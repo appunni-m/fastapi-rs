@@ -782,6 +782,80 @@ def validate() -> None:
             },
             row.get("binding"),
         )
+    behavior_crosswalk_specs = metadata.get("starlette_rs", {}).get("behavior_crosswalks")
+    no_exact_binding_ids = {
+        row.get("id")
+        for row in import_binding_rows
+        if row.get("starlette_rs_review", {}).get("state") == "no_exact_row"
+    }
+    if not isinstance(behavior_crosswalk_specs, dict):
+        raise MetadataError("metadata Starlette behavior crosswalks must be a mapping")
+    require_equal(
+        "Starlette no-exact-row behavior crosswalk denominator",
+        set(behavior_crosswalk_specs),
+        no_exact_binding_ids,
+    )
+    atlas_edges_by_binding = {
+        edge.get("fastapi_binding"): edge
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict)
+    }
+    for binding_id, specification in behavior_crosswalk_specs.items():
+        edge = atlas_edges_by_binding.get(binding_id)
+        projected = edge.get("starlette_rs_behavior_crosswalk") if isinstance(edge, dict) else None
+        if not isinstance(specification, dict) or not isinstance(projected, dict):
+            raise MetadataError(
+                "atlas is missing a reviewed Starlette behavior crosswalk: " + str(binding_id)
+            )
+        for field in ("kind", "starlette_symbol", "fastapi_source_uses", "scope_note"):
+            require_equal(
+                f"atlas Starlette behavior crosswalk {binding_id} {field}",
+                projected.get(field),
+                specification.get(field),
+            )
+        expected_resolution = (
+            "existing-sibling-behavior-requirements"
+            if specification.get("kind") == "private-helper-behavior"
+            else "external-sibling-module-namespace-reference"
+        )
+        require_equal(
+            f"atlas Starlette behavior crosswalk {binding_id} resolution",
+            projected.get("resolution"),
+            expected_resolution,
+        )
+        actual_refs = [
+            {
+                "surface_id": reference.get("surface_id"),
+                "operation_id": reference.get("operation_id"),
+                "requirement_ids": reference.get("requirement_ids"),
+            }
+            for reference in projected.get("target_operation_refs", [])
+        ]
+        require_equal(
+            f"atlas Starlette behavior crosswalk {binding_id} target references",
+            actual_refs,
+            specification.get("target_refs"),
+        )
+        if specification.get("kind") == "module-namespace-reference":
+            catalog_reference = projected.get("namespace_catalog_reference")
+            catalog_evidence = edge.get("starlette_rs_catalog_evidence", [])
+            namespace_evidence = [
+                reference
+                for reference in catalog_evidence
+                if isinstance(reference, dict)
+                and reference.get("record_type") == "external_module_namespace_reference"
+                and reference.get("module") == specification.get("starlette_symbol")
+            ]
+            require_equal(
+                f"atlas Starlette namespace crosswalk {binding_id} evidence count",
+                len(namespace_evidence),
+                1,
+            )
+            require_equal(
+                f"atlas Starlette namespace crosswalk {binding_id} catalog link",
+                catalog_reference,
+                namespace_evidence[0] if namespace_evidence else None,
+            )
     reviewed_starlette_import_ids = {
         candidate.get("id")
         for candidate in candidates

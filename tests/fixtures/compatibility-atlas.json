@@ -76343,7 +76343,10 @@
     "reviewed_public_candidate_candidates": 167,
     "reviewed_source_api_candidates": 392,
     "source_deprecations": 21,
+    "starlette_behavior_crosswalks": 4,
     "starlette_integration_edges": 133,
+    "starlette_module_namespace_crosswalks": 1,
+    "starlette_private_helper_behavior_crosswalks": 3,
     "test_function_designs": 2120,
     "test_modules": 492,
     "test_modules_candidate_links_pending_behavior_review": 0,
@@ -695062,7 +695065,7 @@
       "status": "incomplete"
     },
     {
-      "acceptance": "Review all 133 direct re-export, subclass, helper, and internal-import edges against the pinned Starlette 1.6.0 and Starlette-RS contracts; resolve the four target paths without exact sibling review rows; never duplicate Starlette-owned behavior.",
+      "acceptance": "Review all 133 direct re-export, subclass, helper, and internal-import edges against pinned Starlette 1.6.0 and Starlette-RS contracts. Resolve private helper paths through exact existing sibling behavior requirements, module paths through digest-backed namespace references, and preserve per-target support states; never add duplicate Starlette API inventory or infer FastAPI-RS parity from ownership links.",
       "id": "complete-starlette-consumption-crosswalk",
       "priority": 2,
       "status": "partial"
@@ -696008,7 +696011,7 @@
       }
     }
   ],
-  "schema": "fastapi-rs/compatibility-atlas@5",
+  "schema": "fastapi-rs/compatibility-atlas@6",
   "starlette_integration_edges": [
     {
       "fastapi_binding": "fastapi.concurrency.iterate_in_threadpool",
@@ -702544,6 +702547,81 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-get-route-path",
       "relation": "internal_dependency",
+      "starlette_rs_behavior_crosswalk": {
+        "fastapi_source_uses": {
+          "call_lines": [
+            1513,
+            2072,
+            2745
+          ],
+          "path": "fastapi/routing.py"
+        },
+        "kind": "private-helper-behavior",
+        "resolution": "existing-sibling-behavior-requirements",
+        "scope_note": "The private helper's root_path behavior maps to existing Router and Mount requirements. This records generic behavior ownership; FastAPI's frontend path selection, route graph, and FastAPI-RS parity remain separately owned.",
+        "starlette_symbol": "starlette._utils.get_route_path",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+            "operation_id": "route-dispatch",
+            "relationship": "generic behavior owner for FastAPI private helper; parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.routing.Router.route-dispatch.root-path-match"
+            ],
+            "source_path": "starlette.routing.Router.app",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.route-dispatch.python-callable-endpoint",
+                  "starlette.routing.Router.route-dispatch.custom-converter-override",
+                  "starlette.routing.Router.route-dispatch.mount-child-router-live-route-add",
+                  "starlette.routing.Router.route-dispatch.mount-route-dispatch",
+                  "starlette.routing.Router.route-dispatch.mount-prefix-boundary-miss",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-asgi-class",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-async-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-path-parameter",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-non-verb-helper-rejected",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-sync-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-head-get-fallback",
+                  "starlette.routing.Router.route-dispatch.max-body-size"
+                ],
+                "reason": "The Rust target supports ordered built-in route selection, fixed response projection, live method mutation, and live route-list append. It does not invoke arbitrary Python endpoints, expose Python scope mutation or typed path_params, support Python-registered URL convertors, or dispatch Mount routes.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+            "operation_id": "route-dispatch",
+            "relationship": "generic behavior owner for FastAPI private helper; parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.routing.Mount.route-dispatch.nested-scope-composition"
+            ],
+            "source_path": "starlette.routing.BaseRoute.__call__",
+            "surface_id": "starlette.routing.Mount",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          }
+        ]
+      },
       "starlette_rs_catalog_evidence": [],
       "starlette_rs_planning_areas": [
         "routing-converters-mounts-hosts-and-errors"
@@ -702568,7 +702646,7 @@
         "symbol": "starlette._utils.get_route_path"
       },
       "starlette_symbol": "starlette._utils.get_route_path",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; private helper linked to existing Starlette-RS behavior requirements; FastAPI parity remains unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.HTTPException",
@@ -702660,6 +702738,61 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-is-async-callable",
       "relation": "internal_dependency",
+      "starlette_rs_behavior_crosswalk": {
+        "fastapi_source_uses": {
+          "call_lines": [
+            130,
+            6374,
+            6390
+          ],
+          "path": "fastapi/routing.py"
+        },
+        "kind": "private-helper-behavior",
+        "resolution": "existing-sibling-behavior-requirements",
+        "scope_note": "The sibling callable-form requirements cover the generic sync/async endpoint distinction used by FastAPI's copied request wrapper. FastAPI's legacy startup and shutdown handlers remain FastAPI-owned; these links establish no FastAPI-RS parity.",
+        "starlette_symbol": "starlette._utils.is_async_callable",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+            "operation_id": "request-dispatch",
+            "relationship": "generic behavior owner for FastAPI private helper; parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.routing.sync-endpoint-callable-form",
+              "starlette.routing.async-endpoint-callable-form"
+            ],
+            "source_path": "starlette.applications.Starlette.__call__",
+            "surface_id": "starlette.applications.Starlette",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.sync-endpoint-contextvar-propagation",
+                  "starlette.routing.sync-endpoint-worker-thread",
+                  "starlette.routing.sync-endpoint-single-invocation",
+                  "starlette.routing.sync-endpoint-worker-cancellation",
+                  "starlette.routing.sync-endpoint-callable-form",
+                  "starlette.routing.async-endpoint-callable-form",
+                  "starlette.routing.asgi-callable-instance-dispatch",
+                  "starlette.routing.asgi-callable-http-exception-before-start",
+                  "starlette.routing.asgi-callable-http-exception-after-start",
+                  "starlette.request.path-param-string",
+                  "starlette.request.path-param-float",
+                  "starlette.request.path-param-uuid",
+                  "starlette.request.path-param-path",
+                  "starlette.request.path-param-int-digit-limit",
+                  "starlette.request.cookies-dict-semantics"
+                ],
+                "reason": "The Rust-native profile cannot invoke arbitrary Python endpoint callables; synchronous and async Request endpoint boundaries and ASGI callable-instance dispatch observations are unsupported.",
+                "status": "partial"
+              }
+            }
+          }
+        ]
+      },
       "starlette_rs_catalog_evidence": [],
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency"
@@ -702684,7 +702817,7 @@
         "symbol": "starlette._utils.is_async_callable"
       },
       "starlette_symbol": "starlette._utils.is_async_callable",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; private helper linked to existing Starlette-RS behavior requirements; FastAPI parity remains unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.iterate_in_threadpool",
@@ -703617,6 +703750,37 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-routing",
       "relation": "internal_dependency",
+      "starlette_rs_behavior_crosswalk": {
+        "fastapi_source_uses": {
+          "alias": "routing",
+          "consumed_members": [
+            "Host",
+            "Mount",
+            "NoMatchFound",
+            "Route",
+            "Router",
+            "WebSocketRoute",
+            "replace_params"
+          ],
+          "import_line": 91,
+          "path": "fastapi/routing.py"
+        },
+        "kind": "module-namespace-reference",
+        "namespace_catalog_reference": {
+          "catalog_path": "docs/api-surface.csv",
+          "catalog_sha256": "2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e",
+          "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+          "module": "starlette.routing",
+          "note": "The complete namespace inventory remains owned by Starlette-RS and is referenced by digest rather than copied into the FastAPI atlas.",
+          "record_type": "external_module_namespace_reference",
+          "review_path": "docs/atlas/api-review.csv",
+          "review_sha256": "8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099"
+        },
+        "resolution": "external-sibling-module-namespace-reference",
+        "scope_note": "The module alias is not a standalone behavior endpoint. The atlas links the sibling namespace catalog by digest; operation and member inventories remain owned by Starlette-RS and are not copied here. FastAPI-specific route graph and OpenAPI behavior remains separately owned.",
+        "starlette_symbol": "starlette.routing",
+        "target_operation_refs": []
+      },
       "starlette_rs_catalog_evidence": [
         {
           "catalog_path": "docs/api-surface.csv",
@@ -703646,7 +703810,7 @@
         "symbol": "starlette.routing"
       },
       "starlette_symbol": "starlette.routing",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; external Starlette-RS namespace catalog linked; member behavior remains mapped per operation"
     },
     {
       "fastapi_binding": "fastapi.routing.run_in_threadpool",
@@ -704201,6 +704365,73 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-wrap-app-handling-exceptions",
       "relation": "internal_dependency",
+      "starlette_rs_behavior_crosswalk": {
+        "fastapi_source_uses": {
+          "call_lines": [
+            158,
+            184
+          ],
+          "path": "fastapi/routing.py"
+        },
+        "kind": "private-helper-behavior",
+        "resolution": "existing-sibling-behavior-requirements",
+        "scope_note": "These existing application requirements cover generic HTTP and WebSocket exception outcomes. FastAPI dependency-stack wrapping and integration remain FastAPI-owned, and behavior links alone do not establish target parity.",
+        "starlette_symbol": "starlette._exception_handler.wrap_app_handling_exceptions",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+            "operation_id": "__call__",
+            "relationship": "generic behavior owner for FastAPI private helper; parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.asgi.exception-handler.status-code",
+              "starlette.asgi.exception-handler.exception-class",
+              "starlette.asgi.exception-handler.async-callback",
+              "starlette.asgi.exception-handler.headers-forwarding",
+              "starlette.asgi.exception-handler.router-miss-404",
+              "starlette.asgi.websocket-exception.default-handler",
+              "starlette.asgi.websocket-exception.http-denial-response",
+              "starlette.asgi.websocket-exception.custom-handler",
+              "starlette.asgi.websocket-exception.websocket-class-handler"
+            ],
+            "source_path": "starlette.applications.Starlette.__call__",
+            "surface_id": "starlette.applications.Starlette",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [
+                  "starlette.compatibility.full-public-surface",
+                  "starlette.asgi.scope-mutation",
+                  "starlette.asgi.streaming",
+                  "starlette.asgi.boundary-cancellation"
+                ],
+                "reason": "The package implements the declared direct ASGI route, error, lifespan, and authentication integration workflows; remaining behavior is listed in missing requirements.",
+                "status": "partial"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.compatibility.full-public-surface",
+                  "starlette.asgi.scope-mutation",
+                  "starlette.asgi.streaming",
+                  "starlette.asgi.python-callables",
+                  "starlette.asgi.http-exception.default-406-detail",
+                  "starlette.asgi.http-exception.no-content-204",
+                  "starlette.asgi.http-exception.not-modified-304",
+                  "starlette.asgi.http-exception.headers-200",
+                  "starlette.asgi.server-error.default-response",
+                  "starlette.asgi.server-error.status-500-handler",
+                  "starlette.asgi.server-error.exception-handler",
+                  "starlette.asgi.server-error.special-key-order",
+                  "starlette.asgi.server-error.debug-traceback",
+                  "starlette.asgi.server-error.response-started",
+                  "starlette.asgi.server-error.background-task-failure",
+                  "starlette.asgi.server-error.handled-http-exception-500"
+                ],
+                "reason": "The Rust-native API renders explicit exception details but does not expose the Python HTTPException constructor and its standard-library status-phrase defaults.",
+                "status": "partial"
+              }
+            }
+          }
+        ]
+      },
       "starlette_rs_catalog_evidence": [],
       "starlette_rs_planning_areas": [
         "middleware-authentication-endpoints-datastructures-status",
@@ -704227,7 +704458,7 @@
         "symbol": "starlette._exception_handler.wrap_app_handling_exceptions"
       },
       "starlette_symbol": "starlette._exception_handler.wrap_app_handling_exceptions",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; private helper linked to existing Starlette-RS behavior requirements; FastAPI parity remains unproven"
     },
     {
       "fastapi_binding": "fastapi.security.api_key.HTTP_401_UNAUTHORIZED",

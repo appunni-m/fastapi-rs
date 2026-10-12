@@ -471,7 +471,7 @@ api_public_candidate_classification_review:
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
-  schema: fastapi-rs/compatibility-atlas@5
+  schema: fastapi-rs/compatibility-atlas@6
   candidates_pointer: /api_candidates
   inherited_candidates_pointer: /reviewed_inherited_api_candidates
   classification_pointer: /classification
@@ -542,6 +542,77 @@ starlette_rs:
   metadata_revision_pointer: /authority/revision
   boundary: FastAPI records only its direct Starlette imports, aliases, inheritance and integration edges; generic Starlette API and behavior stay sibling-owned.
   catalog_policy: Link to sibling artifacts; never copy or expand the Starlette API catalog here.
+  behavior_crosswalks:
+    fastapi.routing.get_route_path:
+      kind: private-helper-behavior
+      starlette_symbol: starlette._utils.get_route_path
+      fastapi_source_uses:
+        path: fastapi/routing.py
+        call_lines: [1513, 2072, 2745]
+      target_refs:
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids: [starlette.routing.Router.route-dispatch.root-path-match]
+        - surface_id: starlette.routing.Mount
+          operation_id: route-dispatch
+          requirement_ids: [starlette.routing.Mount.route-dispatch.nested-scope-composition]
+      scope_note: >-
+        The private helper's root_path behavior maps to existing Router and Mount
+        requirements. This records generic behavior ownership; FastAPI's frontend
+        path selection, route graph, and FastAPI-RS parity remain separately owned.
+    fastapi.routing.is_async_callable:
+      kind: private-helper-behavior
+      starlette_symbol: starlette._utils.is_async_callable
+      fastapi_source_uses:
+        path: fastapi/routing.py
+        call_lines: [130, 6374, 6390]
+      target_refs:
+        - surface_id: starlette.applications.Starlette
+          operation_id: request-dispatch
+          requirement_ids:
+            - starlette.routing.sync-endpoint-callable-form
+            - starlette.routing.async-endpoint-callable-form
+      scope_note: >-
+        The sibling callable-form requirements cover the generic sync/async endpoint
+        distinction used by FastAPI's copied request wrapper. FastAPI's legacy startup
+        and shutdown handlers remain FastAPI-owned; these links establish no FastAPI-RS parity.
+    fastapi.routing.wrap_app_handling_exceptions:
+      kind: private-helper-behavior
+      starlette_symbol: starlette._exception_handler.wrap_app_handling_exceptions
+      fastapi_source_uses:
+        path: fastapi/routing.py
+        call_lines: [158, 184]
+      target_refs:
+        - surface_id: starlette.applications.Starlette
+          operation_id: __call__
+          requirement_ids:
+            - starlette.asgi.exception-handler.status-code
+            - starlette.asgi.exception-handler.exception-class
+            - starlette.asgi.exception-handler.async-callback
+            - starlette.asgi.exception-handler.headers-forwarding
+            - starlette.asgi.exception-handler.router-miss-404
+            - starlette.asgi.websocket-exception.default-handler
+            - starlette.asgi.websocket-exception.http-denial-response
+            - starlette.asgi.websocket-exception.custom-handler
+            - starlette.asgi.websocket-exception.websocket-class-handler
+      scope_note: >-
+        These existing application requirements cover generic HTTP and WebSocket
+        exception outcomes. FastAPI dependency-stack wrapping and integration remain
+        FastAPI-owned, and behavior links alone do not establish target parity.
+    fastapi.routing.routing:
+      kind: module-namespace-reference
+      starlette_symbol: starlette.routing
+      fastapi_source_uses:
+        path: fastapi/routing.py
+        import_line: 91
+        alias: routing
+        consumed_members: [Host, Mount, NoMatchFound, Route, Router, WebSocketRoute, replace_params]
+      target_refs: []
+      scope_note: >-
+        The module alias is not a standalone behavior endpoint. The atlas links the
+        sibling namespace catalog by digest; operation and member inventories remain
+        owned by Starlette-RS and are not copied here. FastAPI-specific route graph
+        and OpenAPI behavior remains separately owned.
 
 cargo_dependency_inventory:
   schema: fastapi-rs/cargo-dependency-inventory-annotations@1

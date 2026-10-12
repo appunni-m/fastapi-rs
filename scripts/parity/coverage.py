@@ -112,6 +112,163 @@ def _verify_source_ref(
         _require(sha256_file(path) == expected, f"{label} source digest is stale")
 
 
+def _validate_starlette_behavior_crosswalks(
+    atlas: dict[str, Any], fastapi_source: Path, edges: list[dict[str, Any]]
+) -> None:
+    _require(
+        isinstance(edges, list) and all(isinstance(edge, dict) for edge in edges),
+        "Starlette integration edges must be a list of mappings",
+    )
+    expected_kinds = {
+        "fastapi.routing.get_route_path": "private-helper-behavior",
+        "fastapi.routing.is_async_callable": "private-helper-behavior",
+        "fastapi.routing.wrap_app_handling_exceptions": "private-helper-behavior",
+        "fastapi.routing.routing": "module-namespace-reference",
+    }
+    selected_contract = atlas.get("authorities", {}).get("starlette_rs", {})
+    contract_id = selected_contract.get("current_contract_id")
+    crosswalk_edges = {
+        edge.get("fastapi_binding"): edge
+        for edge in edges
+        if isinstance(edge.get("starlette_rs_behavior_crosswalk"), dict)
+    }
+    _require(
+        set(crosswalk_edges) == set(expected_kinds),
+        "Starlette behavior crosswalks must cover the exact four reviewed bindings",
+    )
+
+    for binding_id, expected_kind in expected_kinds.items():
+        edge = crosswalk_edges[binding_id]
+        crosswalk = edge["starlette_rs_behavior_crosswalk"]
+        kind = crosswalk.get("kind")
+        _require(
+            kind == expected_kind
+            and isinstance(crosswalk.get("scope_note"), str)
+            and bool(crosswalk["scope_note"].strip()),
+            f"Starlette behavior crosswalk kind or scope is invalid: {binding_id}",
+        )
+        source_uses = crosswalk.get("fastapi_source_uses")
+        _require(
+            isinstance(source_uses, dict) and source_uses.get("path") == "fastapi/routing.py",
+            f"Starlette behavior crosswalk source path is invalid: {binding_id}",
+        )
+        source_path = _source_path(fastapi_source, source_uses.get("path"), binding_id)
+        source_tree = ast.parse(source_path.read_text(encoding="utf-8"), filename=str(source_path))
+
+        if kind == "private-helper-behavior":
+            _require(
+                set(source_uses) == {"path", "call_lines"}
+                and isinstance(source_uses.get("call_lines"), list)
+                and bool(source_uses["call_lines"]),
+                f"private helper call-line evidence is malformed: {binding_id}",
+            )
+            helper_name = crosswalk.get("starlette_symbol", "").rsplit(".", 1)[-1]
+            call_lines = source_uses["call_lines"]
+            _require(
+                all(isinstance(line, int) and not isinstance(line, bool) for line in call_lines)
+                and call_lines == sorted(set(call_lines)),
+                f"private helper call lines must be sorted and unique: {binding_id}",
+            )
+            actual_call_lines = sorted(
+                {
+                    node.lineno
+                    for node in ast.walk(source_tree)
+                    if isinstance(node, ast.Call)
+                    and (
+                        (isinstance(node.func, ast.Name) and node.func.id == helper_name)
+                        or (isinstance(node.func, ast.Attribute) and node.func.attr == helper_name)
+                    )
+                }
+            )
+            _require(
+                actual_call_lines == call_lines,
+                f"private helper call lines do not match pinned FastAPI: {binding_id}",
+            )
+            _require(
+                crosswalk.get("resolution") == "existing-sibling-behavior-requirements"
+                and not crosswalk.get("namespace_catalog_reference"),
+                f"private helper crosswalk has the wrong resolution: {binding_id}",
+            )
+            operation_refs = crosswalk.get("target_operation_refs")
+            _require(
+                isinstance(operation_refs, list) and bool(operation_refs),
+                f"private helper has no sibling behavior links: {binding_id}",
+            )
+            for reference in operation_refs:
+                _require(
+                    isinstance(reference, dict)
+                    and reference.get("contract_id") == contract_id
+                    and isinstance(reference.get("surface_id"), str)
+                    and isinstance(reference.get("operation_id"), str)
+                    and isinstance(reference.get("requirement_ids"), list)
+                    and bool(reference["requirement_ids"])
+                    and all(
+                        isinstance(requirement_id, str) and bool(requirement_id)
+                        for requirement_id in reference["requirement_ids"]
+                    )
+                    and isinstance(reference.get("target_support"), dict),
+                    f"private helper sibling behavior link is incomplete: {binding_id}",
+                )
+        else:
+            _require(
+                set(source_uses) == {"path", "import_line", "alias", "consumed_members"}
+                and isinstance(source_uses.get("import_line"), int)
+                and not isinstance(source_uses.get("import_line"), bool)
+                and isinstance(source_uses.get("alias"), str)
+                and isinstance(source_uses.get("consumed_members"), list)
+                and all(
+                    isinstance(member, str) and bool(member)
+                    for member in source_uses["consumed_members"]
+                )
+                and source_uses["consumed_members"] == sorted(set(source_uses["consumed_members"])),
+                f"Starlette module namespace source evidence is malformed: {binding_id}",
+            )
+            alias = source_uses["alias"]
+            imports = [
+                node.lineno
+                for node in source_tree.body
+                if isinstance(node, ast.ImportFrom)
+                and node.module == "starlette"
+                and any(
+                    item.name == "routing" and (item.asname or item.name) == alias
+                    for item in node.names
+                )
+            ]
+            members = sorted(
+                {
+                    node.attr
+                    for node in ast.walk(source_tree)
+                    if isinstance(node, ast.Attribute)
+                    and isinstance(node.value, ast.Name)
+                    and node.value.id == alias
+                }
+            )
+            _require(
+                imports == [source_uses["import_line"]]
+                and members == source_uses["consumed_members"],
+                f"Starlette module namespace usage differs from pinned FastAPI: {binding_id}",
+            )
+            catalog_refs = [
+                item
+                for item in edge.get("starlette_rs_catalog_evidence", [])
+                if isinstance(item, dict)
+                and item.get("record_type") == "external_module_namespace_reference"
+                and item.get("module") == crosswalk.get("starlette_symbol")
+            ]
+            namespace_ref = crosswalk.get("namespace_catalog_reference")
+            _require(
+                crosswalk.get("resolution") == "external-sibling-module-namespace-reference"
+                and not crosswalk.get("target_operation_refs")
+                and len(catalog_refs) == 1
+                and namespace_ref == catalog_refs[0]
+                and namespace_ref.get("contract_id") == contract_id
+                and namespace_ref.get("catalog_path") == "docs/api-surface.csv"
+                and isinstance(namespace_ref.get("catalog_sha256"), str)
+                and re.fullmatch(r"[0-9a-f]{64}", namespace_ref["catalog_sha256"]) is not None,
+                f"Starlette module namespace catalog link is invalid: {binding_id}",
+            )
+
+
 def _walk_source_references(
     value: Any,
     fastapi_root: Path,
@@ -359,7 +516,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@5", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@6", "unsupported atlas schema")
     _require(
         backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
         "unsupported fixture backlog schema",
@@ -1482,7 +1639,9 @@ def validate_compatibility_artifacts(
         f"selector catalog contains unused definitions: {sorted(unused_definitions)}",
     )
 
-    for edge in atlas.get("starlette_integration_edges", []):
+    integration_edges = atlas.get("starlette_integration_edges", [])
+    _validate_starlette_behavior_crosswalks(atlas, fastapi_source, integration_edges)
+    for edge in integration_edges:
         _require(
             bool(edge.get("starlette_rs_planning_areas")),
             f"Starlette edge {edge.get('id')} has no FastAPI-RS planning area",

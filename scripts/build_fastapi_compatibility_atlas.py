@@ -8331,6 +8331,208 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "relationship": relationship,
         }
 
+    def load_internal_starlette_behavior_crosswalks() -> dict[str, dict[str, Any]]:
+        """Resolve the four no-exact-row imports through behavior or namespace evidence."""
+        crosswalks = project_metadata.get("starlette_rs", {}).get("behavior_crosswalks")
+        expected_ids = {
+            "fastapi.routing.get_route_path",
+            "fastapi.routing.is_async_callable",
+            "fastapi.routing.wrap_app_handling_exceptions",
+            "fastapi.routing.routing",
+        }
+        if not isinstance(crosswalks, dict) or set(crosswalks) != expected_ids:
+            raise AtlasError(
+                "metadata.yaml Starlette behavior crosswalks must cover the exact four "
+                "no-exact-row import bindings"
+            )
+        import_bindings = {
+            row.get("id"): row
+            for row in inventory.get("import_bindings", [])
+            if isinstance(row, dict) and isinstance(row.get("id"), str)
+        }
+        no_exact_rows = {
+            row.get("id")
+            for row in import_binding_review.get("rows", [])
+            if row.get("starlette_rs_review", {}).get("state") == "no_exact_row"
+        }
+        if no_exact_rows != expected_ids:
+            raise AtlasError(
+                "pinned import-binding review no-exact-row set differs from the reviewed "
+                "behavior crosswalk scope"
+            )
+
+        resolved: dict[str, dict[str, Any]] = {}
+        for binding_id, entry in crosswalks.items():
+            if not isinstance(entry, dict):
+                raise AtlasError("Starlette behavior crosswalk row is malformed: " + binding_id)
+            kind = entry.get("kind")
+            expected_fields = {
+                "kind",
+                "starlette_symbol",
+                "fastapi_source_uses",
+                "target_refs",
+                "scope_note",
+            }
+            if set(entry) != expected_fields or kind not in {
+                "private-helper-behavior",
+                "module-namespace-reference",
+            }:
+                raise AtlasError(
+                    "Starlette behavior crosswalk fields are unsupported: " + binding_id
+                )
+            binding = import_bindings.get(binding_id)
+            starlette_symbol = entry.get("starlette_symbol")
+            source_uses = entry.get("fastapi_source_uses")
+            target_refs = entry.get("target_refs")
+            scope_note = entry.get("scope_note")
+            target_path = binding.get("target_path") if isinstance(binding, dict) else None
+            if (
+                binding is None
+                or not isinstance(starlette_symbol, str)
+                or target_path != starlette_symbol
+                or not isinstance(source_uses, dict)
+                or not isinstance(target_refs, list)
+                or not isinstance(scope_note, str)
+                or not scope_note.strip()
+            ):
+                raise AtlasError("Starlette behavior crosswalk identity is invalid: " + binding_id)
+            if kind == "private-helper-behavior":
+                if set(source_uses) != {"path", "call_lines"} or not target_refs:
+                    raise AtlasError(
+                        "private helper crosswalk has no source calls or behavior refs: "
+                        + binding_id
+                    )
+                source_path = source_uses.get("path")
+                call_lines = source_uses.get("call_lines")
+                if (
+                    not isinstance(source_path, str)
+                    or not isinstance(call_lines, list)
+                    or not call_lines
+                    or any(
+                        not isinstance(line, int) or isinstance(line, bool) for line in call_lines
+                    )
+                    or call_lines != sorted(set(call_lines))
+                ):
+                    raise AtlasError(
+                        "private helper source-use reference is malformed: " + binding_id
+                    )
+                source_file = (fastapi_root / source_path).resolve()
+                if fastapi_root.resolve() not in source_file.parents or not source_file.is_file():
+                    raise AtlasError("private helper source-use path is invalid: " + binding_id)
+                local_name = binding.get("local_name")
+                if not isinstance(local_name, str) or not local_name:
+                    raise AtlasError(
+                        "private helper import binding has no local name: " + binding_id
+                    )
+                source_tree = ast.parse(
+                    source_file.read_text(encoding="utf-8"), filename=source_path
+                )
+                actual_call_lines = sorted(
+                    {
+                        node.lineno
+                        for node in ast.walk(source_tree)
+                        if isinstance(node, ast.Call)
+                        and isinstance(node.func, ast.Name)
+                        and node.func.id == local_name
+                    }
+                )
+                if actual_call_lines != call_lines:
+                    raise AtlasError(
+                        "private helper source-use calls differ from pinned FastAPI: " + binding_id
+                    )
+                operation_refs = []
+                for reference in target_refs:
+                    if (
+                        not isinstance(reference, dict)
+                        or set(reference) != {"surface_id", "operation_id", "requirement_ids"}
+                        or not isinstance(reference.get("surface_id"), str)
+                        or not isinstance(reference.get("operation_id"), str)
+                        or not isinstance(reference.get("requirement_ids"), list)
+                        or not reference["requirement_ids"]
+                        or any(
+                            not isinstance(requirement_id, str) or not requirement_id
+                            for requirement_id in reference["requirement_ids"]
+                        )
+                    ):
+                        raise AtlasError(
+                            "private helper behavior reference is malformed: " + binding_id
+                        )
+                    operation_refs.append(
+                        starlette_contract_operation_ref(
+                            reference["surface_id"],
+                            reference["operation_id"],
+                            reference["requirement_ids"],
+                            "generic behavior owner for FastAPI private helper; parity remains FastAPI-owned",
+                        )
+                    )
+                resolution = "existing-sibling-behavior-requirements"
+            else:
+                if (
+                    set(source_uses) != {"path", "import_line", "alias", "consumed_members"}
+                    or target_refs
+                    or starlette_symbol != "starlette.routing"
+                ):
+                    raise AtlasError("module namespace crosswalk is malformed: " + binding_id)
+                source_path = source_uses.get("path")
+                import_line = source_uses.get("import_line")
+                alias = source_uses.get("alias")
+                members = source_uses.get("consumed_members")
+                if (
+                    source_path != "fastapi/routing.py"
+                    or not isinstance(import_line, int)
+                    or isinstance(import_line, bool)
+                    or not isinstance(alias, str)
+                    or not isinstance(members, list)
+                    or any(not isinstance(member, str) or not member for member in members)
+                    or members != sorted(set(members))
+                ):
+                    raise AtlasError(
+                        "module namespace source-use reference is malformed: " + binding_id
+                    )
+                source_file = (fastapi_root / source_path).resolve()
+                if fastapi_root.resolve() not in source_file.parents or not source_file.is_file():
+                    raise AtlasError("module namespace source-use path is invalid: " + binding_id)
+                source_tree = ast.parse(
+                    source_file.read_text(encoding="utf-8"), filename=source_path
+                )
+                import_lines = [
+                    node.lineno
+                    for node in source_tree.body
+                    if isinstance(node, ast.ImportFrom)
+                    and node.module == "starlette"
+                    and any(
+                        imported.name == "routing" and (imported.asname or imported.name) == alias
+                        for imported in node.names
+                    )
+                ]
+                actual_members = sorted(
+                    {
+                        node.attr
+                        for node in ast.walk(source_tree)
+                        if isinstance(node, ast.Attribute)
+                        and isinstance(node.value, ast.Name)
+                        and node.value.id == alias
+                    }
+                )
+                if import_lines != [import_line] or actual_members != members:
+                    raise AtlasError(
+                        "module namespace uses differ from pinned FastAPI: " + binding_id
+                    )
+                operation_refs = []
+                resolution = "external-sibling-module-namespace-reference"
+
+            resolved[binding_id] = {
+                "kind": kind,
+                "resolution": resolution,
+                "starlette_symbol": starlette_symbol,
+                "fastapi_source_uses": source_uses,
+                "target_operation_refs": operation_refs,
+                "scope_note": scope_note,
+            }
+        return resolved
+
+    internal_behavior_crosswalks = load_internal_starlette_behavior_crosswalks()
+
     def has_middleware_registration_source(coverage_item: dict[str, Any]) -> bool:
         source_path = coverage_item.get("source_path")
         if not isinstance(source_path, str):
@@ -8868,22 +9070,51 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             target_catalog_evidence, target_review_evidence = starlette_crosswalk_evidence(
                 target_symbol, source_ref, binding.get("source_ref")
             )
-            starlette_edges.append(
-                {
-                    "id": "fastapi-starlette:%s:%s" % (relation, norm_id(binding["id"])),
-                    "fastapi_binding": binding["id"],
-                    "fastapi_source": binding["source_ref"],
-                    "relation": relation,
-                    "starlette_symbol": target_symbol,
-                    "starlette_source": source_ref,
-                    "starlette_rs_planning_areas": starlette_area_for_symbol(
-                        target_symbol, starlette_areas, source_ref
-                    ),
-                    "starlette_rs_catalog_evidence": target_catalog_evidence,
-                    "starlette_rs_review_evidence": target_review_evidence,
-                    "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run",
-                }
-            )
+            edge = {
+                "id": "fastapi-starlette:%s:%s" % (relation, norm_id(binding["id"])),
+                "fastapi_binding": binding["id"],
+                "fastapi_source": binding["source_ref"],
+                "relation": relation,
+                "starlette_symbol": target_symbol,
+                "starlette_source": source_ref,
+                "starlette_rs_planning_areas": starlette_area_for_symbol(
+                    target_symbol, starlette_areas, source_ref
+                ),
+                "starlette_rs_catalog_evidence": target_catalog_evidence,
+                "starlette_rs_review_evidence": target_review_evidence,
+                "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run",
+            }
+            behavior_crosswalk = internal_behavior_crosswalks.get(binding["id"])
+            if behavior_crosswalk is not None:
+                if behavior_crosswalk["starlette_symbol"] != target_symbol:
+                    raise AtlasError(
+                        "Starlette behavior crosswalk target differs from import binding: "
+                        + binding["id"]
+                    )
+                if behavior_crosswalk["kind"] == "module-namespace-reference":
+                    namespace_refs = [
+                        reference
+                        for reference in target_catalog_evidence
+                        if reference.get("record_type") == "external_module_namespace_reference"
+                        and reference.get("module") == target_symbol
+                    ]
+                    if len(namespace_refs) != 1:
+                        raise AtlasError(
+                            "module namespace crosswalk lacks one external Starlette-RS catalog ref: "
+                            + binding["id"]
+                        )
+                    behavior_crosswalk["namespace_catalog_reference"] = namespace_refs[0]
+                    edge["status"] = (
+                        "source-mapped; external Starlette-RS namespace catalog linked; "
+                        "member behavior remains mapped per operation"
+                    )
+                else:
+                    edge["status"] = (
+                        "source-mapped; private helper linked to existing Starlette-RS "
+                        "behavior requirements; FastAPI parity remains unproven"
+                    )
+                edge["starlette_rs_behavior_crosswalk"] = behavior_crosswalk
+            starlette_edges.append(edge)
     for edge in starlette.get("base_edges", []):
         symbol = edge["base"]
         source_ref = source_ref_lookup(starlette_root, symbol)
@@ -8907,6 +9138,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             }
         )
     starlette_edges.sort(key=lambda x: x["id"])
+    behavior_crosswalk_counts = Counter(
+        edge.get("starlette_rs_behavior_crosswalk", {}).get("kind")
+        for edge in starlette_edges
+        if isinstance(edge.get("starlette_rs_behavior_crosswalk"), dict)
+    )
 
     materialized_index_path = PROJECT / "tests/fixtures/materialized-input-index.json"
     if not materialized_index_path.is_file():
@@ -10055,7 +10291,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "priority": 2,
             "id": "complete-starlette-consumption-crosswalk",
             "status": "partial",
-            "acceptance": "Review all 133 direct re-export, subclass, helper, and internal-import edges against the pinned Starlette 1.6.0 and Starlette-RS contracts; resolve the four target paths without exact sibling review rows; never duplicate Starlette-owned behavior.",
+            "acceptance": "Review all 133 direct re-export, subclass, helper, and internal-import edges against pinned Starlette 1.6.0 and Starlette-RS contracts. Resolve private helper paths through exact existing sibling behavior requirements, module paths through digest-backed namespace references, and preserve per-target support states; never add duplicate Starlette API inventory or infer FastAPI-RS parity from ownership links.",
         },
         {
             "priority": 3,
@@ -10525,7 +10761,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     reviewed_inherited_api_candidates.sort(key=lambda row: row["id"])
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@5",
+        "schema": "fastapi-rs/compatibility-atlas@6",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -10649,6 +10885,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 Counter(record["classification"] for record in candidates.values())
             ),
             "starlette_integration_edges": len(starlette_edges),
+            "starlette_behavior_crosswalks": sum(behavior_crosswalk_counts.values()),
+            "starlette_private_helper_behavior_crosswalks": behavior_crosswalk_counts[
+                "private-helper-behavior"
+            ],
+            "starlette_module_namespace_crosswalks": behavior_crosswalk_counts[
+                "module-namespace-reference"
+            ],
             "test_modules": sum(
                 1 for item in coverage_items if item["kind"] == "upstream_test_module"
             ),
@@ -11036,7 +11279,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## FastAPI to Starlette-RS ownership crosswalk",
             "",
-            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export, subclass, and helper edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Module namespaces point to the sibling catalog and digest rather than copying every member. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
+            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Three private-helper paths are linked to existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest; these references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
             "",
             "| FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |",
             "|---:|---:|---:|---:|",
@@ -11049,6 +11292,15 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 len(linked_contract_mappings),
                 len(out_of_contract_mappings),
                 len(unique_starlette_operations),
+            ),
+            "",
+            "| Direct FastAPI-Starlette source edges | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |",
+            "|---:|---:|---:|---:|",
+            "| %d | %d | %d | 0 |"
+            % (
+                atlas["counts"]["starlette_integration_edges"],
+                atlas["counts"]["starlette_private_helper_behavior_crosswalks"],
+                atlas["counts"]["starlette_module_namespace_crosswalks"],
             ),
             "",
             "The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is "
