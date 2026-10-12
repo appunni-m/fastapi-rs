@@ -2434,6 +2434,45 @@ reviewed_api_contract_overlay:
         object identity. This scope covers alias exposure and identity;
         static-file behavior remains in the pinned Starlette-RS API contract
         and is not claimed here.
+    fastapi.templating.Jinja2Templates:
+      source_evidence:
+        - path: fastapi/templating.py
+          symbol: Jinja2Templates
+          kind: import-binding
+          line: 1
+          imported_module: starlette.templating
+          relative_level: 0
+          imported_name: Jinja2Templates
+          alias_spelling: Jinja2Templates
+          local_name: Jinja2Templates
+          target_path: starlette.templating.Jinja2Templates
+      supported_slice: >-
+        FastAPI 0.141.1 directly re-exports the Starlette Jinja2Templates class.
+        Its optional standard extras include Jinja2, which Starlette's
+        templating module requires at import time. This describes the pinned
+        FastAPI source alias and optional availability only; it establishes no
+        FastAPI-RS target identity or parity. Template rendering and response
+        behavior remain Starlette-RS-owned.
+    fastapi.testclient.TestClient:
+      source_evidence:
+        - path: fastapi/testclient.py
+          symbol: TestClient
+          kind: import-binding
+          line: 1
+          imported_module: starlette.testclient
+          relative_level: 0
+          imported_name: TestClient
+          alias_spelling: TestClient
+          local_name: TestClient
+          target_path: starlette.testclient.TestClient
+      supported_slice: >-
+        FastAPI 0.141.1 directly re-exports the Starlette TestClient class. Its
+        optional standard extras include httpx for the test client; pinned
+        Starlette 1.6.0 imports httpx2 when available and falls back to httpx
+        with a deprecation warning. This describes the FastAPI source alias and
+        optional availability only; it establishes no FastAPI-RS target
+        identity or parity. Client, WebSocket, and lifespan behavior remain
+        Starlette-RS-owned.
     fastapi.websockets.WebSocket:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
