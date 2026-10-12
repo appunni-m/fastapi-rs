@@ -233,12 +233,12 @@ by subtracting the Starlette control or from the end-to-end target time.
 
 #### Latest completed seven-workload run (2026-10-12; suite schema v2)
 
-The suite completed at `2026-10-12T12:34:22Z` with suite ID
-`2a7f56cb-f01b-427b-a9c4-2817954131ce` and receipt
-`benchmark-results/suite-20261012T123422Z-2a7f56cb-f01b-427b-a9c4-2817954131ce.json`.
-It ran against FastAPI-RS commit `979909ffddd8cc47d461980ead1b2fee6dff0a15`
+The suite completed at `2026-10-12T13:09:30Z` with suite ID
+`3aef720f-2d4d-4393-adb9-828d29a8cf50` and receipt
+`benchmark-results/suite-20261012T130930Z-3aef720f-2d4d-4393-adb9-828d29a8cf50.json`.
+It ran against FastAPI-RS commit `08b326d1d450cf2af53eb59fe1a344c9ceea9375`
 and manifest SHA-256
-`c961e13a1ce310b6913f785af0772c54972fe78dbb916558cea2b6c3f6d0c937`.
+`9b36d000935f6a05e062fa43d3be0bf494918360ab1596b1e6dfa606970feb66`.
 The source identities are FastAPI 0.141.1 at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
@@ -248,14 +248,44 @@ release profile with `pyo3/extension-module`. All seven fresh parity gates
 passed: 42/42 selected comparisons, zero failed, and zero not-run. Each subject
 used 50 warmups and 1,000 measured calls in five rounds. The target extension
 SHA-256 was
-`1e4de65a23ca2916cf3963eee33eabd09c5ebb802ebfebb5ae800720681f3fbc`; the
+`b958f99b749a8ecf26aa8d43ff2d09ee5c76b3b54fd6a90b4e6f4e9228e6d654`; the
 target binary SHA-256 was
-`011eeab39ea5bbcd625896a826f093288181662c9d581970e41dbc3006f3fc61`.
+`c2f671034055ccd12df33ce812ac4ddfa97532d491fb9fc55352b55ca4d9564b`.
 
 The table reports median and p95 direct-ASGI latency in microseconds; ratios
 are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
 longer on this host. The raw samples and identity details remain in the ignored
 suite and workload receipts linked above.
+
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
+| --- | ---: | ---: | ---: |
+| Async nested dependencies, distinct query aliases | 493.5 / 521.7 µs | 301.0 / 334.0 µs | 0.610x / 0.640x |
+| Async nested dependencies, two query parameters | 415.0 / 441.2 µs | 274.9 / 297.3 µs | 0.663x / 0.674x |
+| Chunked request body | 136.9 / 157.9 µs | 144.2 / 170.6 µs | 1.054x / 1.081x |
+| Invalid request | 148.8 / 222.9 µs | 319.0 / 356.3 µs | 2.145x / 1.599x |
+| Valid request | 130.2 / 142.6 µs | 138.8 / 164.1 µs | 1.066x / 1.151x |
+| Large response model | 363.1 / 389.4 µs | 393.1 / 433.0 µs | 1.083x / 1.112x |
+| Repeated sequence query | 115.2 / 129.6 µs | 111.8 / 131.0 µs | 0.971x / 1.011x |
+
+FastAPI-RS had lower median latency on the two nested-query workloads and the
+repeated-query workload, and higher median latency on the other four. Its p95
+was lower on the two nested-query workloads and higher on the other five.
+These single-host direct-ASGI results do not measure network/server latency or
+isolate native Rust time. `make benchmark-contract-check` passed with all seven
+workload declarations, this suite, and its referenced results.
+
+#### Previous run (2026-10-12; suite schema v2; stale manifest)
+
+This run completed at `2026-10-12T12:34:22Z` with suite ID
+`2a7f56cb-f01b-427b-a9c4-2817954131ce`. Its preserved receipt is archived at
+`benchmark-results/archive/stale-manifest-20261012/suite-20261012T123422Z-2a7f56cb-f01b-427b-a9c4-2817954131ce.json`.
+It ran against FastAPI-RS commit `979909ffddd8cc47d461980ead1b2fee6dff0a15`
+and manifest SHA-256
+`c961e13a1ce310b6913f785af0772c54972fe78dbb916558cea2b6c3f6d0c937`.
+The suite remains historical evidence; the later optional query-list fixture
+changed the manifest, so its comparison does not satisfy the current benchmark
+contract. It passed all seven parity gates (42/42), with 50 warmups and 1,000
+measured calls in five rounds.
 
 | Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
 | --- | ---: | ---: | ---: |
@@ -267,12 +297,7 @@ suite and workload receipts linked above.
 | Large response model | 369.4 / 407.8 µs | 394.4 / 437.6 µs | 1.068x / 1.073x |
 | Repeated sequence query | 102.3 / 120.9 µs | 118.0 / 152.1 µs | 1.154x / 1.258x |
 
-FastAPI-RS was faster on the two nested-query workloads and slower on the other
-five. These single-host direct-ASGI results do not measure network/server
-latency or isolate native Rust time. `make benchmark-contract-check` passed
-with all seven workload declarations, this suite, and its referenced results.
-
-#### Previous seven-workload run (2026-10-12; suite schema v2)
+#### Earlier same-day run (2026-10-12; suite schema v2)
 
 This earlier same-day run completed at `2026-10-12T09:20:04Z` with suite ID
 `263a98eb-9af5-4c4e-9572-96d86853af9a`. Its archived receipt is
