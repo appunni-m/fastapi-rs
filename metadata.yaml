@@ -826,6 +826,7 @@ reviewed_api_contract_overlay:
             identity. Internal DefaultPlaceholder and ModelField remain source
             evidence with private/internal classification.
       source_evidence:
+        - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/_compat/v2.py, symbol: asdict}
@@ -902,6 +903,11 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
+        - &generate_unique_id_callback_precedence
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
+          case_id: fastapi.routing.generate-unique-id-function-precedence
+          workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
+          observation_selectors: [http.status, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -1321,6 +1327,10 @@ reviewed_api_contract_overlay:
         OpenAPI/shared-definition phases, falsy models, forbidden-body statuses,
         include-level responses, dependency schema timing and mutable history
         remain separate compatibility gates.
+
+        The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Other HTTP verbs, callback errors or non-string results, and duplicate or empty operation IDs remain unproven.
+
+        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -3926,6 +3936,7 @@ reviewed_api_contract_overlay:
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
+        - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
         - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
         - {path: fastapi/utils.py, symbol: get_value_or_default}
@@ -3964,6 +3975,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_response_model_as_return_annotation.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
@@ -4026,6 +4038,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+
+        An explicit include callback supplies the fallback for an included router whose callback retains its default, sampled by `generate-unique-id-function-precedence`. Nested callback error timing and non-string results remain unproven.
+
+        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -4238,6 +4254,7 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
+        - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_strict_content_type_nested.py}
@@ -4277,7 +4294,12 @@ reviewed_api_contract_overlay:
         child visitation, retained fields and exact responses/sends. Source-defined
         eager parent-own preparation and lazy child traversal require fresh receipts;
         dynamic branch/version/proxy history and concurrency remain unproven.
+
+        For nested inclusion, the router callback takes precedence over the include callback; a route callback overrides both, and the selected callback sees the effective prefixed route, sampled by `generate-unique-id-function-precedence`. Callback errors and non-string results remain unproven.
+
+        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
       fixture_refs:
+        - *generate_unique_id_callback_precedence
         - *response_traversal_parent_child
       target_binding:
         implementation_owner: fastapi-rs
@@ -4314,6 +4336,7 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
+        - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
         - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
         - {path: fastapi/utils.py, symbol: get_value_or_default}
@@ -4340,6 +4363,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
+        - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
@@ -4402,6 +4426,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+
+        A router-level callback is used for its own routes and retained as an inclusion candidate in the nested-tree sample `generate-unique-id-function-precedence`. Callback errors and non-string results remain unproven.
+
+        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -4447,6 +4475,7 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRouter.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
+        - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
         - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
         - {path: fastapi/utils.py, symbol: get_value_or_default}
@@ -4469,6 +4498,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
+        - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
@@ -4527,6 +4557,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+
+        The GET decorator accepts a route-level callback that overrides router and include callbacks, sampled by `generate-unique-id-function-precedence`. Other verbs, callback errors or non-string results, and duplicate or empty operation IDs remain unproven.
+
+        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -4774,6 +4808,7 @@ reviewed_api_contract_overlay:
     fastapi.applications.FastAPI.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
       source_evidence:
+        - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/_compat/v2.py, symbol: asdict}
@@ -4817,6 +4852,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - *generate_unique_id_callback_precedence
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -5051,6 +5087,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+
+        A direct GET route uses the application callback when no route-level callback is supplied, sampled by `generate-unique-id-function-precedence`. An explicit FastAPI.get route callback and other verbs remain unproven.
+
+        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract

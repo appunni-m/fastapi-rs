@@ -958,6 +958,91 @@ impl ResponseClassChoice {
     }
 }
 
+enum GenerateUniqueIdArgument {
+    Omitted,
+    Provided(Py<PyAny>),
+}
+
+impl FromPyObject<'_, '_> for GenerateUniqueIdArgument {
+    type Error = PyErr;
+
+    fn extract(value: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
+        Ok(Self::Provided(value.to_owned().unbind()))
+    }
+}
+
+impl GenerateUniqueIdArgument {
+    fn into_choice(self, py: Python<'_>) -> PyResult<GenerateUniqueIdChoice> {
+        match self {
+            Self::Omitted => default_generate_unique_id_function(py),
+            Self::Provided(value) => Ok(GenerateUniqueIdChoice::from_python(py, value)),
+        }
+    }
+}
+
+enum GenerateUniqueIdChoice {
+    Default(Py<PyAny>),
+    Explicit(Py<PyAny>),
+}
+
+impl GenerateUniqueIdChoice {
+    fn from_python(py: Python<'_>, value: Py<PyAny>) -> Self {
+        if value
+            .bind(py)
+            .is_instance_of::<PyFastApiDefaultPlaceholder>()
+        {
+            Self::Default(value)
+        } else {
+            Self::Explicit(value)
+        }
+    }
+
+    const fn is_default(&self) -> bool {
+        matches!(self, Self::Default(_))
+    }
+
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        match self {
+            Self::Default(value) => Self::Default(value.clone_ref(py)),
+            Self::Explicit(value) => Self::Explicit(value.clone_ref(py)),
+        }
+    }
+
+    fn first_explicit(py: Python<'_>, values: &[&Self]) -> Self {
+        values
+            .iter()
+            .find(|value| !value.is_default())
+            .unwrap_or(&values[0])
+            .clone_ref(py)
+    }
+
+    fn actual(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        match self {
+            Self::Default(value) => Ok(value
+                .bind(py)
+                .extract::<PyRef<'_, PyFastApiDefaultPlaceholder>>()?
+                .value
+                .clone_ref(py)),
+            Self::Explicit(value) => Ok(value.clone_ref(py)),
+        }
+    }
+
+    fn python_value(&self, py: Python<'_>) -> Py<PyAny> {
+        match self {
+            Self::Default(value) | Self::Explicit(value) => value.clone_ref(py),
+        }
+    }
+}
+
+fn default_generate_unique_id_function(py: Python<'_>) -> PyResult<GenerateUniqueIdChoice> {
+    let value = py
+        .import("fastapi_rs._core")?
+        .getattr("_generate_unique_id")?
+        .unbind();
+    Py::new(py, PyFastApiDefaultPlaceholder { value })
+        .map(|placeholder| GenerateUniqueIdChoice::Default(placeholder.into_any()))
+}
+
 struct AdditionalResponseField {
     status: Py<PyAny>,
     response: Py<PyDict>,
@@ -1019,6 +1104,8 @@ struct FastApiRoute {
     response_description: String,
     responses: Py<PyDict>,
     operation_id: Option<String>,
+    unique_id: String,
+    generate_unique_id_function: GenerateUniqueIdChoice,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
     status_code: Option<u16>,
@@ -1144,7 +1231,10 @@ struct PyApiRoute {
     name: String,
     methods: Vec<String>,
     tags: Vec<String>,
+    operation_id: Option<String>,
     endpoint: Py<PyAny>,
+    unique_id: Option<String>,
+    generate_unique_id_function: Py<PyAny>,
     direct_openapi_supported: bool,
 }
 
@@ -1176,6 +1266,23 @@ impl PyApiRoute {
     #[getter]
     fn name(&self) -> &str {
         &self.name
+    }
+
+    #[getter]
+    fn operation_id(&self) -> Option<&str> {
+        self.operation_id.as_deref()
+    }
+
+    #[getter]
+    fn unique_id(&self) -> PyResult<&str> {
+        self.unique_id.as_deref().ok_or_else(|| {
+            PyAttributeError::new_err("'APIRoute' object has no attribute 'unique_id'")
+        })
+    }
+
+    #[getter]
+    fn generate_unique_id_function(&self, py: Python<'_>) -> Py<PyAny> {
+        self.generate_unique_id_function.clone_ref(py)
     }
 
     #[getter]
@@ -1269,6 +1376,8 @@ struct ApiRouteViewConfig<'a> {
     method: &'a str,
     name: &'a str,
     tags: &'a [String],
+    operation_id: Option<&'a str>,
+    generate_unique_id_function: &'a GenerateUniqueIdChoice,
     direct_openapi_supported: bool,
 }
 
@@ -1285,11 +1394,38 @@ fn new_api_route_view(
             name: config.name.to_owned(),
             methods: vec![config.method.to_owned()],
             tags: config.tags.to_vec(),
+            operation_id: config.operation_id.map(str::to_owned),
             endpoint,
+            unique_id: None,
+            generate_unique_id_function: config.generate_unique_id_function.python_value(py),
             direct_openapi_supported: config.direct_openapi_supported,
         },
     )
     .map(Py::into_any)
+}
+
+fn generated_unique_id(
+    py: Python<'_>,
+    generate_unique_id_function: &GenerateUniqueIdChoice,
+    route: &Py<PyAny>,
+    operation_id: Option<&str>,
+) -> PyResult<String> {
+    if let Some(operation_id) = operation_id.filter(|value| !value.is_empty()) {
+        return Ok(operation_id.to_owned());
+    }
+    generate_unique_id_function
+        .actual(py)?
+        .bind(py)
+        .call1((route.bind(py),))?
+        .extract::<String>()
+}
+
+fn set_api_route_unique_id(py: Python<'_>, route: &Py<PyAny>, unique_id: String) -> PyResult<()> {
+    route
+        .bind(py)
+        .extract::<PyRefMut<'_, PyApiRoute>>()?
+        .unique_id = Some(unique_id);
+    Ok(())
 }
 
 fn new_route_context(
@@ -1462,37 +1598,19 @@ impl IncludedFieldBranch {
 
 fn build_response_field(
     py: Python<'_>,
-    name: &str,
-    path: &str,
-    method: &str,
-    explicit_operation_id: Option<&str>,
+    unique_id: &str,
     model: Option<&Py<PyAny>>,
 ) -> PyResult<Option<ResponseField>> {
     let Some(model) = model else { return Ok(None) };
     if !model.bind(py).is_truthy()? {
         return Ok(None);
     }
-    let unique_id = response_unique_id(name, path, method, explicit_operation_id);
     ResponseField::new(py, &format!("Response_{unique_id}"), model.bind(py)).map(Some)
-}
-
-fn response_unique_id(
-    name: &str,
-    path: &str,
-    method: &str,
-    explicit_operation_id: Option<&str>,
-) -> String {
-    explicit_operation_id
-        .filter(|value| !value.is_empty())
-        .map_or_else(|| operation_id(name, path, method), str::to_owned)
 }
 
 struct ResponseFieldInput {
     index: usize,
-    name: String,
-    path: String,
-    method: String,
-    operation_id: Option<String>,
+    unique_id: String,
     model: Option<Py<PyAny>>,
     responses: Py<PyDict>,
 }
@@ -1525,10 +1643,7 @@ fn materialize_included_response_fields(
                     })?;
                     Ok(ResponseFieldInput {
                         index: *index,
-                        name: route.name.clone(),
-                        path: route.path_format.clone(),
-                        method: route.method.clone(),
-                        operation_id: route.operation_id.clone(),
+                        unique_id: route.unique_id.clone(),
                         model: route
                             .response_model
                             .as_ref()
@@ -1542,22 +1657,9 @@ fn materialize_included_response_fields(
         // the app borrow. No successful partial branch is published on error.
         let mut prepared = Vec::with_capacity(inputs.len());
         for input in inputs {
-            let unique_id = response_unique_id(
-                &input.name,
-                &input.path,
-                &input.method,
-                input.operation_id.as_deref(),
-            );
             let additional =
-                build_additional_response_fields(py, input.responses.bind(py), &unique_id)?;
-            let field = build_response_field(
-                py,
-                &input.name,
-                &input.path,
-                &input.method,
-                input.operation_id.as_deref(),
-                input.model.as_ref(),
-            )?;
+                build_additional_response_fields(py, input.responses.bind(py), &input.unique_id)?;
+            let field = build_response_field(py, &input.unique_id, input.model.as_ref())?;
             prepared.push((
                 input.index,
                 ResponseFieldState::Ready(RouteResponseFields {
@@ -1651,6 +1753,7 @@ struct ResponseModelOptions {
     responses: Option<Py<PyAny>>,
     summary: Option<String>,
     operation_id: Option<String>,
+    generate_unique_id_function: GenerateUniqueIdChoice,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
     dependencies: Vec<Py<PyAny>>,
@@ -1684,6 +1787,7 @@ pub(crate) struct PyFastApi {
     swagger_ui_oauth2_redirect_url: Option<String>,
     swagger_ui_init_oauth: Option<Py<PyAny>>,
     swagger_ui_parameters: Option<Py<PyAny>>,
+    generate_unique_id_function: GenerateUniqueIdChoice,
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
@@ -1718,6 +1822,7 @@ struct OpenApiRouteSnapshot {
     summary: Option<String>,
     response_description: String,
     operation_id: Option<String>,
+    unique_id: String,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
     status_code: Option<u16>,
@@ -1740,6 +1845,7 @@ impl OpenApiRouteSnapshot {
             summary: route.summary.clone(),
             response_description: route.response_description.clone(),
             operation_id: route.operation_id.clone(),
+            unique_id: route.unique_id.clone(),
             deprecated: route.deprecated,
             tags: route.tags.clone(),
             status_code: route.status_code,
@@ -1923,6 +2029,7 @@ pub(crate) struct PyApiRouter {
 struct RouterIncludePolicy<'policy> {
     prefix: &'policy str,
     response_class: &'policy ResponseClassChoice,
+    generate_unique_id_function: &'policy GenerateUniqueIdChoice,
     tags: &'policy [String],
     dependencies: &'policy [Py<PyAny>],
     deprecated: Option<bool>,
@@ -2108,8 +2215,7 @@ fn route_operation_signature(py: Python<'_>, module: &Bound<'_, PyModule>) -> Py
         ));
     }
     let signature_specification = contract.get_item("signature")?;
-    let generate_unique_id = wrap_pyfunction!(generate_unique_id, module)?.into_any();
-    generate_unique_id.setattr("__module__", "fastapi.utils")?;
+    let generate_unique_id = module.getattr("_generate_unique_id")?;
     let inspect = py.import("inspect")?;
     let parameter_type = inspect.getattr("Parameter")?;
     let parameter_specifications = signature_specification
@@ -2191,7 +2297,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -2210,6 +2316,7 @@ impl PyFastApi {
         swagger_ui_oauth2_redirect_url: Option<&str>,
         swagger_ui_init_oauth: Option<Py<PyAny>>,
         swagger_ui_parameters: Option<Py<PyAny>>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         terms_of_service: Option<String>,
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
@@ -2302,6 +2409,7 @@ impl PyFastApi {
             swagger_ui_oauth2_redirect_url: swagger_ui_oauth2_redirect_url.map(str::to_owned),
             swagger_ui_init_oauth,
             swagger_ui_parameters,
+            generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
             terms_of_service,
             contact,
             license_info,
@@ -2471,8 +2579,8 @@ impl PyFastApi {
     )]
     // Distinguish omission (infer from the endpoint return annotation) from explicit None (opt out).
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn post(
         slf: Py<Self>,
@@ -2494,6 +2602,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2517,6 +2626,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2531,8 +2641,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn get(
         slf: Py<Self>,
@@ -2554,6 +2664,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2577,6 +2688,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2591,8 +2703,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn put(
         slf: Py<Self>,
@@ -2614,6 +2726,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2637,6 +2750,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2651,8 +2765,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn delete(
         slf: Py<Self>,
@@ -2674,6 +2788,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2697,6 +2812,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2711,8 +2827,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn patch(
         slf: Py<Self>,
@@ -2734,6 +2850,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2757,6 +2874,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2771,8 +2889,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn head(
         slf: Py<Self>,
@@ -2794,6 +2912,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2817,6 +2936,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2831,8 +2951,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn options(
         slf: Py<Self>,
@@ -2854,6 +2974,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2877,6 +2998,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2891,8 +3013,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, response_class = ResponseClassArgument::Omitted, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, generate_unique_id_function=None, response_class=None, name=None)"
     )]
     fn trace(
         slf: Py<Self>,
@@ -2914,6 +3036,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -2937,6 +3060,7 @@ impl PyFastApi {
                 responses,
                 summary,
                 operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2946,8 +3070,8 @@ impl PyFastApi {
     }
 
     #[pyo3(
-        signature = (path, *, dependencies = None, include_in_schema = true, name = None),
-        text_signature = "($self, path, *, dependencies=None, include_in_schema=True, name=None)"
+        signature = (path, *, dependencies = None, include_in_schema = true, name = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted),
+        text_signature = "($self, path, *, dependencies=None, include_in_schema=True, name=None, generate_unique_id_function=None)"
     )]
     fn api_route(
         slf: Py<Self>,
@@ -2956,6 +3080,7 @@ impl PyFastApi {
         dependencies: Option<Vec<Py<PyAny>>>,
         include_in_schema: bool,
         name: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -2976,6 +3101,7 @@ impl PyFastApi {
                 responses: None,
                 summary: None,
                 operation_id: None,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 deprecated: None,
                 tags: None,
                 dependencies: dependencies.unwrap_or_default(),
@@ -2986,8 +3112,8 @@ impl PyFastApi {
     }
 
     #[pyo3(
-        signature = (path, endpoint, *, dependencies = None, methods = None, include_in_schema = true, name = None),
-        text_signature = "($self, path, endpoint, *, dependencies=None, methods=None, include_in_schema=True, name=None)"
+        signature = (path, endpoint, *, dependencies = None, methods = None, include_in_schema = true, name = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted),
+        text_signature = "($self, path, endpoint, *, dependencies=None, methods=None, include_in_schema=True, name=None, generate_unique_id_function=None)"
     )]
     // lint-exception: preserve the supported FastAPI.add_api_route keyword signature.
     #[allow(
@@ -3003,6 +3129,7 @@ impl PyFastApi {
         methods: Option<Py<PyAny>>,
         include_in_schema: bool,
         name: Option<String>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
         let normalized_methods = PySet::empty(py)?;
         if let Some(methods) = methods {
@@ -3015,7 +3142,15 @@ impl PyFastApi {
         if normalized_methods.is_empty() {
             return Err(PyAssertionError::new_err(""));
         }
-        let decorator = Self::api_route(slf, py, path, dependencies, include_in_schema, name)?;
+        let decorator = Self::api_route(
+            slf,
+            py,
+            path,
+            dependencies,
+            include_in_schema,
+            name,
+            generate_unique_id_function,
+        )?;
         for method in normalized_methods.iter() {
             decorator.bind(py).borrow_mut().method = method.extract::<String>()?;
             decorator.bind(py).call1((endpoint.bind(py),))?;
@@ -3169,7 +3304,7 @@ impl PyFastApi {
         Ok(())
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -3185,13 +3320,22 @@ impl PyFastApi {
         default_response_class: ResponseClassArgument,
         deprecated: Option<bool>,
         include_in_schema: bool,
+        generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
         let include_response_class = default_response_class.into_choice(py)?;
+        let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
         let mut destination = slf.bind(py).borrow_mut();
         let destination = &mut *destination;
         let inherited_response_class = ResponseClassChoice::first_explicit(
             py,
             &[&include_response_class, &destination.default_response_class],
+        );
+        let inherited_generate_unique_id_function = GenerateUniqueIdChoice::first_explicit(
+            py,
+            &[
+                &include_generate_unique_id_function,
+                &destination.generate_unique_id_function,
+            ],
         );
         let router_object = router.clone_ref(py).into_any();
         let include_prefix = prefix.to_owned();
@@ -3221,6 +3365,7 @@ impl PyFastApi {
             RouterIncludePolicy {
                 prefix: &prefix,
                 response_class: &inherited_response_class,
+                generate_unique_id_function: &inherited_generate_unique_id_function,
                 tags: &tags,
                 dependencies: &inherited_dependencies,
                 deprecated,
@@ -4124,7 +4269,7 @@ impl PyFastApi {
             .as_ref()
             .filter(|operation_id| !operation_id.is_empty())
             .cloned()
-            .unwrap_or_else(|| operation_id(name, &route.path_format, &route.method));
+            .unwrap_or_else(|| route.unique_id.clone());
         let parameters = route
             .plan
             .openapi_parameters(py)?
@@ -4375,7 +4520,7 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -4392,6 +4537,7 @@ impl PyApiRouter {
         lifespan: Option<Py<PyAny>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
+        generate_unique_id_function: GenerateUniqueIdArgument,
         strict_content_type: Option<bool>,
     ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
@@ -4410,6 +4556,7 @@ impl PyApiRouter {
                 None,
                 None,
                 None,
+                generate_unique_id_function,
                 None,
                 None,
                 None,
@@ -4497,7 +4644,7 @@ impl PyApiRouter {
         add_frontend_route(&mut inner, py, path, directory, fallback, check_dir, &[])
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -4513,14 +4660,26 @@ impl PyApiRouter {
         default_response_class: ResponseClassArgument,
         deprecated: Option<bool>,
         include_in_schema: bool,
+        generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
         let inner = slf.bind(py).borrow().inner.clone_ref(py);
         let include_response_class = default_response_class.into_choice(py)?;
+        let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
         let inherited_response_class = {
             let destination = inner.bind(py).borrow();
             ResponseClassChoice::first_explicit(
                 py,
                 &[&include_response_class, &destination.default_response_class],
+            )
+        };
+        let inherited_generate_unique_id_function = {
+            let destination = inner.bind(py).borrow();
+            GenerateUniqueIdChoice::first_explicit(
+                py,
+                &[
+                    &include_generate_unique_id_function,
+                    &destination.generate_unique_id_function,
+                ],
             )
         };
         let router_object = router.clone_ref(py).into_any();
@@ -4558,6 +4717,7 @@ impl PyApiRouter {
             RouterIncludePolicy {
                 prefix: &prefix,
                 response_class: &inherited_response_class,
+                generate_unique_id_function: &inherited_generate_unique_id_function,
                 tags: &tags,
                 dependencies: &dependencies,
                 deprecated,
@@ -4592,6 +4752,14 @@ impl PyApiRouter {
     }
 
     fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
+        if name == "generate_unique_id_function" {
+            return Ok(self
+                .inner
+                .bind(py)
+                .borrow()
+                .generate_unique_id_function
+                .python_value(py));
+        }
         if !matches!(
             name,
             "get"
@@ -5042,6 +5210,7 @@ fn merge_router_routes(
     let RouterIncludePolicy {
         prefix,
         response_class: inherited_response_class,
+        generate_unique_id_function: inherited_generate_unique_id_function,
         tags: inherited_tags,
         dependencies: inherited_dependencies,
         deprecated: inherited_deprecated,
@@ -5079,6 +5248,14 @@ fn merge_router_routes(
         let route_scope = source_route.route_scope.clone_ref(py);
         let path_format = route_path_format(py, &path)?;
         let tags = combined_route_tags(inherited_tags, source_route.tags.as_deref());
+        let generate_unique_id_function = GenerateUniqueIdChoice::first_explicit(
+            py,
+            &[
+                &source_route.generate_unique_id_function,
+                &source.generate_unique_id_function,
+                inherited_generate_unique_id_function,
+            ],
+        );
         let original_route = source_route.original_route.clone_ref(py);
         let effective_route = new_api_route_view(
             py,
@@ -5088,12 +5265,24 @@ fn merge_router_routes(
                 method: &source_route.method,
                 name: &source_route.name,
                 tags: tags.as_deref().unwrap_or_default(),
+                operation_id: source_route.operation_id.as_deref(),
+                generate_unique_id_function: &generate_unique_id_function,
                 direct_openapi_supported: false,
             },
             source_route.endpoint.clone_ref(py),
         )?;
-        let effective_route_context =
-            new_route_context(py, original_route.clone_ref(py), effective_route)?;
+        let effective_route_context = new_route_context(
+            py,
+            original_route.clone_ref(py),
+            effective_route.clone_ref(py),
+        )?;
+        let unique_id = generated_unique_id(
+            py,
+            &generate_unique_id_function,
+            &effective_route_context,
+            source_route.operation_id.as_deref(),
+        )?;
+        set_api_route_unique_id(py, &effective_route, unique_id.clone())?;
         let actual_response_class = response_class.actual(py)?;
         let sse_stream = source_route.generator_kind.is_generator()
             && actual_response_class.bind(py).is_instance_of::<PyType>()
@@ -5119,6 +5308,8 @@ fn merge_router_routes(
             response_description: source_route.response_description.clone(),
             responses: source_route.responses.clone_ref(py),
             operation_id: source_route.operation_id.clone(),
+            unique_id,
+            generate_unique_id_function,
             deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
             tags,
             status_code: source_route.status_code,
@@ -5252,6 +5443,7 @@ struct PyOperationDecorator {
     response_description: String,
     responses: Option<Py<PyAny>>,
     operation_id: Option<String>,
+    generate_unique_id_function: GenerateUniqueIdChoice,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
     dependencies: Vec<Py<PyAny>>,
@@ -5492,6 +5684,16 @@ fn operation_decorator(
     status_code: Option<u16>,
     response_model_options: ResponseModelOptions,
 ) -> PyResult<Py<PyOperationDecorator>> {
+    let generate_unique_id_function = {
+        let app = app.bind(py).borrow();
+        GenerateUniqueIdChoice::first_explicit(
+            py,
+            &[
+                &response_model_options.generate_unique_id_function,
+                &app.generate_unique_id_function,
+            ],
+        )
+    };
     Py::new(
         py,
         PyOperationDecorator {
@@ -5504,6 +5706,7 @@ fn operation_decorator(
                 .unwrap_or_else(|| DEFAULT_RESPONSE_DESCRIPTION.to_owned()),
             responses: response_model_options.responses,
             operation_id: response_model_options.operation_id,
+            generate_unique_id_function,
             deprecated: response_model_options.deprecated,
             tags: response_model_options.tags,
             dependencies: response_model_options.dependencies,
@@ -5535,13 +5738,6 @@ impl PyOperationDecorator {
         let (route_scope, path_format) =
             http_route_scope(py, &scope_path, endpoint.bind(py), &self.method, &name)?;
         let responses = route_response_declarations(py, self.responses.as_ref())?;
-        let unique_id = response_unique_id(
-            &name,
-            &path_format,
-            &self.method,
-            self.operation_id.as_deref(),
-        );
-        let additional = build_additional_response_fields(py, responses.bind(py), &unique_id)?;
         if !endpoint.bind(py).is_callable() {
             return Err(PyAssertionError::new_err("An endpoint must be a callable"));
         }
@@ -5627,6 +5823,7 @@ impl PyOperationDecorator {
             && self.name.is_none()
             && self.summary.is_none()
             && self.operation_id.is_none()
+            && self.generate_unique_id_function.is_default()
             && self.deprecated.is_none()
             && self.status_code.is_none()
             && self.include_in_schema
@@ -5655,18 +5852,21 @@ impl PyOperationDecorator {
                 method: &self.method,
                 name: &name,
                 tags: self.tags.as_deref().unwrap_or_default(),
+                operation_id: self.operation_id.as_deref(),
+                generate_unique_id_function: &self.generate_unique_id_function,
                 direct_openapi_supported,
             },
             endpoint.clone_ref(py),
         )?;
-        let response_field = build_response_field(
+        let unique_id = generated_unique_id(
             py,
-            &name,
-            &path_format,
-            &self.method,
+            &self.generate_unique_id_function,
+            &public_route,
             self.operation_id.as_deref(),
-            response_model.as_ref(),
         )?;
+        set_api_route_unique_id(py, &public_route, unique_id.clone())?;
+        let additional = build_additional_response_fields(py, responses.bind(py), &unique_id)?;
+        let response_field = build_response_field(py, &unique_id, response_model.as_ref())?;
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
         let index = app
@@ -5691,6 +5891,8 @@ impl PyOperationDecorator {
             response_description: self.response_description.clone(),
             responses,
             operation_id: self.operation_id.clone(),
+            unique_id,
+            generate_unique_id_function: self.generate_unique_id_function.clone_ref(py),
             deprecated: self.deprecated,
             tags: self.tags.clone(),
             status_code: self.status_code,
@@ -12209,6 +12411,9 @@ impl AwaitableStateMachine for FastApiCall {
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     crate::lifespan::register(module)?;
     register_pydantic_schema_generator(module)?;
+    let generate_unique_id = wrap_pyfunction!(generate_unique_id, module)?.into_any();
+    generate_unique_id.setattr("__module__", "fastapi.utils")?;
+    module.add("_generate_unique_id", &generate_unique_id)?;
     module.add_function(wrap_pyfunction!(frontend_dependency_endpoint, module)?)?;
     module.add_class::<PyFastApiDefaultPlaceholder>()?;
     module.add_class::<PyOperationRouteDescriptor>()?;

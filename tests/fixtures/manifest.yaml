@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: f2eaea50ae8ad64d7418264ed1f23712aeae91047f8e25d0c984d9224a8d1ba5
+    sha256: ed39c70b3bf99d689fb3a329639a5b89de633fc37e747515e6c384504cd888ab
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: dc47a03062a09b611e442046d5df8b9ee7fa25583ca5afb3d7797347e35b6202
+    sha256: b5d97423a8e6aec4924739b1b5cca14f6a4faec6458ca41356808018229300c9
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 22659eb19acb9819215c60fd749d17cb3b387b6099a4ed6b27a37dd32fe4904b
+    sha256: f7401936045bee65f697681f5b0b09fb6adadfad73cf4577c3552b8e76b6a004
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 558
-      cases: 2316
-      partial_source_mappings: 1594
+      workflows: 559
+      cases: 2317
+      partial_source_mappings: 1595
 
 contract_metadata:
   aliases:
@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 169
-    operation_fixture_refs: 1457
+    operation_fixture_refs: 1463
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -8813,6 +8813,19 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-function-precedence
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
+      input_sha256: d110ba3fbb2597345253eb6c61c607d7c2284028d685f07396b1e0a6601fa581
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
+      recipe_sha256: 3d2b6d7abe19025c0375abea76b996209e08a4e3ba5f17cfe3ed2b179c58c9f0
+      workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
+      workload_sha256: 72e5d1cd55a18f9ea8b6137e07fd11a47dd3c6abcb77d9d945bedb62e7147cba
+      case_id: fastapi.routing.generate-unique-id-function-precedence
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: next-openapi-response-fields
       input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
       input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
@@ -11310,6 +11323,19 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-function-precedence
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
+      input_sha256: d110ba3fbb2597345253eb6c61c607d7c2284028d685f07396b1e0a6601fa581
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
+      recipe_sha256: 3d2b6d7abe19025c0375abea76b996209e08a4e3ba5f17cfe3ed2b179c58c9f0
+      workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
+      workload_sha256: 72e5d1cd55a18f9ea8b6137e07fd11a47dd3c6abcb77d9d945bedb62e7147cba
+      case_id: fastapi.routing.generate-unique-id-function-precedence
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: openapi-validation-response
       input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
       input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
@@ -13100,6 +13126,19 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-function-precedence
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
+      input_sha256: d110ba3fbb2597345253eb6c61c607d7c2284028d685f07396b1e0a6601fa581
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
+      recipe_sha256: 3d2b6d7abe19025c0375abea76b996209e08a4e3ba5f17cfe3ed2b179c58c9f0
+      workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
+      workload_sha256: 72e5d1cd55a18f9ea8b6137e07fd11a47dd3c6abcb77d9d945bedb62e7147cba
+      case_id: fastapi.routing.generate-unique-id-function-precedence
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -40404,6 +40443,19 @@ api_surface_contract:
       observation_selectors: *id016
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-function-precedence
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
+      input_sha256: d110ba3fbb2597345253eb6c61c607d7c2284028d685f07396b1e0a6601fa581
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
+      recipe_sha256: 3d2b6d7abe19025c0375abea76b996209e08a4e3ba5f17cfe3ed2b179c58c9f0
+      workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
+      workload_sha256: 72e5d1cd55a18f9ea8b6137e07fd11a47dd3c6abcb77d9d945bedb62e7147cba
+      case_id: fastapi.routing.generate-unique-id-function-precedence
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -41006,6 +41058,19 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-function-precedence
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
+      input_sha256: d110ba3fbb2597345253eb6c61c607d7c2284028d685f07396b1e0a6601fa581
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
+      recipe_sha256: 3d2b6d7abe19025c0375abea76b996209e08a4e3ba5f17cfe3ed2b179c58c9f0
+      workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
+      workload_sha256: 72e5d1cd55a18f9ea8b6137e07fd11a47dd3c6abcb77d9d945bedb62e7147cba
+      case_id: fastapi.routing.generate-unique-id-function-precedence
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -41451,6 +41516,19 @@ api_surface_contract:
       observation_selectors: *id016
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-function-precedence
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
+      input_sha256: d110ba3fbb2597345253eb6c61c607d7c2284028d685f07396b1e0a6601fa581
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
+      recipe_sha256: 3d2b6d7abe19025c0375abea76b996209e08a4e3ba5f17cfe3ed2b179c58c9f0
+      workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
+      workload_sha256: 72e5d1cd55a18f9ea8b6137e07fd11a47dd3c6abcb77d9d945bedb62e7147cba
+      case_id: fastapi.routing.generate-unique-id-function-precedence
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: response-field-traversal
       input_path: tests/fixtures/inputs/parity/response-field-traversal.json
       input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655

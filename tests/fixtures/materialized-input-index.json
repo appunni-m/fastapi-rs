@@ -8278,6 +8278,27 @@
       ]
     },
     {
+      "id": "generate-unique-id-function-precedence",
+      "input_path": "tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json",
+      "input_sha256": "d110ba3fbb2597345253eb6c61c607d7c2284028d685f07396b1e0a6601fa581",
+      "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml",
+      "recipe_sha256": "3d2b6d7abe19025c0375abea76b996209e08a4e3ba5f17cfe3ed2b179c58c9f0",
+      "workload_path": "tests/fixtures/workloads/generate_unique_id_function_precedence.py",
+      "workload_sha256": "72e5d1cd55a18f9ea8b6137e07fd11a47dd3c6abcb77d9d945bedb62e7147cba",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-function-precedence"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.generate-unique-id-function-precedence",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "generator-awaitable-protocol",
       "input_path": "tests/fixtures/inputs/parity/generator-awaitable-protocol.json",
       "input_sha256": "ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65",
@@ -38554,6 +38575,20 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_generate_unique_id_function.py",
+      "fixture_id": "fastapi.test.test-generate-unique-id-function",
+      "workflow_id": "generate-unique-id-function-precedence",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-function-precedence"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "openapi.document"
       ]
     },
     {
