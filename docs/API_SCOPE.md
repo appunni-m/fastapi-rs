@@ -252,9 +252,13 @@ OpenAPI extras, unique-ID generation, and strict content-type policy;
 `APIWebSocketRoute` (`routing.py:801-870`) handles WebSocket endpoints. These
 must be inventoried even though the reference page documents them through
 `FastAPI`/`APIRouter` rather than a separate autodoc target. New route-tree
-types (`RouteContext`, `iter_route_contexts`) appear in `routing.py`; they are
-currently implementation-level structure except where exposed through route
-customization and OpenAPI traversal.
+types (`RouteContext`, `iter_route_contexts`) appear in `routing.py`; the
+release notes expose `iter_route_contexts()` for advanced use. The selected
+contract covers the read-only `RouteContext` getters `endpoint`, `methods`,
+`name`, `original_route`, `path`, and `path_format` for one direct and one
+nested-included HTTP GET `APIRoute`. It does not establish `.route`, public
+construction or dataclass semantics, general forwarded-member behavior, or
+other route types and configurations.
 
 `FastAPI`/`APIRouter` route operation parameters cover:
 

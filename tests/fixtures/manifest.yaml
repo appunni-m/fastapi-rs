@@ -865,8 +865,7 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 6
-      slice-described: 462
+      slice-described: 468
     implementation_owner_plans:
       fastapi-rs: 437
       starlette-rs: 31
@@ -878,8 +877,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
-    symbols_with_operation_fixture_refs: 163
-    operation_fixture_refs: 1441
+    symbols_with_operation_fixture_refs: 169
+    operation_fixture_refs: 1453
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -42351,12 +42350,48 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.apiroute-state.direct
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    observation_selectors:
+    - asgi.application_error.exception
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.RouteContext.endpoint/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.RouteContext.endpoint
@@ -42365,8 +42400,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1145
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      known_gaps:
+      - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
+        covered. Other route types, mutations, public construction, dataclass semantics, `.route`, and
+        general forwarded-member behavior are not established.
   - id: fastapi.routing.RouteContext.methods
     kind: property_getter
     source_candidate_ref: /api_candidates/1146
@@ -42399,12 +42438,48 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.apiroute-state.direct
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    observation_selectors:
+    - asgi.application_error.exception
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.RouteContext.methods/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.RouteContext.methods
@@ -42413,8 +42488,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1146
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      known_gaps:
+      - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
+        covered. Other route types, mutations, public construction, dataclass semantics, `.route`, and
+        general forwarded-member behavior are not established.
   - id: fastapi.routing.RouteContext.name
     kind: property_getter
     source_candidate_ref: /api_candidates/1147
@@ -42447,12 +42526,48 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.apiroute-state.direct
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    observation_selectors:
+    - asgi.application_error.exception
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.RouteContext.name/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.RouteContext.name
@@ -42461,8 +42576,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1147
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      known_gaps:
+      - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
+        covered. Other route types, mutations, public construction, dataclass semantics, `.route`, and
+        general forwarded-member behavior are not established.
   - id: fastapi.routing.RouteContext.original_route
     kind: property_getter
     source_candidate_ref: /api_candidates/1148
@@ -42495,12 +42614,48 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.apiroute-state.direct
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    observation_selectors:
+    - asgi.application_error.exception
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.RouteContext.original_route/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.RouteContext.original_route
@@ -42509,8 +42664,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1148
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      known_gaps:
+      - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
+        covered. Other route types, mutations, public construction, dataclass semantics, `.route`, and
+        general forwarded-member behavior are not established.
   - id: fastapi.routing.RouteContext.path
     kind: property_getter
     source_candidate_ref: /api_candidates/1149
@@ -42543,12 +42702,48 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.apiroute-state.direct
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    observation_selectors:
+    - asgi.application_error.exception
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.RouteContext.path/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.RouteContext.path
@@ -42557,8 +42752,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1149
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      known_gaps:
+      - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
+        covered. Other route types, mutations, public construction, dataclass semantics, `.route`, and
+        general forwarded-member behavior are not established.
   - id: fastapi.routing.RouteContext.path_format
     kind: property_getter
     source_candidate_ref: /api_candidates/1150
@@ -42591,12 +42790,48 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.apiroute-state.direct
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    observation_selectors:
+    - asgi.application_error.exception
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.RouteContext.path_format/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.RouteContext.path_format
@@ -42605,8 +42840,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1150
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      known_gaps:
+      - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
+        covered. Other route types, mutations, public construction, dataclass semantics, `.route`, and
+        general forwarded-member behavior are not established.
   - id: fastapi.routing.iter_route_contexts
     kind: function
     source_candidate_ref: /api_candidates/1390

@@ -3022,6 +3022,188 @@ reviewed_api_contract_overlay:
         separately scoped route-context observations. This does not promise a
         public constructor, dataclass value semantics, or every forwarded
         member.
+    fastapi.routing.RouteContext.endpoint:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: endpoint
+          owner: RouteContext
+          kind: source-definition
+          start_line: 1578
+          end_line: 1579
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        In the direct and nested-included cases, the workload reads
+        `RouteContext.endpoint.__name__` for one GET APIRoute in each context
+        and compares it through the HTTP response projection. The selected
+        endpoint names do not establish endpoint identity or other endpoint
+        values.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - >-
+            Only this getter's selected values for one direct and one nested
+            included HTTP GET APIRoute are covered. Other route types,
+            mutations, public construction, dataclass semantics, `.route`,
+            and general forwarded-member behavior are not established.
+    fastapi.routing.RouteContext.methods:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: methods
+          owner: RouteContext
+          kind: source-definition
+          start_line: 1574
+          end_line: 1575
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        In the direct and nested-included cases, the workload sorts
+        `RouteContext.methods` for one GET APIRoute in each context and compares
+        the resulting list through the HTTP response projection. Other method
+        sets and route configurations are outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - >-
+            Only this getter's selected values for one direct and one nested
+            included HTTP GET APIRoute are covered. Other route types,
+            mutations, public construction, dataclass semantics, `.route`,
+            and general forwarded-member behavior are not established.
+    fastapi.routing.RouteContext.name:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: name
+          owner: RouteContext
+          kind: source-definition
+          start_line: 1570
+          end_line: 1571
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        In the direct and nested-included cases, the workload reads
+        `RouteContext.name` for one GET APIRoute in each context and compares
+        the selected names through the HTTP response projection. Other route
+        types and name configurations are outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - >-
+            Only this getter's selected values for one direct and one nested
+            included HTTP GET APIRoute are covered. Other route types,
+            mutations, public construction, dataclass semantics, `.route`,
+            and general forwarded-member behavior are not established.
+    fastapi.routing.RouteContext.original_route:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: original_route
+          owner: RouteContext
+          kind: source-definition
+          start_line: 1550
+          end_line: 1553
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        In the direct and nested-included cases, the workload compares whether
+        `RouteContext.original_route` is the selected original APIRoute for one
+        GET operation in each context. This establishes only the observed
+        identity relation for those two cases.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - >-
+            Only this getter's selected values for one direct and one nested
+            included HTTP GET APIRoute are covered. Other route types,
+            mutations, public construction, dataclass semantics, `.route`,
+            and general forwarded-member behavior are not established.
+    fastapi.routing.RouteContext.path:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: path
+          owner: RouteContext
+          kind: source-definition
+          start_line: 1562
+          end_line: 1563
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        In the direct and nested-included cases, the workload reads
+        `RouteContext.path` for one GET APIRoute in each context and compares
+        the selected paths through the HTTP response projection. Other route
+        types and route configurations are outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - >-
+            Only this getter's selected values for one direct and one nested
+            included HTTP GET APIRoute are covered. Other route types,
+            mutations, public construction, dataclass semantics, `.route`,
+            and general forwarded-member behavior are not established.
+    fastapi.routing.RouteContext.path_format:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: path_format
+          owner: RouteContext
+          kind: source-definition
+          start_line: 1566
+          end_line: 1567
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        In the direct and nested-included cases, the workload reads
+        `RouteContext.path_format` for one GET APIRoute in each context and
+        compares the selected path formats through the HTTP response
+        projection. Other route types and route configurations are outside
+        this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - >-
+            Only this getter's selected values for one direct and one nested
+            included HTTP GET APIRoute are covered. Other route types,
+            mutations, public construction, dataclass semantics, `.route`,
+            and general forwarded-member behavior are not established.
     fastapi.types.IncEx:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       target_binding:
