@@ -982,6 +982,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.generate-unique-id-function-precedence
           workload_path: tests/fixtures/workloads/generate_unique_id_function_precedence.py
           observation_selectors: [http.status, openapi.document]
+        - &generate_unique_id_duplicate_warnings
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-duplicate-warnings.yaml
+          case_id: fastapi.routing.generate-unique-id-duplicate-operation-warnings
+          workload_path: tests/fixtures/workloads/generate_unique_id_duplicate_warnings.py
+          observation_selectors: [http.status, openapi.document, warnings.category_message]
+        - &generate_unique_id_multi_methods
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-multi-methods.yaml
+          case_id: fastapi.routing.generate-unique-id-multi-method-route-view
+          workload_path: tests/fixtures/workloads/generate_unique_id_multi_methods.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -1402,7 +1412,7 @@ reviewed_api_contract_overlay:
         include-level responses, dependency schema timing and mutable history
         remain separate compatibility gates.
 
-        The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Other HTTP verbs, callback errors or non-string results, and duplicate or empty operation IDs remain unproven.
+        The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Duplicate operation-ID warnings and operation values are sampled by `generate-unique-id-duplicate-warnings`. Multi-method registration passes the full method set to one callback on direct and included routes, sampled by `generate-unique-id-multi-methods`. Callback errors or non-string results and empty operation IDs remain unproven.
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and included routes while producing their operation IDs. It samples true `include_in_schema`, explicit false normalized to `None` for direct `deprecated`, and inherited true `deprecated`; other field values, callback mutation, and later-initialized APIRoute state remain unproven.
     fastapi.applications.FastAPI.exception_handler:
@@ -3644,6 +3654,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
       fixture_refs:
+        - *generate_unique_id_multi_methods
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -4371,10 +4382,12 @@ reviewed_api_contract_overlay:
           symbol: test_openapi_schema
         - path: tests/test_openapi_cache_root_path.py
         - path: tests/test_enforce_once_required_parameter.py
+        - {path: tests/test_generate_unique_id_function.py, symbol: test_warn_duplicate_operation_id}
         - path: fastapi/openapi/utils.py
           symbol: get_openapi_path
         - path: docs/en/docs/how-to/extending-openapi.md
       fixture_refs:
+        - *generate_unique_id_duplicate_warnings
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -9460,6 +9473,8 @@ reviewed_api_contract_overlay:
           symbol: APIRouter
           start_line: 2255
           end_line: 6447
+      fixture_refs:
+        - *generate_unique_id_multi_methods
       supported_slice: >-
         Constructor state only for router prefix, tags, dependencies, default response class,
         responses/callbacks, route class and lifespan/startup configuration; path-operation

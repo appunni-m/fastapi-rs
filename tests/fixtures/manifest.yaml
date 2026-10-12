@@ -416,7 +416,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 38a9e08ba80eddf339e7eeb72c1b969a7205543db76defda24135ee0ec8e1fdf
+    sha256: 6b128bdb593f6a3a7ce6382957ce80382718fe157dbd7442589b66ed90f8b425
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -452,7 +452,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 77b44e2df2a75a6666b19270170b393abba6a7330547d27b0b195e83ef6816b2
+    sha256: 5e0b879686d9fdc63e196a4acf40f8aef67b5188cc6767505508740bcdae8732
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 892
@@ -489,14 +489,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@6
-    sha256: a7570a2b718bc205951afc351ba0e8c6e2092d2294209845085c76a5ac7aa8ca
+    sha256: c1d8dd3020de00ce4d3d030602bbebcf99f859ab8664d78963fc0c3895954020
     schema_path: tests/fixtures/schemas/materialized-input-index-v6.schema.json
     schema_sha256: ae41594fe0e41252406d822c6be15d75b6a0c55d8704022b7e16c691e210123a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 565
-      cases: 2343
-      partial_source_mappings: 1615
+      workflows: 567
+      cases: 2345
+      partial_source_mappings: 1618
 
 contract_metadata:
   aliases:
@@ -903,8 +903,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 109
-    symbols_with_operation_fixture_refs: 173
-    operation_fixture_refs: 1474
+    symbols_with_operation_fixture_refs: 174
+    operation_fixture_refs: 1479
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -7451,6 +7451,23 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-multi-methods
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-multi-methods.json
+      input_sha256: 571f620554e1486b63844fc2f2fe80841f892bff1744e6140c938cfef41e9455
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-multi-methods.yaml
+      recipe_sha256: 0d9fadd9929b7f251a6f8181b9f6e4e574750dcdd3daa06ad1d91acb5b30ae57
+      workload_path: tests/fixtures/workloads/generate_unique_id_multi_methods.py
+      workload_sha256: f7d3fa9279e29f5f82b6b84c4ad1c8f5e4a46ab968876b260507cb3e1e10dc7b
+      case_id: fastapi.routing.generate-unique-id-multi-method-route-view
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: openapi-validation-response
       input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
       input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
@@ -8852,6 +8869,40 @@ api_surface_contract:
       case_id: fastapi.routing.generate-unique-id-function-precedence
       observation_selectors:
       - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: generate-unique-id-duplicate-warnings
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-duplicate-warnings.json
+      input_sha256: 35b0f23bf2a4863b9ff900126556da5f8300f1fe62eb2dfb1f4582ac19a61baa
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-duplicate-warnings.yaml
+      recipe_sha256: 941f9ef2649458b558dc8c1683226cd866bddb23799cccc1e7815b43c1e9471d
+      workload_path: tests/fixtures/workloads/generate_unique_id_duplicate_warnings.py
+      workload_sha256: ea721efa5d2b94efe10032de149b871d3b9fc54afa22bf684c9d03037f9ad0f8
+      case_id: fastapi.routing.generate-unique-id-duplicate-operation-warnings
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+      - warnings.category_message
+    - workflow_id: generate-unique-id-multi-methods
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-multi-methods.json
+      input_sha256: 571f620554e1486b63844fc2f2fe80841f892bff1744e6140c938cfef41e9455
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-multi-methods.yaml
+      recipe_sha256: 0d9fadd9929b7f251a6f8181b9f6e4e574750dcdd3daa06ad1d91acb5b30ae57
+      workload_path: tests/fixtures/workloads/generate_unique_id_multi_methods.py
+      workload_sha256: f7d3fa9279e29f5f82b6b84c4ad1c8f5e4a46ab968876b260507cb3e1e10dc7b
+      case_id: fastapi.routing.generate-unique-id-multi-method-route-view
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
       - http.status
       - openapi.document
       - openapi.paths
@@ -13804,6 +13855,23 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: generate-unique-id-duplicate-warnings
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-duplicate-warnings.json
+      input_sha256: 35b0f23bf2a4863b9ff900126556da5f8300f1fe62eb2dfb1f4582ac19a61baa
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-duplicate-warnings.yaml
+      recipe_sha256: 941f9ef2649458b558dc8c1683226cd866bddb23799cccc1e7815b43c1e9471d
+      workload_path: tests/fixtures/workloads/generate_unique_id_duplicate_warnings.py
+      workload_sha256: ea721efa5d2b94efe10032de149b871d3b9fc54afa22bf684c9d03037f9ad0f8
+      case_id: fastapi.routing.generate-unique-id-duplicate-operation-warnings
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+      - warnings.category_message
     - workflow_id: openapi-validation-response
       input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
       input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
@@ -40736,6 +40804,24 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/372
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: generate-unique-id-multi-methods
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-multi-methods.json
+      input_sha256: 571f620554e1486b63844fc2f2fe80841f892bff1744e6140c938cfef41e9455
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-multi-methods.yaml
+      recipe_sha256: 0d9fadd9929b7f251a6f8181b9f6e4e574750dcdd3daa06ad1d91acb5b30ae57
+      workload_path: tests/fixtures/workloads/generate_unique_id_multi_methods.py
+      workload_sha256: f7d3fa9279e29f5f82b6b84c4ad1c8f5e4a46ab968876b260507cb3e1e10dc7b
+      case_id: fastapi.routing.generate-unique-id-multi-method-route-view
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
     feature_ids:
     - app-routing

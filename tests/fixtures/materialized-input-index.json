@@ -8303,6 +8303,27 @@
       ]
     },
     {
+      "id": "generate-unique-id-duplicate-warnings",
+      "input_path": "tests/fixtures/inputs/parity/generate-unique-id-duplicate-warnings.json",
+      "input_sha256": "35b0f23bf2a4863b9ff900126556da5f8300f1fe62eb2dfb1f4582ac19a61baa",
+      "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-duplicate-warnings.yaml",
+      "recipe_sha256": "941f9ef2649458b558dc8c1683226cd866bddb23799cccc1e7815b43c1e9471d",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-duplicate-operation-warnings"
+      ],
+      "workload_path": "tests/fixtures/workloads/generate_unique_id_duplicate_warnings.py",
+      "workload_sha256": "ea721efa5d2b94efe10032de149b871d3b9fc54afa22bf684c9d03037f9ad0f8",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.generate-unique-id-duplicate-operation-warnings",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "generate-unique-id-function-precedence",
       "input_path": "tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json",
       "input_sha256": "792aa210ff309cd9dfc2315a9941c6e1d2de09f1014cff5e47bda6446f5b7af2",
@@ -8319,6 +8340,28 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:reference/fastapi.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generate-unique-id-multi-methods",
+      "input_path": "tests/fixtures/inputs/parity/generate-unique-id-multi-methods.json",
+      "input_sha256": "571f620554e1486b63844fc2f2fe80841f892bff1744e6140c938cfef41e9455",
+      "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-multi-methods.yaml",
+      "recipe_sha256": "0d9fadd9929b7f251a6f8181b9f6e4e574750dcdd3daa06ad1d91acb5b30ae57",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-multi-method-route-view"
+      ],
+      "workload_path": "tests/fixtures/workloads/generate_unique_id_multi_methods.py",
+      "workload_sha256": "f7d3fa9279e29f5f82b6b84c4ad1c8f5e4a46ab968876b260507cb3e1e10dc7b",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.generate-unique-id-multi-method-route-view",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
             "source:upstream-test:tests/test_generate_unique_id_function.py"
           ]
         }
@@ -39036,6 +39079,20 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_generate_unique_id_function.py",
+      "fixture_id": "fastapi.test.test-generate-unique-id-function",
+      "workflow_id": "generate-unique-id-duplicate-warnings",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-duplicate-operation-warnings"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "documented-page:reference/fastapi.md",
       "fixture_id": "fastapi.docs.reference-fastapi",
       "workflow_id": "generate-unique-id-function-precedence",
@@ -39062,6 +39119,38 @@
       ],
       "observation_selectors": [
         "docs.response.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/generate-clients.md",
+      "fixture_id": "fastapi.docs.advanced-generate-clients",
+      "workflow_id": "generate-unique-id-multi-methods",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-multi-method-route-view"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_generate_unique_id_function.py",
+      "fixture_id": "fastapi.test.test-generate-unique-id-function",
+      "workflow_id": "generate-unique-id-multi-methods",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-multi-method-route-view"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
         "openapi.document"
       ]
     },

@@ -1,9 +1,9 @@
 //! OpenAPI document assembly owned by the FastAPI compatibility layer.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
 use crate::encoding::{JsonableEncoderInput, JsonableEncoderOptions, jsonable_encoder};
-use pyo3::exceptions::{PyKeyError, PyNotImplementedError, PyValueError};
+use pyo3::exceptions::{PyKeyError, PyNotImplementedError, PyUserWarning, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyModule, PyString, PyTuple};
 
@@ -31,6 +31,8 @@ pub(crate) struct OpenApiOperation {
     pub(crate) summary: String,
     pub(crate) response_description: String,
     pub(crate) operation_id: String,
+    pub(crate) endpoint_name: String,
+    pub(crate) endpoint_file: Option<String>,
     pub(crate) deprecated: Option<bool>,
     pub(crate) tags: Option<Vec<String>>,
     /// The route's explicit status, kept separate from its response-class default.
@@ -250,7 +252,24 @@ pub(crate) fn openapi_document(
     }
 
     let paths = PyDict::new(py);
+    let mut operation_ids = HashSet::with_capacity(operations.len());
     for operation in operations {
+        if !operation_ids.insert(operation.operation_id.clone()) {
+            let mut message = format!(
+                "Duplicate Operation ID {} for function {}",
+                operation.operation_id, operation.endpoint_name
+            );
+            if let Some(file_name) = operation.endpoint_file.as_deref() {
+                message.push_str(" at ");
+                message.push_str(file_name);
+            }
+            py.import("warnings")?.getattr("warn_explicit")?.call1((
+                message,
+                py.get_type::<PyUserWarning>(),
+                "fastapi/openapi/utils.py",
+                303,
+            ))?;
+        }
         let path_item = match paths.get_item(&operation.path)? {
             Some(value) => value.cast_into::<PyDict>().map_err(|_| {
                 PyErr::new::<pyo3::exceptions::PyTypeError, _>(
