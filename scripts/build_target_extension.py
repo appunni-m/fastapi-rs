@@ -489,9 +489,7 @@ def main() -> int:
         action="store_true",
         help="build and validate a non-editable wheel against the pinned Starlette-RS source",
     )
-    parser.add_argument(
-        "--maturin", default="maturin", help="Maturin command (supports wrappers)"
-    )
+    parser.add_argument("--maturin", default="maturin", help="Maturin command (supports wrappers)")
     parser.add_argument(
         "--out", type=Path, default=ROOT / "target/wheels", help="release wheel output directory"
     )
