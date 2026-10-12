@@ -278,6 +278,36 @@ cases:
     execution: *server_execution
     source_evidence: *cli_sources
 
+  - case_id: fastapi.cli.process.dev-explicit-entrypoint
+    argv: [fastapi, dev, --entrypoint, backend.main:app, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: backend/__init__.py
+          content: ""
+        - path: backend/main.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-explicit-entrypoint-short-alias
+    argv: [fastapi, dev, -e, backend.main:app, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: backend/__init__.py
+          content: ""
+        - path: backend/main.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
   - case_id: fastapi.cli.process.run-explicit-entrypoint
     argv: [fastapi, run, --entrypoint, backend.main:app, --host, 127.0.0.1, --port, "{port}"]
     cwd:

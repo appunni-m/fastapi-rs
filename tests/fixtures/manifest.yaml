@@ -416,7 +416,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 07d60935236a809b4f8bc80395cbf00096b2eaa67aee802e2c0267672d99e44d
+    sha256: a6ce9b68b5a639cadd2e1025684393601dec16d03e9ae51a6c6f75ec51603c2b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -452,7 +452,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 3e744bc049105f56858052964d81580385b3b98fbfb7c9147845cef52a7a9793
+    sha256: cd8bbb66f38acbf67ad100245a77f5757e1e41e407de7c82ac660d523f1fd201
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 892
@@ -489,13 +489,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 4e4704add8fa00e676a9ce1d8e69480055dade47b62840ab701878cdb3cade0b
+    sha256: e377c4cb919cdf8cb67d2f761257b6db0a6125624551da6819b2f226cefeaadd
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 569
-      cases: 2383
+      cases: 2385
       partial_source_mappings: 1624
 
 contract_metadata:
@@ -826,7 +826,7 @@ unresolved:
     comparison_schema_path: tests/fixtures/schemas/python-process-comparison-v2.schema.json
     comparison_schema_sha256: 8d7c77b71d345c26d60f29d758f25f91d4618044f1b5bebdf9a0c9fd421e7c6f
     recipe_path: tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml
-    recipe_sha256: b8fbb78c9cccf01387e8bd1eaab079eabbeb50d8e5e9ca8ad420916ac60cef58
+    recipe_sha256: 977880bed895b0cc29cbdc5781deb85909c77452d83fd2403a4403887bde9d1b
     case_ids:
       - fastapi.cli.process.root-help
       - fastapi.cli.process.root-version
@@ -846,6 +846,8 @@ unresolved:
       - fastapi.cli.process.run-leaves-environment-unchanged
       - fastapi.cli.process.run-auto-discovery-no-path
       - fastapi.cli.process.dev-pyproject-entrypoint
+      - fastapi.cli.process.dev-explicit-entrypoint
+      - fastapi.cli.process.dev-explicit-entrypoint-short-alias
       - fastapi.cli.process.run-explicit-entrypoint
       - fastapi.cli.process.dev-app-option
       - fastapi.cli.process.dev-port-environment
@@ -893,10 +895,11 @@ unresolved:
       - http.body.bytes
     coverage: >-
       Adds bounded UTF-8 project trees, stable staged-tree identity, and a loopback HTTP server
-      lifecycle with readiness, one request, and process-group shutdown. The 22-case CLI recipe
+      lifecycle with readiness, one request, and process-group shutdown. The 24-case CLI recipe
       observes root/dev/run help and version, missing-app and configuration errors, all six
       documented default discovery paths, app-name discovery, path and explicit/pyproject
-      entrypoints, FASTAPI_ENV default/preservation, the PORT environment variable, and a
+      entrypoints (including the documented dev option and its -e alias), FASTAPI_ENV
+      default/preservation, the PORT environment variable, and a
       documented multi-worker invocation. Command cases compare exact exit code/stdout/stderr;
       server cases compare exit code, HTTP status, and exact response body. FastAPI dev uses its
       127.0.0.1 default; fastapi run binds explicitly to 127.0.0.1 for safe loopback execution.
