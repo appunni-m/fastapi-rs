@@ -23,14 +23,17 @@ from scripts.parity.contract import (
     sha256_file,
 )
 from scripts.parity.materialized import _api_probe_selectors, _source_selectors_for_case
-from scripts.parity.process_contract import PROCESS_WORKFLOW_SCHEMA_ID, load_process_workflow
+from scripts.parity.process_contract import (
+    PROCESS_WORKFLOW_SCHEMA_IDS,
+    load_process_workflow,
+)
 
 INDEX_PATH = ROOT / "tests/fixtures/materialized-input-index.json"
 INPUT_DIR = ROOT / "tests/fixtures/inputs/parity"
 FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 INDEX_SCHEMA = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
-INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v6.schema.json"
+INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v7.schema.json"
 
 
 def _source_item_id(
@@ -184,7 +187,7 @@ def build_index() -> dict[str, Any]:
         # Workflow IDs follow the materialized-index slug schema even when an
         # older input filename uses underscores.
         workflow_id = input_path.stem.replace("_", "-")
-        if read_json(input_path).get("schema") == PROCESS_WORKFLOW_SCHEMA_ID:
+        if read_json(input_path).get("schema") in PROCESS_WORKFLOW_SCHEMA_IDS:
             workflow, _, input_digest = load_process_workflow(
                 input_path, source_root=FASTAPI_SOURCE
             )
@@ -260,7 +263,7 @@ def build_index() -> dict[str, Any]:
             "case_ids": [case["case_id"] for case in workflow["cases"]],
         }
         if is_process_workflow:
-            workflow_ref["workflow_schema"] = PROCESS_WORKFLOW_SCHEMA_ID
+            workflow_ref["workflow_schema"] = workflow["schema"]
         else:
             assert workload_path is not None
             workflow_ref["workload_path"] = workload_path.relative_to(ROOT).as_posix()

@@ -13,20 +13,46 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
-from scripts.parity.contract import ROOT, ContractError, read_json
-from scripts.parity.process_contract import _process_selectors_for_case
+from scripts.parity.contract import (
+    PROCESS_WORKFLOW_SCHEMA_ID,
+    PROCESS_WORKFLOW_SCHEMA_V2_ID,
+    ROOT,
+    ContractError,
+    read_json,
+)
+from scripts.parity.process_contract import (
+    _process_selectors_for_case,
+    process_tree_identity,
+)
 from scripts.parity.process_worker import (
     PROCESS_RESULT_SCHEMA_ID,
     PROCESS_RESULT_SCHEMA_PATH,
+    PROCESS_RESULT_SCHEMA_V2_ID,
+    PROCESS_RESULT_SCHEMA_V2_PATH,
     SELECTOR_CATALOG_PATH,
     _canonical_sha256,
     _profile_expectations,
 )
 
 PROCESS_COMPARISON_SCHEMA_ID = "fastapi-rs/python-process-comparison@1"
+PROCESS_COMPARISON_SCHEMA_V2_ID = "fastapi-rs/python-process-comparison@2"
 PROCESS_COMPARISON_SCHEMA_PATH = (
     ROOT / "tests/fixtures/schemas/python-process-comparison.schema.json"
 )
+PROCESS_COMPARISON_SCHEMA_V2_PATH = (
+    ROOT / "tests/fixtures/schemas/python-process-comparison-v2.schema.json"
+)
+PROCESS_RESULT_SCHEMAS = {
+    PROCESS_WORKFLOW_SCHEMA_ID: (PROCESS_RESULT_SCHEMA_ID, PROCESS_RESULT_SCHEMA_PATH),
+    PROCESS_WORKFLOW_SCHEMA_V2_ID: (PROCESS_RESULT_SCHEMA_V2_ID, PROCESS_RESULT_SCHEMA_V2_PATH),
+}
+PROCESS_COMPARISON_SCHEMAS = {
+    PROCESS_WORKFLOW_SCHEMA_ID: (PROCESS_COMPARISON_SCHEMA_ID, PROCESS_COMPARISON_SCHEMA_PATH),
+    PROCESS_WORKFLOW_SCHEMA_V2_ID: (
+        PROCESS_COMPARISON_SCHEMA_V2_ID,
+        PROCESS_COMPARISON_SCHEMA_V2_PATH,
+    ),
+}
 
 
 class ProcessComparisonError(ContractError):
@@ -57,8 +83,12 @@ def _validate_result(
 ) -> None:
     if not isinstance(result, dict):
         raise ProcessComparisonError(f"{product} process result must be an object")
-    _validate_schema(result, PROCESS_RESULT_SCHEMA_PATH, f"{product} process result")
-    if result.get("schema") != PROCESS_RESULT_SCHEMA_ID:
+    expected_result_schema = PROCESS_RESULT_SCHEMAS.get(workflow.get("schema"))
+    if expected_result_schema is None:
+        raise ProcessComparisonError("process workflow schema is unsupported for comparison")
+    result_schema_id, result_schema_path = expected_result_schema
+    _validate_schema(result, result_schema_path, f"{product} process result")
+    if result.get("schema") != result_schema_id:
         raise ProcessComparisonError(f"{product} process result schema is unsupported")
     if result.get("product") != product:
         raise ProcessComparisonError(f"expected a {product} process result")
@@ -345,6 +375,158 @@ def _validate_cases(
     return comparisons
 
 
+def _validate_v2_case_command(
+    result_case: dict[str, Any],
+    specification: dict[str, Any],
+    identity: dict[str, Any],
+    product: str,
+    expected_cwd: dict[str, Any],
+) -> None:
+    case_id = specification["case_id"]
+    entrypoint = identity["entrypoint"]["path"]
+    execution = specification["execution"]
+    port: int | None = None
+    if execution["kind"] == "http-server":
+        lifecycle = result_case.get("lifecycle")
+        if not isinstance(lifecycle, dict) or type(lifecycle.get("port")) is not int:
+            raise ProcessComparisonError(
+                f"{product} server lifecycle has no assigned loopback port: {case_id}"
+            )
+        port = lifecycle["port"]
+        if not 1 <= port <= 65535:
+            raise ProcessComparisonError(f"{product} server lifecycle port is invalid: {case_id}")
+        if (
+            lifecycle.get("readiness") != "ready"
+            or lifecycle.get("request") != "completed"
+            or lifecycle.get("shutdown") != "graceful"
+        ):
+            raise ProcessComparisonError(
+                f"{product} server lifecycle did not complete cleanly: {case_id}"
+            )
+    argv_tail = list(specification["argv"][1:])
+    environment_set = dict(specification["environment"]["set"])
+    if port is not None:
+        argv_tail = [str(port) if value == "{port}" else value for value in argv_tail]
+        if environment_set.get("PORT") == "{port}":
+            environment_set["PORT"] = str(port)
+    expected_command = {
+        "argv": [entrypoint, *argv_tail],
+        "cwd": expected_cwd,
+        "environment": {
+            "set": environment_set,
+            "unset": specification["environment"]["unset"],
+            "inherited": False,
+        },
+        "execution": execution,
+    }
+    if result_case.get("command") != expected_command:
+        raise ProcessComparisonError(
+            f"{product} case command or staged-tree identity differs from the input: {case_id}"
+        )
+    if result_case.get("timeout_seconds") != specification["timeout_seconds"]:
+        raise ProcessComparisonError(f"{product} case timeout differs from input: {case_id}")
+
+
+def _validate_v2_cases(
+    workflow: dict[str, Any], source: dict[str, Any], target: dict[str, Any]
+) -> list[dict[str, Any]]:
+    source_cases = source.get("cases")
+    target_cases = target.get("cases")
+    specifications = workflow.get("cases")
+    if not isinstance(source_cases, list) or not isinstance(target_cases, list):
+        raise ProcessComparisonError("process result case arrays are missing")
+    if (
+        not isinstance(specifications, list)
+        or len(source_cases) != len(specifications)
+        or len(target_cases) != len(specifications)
+    ):
+        raise ProcessComparisonError("process source/target case counts differ from the input")
+
+    selector_support = _selector_catalog()
+    source_identity = source["identity"]
+    target_identity = target["identity"]
+    comparisons: list[dict[str, Any]] = []
+    for specification, source_case, target_case in zip(
+        specifications, source_cases, target_cases, strict=True
+    ):
+        case_id = specification["case_id"]
+        if source_case.get("case_id") != case_id or target_case.get("case_id") != case_id:
+            raise ProcessComparisonError("process source/target case order differs from the input")
+        expected_cwd = process_tree_identity(specification["cwd"])
+        _validate_v2_case_command(
+            source_case, specification, source_identity, "oracle", expected_cwd
+        )
+        _validate_v2_case_command(
+            target_case, specification, target_identity, "target", expected_cwd
+        )
+        if source_case.get("status") != "completed" or target_case.get("status") != "completed":
+            raise ProcessComparisonError(f"process case is incomplete: {case_id}")
+        if (
+            type(source_case.get("exit_code")) is not int
+            or type(target_case.get("exit_code")) is not int
+        ):
+            raise ProcessComparisonError(f"process exit code is missing: {case_id}")
+        source_observations = _observation_map(source_case, case_id)
+        target_observations = _observation_map(target_case, case_id)
+        selected = _process_selectors_for_case(specification, selector_support)
+        expected_order = [
+            selector for selector in specification["observations"] if selector in selected
+        ]
+        if (
+            not expected_order
+            or list(source_observations) != expected_order
+            or list(target_observations) != expected_order
+        ):
+            raise ProcessComparisonError(
+                f"process observations differ from selected input selectors: {case_id}"
+            )
+        if "process.exit_code" in selected:
+            if source_observations["process.exit_code"] != source_case["exit_code"]:
+                raise ProcessComparisonError(
+                    f"source exit-code selector is inconsistent: {case_id}"
+                )
+            if target_observations["process.exit_code"] != target_case["exit_code"]:
+                raise ProcessComparisonError(
+                    f"target exit-code selector is inconsistent: {case_id}"
+                )
+
+        observation_comparisons: list[dict[str, Any]] = []
+        for selector in expected_order:
+            source_value = source_observations[selector]
+            target_value = target_observations[selector]
+            if selector in {"process.exit_code", "http.status"}:
+                if type(source_value) is not int or type(target_value) is not int:
+                    raise ProcessComparisonError(f"{case_id} {selector} is not an integer")
+                source_summary: Any = source_value
+                target_summary: Any = target_value
+                equal = source_value == target_value
+            else:
+                source_bytes = _validate_stream(source_value, case_id=case_id, selector=selector)
+                target_bytes = _validate_stream(target_value, case_id=case_id, selector=selector)
+                source_summary = _stream_summary(source_value)
+                target_summary = _stream_summary(target_value)
+                equal = source_bytes == target_bytes
+            observation_comparisons.append(
+                {
+                    "selector": selector,
+                    "comparison": "exact",
+                    "equal": equal,
+                    "source": source_summary,
+                    "target": target_summary,
+                }
+            )
+        case_equal = all(row["equal"] for row in observation_comparisons)
+        comparisons.append(
+            {
+                "case_id": case_id,
+                "cwd": expected_cwd,
+                "status": "matched" if case_equal else "mismatched",
+                "observations": observation_comparisons,
+            }
+        )
+    return comparisons
+
+
 def compare_process_workflow_results(
     *,
     workflow: dict[str, Any],
@@ -428,11 +610,20 @@ def compare_process_workflow_results(
         if source_identity["packages"][name] != target_identity["packages"][name]:
             raise ProcessComparisonError(f"source and target shared package differs: {name}")
 
-    cases = _validate_cases(workflow, source, target)
+    workflow_schema_id = workflow.get("schema")
+    comparison_schema = PROCESS_COMPARISON_SCHEMAS.get(workflow_schema_id)
+    if comparison_schema is None:
+        raise ProcessComparisonError("process workflow schema is unsupported for comparison")
+    comparison_schema_id, comparison_schema_path = comparison_schema
+    cases = (
+        _validate_v2_cases(workflow, source, target)
+        if workflow_schema_id == PROCESS_WORKFLOW_SCHEMA_V2_ID
+        else _validate_cases(workflow, source, target)
+    )
     matched = sum(case["status"] == "matched" for case in cases)
     mismatched = len(cases) - matched
     comparison = {
-        "schema": PROCESS_COMPARISON_SCHEMA_ID,
+        "schema": comparison_schema_id,
         "comparison_id": str(uuid.uuid4()),
         "created_at": dt.datetime.now(dt.UTC).isoformat(),
         "status": "matched" if mismatched == 0 else "mismatched",
@@ -452,5 +643,5 @@ def compare_process_workflow_results(
         },
         "command": command,
     }
-    _validate_schema(comparison, PROCESS_COMPARISON_SCHEMA_PATH, "process comparison")
+    _validate_schema(comparison, comparison_schema_path, "process comparison")
     return comparison

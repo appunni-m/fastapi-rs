@@ -1,0 +1,373 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/python-process-comparison/2",
+  "title": "FastAPI-RS Python process comparison v2",
+  "description": "Exact comparisons for selected process and loopback HTTP observations, bound to the declared isolated input tree.",
+  "type": "object",
+  "required": [
+    "schema",
+    "comparison_id",
+    "created_at",
+    "status",
+    "manifest",
+    "input",
+    "source_result",
+    "target_result",
+    "cases",
+    "summary",
+    "command"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fastapi-rs/python-process-comparison@2"
+    },
+    "comparison_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "matched",
+        "mismatched"
+      ]
+    },
+    "manifest": {
+      "$ref": "#/$defs/digestReference"
+    },
+    "input": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256",
+        "schema"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "schema": {
+          "const": "fastapi-rs/python-process-workflow@2"
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_result": {
+      "$ref": "#/$defs/resultReferenceOracle"
+    },
+    "target_result": {
+      "$ref": "#/$defs/resultReferenceTarget"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      },
+      "maxItems": 128
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    },
+    "command": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      },
+      "maxItems": 64
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "digestReference": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resultReference": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256",
+        "run_id",
+        "product"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "product": {
+          "enum": [
+            "oracle",
+            "target"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "resultReferenceOracle": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/resultReference"
+        },
+        {
+          "properties": {
+            "product": {
+              "const": "oracle"
+            }
+          }
+        }
+      ]
+    },
+    "resultReferenceTarget": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/resultReference"
+        },
+        {
+          "properties": {
+            "product": {
+              "const": "target"
+            }
+          }
+        }
+      ]
+    },
+    "streamSummary": {
+      "type": "object",
+      "required": [
+        "sha256",
+        "length_bytes"
+      ],
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "length_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "required": [
+        "selector",
+        "comparison",
+        "equal",
+        "source",
+        "target"
+      ],
+      "properties": {
+        "selector": {
+          "enum": [
+            "process.exit_code",
+            "process.stdout",
+            "process.stderr",
+            "http.status",
+            "http.body.bytes"
+          ]
+        },
+        "comparison": {
+          "const": "exact"
+        },
+        "equal": {
+          "type": "boolean"
+        },
+        "source": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "$ref": "#/$defs/streamSummary"
+            }
+          ]
+        },
+        "target": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "$ref": "#/$defs/streamSummary"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "selector": {
+                "enum": [
+                  "process.exit_code",
+                  "http.status"
+                ]
+              }
+            },
+            "required": [
+              "selector"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "type": "integer"
+              },
+              "target": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "selector": {
+                "enum": [
+                  "process.stdout",
+                  "process.stderr",
+                  "http.body.bytes"
+                ]
+              }
+            },
+            "required": [
+              "selector"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/streamSummary"
+              },
+              "target": {
+                "$ref": "#/$defs/streamSummary"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "status",
+        "observations",
+        "cwd"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "matched",
+            "mismatched"
+          ]
+        },
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/observation"
+          },
+          "maxItems": 5
+        },
+        "cwd": {
+          "$ref": "#/$defs/cwdIdentity"
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "case_count",
+        "matched",
+        "mismatched"
+      ],
+      "properties": {
+        "case_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "matched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mismatched": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "cwdIdentity": {
+      "type": "object",
+      "required": [
+        "kind",
+        "tree_sha256",
+        "file_count",
+        "total_bytes"
+      ],
+      "properties": {
+        "kind": {
+          "const": "isolated-tree"
+        },
+        "tree_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "file_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8388608
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.build_parity_inputs import RECIPE_DIR, read_recipe
 from scripts.parity.contract import ROOT, ContractError
-from scripts.parity.process_contract import PROCESS_WORKFLOW_SCHEMA_ID
+from scripts.parity.process_contract import PROCESS_WORKFLOW_SCHEMA_IDS
 
 WORKLOAD_ROOT = (ROOT / "tests/fixtures/workloads").resolve()
 DEFAULT_FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
@@ -152,7 +152,7 @@ def _parity_workload_paths(
 
     for recipe_path in recipes:
         recipe = read_recipe(recipe_path)
-        if recipe.get("schema") != PROCESS_WORKFLOW_SCHEMA_ID:
+        if recipe.get("schema") not in PROCESS_WORKFLOW_SCHEMA_IDS:
             workload = recipe.get("workload")
             if not isinstance(workload, dict) or not isinstance(workload.get("file"), str):
                 raise ContractError(

@@ -488,10 +488,10 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@6
-    sha256: ddb14337de0b7c6bf6d6152e65feb79e4c960120d566f0adc192289e34f2a6c0
-    schema_path: tests/fixtures/schemas/materialized-input-index-v6.schema.json
-    schema_sha256: ae41594fe0e41252406d822c6be15d75b6a0c55d8704022b7e16c691e210123a
+    schema: fastapi-rs/materialized-input-index@7
+    sha256: 15f2fdb12596c75cdc111b2a6321e49477527c3b95904bb5df17d6371ec24f31
+    schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
+    schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 568
@@ -814,6 +814,29 @@ unresolved:
       console entrypoint yet, so no target parity claim is possible. The
       monkeypatched upstream test of private fastapi.cli.main is excluded with
       source evidence; the documented console command remains mapped.
+  python_process_workflow_v2:
+    state: bounded-isolated-tree-and-loopback-server-lifecycle-supported
+    schema_id: fastapi-rs/python-process-workflow@2
+    schema_path: tests/fixtures/schemas/python-process-workflow-v2.schema.json
+    schema_sha256: 6ed19e4116f9bb274b8bfb63abd8245ed90c261009e035146e4b1da8b0088dbc
+    result_schema_id: fastapi-rs/python-process-workflow-result@2
+    result_schema_path: tests/fixtures/schemas/python-process-workflow-result-v2.schema.json
+    result_schema_sha256: 8c425c2a780044f6de2324a52c636ad70cf7b527b953ea6a7921184c3370a54d
+    comparison_schema_id: fastapi-rs/python-process-comparison@2
+    comparison_schema_path: tests/fixtures/schemas/python-process-comparison-v2.schema.json
+    comparison_schema_sha256: 8d7c77b71d345c26d60f29d758f25f91d4618044f1b5bebdf9a0c9fd421e7c6f
+    coverage: >-
+      Adds bounded UTF-8 project trees, stable staged-tree identity, and an optional
+      loopback HTTP server lifecycle with readiness, one request, and process-group shutdown.
+      Command cases compare exit code and exact stdout/stderr; server cases compare exit code
+      and HTTP status with an optional exact response body. Server stdout/stderr are drained
+      under the output cap but excluded because CLI startup output includes run-assigned ports
+      and process identifiers. Server binding supports --port {port} or PORT={port}, exclusively.
+      FastAPI dev may use its documented safe 127.0.0.1 default host; FastAPI run must set
+      --host 127.0.0.1 explicitly because its documented default binds all interfaces.
+      FASTAPI_PUBLIC_URL is independently settable/unsettable but startup-text effects are not
+      observed in this infrastructure slice. Server workflows require POSIX; non-POSIX v2
+      execution is rejected. Recipes and source mappings remain separately reviewed.
   fixture_backlog_integrity:
     state: source-linked-designs-validated; incremental-materialization-indexed; full-backlog-pending
     source_artifacts: [compatibility_atlas, fixture_backlog, materialized_input_index]

@@ -34,6 +34,7 @@ WORKFLOW_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v7.sche
 WORKFLOW_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v8.schema.json"
 WORKFLOW_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v9.schema.json"
 PROCESS_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-process-workflow.schema.json"
+PROCESS_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-process-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
 API_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-workflow-v3.schema.json"
@@ -71,6 +72,12 @@ WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
 PROCESS_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-process-workflow@1"
+PROCESS_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow@2"
+PROCESS_WORKFLOW_SCHEMA_IDS = frozenset({PROCESS_WORKFLOW_SCHEMA_ID, PROCESS_WORKFLOW_SCHEMA_V2_ID})
+PROCESS_RESULT_SCHEMA_ID = "fastapi-rs/python-process-workflow-result@1"
+PROCESS_RESULT_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow-result@2"
+PROCESS_COMPARISON_SCHEMA_ID = "fastapi-rs/python-process-comparison@1"
+PROCESS_COMPARISON_SCHEMA_V2_ID = "fastapi-rs/python-process-comparison@2"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
@@ -149,6 +156,7 @@ WORKFLOW_SCHEMAS = {
 RECIPE_WORKFLOW_SCHEMAS = {
     **WORKFLOW_SCHEMAS,
     PROCESS_WORKFLOW_SCHEMA_ID: PROCESS_WORKFLOW_SCHEMA,
+    PROCESS_WORKFLOW_SCHEMA_V2_ID: PROCESS_WORKFLOW_SCHEMA_V2,
 }
 RESULT_SCHEMAS = {
     RESULT_SCHEMA_ID: RESULT_SCHEMA,
@@ -457,6 +465,59 @@ def read_manifest() -> dict[str, Any]:
         raise ContractError("API import-binding classification review metadata is unsupported")
 
     unresolved = manifest.get("unresolved")
+    process_workflow_contract = (
+        unresolved.get("python_process_workflow") if isinstance(unresolved, dict) else None
+    )
+    if not isinstance(process_workflow_contract, dict):
+        raise ContractError("manifest Python process workflow v1 contract is missing")
+    if (
+        process_workflow_contract.get("schema_id") != PROCESS_WORKFLOW_SCHEMA_ID
+        or process_workflow_contract.get("result_schema_id") != PROCESS_RESULT_SCHEMA_ID
+        or process_workflow_contract.get("comparison_schema_id") != PROCESS_COMPARISON_SCHEMA_ID
+    ):
+        raise ContractError("manifest Python process workflow v1 schema identities are unsupported")
+    process_v1_schema_refs = (
+        ("schema_path", "schema_sha256", "python process workflow v1 schema"),
+        ("result_schema_path", "result_schema_sha256", "python process result v1 schema"),
+        (
+            "comparison_schema_path",
+            "comparison_schema_sha256",
+            "python process comparison v1 schema",
+        ),
+    )
+    for path_key, digest_key, label in process_v1_schema_refs:
+        _verify_digest_ref(
+            process_workflow_contract.get(path_key),
+            process_workflow_contract.get(digest_key),
+            label,
+        )
+    process_workflow_v2_contract = (
+        unresolved.get("python_process_workflow_v2") if isinstance(unresolved, dict) else None
+    )
+    if not isinstance(process_workflow_v2_contract, dict):
+        raise ContractError("manifest Python process workflow v2 contract is missing")
+    if (
+        process_workflow_v2_contract.get("schema_id") != PROCESS_WORKFLOW_SCHEMA_V2_ID
+        or process_workflow_v2_contract.get("result_schema_id") != PROCESS_RESULT_SCHEMA_V2_ID
+        or process_workflow_v2_contract.get("comparison_schema_id")
+        != PROCESS_COMPARISON_SCHEMA_V2_ID
+    ):
+        raise ContractError("manifest Python process workflow v2 schema identities are unsupported")
+    process_v2_schema_refs = (
+        ("schema_path", "schema_sha256", "python process workflow v2 schema"),
+        ("result_schema_path", "result_schema_sha256", "python process result v2 schema"),
+        (
+            "comparison_schema_path",
+            "comparison_schema_sha256",
+            "python process comparison v2 schema",
+        ),
+    )
+    for path_key, digest_key, label in process_v2_schema_refs:
+        _verify_digest_ref(
+            process_workflow_v2_contract.get(path_key),
+            process_workflow_v2_contract.get(digest_key),
+            label,
+        )
     workflow_contract = (
         unresolved.get("python_asgi_workflow") if isinstance(unresolved, dict) else None
     )

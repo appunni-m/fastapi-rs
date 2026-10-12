@@ -29,12 +29,12 @@ from scripts.parity.contract import (
 )
 from scripts.parity.fault_contracts import FaultContractError, verification_mode
 from scripts.parity.process_contract import (
-    PROCESS_WORKFLOW_SCHEMA_ID,
+    PROCESS_WORKFLOW_SCHEMA_IDS,
     _process_selectors_for_case,
     load_process_workflow,
 )
 
-INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v6.schema.json"
+INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v7.schema.json"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
@@ -203,7 +203,7 @@ def _source_selectors_for_case(
     selector_support: dict[str, str] | None = None,
 ) -> set[str]:
     """Pair feature selectors with generic protocol observations used by this case."""
-    if workflow_schema == PROCESS_WORKFLOW_SCHEMA_ID:
+    if workflow_schema in PROCESS_WORKFLOW_SCHEMA_IDS:
         if selector_support is None:
             _fail("process selector support is required to validate observations")
         selected = _process_selectors_for_case(case, selector_support)
@@ -265,7 +265,7 @@ def validate_materialized_input_index(
     requirements_by_case: dict[tuple[str, str], set[str]] = defaultdict(set)
     api_definition_cases: dict[str, set[str]] = {}
     for workflow_id, workflow_ref in workflow_by_id.items():
-        is_process_workflow = workflow_ref.get("workflow_schema") == PROCESS_WORKFLOW_SCHEMA_ID
+        is_process_workflow = workflow_ref.get("workflow_schema") in PROCESS_WORKFLOW_SCHEMA_IDS
         indexed_paths = [
             ("input_path", "input_sha256", "workflow input"),
             ("recipe_path", "recipe_sha256", "workflow recipe"),
@@ -498,7 +498,7 @@ def validate_materialized_input_index(
             ):
                 _fail(f"workflow case lacks matching source evidence: {case_id} -> {source_id}")
             workflow_schema = workflow_schemas[workflow_id]
-            if workflow_schema == PROCESS_WORKFLOW_SCHEMA_ID:
+            if workflow_schema in PROCESS_WORKFLOW_SCHEMA_IDS:
                 used_selectors.update(_process_selectors_for_case(case, selector_support))
             else:
                 used_selectors.update(_selected_selectors(case, workflow_schema=workflow_schema))

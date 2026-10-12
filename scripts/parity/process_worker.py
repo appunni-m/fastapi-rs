@@ -6,14 +6,17 @@ import argparse
 import base64
 import datetime as dt
 import hashlib
+import http.client
 import json
 import os
 import re
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -21,21 +24,52 @@ from typing import Any, Literal
 
 from jsonschema import Draft202012Validator, FormatChecker
 
-from scripts.parity.contract import ROOT, ContractError, read_json, read_manifest, sha256_file
+from scripts.parity.contract import (
+    PROCESS_WORKFLOW_SCHEMA_ID,
+    PROCESS_WORKFLOW_SCHEMA_V2_ID,
+    ROOT,
+    ContractError,
+    read_json,
+    read_manifest,
+    sha256_file,
+)
 from scripts.parity.process_contract import (
     ORACLE_PROCESS_PROFILE_ID,
+    PROCESS_REQUEST_MAX_RESPONSE_BYTES,
+    PROCESS_STREAM_MAX_BYTES,
     TARGET_PROCESS_PROFILE_ID,
     _process_selectors_for_case,
     load_process_workflow,
+    process_tree_identity,
+    stage_process_tree,
 )
 
 PROCESS_RESULT_SCHEMA_ID = "fastapi-rs/python-process-workflow-result@1"
+PROCESS_RESULT_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow-result@2"
 PROCESS_RESULT_SCHEMA_PATH = (
     ROOT / "tests/fixtures/schemas/python-process-workflow-result.schema.json"
+)
+PROCESS_RESULT_SCHEMA_V2_PATH = (
+    ROOT / "tests/fixtures/schemas/python-process-workflow-result-v2.schema.json"
 )
 PROCESS_COMPARISON_SCHEMA_PATH = (
     ROOT / "tests/fixtures/schemas/python-process-comparison.schema.json"
 )
+PROCESS_COMPARISON_SCHEMA_V2_PATH = (
+    ROOT / "tests/fixtures/schemas/python-process-comparison-v2.schema.json"
+)
+PROCESS_RESULT_SCHEMA_PATHS = {
+    PROCESS_WORKFLOW_SCHEMA_ID: PROCESS_RESULT_SCHEMA_PATH,
+    PROCESS_WORKFLOW_SCHEMA_V2_ID: PROCESS_RESULT_SCHEMA_V2_PATH,
+}
+PROCESS_RESULT_SCHEMA_IDS = {
+    PROCESS_WORKFLOW_SCHEMA_ID: PROCESS_RESULT_SCHEMA_ID,
+    PROCESS_WORKFLOW_SCHEMA_V2_ID: PROCESS_RESULT_SCHEMA_V2_ID,
+}
+PROCESS_COMPARISON_SCHEMA_PATHS = {
+    PROCESS_WORKFLOW_SCHEMA_ID: PROCESS_COMPARISON_SCHEMA_PATH,
+    PROCESS_WORKFLOW_SCHEMA_V2_ID: PROCESS_COMPARISON_SCHEMA_V2_PATH,
+}
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 STANDARD_SURFACE_PATH = ROOT / "tests/fixtures/runtime-api-surface-standard.json"
 SELECTOR_CATALOG_PATH = ROOT / "tests/fixtures/observation-selectors.json"
@@ -685,6 +719,494 @@ def _execute_case(case: dict[str, Any], entrypoint: Path) -> tuple[dict[str, Any
     )
 
 
+class _PipeCapture:
+    """Drain one child stream continuously while retaining only a bounded prefix."""
+
+    def __init__(self, stream: Any, *, limit: int = PROCESS_STREAM_MAX_BYTES) -> None:
+        self._stream = stream
+        self._limit = limit
+        self._data = bytearray()
+        self.exceeded = threading.Event()
+        self.error: OSError | None = None
+        self._thread = threading.Thread(target=self._drain, daemon=True)
+
+    def start(self) -> None:
+        self._thread.start()
+
+    def _drain(self) -> None:
+        try:
+            while chunk := self._stream.read1(65_536):
+                remaining = self._limit - len(self._data)
+                if remaining > 0:
+                    self._data.extend(chunk[:remaining])
+                if len(chunk) > remaining:
+                    self.exceeded.set()
+        except OSError as exc:
+            self.error = exc
+        finally:
+            self._stream.close()
+
+    def join(self, timeout: float = 2.0) -> None:
+        self._thread.join(timeout)
+        if self._thread.is_alive():
+            self.exceeded.set()
+
+    def bytes(self) -> bytes:
+        return bytes(self._data)
+
+
+def _start_captures(process: subprocess.Popen[bytes]) -> tuple[_PipeCapture, _PipeCapture]:
+    if process.stdout is None or process.stderr is None:
+        raise ProcessError("process output pipes were not created")
+    stdout = _PipeCapture(process.stdout)
+    stderr = _PipeCapture(process.stderr)
+    stdout.start()
+    stderr.start()
+    return stdout, stderr
+
+
+def _capture_failure(stdout: _PipeCapture, stderr: _PipeCapture) -> str | None:
+    if stdout.exceeded.is_set() or stderr.exceeded.is_set():
+        return "output_limit"
+    if stdout.error is not None or stderr.error is not None:
+        return "capture_error"
+    return None
+
+
+def _wait_bounded(process: subprocess.Popen[bytes], deadline: float) -> bool:
+    while process.poll() is None:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(0.01, remaining))
+    return True
+
+
+def _process_group_exists(process: subprocess.Popen[bytes]) -> bool:
+    if os.name != "posix":
+        return process.poll() is None
+    try:
+        os.killpg(process.pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def _wait_process_group_gone(process: subprocess.Popen[bytes], deadline: float) -> bool:
+    while _process_group_exists(process):
+        process.poll()
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        time.sleep(min(0.01, remaining))
+    process.poll()
+    return not _process_group_exists(process)
+
+
+def _signal_process_group(process: subprocess.Popen[bytes], signum: int) -> None:
+    if os.name == "posix":
+        os.killpg(process.pid, signum)
+    elif process.poll() is None:
+        process.send_signal(signum)
+
+
+def _finish_killed_process(process: subprocess.Popen[bytes]) -> int | None:
+    _kill_process_tree(process)
+    try:
+        return process.wait(timeout=2)
+    except subprocess.TimeoutExpired:
+        try:
+            process.kill()
+        except ProcessLookupError:
+            pass
+        try:
+            return process.wait(timeout=1)
+        except subprocess.TimeoutExpired:
+            return None
+
+
+def _allocate_loopback_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as reservation:
+        reservation.bind(("127.0.0.1", 0))
+        return int(reservation.getsockname()[1])
+
+
+def _readiness_probe(port: int, path: str, timeout_seconds: float) -> None:
+    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=timeout_seconds)
+    try:
+        connection.request("GET", path)
+        response = connection.getresponse()
+        response.close()
+    finally:
+        connection.close()
+
+
+def _bounded_http_request(
+    *, port: int, request: dict[str, Any], deadline: float
+) -> tuple[int, bytes]:
+    connection = http.client.HTTPConnection(
+        "127.0.0.1",
+        port,
+        timeout=max(0.001, deadline - time.monotonic()),
+    )
+    body = request["body"].encode("utf-8", errors="strict")
+    try:
+        connection.request(
+            request["method"],
+            request["path"],
+            body=body,
+            headers=request["headers"],
+        )
+        response = connection.getresponse()
+        status = response.status
+        response_body = bytearray()
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("loopback HTTP request exceeded its deadline")
+            if connection.sock is not None:
+                connection.sock.settimeout(remaining)
+            chunk = response.read(
+                min(65_536, PROCESS_REQUEST_MAX_RESPONSE_BYTES + 1 - len(response_body))
+            )
+            if not chunk:
+                break
+            response_body.extend(chunk)
+            if len(response_body) > PROCESS_REQUEST_MAX_RESPONSE_BYTES:
+                raise ProcessError(
+                    f"loopback HTTP response exceeds {PROCESS_REQUEST_MAX_RESPONSE_BYTES} bytes"
+                )
+        return status, bytes(response_body)
+    finally:
+        connection.close()
+
+
+def _interrupt_process_group(process: subprocess.Popen[bytes]) -> None:
+    if process.poll() is not None:
+        return
+    if os.name == "posix":
+        os.killpg(process.pid, signal.SIGINT)
+    elif os.name == "nt":
+        process.send_signal(signal.CTRL_BREAK_EVENT)
+    else:
+        process.send_signal(signal.SIGINT)
+
+
+def _graceful_server_shutdown(
+    process: subprocess.Popen[bytes], grace_seconds: float
+) -> tuple[str, int | None]:
+    if not _process_group_exists(process):
+        process.poll()
+        return "not_started", process.returncode
+    try:
+        _interrupt_process_group(process)
+    except ProcessLookupError:
+        pass
+    graceful_deadline = time.monotonic() + max(0.0, grace_seconds)
+    if _wait_process_group_gone(process, graceful_deadline):
+        return "graceful", process.returncode
+
+    try:
+        _signal_process_group(process, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+    if _wait_process_group_gone(process, time.monotonic() + 0.5):
+        return "forced", process.returncode
+
+    try:
+        _signal_process_group(process, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    stopped = _wait_process_group_gone(process, time.monotonic() + 1.0)
+    if process.poll() is None:
+        try:
+            process.wait(timeout=0.5)
+        except subprocess.TimeoutExpired:
+            pass
+    return ("forced" if stopped else "failed"), process.returncode
+
+
+def _v2_command_record(
+    case: dict[str, Any],
+    argv: list[str],
+    cwd_identity: dict[str, Any],
+    *,
+    environment_set: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    environment = case["environment"]
+    return {
+        "argv": argv,
+        "cwd": cwd_identity,
+        "environment": {
+            "set": environment["set"] if environment_set is None else environment_set,
+            "unset": environment["unset"],
+            "inherited": False,
+        },
+        "execution": case["execution"],
+    }
+
+
+def _v2_observations(
+    case: dict[str, Any],
+    *,
+    exit_code: int | None,
+    stdout: bytes,
+    stderr: bytes,
+    http_status: int | None = None,
+    http_body: bytes | None = None,
+) -> list[dict[str, Any]]:
+    values: dict[str, Any] = {
+        "process.exit_code": exit_code,
+        "process.stdout": _stream_record(stdout),
+        "process.stderr": _stream_record(stderr),
+    }
+    if http_status is not None:
+        values["http.status"] = http_status
+    if http_body is not None:
+        values["http.body.bytes"] = _stream_record(http_body)
+    return [
+        {"selector": selector, "value": values[selector]}
+        for selector in case["observations"]
+        if selector in values and values[selector] is not None
+    ]
+
+
+def _execute_v2_case(case: dict[str, Any], entrypoint: Path) -> tuple[dict[str, Any], bool]:
+    """Execute one bounded v2 command or loopback server case."""
+    execution = case["execution"]
+    is_server = execution["kind"] == "http-server"
+    port: int | None = None
+    try:
+        if is_server:
+            port = _allocate_loopback_port()
+    except OSError as exc:
+        port_error = {"type": type(exc).__name__, "message": str(exc)}
+        identity = process_tree_identity(case["cwd"])
+        result_case: dict[str, Any] = {
+            "case_id": case["case_id"],
+            "status": "spawn_error",
+            "exit_code": None,
+            "observations": [],
+            "command": _v2_command_record(case, [str(entrypoint), *case["argv"][1:]], identity),
+            "timeout_seconds": case["timeout_seconds"],
+            "duration_seconds": 0.0,
+            "error": port_error,
+        }
+        if is_server:
+            result_case["lifecycle"] = {
+                "readiness": "not_reached",
+                "request": "not_attempted",
+                "shutdown": "not_started",
+                "port": None,
+            }
+        return result_case, False
+
+    argv_tail = list(case["argv"][1:])
+    environment_set = dict(case["environment"]["set"])
+    if is_server:
+        argv_tail = [str(port) if value == "{port}" else value for value in argv_tail]
+        if environment_set.get("PORT") == "{port}":
+            environment_set["PORT"] = str(port)
+    argv = [str(entrypoint), *argv_tail]
+    timeout_seconds = case["timeout_seconds"]
+    started = time.monotonic()
+    deadline = started + timeout_seconds
+    cwd_identity = process_tree_identity(case["cwd"])
+    lifecycle = (
+        {
+            "readiness": "not_reached",
+            "request": "not_attempted",
+            "shutdown": "not_started",
+            "port": port,
+        }
+        if is_server
+        else None
+    )
+    process: subprocess.Popen[bytes] | None = None
+    stdout_capture: _PipeCapture | None = None
+    stderr_capture: _PipeCapture | None = None
+    stage_verified = False
+    status = "spawn_error"
+    error: dict[str, str] | None = None
+    exit_code: int | None = None
+    http_status: int | None = None
+    http_body: bytes | None = None
+    http_response_error: Exception | None = None
+
+    try:
+        with tempfile.TemporaryDirectory(
+            prefix=f"fastapi-rs-{case['case_id'].rsplit('.', 1)[-1]}-"
+        ) as cwd_text:
+            cwd = Path(cwd_text)
+            staged_identity = stage_process_tree(case["cwd"], cwd)
+            stage_verified = True
+            if staged_identity != cwd_identity:
+                raise ProcessError("staged process tree identity changed before invocation")
+            process = subprocess.Popen(
+                argv,
+                cwd=cwd,
+                env=environment_set,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=False,
+                start_new_session=(os.name == "posix"),
+                creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
+            )
+            stdout_capture, stderr_capture = _start_captures(process)
+            if not is_server:
+                status = "completed" if _wait_bounded(process, deadline) else "timeout"
+                capture_failure = _capture_failure(stdout_capture, stderr_capture)
+                if capture_failure is not None:
+                    status = capture_failure
+                if status != "completed":
+                    exit_code = _finish_killed_process(process)
+                else:
+                    exit_code = process.returncode
+                    if _process_group_exists(process):
+                        _graceful_server_shutdown(process, 0.0)
+                        status = "child_process_leak"
+            else:
+                readiness_deadline = min(
+                    deadline,
+                    time.monotonic() + execution["readiness"]["timeout_seconds"],
+                )
+                while time.monotonic() < readiness_deadline:
+                    capture_failure = _capture_failure(stdout_capture, stderr_capture)
+                    if capture_failure is not None:
+                        status = capture_failure
+                        break
+                    if process.poll() is not None:
+                        status = "server_exited"
+                        lifecycle["readiness"] = "process_exited"
+                        break
+                    probe_timeout = min(0.5, readiness_deadline - time.monotonic())
+                    try:
+                        _readiness_probe(port, execution["readiness"]["path"], probe_timeout)
+                        lifecycle["readiness"] = "ready"
+                        break
+                    except (OSError, http.client.HTTPException, TimeoutError):
+                        remaining = readiness_deadline - time.monotonic()
+                        if remaining > 0:
+                            time.sleep(
+                                min(execution["readiness"]["poll_interval_ms"] / 1000, remaining)
+                            )
+                else:
+                    status = "timeout" if time.monotonic() >= deadline else "readiness_timeout"
+                    lifecycle["readiness"] = "timeout"
+
+                if lifecycle["readiness"] == "ready":
+                    capture_failure = _capture_failure(stdout_capture, stderr_capture)
+                    if capture_failure is not None:
+                        status = capture_failure
+                    elif process.poll() is not None:
+                        status = "server_exited"
+                    else:
+                        request_deadline = min(
+                            deadline,
+                            time.monotonic() + execution["request"]["timeout_seconds"],
+                        )
+                        try:
+                            http_status, http_body = _bounded_http_request(
+                                port=port,
+                                request=execution["request"],
+                                deadline=request_deadline,
+                            )
+                            lifecycle["request"] = "completed"
+                            status = "completed"
+                        except ProcessError as exc:
+                            http_response_error = exc
+                            lifecycle["request"] = "failed"
+                            status = "output_limit"
+                        except (OSError, http.client.HTTPException, TimeoutError) as exc:
+                            http_response_error = exc
+                            lifecycle["request"] = "failed"
+                            status = "request_error"
+
+                if lifecycle["readiness"] == "not_reached" and status == "spawn_error":
+                    status = "timeout" if time.monotonic() >= deadline else "readiness_timeout"
+                parent_running = process.poll() is None
+                shutdown_deadline = min(
+                    deadline,
+                    time.monotonic() + execution["shutdown"]["grace_seconds"],
+                )
+                remaining_grace = max(0.0, shutdown_deadline - time.monotonic())
+                shutdown, shutdown_exit_code = _graceful_server_shutdown(process, remaining_grace)
+                lifecycle["shutdown"] = shutdown
+                if shutdown_exit_code is not None:
+                    exit_code = shutdown_exit_code
+                if status == "completed":
+                    if not parent_running:
+                        status = "server_exited"
+                    elif shutdown != "graceful":
+                        status = "shutdown_timeout"
+
+                capture_failure = _capture_failure(stdout_capture, stderr_capture)
+                if capture_failure is not None and status == "completed":
+                    status = capture_failure
+                if lifecycle["shutdown"] in {"forced", "failed"} and status == "completed":
+                    status = "shutdown_timeout"
+    except (OSError, ContractError) as exc:
+        status = "spawn_error" if stage_verified else "staging_error"
+        error = {"type": type(exc).__name__, "message": str(exc)}
+        if process is not None and process.poll() is None:
+            exit_code = _finish_killed_process(process)
+
+    if process is not None and process.poll() is None:
+        exit_code = _finish_killed_process(process)
+        if lifecycle is not None and lifecycle["shutdown"] == "not_started":
+            lifecycle["shutdown"] = "forced"
+        if status == "completed":
+            status = "shutdown_timeout" if is_server else "timeout"
+    if stdout_capture is not None:
+        stdout_capture.join()
+    if stderr_capture is not None:
+        stderr_capture.join()
+    stdout = stdout_capture.bytes() if stdout_capture is not None else b""
+    stderr = stderr_capture.bytes() if stderr_capture is not None else b""
+    if stdout_capture is not None and stderr_capture is not None:
+        capture_failure = _capture_failure(stdout_capture, stderr_capture)
+        if capture_failure is not None and status == "completed":
+            status = capture_failure
+    if error is None and status != "completed":
+        message = (
+            str(http_response_error)
+            if http_response_error is not None
+            else f"process case ended with status {status}"
+        )
+        error = {
+            "type": type(http_response_error).__name__ if http_response_error else status,
+            "message": message,
+        }
+
+    if status == "completed" and process is not None and exit_code is None:
+        exit_code = process.returncode
+    observations = _v2_observations(
+        case,
+        exit_code=exit_code,
+        stdout=stdout,
+        stderr=stderr,
+        http_status=http_status,
+        http_body=http_body,
+    )
+    result_case: dict[str, Any] = {
+        "case_id": case["case_id"],
+        "status": status,
+        "exit_code": exit_code,
+        "observations": observations,
+        "command": _v2_command_record(case, argv, cwd_identity, environment_set=environment_set),
+        "timeout_seconds": timeout_seconds,
+        "duration_seconds": max(0.0, time.monotonic() - started),
+    }
+    if lifecycle is not None:
+        result_case["lifecycle"] = lifecycle
+    if error is not None:
+        result_case["error"] = error
+    return result_case, status == "completed"
+
+
 def _relative_input_path(path: Path) -> str:
     try:
         return path.resolve().relative_to(ROOT.resolve()).as_posix()
@@ -712,9 +1234,16 @@ def write_process_artifact(value: dict[str, Any], output_path: Path, *, group: s
         resolved.relative_to(artifact_root)
     except ValueError as exc:
         raise ProcessError("process artifacts must be written under parity-results/") from exc
+    schema_path = (
+        PROCESS_COMPARISON_SCHEMA_PATHS.get(value.get("input", {}).get("schema"))
+        if group == "comparisons"
+        else PROCESS_RESULT_SCHEMA_PATHS.get(value.get("input", {}).get("schema"))
+    )
+    if schema_path is None:
+        raise ProcessError("process artifact refers to an unsupported workflow schema")
     _validate_schema(
         value,
-        PROCESS_COMPARISON_SCHEMA_PATH if group == "comparisons" else PROCESS_RESULT_SCHEMA_PATH,
+        schema_path,
         "process comparison" if group == "comparisons" else "process result",
     )
     resolved.parent.mkdir(parents=True, exist_ok=True)
@@ -767,6 +1296,8 @@ def run_process_workflow(
         input_path,
         source_root=source_root,
     )
+    result_schema_path = PROCESS_RESULT_SCHEMA_PATHS[workflow["schema"]]
+    result_schema_id = PROCESS_RESULT_SCHEMA_IDS[workflow["schema"]]
     if workflow["profiles"][mode] != profile:
         raise ProcessError(f"workflow does not select the requested {mode} profile")
     expectations = _profile_expectations(mode, profile)
@@ -780,7 +1311,7 @@ def run_process_workflow(
     )
     relative_input = _relative_input_path(workflow_path)
     common: dict[str, Any] = {
-        "schema": PROCESS_RESULT_SCHEMA_ID,
+        "schema": result_schema_id,
         "run_id": str(uuid.uuid4()),
         "started_at": started_at.isoformat(),
         "finished_at": dt.datetime.now(dt.UTC).isoformat(),
@@ -814,7 +1345,7 @@ def run_process_workflow(
                 "unresolved_reason": reason,
             }
         )
-        _validate_schema(common, PROCESS_RESULT_SCHEMA_PATH, "process result")
+        _validate_schema(common, result_schema_path, "process result")
         return common
     _verify_script_interpreter(resolved_entrypoint, resolved_python)
     runtime = (
@@ -858,7 +1389,10 @@ def run_process_workflow(
             **case,
             "observations": [selector for selector in case["observations"] if selector in selected],
         }
-        result_case, completed = _execute_case(selected_case, resolved_entrypoint)
+        if workflow["schema"] == PROCESS_WORKFLOW_SCHEMA_V2_ID:
+            result_case, completed = _execute_v2_case(selected_case, resolved_entrypoint)
+        else:
+            result_case, completed = _execute_case(selected_case, resolved_entrypoint)
         common["cases"].append(result_case)
         if not completed:
             all_cases_completed = False
@@ -873,7 +1407,7 @@ def run_process_workflow(
             )
     common["finished_at"] = dt.datetime.now(dt.UTC).isoformat()
     common["status"] = "completed" if all_cases_completed else "incomplete"
-    _validate_schema(common, PROCESS_RESULT_SCHEMA_PATH, "process result")
+    _validate_schema(common, result_schema_path, "process result")
     return common
 
 
