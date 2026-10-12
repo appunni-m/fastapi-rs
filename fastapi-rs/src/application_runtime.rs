@@ -5394,34 +5394,6 @@ fn route_response_declarations(
     Ok(declarations.unbind())
 }
 
-fn additional_response_description(response: &Bound<'_, PyDict>) -> PyResult<String> {
-    for (key, _) in response.iter() {
-        let key = key.extract::<String>()?;
-        if !matches!(key.as_str(), "description" | "model") {
-            return Err(PyNotImplementedError::new_err(
-                "route-level responses currently support description and model entries only",
-            ));
-        }
-    }
-    if response.len() > 2 {
-        return Err(PyNotImplementedError::new_err(
-            "route-level responses currently support description and model entries only",
-        ));
-    }
-    let description = response
-        .get_item("description")?
-        .ok_or_else(|| {
-            PyNotImplementedError::new_err("route-level responses require an explicit description")
-        })?
-        .extract::<String>()?;
-    if description.is_empty() {
-        return Err(PyNotImplementedError::new_err(
-            "route-level response descriptions must be non-empty",
-        ));
-    }
-    Ok(description)
-}
-
 fn additional_response_body_allowed(py: Python<'_>, status: &Bound<'_, PyAny>) -> PyResult<bool> {
     if status.is_none() {
         return Ok(true);
@@ -5434,39 +5406,6 @@ fn additional_response_body_allowed(py: Python<'_>, status: &Bound<'_, PyAny>) -
     Ok(!(code.lt(200)? || code.eq(204)? || code.eq(205)? || code.eq(304)?))
 }
 
-fn evaluate_additional_response_status_text(
-    py: Python<'_>,
-    status: &Bound<'_, PyAny>,
-) -> PyResult<()> {
-    let ranges = PyDict::new(py);
-    for (key, description) in [
-        ("1XX", "Information"),
-        ("2XX", "Success"),
-        ("3XX", "Redirection"),
-        ("4XX", "Client Error"),
-        ("5XX", "Server Error"),
-        ("DEFAULT", "Default Response"),
-    ] {
-        ranges.set_item(key, description)?;
-    }
-    // Source evaluates this second conversion and fallback even when an explicit
-    // description wins. The retained metadata subset requires that description.
-    let key = status.str()?.call_method0("upper")?;
-    if let Some(description) = ranges.get_item(key)? {
-        if description.is_truthy()? {
-            return Ok(());
-        }
-    }
-    // Python resolves the bound callee before evaluating its int argument.
-    let get_status_text = py
-        .import("http.client")?
-        .getattr("responses")?
-        .getattr("get")?;
-    let code = py.import("builtins")?.getattr("int")?.call1((status,))?;
-    get_status_text.call1((code,))?;
-    Ok(())
-}
-
 fn build_additional_response_fields(
     py: Python<'_>,
     responses: &Bound<'_, PyDict>,
@@ -5477,9 +5416,6 @@ fn build_additional_response_fields(
         let response = response
             .cast::<PyDict>()
             .map_err(|_| PyAssertionError::new_err("An additional response must be a dict"))?;
-        // Keep the existing deliberately restricted metadata policy. It is not
-        // FastAPI's general response-dictionary contract.
-        additional_response_description(response)?;
         let model = response.get_item("model")?;
         let field = match model {
             Some(model) if model.is_truthy()? => {
@@ -5533,11 +5469,16 @@ fn additional_response_openapi(
         }
         None => None,
     };
-    evaluate_additional_response_status_text(py, response.status.bind(py))?;
+    let response_document = py
+        .import("copy")?
+        .getattr("deepcopy")?
+        .call1((response.response.bind(py),))?
+        .cast_into::<PyDict>()?;
+    response_document.call_method1("pop", ("model", py.None()))?;
     Ok(OpenApiAdditionalResponse {
         status: status.unbind(),
-        description: additional_response_description(response.response.bind(py))?,
-        response_model_name: None,
+        status_code: response.status.clone_ref(py),
+        response: response_document.unbind(),
         response_schema,
     })
 }

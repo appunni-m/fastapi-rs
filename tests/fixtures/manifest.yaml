@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 169
-    operation_fixture_refs: 1453
+    operation_fixture_refs: 1457
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -8656,6 +8656,56 @@ api_surface_contract:
       - openapi.document
       - python.warnings
       - warnings.category_message
+    - workflow_id: additional-response-openapi-wave
+      input_path: tests/fixtures/inputs/parity/additional-response-openapi-wave.json
+      input_sha256: 8596203286714f468f8c2643b07b610a763aca518a060a12bfe64639c6b4704f
+      recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+      recipe_sha256: 5d4597ea42db1488c9a7029b2a5de499d128afda40d95f972b66d93bee6caefe
+      workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+      workload_sha256: 67a0b0be967bd7d9ddc9382b2af12c77c0b815392731a4820d09c9b85ad3ebfd
+      case_id: fastapi.additional-response-openapi-wave.media-content.test-openapi-schema
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: additional-response-openapi-wave
+      input_path: tests/fixtures/inputs/parity/additional-response-openapi-wave.json
+      input_sha256: 8596203286714f468f8c2643b07b610a763aca518a060a12bfe64639c6b4704f
+      recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+      recipe_sha256: 5d4597ea42db1488c9a7029b2a5de499d128afda40d95f972b66d93bee6caefe
+      workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+      workload_sha256: 67a0b0be967bd7d9ddc9382b2af12c77c0b815392731a4820d09c9b85ad3ebfd
+      case_id: fastapi.additional-response-openapi-wave.modeled-not-found.test-openapi-schema
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: additional-response-openapi-wave
+      input_path: tests/fixtures/inputs/parity/additional-response-openapi-wave.json
+      input_sha256: 8596203286714f468f8c2643b07b610a763aca518a060a12bfe64639c6b4704f
+      recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+      recipe_sha256: 5d4597ea42db1488c9a7029b2a5de499d128afda40d95f972b66d93bee6caefe
+      workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+      workload_sha256: 67a0b0be967bd7d9ddc9382b2af12c77c0b815392731a4820d09c9b85ad3ebfd
+      case_id: fastapi.additional-response-openapi-wave.multiple-statuses.test-openapi-schema
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: additional-response-openapi-wave
+      input_path: tests/fixtures/inputs/parity/additional-response-openapi-wave.json
+      input_sha256: 8596203286714f468f8c2643b07b610a763aca518a060a12bfe64639c6b4704f
+      recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+      recipe_sha256: 5d4597ea42db1488c9a7029b2a5de499d128afda40d95f972b66d93bee6caefe
+      workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+      workload_sha256: 67a0b0be967bd7d9ddc9382b2af12c77c0b815392731a4820d09c9b85ad3ebfd
+      case_id: fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -8707,6 +8757,9 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
+      - The selected additional-response cases cover model/content schema merging and preserved examples.
+        Headers, links, malformed metadata structures, and uncommon or invalid response status conversions
+        remain unverified.
       - Safe gi_code property lookup can emit extra audit events or invoke rejecting audit hooks compared
         with CPython native field access; audit-event parity is not exercised by these inputs.
       - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;

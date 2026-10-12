@@ -3600,7 +3600,12 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
         - {path: fastapi/applications.py, symbol: __call__}
         - {path: fastapi/routing.py, symbol: serialize_response}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: fastapi/utils.py, symbol: is_body_allowed_for_status_code}
+        - {path: tests/test_tutorial/test_additional_responses/test_tutorial002.py, symbol: test_openapi_schema}
+        - {path: tests/test_tutorial/test_additional_responses/test_tutorial003.py, symbol: test_openapi_schema}
+        - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: tests/test_additional_responses_default_validationerror.py, symbol: test_openapi_schema}
         - path: fastapi/routing.py
           symbol: get_request_handler
           kind: source-definition
@@ -3713,6 +3718,22 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
           case_id: fastapi.openapi-array-items-query-wire.required-list
           workload_path: tests/fixtures/workloads/array_items_query_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+          case_id: fastapi.additional-response-openapi-wave.media-content.test-openapi-schema
+          workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+          case_id: fastapi.additional-response-openapi-wave.modeled-not-found.test-openapi-schema
+          workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+          case_id: fastapi.additional-response-openapi-wave.multiple-statuses.test-openapi-schema
+          workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml
+          case_id: fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema
+          workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
+          observation_selectors: [openapi.document]
       feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
         - http.status
@@ -3766,6 +3787,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+        Four additional-response cases cover media-type content merging, model-derived
+        response schemas, preserved examples, and status-description defaults for
+        declared responses; they do not establish arbitrary metadata-key or malformed
+        declaration parity.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -3775,6 +3800,10 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
+          - &additional_response_metadata_gap >-
+            The selected additional-response cases cover model/content schema merging
+            and preserved examples. Headers, links, malformed metadata structures, and
+            uncommon or invalid response status conversions remain unverified.
           - &generator_await_audit_gap >-
             Safe gi_code property lookup can emit extra audit events or invoke
             rejecting audit hooks compared with CPython native field access;

@@ -19,8 +19,8 @@ pub(crate) struct OpenApiParameter {
 
 pub(crate) struct OpenApiAdditionalResponse {
     pub(crate) status: Py<PyAny>,
-    pub(crate) description: String,
-    pub(crate) response_model_name: Option<String>,
+    pub(crate) status_code: Py<PyAny>,
+    pub(crate) response: Py<PyDict>,
     pub(crate) response_schema: Option<Py<PyAny>>,
 }
 
@@ -114,6 +114,67 @@ fn deduplicate_operation_parameters<'py>(
     PyList::new(py, all_parameters.iter().map(|(_, parameter)| parameter))
 }
 
+pub(crate) fn deep_dict_update(
+    main_dict: &Bound<'_, PyDict>,
+    update_dict: &Bound<'_, PyDict>,
+) -> PyResult<()> {
+    for (key, value) in update_dict.iter() {
+        if let Some(existing) = main_dict.get_item(&key)? {
+            if existing.is_instance_of::<PyDict>() && value.is_instance_of::<PyDict>() {
+                deep_dict_update(existing.cast::<PyDict>()?, value.cast::<PyDict>()?)?;
+                continue;
+            }
+            if existing.is_instance_of::<PyList>() && value.is_instance_of::<PyList>() {
+                let combined = existing.call_method1("__add__", (&value,))?;
+                main_dict.set_item(&key, combined)?;
+                continue;
+            }
+        }
+        main_dict.set_item(&key, value)?;
+    }
+    Ok(())
+}
+
+fn first_truthy<'py>(
+    candidates: &[Option<Bound<'py, PyAny>>],
+) -> PyResult<Option<Bound<'py, PyAny>>> {
+    for candidate in candidates.iter().flatten() {
+        if candidate.is_truthy()? {
+            return Ok(Some(candidate.clone()));
+        }
+    }
+    Ok(None)
+}
+
+fn additional_response_status_text<'py>(
+    py: Python<'py>,
+    status: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let ranges = PyDict::new(py);
+    for (key, description) in [
+        ("1XX", "Information"),
+        ("2XX", "Success"),
+        ("3XX", "Redirection"),
+        ("4XX", "Client Error"),
+        ("5XX", "Server Error"),
+        ("DEFAULT", "Default Response"),
+    ] {
+        ranges.set_item(key, description)?;
+    }
+    let key = status.str()?.call_method0("upper")?;
+    if let Some(description) = ranges.get_item(key)? {
+        if description.is_truthy()? {
+            return Ok(description);
+        }
+    }
+    let code = py.import("builtins")?.getattr("int")?.call1((status,))?;
+    let responses = py
+        .import("http.client")?
+        .getattr("responses")?
+        .getattr("get")?;
+    responses.call1((code,))
+}
+
 /// Assemble the first-slice FastAPI OpenAPI 3.1 document from Rust-owned
 /// operation metadata and Pydantic JSON Schema values.
 pub(crate) fn openapi_document(
@@ -171,11 +232,7 @@ pub(crate) fn openapi_document(
         }
         for response in &operation.additional_responses {
             if let Some(schema) = response.response_schema.as_ref() {
-                if let Some(name) = response.response_model_name.as_deref() {
-                    collect_model_schema(py, &mut schemas, name, schema, true)?;
-                } else {
-                    collect_schema_definitions(py, &mut schemas, schema, true)?;
-                }
+                collect_schema_definitions(py, &mut schemas, schema, true)?;
             }
         }
         if let Some(schema) = operation.stream_item_schema.as_ref() {
@@ -372,42 +429,36 @@ pub(crate) fn openapi_document(
                     response
                 }
             };
-            response.set_item("description", &additional_response.description)?;
+            let response_document = additional_response.response.bind(py);
             if let Some(schema) = additional_response.response_schema.as_ref() {
-                let content = match response.get_item("content")? {
-                    Some(content) => content.cast_into::<PyDict>().map_err(|_| {
-                        PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-                            "OpenAPI response content must be a dictionary",
-                        )
-                    })?,
-                    None => {
-                        let content = PyDict::new(py);
-                        response.set_item("content", &content)?;
-                        content
-                    }
-                };
+                let content = response_document
+                    .call_method1("setdefault", ("content", PyDict::new(py)))?
+                    .cast_into::<PyDict>()?;
                 let media_type = operation
                     .response_media_type
                     .as_deref()
                     .unwrap_or("application/json");
-                let media = match content.get_item(media_type)? {
-                    Some(media) => media.cast_into::<PyDict>().map_err(|_| {
-                        PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-                            "OpenAPI media type entry must be a dictionary",
-                        )
-                    })?,
-                    None => {
-                        let media = PyDict::new(py);
-                        content.set_item(media_type, &media)?;
-                        media
-                    }
-                };
-                let schema = match additional_response.response_model_name.as_deref() {
-                    Some(model_name) => reference_schema(py, model_name)?.into_any(),
-                    None => normalize_schema(py, schema.bind(py), true)?,
-                };
-                media.set_item("schema", schema)?;
+                let media = content
+                    .call_method1("setdefault", (media_type, PyDict::new(py)))?
+                    .cast_into::<PyDict>()?;
+                let schema_target = media
+                    .call_method1("setdefault", ("schema", PyDict::new(py)))?
+                    .cast_into::<PyDict>()?;
+                let schema = normalize_schema(py, schema.bind(py), true)?.cast_into::<PyDict>()?;
+                deep_dict_update(&schema_target, &schema)?;
             }
+            let status_text =
+                additional_response_status_text(py, additional_response.status_code.bind(py))?;
+            let description = match first_truthy(&[
+                response_document.get_item("description")?,
+                response.get_item("description")?,
+                Some(status_text),
+            ])? {
+                Some(description) => description,
+                None => PyString::new(py, "Additional Response").into_any(),
+            };
+            deep_dict_update(&response, response_document)?;
+            response.set_item("description", description)?;
         }
 
         let needs_validation_response =
