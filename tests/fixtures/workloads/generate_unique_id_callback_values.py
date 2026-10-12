@@ -6,6 +6,7 @@ import json
 from typing import Any
 
 from fastapi import APIRouter, FastAPI
+from fastapi.routing import iter_route_contexts
 from pydantic import BaseModel
 
 
@@ -45,6 +46,16 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             route.summary = "callback summary"
             route.tags.append("callback-tag")
             return f"{route.summary}:{','.join(route.tags)}"
+        if behavior == "method-mutation":
+            mutation = factory_input["mutation"]
+            method = factory_input.get("method")
+            if mutation == "add":
+                route.methods.add(method)
+            elif mutation == "remove":
+                route.methods.remove(method)
+            elif mutation == "clear":
+                route.methods.clear()
+            return f"{route.path}:{','.join(sorted(route.methods)) or 'empty'}"
         if behavior == "callback-state":
             response_class = route.response_class
             strict_content_type = route.strict_content_type
@@ -98,6 +109,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
     app = FastAPI()
     router_route = None
     mutated_route = None
+    included_route = None
     if behavior == "error":
 
         @app.get("/trigger", operation_id="trigger")
@@ -147,6 +159,31 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             generate_unique_id_function=generate,
         )(lambda: {"value": "ok"})
         mutated_route = next(route for route in app.routes if route.path == "/mutated")
+    elif behavior == "method-mutation":
+        path = "/included" if factory_input["included"] else "/mutated"
+        initial_methods = factory_input["initial_methods"]
+        if factory_input["included"]:
+            app = FastAPI(generate_unique_id_function=generate)
+            router = APIRouter()
+            router.add_api_route(
+                path,
+                lambda: {"value": "included"},
+                methods=initial_methods,
+            )
+            app.include_router(router, prefix="/api")
+            included_route = next(
+                context
+                for context in iter_route_contexts(app.routes)
+                if context.path == f"/api{path}"
+            )
+        else:
+            app.add_api_route(
+                path,
+                lambda: {"value": "ok"},
+                methods=initial_methods,
+                generate_unique_id_function=generate,
+            )
+            mutated_route = next(route for route in app.routes if route.path == path)
     elif behavior == "callback-state":
 
         @app.get(
@@ -184,7 +221,14 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             return {
                 "summary": mutated_route.summary,
                 "tags": mutated_route.tags,
+                "methods": sorted(mutated_route.methods),
                 "unique_id": mutated_route.unique_id,
+            }
+        if included_route is not None:
+            return {
+                "path": included_route.path,
+                "methods": sorted(included_route.methods),
+                "unique_id": included_route.unique_id,
             }
         if callback_snapshot is not None:
             return callback_snapshot

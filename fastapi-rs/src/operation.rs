@@ -4,9 +4,20 @@ use starlette_rs::{
     Cookies, DetailedRouteMatch, QueryParams, RequestHeaders, RouteError, RouteTable,
 };
 
-// FastAPI's APIRoute uses an exact method set. Hide GET from RouteTable's
-// generic GET-to-HEAD expansion while keeping normal GET matching here.
-const INTERNAL_GET_METHOD: &str = "\0FASTAPI_GET";
+// RouteTable uppercases methods and adds HEAD for GET. Encode method bytes
+// into uppercase hex tokens so its normalizer preserves FastAPI's exact set.
+const ROUTE_METHOD_PREFIX: &str = "\0FASTAPI_METHOD_";
+const HEX_DIGITS: &[u8; 16] = b"0123456789ABCDEF";
+
+fn route_method_token(method: &str) -> String {
+    let mut token = String::with_capacity(ROUTE_METHOD_PREFIX.len() + method.len() * 2);
+    token.push_str(ROUTE_METHOD_PREFIX);
+    for byte in method.as_bytes() {
+        token.push(char::from(HEX_DIGITS[(byte >> 4) as usize]));
+        token.push(char::from(HEX_DIGITS[(byte & 0x0f) as usize]));
+    }
+    token
+}
 
 /// The source location FastAPI uses to obtain one endpoint argument.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -141,17 +152,42 @@ impl FastApiOperationRouter {
         method: impl AsRef<str>,
         status_code: Option<u16>,
     ) -> Result<usize, RouteError> {
-        let path = path.into();
         let method = method.as_ref().to_ascii_uppercase();
-        let route_method = if method == "GET" {
-            INTERNAL_GET_METHOD
-        } else {
-            method.as_str()
-        };
-        let operation_index = self.route_table.add_route(path.clone(), [route_method])?;
+        self.add_operation_with_methods(path, [method], status_code)
+    }
+
+    /// Registers one path operation with its finalized exact method set.
+    ///
+    /// Unlike [`Self::add_operation`], this preserves method spelling and does
+    /// not infer `HEAD` from `GET`. An empty set accepts any method, matching
+    /// FastAPI's APIRoute/Starlette routing behavior.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`RouteError`] if Starlette-RS rejects the path template.
+    pub fn add_operation_with_methods<I, S>(
+        &mut self,
+        path: impl Into<String>,
+        methods: I,
+        status_code: Option<u16>,
+    ) -> Result<usize, RouteError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let path = path.into();
+        let methods = methods
+            .into_iter()
+            .map(|method| method.as_ref().to_owned())
+            .collect::<Vec<_>>();
+        let route_methods = methods
+            .iter()
+            .map(|method| route_method_token(method))
+            .collect::<Vec<_>>();
+        let operation_index = self.route_table.add_route(path.clone(), route_methods)?;
         self.operations.push(FastApiOperation {
             path,
-            methods: vec![method],
+            methods,
             status_code,
             parameters: Vec::new(),
         });
@@ -244,14 +280,10 @@ impl FastApiOperationRouter {
     /// path and root-path rules.
     #[must_use]
     pub fn matches(&self, path: &str, root_path: &str, method: &str) -> FastApiOperationMatch {
-        let route_method = if method == "GET" {
-            INTERNAL_GET_METHOD
-        } else {
-            method
-        };
+        let route_method = route_method_token(method);
         match self
             .route_table
-            .matches_detailed_with_root_path(path, root_path, route_method)
+            .matches_detailed_with_root_path(path, root_path, &route_method)
         {
             DetailedRouteMatch::Matched {
                 route_index,
@@ -262,20 +294,15 @@ impl FastApiOperationRouter {
             },
             DetailedRouteMatch::MethodNotAllowed {
                 route_index,
-                allowed_methods,
+                allowed_methods: _,
                 path_params,
             } => FastApiOperationMatch::MethodNotAllowed {
                 operation_index: route_index,
-                allowed_methods: allowed_methods
-                    .into_iter()
-                    .map(|method| {
-                        if method == INTERNAL_GET_METHOD {
-                            String::from("GET")
-                        } else {
-                            method
-                        }
-                    })
-                    .collect(),
+                allowed_methods: self
+                    .operations
+                    .get(route_index)
+                    .map(|operation| operation.methods.clone())
+                    .unwrap_or_default(),
                 path_params,
             },
             DetailedRouteMatch::NotFound => FastApiOperationMatch::NotFound,
@@ -285,7 +312,7 @@ impl FastApiOperationRouter {
     /// Returns the trailing-slash alternative when it matches a FastAPI operation.
     ///
     /// Matching and root-path handling use Starlette-RS's public route-table
-    /// API. The internal GET method preserves FastAPI's exact method semantics.
+    /// API. Encoded method tokens preserve FastAPI's exact method semantics.
     #[must_use]
     pub(crate) fn find_slash_redirect_path(
         &self,
@@ -293,13 +320,9 @@ impl FastApiOperationRouter {
         root_path: &str,
         method: &str,
     ) -> Option<String> {
-        let route_method = if method == "GET" {
-            INTERNAL_GET_METHOD
-        } else {
-            method
-        };
+        let route_method = route_method_token(method);
         self.route_table
-            .find_slash_redirect_path(path, root_path, route_method)
+            .find_slash_redirect_path(path, root_path, &route_method)
     }
 
     /// Returns operation metadata by its stable insertion index.

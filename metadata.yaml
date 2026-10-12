@@ -1037,6 +1037,36 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.generate-unique-id-callback-mutates-route-metadata
           workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
           observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_callback_methods
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-callback-adds-route-method
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_callback_methods_empty
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-callback-clears-route-methods
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_callback_methods_remove
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-callback-removes-route-method
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_included_callback_methods
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-included-callback-adds-route-method
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_included_callback_methods_remove
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-included-callback-removes-route-method
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_included_callback_methods_empty
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-included-callback-clears-route-methods
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - &generate_unique_id_callback_state
           recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
           case_id: fastapi.routing.generate-unique-id-callback-construction-state
@@ -1462,9 +1492,9 @@ reviewed_api_contract_overlay:
         include-level responses, dependency schema timing and mutable history
         remain separate compatibility gates.
 
-        The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Duplicate operation-ID warnings and operation values are sampled by `generate-unique-id-duplicate-warnings`. Multi-method registration passes the full method set to one callback on direct and included routes, sampled by `generate-unique-id-multi-methods`. Callback exceptions, integer/empty/unhashable results, duplicate integer IDs, operation-ID short-circuit behavior, summary/tag mutation, and a selected pre-callback APIRoute state projection are sampled by `generate-unique-id-callback-values`. Other APIRoute state and mutations remain unproven.
+        The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Duplicate operation-ID warnings and operation values are sampled by `generate-unique-id-duplicate-warnings`. Multi-method registration passes the full method set to one callback on direct and included routes, sampled by `generate-unique-id-multi-methods`. Callback exceptions, integer/empty/unhashable results, duplicate integer IDs, operation-ID short-circuit behavior, summary/tag mutation, a selected pre-callback APIRoute state projection, and method addition, removal, and clearing for direct and included routes are mapped by `generate-unique-id-callback-values`. These are input mappings; live parity remains required. Other APIRoute state and mutations remain unproven.
 
-        Its route view exposes the selected source fields and supports `summary` and tag-list mutation. Inputs observe direct and included route values, explicit false normalized to `None` for direct `deprecated`, inherited true `deprecated`, selected callback-time response-model options, response-class/default placeholder, route regex and converters, dependency provider, strict content type, stream item type, and the absence of selected later-initialized attributes. Mutations beyond `summary` and tags, complete APIRoute constructor behavior, and later route-method effects remain unproven.
+        Its route view exposes the selected source fields and supports `summary`, tag-list, and method-set mutation during the unique-ID callback. Inputs observe direct and included route values, explicit false normalized to `None` for direct `deprecated`, inherited true `deprecated`, selected callback-time response-model options, response-class/default placeholder, route regex and converters, dependency provider, strict content type, stream item type, and the absence of selected later-initialized attributes. Dedicated input recipes map removal/addition of methods, clearing the method set, exact HTTP dispatch, and OpenAPI projection; live parity remains required. Mutations beyond these selected fields, complete APIRoute constructor behavior, and later route-method effects remain unproven.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -3098,6 +3128,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute-state.direct
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.iter-route-contexts.nested-included
+        - *generate_unique_id_callback_methods
+        - *generate_unique_id_callback_methods_empty
+        - *generate_unique_id_callback_methods_remove
+        - *generate_unique_id_included_callback_methods
+        - *generate_unique_id_included_callback_methods_remove
+        - *generate_unique_id_included_callback_methods_empty
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
       supported_slice: >-
@@ -3105,7 +3141,10 @@ reviewed_api_contract_overlay:
         GET path operation and one GET operation included through nested
         APIRouter instances. It compares only path, path_format, name, methods,
         tags, endpoint name, and whether the effective route-context scope key
-        is absent on the direct route or present on the included route. This
+        is absent on the direct route or present on the included route. Separate
+        inputs map callback-time method addition, removal, and clearing on direct
+        routes and included-route contexts through route inspection, request
+        dispatch, and OpenAPI. Live parity for those cases remains unverified. This
         does not establish direct APIRoute
         construction, custom route-class subclassing, or other constructor
         arguments or APIRoute state such as response models, dependencies,
@@ -5133,6 +5172,9 @@ reviewed_api_contract_overlay:
         - *generate_unique_id_duplicate_integer
         - *generate_unique_id_router_flags
         - *generate_unique_id_callback_mutation
+        - *generate_unique_id_callback_methods
+        - *generate_unique_id_callback_methods_empty
+        - *generate_unique_id_included_callback_methods
         - *generate_unique_id_callback_state
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses

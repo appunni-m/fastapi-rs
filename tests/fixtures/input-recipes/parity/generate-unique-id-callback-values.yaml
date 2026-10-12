@@ -154,6 +154,288 @@ cases:
   source_evidence:
   - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
   - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-callback-adds-route-method
+  factory_input: {behavior: method-mutation, included: false, mutation: add, method: PATCH, initial_methods: [GET]}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: direct-route-methods
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: original-direct-get-method
+    kind: http_request
+    scope: &direct-method-get-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /mutated
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: callback-added-direct-patch-method
+    kind: http_request
+    scope: &direct-method-patch-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: PATCH
+      scheme: http
+      path: /mutated
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: direct-method-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-callback-removes-route-method
+  factory_input: {behavior: method-mutation, included: false, mutation: remove, method: POST, initial_methods: [GET, POST]}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: direct-route-methods
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: callback-removed-direct-post-method
+    kind: http_request
+    scope: &direct-method-post-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /mutated
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  - action_id: retained-direct-get-method
+    kind: http_request
+    scope: *direct-method-get-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: direct-method-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-callback-clears-route-methods
+  factory_input: {behavior: method-mutation, included: false, mutation: clear, initial_methods: [GET, POST]}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: direct-route-methods
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: empty-direct-method-set-matches-patch
+    kind: http_request
+    scope: *direct-method-patch-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: direct-method-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-included-callback-adds-route-method
+  factory_input: {behavior: method-mutation, included: true, mutation: add, method: PATCH, initial_methods: [GET]}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: included-route-methods
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: original-included-get-method
+    kind: http_request
+    scope: &included-method-get-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/included
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: callback-added-included-patch-method
+    kind: http_request
+    scope: &included-method-patch-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: PATCH
+      scheme: http
+      path: /api/included
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: included-method-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-included-callback-removes-route-method
+  factory_input: {behavior: method-mutation, included: true, mutation: remove, method: POST, initial_methods: [GET, POST]}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: included-route-methods
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: callback-removed-included-post-method
+    kind: http_request
+    scope: &included-method-post-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /api/included
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  - action_id: retained-included-get-method
+    kind: http_request
+    scope: *included-method-get-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: included-method-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-included-callback-clears-route-methods
+  factory_input: {behavior: method-mutation, included: true, mutation: clear, initial_methods: [GET, POST]}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: included-route-methods
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: empty-included-method-set-matches-patch
+    kind: http_request
+    scope: *included-method-patch-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: included-method-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
 - case_id: fastapi.routing.generate-unique-id-callback-construction-state
   factory_input: {behavior: callback-state}
   construction_observation:

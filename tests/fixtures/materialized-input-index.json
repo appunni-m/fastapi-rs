@@ -8305,15 +8305,21 @@
     {
       "id": "generate-unique-id-callback-values",
       "input_path": "tests/fixtures/inputs/parity/generate-unique-id-callback-values.json",
-      "input_sha256": "db6dd3e57e9b7959f7cd49a79426b7108921de4ad58f458ad13ea5606405183a",
+      "input_sha256": "a13390720244f47edfcdc12f19fe5be34ed87e01b7866001518b56baa17550e8",
       "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml",
-      "recipe_sha256": "6dda6d3f164a103c2d2aaf9c4111d9903bb494b87b62efd6863de38e0006b2c9",
+      "recipe_sha256": "4c7b106dcca2f2fb1005735107858ff349e63a96421358ae2177fdbdb2b9eb79",
       "case_ids": [
         "fastapi.routing.generate-unique-id-integer-return",
         "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view",
         "fastapi.routing.generate-unique-id-router-add-api-route-defaults",
         "fastapi.applications.generate-unique-id-app-add-api-route-defaults",
         "fastapi.routing.generate-unique-id-callback-mutates-route-metadata",
+        "fastapi.routing.generate-unique-id-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-callback-removes-route-method",
+        "fastapi.routing.generate-unique-id-callback-clears-route-methods",
+        "fastapi.routing.generate-unique-id-included-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-included-callback-removes-route-method",
+        "fastapi.routing.generate-unique-id-included-callback-clears-route-methods",
         "fastapi.routing.generate-unique-id-callback-construction-state",
         "fastapi.routing.generate-unique-id-empty-return",
         "fastapi.routing.generate-unique-id-unhashable-return",
@@ -8321,7 +8327,7 @@
         "fastapi.routing.generate-unique-id-duplicate-integer-warning"
       ],
       "workload_path": "tests/fixtures/workloads/generate_unique_id_callback_values.py",
-      "workload_sha256": "1c345264352468c06b776af43250a523b80b4c0141ada1bae20b1cbf505e3168",
+      "workload_sha256": "5943494f19696a8dd77d9f45530b2bb63fd4daf558d38d81b6f80e0cb8178ab7",
       "case_contracts": [
         {
           "case_id": "fastapi.routing.generate-unique-id-integer-return",
@@ -8363,6 +8369,60 @@
           "requirement_refs": [
             "source:documented-page:advanced/generate-clients.md",
             "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-callback-adds-route-method",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-callback-removes-route-method",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-callback-clears-route-methods",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-included-callback-adds-route-method",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-included-callback-removes-route-method",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-included-callback-clears-route-methods",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py",
+            "source:upstream-test:tests/test_router_include_context.py"
           ]
         },
         {
@@ -39186,13 +39246,19 @@
       "fixture_id": "fastapi.docs.advanced-generate-clients",
       "workflow_id": "generate-unique-id-callback-values",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 8 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 14 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.applications.generate-unique-id-app-add-api-route-defaults",
+        "fastapi.routing.generate-unique-id-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-callback-clears-route-methods",
         "fastapi.routing.generate-unique-id-callback-construction-state",
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-callback-mutates-route-metadata",
+        "fastapi.routing.generate-unique-id-callback-removes-route-method",
         "fastapi.routing.generate-unique-id-empty-return",
+        "fastapi.routing.generate-unique-id-included-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-included-callback-clears-route-methods",
+        "fastapi.routing.generate-unique-id-included-callback-removes-route-method",
         "fastapi.routing.generate-unique-id-integer-return",
         "fastapi.routing.generate-unique-id-router-add-api-route-defaults",
         "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view"
@@ -39200,6 +39266,7 @@
       "observation_selectors": [
         "docs.response.status",
         "http.body.bytes",
+        "http.headers.ordered",
         "http.status",
         "openapi.document",
         "openapi.paths"
@@ -39226,14 +39293,20 @@
       "fixture_id": "fastapi.test.test-generate-unique-id-function",
       "workflow_id": "generate-unique-id-callback-values",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 10 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 16 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.applications.generate-unique-id-app-add-api-route-defaults",
+        "fastapi.routing.generate-unique-id-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-callback-clears-route-methods",
         "fastapi.routing.generate-unique-id-callback-construction-state",
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-callback-mutates-route-metadata",
+        "fastapi.routing.generate-unique-id-callback-removes-route-method",
         "fastapi.routing.generate-unique-id-duplicate-integer-warning",
         "fastapi.routing.generate-unique-id-empty-return",
+        "fastapi.routing.generate-unique-id-included-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-included-callback-clears-route-methods",
+        "fastapi.routing.generate-unique-id-included-callback-removes-route-method",
         "fastapi.routing.generate-unique-id-integer-return",
         "fastapi.routing.generate-unique-id-router-add-api-route-defaults",
         "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view",
@@ -39250,13 +39323,20 @@
       "fixture_id": "fastapi.test.test-router-include-context",
       "workflow_id": "generate-unique-id-callback-values",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.routing.generate-unique-id-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-callback-clears-route-methods",
+        "fastapi.routing.generate-unique-id-callback-removes-route-method",
+        "fastapi.routing.generate-unique-id-included-callback-adds-route-method",
+        "fastapi.routing.generate-unique-id-included-callback-clears-route-methods",
+        "fastapi.routing.generate-unique-id-included-callback-removes-route-method",
         "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view"
       ],
       "observation_selectors": [
         "docs.response.status",
         "http.body.bytes",
+        "http.headers.ordered",
         "http.status",
         "openapi.document"
       ]
