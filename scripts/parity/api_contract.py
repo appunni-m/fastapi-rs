@@ -1594,6 +1594,61 @@ def _reviewed_identity_workflow_references(
     }
 
 
+def _propagate_verified_root_alias_deprecations(
+    deprecations: dict[str, list[str]],
+    *,
+    candidates_by_id: dict[str, dict[str, Any]],
+    candidate_indexes: dict[str, int],
+    identity_workflow_refs: dict[str, list[dict[str, Any]]],
+) -> None:
+    """Share callable source deprecations with identity-checked public root aliases."""
+    for root_id, workflow_refs in identity_workflow_refs.items():
+        root_candidate = candidates_by_id.get(root_id)
+        if (
+            not isinstance(root_candidate, dict)
+            or root_candidate.get("classification") != "supported"
+            or root_candidate.get("kind") != "import_binding"
+            or root_candidate.get("root_export") is not True
+        ):
+            continue
+
+        target_id = root_candidate.get("target_path")
+        if not isinstance(target_id, str) or not target_id.startswith("fastapi.param_functions."):
+            continue
+        target_candidate = candidates_by_id.get(target_id)
+        if (
+            not isinstance(target_candidate, dict)
+            or target_candidate.get("classification") != "supported"
+            or target_candidate.get("kind") != "function"
+        ):
+            continue
+
+        root_ref = _pointer("api_candidates", candidate_indexes[root_id])
+        target_ref = _pointer("api_candidates", candidate_indexes[target_id])
+        identity_ref = next(
+            (
+                reference
+                for reference in workflow_refs
+                if reference.get("relation") == "root_to_public_module"
+                and set(reference.get("source_candidate_refs", [])) == {root_ref, target_ref}
+            ),
+            None,
+        )
+        source_deprecation_refs = deprecations.get(target_id, [])
+        if source_deprecation_refs and identity_ref is None:
+            raise ContractError(
+                "root alias deprecation propagation requires reviewed same-object identity "
+                f"evidence: {root_id} -> {target_id}"
+            )
+        if identity_ref is None:
+            continue
+
+        # The reviewed root-alias workload compares these exact imported objects with ``is``.
+        deprecations[root_id] = list(
+            dict.fromkeys([*deprecations.get(root_id, []), *source_deprecation_refs])
+        )
+
+
 def build_api_surface_contract(
     *,
     inventory: dict[str, Any],
@@ -2018,6 +2073,12 @@ def build_api_surface_contract(
         materialized_input_index=materialized_input_index,
         runtime_core=runtime_core,
         selector_support=selector_support,
+    )
+    _propagate_verified_root_alias_deprecations(
+        deprecations,
+        candidates_by_id=candidates_by_id,
+        candidate_indexes=candidate_indexes,
+        identity_workflow_refs=identity_workflow_refs_by_symbol,
     )
     matched_error_rules: set[str] = set()
     rule_ids: set[str] = set()

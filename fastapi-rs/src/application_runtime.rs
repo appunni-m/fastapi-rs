@@ -7407,14 +7407,10 @@ fn parameter_source(
         }
         if kind == "header" || kind == "query" || kind == "cookie" {
             let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
-            let validation_alias = if kind == "query" {
-                let validation_alias = marker.getattr("validation_alias")?;
-                if validation_alias.is_instance_of::<PyString>() {
-                    let validation_alias = validation_alias.extract::<String>()?;
-                    (!validation_alias.is_empty()).then_some(validation_alias)
-                } else {
-                    None
-                }
+            let validation_alias = marker.getattr("validation_alias")?;
+            let validation_alias = if validation_alias.is_instance_of::<PyString>() {
+                let validation_alias = validation_alias.extract::<String>()?;
+                (!validation_alias.is_empty()).then_some(validation_alias)
             } else {
                 None
             };

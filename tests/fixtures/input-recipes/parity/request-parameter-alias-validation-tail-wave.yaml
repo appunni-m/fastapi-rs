@@ -251,3 +251,487 @@ cases:
     kind: upstream_test
   - path: tests/test_request_params/test_file/test_required.py
     kind: upstream_test
+- case_id: fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias
+  actions:
+  - action_id: header-validation-alias-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - value
+        - cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-validation-alias-wire-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - wire-header
+        - cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-header-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1header-validation-alias/get/parameters/0
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias
+  actions:
+  - action_id: header-both-aliases-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header-alias-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - value
+        - cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-both-aliases-declared-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header-alias-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - public-header
+        - cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-both-aliases-validation-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header-alias-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - wire-header
+        - cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-header-alias-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1header-alias-validation-alias/get/parameters/0
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias
+  actions:
+  - action_id: cookie-validation-alias-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookie-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - value=cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: cookie-validation-alias-wire-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookie-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - wire-cookie=cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-cookie-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1cookie-validation-alias/get/parameters/0
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_cookie/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias
+  actions:
+  - action_id: cookie-both-aliases-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookie-alias-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - value=cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: cookie-both-aliases-declared-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookie-alias-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - public-cookie=cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: cookie-both-aliases-validation-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookie-alias-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - wire-cookie=cedar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-cookie-alias-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1cookie-alias-validation-alias/get/parameters/0
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_cookie/test_required_str.py
+    kind: upstream_test

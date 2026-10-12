@@ -231,41 +231,39 @@ server or a native-only Rust boundary. Those measurements remain separate
 future workloads; do not infer them by subtracting the Starlette control or
 from the end-to-end target time.
 
-#### Latest completed six-workload run (suite schema v1)
+#### Latest completed historical seven-workload run (suite schema v2)
 
-The run completed at `2026-10-04T21:51:11Z` with suite ID
-`c98c3402-28d7-4c87-9c66-e4ab1717de2f` and suite artifact SHA-256
-`f1acbbf51be3bba0a80268ba806fae77583503db65f9cfc2172e3546a7e08a05`.
-It used FastAPI-RS commit `657ce16d49cca1b80e1fca6fca9e5a6b50b457de`,
+The run completed at `2026-10-05T15:59:05Z` with suite ID
+`1835834f-5295-4952-bde3-cfd742f6f608`. Its archived record is
+`benchmark-results/archive/d508878-before-inline-query-schema-wire/suite-20261005T155905Z-1835834f-5295-4952-bde3-cfd742f6f608.json`.
+It used FastAPI-RS commit `d50887853d382bd9d9e03c7e82a504614ff02aba`,
 FastAPI `0.141.1` at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette
 `1.6.0` at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
 `b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. It ran on CPython 3.12.13,
 macOS 15.7.7 ARM64 (12 logical CPUs), with Cargo 1.98.1 release profile and
-`pyo3/extension-module`. All six fresh parity gates passed (41/41 selected
-cases). The target binary SHA-256 was
-`9e860fd841e7d32dde4452b088d8147d94217318d6488c18030684ba11e2624f`.
+`pyo3/extension-module`. All seven workload parity gates passed. Each subject
+used 50 warmups and 1,000 measured calls in five rounds.
 
 The table reports median and p95 direct-ASGI latency in microseconds; ratios
 are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
-longer on this host. Each subject used 50 warmups and 1,000 measured calls in
-five rounds.
+longer on this host.
 
 | Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
 | --- | ---: | ---: | ---: |
-| Async nested dependencies, distinct query aliases | 506.6 / 543.7 µs | 844.9 / 942.2 µs | 1.668x / 1.733x |
-| Async nested dependencies, two query parameters | 408.0 / 436.8 µs | 689.4 / 733.9 µs | 1.690x / 1.680x |
-| Chunked request body | 136.5 / 158.5 µs | 48.7 / 58.2 µs | 0.357x / 0.367x |
-| Invalid request | 145.1 / 211.3 µs | 225.5 / 248.8 µs | 1.554x / 1.177x |
-| Valid request | 136.5 / 159.3 µs | 48.6 / 59.5 µs | 0.356x / 0.374x |
-| Repeated sequence query | 101.8 / 121.3 µs | 31.8 / 38.8 µs | 0.312x / 0.320x |
+| Async nested dependencies, distinct query aliases | 517.2 / 584.8 µs | 326.2 / 384.0 µs | 0.631x / 0.657x |
+| Async nested dependencies, two query parameters | 437.6 / 486.5 µs | 288.4 / 313.2 µs | 0.659x / 0.644x |
+| Chunked request body | 134.6 / 149.4 µs | 142.2 / 169.9 µs | 1.056x / 1.137x |
+| Invalid request | 150.1 / 226.2 µs | 338.8 / 396.2 µs | 2.257x / 1.752x |
+| Valid request | 135.4 / 157.0 µs | 139.9 / 162.1 µs | 1.033x / 1.033x |
+| Large response model | 373.2 / 620.6 µs | 404.1 / 473.7 µs | 1.083x / 0.763x |
+| Repeated sequence query | 98.3 / 122.6 µs | 126.3 / 229.7 µs | 1.284x / 1.873x |
 
-This run shows higher FastAPI-RS latency in both nested-dependency workloads
-and invalid requests, and lower latency in the chunked-body, valid-request,
-and repeated-query workloads. Treat these as single-host direct-ASGI results;
-they do not measure network/server latency or isolate native Rust time. The
-suite and per-workload artifacts remain in ignored `benchmark-results/`.
-The earlier six-workload run (`a7e96ada-5253-46f8-a583-9c1658c84fe3`) is
-historical and has a different target revision and Starlette-RS pin.
+These are single-host direct-ASGI results; they do not measure network/server
+latency or isolate native Rust time. This is historical evidence, not a current
+benchmark result: the saved target revision and manifest identity do not match
+the current checkout, and `make benchmark-contract-check` reports no suite
+artifact compatible with the current manifest and target. The earlier six-
+workload run (`c98c3402-28d7-4c87-9c66-e4ab1717de2f`) remains historical too.
 
 An earlier exploratory warm-request call profile of the invalid workload
 counted four `TypeAdapter` constructions in FastAPI-RS and none in FastAPI

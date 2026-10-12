@@ -36,6 +36,8 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [],
             "kwargs": {"default": None, "example": "cookie1"},
         },
+        "form-example": {"args": [], "kwargs": {"example": "form1"}},
+        "file-example": {"args": [], "kwargs": {"example": "file1"}},
         "operation-id-explicit": {
             "args": [],
             "kwargs": {

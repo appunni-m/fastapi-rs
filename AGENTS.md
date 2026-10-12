@@ -2,6 +2,8 @@
 
 - Pin FastAPI 0.141.1, Starlette 1.6.0, Starlette-RS, Python, and Pydantic.
   Starlette 1.6 is sole oracle; sibling owns generic behavior.
+- Treat FastAPI-RS as greenfield: implement only the pinned FastAPI contract;
+  do not add FastAPI-RS backward-compatibility shims.
 - `metadata.yaml` owns identities, policy, and reviewed API overlays. Generate
   candidates/inventory from pinned source; keep classifications and fixture
   mappings in reviewed files. Run `make metadata-check` after changes.
@@ -11,9 +13,9 @@
 - Expose `fastapi`; original FastAPI is source-oracle/dev-only, with zero
   target runtime dependency or import. Python runtime files allow only direct
   native re-exports and literal `__all__`; no helpers, functions, `if`/`else`,
-  loops, or fallback behavior. Rust owns FastAPI behavior and control flow.
-  Put it in `fastapi-rs/`; limit `fastapi-rs-py/` to PyO3 binding and
-  value conversion. Enforce with `make python-facade-check`.
+  loops, or fallback behavior. `fastapi-rs/` is the sole FastAPI implementation;
+  Rust owns behavior and control flow. Limit `fastapi-rs-py/` to PyO3 binding
+  and value conversion. Enforce with `make python-facade-check`.
 - For Rust changes, forbid unsafe and blanket lint suppressions; run
   `make fmt clippy` and static contract checks. Keep zero unit tests; never run
   pytest, unittest, or Cargo test. Verify with live identity-checked parity

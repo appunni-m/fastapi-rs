@@ -48,11 +48,11 @@ SHA256_HASH = re.compile(r"^--hash=sha256:([0-9a-f]{64})$")
 
 
 def cargo_metadata(*, offline: bool, starlette_rs_source: Path) -> dict[str, Any]:
-    """Read Cargo's resolved graph with the reviewed Starlette-RS source path.
+    """Read Cargo's resolved graph with the reviewed sibling source paths.
 
     The checkout's normal workspace manifest points at the sibling development
     checkout. Build a short-lived manifest overlay so inventory checks can use
-    the pinned clean source without editing Cargo.toml or touching that sibling.
+    the pinned clean source without editing Cargo.toml or touching the sibling.
     """
     workspace_manifest = ROOT / "Cargo.toml"
     manifest_text = workspace_manifest.read_text(encoding="utf-8")

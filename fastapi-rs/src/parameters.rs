@@ -9,8 +9,8 @@ static EXAMPLE_UNSET: PyOnceLock<Py<PyAny>> = PyOnceLock::new();
 const EXAMPLE_DEPRECATION_WARNING: &str =
     "`example` has been deprecated, please use `examples` instead";
 const REGEX_DEPRECATION_WARNING: &str = "`regex` has been deprecated, please use `pattern` instead";
-const FASTAPI_FILE_REGEX_WARNING_PATH: &str = "fastapi/param_functions.py";
-const FASTAPI_FILE_REGEX_WARNING_LINE: u32 = 2249;
+const FASTAPI_FILE_WRAPPER_WARNING_PATH: &str = "fastapi/param_functions.py";
+const FASTAPI_FILE_WRAPPER_WARNING_LINE: u32 = 2249;
 
 #[pyclass(name = "_ParameterUnset", module = "fastapi_rs._core")]
 struct ParameterUnset;
@@ -236,14 +236,14 @@ fn warn_parameter_deprecation_at_level(
     Ok(())
 }
 
-fn warn_fastapi_file_regex_deprecation(py: Python<'_>) -> PyResult<()> {
+fn warn_fastapi_file_wrapper_deprecation(py: Python<'_>, message: &str) -> PyResult<()> {
     let warnings = py.import("warnings")?;
     let category = crate::errors::fastapi_deprecation_warning_type(py);
     warnings.getattr("warn_explicit")?.call1((
-        REGEX_DEPRECATION_WARNING,
+        message,
         category,
-        FASTAPI_FILE_REGEX_WARNING_PATH,
-        FASTAPI_FILE_REGEX_WARNING_LINE,
+        FASTAPI_FILE_WRAPPER_WARNING_PATH,
+        FASTAPI_FILE_WRAPPER_WARNING_LINE,
     ))?;
     Ok(())
 }
@@ -296,6 +296,7 @@ fn security(
         default = query_ellipsis_default(),
         *,
         alias = None,
+        validation_alias = None,
         convert_underscores = true,
         pattern = None,
         regex = None,
@@ -312,6 +313,7 @@ fn header(
     py: Python<'_>,
     default: Py<PyAny>,
     alias: Option<String>,
+    validation_alias: Option<Py<PyAny>>,
     convert_underscores: bool,
     pattern: Option<String>,
     regex: Option<String>,
@@ -330,7 +332,7 @@ fn header(
         ParameterMetadata {
             kind: "header".to_owned(),
             alias,
-            validation_alias: None,
+            validation_alias,
             embed: None,
             dependency: None,
             scope: None,
@@ -363,16 +365,23 @@ fn header(
         default = query_ellipsis_default(),
         *,
         alias = None,
+        validation_alias = None,
         pattern = None,
         regex = None,
         example = example_unset_default(),
         examples = None
     )
 )]
+// lint-exception: PyO3 needs one Rust argument per FastAPI-compatible Cookie keyword.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "preserve FastAPI Cookie's public keyword signature"
+)]
 fn cookie(
     py: Python<'_>,
     default: Py<PyAny>,
     alias: Option<String>,
+    validation_alias: Option<Py<PyAny>>,
     pattern: Option<String>,
     regex: Option<String>,
     example: Py<PyAny>,
@@ -390,7 +399,7 @@ fn cookie(
         ParameterMetadata {
             kind: "cookie".to_owned(),
             alias,
-            validation_alias: None,
+            validation_alias,
             embed: None,
             dependency: None,
             scope: None,
@@ -803,12 +812,14 @@ fn file(
     examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
     if !is_example_unset(py, &example) {
-        warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+        // FastAPI 0.141.1's File wrapper frame is exposed by its inherited
+        // `stacklevel=4` warning from `params.File`.
+        warn_fastapi_file_wrapper_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
     }
     if regex.is_some() {
         // Match FastAPI 0.141.1's public File wrapper, which emits this warning
         // from its params.File call at param_functions.py:2249.
-        warn_fastapi_file_regex_deprecation(py)?;
+        warn_fastapi_file_wrapper_deprecation(py, REGEX_DEPRECATION_WARNING)?;
     }
     Py::new(
         py,

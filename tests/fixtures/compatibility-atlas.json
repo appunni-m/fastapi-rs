@@ -326969,7 +326969,7 @@
       "title": "Server-Sent Events - `EventSourceResponse` and `ServerSentEvent`"
     },
     {
-      "exclusion_reason": "This page only identifies FastAPI's direct Starlette StaticFiles re-export. Keep its import identity in the FastAPI API manifest and exclude it from an independent FastAPI behavior workflow; the separate Starlette-RS StaticFiles configuration contract is mapped below, but its missing-root and repeated-check requirements are not exercised by this page's workflow.",
+      "exclusion_reason": "The pinned page documents FastAPI's direct Starlette StaticFiles re-export. Keep its import identity in the FastAPI API manifest and exclude the page from an independent FastAPI behavior workflow. Missing-root and repeated-check behavior belongs to the separate Starlette 1.6.0 StaticFiles contract; this import-only reference provides no workflow for those behaviors.",
       "feature_ids": [
         "middleware-integrations"
       ],
@@ -532074,7 +532074,7 @@
     },
     {
       "benchmark_workload_id": null,
-      "exclusion_reason": "The pinned source contains only the explicit note that duplicate same-name cookies cannot be passed and comma-delimited cookie lists are unsupported by Starlette. It defines no test function or independent expected behavior. The parsing limitation belongs to Starlette 1.6.0 and its sibling Starlette-RS contract; this is not FastAPI support evidence.",
+      "exclusion_reason": "The pinned module contains only comments that its repeated-cookie list input cannot be supplied and comma-delimited cookie values are unsupported by Starlette; it defines no test function or independent behavior. This exclusion applies only to that list-form scenario. The separate ASGI input fastapi.request-parameters.extra-model.cookie-duplicate-last-value exercises repeated cookie keys and their last-value handling, so duplicate-cookie behavior is not excluded here. Generic cookie parsing remains owned by Starlette 1.6.0 and Starlette-RS.",
       "feature_ids": [
         "request-validation"
       ],
@@ -532098,7 +532098,7 @@
           }
         ],
         "reviewed_module_mapping": {
-          "rationale": "The pinned source contains only the explicit note that duplicate same-name cookies cannot be passed and comma-delimited cookie lists are unsupported by Starlette. It defines no test function or independent expected behavior. The parsing limitation belongs to Starlette 1.6.0 and its sibling Starlette-RS contract; this is not FastAPI support evidence.",
+          "rationale": "The pinned module contains only comments that its repeated-cookie list input cannot be supplied and comma-delimited cookie values are unsupported by Starlette; it defines no test function or independent behavior. This exclusion applies only to that list-form scenario. The separate ASGI input fastapi.request-parameters.extra-model.cookie-duplicate-last-value exercises repeated cookie keys and their last-value handling, so duplicate-cookie behavior is not excluded here. Generic cookie parsing remains owned by Starlette 1.6.0 and Starlette-RS.",
           "supporting_sources": [
             {
               "end_line": 3,
@@ -532177,7 +532177,7 @@
     },
     {
       "benchmark_workload_id": null,
-      "exclusion_reason": "The pinned source contains only the explicit note that duplicate same-name cookies cannot be passed and comma-delimited cookie lists are unsupported by Starlette. It defines no test function or independent expected behavior. The parsing limitation belongs to Starlette 1.6.0 and its sibling Starlette-RS contract; this is not FastAPI support evidence.",
+      "exclusion_reason": "The pinned optional-list module contains only comments that its repeated-cookie list input cannot be supplied and comma-delimited cookie values are unsupported by Starlette; it defines no test function or independent behavior. This exclusion applies only to that optional list-form scenario. The separate ASGI input fastapi.request-parameters.extra-model.cookie-duplicate-last-value exercises repeated cookie keys and their last-value handling, so duplicate-cookie behavior is not excluded here. Generic cookie parsing remains owned by Starlette 1.6.0 and Starlette-RS.",
       "feature_ids": [
         "request-validation"
       ],
@@ -532201,7 +532201,7 @@
           }
         ],
         "reviewed_module_mapping": {
-          "rationale": "The pinned source contains only the explicit note that duplicate same-name cookies cannot be passed and comma-delimited cookie lists are unsupported by Starlette. It defines no test function or independent expected behavior. The parsing limitation belongs to Starlette 1.6.0 and its sibling Starlette-RS contract; this is not FastAPI support evidence.",
+          "rationale": "The pinned optional-list module contains only comments that its repeated-cookie list input cannot be supplied and comma-delimited cookie values are unsupported by Starlette; it defines no test function or independent behavior. This exclusion applies only to that optional list-form scenario. The separate ASGI input fastapi.request-parameters.extra-model.cookie-duplicate-last-value exercises repeated cookie keys and their last-value handling, so duplicate-cookie behavior is not excluded here. Generic cookie parsing remains owned by Starlette 1.6.0 and Starlette-RS.",
           "supporting_sources": [
             {
               "end_line": 3,
@@ -532910,6 +532910,22 @@
           },
           {
             "case_ids": [
+              "fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias",
+              "fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml",
+            "workflow_id": "request-parameter-alias-validation-tail-wave"
+          },
+          {
+            "case_ids": [
               "fastapi.request-parameters.cookie.alias-name-missing",
               "fastapi.request-parameters.cookie.alias-valid",
               "fastapi.request-parameters.cookie.required-missing"
@@ -532986,8 +533002,8 @@
             "case_id": "fastapi.test.test-request-params-test-cookie-test-required-str.test-required-validation-alias-schema",
             "end_line": 212,
             "line": 202,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_validation_alias_schema"
           },
           {
@@ -533002,24 +533018,24 @@
             "case_id": "fastapi.test.test-request-params-test-cookie-test-required-str.test-required-validation-alias-by-name",
             "end_line": 263,
             "line": 248,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_validation_alias_by_name"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-cookie-test-required-str.test-required-validation-alias-by-validation-alias",
             "end_line": 279,
             "line": 273,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_validation_alias_by_validation_alias"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-cookie-test-required-str.test-required-alias-and-validation-alias-schema",
             "end_line": 321,
             "line": 311,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_schema"
           },
           {
@@ -533034,24 +533050,24 @@
             "case_id": "fastapi.test.test-request-params-test-cookie-test-required-str.test-required-alias-and-validation-alias-by-name",
             "end_line": 378,
             "line": 357,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_by_name"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-cookie-test-required-str.test-required-alias-and-validation-alias-by-alias",
             "end_line": 406,
             "line": 388,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_by_alias"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-cookie-test-required-str.test-required-alias-and-validation-alias-by-validation-alias",
             "end_line": 422,
             "line": 416,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_by_validation_alias"
           }
         ],
@@ -533069,7 +533085,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.alias-valid (actions: get-cookie-by-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.alias-name-missing (actions: get-cookie-by-python-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.required-missing (actions: get-required-cookie-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.openapi-parameter (actions: inspect-cookie-parameter-schema; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.cookie.alias-valid (actions: get-cookie-by-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.cookie.alias-name-missing (actions: get-cookie-by-python-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.cookie.required-missing (actions: get-required-cookie-missing; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.alias-valid (actions: get-cookie-by-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.alias-name-missing (actions: get-cookie-by-python-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.required-missing (actions: get-required-cookie-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml::fastapi.request-parameters.cookie.review-slice.openapi-parameter (actions: inspect-cookie-parameter-schema; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml::fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias (actions: cookie-validation-alias-python-name, cookie-validation-alias-wire-name, openapi-cookie-validation-alias; selectors: http.body.bytes, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml::fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias (actions: cookie-both-aliases-python-name, cookie-both-aliases-declared-name, cookie-both-aliases-validation-name, openapi-cookie-alias-validation-alias; selectors: http.body.bytes, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.cookie.alias-valid (actions: get-cookie-by-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.cookie.alias-name-missing (actions: get-cookie-by-python-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.cookie.required-missing (actions: get-required-cookie-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml::fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias (actions: cookie-both-aliases-declared-name, cookie-both-aliases-python-name, cookie-both-aliases-validation-name, openapi-cookie-alias-validation-alias; selectors: http.body.bytes, http.status, openapi.document, openapi.paths). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 347,
@@ -533302,6 +533318,30 @@
                 "openapi.paths"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml"
             },
             {
               "case_ids": [
@@ -540026,6 +540066,22 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias",
+              "fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml",
+            "workflow_id": "request-parameter-alias-validation-tail-wave"
+          },
+          {
+            "case_ids": [
               "fastapi.request-parameters.header.required-missing",
               "fastapi.request-parameters.header.underscore-alias"
             ],
@@ -540101,8 +540157,8 @@
             "case_id": "fastapi.test.test-request-params-test-header-test-required-str.test-required-validation-alias-schema",
             "end_line": 206,
             "line": 196,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_validation_alias_schema"
           },
           {
@@ -540117,24 +540173,24 @@
             "case_id": "fastapi.test.test-request-params-test-header-test-required-str.test-required-validation-alias-by-name",
             "end_line": 256,
             "line": 242,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_validation_alias_by_name"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-header-test-required-str.test-required-validation-alias-by-validation-alias",
             "end_line": 271,
             "line": 266,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_validation_alias_by_validation_alias"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-header-test-required-str.test-required-alias-and-validation-alias-schema",
             "end_line": 313,
             "line": 303,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_schema"
           },
           {
@@ -540149,24 +540205,24 @@
             "case_id": "fastapi.test.test-request-params-test-header-test-required-str.test-required-alias-and-validation-alias-by-name",
             "end_line": 369,
             "line": 349,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_by_name"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-header-test-required-str.test-required-alias-and-validation-alias-by-alias",
             "end_line": 396,
             "line": 379,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_by_alias"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-header-test-required-str.test-required-alias-and-validation-alias-by-validation-alias",
             "end_line": 411,
             "line": 406,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_alias_and_validation_alias_by_validation_alias"
           }
         ],
@@ -540184,7 +540240,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.header.underscore-alias (actions: get-underscore-header-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.header.required-missing (actions: get-required-header-missing; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml::fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias (actions: header-validation-alias-python-name, header-validation-alias-wire-name, openapi-header-validation-alias; selectors: http.body.bytes, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml::fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias (actions: header-both-aliases-python-name, header-both-aliases-declared-name, header-both-aliases-validation-name, openapi-header-alias-validation-alias; selectors: http.body.bytes, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.header.underscore-alias (actions: get-underscore-header-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.header.required-missing (actions: get-required-header-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml::fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias (actions: header-both-aliases-declared-name, header-both-aliases-python-name, header-both-aliases-validation-name, openapi-header-alias-validation-alias; selectors: http.body.bytes, http.status, openapi.document, openapi.paths). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 347,
@@ -540378,6 +540434,30 @@
             }
           ],
           "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml"
+            },
             {
               "case_ids": [
                 "fastapi.request-parameters.header.underscore-alias"

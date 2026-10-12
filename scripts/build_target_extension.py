@@ -87,7 +87,11 @@ def _atomic_write(destination: Path, content: bytes, mode: int) -> None:
         temporary_path.unlink(missing_ok=True)
 
 
-def _workspace_overlay(starlette_rs_source: Path, overlay_root: Path, python_source: Path) -> None:
+def _workspace_overlay(
+    starlette_rs_source: Path,
+    overlay_root: Path,
+    python_source: Path,
+) -> None:
     manifest = ROOT / "Cargo.toml"
     try:
         manifest_text = manifest.read_text(encoding="utf-8")
@@ -479,7 +483,7 @@ def main() -> int:
             *cargo_command,
             "build",
             "--manifest-path",
-            str(overlay_root / "Cargo.toml"),
+            str(overlay_root / "fastapi-rs-py/Cargo.toml"),
             "--locked",
             "--offline",
             "--release",

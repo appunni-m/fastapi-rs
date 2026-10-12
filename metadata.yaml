@@ -6650,12 +6650,11 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
-        Partial Rust-owned Digest dependency with keyword-only constructor,
-        HTTP Digest challenge, case-insensitive scheme recognition, and
-        HTTPAuthorizationCredentials extraction. The pinned upstream workflow
-        observes missing and wrong-scheme challenges. Valid credentials,
-        optional authentication, HTTPBase inheritance, and OpenAPI security
-        generation remain outside this evidenced slice.
+        Partial Rust-owned Digest dependency. The selected request cases
+        observe missing-credential and wrong-scheme challenge responses, and
+        the public API input reflects its constructor signature. Successful
+        credentials, scheme-case variants, optional authentication, HTTPBase
+        inheritance, and OpenAPI security generation remain unverified.
     fastapi.security.http.HTTPDigest:
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
       source_evidence:
@@ -6716,21 +6715,19 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Partial awaitable checks that Digest credentials are present and that
-        the scheme matches case-insensitively, then returns the native
-        authorization-credentials model. The selected workflow verifies missing
-        and wrong-scheme challenges; valid and optional credential cases remain
-        unverified.
+        The selected workflow verifies missing-credential and wrong-scheme
+        Digest challenge responses. Successful extraction, scheme-case
+        variants, and optional credential behavior remain unverified.
     fastapi.security.HTTPBasicCredentials:
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       source_evidence:
         - {path: fastapi/security/__init__.py}
       feature_ids: [dependency-security]
-      observation_selectors: [python.import_path, python.object_identity, python.signature]
+      observation_selectors: [python.signature]
       supported_slice: >-
-        Native root alias to the Pydantic credentials model created by the
-        Rust registration layer; field validation and schema parity are not
-        established by an identity-checked fixture mapping here.
+        The selected root-import probe reflects the public class signature.
+        Root/module object identity, field validation, and schema parity remain
+        unverified.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-basic-credentials
@@ -6743,14 +6740,46 @@ reviewed_api_contract_overlay:
           start_line: 16
           end_line: 26
       feature_ids: [dependency-security]
-      observation_selectors: [python.call_outcome, python.signature]
+      observation_selectors: [python.signature]
       supported_slice: >-
-        Partial model implementation has required username and password
-        string fields and the documented field descriptions. Schema parity
-        and field-level validation outcomes remain unverified.
+        The selected module-import probe reflects the class signature,
+        including required username and password fields. Field descriptions,
+        schema parity, and validation outcomes remain unverified.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-basic-credentials
+    fastapi.security.http.HTTPBasicCredentials.password:
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: HTTPBasicCredentials
+          kind: source-definition
+          start_line: 16
+          end_line: 26
+      observation_selectors: [http.body.bytes]
+      supported_slice: >-
+        The source model declares this required string field as the HTTP Basic
+        password. The selected valid optional-authentication request returns
+        the parsed password through the public endpoint result; model validation
+        and schema behavior remain outside this field slice.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-basic-optional.test-security-http-basic
+    fastapi.security.http.HTTPBasicCredentials.username:
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: HTTPBasicCredentials
+          kind: source-definition
+          start_line: 16
+          end_line: 26
+      observation_selectors: [http.body.bytes]
+      supported_slice: >-
+        The source model declares this required string field as the HTTP Basic
+        username. The selected valid optional-authentication request returns
+        the parsed username through the public endpoint result; model validation
+        and schema behavior remain outside this field slice.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-basic-optional.test-security-http-basic
     fastapi.security.OAuth2:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2
       source_evidence:
@@ -6848,6 +6877,24 @@ reviewed_api_contract_overlay:
         Partial awaitable returns any present Authorization header without
         interpreting its scheme, returns None when missing and auto_error is
         false, and otherwise raises the Bearer challenge response.
+    fastapi.security.oauth2.OAuth2.make_not_authenticated_error:
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: make_not_authenticated_error
+          kind: source-definition
+          owner: OAuth2
+          start_line: 401
+          end_line: 421
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The source helper creates an HTTPException with status 401, detail
+        "Not authenticated", and a Bearer WWW-Authenticate header. The selected
+        missing-token request observes this response through the OAuth2
+        dependency path; direct exception-object introspection and subclasses
+        with overridden challenge headers are outside this slice.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-no-token
     fastapi.security.oauth2.OAuth2PasswordBearer:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
       source_evidence:
@@ -6897,13 +6944,18 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 536
           end_line: 544
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+          case_id: fastapi.security-wave.oauth2-tutorial-002.test-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+          case_id: fastapi.security-wave.oauth2-protected-user.test-no-token
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [python.call_outcome]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Native awaitable accepts a case-insensitive Bearer scheme, returns its
-        trimmed token parameter including an empty token, returns None when
-        optional authentication has no Bearer header, and otherwise raises the
-        native 401 response. Live parity remains unverified.
+        Selected requests observe a valid Bearer token returned to the endpoint
+        and a missing required credential producing the 401 challenge. Token
+        whitespace/case variants, empty parameters, and optional authentication
+        remain unverified.
     fastapi.security.HTTPAuthorizationCredentials:
       rust_binding: fastapi-rs/src/security.rs::create_credentials_model
       source_evidence:
@@ -7291,14 +7343,10 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Partial awaitable slice extracts the configured cookie value, returns
-        None for a missing key when `auto_error=False`, and raises the 401
-        response with the APIKey `WWW-Authenticate` challenge when a required
-        key is missing. Callable-object introspection projects the `Request`
-        parameter and `str | None` return annotation; direct bound-method
-        annotation parity and `inspect.iscoroutinefunction` remain partial
-        because the target returns a native custom awaitable.
-        Cookie parsing edge cases remain outside this slice.
+        Selected HTTP cases cover extraction of a configured cookie, a missing
+        optional key, and the 401 APIKey challenge for a missing required key.
+        Callable and bound-method introspection, empty-cookie handling, and
+        other cookie parsing edges are unverified.
     fastapi.security.api_key.APIKeyCookie.__init__:
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie::new
       source_evidence:
@@ -7348,14 +7396,10 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Partial awaitable slice extracts the configured header value, returns
-        None for a missing key when `auto_error=False`, and raises the 401
-        response with the APIKey `WWW-Authenticate` challenge when a required
-        key is missing. Callable-object introspection projects the `Request`
-        parameter and `str | None` return annotation; direct bound-method
-        annotation parity and `inspect.iscoroutinefunction` remain partial
-        because the target returns a native custom awaitable.
-        Header normalization edge cases remain outside this slice.
+        Selected HTTP cases cover a configured header, a missing required key,
+        and the 401 APIKey challenge. Callable and bound-method introspection,
+        optional-header behavior, and header normalization edges are
+        unverified.
     fastapi.security.api_key.APIKeyHeader.__init__:
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::new
       source_evidence:
@@ -7405,14 +7449,10 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Partial awaitable slice extracts the configured query value, returns
-        None for a missing key when `auto_error=False`, and raises the 401
-        response with the APIKey `WWW-Authenticate` challenge when a required
-        key is missing. Callable-object introspection projects the `Request`
-        parameter and `str | None` return annotation; direct bound-method
-        annotation parity and `inspect.iscoroutinefunction` remain partial
-        because the target returns a native custom awaitable.
-        Query parsing edge cases remain outside this slice.
+        Selected HTTP cases cover extraction of a configured query key, a
+        missing optional key, and the 401 APIKey challenge for a missing
+        required key. Callable and bound-method introspection and other query
+        parsing edges are unverified.
     fastapi.security.api_key.APIKeyQuery.__init__:
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery::new
       source_evidence:
@@ -7467,11 +7507,11 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
           case_id: fastapi.security.base.custom-subclass-openapi-scheme
       feature_ids: [dependency-security]
+      observation_selectors: [http.status, http.headers.ordered, openapi.document]
       supported_slice: >-
-        Native base type is used in the same inheritance position for the
-        APIKey security dependencies and carries the source `model` and
-        `scheme_name` annotations. Direct base-class identity and MRO parity
-        remain unverified by a dedicated input workflow.
+        A custom `SecurityBase` subclass is exercised through its generated
+        OpenAPI security scheme. Base-class identity, annotations, and MRO are
+        unverified.
     fastapi.security.OAuth2AuthorizationCodeBearer:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
       source_evidence:
@@ -7637,11 +7677,10 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        The native awaitable accepts a case-insensitive Bearer scheme, returns
-        the stripped token parameter (including an empty parameter), returns
-        None when optional authentication has no Bearer header, and otherwise
-        raises the 401 Bearer challenge. The selected requests compare exact
-        response status, headers, and body.
+        Selected requests cover a missing required token, a wrong scheme, a
+        valid Bearer token, and token whitespace trimming, with exact response
+        status, headers, and body comparison. Scheme-case variants, empty
+        parameters, and optional missing-header behavior remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -7669,8 +7708,23 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-request-form
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-items
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-openapi-schema
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      supported_slice: >-
+        The public root name aliases the source permissive password-form
+        dependency. Its constructor declares username, password, scope,
+        optional grant_type, client_id, and client_secret as form fields; it
+        stores the submitted values and splits scope on whitespace. The
+        selected tutorial inputs exercise form submission, requested scopes,
+        and the generated request schema. Request.form parsing and FormData
+        remain within the pinned Starlette-RS contract; unselected encodings,
+        file parts, and parser-error variants are outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7688,8 +7742,22 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-request-form
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-items
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-openapi-schema
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      supported_slice: >-
+        The source class accepts form fields for username, password, scope,
+        optional grant_type, client_id, and client_secret, stores their values,
+        and splits scope on whitespace. The selected tutorial inputs exercise
+        form submission, requested scopes, and request-schema generation.
+        Request.form parsing and FormData remain within the pinned
+        Starlette-RS contract; unselected encodings and parser-error variants
+        are outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7708,8 +7776,20 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-request-form
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-items
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-openapi-schema
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      supported_slice: >-
+        This constructor binds the declared OAuth2 password fields from FastAPI
+        Form parameters, assigns them to the instance, and splits the submitted
+        scope string on whitespace. The selected tutorial requests exercise
+        form submission and scope values; omitted defaults, direct constructor
+        calls, and unselected input-validation outcomes are not established.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7737,8 +7817,24 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-no-grant-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-incorrect-grant-type-incorrect
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-correct-grant-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-openapi-schema
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      supported_slice: >-
+        The public root name aliases the strict source password-form
+        dependency. Its grant_type field is required and constrained to the
+        password value; the remaining declared form fields follow the base
+        class. Selected inputs cover absent, incorrect, and correct grant_type
+        values plus the generated login request schema. Form parsing is owned
+        by the pinned Starlette-RS Request.form/FormData contract, and other
+        parser behaviors remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7756,8 +7852,22 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-no-grant-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-incorrect-grant-type-incorrect
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-correct-grant-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-openapi-schema
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      supported_slice: >-
+        This strict source class inherits the permissive password-form fields
+        and changes grant_type to a required field constrained to "password".
+        The selected ASGI inputs cover missing, incorrect, and correct values
+        and the login request schema; other form fields and parser behavior
+        remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7776,8 +7886,22 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-no-grant-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-incorrect-grant-type-incorrect
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-strict-login-correct-grant-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-strict-required-gap-wave.yaml
+          case_id: fastapi.security-gap.oauth2-strict-required.test-openapi-schema
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      supported_slice: >-
+        The constructor requires the password grant_type field, validates it
+        against the fixed password pattern, and forwards the remaining form
+        values to the base constructor. The selected inputs observe absent,
+        incorrect, and correct grant_type submissions and the generated
+        request schema; direct constructor validation cases are not selected.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7805,8 +7929,19 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.security-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-system-status
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-items
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
+      supported_slice: >-
+        Selected protected-request cases exercise scope injection through HTTP
+        authorization outcomes. Direct export identity, constructor values,
+        `scopes`, and `scope_str` observations, token verification, and
+        arbitrary dependency graphs are unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7824,8 +7959,19 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.security-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-system-status
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-items
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
+      supported_slice: >-
+        Selected protected-request cases exercise scope injection through HTTP
+        authorization outcomes. Direct constructor values, `scopes`,
+        `scope_str`, token verification, and arbitrary dependency graphs are
+        unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7844,8 +7990,18 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.security-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-system-status
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.test-read-items
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
+      supported_slice: >-
+        Selected protected-request cases exercise the constructor indirectly
+        through FastAPI scope injection. Direct constructor inputs, defaulting
+        behavior, `scope_str`, and mutable-list edges are unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -7977,7 +8133,7 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
           case_id: fastapi.security.explicit-initializer-api.openid
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [openapi.security, python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
       supported_slice: >-
         Exact signature and selected OpenAPI cases cover required
         openIdConnectUrl plus optional scheme name, description, and auto_error.
@@ -8023,6 +8179,24 @@ reviewed_api_contract_overlay:
         known_gaps:
           - behavior of empty and non-string Authorization values is not exhaustively observed.
         rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::__call__
+    fastapi.security.open_id_connect_url.OpenIdConnect.make_not_authenticated_error:
+      source_evidence:
+        - path: fastapi/security/open_id_connect_url.py
+          symbol: make_not_authenticated_error
+          kind: source-definition
+          owner: OpenIdConnect
+          start_line: 80
+          end_line: 85
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The source helper creates an HTTPException with status 401, detail
+        "Not authenticated", and a Bearer WWW-Authenticate header. The
+        selected required OpenID Connect request observes that response through
+        the public dependency path; direct exception-object introspection is
+        outside this slice.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect.test-security-oauth2-password-bearer-no-header
     fastapi.openapi.models.APIKey:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       source_evidence:

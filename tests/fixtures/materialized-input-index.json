@@ -5609,11 +5609,11 @@
     {
       "id": "direct-api-warnings",
       "input_path": "tests/fixtures/inputs/parity/direct-api-warnings.json",
-      "input_sha256": "684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3",
+      "input_sha256": "9f06de42fe7fed19e7282cd24cfaaa16ca25f8534197c679ace071129a5aa5ea",
       "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-warnings.yaml",
-      "recipe_sha256": "dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b",
+      "recipe_sha256": "38a8d68a27ab9774ce811db709474ec204bde6a36971dfe75e6c43477e6c7ef1",
       "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
-      "workload_sha256": "de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2",
+      "workload_sha256": "8d7624c240a6de359a57be0d6ca253d8cb3d7942a40e95e27b4a3fe4652d90ba",
       "case_ids": [
         "fastapi.deprecation.query-example-warning",
         "fastapi.deprecation.query-regex-warning",
@@ -5627,6 +5627,8 @@
         "fastapi.deprecation.path-example-warning",
         "fastapi.deprecation.header-example-warning",
         "fastapi.deprecation.cookie-example-warning",
+        "fastapi.deprecation.form-example-warning",
+        "fastapi.deprecation.file-example-warning",
         "fastapi.deprecation.generate-operation-id-explicit-route",
         "fastapi.deprecation.generate-operation-id-fallback-route",
         "fastapi.deprecation.generate-operation-id-for-path"
@@ -5657,8 +5659,20 @@
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
         },
         {
+          "case_id": "fastapi.deprecation.file-example-warning",
+          "symbol_id": "fastapi.File",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
           "case_id": "fastapi.deprecation.file-regex-warning",
           "symbol_id": "fastapi.File",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.form-example-warning",
+          "symbol_id": "fastapi.Form",
           "path": "fastapi/param_functions.py",
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
         },
@@ -5765,9 +5779,29 @@
           ]
         },
         {
+          "case_id": "fastapi.deprecation.file-example-warning",
+          "probe_id": "file-example",
+          "symbol_id": "fastapi.File",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
           "case_id": "fastapi.deprecation.file-regex-warning",
           "probe_id": "file-regex",
           "symbol_id": "fastapi.File",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.form-example-warning",
+          "probe_id": "form-example",
+          "symbol_id": "fastapi.Form",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.call_outcome",
@@ -5964,6 +5998,20 @@
           "requirement_refs": [
             "api:fastapi.Cookie",
             "source:upstream-test:tests/test_schema_extra_examples.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.form-example-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Form"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.file-example-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.File"
           ]
         },
         {
@@ -19483,13 +19531,17 @@
     {
       "id": "request-parameter-alias-validation-tail-wave",
       "input_path": "tests/fixtures/inputs/parity/request-parameter-alias-validation-tail-wave.json",
-      "input_sha256": "f3075868f8a3c9813054c2e56c6d044ccff5db3a20a74843f18258dabd882762",
+      "input_sha256": "42180a343ac3393e1db1cd6e069c5939d529f664104b5f769b8b88caf6bb6bfc",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml",
-      "recipe_sha256": "663b2ea547b9245f5494d5e56b3fb74d6524e36c76dd970221145ba9c8d8cedf",
+      "recipe_sha256": "57f82c08abb0905de527348bbb55c08ba4043c7d8ad01f3c1aa900b36ae88188",
       "workload_path": "tests/fixtures/workloads/request_parameter_alias_validation_tail_wave.py",
-      "workload_sha256": "af34b8a69b04e90c284cd80d401b6c4770ec513d077a4d60b114336209fa3b0b",
+      "workload_sha256": "41650cf049f2576da270e0c058b4bf8b20254d5778d47c05bd783121a6e7b679",
       "case_ids": [
-        "fastapi.request-parameter-alias-validation-tail-wave.body-form-file"
+        "fastapi.request-parameter-alias-validation-tail-wave.body-form-file",
+        "fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias",
+        "fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias",
+        "fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias",
+        "fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias"
       ],
       "oracle_profile_extension": "standard-multipart",
       "case_contracts": [
@@ -19500,6 +19552,34 @@
             "source:upstream-test:tests/test_request_params/test_body/test_required_str.py",
             "source:upstream-test:tests/test_request_params/test_file/test_required.py",
             "source:upstream-test:tests/test_request_params/test_form/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_header/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_header/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_cookie/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_cookie/test_required_str.py"
           ]
         }
       ]
@@ -19842,9 +19922,9 @@
     {
       "id": "request-parameter-model-tutorial-ignore-edges",
       "input_path": "tests/fixtures/inputs/parity/request-parameter-model-tutorial-ignore-edges.json",
-      "input_sha256": "2b488f74941c40afeac34bf5acf6634c29e6c56d2ad0fe17d94a33841fffd7b8",
+      "input_sha256": "05f1b4156af2221c7eceedf69c92dd7f0c65efb7bb78dae1a711d88a908e7b02",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-parameter-model-tutorial-ignore-edges.yaml",
-      "recipe_sha256": "369d076211057279cc402022a14809e7681c11f6661e01895b0dfd28aefff75e",
+      "recipe_sha256": "b5191960d5e266acbfc21dea2a055f393780c1e3a7cdc8df93bd61ee62d19065",
       "workload_path": "tests/fixtures/workloads/request_parameter_openapi_wave.py",
       "workload_sha256": "e3cec77fe512aaafc504875ae5fa31a36cc58c0557d593b6f570afe8a8c56d8d",
       "case_ids": [
@@ -46624,6 +46704,23 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_request_params/test_cookie/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-cookie-test-required-str",
+      "workflow_id": "request-parameter-alias-validation-tail-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias",
+        "fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_request_params/test_file/test_required.py",
       "fixture_id": "fastapi.test.test-request-params-test-file-test-required",
       "workflow_id": "request-parameter-alias-validation-tail-wave",
@@ -46647,6 +46744,23 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.request-parameter-alias-validation-tail-wave.body-form-file"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_header/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-header-test-required-str",
+      "workflow_id": "request-parameter-alias-validation-tail-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias",
+        "fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias"
       ],
       "observation_selectors": [
         "http.body.bytes",

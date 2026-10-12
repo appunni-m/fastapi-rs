@@ -29,7 +29,7 @@ remains in progress, so no overall compatibility claim is made.
 - Runtime boundary: upstream FastAPI is source-oracle-only and never a runtime
   dependency or import. Python runtime modules contain only native re-exports
   and literal `__all__`, with no functions, branches, loops, or fallback
-  behavior. All FastAPI behavior and control flow lives in Rust.
+  behavior. All FastAPI behavior and control flow lives in `fastapi-rs/`.
 
 ## Project rules and research
 

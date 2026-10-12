@@ -238,6 +238,40 @@ cases:
   - path: docs/en/docs/tutorial/schema-extra-example.md
     kind: upstream_documentation
     sha256: 1bc9e50ddfa28bc8c6057ebdeafafae8069ab9d05e2a1674555122ede3a263a0
+- case_id: fastapi.deprecation.form-example-warning
+  probes:
+  - probe_id: form-example
+    public_callable:
+      module: fastapi
+      attribute: Form
+    argument_bundle: form-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Form
+- case_id: fastapi.deprecation.file-example-warning
+  probes:
+  - probe_id: file-example
+    public_callable:
+      module: fastapi
+      attribute: File
+    argument_bundle: file-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.File
 - case_id: fastapi.deprecation.generate-operation-id-explicit-route
   probes:
   - probe_id: generate-operation-id-explicit

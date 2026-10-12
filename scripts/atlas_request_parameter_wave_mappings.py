@@ -465,10 +465,10 @@ def _source_exclusion(test_path: str, reason: str) -> dict[str, Any]:
 
 _UNSUPPORTED_REQUEST_PARAM_MODULES = {
     "tests/test_request_params/test_cookie/test_list.py": (
-        "The pinned source contains only the explicit note that duplicate same-name cookies cannot be passed and comma-delimited cookie lists are unsupported by Starlette. It defines no test function or independent expected behavior. The parsing limitation belongs to Starlette 1.6.0 and its sibling Starlette-RS contract; this is not FastAPI support evidence."
+        "The pinned module contains only comments that its repeated-cookie list input cannot be supplied and comma-delimited cookie values are unsupported by Starlette; it defines no test function or independent behavior. This exclusion applies only to that list-form scenario. The separate ASGI input fastapi.request-parameters.extra-model.cookie-duplicate-last-value exercises repeated cookie keys and their last-value handling, so duplicate-cookie behavior is not excluded here. Generic cookie parsing remains owned by Starlette 1.6.0 and Starlette-RS."
     ),
     "tests/test_request_params/test_cookie/test_optional_list.py": (
-        "The pinned source contains only the explicit note that duplicate same-name cookies cannot be passed and comma-delimited cookie lists are unsupported by Starlette. It defines no test function or independent expected behavior. The parsing limitation belongs to Starlette 1.6.0 and its sibling Starlette-RS contract; this is not FastAPI support evidence."
+        "The pinned optional-list module contains only comments that its repeated-cookie list input cannot be supplied and comma-delimited cookie values are unsupported by Starlette; it defines no test function or independent behavior. This exclusion applies only to that optional list-form scenario. The separate ASGI input fastapi.request-parameters.extra-model.cookie-duplicate-last-value exercises repeated cookie keys and their last-value handling, so duplicate-cookie behavior is not excluded here. Generic cookie parsing remains owned by Starlette 1.6.0 and Starlette-RS."
     ),
     "tests/test_request_params/test_path/test_list.py": (
         "The pinned source comment says FastAPI does not support non-scalar Path parameters; the module has no test function. No runtime parity case is inferred from the comment."
@@ -604,6 +604,115 @@ def _tail_function_mapping(
     }
 
 
+def _header_cookie_alias_function_mapping(
+    test_path: str,
+    function_name: str,
+    case_id: str,
+    action_id: str,
+    observation_selectors: list[str],
+    behavior: str,
+) -> dict[str, Any]:
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _TAIL_WAVE_RECIPE,
+            "case_id": case_id,
+            "action_ids": [action_id],
+            "observation_selectors": observation_selectors,
+        },
+        "rationale": behavior,
+        "contract_gate": (
+            "This is a partial input mapping for one direct Header or Cookie declaration. "
+            "The pinned parametrized test also covers its BaseModel route; that route is not "
+            "claimed here. Only the selected status/body or route-specific OpenAPI parameter "
+            "projection is compared, with generic cookie/header parsing owned by Starlette."
+        ),
+    }
+
+
+def _header_cookie_alias_module_mappings(parameter: str, kind: str) -> dict[str, Any]:
+    case_root = "fastapi.request-parameter-alias-validation-tail-wave"
+    direct_case = f"{case_root}.{parameter}-validation-alias"
+    combined_case = f"{case_root}.{parameter}-alias-validation-alias"
+    rows = [
+        (
+            "test_required_validation_alias_schema",
+            direct_case,
+            f"openapi-{parameter}-validation-alias",
+            ["openapi.document", "openapi.paths"],
+            f"The selected OpenAPI pointer isolates the direct {kind} parameter declaration that uses only validation_alias.",
+        ),
+        (
+            "test_required_validation_alias_by_name",
+            direct_case,
+            f"{parameter}-validation-alias-python-name",
+            ["http.body.bytes", "http.status"],
+            f"The direct {kind} case submits the Python parameter name while validation_alias supplies the alternate wire name.",
+        ),
+        (
+            "test_required_validation_alias_by_validation_alias",
+            direct_case,
+            f"{parameter}-validation-alias-wire-name",
+            ["http.body.bytes", "http.status"],
+            f"The direct {kind} case submits the validation alias as the request name.",
+        ),
+        (
+            "test_required_alias_and_validation_alias_schema",
+            combined_case,
+            f"openapi-{parameter}-alias-validation-alias",
+            ["openapi.document", "openapi.paths"],
+            f"The selected OpenAPI pointer isolates the direct {kind} declaration with both alias and validation_alias.",
+        ),
+        (
+            "test_required_alias_and_validation_alias_by_name",
+            combined_case,
+            f"{parameter}-both-aliases-python-name",
+            ["http.body.bytes", "http.status"],
+            f"The direct {kind} case submits the Python parameter name while both aliases are declared.",
+        ),
+        (
+            "test_required_alias_and_validation_alias_by_alias",
+            combined_case,
+            f"{parameter}-both-aliases-declared-name",
+            ["http.body.bytes", "http.status"],
+            f"The direct {kind} case submits the declared alias while validation_alias names the alternate wire field.",
+        ),
+        (
+            "test_required_alias_and_validation_alias_by_validation_alias",
+            combined_case,
+            f"{parameter}-both-aliases-validation-name",
+            ["http.body.bytes", "http.status"],
+            f"The direct {kind} case submits the validation alias when both aliases are declared.",
+        ),
+    ]
+    test_path = f"tests/test_request_params/test_{parameter}/test_required_str.py"
+    return {
+        function_name: _header_cookie_alias_function_mapping(
+            test_path,
+            function_name,
+            case_id,
+            action_id,
+            selectors,
+            behavior,
+        )
+        for function_name, case_id, action_id, selectors, behavior in rows
+    }
+
+
 def _optional_upload_function_mapping(
     test_path: str,
     function_name: str,
@@ -722,6 +831,12 @@ def _request_http_function_mapping(
 
 
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
+    "tests/test_request_params/test_header/test_required_str.py": (
+        _header_cookie_alias_module_mappings("header", "Header")
+    ),
+    "tests/test_request_params/test_cookie/test_required_str.py": (
+        _header_cookie_alias_module_mappings("cookie", "Cookie")
+    ),
     "tests/test_file_and_form_order_issue_9116.py": {
         "test_file_list_form_order": _request_http_function_mapping(
             "tests/test_file_and_form_order_issue_9116.py",

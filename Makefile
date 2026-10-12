@@ -28,7 +28,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -53,6 +53,7 @@ help: ## Show common development commands
 	  '  make dependency-graph-update Regenerate FastAPI lock-derived dependency edges and surfaces' \
 	  '  make dependency-graph-check Check Python dependency rows against FastAPI 0.141.1 uv.lock' \
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
+	  '  make parity-workload-check Screen active workload Python sources with AST' \
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
 	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and release FastAPI-RS / ../starlette-rs' \
@@ -178,7 +179,10 @@ parity-api-runtime: parity-inputs ## Regenerate pinned-source runtime reflection
 parity-inputs: ## Materialize ignored JSON workflows from input-only YAML recipes
 	$(PYTHON) scripts/build_parity_inputs.py
 
-parity-validate: parity-inputs ## Validate workflows, source atlas, fixture mappings, and pinned source references
+parity-workload-check: ## Statically screen active parity workload Python sources
+	$(PYTHON) scripts/check_parity_workload_sources.py
+
+parity-validate: parity-inputs parity-workload-check ## Validate workflows, source atlas, fixture mappings, and pinned source references
 	$(PYTHON) -m scripts.parity.cli validate --input "$(PARITY_INPUT)"
 
 parity-index-update: parity-inputs ## Rebuild source mappings for current fixture workflows
