@@ -18,7 +18,7 @@
       "version": "2.13.4",
       "pydantic_core_version": "2.46.4"
     },
-    "source_inventory_sha256": "8e60d6c5d15d65dedca438c1af828c2873662ffa5d215daef6f954b484e0441a",
+    "source_inventory_sha256": "44a7eff9e8d7a50de0a73102d93b0a7039b1233e13e671049455317995f4fe3c",
     "optional_extras": [
       "docs-tests",
       "standard"
@@ -436,7 +436,7 @@
     {
       "id": "fastapi.datastructures",
       "status": "imported",
-      "source_declared_symbol_count": 36,
+      "source_declared_symbol_count": 37,
       "source_declared_symbol_ids": [
         "fastapi.datastructures.Address",
         "fastapi.datastructures.Annotated",
@@ -448,6 +448,7 @@
         "fastapi.datastructures.DefaultPlaceholder.__bool__",
         "fastapi.datastructures.DefaultPlaceholder.__eq__",
         "fastapi.datastructures.DefaultPlaceholder.__init__",
+        "fastapi.datastructures.DefaultPlaceholder.value",
         "fastapi.datastructures.DefaultType",
         "fastapi.datastructures.Doc",
         "fastapi.datastructures.FormData",
@@ -1456,7 +1457,7 @@
     {
       "id": "fastapi.routing",
       "status": "imported",
-      "source_declared_symbol_count": 389,
+      "source_declared_symbol_count": 407,
       "source_declared_symbol_ids": [
         "fastapi.routing.APIRoute",
         "fastapi.routing.APIRoute.__init__",
@@ -1500,10 +1501,13 @@
         "fastapi.routing.APIRouter.__init__",
         "fastapi.routing.APIRouter._contains_router",
         "fastapi.routing.APIRouter._frontend_match_is_more_specific",
+        "fastapi.routing.APIRouter._frontend_routes",
         "fastapi.routing.APIRouter._get_routes_version",
         "fastapi.routing.APIRouter._iter_low_priority_routes",
+        "fastapi.routing.APIRouter._low_priority_routes",
         "fastapi.routing.APIRouter._mark_routes_changed",
         "fastapi.routing.APIRouter._match_low_priority",
+        "fastapi.routing.APIRouter._routes_version",
         "fastapi.routing.APIRouter._shutdown",
         "fastapi.routing.APIRouter._startup",
         "fastapi.routing.APIRouter.add_api_route",
@@ -1513,19 +1517,34 @@
         "fastapi.routing.APIRouter.add_websocket_route",
         "fastapi.routing.APIRouter.api_route",
         "fastapi.routing.APIRouter.app",
+        "fastapi.routing.APIRouter.callbacks",
+        "fastapi.routing.APIRouter.default_response_class",
         "fastapi.routing.APIRouter.delete",
+        "fastapi.routing.APIRouter.dependencies",
+        "fastapi.routing.APIRouter.dependency_overrides_provider",
+        "fastapi.routing.APIRouter.deprecated",
         "fastapi.routing.APIRouter.frontend",
+        "fastapi.routing.APIRouter.generate_unique_id_function",
         "fastapi.routing.APIRouter.get",
         "fastapi.routing.APIRouter.handle",
         "fastapi.routing.APIRouter.head",
+        "fastapi.routing.APIRouter.include_in_schema",
         "fastapi.routing.APIRouter.include_router",
+        "fastapi.routing.APIRouter.lifespan_context",
         "fastapi.routing.APIRouter.matches",
         "fastapi.routing.APIRouter.on_event",
+        "fastapi.routing.APIRouter.on_shutdown",
+        "fastapi.routing.APIRouter.on_startup",
         "fastapi.routing.APIRouter.options",
         "fastapi.routing.APIRouter.patch",
         "fastapi.routing.APIRouter.post",
+        "fastapi.routing.APIRouter.prefix",
         "fastapi.routing.APIRouter.put",
+        "fastapi.routing.APIRouter.responses",
         "fastapi.routing.APIRouter.route",
+        "fastapi.routing.APIRouter.route_class",
+        "fastapi.routing.APIRouter.strict_content_type",
+        "fastapi.routing.APIRouter.tags",
         "fastapi.routing.APIRouter.trace",
         "fastapi.routing.APIRouter.websocket",
         "fastapi.routing.APIRouter.websocket_route",
@@ -31937,6 +31956,15 @@
         ],
         "return_annotation": null
       }
+    },
+    {
+      "id": "fastapi.datastructures.DefaultPlaceholder.value",
+      "kind": "value",
+      "object_identity": "builtins.NoneType",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
     },
     {
       "id": "fastapi.datastructures.DefaultType",
@@ -90598,6 +90626,15 @@
       }
     },
     {
+      "id": "fastapi.routing.APIRouter._frontend_routes",
+      "kind": "value",
+      "object_identity": "builtins.NoneType",
+      "deprecated_metadata": null,
+      "source_visibility": "private",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
       "id": "fastapi.routing.APIRouter._get_routes_version",
       "kind": "callable",
       "object_identity": "fastapi.routing.APIRouter._get_routes_version",
@@ -90679,6 +90716,15 @@
           ]
         }
       }
+    },
+    {
+      "id": "fastapi.routing.APIRouter._low_priority_routes",
+      "kind": "value",
+      "object_identity": "builtins.list",
+      "deprecated_metadata": null,
+      "source_visibility": "private",
+      "source_kind": "field",
+      "source_storage": "instance"
     },
     {
       "id": "fastapi.routing.APIRouter._mark_routes_changed",
@@ -90771,6 +90817,15 @@
           ]
         }
       }
+    },
+    {
+      "id": "fastapi.routing.APIRouter._routes_version",
+      "kind": "value",
+      "object_identity": "builtins.int",
+      "deprecated_metadata": null,
+      "source_visibility": "private",
+      "source_kind": "field",
+      "source_storage": "instance"
     },
     {
       "id": "fastapi.routing.APIRouter._shutdown",
@@ -92430,6 +92485,24 @@
       }
     },
     {
+      "id": "fastapi.routing.APIRouter.callbacks",
+      "kind": "value",
+      "object_identity": "builtins.list",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
+      "id": "fastapi.routing.APIRouter.default_response_class",
+      "kind": "value",
+      "object_identity": "fastapi.datastructures.DefaultPlaceholder",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
       "id": "fastapi.routing.APIRouter.delete",
       "kind": "callable",
       "object_identity": "fastapi.routing.APIRouter.delete",
@@ -93228,6 +93301,33 @@
       }
     },
     {
+      "id": "fastapi.routing.APIRouter.dependencies",
+      "kind": "value",
+      "object_identity": "builtins.list",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
+      "id": "fastapi.routing.APIRouter.dependency_overrides_provider",
+      "kind": "value",
+      "object_identity": "builtins.NoneType",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
+      "id": "fastapi.routing.APIRouter.deprecated",
+      "kind": "value",
+      "object_identity": "builtins.NoneType",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
       "id": "fastapi.routing.APIRouter.frontend",
       "kind": "callable",
       "object_identity": "fastapi.routing.APIRouter.frontend",
@@ -93372,6 +93472,15 @@
         ],
         "return_annotation": "builtins.NoneType"
       }
+    },
+    {
+      "id": "fastapi.routing.APIRouter.generate_unique_id_function",
+      "kind": "value",
+      "object_identity": "fastapi.datastructures.DefaultPlaceholder",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
     },
     {
       "id": "fastapi.routing.APIRouter.get",
@@ -95060,6 +95169,15 @@
       }
     },
     {
+      "id": "fastapi.routing.APIRouter.include_in_schema",
+      "kind": "value",
+      "object_identity": "builtins.bool",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
       "id": "fastapi.routing.APIRouter.include_router",
       "kind": "callable",
       "object_identity": "fastapi.routing.APIRouter.include_router",
@@ -95396,6 +95514,15 @@
       }
     },
     {
+      "id": "fastapi.routing.APIRouter.lifespan_context",
+      "kind": "value",
+      "object_identity": "fastapi.routing._DefaultLifespan",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
       "id": "fastapi.routing.APIRouter.matches",
       "kind": "callable",
       "object_identity": "fastapi.routing.APIRouter.matches",
@@ -95509,6 +95636,24 @@
           ]
         }
       }
+    },
+    {
+      "id": "fastapi.routing.APIRouter.on_shutdown",
+      "kind": "value",
+      "object_identity": "builtins.list",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
+      "id": "fastapi.routing.APIRouter.on_startup",
+      "kind": "value",
+      "object_identity": "builtins.list",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
     },
     {
       "id": "fastapi.routing.APIRouter.options",
@@ -97905,6 +98050,15 @@
       }
     },
     {
+      "id": "fastapi.routing.APIRouter.prefix",
+      "kind": "value",
+      "object_identity": "builtins.str",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
       "id": "fastapi.routing.APIRouter.put",
       "kind": "callable",
       "object_identity": "fastapi.routing.APIRouter.put",
@@ -98703,6 +98857,15 @@
       }
     },
     {
+      "id": "fastapi.routing.APIRouter.responses",
+      "kind": "value",
+      "object_identity": "builtins.dict",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
       "id": "fastapi.routing.APIRouter.route",
       "kind": "callable",
       "object_identity": "fastapi.routing.APIRouter.route",
@@ -98805,6 +98968,638 @@
           ]
         }
       }
+    },
+    {
+      "id": "fastapi.routing.APIRouter.route_class",
+      "kind": "class",
+      "object_identity": "fastapi.routing.APIRoute",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance",
+      "signature": {
+        "status": "available",
+        "parameters": [
+          {
+            "name": "path",
+            "kind": "positional_or_keyword",
+            "required": true,
+            "default": {
+              "kind": "empty"
+            },
+            "annotation": "builtins.str"
+          },
+          {
+            "name": "endpoint",
+            "kind": "positional_or_keyword",
+            "required": true,
+            "default": {
+              "kind": "empty"
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "collections.abc.Callable",
+              "arguments": [
+                "builtins.ellipsis",
+                "typing.Any"
+              ]
+            }
+          },
+          {
+            "name": "response_model",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "object",
+              "type": "fastapi.datastructures.DefaultPlaceholder"
+            },
+            "annotation": "typing.Any"
+          },
+          {
+            "name": "status_code",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "builtins.int",
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "tags",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.list",
+                  "arguments": [
+                    {
+                      "form": "generic",
+                      "origin": "types.UnionType",
+                      "arguments": [
+                        "builtins.str",
+                        "enum.Enum"
+                      ]
+                    }
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "dependencies",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "collections.abc.Sequence",
+                  "arguments": [
+                    "fastapi.params.Depends"
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "summary",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "builtins.str",
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "description",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "builtins.str",
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "response_description",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "str",
+              "value": "Successful Response"
+            },
+            "annotation": "builtins.str"
+          },
+          {
+            "name": "responses",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.dict",
+                  "arguments": [
+                    {
+                      "form": "generic",
+                      "origin": "types.UnionType",
+                      "arguments": [
+                        "builtins.int",
+                        "builtins.str"
+                      ]
+                    },
+                    {
+                      "form": "generic",
+                      "origin": "builtins.dict",
+                      "arguments": [
+                        "builtins.str",
+                        "typing.Any"
+                      ]
+                    }
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "deprecated",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "builtins.bool",
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "builtins.str",
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "methods",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.set",
+                  "arguments": [
+                    "builtins.str"
+                  ]
+                },
+                {
+                  "form": "generic",
+                  "origin": "builtins.list",
+                  "arguments": [
+                    "builtins.str"
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "operation_id",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "builtins.str",
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "response_model_include",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "typing.Union",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.set",
+                  "arguments": [
+                    "builtins.int"
+                  ]
+                },
+                {
+                  "form": "generic",
+                  "origin": "builtins.set",
+                  "arguments": [
+                    "builtins.str"
+                  ]
+                },
+                {
+                  "form": "generic",
+                  "origin": "collections.abc.Mapping",
+                  "arguments": [
+                    "builtins.int",
+                    {
+                      "form": "generic",
+                      "origin": "typing.Union",
+                      "arguments": [
+                        {
+                          "form": "forward_ref",
+                          "expression": "IncEx"
+                        },
+                        "builtins.bool"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "form": "generic",
+                  "origin": "collections.abc.Mapping",
+                  "arguments": [
+                    "builtins.str",
+                    {
+                      "form": "generic",
+                      "origin": "typing.Union",
+                      "arguments": [
+                        {
+                          "form": "forward_ref",
+                          "expression": "IncEx"
+                        },
+                        "builtins.bool"
+                      ]
+                    }
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "response_model_exclude",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "typing.Union",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.set",
+                  "arguments": [
+                    "builtins.int"
+                  ]
+                },
+                {
+                  "form": "generic",
+                  "origin": "builtins.set",
+                  "arguments": [
+                    "builtins.str"
+                  ]
+                },
+                {
+                  "form": "generic",
+                  "origin": "collections.abc.Mapping",
+                  "arguments": [
+                    "builtins.int",
+                    {
+                      "form": "generic",
+                      "origin": "typing.Union",
+                      "arguments": [
+                        {
+                          "form": "forward_ref",
+                          "expression": "IncEx"
+                        },
+                        "builtins.bool"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "form": "generic",
+                  "origin": "collections.abc.Mapping",
+                  "arguments": [
+                    "builtins.str",
+                    {
+                      "form": "generic",
+                      "origin": "typing.Union",
+                      "arguments": [
+                        {
+                          "form": "forward_ref",
+                          "expression": "IncEx"
+                        },
+                        "builtins.bool"
+                      ]
+                    }
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "response_model_by_alias",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "bool",
+              "value": true
+            },
+            "annotation": "builtins.bool"
+          },
+          {
+            "name": "response_model_exclude_unset",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "bool",
+              "value": false
+            },
+            "annotation": "builtins.bool"
+          },
+          {
+            "name": "response_model_exclude_defaults",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "bool",
+              "value": false
+            },
+            "annotation": "builtins.bool"
+          },
+          {
+            "name": "response_model_exclude_none",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "bool",
+              "value": false
+            },
+            "annotation": "builtins.bool"
+          },
+          {
+            "name": "include_in_schema",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "bool",
+              "value": true
+            },
+            "annotation": "builtins.bool"
+          },
+          {
+            "name": "response_class",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "object",
+              "type": "fastapi.datastructures.DefaultPlaceholder"
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.type",
+                  "arguments": [
+                    "starlette.responses.Response"
+                  ]
+                },
+                "fastapi.datastructures.DefaultPlaceholder"
+              ]
+            }
+          },
+          {
+            "name": "dependency_overrides_provider",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "typing.Any",
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "callbacks",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.list",
+                  "arguments": [
+                    "starlette.routing.BaseRoute"
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "openapi_extra",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "literal",
+              "type": "NoneType",
+              "value": null
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "builtins.dict",
+                  "arguments": [
+                    "builtins.str",
+                    "typing.Any"
+                  ]
+                },
+                "builtins.NoneType"
+              ]
+            }
+          },
+          {
+            "name": "generate_unique_id_function",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "object",
+              "type": "fastapi.datastructures.DefaultPlaceholder"
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                {
+                  "form": "generic",
+                  "origin": "collections.abc.Callable",
+                  "arguments": [
+                    "builtins.list",
+                    "builtins.str"
+                  ]
+                },
+                "fastapi.datastructures.DefaultPlaceholder"
+              ]
+            }
+          },
+          {
+            "name": "strict_content_type",
+            "kind": "keyword_only",
+            "required": false,
+            "default": {
+              "kind": "object",
+              "type": "fastapi.datastructures.DefaultPlaceholder"
+            },
+            "annotation": {
+              "form": "generic",
+              "origin": "types.UnionType",
+              "arguments": [
+                "builtins.bool",
+                "fastapi.datastructures.DefaultPlaceholder"
+              ]
+            }
+          }
+        ],
+        "return_annotation": "builtins.NoneType"
+      }
+    },
+    {
+      "id": "fastapi.routing.APIRouter.strict_content_type",
+      "kind": "value",
+      "object_identity": "fastapi.datastructures.DefaultPlaceholder",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
+    },
+    {
+      "id": "fastapi.routing.APIRouter.tags",
+      "kind": "value",
+      "object_identity": "builtins.list",
+      "deprecated_metadata": null,
+      "source_visibility": "public",
+      "source_kind": "field",
+      "source_storage": "instance"
     },
     {
       "id": "fastapi.routing.APIRouter.trace",
@@ -128406,6 +129201,13 @@
       ]
     },
     {
+      "object_identity": "fastapi.routing.APIRoute",
+      "names": [
+        "fastapi.routing.APIRoute",
+        "fastapi.routing.APIRouter.route_class"
+      ]
+    },
+    {
       "object_identity": "fastapi.routing.APIRouter",
       "names": [
         "fastapi.APIRouter",
@@ -129028,9 +129830,9 @@
     "import_error_modules": 0,
     "entrypoint_modules_skipped": 1,
     "optional_feature_unavailable_modules": 0,
-    "source_symbols_reflected": 1623,
+    "source_symbols_reflected": 1642,
     "runtime_only_names": 44,
-    "object_identity_alias_groups": 197,
+    "object_identity_alias_groups": 198,
     "pydantic_model_classes": 49,
     "import_warnings": 1
   }

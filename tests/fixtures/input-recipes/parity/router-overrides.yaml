@@ -156,3 +156,48 @@ cases:
   source_evidence:
   - path: tests/test_include_router_defaults_overrides.py
     kind: upstream_test
+- case_id: fastapi.routing.include-router.default-response-class-openapi-media-type
+  actions:
+  - action_id: inspect-default-response-media-types
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1level1~1level2~1level3~1level4~1default5/get/responses/200
+      - /paths/~1level1~1level2~1level3~1default5/get/responses/200
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/custom-response.md
+    kind: upstream_documentation
+  - path: docs/en/docs/release-notes.md
+    kind: upstream_documentation

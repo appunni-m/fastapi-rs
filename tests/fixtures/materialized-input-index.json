@@ -8645,9 +8645,9 @@
     {
       "id": "generate-unique-id-callback-values",
       "input_path": "tests/fixtures/inputs/parity/generate-unique-id-callback-values.json",
-      "input_sha256": "a13390720244f47edfcdc12f19fe5be34ed87e01b7866001518b56baa17550e8",
+      "input_sha256": "0d001eb8bf07c2bddd9ea31417e335cf43849eebdc1c24fec14dfe1379c6bcc9",
       "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml",
-      "recipe_sha256": "4c7b106dcca2f2fb1005735107858ff349e63a96421358ae2177fdbdb2b9eb79",
+      "recipe_sha256": "677ebdbccaab687492e9a6324267b69fcb3b7dcbef36a7bdbb731f1b53c3759d",
       "case_ids": [
         "fastapi.routing.generate-unique-id-integer-return",
         "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view",
@@ -24407,14 +24407,15 @@
     {
       "id": "router-overrides",
       "input_path": "tests/fixtures/inputs/parity/router-overrides.json",
-      "input_sha256": "05f52df96b394b67c59214e327726d76a91c86b4bab193f96fe3ab489772df78",
+      "input_sha256": "51e2eb7beb6b7076a8f086f0e8dcca4689833322660839c2535a982a2f97686e",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-overrides.yaml",
-      "recipe_sha256": "56c95d99ea33c7db38387532d14ca71317c8e44676f622ca0aa8fbda1ccddad8",
+      "recipe_sha256": "aa2f82e3579ca78f190b688bcf4b1a8924ac0230f792cc89175537a7f1037543",
       "case_ids": [
         "fastapi.routing.include-router.root-defaults",
         "fastapi.routing.include-router.nested-include-defaults",
         "fastapi.routing.include-router.router-default-response-class",
-        "fastapi.routing.include-router.endpoint-response-override"
+        "fastapi.routing.include-router.endpoint-response-override",
+        "fastapi.routing.include-router.default-response-class-openapi-media-type"
       ],
       "workload_path": "tests/fixtures/workloads/router_overrides.py",
       "workload_sha256": "396c39f2abf2e21cb312d0350f1ecc6e30983c1f306d9a69c73495d5b71e7980",
@@ -24444,6 +24445,14 @@
           "case_id": "fastapi.routing.include-router.endpoint-response-override",
           "verification": "parity",
           "requirement_refs": [
+            "source:upstream-test:tests/test_include_router_defaults_overrides.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.include-router.default-response-class-openapi-media-type",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/custom-response.md",
             "source:upstream-test:tests/test_include_router_defaults_overrides.py"
           ]
         }
@@ -53226,21 +53235,39 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/custom-response.md",
+      "fixture_id": "fastapi.docs.advanced-custom-response",
+      "workflow_id": "router-overrides",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.include-router.default-response-class-openapi-media-type"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_include_router_defaults_overrides.py",
       "fixture_id": "fastapi.test.test-include-router-defaults-overrides",
       "workflow_id": "router-overrides",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.routing.include-router.default-response-class-openapi-media-type",
         "fastapi.routing.include-router.endpoint-response-override",
         "fastapi.routing.include-router.nested-include-defaults",
         "fastapi.routing.include-router.root-defaults",
         "fastapi.routing.include-router.router-default-response-class"
       ],
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
-        "http.status"
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

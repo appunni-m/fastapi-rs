@@ -5,7 +5,7 @@
       "declared_pydantic_requirement": ">=2.9.0",
       "declared_starlette_requirement": ">=0.46.0",
       "inventory_path": "tests/fixtures/api-inventory.json",
-      "inventory_sha256": "bbe0dbceac413470d26f2fb6ca986789518814d6cab94f8d150ae4a717d75dbf",
+      "inventory_sha256": "ade1e1a3a3ef66d14b40f2fae3d5a9ce8e76911bfa2f12c9f2cbe149c5df9674",
       "repository": "https://github.com/fastapi/fastapi",
       "version": "0.141.1",
       "working_tree": "pinned-source"
@@ -34760,6 +34760,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/response-surface.yaml",
           "workflow_id": "response-surface"
+        },
+        {
+          "case_ids": [
+            "fastapi.routing.include-router.default-response-class-openapi-media-type"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-overrides.yaml",
+          "workflow_id": "router-overrides"
         },
         {
           "case_ids": [
@@ -178979,17 +178992,21 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.routing.include-router.default-response-class-openapi-media-type",
             "fastapi.routing.include-router.endpoint-response-override",
             "fastapi.routing.include-router.nested-include-defaults",
             "fastapi.routing.include-router.root-defaults",
             "fastapi.routing.include-router.router-default-response-class"
           ],
-          "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/router-overrides.yaml",
           "workflow_id": "router-overrides"

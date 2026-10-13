@@ -14259,13 +14259,18 @@
             "line": 33,
             "path": "docs/en/docs/advanced/openapi-webhooks.md",
             "role": "fastapi-public-documentation"
+          },
+          {
+            "line": 27,
+            "path": "docs/en/docs/advanced/openapi-webhooks.md",
+            "role": "fastapi-public-documentation"
           }
         ],
         "evidence_basis": [
           "documented",
           "source-declaration"
         ],
-        "reason": "FastAPI 0.141.1 documents `FastAPI.webhooks` as the APIRouter whose path operations describe outgoing webhooks. The source assignment confirms the public field; the constructor and OpenAPI operation contracts record the selected behavior coverage.",
+        "reason": "FastAPI 0.141.1 documents `FastAPI.webhooks` as the APIRouter for outgoing webhook operations and states the feature is available from FastAPI 0.99.0 with OpenAPI 3.1.0. These are historical availability floors; the pinned 0.141.1 source does not branch on them. The source assignment confirms the public field, and selected OpenAPI cases cover its emitted operations.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 937,
@@ -14275,6 +14280,11 @@
       "id": "fastapi.applications.FastAPI.webhooks",
       "kind": "field",
       "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 27,
+          "path": "docs/en/docs/advanced/openapi-webhooks.md"
+        },
         {
           "kind": "reviewed_public_candidate_documentation_contract",
           "line": 33,
@@ -18194,6 +18204,57 @@
         }
       ],
       "visibility": "public_protocol"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "supported",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 162,
+            "path": "fastapi/datastructures.py",
+            "role": "fastapi-source-field"
+          },
+          {
+            "line": 6179,
+            "path": "docs/en/docs/release-notes.md",
+            "role": "fastapi-public-documentation"
+          }
+        ],
+        "evidence_basis": [
+          "documented"
+        ],
+        "reason": "The pinned release notes explicitly document reading the wrapped response class through route.response_class.value. This supports that value field access; it does not make DefaultPlaceholder itself a public class.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 162,
+          "path": "fastapi/datastructures.py"
+        }
+      },
+      "id": "fastapi.datastructures.DefaultPlaceholder.value",
+      "kind": "field",
+      "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 6179,
+          "path": "docs/en/docs/release-notes.md"
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 162,
+          "line": 162,
+          "module_sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7",
+          "path": "fastapi/datastructures.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
     },
     {
       "candidate_kinds": [
@@ -52116,6 +52177,26 @@
       ],
       "classification": "private/internal",
       "classification_evidence_rule": "Pinned source marks the declaration private or protocol-internal.",
+      "id": "fastapi.routing.APIRouter._frontend_routes",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2568,
+          "line": 2568,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "private"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "private/internal",
+      "classification_evidence_rule": "Pinned source marks the declaration private or protocol-internal.",
       "id": "fastapi.routing.APIRouter._get_routes_version",
       "kind": "method",
       "public_evidence": [],
@@ -52154,6 +52235,26 @@
       ],
       "classification": "private/internal",
       "classification_evidence_rule": "Pinned source marks the declaration private or protocol-internal.",
+      "id": "fastapi.routing.APIRouter._low_priority_routes",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2567,
+          "line": 2567,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "private"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "private/internal",
+      "classification_evidence_rule": "Pinned source marks the declaration private or protocol-internal.",
       "id": "fastapi.routing.APIRouter._mark_routes_changed",
       "kind": "method",
       "public_evidence": [],
@@ -52184,6 +52285,26 @@
           "path": "fastapi/routing.py"
         }
       ],
+      "visibility": "private"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "private/internal",
+      "classification_evidence_rule": "Pinned source marks the declaration private or protocol-internal.",
+      "id": "fastapi.routing.APIRouter._routes_version",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2566,
+          "line": 2566,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
       "visibility": "private"
     },
     {
@@ -52472,6 +52593,98 @@
       "candidate_kinds": [
         "class_member"
       ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2560,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `callbacks` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2560,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.callbacks",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2560,
+          "line": 2560,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "supported",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2563,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          },
+          {
+            "line": 6179,
+            "path": "docs/en/docs/release-notes.md",
+            "role": "fastapi-public-documentation"
+          }
+        ],
+        "evidence_basis": [
+          "documented"
+        ],
+        "reason": "The pinned release notes explicitly describe advanced consumer logic accessing router.default_response_class; classify this exact APIRouter field as supported.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2563,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.default_response_class",
+      "kind": "field",
+      "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 6179,
+          "path": "docs/en/docs/release-notes.md"
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 2563,
+          "line": 2563,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
       "classification": "supported",
       "classification_evidence_rule": "Explicit root export/import, documented target or module declaration, explicit member allowlist, or field of a documented OpenAPI model.",
       "id": "fastapi.routing.APIRouter.delete",
@@ -52498,6 +52711,129 @@
       "candidate_kinds": [
         "class_member"
       ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2556,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `dependencies` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2556,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.dependencies",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2556,
+          "line": 2556,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2561,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `dependency_overrides_provider` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2561,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.dependency_overrides_provider",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2561,
+          "line": 2561,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2557,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `deprecated` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2557,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.deprecated",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2557,
+          "line": 2557,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
       "classification": "supported",
       "classification_evidence_rule": "Explicit root export/import, documented target or module declaration, explicit member allowlist, or field of a documented OpenAPI model.",
       "id": "fastapi.routing.APIRouter.frontend",
@@ -52518,6 +52854,47 @@
           "path": "fastapi/routing.py"
         }
       ],
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2564,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `generate_unique_id_function` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2564,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.generate_unique_id_function",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2564,
+          "line": 2564,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
       "visibility": "public"
     },
     {
@@ -52612,6 +52989,47 @@
       "candidate_kinds": [
         "class_member"
       ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2558,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `include_in_schema` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2558,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.include_in_schema",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2558,
+          "line": 2558,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
       "classification": "supported",
       "classification_evidence_rule": "Explicit root export/import, documented target or module declaration, explicit member allowlist, or field of a documented OpenAPI model.",
       "id": "fastapi.routing.APIRouter.include_router",
@@ -52632,6 +53050,47 @@
           "path": "fastapi/routing.py"
         }
       ],
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2530,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `lifespan_context` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2530,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.lifespan_context",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2530,
+          "line": 2530,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
       "visibility": "public"
     },
     {
@@ -52694,6 +53153,88 @@
           "path": "fastapi/routing.py"
         }
       ],
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2550,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `on_shutdown` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2550,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.on_shutdown",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2552,
+          "line": 2550,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2547,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `on_startup` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2547,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.on_startup",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2549,
+          "line": 2547,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
       "visibility": "public"
     },
     {
@@ -52778,6 +53319,47 @@
       "candidate_kinds": [
         "class_member"
       ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2554,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `prefix` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2554,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.prefix",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2554,
+          "line": 2554,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
       "classification": "supported",
       "classification_evidence_rule": "Explicit root export/import, documented target or module declaration, explicit member allowlist, or field of a documented OpenAPI model.",
       "id": "fastapi.routing.APIRouter.put",
@@ -52798,6 +53380,47 @@
           "path": "fastapi/routing.py"
         }
       ],
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2559,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `responses` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2559,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.responses",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2559,
+          "line": 2559,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
       "visibility": "public"
     },
     {
@@ -52832,6 +53455,129 @@
           "path": "fastapi/routing.py"
         }
       ],
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2562,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `route_class` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2562,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.route_class",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2562,
+          "line": 2562,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2565,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `strict_content_type` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2565,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.strict_content_type",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2565,
+          "line": 2565,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
+      "visibility": "public"
+    },
+    {
+      "candidate_kinds": [
+        "class_member"
+      ],
+      "classification": "uncertain",
+      "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
+      "classification_review": {
+        "binding": null,
+        "candidate_kind": "field",
+        "evidence": [
+          {
+            "line": 2555,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-field"
+          }
+        ],
+        "evidence_basis": [
+          "member-exposure-unresolved",
+          "source-declaration"
+        ],
+        "reason": "FastAPI 0.141.1 assigns `tags` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "review_artifact": "api_public_candidate_classification_review",
+        "source": {
+          "line": 2555,
+          "path": "fastapi/routing.py"
+        }
+      },
+      "id": "fastapi.routing.APIRouter.tags",
+      "kind": "field",
+      "public_evidence": [],
+      "source_evidence": [
+        {
+          "end_line": 2555,
+          "line": 2555,
+          "module_sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "path": "fastapi/routing.py"
+        }
+      ],
+      "storage": "instance",
       "visibility": "public"
     },
     {
@@ -75956,15 +76702,15 @@
     "path": "tests/fixtures/api-public-candidate-classification-review.json",
     "schema": "fastapi-rs/public-candidate-classification-review@1",
     "scope": {
-      "candidate_count": 167,
-      "candidate_ids_sha256": "01dd8633543cba28cc8fc64235130598e5dfd20225244b0da48f579503388141",
+      "candidate_count": 183,
+      "candidate_ids_sha256": "0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd",
       "recommendation_counts": {
         "private/internal": 123,
-        "supported": 15,
-        "uncertain": 29
+        "supported": 17,
+        "uncertain": 43
       }
     },
-    "sha256": "c7b39a8a25c8a652dbd11ac5585ce991c4792adb765cff3fdc46618290d61907",
+    "sha256": "a53fadfdb15234b7909dcd87e82112dd2691fc1b4155c3fdd21623b1e4d17557",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
@@ -76242,7 +76988,7 @@
       "declared_pydantic_requirement": ">=2.9.0",
       "declared_starlette_requirement": ">=0.46.0",
       "inventory_path": "tests/fixtures/api-inventory.json",
-      "inventory_sha256": "bbe0dbceac413470d26f2fb6ca986789518814d6cab94f8d150ae4a717d75dbf",
+      "inventory_sha256": "ade1e1a3a3ef66d14b40f2fae3d5a9ce8e76911bfa2f12c9f2cbe149c5df9674",
       "repository": "https://github.com/fastapi/fastapi",
       "version": "0.141.1",
       "working_tree": "pinned-source"
@@ -76328,11 +77074,11 @@
   },
   "counts": {
     "alias_records": 69,
-    "api_candidates": 1624,
+    "api_candidates": 1643,
     "api_classifications": {
-      "private/internal": 1103,
-      "supported": 473,
-      "uncertain": 48
+      "private/internal": 1106,
+      "supported": 475,
+      "uncertain": 62
     },
     "documentation_pages": 155,
     "documentation_pages_candidate_links_pending_behavior_review": 0,
@@ -76358,7 +77104,7 @@
     "reviewed_callable_candidates": 137,
     "reviewed_import_binding_candidates": 97,
     "reviewed_inherited_api_candidates": 13,
-    "reviewed_public_candidate_candidates": 167,
+    "reviewed_public_candidate_candidates": 183,
     "reviewed_source_api_candidates": 392,
     "source_deprecations": 21,
     "starlette_behavior_crosswalks": 4,
@@ -255558,6 +256304,19 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/response-surface.yaml",
             "workflow_id": "response-surface"
+          },
+          {
+            "case_ids": [
+              "fastapi.routing.include-router.default-response-class-openapi-media-type"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/router-overrides.yaml",
+            "workflow_id": "router-overrides"
           },
           {
             "case_ids": [
@@ -512077,17 +512836,21 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.routing.include-router.default-response-class-openapi-media-type",
               "fastapi.routing.include-router.endpoint-response-override",
               "fastapi.routing.include-router.nested-include-defaults",
               "fastapi.routing.include-router.root-defaults",
               "fastapi.routing.include-router.router-default-response-class"
             ],
-            "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
+              "docs.response.status",
               "http.body.bytes",
               "http.headers.ordered",
-              "http.status"
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/router-overrides.yaml",
             "workflow_id": "router-overrides"
@@ -697407,7 +698170,7 @@
       "classification": "uncertain",
       "classification_evidence_rule": "APIRouter inherits this Router method from Starlette 1.6.0, but the pinned API review does not establish this exact member path as a consumer-facing contract.",
       "exposure_candidate_id": "fastapi.routing.APIRouter",
-      "exposure_candidate_ref": "/api_candidates/1089",
+      "exposure_candidate_ref": "/api_candidates/1090",
       "id": "fastapi.routing.APIRouter.host",
       "kind": "inherited_method",
       "reviewed_overlay_ref": "/reviewed_api_contract_overlay/inherited_candidate_reviews/fastapi.routing.APIRouter.host",
@@ -697445,7 +698208,7 @@
       "classification": "uncertain",
       "classification_evidence_rule": "APIRouter inherits this ASGI lifecycle handler from Starlette 1.6.0, but the pinned API review does not establish this direct Router member path as a consumer-facing contract.",
       "exposure_candidate_id": "fastapi.routing.APIRouter",
-      "exposure_candidate_ref": "/api_candidates/1089",
+      "exposure_candidate_ref": "/api_candidates/1090",
       "id": "fastapi.routing.APIRouter.lifespan",
       "kind": "inherited_method",
       "reviewed_overlay_ref": "/reviewed_api_contract_overlay/inherited_candidate_reviews/fastapi.routing.APIRouter.lifespan",
@@ -697483,7 +698246,7 @@
       "classification": "uncertain",
       "classification_evidence_rule": "APIRouter inherits this route-registration method from Starlette 1.6.0, but the pinned API review does not establish this exact direct Router member path as a consumer-facing contract.",
       "exposure_candidate_id": "fastapi.routing.APIRouter",
-      "exposure_candidate_ref": "/api_candidates/1089",
+      "exposure_candidate_ref": "/api_candidates/1090",
       "id": "fastapi.routing.APIRouter.mount",
       "kind": "inherited_method",
       "reviewed_overlay_ref": "/reviewed_api_contract_overlay/inherited_candidate_reviews/fastapi.routing.APIRouter.mount",
@@ -697521,7 +698284,7 @@
       "classification": "private/internal",
       "classification_evidence_rule": "Starlette Router assigns this handler as internal fallback dispatch; the pinned API review classifies it as private/internal rather than a direct consumer-facing method.",
       "exposure_candidate_id": "fastapi.routing.APIRouter",
-      "exposure_candidate_ref": "/api_candidates/1089",
+      "exposure_candidate_ref": "/api_candidates/1090",
       "id": "fastapi.routing.APIRouter.not_found",
       "kind": "inherited_method",
       "reviewed_overlay_ref": "/reviewed_api_contract_overlay/inherited_candidate_reviews/fastapi.routing.APIRouter.not_found",
@@ -697578,7 +698341,7 @@
         }
       ],
       "exposure_candidate_id": "fastapi.routing.APIRouter",
-      "exposure_candidate_ref": "/api_candidates/1089",
+      "exposure_candidate_ref": "/api_candidates/1090",
       "feature_ids": [
         "app-routing"
       ],
@@ -697648,7 +698411,7 @@
         }
       ],
       "exposure_candidate_id": "fastapi.routing.APIRouter",
-      "exposure_candidate_ref": "/api_candidates/1089",
+      "exposure_candidate_ref": "/api_candidates/1090",
       "feature_ids": [
         "app-routing"
       ],

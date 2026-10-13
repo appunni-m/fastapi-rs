@@ -29,6 +29,11 @@ EXPECTED_VERSION = "0.141.1"
 EXPECTED_TAG = "0.141.1"
 EXPECTED_COMMIT = "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
 SCHEMA = "fastapi-rs/source-api-inventory@1"
+INSTANCE_ASSIGNMENT_OWNERS = {
+    ("fastapi.applications", "FastAPI"),
+    ("fastapi.routing", "APIRouter"),
+    ("fastapi.datastructures", "DefaultPlaceholder"),
+}
 DOC_TARGET = re.compile(r"^\s*:::\s+(fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*$")
 LOCK_PACKAGE = re.compile(
     r"(?ms)^\[\[package\]\]\s*\n(?:(?!^\[\[package\]\]).)*?"
@@ -563,7 +568,7 @@ def assignment_record(
 
 
 def instance_assignment_records(module: ParsedModule, owner: ast.ClassDef) -> list[dict[str, Any]]:
-    """Discover ``self.name`` assignments in FastAPI.__init__ without classifying them.
+    """Discover selected ``self.name`` constructor assignments without classifying them.
 
     These records describe constructor assignment candidates, not public API. A
     separate reviewed classification artifact decides which names FastAPI's
@@ -671,7 +676,7 @@ def class_record(
                     "source_ref": source_ref(module, child),
                 }
             )
-    if module.name == "fastapi.applications" and node.name == "FastAPI":
+    if (module.name, node.name) in INSTANCE_ASSIGNMENT_OWNERS:
         members.extend(instance_assignment_records(module, node))
         members.sort(
             key=lambda item: (
@@ -1073,7 +1078,7 @@ def build_inventory(checkout: Path) -> dict[str, Any]:
             },
         },
         "inventory_limits": [
-            "FastAPI.__init__ self-assignments are emitted as discovery candidates only; source discovery does not classify them as supported API.",
+            "Selected FastAPI constructor self-assignments on FastAPI, APIRouter, and DefaultPlaceholder are emitted as discovery candidates only; source discovery does not classify them as supported API.",
             "Importable private implementation names are present only when represented by source definitions/import bindings; they are not classified as supported public API solely because they exist.",
             "The inventory preserves source annotations and default expressions, including Annotated metadata, but does not execute them or infer their runtime type domains.",
             "Documented module targets such as fastapi.status and fastapi.openapi.models are represented as targets/modules; their delegated or generated members are identified in delegated_scope rather than expanded as FastAPI-owned declarations.",

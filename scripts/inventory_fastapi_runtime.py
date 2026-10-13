@@ -38,6 +38,11 @@ EXPECTED_STARLETTE = ("1.6.0", "4f250d6b814587e20c5365f0a5f0c4d42bcb929f")
 EXPECTED_PYDANTIC = ("2.13.4", "2.46.4")
 EXPECTED_PYTHON = ("CPython", "3.12.13")
 SCHEMA = "fastapi-rs/runtime-api-surface@1"
+INSTANCE_REFLECTION_ARGUMENTS = {
+    # DefaultPlaceholder has one required, unconstrained value. Supplying None
+    # lets source-oracle reflection record the documented instance field.
+    "fastapi.datastructures.DefaultPlaceholder": (None,),
+}
 OPTIONAL_DISTRIBUTIONS = (
     "email-validator",
     "fastapi-cli",
@@ -348,7 +353,7 @@ def _runtime_symbol(
             owner_id, _, field_name = identifier.rpartition(".")
             if owner_id not in instance_cache:
                 owner = _resolve(module, owner_id, module_id)
-                instance_cache[owner_id] = owner()
+                instance_cache[owner_id] = owner(*INSTANCE_REFLECTION_ARGUMENTS.get(owner_id, ()))
             value = getattr(instance_cache[owner_id], field_name)
         else:
             try:
