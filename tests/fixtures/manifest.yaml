@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 3fbdb00769767e88943b22a660cde552a3ee37bd1fd2960f48f9e819c5034d5c
+    sha256: eb6a89723230f878bcb138b5983640837b0c6dfffa68a3f78ad531af89988e0a
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: c01a444592fec64f7e7ff00f09ef2462a0b5d6533507e964116c495a5b79c86f
+    sha256: a5e47126cc410d2f82be355fc5cfb6d59e1eee7b1ae201c53175ca2ade1367e1
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: cdeb4b594f490b6f8e8c93a9b585b06cf9a23bd5b8bb72cbf5d5d8ba7102e8c7
+    sha256: a26acf053d0ad196886a499cb7d20a6c272c0ead40f96aa938c16526b90c618c
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 575
-      cases: 2415
-      partial_source_mappings: 1637
+      workflows: 576
+      cases: 2416
+      partial_source_mappings: 1639
 
 contract_metadata:
   aliases:
@@ -1089,7 +1089,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 110
     symbols_with_operation_fixture_refs: 177
-    operation_fixture_refs: 1595
+    operation_fixture_refs: 1596
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -15312,6 +15312,23 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
       - openapi.document
+    - workflow_id: webhooks-duplicate-operation-id
+      input_path: tests/fixtures/inputs/parity/webhooks-duplicate-operation-id.json
+      input_sha256: 10a28f108d541a4e3b5b005fabcfc0581cb37c079b8567a90392b861334b0300
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-duplicate-operation-id.yaml
+      recipe_sha256: 868925df0d95df605ecc4ec79a1c60af92e949dff4ae22a48ce7ec7482f2fb23
+      workload_path: tests/fixtures/workloads/webhooks_duplicate_operation_id.py
+      workload_sha256: 109ee0e66e8e17da1639ea354424373ef71603644992057487f681a3f098f70c
+      case_id: fastapi.webhooks.openapi.duplicate-operation-id-warning
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing

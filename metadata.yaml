@@ -4698,8 +4698,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-duplicate-operation-id.yaml
+          case_id: fastapi.webhooks.openapi.duplicate-operation-id-warning
+          workload_path: tests/fixtures/workloads/webhooks_duplicate_operation_id.py
+          observation_selectors: [http.status, warnings.category_message, openapi.document]
       feature_ids: [openapi-docs]
-      observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema]
+      observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema, warnings.category_message]
       supported_slice: >-
         Operation parameters are deduplicated by their (in, name) pair while
         preserving the first key position. The last definition supplies the
@@ -4729,7 +4733,8 @@ reviewed_api_contract_overlay:
         serializes schema-object keys in a different order; raw OpenAPI bytes
         remain a parity gap. The linked webhook cases cover constructor-supplied
         and default routers, body/security schema emission, and separation from
-        inbound paths.
+        inbound paths. A same-ID path/webhook pair emits the pinned duplicate
+        operation warning while retaining each operation in its separate map.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:

@@ -1,0 +1,44 @@
+schema: fastapi-rs/python-asgi-workflow@4
+workload:
+  file: tests/fixtures/workloads/webhooks_duplicate_operation_id.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.webhooks.openapi.duplicate-operation-id-warning
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-shared-operation-id-across-path-and-webhook
+    kind: http_request
+    capture_warnings: true
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1regular-event/get/operationId
+      - /webhooks/event-notify/post/operationId
+      comparison: exact
+  source_evidence:
+  - path: tests/test_generate_unique_id_function.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/openapi-webhooks.md
+    kind: upstream_documentation

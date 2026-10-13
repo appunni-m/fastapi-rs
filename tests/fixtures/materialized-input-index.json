@@ -30513,6 +30513,28 @@
       ]
     },
     {
+      "id": "webhooks-duplicate-operation-id",
+      "input_path": "tests/fixtures/inputs/parity/webhooks-duplicate-operation-id.json",
+      "input_sha256": "10a28f108d541a4e3b5b005fabcfc0581cb37c079b8567a90392b861334b0300",
+      "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-duplicate-operation-id.yaml",
+      "recipe_sha256": "868925df0d95df605ecc4ec79a1c60af92e949dff4ae22a48ce7ec7482f2fb23",
+      "case_ids": [
+        "fastapi.webhooks.openapi.duplicate-operation-id-warning"
+      ],
+      "workload_path": "tests/fixtures/workloads/webhooks_duplicate_operation_id.py",
+      "workload_sha256": "109ee0e66e8e17da1639ea354424373ef71603644992057487f681a3f098f70c",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.webhooks.openapi.duplicate-operation-id-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/openapi-webhooks.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "webhooks-security",
       "input_path": "tests/fixtures/inputs/parity/webhooks-security.json",
       "input_sha256": "da5fc269022718c1549acd7d0e5462b9709343d7706d50c3736286f8bf4c32ff",
@@ -57433,6 +57455,35 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/openapi-webhooks.md",
+      "fixture_id": "fastapi.docs.advanced-openapi-webhooks",
+      "workflow_id": "webhooks-duplicate-operation-id",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.webhooks.openapi.duplicate-operation-id-warning"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_generate_unique_id_function.py",
+      "fixture_id": "fastapi.test.test-generate-unique-id-function",
+      "workflow_id": "webhooks-duplicate-operation-id",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.webhooks.openapi.duplicate-operation-id-warning"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
         "openapi.document"
       ]
     },
