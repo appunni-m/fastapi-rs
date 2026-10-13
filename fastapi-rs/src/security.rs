@@ -1021,12 +1021,14 @@ enum ConstructorInitKind {
     SecurityScopes,
     OAuth2PasswordRequestForm,
     OAuth2PasswordRequestFormStrict,
+    NativeNewConstructor,
 }
 
 #[pyclass(name = "_ConstructorInit", module = "fastapi_rs._core", dict)]
 struct ConstructorInit {
     kind: ConstructorInitKind,
     signature: Py<PyAny>,
+    callable_name: String,
 }
 
 #[pymethods]
@@ -1060,6 +1062,14 @@ impl ConstructorInit {
         args: &Bound<'_, PyTuple>,
         kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<()> {
+        if matches!(self.kind, ConstructorInitKind::NativeNewConstructor) {
+            let _ = bind_constructor_arguments(py, self, args, kwargs)?;
+            // PyO3's #[new] has already built and initialized the instance before
+            // Python invokes __init__. Its original __init__ is object.__init__,
+            // so the compatibility wrapper must only expose and validate the
+            // source signature here.
+            return Ok(());
+        }
         let arguments = bind_constructor_arguments(py, self, args, kwargs)?;
         match self.kind {
             ConstructorInitKind::AuthorizationCode => initialize_authorization_code(py, &arguments),
@@ -1071,6 +1081,9 @@ impl ConstructorInit {
             ConstructorInitKind::OAuth2PasswordRequestFormStrict => {
                 initialize_oauth2_password_request_form(&arguments)
             }
+            ConstructorInitKind::NativeNewConstructor => Err(PyRuntimeError::new_err(
+                "native constructor wrapper reached an invalid dispatch path",
+            )),
         }
     }
 }
@@ -1106,15 +1119,7 @@ fn bind_constructor_arguments<'py>(
         }
     }
 
-    let callable_name = match initializer.kind {
-        ConstructorInitKind::AuthorizationCode => "OAuth2AuthorizationCodeBearer.__init__",
-        ConstructorInitKind::OpenIdConnect => "OpenIdConnect.__init__",
-        ConstructorInitKind::SecurityScopes => "SecurityScopes.__init__",
-        ConstructorInitKind::OAuth2PasswordRequestForm => "OAuth2PasswordRequestForm.__init__",
-        ConstructorInitKind::OAuth2PasswordRequestFormStrict => {
-            "OAuth2PasswordRequestFormStrict.__init__"
-        }
-    };
+    let callable_name = initializer.callable_name.as_str();
     let kwargs = kwargs.cloned().unwrap_or_else(|| PyDict::new(py));
     for (keyword, _) in kwargs.iter() {
         let name = keyword.extract::<String>()?;
@@ -1350,6 +1355,13 @@ fn initialize_security_attributes(
 #[pyclass]
 struct ConstructorSignatureDescriptor {
     class_signature: Py<PyAny>,
+    instance_signature: ConstructorInstanceSignature,
+}
+
+#[derive(Clone, Copy)]
+enum ConstructorInstanceSignature {
+    Dependency,
+    ApiKeyDependency,
 }
 
 #[pymethods]
@@ -1363,7 +1375,10 @@ impl ConstructorSignatureDescriptor {
         if instance.is_none() {
             return Ok(self.class_signature.clone_ref(py));
         }
-        dependency_signature(py)
+        match self.instance_signature {
+            ConstructorInstanceSignature::Dependency => dependency_signature(py),
+            ConstructorInstanceSignature::ApiKeyDependency => api_key_dependency_signature(py),
+        }
     }
 }
 
@@ -1948,11 +1963,387 @@ fn constructor_parameter<'py>(
         .call((name, kind.clone()), Some(&parameter_arguments))
 }
 
+fn optional_union_type<'py>(
+    py: Python<'py>,
+    inner: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let none_type = py.None().bind(py).get_type();
+    py.import("operator")?
+        .getattr("or_")?
+        .call1((inner, none_type))
+}
+
+fn dictionary_type<'py>(
+    py: Python<'py>,
+    key: &Bound<'py, PyAny>,
+    value: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    py.import("builtins")?
+        .getattr("dict")?
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(py, [key.clone(), value.clone()])?,))
+}
+
+fn security_scheme_annotations<'py>(
+    py: Python<'py>,
+    optional_string: &Bound<'py, PyAny>,
+) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+    let scheme_name = documented_annotation(
+        py,
+        optional_string,
+        "\n                Security scheme name.\n\n                It will be included in the generated OpenAPI (e.g. visible at `/docs`).\n                ",
+    )?;
+    let description = documented_annotation(
+        py,
+        optional_string,
+        "\n                Security scheme description.\n\n                It will be included in the generated OpenAPI (e.g. visible at `/docs`).\n                ",
+    )?;
+    Ok((scheme_name, description))
+}
+
+fn api_key_constructor_parameters(
+    py: Python<'_>,
+    input_kind: ApiKeyInputKind,
+) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let parameter_type = py.import("inspect")?.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none = py.None();
+    let none_type = none.bind(py).get_type();
+    let optional_string = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((string_type.as_any(), none_type))?;
+    let name_doc = match input_kind {
+        ApiKeyInputKind::Header => "Header name.",
+        ApiKeyInputKind::Query => "Query parameter name.",
+        ApiKeyInputKind::Cookie => "Cookie name.",
+    };
+    let (scheme_name, description) = security_scheme_annotations(py, &optional_string)?;
+    let name = documented_annotation(py, string_type.as_any(), name_doc)?;
+    let auto_error_doc = match input_kind {
+        ApiKeyInputKind::Header => {
+            "\n                By default, if the header is not provided, `APIKeyHeader` will\n                automatically cancel the request and send the client an error.\n\n                If `auto_error` is set to `False`, when the header is not available,\n                instead of erroring out, the dependency result will be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, in a header or\n                in an HTTP Bearer token).\n                "
+        }
+        ApiKeyInputKind::Query => {
+            "\n                By default, if the query parameter is not provided, `APIKeyQuery` will\n                automatically cancel the request and send the client an error.\n\n                If `auto_error` is set to `False`, when the query parameter is not\n                available, instead of erroring out, the dependency result will be\n                `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, in a query\n                parameter or in an HTTP Bearer token).\n                "
+        }
+        ApiKeyInputKind::Cookie => {
+            "\n                By default, if the cookie is not provided, `APIKeyCookie` will\n                automatically cancel the request and send the client an error.\n\n                If `auto_error` is set to `False`, when the cookie is not available,\n                instead of erroring out, the dependency result will be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, in a cookie or\n                in an HTTP Bearer token).\n                "
+        }
+    };
+    let auto_error = documented_annotation(py, bool_type.as_any(), auto_error_doc)?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(py, "name", &keyword_only, &name, None)?,
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &keyword_only,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "description",
+            &keyword_only,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &keyword_only,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+    ])
+}
+
+fn http_basic_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let parameter_type = py.import("inspect")?.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none = py.None();
+    let optional_string = optional_union_type(py, string_type.as_any())?;
+    let (scheme_name, description) = security_scheme_annotations(py, &optional_string)?;
+    let realm = documented_annotation(
+        py,
+        &optional_string,
+        "\n                HTTP Basic authentication realm.\n                ",
+    )?;
+    let auto_error = documented_annotation(
+        py,
+        bool_type.as_any(),
+        "\n                By default, if the HTTP Basic authentication is not provided (a\n                header), `HTTPBasic` will automatically cancel the request and send the\n                client an error.\n\n                If `auto_error` is set to `False`, when the HTTP Basic authentication\n                is not available, instead of erroring out, the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, in HTTP Basic\n                authentication or in an HTTP Bearer token).\n                ",
+    )?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &keyword_only,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(py, "realm", &keyword_only, &realm, Some(none.bind(py)))?,
+        constructor_parameter(
+            py,
+            "description",
+            &keyword_only,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &keyword_only,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+    ])
+}
+
+fn http_bearer_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let parameter_type = py.import("inspect")?.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none = py.None();
+    let optional_string = optional_union_type(py, string_type.as_any())?;
+    let (scheme_name, description) = security_scheme_annotations(py, &optional_string)?;
+    let bearer_format = documented_annotation(py, &optional_string, "Bearer token format.")?;
+    let auto_error = documented_annotation(
+        py,
+        bool_type.as_any(),
+        "\n                By default, if the HTTP Bearer token is not provided (in an\n                `Authorization` header), `HTTPBearer` will automatically cancel the\n                request and send the client an error.\n\n                If `auto_error` is set to `False`, when the HTTP Bearer token\n                is not available, instead of erroring out, the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, in an HTTP\n                Bearer token or in a cookie).\n                ",
+    )?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(
+            py,
+            "bearerFormat",
+            &keyword_only,
+            &bearer_format,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &keyword_only,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "description",
+            &keyword_only,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &keyword_only,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+    ])
+}
+
+fn http_digest_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let parameter_type = py.import("inspect")?.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none = py.None();
+    let optional_string = optional_union_type(py, string_type.as_any())?;
+    let (scheme_name, description) = security_scheme_annotations(py, &optional_string)?;
+    let auto_error = documented_annotation(
+        py,
+        bool_type.as_any(),
+        "\n                By default, if the HTTP Digest is not provided, `HTTPDigest` will\n                automatically cancel the request and send the client an error.\n\n                If `auto_error` is set to `False`, when the HTTP Digest is not\n                available, instead of erroring out, the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, in HTTP\n                Digest or in a cookie).\n                ",
+    )?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &keyword_only,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "description",
+            &keyword_only,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &keyword_only,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+    ])
+}
+
+fn oauth2_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let parameter_type = py.import("inspect")?.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none = py.None();
+    let optional_string = optional_union_type(py, string_type.as_any())?;
+    let (scheme_name, description) = security_scheme_annotations(py, &optional_string)?;
+    let module = py.import("fastapi_rs._core")?;
+    let flows_model = module.getattr("_OAuth2FlowsModel")?;
+    let dictionary_any = dictionary_type(
+        py,
+        string_type.as_any(),
+        py.import("typing")?.getattr("Any")?.as_any(),
+    )?;
+    let dictionary_flows = dictionary_type(py, string_type.as_any(), &dictionary_any)?;
+    let flows_type = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((flows_model.as_any(), dictionary_flows))?;
+    let flows = documented_annotation(
+        py,
+        &flows_type,
+        "\n                The dictionary of OAuth2 flows.\n                ",
+    )?;
+    let flows_default = flows_model.call0()?;
+    let auto_error = documented_annotation(
+        py,
+        bool_type.as_any(),
+        "\n                By default, if no HTTP Authorization header is provided, required for\n                OAuth2 authentication, it will automatically cancel the request and\n                send the client an error.\n\n                If `auto_error` is set to `False`, when the HTTP Authorization header\n                is not available, instead of erroring out, the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, with OAuth2\n                or in a cookie).\n                ",
+    )?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(
+            py,
+            "flows",
+            &keyword_only,
+            &flows,
+            Some(flows_default.as_any()),
+        )?,
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &keyword_only,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "description",
+            &keyword_only,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &keyword_only,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+    ])
+}
+
+fn oauth2_password_bearer_constructor_parameters(
+    py: Python<'_>,
+) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let parameter_type = py.import("inspect")?.getattr("Parameter")?;
+    let positional = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none = py.None();
+    let optional_string = optional_union_type(py, string_type.as_any())?;
+    let (scheme_name, description) = security_scheme_annotations(py, &optional_string)?;
+    let token_url = documented_annotation(
+        py,
+        string_type.as_any(),
+        "\n                The URL to obtain the OAuth2 token. This would be the *path operation*\n                that has `OAuth2PasswordRequestForm` as a dependency.\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
+    )?;
+    let scopes_type = dictionary_type(py, string_type.as_any(), string_type.as_any())?;
+    let optional_scopes_type = optional_union_type(py, &scopes_type)?;
+    let scopes = documented_annotation(
+        py,
+        &optional_scopes_type,
+        "\n                The OAuth2 scopes that would be required by the *path operations* that\n                use this dependency.\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
+    )?;
+    let auto_error = documented_annotation(
+        py,
+        bool_type.as_any(),
+        "\n                By default, if no HTTP Authorization header is provided, required for\n                OAuth2 authentication, it will automatically cancel the request and\n                send the client an error.\n\n                If `auto_error` is set to `False`, when the HTTP Authorization header\n                is not available, instead of erroring out, the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, with OAuth2\n                or in a cookie).\n                ",
+    )?;
+    let refresh_url = documented_annotation(
+        py,
+        &optional_string,
+        "\n                The URL to refresh the token and obtain a new one.\n                ",
+    )?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(py, "tokenUrl", &positional, &token_url, None)?,
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &positional,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(py, "scopes", &positional, &scopes, Some(none.bind(py)))?,
+        constructor_parameter(
+            py,
+            "description",
+            &positional,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &positional,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+        constructor_parameter(
+            py,
+            "refreshUrl",
+            &positional,
+            &refresh_url,
+            Some(none.bind(py)),
+        )?,
+    ])
+}
+
 fn attach_constructor_introspection(
     py: Python<'_>,
     class: &Bound<'_, PyType>,
     parameters: Vec<Bound<'_, PyAny>>,
     kind: ConstructorInitKind,
+) -> PyResult<()> {
+    attach_constructor_introspection_with_instance_signature(
+        py,
+        class,
+        parameters,
+        kind,
+        ConstructorInstanceSignature::Dependency,
+    )
+}
+
+fn attach_constructor_introspection_with_instance_signature(
+    py: Python<'_>,
+    class: &Bound<'_, PyType>,
+    parameters: Vec<Bound<'_, PyAny>>,
+    kind: ConstructorInitKind,
+    instance_signature: ConstructorInstanceSignature,
 ) -> PyResult<()> {
     let inspect = py.import("inspect")?;
     let class_parameters = PyList::empty(py);
@@ -1971,11 +2362,13 @@ fn attach_constructor_introspection(
     }
     let init_signature = inspect.getattr("Signature")?.call1((init_parameters,))?;
 
+    let callable_name = format!("{}.__init__", class.name()?);
     let init_callable = Py::new(
         py,
         ConstructorInit {
             kind,
             signature: init_signature.unbind(),
+            callable_name,
         },
     )?;
     init_callable.bind(py).setattr("__name__", "__init__")?;
@@ -1991,6 +2384,7 @@ fn attach_constructor_introspection(
             py,
             ConstructorSignatureDescriptor {
                 class_signature: class_signature.unbind(),
+                instance_signature,
             },
         )?,
     )?;
@@ -2588,10 +2982,21 @@ fn create_oauth2_models(py: Python<'_>) -> PyResult<OAuth2ModelTypes> {
 
 fn create_credentials_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let create_model = py.import("pydantic")?.getattr("create_model")?;
+    let string_type = py.get_type::<PyString>();
+    let scheme = documented_annotation(
+        py,
+        string_type.as_any(),
+        "\n            The HTTP authorization scheme extracted from the header value.\n            ",
+    )?;
+    let credentials = documented_annotation(
+        py,
+        string_type.as_any(),
+        "\n            The HTTP authorization credentials extracted from the header value.\n            ",
+    )?;
     let fields = PyDict::new(py);
     fields.set_item("__module__", "fastapi.security.http")?;
-    fields.set_item("scheme", py.get_type::<PyString>())?;
-    fields.set_item("credentials", py.get_type::<PyString>())?;
+    fields.set_item("scheme", scheme)?;
+    fields.set_item("credentials", credentials)?;
     create_model
         .call(("HTTPAuthorizationCredentials",), Some(&fields))
         .map(Bound::unbind)
@@ -2900,24 +3305,57 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyApiKeyHeader>()?;
     let api_key_header_type = py.get_type::<PyApiKeyHeader>();
     attach_api_key_dependency_introspection(py, &api_key_header_type)?;
+    attach_constructor_introspection_with_instance_signature(
+        py,
+        &api_key_header_type,
+        api_key_constructor_parameters(py, ApiKeyInputKind::Header)?,
+        ConstructorInitKind::NativeNewConstructor,
+        ConstructorInstanceSignature::ApiKeyDependency,
+    )?;
 
     module.add_class::<PyApiKeyQuery>()?;
     let api_key_query_type = py.get_type::<PyApiKeyQuery>();
     attach_api_key_dependency_introspection(py, &api_key_query_type)?;
+    attach_constructor_introspection_with_instance_signature(
+        py,
+        &api_key_query_type,
+        api_key_constructor_parameters(py, ApiKeyInputKind::Query)?,
+        ConstructorInitKind::NativeNewConstructor,
+        ConstructorInstanceSignature::ApiKeyDependency,
+    )?;
 
     module.add_class::<PyApiKeyCookie>()?;
     let api_key_cookie_type = py.get_type::<PyApiKeyCookie>();
     attach_api_key_dependency_introspection(py, &api_key_cookie_type)?;
+    attach_constructor_introspection_with_instance_signature(
+        py,
+        &api_key_cookie_type,
+        api_key_constructor_parameters(py, ApiKeyInputKind::Cookie)?,
+        ConstructorInitKind::NativeNewConstructor,
+        ConstructorInstanceSignature::ApiKeyDependency,
+    )?;
 
     module.add_class::<PyHttpBearer>()?;
     let http_bearer_type = py.get_type::<PyHttpBearer>();
     attach_dependency_introspection(py, &http_bearer_type)?;
+    attach_constructor_introspection(
+        py,
+        &http_bearer_type,
+        http_bearer_constructor_parameters(py)?,
+        ConstructorInitKind::NativeNewConstructor,
+    )?;
     http_bearer_type.setattr("_fastapi_rs_credentials_type", credentials_type.bind(py))?;
     http_bearer_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
 
     module.add_class::<PyHttpBasic>()?;
     let http_basic_type = py.get_type::<PyHttpBasic>();
     attach_dependency_introspection(py, &http_basic_type)?;
+    attach_constructor_introspection(
+        py,
+        &http_basic_type,
+        http_basic_constructor_parameters(py)?,
+        ConstructorInitKind::NativeNewConstructor,
+    )?;
     http_basic_type.setattr(
         "_fastapi_rs_credentials_type",
         basic_credentials_type.bind(py),
@@ -2933,17 +3371,35 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyHttpDigest>()?;
     let http_digest_type = py.get_type::<PyHttpDigest>();
     attach_dependency_introspection(py, &http_digest_type)?;
+    attach_constructor_introspection(
+        py,
+        &http_digest_type,
+        http_digest_constructor_parameters(py)?,
+        ConstructorInitKind::NativeNewConstructor,
+    )?;
     http_digest_type.setattr("_fastapi_rs_credentials_type", credentials_type.bind(py))?;
     http_digest_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
 
     module.add_class::<PyOAuth2>()?;
     let oauth2_type = py.get_type::<PyOAuth2>();
     attach_dependency_introspection(py, &oauth2_type)?;
+    attach_constructor_introspection(
+        py,
+        &oauth2_type,
+        oauth2_constructor_parameters(py)?,
+        ConstructorInitKind::NativeNewConstructor,
+    )?;
     oauth2_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
 
     module.add_class::<PyOAuth2PasswordBearer>()?;
     let oauth2_password_bearer_type = py.get_type::<PyOAuth2PasswordBearer>();
     attach_dependency_introspection(py, &oauth2_password_bearer_type)?;
+    attach_constructor_introspection(
+        py,
+        &oauth2_password_bearer_type,
+        oauth2_password_bearer_constructor_parameters(py)?,
+        ConstructorInitKind::NativeNewConstructor,
+    )?;
     oauth2_password_bearer_type
         .setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
 
