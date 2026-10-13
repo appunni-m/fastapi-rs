@@ -909,6 +909,14 @@ def propagate_pydantic_models(records: list[dict[str, Any]]) -> list[str]:
         for item in module["definitions"]
         if item["kind"] == "class"
     }
+    for class_id, item in classes.items():
+        module_id = class_id.rpartition(".")[0]
+        for base in item["bases"]:
+            resolved = base["resolved_path"]
+            local_base = f"{module_id}.{resolved}"
+            if "." not in resolved and local_base in classes:
+                base["resolved_path"] = local_base
+
     marked: set[str] = set()
     changed = True
     while changed:

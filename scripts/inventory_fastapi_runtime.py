@@ -186,7 +186,7 @@ def _signature(value: Any) -> dict[str, Any] | None:
             }
             for parameter in signature.parameters.values()
         ],
-        "return_annotation": _qualified(signature.return_annotation)
+        "return_annotation": _annotation(signature.return_annotation)
         if signature.return_annotation is not inspect.Signature.empty
         else None,
     }

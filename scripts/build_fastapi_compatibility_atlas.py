@@ -11876,18 +11876,28 @@ def _sync_manifest_artifact_metadata(
     manifest_text = (
         manifest_text[:deprecations_start] + deprecations_block + manifest_text[deprecations_end:]
     )
-    runtime_core_path = PROJECT / "tests/fixtures/runtime-api-surface-core.json"
-    manifest_text = _replace_manifest_artifact_block(
-        manifest_text,
-        "runtime_api_surface_core",
-        {"sha256": sha256(runtime_core_path)},
-    )
-    runtime_standard_path = PROJECT / "tests/fixtures/runtime-api-surface-standard.json"
-    manifest_text = _replace_manifest_artifact_block(
-        manifest_text,
-        "runtime_api_surface_standard",
-        {"sha256": sha256(runtime_standard_path)},
-    )
+    for artifact_name, profile_name in (
+        ("runtime_api_surface_core", "runtime-api-surface-core.json"),
+        ("runtime_api_surface_standard", "runtime-api-surface-standard.json"),
+    ):
+        runtime_path = PROJECT / "tests/fixtures" / profile_name
+        runtime_profile = json.loads(runtime_path.read_text(encoding="utf-8"))
+        runtime_counts = runtime_profile["counts"]
+        manifest_text = _replace_manifest_artifact_block(
+            manifest_text,
+            artifact_name,
+            {
+                "sha256": sha256(runtime_path),
+                "counts": {
+                    "source_symbols_reflected": runtime_counts["source_symbols_reflected"],
+                    "optional_feature_unavailable_modules": runtime_counts[
+                        "optional_feature_unavailable_modules"
+                    ],
+                    "entrypoint_modules_skipped": runtime_counts["entrypoint_modules_skipped"],
+                    "pydantic_model_classes": runtime_counts["pydantic_model_classes"],
+                },
+            },
+        )
     manifest_path.write_text(manifest_text, encoding="utf-8")
 
 
