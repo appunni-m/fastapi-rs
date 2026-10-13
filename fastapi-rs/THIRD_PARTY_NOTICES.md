@@ -4783,8 +4783,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## FastAPI 0.141.1 signature metadata — MIT
 
-The route signature metadata and annotation text in
-`fastapi-rs/src/route_signature.json` were copied from FastAPI 0.141.1 at the
+The route and parameter-factory signature metadata and annotation text in
+`fastapi-rs/src/route_signature.json` and
+`fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.141.1 at the
 source commit `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` recorded in that file.
 
 <!-- BEGIN PINNED FASTAPI LICENSE -->

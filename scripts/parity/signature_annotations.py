@@ -19,15 +19,37 @@ class SignatureAnnotationError(ValueError):
 
 
 FIELD_INFO_ATTRIBUTES = (
-    "annotation", "default", "default_factory", "alias", "alias_priority",
-    "validation_alias", "serialization_alias", "title", "field_title_generator",
-    "description", "examples", "exclude", "exclude_if", "discriminator",
-    "deprecated", "json_schema_extra", "frozen", "validate_default", "repr",
-    "init", "init_var", "kw_only",
+    "annotation",
+    "default",
+    "default_factory",
+    "alias",
+    "alias_priority",
+    "validation_alias",
+    "serialization_alias",
+    "title",
+    "field_title_generator",
+    "description",
+    "examples",
+    "exclude",
+    "exclude_if",
+    "discriminator",
+    "deprecated",
+    "json_schema_extra",
+    "frozen",
+    "validate_default",
+    "repr",
+    "init",
+    "init_var",
+    "kw_only",
 )
 FASTAPI_FIELD_ATTRIBUTES = (
-    "embed", "media_type", "example", "include_in_schema", "openapi_examples",
-    "in_", "convert_underscores",
+    "embed",
+    "media_type",
+    "example",
+    "include_in_schema",
+    "openapi_examples",
+    "in_",
+    "convert_underscores",
 )
 CONSTRAINT_FIELDS = {
     "annotated_types.Gt": ("gt",),
@@ -37,9 +59,22 @@ CONSTRAINT_FIELDS = {
     ),
 }
 TYPING_FORMS = (
-    "Any", "Union", "Literal", "Annotated", "Optional", "ClassVar", "Final",
-    "NoReturn", "Never", "Self", "LiteralString", "TypeGuard", "Unpack",
-    "Concatenate", "Required", "NotRequired",
+    "Any",
+    "Union",
+    "Literal",
+    "Annotated",
+    "Optional",
+    "ClassVar",
+    "Final",
+    "NoReturn",
+    "Never",
+    "Self",
+    "LiteralString",
+    "TypeGuard",
+    "Unpack",
+    "Concatenate",
+    "Required",
+    "NotRequired",
 )
 FASTAPI_FIELD_INFO_TYPES = frozenset(
     {
@@ -90,9 +125,7 @@ def project_annotation(value: Any, project_value: Callable[[Any], Any]) -> dict[
     return _annotation(value, project_value, depth=0)
 
 
-def _annotation(
-    value: Any, project_value: Callable[[Any], Any], *, depth: int
-) -> dict[str, Any]:
+def _annotation(value: Any, project_value: Callable[[Any], Any], *, depth: int) -> dict[str, Any]:
     if depth > 64:
         raise SignatureAnnotationError("signature annotation exceeded its nesting limit")
     if value is inspect.Signature.empty:
@@ -116,8 +149,7 @@ def _annotation(
             "module": value.__module__,
             "bound": _annotation(value.__bound__, project_value, depth=depth + 1),
             "constraints": [
-                _annotation(item, project_value, depth=depth + 1)
-                for item in value.__constraints__
+                _annotation(item, project_value, depth=depth + 1) for item in value.__constraints__
             ],
             "covariant": value.__covariant__,
             "contravariant": value.__contravariant__,
@@ -131,9 +163,7 @@ def _annotation(
             "python_type": _type_name(value),
             "alias_name": _alias_name(value),
             "base": _annotation(base, project_value, depth=depth + 1),
-            "metadata": [
-                _metadata(item, project_value, depth=depth + 1) for item in metadata
-            ],
+            "metadata": [_metadata(item, project_value, depth=depth + 1) for item in metadata],
         }
     if origin is not None:
         return {
@@ -142,8 +172,7 @@ def _annotation(
             "alias_name": _alias_name(value),
             "origin": _symbol(origin),
             "arguments": [
-                _annotation(item, project_value, depth=depth + 1)
-                for item in typing.get_args(value)
+                _annotation(item, project_value, depth=depth + 1) for item in typing.get_args(value)
             ],
         }
     if type(value) in {list, tuple}:
@@ -162,9 +191,7 @@ def _annotation(
     return {"kind": "type", "qualified_name": _symbol(value)}
 
 
-def _metadata(
-    value: Any, project_value: Callable[[Any], Any], *, depth: int
-) -> dict[str, Any]:
+def _metadata(value: Any, project_value: Callable[[Any], Any], *, depth: int) -> dict[str, Any]:
     if depth > 64:
         raise SignatureAnnotationError("signature metadata exceeded its nesting limit")
     doc_type = getattr(importlib.import_module("annotated_doc"), "Doc", None)
@@ -183,7 +210,9 @@ def _metadata(
         ):
             raise SignatureAnnotationError("deprecated annotation has unreviewed fields or values")
         return {
-            "kind": "deprecated", "qualified_name": name, "message": value.message,
+            "kind": "deprecated",
+            "qualified_name": name,
+            "message": value.message,
             "category": _annotation(value.category, project_value, depth=depth + 1),
             "stacklevel": value.stacklevel,
         }
@@ -202,7 +231,8 @@ def _metadata(
                     f"constraint annotation has unreviewed slots: {name}"
                 )
         return {
-            "kind": "constraint", "qualified_name": name,
+            "kind": "constraint",
+            "qualified_name": name,
             "fields": {
                 field: _field_value(getattr(value, field), project_value) for field in fields
             },
@@ -230,17 +260,19 @@ def _metadata(
         observed_fields.update(
             {
                 field: _field_value(extra[field], project_value)
-                for field in FASTAPI_FIELD_ATTRIBUTES if field in extra
+                for field in FASTAPI_FIELD_ATTRIBUTES
+                if field in extra
             }
         )
         attributes_set = value._attributes_set
         if type(attributes_set) is not dict or any(
-            type(field) is not str or field not in FIELD_INFO_ATTRIBUTES
-            for field in attributes_set
+            type(field) is not str or field not in FIELD_INFO_ATTRIBUTES for field in attributes_set
         ):
             raise SignatureAnnotationError("FieldInfo has unreviewed explicitly set attributes")
         return {
-            "kind": "field_info", "qualified_name": name, "attributes": observed_fields,
+            "kind": "field_info",
+            "qualified_name": name,
+            "attributes": observed_fields,
             "attributes_set": {
                 field: _field_value(attributes_set[field], project_value)
                 for field in sorted(attributes_set)
@@ -263,9 +295,7 @@ def _require_reviewed_constraint_type(value: Any, name: str) -> None:
         from pydantic import Field
 
         metadata = Field(pattern="x").metadata
-        expected = next(
-            (type(item) for item in metadata if _type_name(item) == name), None
-        )
+        expected = next((type(item) for item in metadata if _type_name(item) == name), None)
     if type(value) is not expected:
         raise SignatureAnnotationError(f"unreviewed constraint annotation type: {name}")
 

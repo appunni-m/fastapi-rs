@@ -343,8 +343,10 @@ def _sync_source_notices(fastapi_source: Path, starlette_rs_source: Path) -> Non
         "\0",  # Replace through EOF; this sentinel cannot occur in the notice file.
         (
             f"{fastapi_heading}\n\n"
-            "The route signature metadata and annotation text in\n"
-            "`fastapi-rs/src/route_signature.json` were copied from FastAPI 0.141.1 at the\n"
+            "The route and parameter-factory signature metadata and annotation text in\n"
+            "`fastapi-rs/src/route_signature.json` and\n"
+            "`fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.141.1 "
+            "at the\n"
             f"source commit `{fastapi_commit}` recorded in that file.\n\n"
             f"{BEGIN_FASTAPI}\n"
             f"{fastapi_license.decode('utf-8')}"

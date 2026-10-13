@@ -208,9 +208,7 @@ def _profile_expectations(mode: Literal["oracle", "target"], profile_id: str) ->
     if mode == "oracle":
         if profile_id not in ORACLE_PROCESS_PROFILE_IDS:
             raise ProcessError("oracle process runner received a non-pinned profile")
-        profile_name = (
-            "core" if profile_id == ORACLE_PROCESS_CORE_PROFILE_ID else "standard"
-        )
+        profile_name = "core" if profile_id == ORACLE_PROCESS_CORE_PROFILE_ID else "standard"
         surface_path = CORE_SURFACE_PATH if profile_name == "core" else STANDARD_SURFACE_PATH
         authority = read_json(surface_path).get("authority", {})
         if not isinstance(authority, dict):

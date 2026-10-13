@@ -2389,6 +2389,11 @@ impl PyFastApiDefaultPlaceholder {
     }
 }
 
+/// Construct FastAPI's default-placeholder sentinel for Rust-owned signatures.
+pub(crate) fn default_placeholder(py: Python<'_>, value: Py<PyAny>) -> PyResult<Py<PyAny>> {
+    Py::new(py, PyFastApiDefaultPlaceholder { value }).map(Py::into_any)
+}
+
 #[pyclass(name = "_OperationRouteDescriptor", module = "fastapi_rs._core")]
 struct PyOperationRouteDescriptor {
     method: Py<PyAny>,

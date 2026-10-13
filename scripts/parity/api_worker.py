@@ -348,6 +348,7 @@ def _signature_value(
     signature = inspect.signature(function)
     if structural_signatures:
         try:
+
             def project(value: Any) -> dict[str, Any]:
                 return project_annotation(
                     value,
