@@ -70,6 +70,7 @@ COMPARISON_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v6.
 COMPARISON_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v7.schema.json"
 COMPARISON_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v8.schema.json"
 COMPARISON_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v9.schema.json"
+COMPARISON_SCHEMA_V10 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v10.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
@@ -163,6 +164,7 @@ COMPARISON_SCHEMA_V6_ID = "fastapi-rs/python-asgi-comparison@6"
 COMPARISON_SCHEMA_V7_ID = "fastapi-rs/python-asgi-comparison@7"
 COMPARISON_SCHEMA_V8_ID = "fastapi-rs/python-asgi-comparison@8"
 COMPARISON_SCHEMA_V9_ID = "fastapi-rs/python-asgi-comparison@9"
+COMPARISON_SCHEMA_V10_ID = "fastapi-rs/python-asgi-comparison@10"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
@@ -211,6 +213,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_V7_ID: COMPARISON_SCHEMA_V7,
     COMPARISON_SCHEMA_V8_ID: COMPARISON_SCHEMA_V8,
     COMPARISON_SCHEMA_V9_ID: COMPARISON_SCHEMA_V9,
+    COMPARISON_SCHEMA_V10_ID: COMPARISON_SCHEMA_V10,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -235,9 +238,9 @@ COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V4_ID: COMPARISON_SCHEMA_V4_ID,
     WORKFLOW_SCHEMA_V5_ID: COMPARISON_SCHEMA_V5_ID,
     WORKFLOW_SCHEMA_V6_ID: COMPARISON_SCHEMA_V6_ID,
-    WORKFLOW_SCHEMA_V7_ID: COMPARISON_SCHEMA_V7_ID,
-    WORKFLOW_SCHEMA_V8_ID: COMPARISON_SCHEMA_V8_ID,
-    WORKFLOW_SCHEMA_V9_ID: COMPARISON_SCHEMA_V9_ID,
+    WORKFLOW_SCHEMA_V7_ID: COMPARISON_SCHEMA_V10_ID,
+    WORKFLOW_SCHEMA_V8_ID: COMPARISON_SCHEMA_V10_ID,
+    WORKFLOW_SCHEMA_V9_ID: COMPARISON_SCHEMA_V10_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -679,13 +682,13 @@ def read_manifest() -> dict[str, Any]:
     if (
         workflow_v7_contract.get("schema_id") != WORKFLOW_SCHEMA_V7_ID
         or workflow_v7_contract.get("result_schema_id") != RESULT_SCHEMA_V7_ID
-        or workflow_v7_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V7_ID
+        or workflow_v7_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V10_ID
     ):
         raise ContractError("manifest Python/ASGI v7 schema identities are unsupported")
     workflow_v7_schema_refs = (
         ("schema_path", "schema_sha256", "python-asgi-workflow v7 schema"),
         ("result_schema_path", "result_schema_sha256", "workflow result v7 schema"),
-        ("comparison_schema_path", "comparison_schema_sha256", "comparison v7 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v10 schema"),
     )
     for path_key, digest_key, label in workflow_v7_schema_refs:
         _verify_digest_ref(
@@ -699,13 +702,13 @@ def read_manifest() -> dict[str, Any]:
     if (
         workflow_v8_contract.get("schema_id") != WORKFLOW_SCHEMA_V8_ID
         or workflow_v8_contract.get("result_schema_id") != RESULT_SCHEMA_V8_ID
-        or workflow_v8_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V8_ID
+        or workflow_v8_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V10_ID
     ):
         raise ContractError("manifest Python/ASGI v8 schema identities are unsupported")
     workflow_v8_schema_refs = (
         ("schema_path", "schema_sha256", "python-asgi-workflow v8 schema"),
         ("result_schema_path", "result_schema_sha256", "workflow result v8 schema"),
-        ("comparison_schema_path", "comparison_schema_sha256", "comparison v8 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v10 schema"),
     )
     for path_key, digest_key, label in workflow_v8_schema_refs:
         _verify_digest_ref(
@@ -719,13 +722,13 @@ def read_manifest() -> dict[str, Any]:
     if (
         workflow_v9_contract.get("schema_id") != WORKFLOW_SCHEMA_V9_ID
         or workflow_v9_contract.get("result_schema_id") != RESULT_SCHEMA_V9_ID
-        or workflow_v9_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V9_ID
+        or workflow_v9_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V10_ID
     ):
         raise ContractError("manifest Python/ASGI v9 schema identities are unsupported")
     workflow_v9_schema_refs = (
         ("schema_path", "schema_sha256", "python-asgi-workflow v9 schema"),
         ("result_schema_path", "result_schema_sha256", "workflow result v9 schema"),
-        ("comparison_schema_path", "comparison_schema_sha256", "comparison v9 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v10 schema"),
     )
     for path_key, digest_key, label in workflow_v9_schema_refs:
         _verify_digest_ref(

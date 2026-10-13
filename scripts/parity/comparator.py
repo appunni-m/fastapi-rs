@@ -531,6 +531,37 @@ def _compare_case_v4(
     return {"case_id": case_id, "outcome": "fail" if diffs else "pass", "diffs": diffs}
 
 
+def _lane_summary(cases: list[dict[str, Any]]) -> dict[str, int]:
+    outcomes = [case["outcome"] for case in cases]
+    not_run = outcomes.count("not_run")
+    return {
+        "selected": len(cases),
+        "executed": outcomes.count("pass") + outcomes.count("fail"),
+        "passed": outcomes.count("pass"),
+        "failed": outcomes.count("fail"),
+        "skipped": not_run,
+        "not_run": not_run,
+        # Completed comparison artifacts are emitted only after both product
+        # receipts pass their infrastructure gates.
+        "infrastructure_errors": 0,
+    }
+
+
+def _validate_lane_summary(summary: dict[str, Any]) -> None:
+    lanes = (summary["parity"], summary["fault_contract"])
+    for lane in lanes:
+        if (
+            lane["selected"] != lane["executed"] + lane["skipped"]
+            or lane["executed"] != lane["passed"] + lane["failed"]
+            or lane["skipped"] != lane["not_run"]
+            or lane["infrastructure_errors"] != 0
+        ):
+            raise ComparisonError("comparison lane summary counts are inconsistent")
+    for key in ("selected", "passed", "failed", "not_run"):
+        if summary[key] != sum(lane[key] for lane in lanes):
+            raise ComparisonError(f"comparison summary {key} count differs from its lanes")
+
+
 def compare_workflow_results(
     *,
     workflow: dict[str, Any],
@@ -687,17 +718,12 @@ def compare_workflow_results(
     }:
         parity_results = [case for case in case_results if case["verification"] == "parity"]
         fault_results = [case for case in case_results if case["verification"] == "fault-contract"]
-        summary["parity"] = {
-            "selected": len(parity_results),
-            "passed": sum(case["outcome"] == "pass" for case in parity_results),
-            "failed": sum(case["outcome"] == "fail" for case in parity_results),
-            "not_run": sum(case["outcome"] == "not_run" for case in parity_results),
-        }
+        summary["parity"] = _lane_summary(parity_results)
         summary["fault_contract"] = {
-            "selected": len(fault_results),
-            "passed": sum(case["outcome"] == "pass" for case in fault_results),
-            "failed": sum(case["outcome"] == "fail" for case in fault_results),
+            **_lane_summary(fault_results),
+            "oracle_status": "not_applicable",
         }
+        _validate_lane_summary(summary)
     return {
         "schema": comparison_schema,
         "run_id": str(uuid.uuid4()),
