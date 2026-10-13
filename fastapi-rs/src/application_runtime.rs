@@ -2390,6 +2390,12 @@ struct PyFastApiHttpExceptionHandler;
 )]
 struct PyFastApiRequestValidationExceptionHandler;
 
+#[pyclass(
+    name = "_FastAPIWebSocketRequestValidationExceptionHandler",
+    module = "fastapi_rs._core"
+)]
+struct PyFastApiWebSocketRequestValidationExceptionHandler;
+
 #[pyclass(name = "_ExceptionHandlerDecorator", module = "fastapi_rs._core")]
 struct PyExceptionHandlerDecorator {
     app: Py<PyFastApi>,
@@ -2802,6 +2808,14 @@ impl PyFastApi {
             exception_handlers.set_item(
                 request_validation_exception_type,
                 Py::new(py, PyFastApiRequestValidationExceptionHandler)?.into_any(),
+            )?;
+        }
+        let websocket_validation_exception_type =
+            crate::errors::websocket_request_validation_error_type(py);
+        if !exception_handlers.contains(&websocket_validation_exception_type)? {
+            exception_handlers.set_item(
+                websocket_validation_exception_type,
+                Py::new(py, PyFastApiWebSocketRequestValidationExceptionHandler)?.into_any(),
             )?;
         }
         let mut docs_router = RouteTable::new();
@@ -4399,6 +4413,26 @@ impl PyFastApiRequestValidationExceptionHandler {
         py.import("starlette.responses")?
             .getattr("JSONResponse")?
             .call((content,), Some(&kwargs))
+            .map(Bound::unbind)
+    }
+}
+
+#[pymethods]
+impl PyFastApiWebSocketRequestValidationExceptionHandler {
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        websocket: Py<PyAny>,
+        exception: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        let errors = exception.bind(py).call_method0("errors")?;
+        let reason = jsonable_encoder_default(py, &errors)?;
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("code", 1008_u16)?;
+        kwargs.set_item("reason", reason)?;
+        websocket
+            .bind(py)
+            .call_method("close", (), Some(&kwargs))
             .map(Bound::unbind)
     }
 }
@@ -12147,7 +12181,9 @@ impl FastApiCall {
                 && iscoroutinefunction
                     .call1((handler.getattr("__call__")?,))?
                     .extract::<bool>()?);
-        let awaitable = if is_async {
+        let native_websocket_validation_handler = handler
+            .is_instance(&py.get_type::<PyFastApiWebSocketRequestValidationExceptionHandler>())?;
+        let awaitable = if is_async || native_websocket_validation_handler {
             handler.call1((websocket, exception))?
         } else {
             py.import("starlette.concurrency")?

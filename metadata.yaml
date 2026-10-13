@@ -1402,6 +1402,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor-middleware-order
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.default-handler-close
+          workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+          observation_selectors: [websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.constructor-override-close
+          workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+          observation_selectors: [websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
           case_id: fastapi.applications.constructor.redirect-slashes-enabled
         - recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
@@ -1481,7 +1487,9 @@ reviewed_api_contract_overlay:
         accepts a mapping keyed by exception class or HTTP status code, and
         registered custom HTTP handlers participate in response dispatch.
         Identity-checked workflows cover exception-class, status-code, and
-        default Starlette HTTPException handling. The constructor also accepts
+        default Starlette HTTPException handling. The WebSocket validation
+        workflow observes the default handler mapping and confirms that a
+        constructor-supplied handler is preserved and used. The constructor also accepts
         the default and custom `docs_url` path and an optional `redoc_url`; the
         metadata tutorial workflow observes a moved Swagger UI route and a
         disabled ReDoc route. Attribute access to those stored values and other
@@ -1616,10 +1624,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
           case_id: fastapi.applications.exception-handler.decorator
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.path-error
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.body-error
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.malformed-json
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.default-precedes-server-error
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.form-body
         - recipe_path: tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml
           case_id: fastapi.applications.exception-handler.after-stack-cache
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.default-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.custom-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.constructor-override-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml
           case_id: fastapi.websocket-exception.custom-handler-close
         - *response_traversal_branch_retry
@@ -1642,11 +1664,13 @@ reviewed_api_contract_overlay:
         The custom handler receives the same Request object used by the FastAPI
         path operation. Built-in Starlette HTTPException JSON handling is also
         included.
-        Handler registration after the middleware stack has been cached,
-        custom RequestValidationError handlers, constructor-argument
-        registration of WebSocket validation handlers, custom WebSocket
-        exception handler object identity/state parity, and default FastAPI
-        validation-handler entries remain outside this slice. Independent
+        Identity-checked inputs cover path, body, malformed-JSON and form
+        RequestValidationError dispatch plus the default 422 response even
+        when a server-error handler is registered. The WebSocket validation
+        workflow checks the default handler-map entry, custom override
+        registration and both close outcomes. Handler registration after the
+        middleware stack has been cached and custom WebSocket exception-handler
+        object identity/state parity remain outside this slice. Independent
         WebSocket workflows cover custom validation-error and
         WebSocketException handlers; the latter records the endpoint socket,
         handler socket, exception fields, state, and close event for direct
@@ -3120,6 +3144,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.websocket-validation.default-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.custom-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.constructor-override-close
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class
@@ -3128,6 +3154,7 @@ reviewed_api_contract_overlay:
         - websocket.close_reason
         - websocket.event_order
         - websocket.messages
+        - websocket.workload_trace
         - construction.outcome
         - construction.exception_class
         - construction.exception_message
@@ -3142,16 +3169,18 @@ reviewed_api_contract_overlay:
         are Starlette 1.6.0 / Starlette-RS responsibilities. These cases do not
         establish TestClient-only behavior, all custom validation-handler
         dispatch variants, all endpoint signatures, or every path and lifecycle
-        edge. A separate workflow maps one default close and one independently
-        authored custom invalid-path close case. FastAPI-RS now constructs the
-        public WebSocketRequestValidationError with endpoint context and sends
-        it through registered custom handlers; the linked invalid-path target
-        comparison is the evidence boundary for that behavior.
+        edge. A separate workflow maps default, decorator-override, and
+        constructor-override closes for invalid WebSocket path input. It
+        observes default handler registration and both override paths. FastAPI-RS
+        constructs the public WebSocketRequestValidationError with endpoint
+        context, installs a Rust-owned default callable and dispatches selected
+        application-supplied handlers; the linked target comparison bounds
+        that evidence.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - FastAPI-RS does not install FastAPI's default WebSocketRequestValidationError handler in FastAPI.exception_handlers; the default validation path closes directly, so handler-map inspection and override of the default mapping are not covered.
+          - Other WebSocket endpoint signatures, router-level handler registrations, post-accept validation failures, and lifecycle combinations remain unverified.
     fastapi.routing.APIRouter.websocket:
       source_evidence:
         - path: fastapi/routing.py
@@ -8092,14 +8121,27 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
-      observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.path-error
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.body-error
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.malformed-json
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.default-precedes-server-error
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.form-body
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message]
       error_contract_ids: [fastapi.exceptions.RequestValidationError]
       supported_slice: >-
         Partial native error-object slice: constructors preserve errors, body,
         endpoint_ctx, the derived endpoint context fields, .errors(), and the
-        FastAPI string representation. Request validation generated by ASGI
-        dispatch, custom exception handlers, WebSocket validation, overrides,
-        and other ValidationException subclasses remain outside this slice.
+        FastAPI string representation. Identity-checked ASGI cases also cover
+        generated path, body, malformed-JSON, and form errors dispatched to a
+        custom RequestValidationError handler, plus the default 422 handler
+        taking precedence over a registered server-error handler. WebSocket
+        validation, overrides, and other ValidationException subclasses remain
+        outside this slice.
     fastapi.exceptions.ValidationException.errors:
       rust_binding: fastapi-rs/src/errors.rs::BoundValidationExceptionErrors::__call__
       source_evidence:
@@ -8156,7 +8198,11 @@ reviewed_api_contract_overlay:
           statement: Add exception handler for WebSocketRequestValidationError (which also allows to override it).
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.default-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.custom-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.constructor-override-close
       feature_ids: [public-api-errors, request-validation, websocket-lifecycle]
       observation_selectors:
         - construction.outcome
@@ -8166,18 +8212,22 @@ reviewed_api_contract_overlay:
         - websocket.close_reason
         - websocket.event_order
         - websocket.messages
+        - websocket.workload_trace
       supported_slice: >-
         FastAPI defines the error class, installs its default WebSocket
         validation handler, and permits an application handler to override it.
         FastAPI-RS exposes a Rust-owned class inheriting ValidationException;
-        the linked custom-handler-close workflow checks public import,
-        validation construction, and custom WebSocket handler dispatch. The
-        default handler entry in FastAPI.exception_handlers remains uncovered.
+        the linked workflow compares default, decorator-override, and
+        constructor-override close outcomes, exact event/message observations,
+        and workload traces proving the default handler-map entry and custom
+        override registration. It does not cover every handler callable
+        metadata field or all custom WebSocket object
+        identity/state behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - FastAPI-RS does not install the default WebSocketRequestValidationError handler in FastAPI.exception_handlers.
+          - Exact introspection metadata of the native callable stored as the default handler remains unverified.
     fastapi.WebSocketException:
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
@@ -13155,9 +13205,8 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Custom RequestValidationError handlers are not dispatched; HTTP validation keeps FastAPI-RS's direct 422 response path.
           - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and state when Starlette-RS invokes the handler.
-          - FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not present in the exception_handlers mapping.
+          - Exact introspection metadata of the native WebSocket validation handler callable remains unverified.
           - Registering handlers after the middleware stack has been cached does not rebuild the stack.
     fastapi.applications.FastAPI.mount:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI

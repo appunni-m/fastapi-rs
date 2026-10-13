@@ -14,7 +14,31 @@ async def required_header_dependency(x_missing: Annotated[str, Header()]) -> Non
 
 
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
-    app = FastAPI()
+    constructor_handler = None
+    exception_handlers = None
+    if factory_input.get("constructor_validation_handler", False):
+
+        async def constructor_validation_handler(
+            websocket: WebSocket, exception: WebSocketRequestValidationError
+        ) -> None:
+            del exception
+            await websocket.close(code=1003, reason="constructor")
+
+        constructor_handler = constructor_validation_handler
+        exception_handlers = {WebSocketRequestValidationError: constructor_validation_handler}
+    app = FastAPI(exception_handlers=exception_handlers)
+    registered_handler = app.exception_handlers.get(WebSocketRequestValidationError)
+    event_trace.append(
+        "default-websocket-validation-handler-present"
+        if registered_handler is not None
+        else "default-websocket-validation-handler-missing"
+    )
+    if constructor_handler is not None:
+        event_trace.append(
+            "constructor-websocket-validation-handler-registered"
+            if registered_handler is constructor_handler
+            else "constructor-websocket-validation-handler-not-registered"
+        )
 
     async def websocket_validation_lease() -> AsyncIterator[None]:
         event_trace.append("validation-lease-enter")
@@ -31,6 +55,13 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
         ) -> None:
             del exception
             await websocket.close(code=1002, reason="foo")
+
+        event_trace.append(
+            "custom-websocket-validation-handler-registered"
+            if app.exception_handlers.get(WebSocketRequestValidationError)
+            is websocket_validation_handler
+            else "custom-websocket-validation-handler-not-registered"
+        )
 
     @app.websocket("/depends-validate/")
     async def dependency_validation_endpoint(

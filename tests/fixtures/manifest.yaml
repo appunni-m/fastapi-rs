@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: b8db619459df631851c693bca113a03fa55a42cd18b9a2cd3b121b446928a1ab
+    sha256: d8a23d2497c9118f978853b11b6cd17a24828819720b63f99b0fa8b4841413b4
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 62bc6e4c7b04a48f28add3fdb2704aaca32798329855180f36bd4a8fd4f0580e
+    sha256: 8bd362a658f399e8627307f3215ba1fe7a9e4c33fdeab5e8035f8a053a6be1b9
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,13 +512,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 5e250a77ecd99966390c73050783916e92e77e93a895c173aef083c2e632378f
+    sha256: 8b8e737dea8348eaace67c5317cbd29fe0934757fe0905e6f6d55b9ad07ba7fa
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 577
-      cases: 2420
+      cases: 2421
       partial_source_mappings: 1646
 
 contract_metadata:
@@ -1089,7 +1089,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 110
     symbols_with_operation_fixture_refs: 177
-    operation_fixture_refs: 1605
+    operation_fixture_refs: 1621
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -11034,12 +11034,29 @@ api_surface_contract:
       - http.status
     - workflow_id: websocket-validation-handler-wave
       input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
-      input_sha256: 908cbbe064dba35a3dc364a13cd77aa8b18278a0057cb2aa42536ee93a88d99b
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
       recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
-      recipe_sha256: 80f37cc50c42086d361c1f629d87349b0fc7444f66d6147d08d485d90b5de61b
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
       workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
-      workload_sha256: 2742fa4a4e6725887631c2870de0cbcb5d4fa1aa7d027af8e7db551968f54da9
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
       case_id: fastapi.websocket-validation.default-handler-close
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+      - websocket.workload_trace
+    - workflow_id: websocket-validation-handler-wave
+      input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
+      workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
+      case_id: fastapi.websocket-validation.constructor-override-close
       observation_selectors:
       - construction.exception_class
       - construction.exception_message
@@ -11863,6 +11880,81 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.path-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.body-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.malformed-json
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.default-precedes-server-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.form-body
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: exception-handler-after-stack-cache
       input_path: tests/fixtures/inputs/parity/exception-handler-after-stack-cache.json
       input_sha256: 48469342379967a65890f1555736df46dd6293fb93fb3bf7017ee5d4c203f007
@@ -11886,11 +11978,28 @@ api_surface_contract:
       - http.status
     - workflow_id: websocket-validation-handler-wave
       input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
-      input_sha256: 908cbbe064dba35a3dc364a13cd77aa8b18278a0057cb2aa42536ee93a88d99b
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
       recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
-      recipe_sha256: 80f37cc50c42086d361c1f629d87349b0fc7444f66d6147d08d485d90b5de61b
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
       workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
-      workload_sha256: 2742fa4a4e6725887631c2870de0cbcb5d4fa1aa7d027af8e7db551968f54da9
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
+      case_id: fastapi.websocket-validation.default-handler-close
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+      - websocket.workload_trace
+    - workflow_id: websocket-validation-handler-wave
+      input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
+      workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
       case_id: fastapi.websocket-validation.custom-handler-close
       observation_selectors:
       - construction.exception_class
@@ -11900,6 +12009,24 @@ api_surface_contract:
       - websocket.close_reason
       - websocket.event_order
       - websocket.messages
+      - websocket.workload_trace
+    - workflow_id: websocket-validation-handler-wave
+      input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
+      workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
+      case_id: fastapi.websocket-validation.constructor-override-close
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+      - websocket.workload_trace
     - workflow_id: websocket-exception-handler
       input_path: tests/fixtures/inputs/parity/websocket-exception-handler.json
       input_sha256: 80dce3c0a855b4c7b6a78db4656f13b8973bac63f392a8affca31c7bd31411d7
@@ -16714,11 +16841,11 @@ api_surface_contract:
       - websocket.event_order
     - workflow_id: websocket-validation-handler-wave
       input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
-      input_sha256: 908cbbe064dba35a3dc364a13cd77aa8b18278a0057cb2aa42536ee93a88d99b
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
       recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
-      recipe_sha256: 80f37cc50c42086d361c1f629d87349b0fc7444f66d6147d08d485d90b5de61b
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
       workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
-      workload_sha256: 2742fa4a4e6725887631c2870de0cbcb5d4fa1aa7d027af8e7db551968f54da9
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
       case_id: fastapi.websocket-validation.default-handler-close
       observation_selectors:
       - construction.exception_class
@@ -16731,11 +16858,11 @@ api_surface_contract:
       - websocket.workload_trace
     - workflow_id: websocket-validation-handler-wave
       input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
-      input_sha256: 908cbbe064dba35a3dc364a13cd77aa8b18278a0057cb2aa42536ee93a88d99b
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
       recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
-      recipe_sha256: 80f37cc50c42086d361c1f629d87349b0fc7444f66d6147d08d485d90b5de61b
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
       workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
-      workload_sha256: 2742fa4a4e6725887631c2870de0cbcb5d4fa1aa7d027af8e7db551968f54da9
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
       case_id: fastapi.websocket-validation.custom-handler-close
       observation_selectors:
       - construction.exception_class
@@ -16745,6 +16872,24 @@ api_surface_contract:
       - websocket.close_reason
       - websocket.event_order
       - websocket.messages
+      - websocket.workload_trace
+    - workflow_id: websocket-validation-handler-wave
+      input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
+      workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
+      case_id: fastapi.websocket-validation.constructor-override-close
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+      - websocket.workload_trace
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -16778,6 +16923,7 @@ api_surface_contract:
     - websocket.close_reason
     - websocket.event_order
     - websocket.messages
+    - websocket.workload_trace
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.applications.FastAPI.websocket/supported_slice
@@ -16793,9 +16939,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket
       known_gaps:
-      - FastAPI-RS does not install FastAPI's default WebSocketRequestValidationError handler in FastAPI.exception_handlers;
-        the default validation path closes directly, so handler-map inspection and override of the default
-        mapping are not covered.
+      - Other WebSocket endpoint signatures, router-level handler registrations, post-accept validation
+        failures, and lifecycle combinations remain unverified.
   - id: fastapi.background.BackgroundTasks
     kind: class
     source_candidate_ref: /api_candidates/274
@@ -19283,11 +19428,89 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.path-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.body-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.malformed-json
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.default-precedes-server-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: request-validation-exception-handler
+      input_path: tests/fixtures/inputs/parity/request-validation-exception-handler.json
+      input_sha256: e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+      recipe_sha256: 79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b
+      workload_path: tests/fixtures/workloads/request_validation_exception_handler.py
+      workload_sha256: 82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89
+      case_id: fastapi.request-validation-handler.form-body
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
     - request-validation
     observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - error.args
     - error.class
     - error.public_attributes
@@ -19646,11 +19869,28 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: websocket-validation-handler-wave
       input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
-      input_sha256: 908cbbe064dba35a3dc364a13cd77aa8b18278a0057cb2aa42536ee93a88d99b
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
       recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
-      recipe_sha256: 80f37cc50c42086d361c1f629d87349b0fc7444f66d6147d08d485d90b5de61b
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
       workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
-      workload_sha256: 2742fa4a4e6725887631c2870de0cbcb5d4fa1aa7d027af8e7db551968f54da9
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
+      case_id: fastapi.websocket-validation.default-handler-close
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+      - websocket.workload_trace
+    - workflow_id: websocket-validation-handler-wave
+      input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
+      workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
       case_id: fastapi.websocket-validation.custom-handler-close
       observation_selectors:
       - construction.exception_class
@@ -19660,6 +19900,24 @@ api_surface_contract:
       - websocket.close_reason
       - websocket.event_order
       - websocket.messages
+      - websocket.workload_trace
+    - workflow_id: websocket-validation-handler-wave
+      input_path: tests/fixtures/inputs/parity/websocket-validation-handler-wave.json
+      input_sha256: f57b98b7dc139c3ce1f3cb851f576282f3d385979967185197a55ef29f2eb0bb
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+      recipe_sha256: d6a609cfb1410f258d1571fc34faeeed4c671278ea80a33eea12d0faa9003dbf
+      workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+      workload_sha256: 913da4ea8aa7134d656ffdc1e217a140374d813c0a23ff7dbd51405405f7f719
+      case_id: fastapi.websocket-validation.constructor-override-close
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+      - websocket.workload_trace
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -19678,6 +19936,7 @@ api_surface_contract:
     - websocket.close_reason
     - websocket.event_order
     - websocket.messages
+    - websocket.workload_trace
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.exceptions.WebSocketRequestValidationError/supported_slice
@@ -19693,7 +19952,7 @@ api_surface_contract:
       status: partial-contract
       rust_binding: null
       known_gaps:
-      - FastAPI-RS does not install the default WebSocketRequestValidationError handler in FastAPI.exception_handlers.
+      - Exact introspection metadata of the native callable stored as the default handler remains unverified.
   - id: fastapi.middleware.cors.CORSMiddleware
     kind: import_binding
     source_candidate_ref: /api_candidates/596
@@ -57057,12 +57316,9 @@ api_surface_contract:
         canonical_operation_ref: *id032
       status: partial-contract
       known_gaps:
-      - Custom RequestValidationError handlers are not dispatched; HTTP validation keeps FastAPI-RS's
-        direct 422 response path.
       - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
         state when Starlette-RS invokes the handler.
-      - FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not
-        present in the exception_handlers mapping.
+      - Exact introspection metadata of the native WebSocket validation handler callable remains unverified.
       - Registering handlers after the middleware stack has been cached does not rebuild the stack.
   - id: fastapi.applications.FastAPI.mount
     kind: inherited_method

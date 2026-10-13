@@ -693394,10 +693394,11 @@
           },
           {
             "case_ids": [
+              "fastapi.websocket-validation.constructor-override-close",
               "fastapi.websocket-validation.custom-handler-close",
               "fastapi.websocket-validation.default-handler-close"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "construction.exception_class",
@@ -696960,9 +696961,8 @@
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
-          "Custom RequestValidationError handlers are not dispatched; HTTP validation keeps FastAPI-RS's direct 422 response path.",
           "Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and state when Starlette-RS invokes the handler.",
-          "FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not present in the exception_handlers mapping.",
+          "Exact introspection metadata of the native WebSocket validation handler callable remains unverified.",
           "Registering handlers after the middleware stack has been cached does not rebuild the stack."
         ],
         "status": "partial-contract"
