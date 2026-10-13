@@ -38,7 +38,8 @@ RecursiveSubitemInSubmodel.model_rebuild()
 RecursiveItemViaSubmodel.model_rebuild()
 
 
-def create_app() -> FastAPI:
+def create_app(factory_input: dict[str, object], workload_trace: list[str]) -> FastAPI:
+    del factory_input, workload_trace
     app = FastAPI()
 
     @app.get("/items/invalid", response_model=Item)

@@ -1,10 +1,15 @@
-schema: fastapi-rs/python-asgi-workflow@2
+schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/response_validation_uncovered_wave.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.response-validation.pydantic.invalid-field
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: response-validation
     kind: http_request
@@ -36,10 +41,18 @@ cases:
     - kind: application_error
       selector: validation_error_class
       comparison: exact
+    - kind: application_error
+      selector: validation_error_details
+      comparison: exact
   source_evidence:
   - path: tests/test_validate_response.py
     kind: upstream_test
 - case_id: fastapi.response-validation.pydantic.nonnullable-none
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: response-validation
     kind: http_request
@@ -71,10 +84,18 @@ cases:
     - kind: application_error
       selector: validation_error_class
       comparison: exact
+    - kind: application_error
+      selector: validation_error_details
+      comparison: exact
   source_evidence:
   - path: tests/test_validate_response.py
     kind: upstream_test
 - case_id: fastapi.response-validation.pydantic.multiple-invalid-fields
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: response-validation
     kind: http_request
@@ -106,10 +127,18 @@ cases:
     - kind: application_error
       selector: validation_error_class
       comparison: exact
+    - kind: application_error
+      selector: validation_error_details
+      comparison: exact
   source_evidence:
   - path: tests/test_validate_response.py
     kind: upstream_test
 - case_id: fastapi.response-validation.pydantic.invalid-list
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: response-validation
     kind: http_request
@@ -141,10 +170,18 @@ cases:
     - kind: application_error
       selector: validation_error_class
       comparison: exact
+    - kind: application_error
+      selector: validation_error_details
+      comparison: exact
   source_evidence:
   - path: tests/test_validate_response.py
     kind: upstream_test
 - case_id: fastapi.response-validation.pydantic.nullable-object
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: nullable-response
     kind: http_request
@@ -182,6 +219,11 @@ cases:
   - path: tests/test_validate_response.py
     kind: upstream_test
 - case_id: fastapi.response-validation.pydantic.nullable-none
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: nullable-none-response
     kind: http_request
@@ -219,6 +261,11 @@ cases:
   - path: tests/test_validate_response.py
     kind: upstream_test
 - case_id: fastapi.response-validation.dataclass.invalid-field
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: dataclass-response-validation
     kind: http_request
@@ -250,10 +297,18 @@ cases:
     - kind: application_error
       selector: validation_error_class
       comparison: exact
+    - kind: application_error
+      selector: validation_error_details
+      comparison: exact
   source_evidence:
   - path: tests/test_validate_response_dataclass.py
     kind: upstream_test
 - case_id: fastapi.response-validation.dataclass.multiple-invalid-fields
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: dataclass-response-validation
     kind: http_request
@@ -285,10 +340,18 @@ cases:
     - kind: application_error
       selector: validation_error_class
       comparison: exact
+    - kind: application_error
+      selector: validation_error_details
+      comparison: exact
   source_evidence:
   - path: tests/test_validate_response_dataclass.py
     kind: upstream_test
 - case_id: fastapi.response-validation.dataclass.invalid-list
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: dataclass-response-validation
     kind: http_request
@@ -320,10 +383,18 @@ cases:
     - kind: application_error
       selector: validation_error_class
       comparison: exact
+    - kind: application_error
+      selector: validation_error_details
+      comparison: exact
   source_evidence:
   - path: tests/test_validate_response_dataclass.py
     kind: upstream_test
 - case_id: fastapi.response-serialization.recursive-nested-models
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: recursive-model
     kind: http_request
