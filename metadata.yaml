@@ -12882,6 +12882,128 @@ reviewed_api_contract_overlay:
         Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
         default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
 
+    fastapi.datastructures.DefaultPlaceholder.value:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiDefaultPlaceholder::value
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: DefaultPlaceholder
+          start_line: 153
+          end_line: 168
+        - {path: docs/en/docs/release-notes.md}
+        - {path: fastapi/routing.py, symbol: get_request_handler}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-callback-construction-state
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors:
+            - construction.exception_class
+            - construction.exception_message
+            - construction.outcome
+            - docs.response.status
+            - http.body.bytes
+            - http.status
+            - openapi.document
+            - openapi.paths
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-response-class.yaml
+          case_id: fastapi.routing.apirouter.default-response-class.direct-read-write
+          workload_path: tests/fixtures/workloads/apirouter_default_response_class.py
+          observation_selectors:
+            - construction.exception_class
+            - construction.exception_message
+            - construction.outcome
+            - docs.response.status
+            - http.body.bytes
+            - http.headers.ordered
+            - http.status
+            - openapi.document
+            - openapi.paths
+      feature_ids: [response-serialization, openapi-docs]
+      observation_selectors:
+        - construction.exception_class
+        - construction.exception_message
+        - construction.outcome
+        - docs.response.status
+        - http.body.bytes
+        - http.headers.ordered
+        - http.status
+        - openapi.document
+        - openapi.paths
+      supported_slice: >-
+        The linked callback-state input reads `route.response_class.value` and
+        embeds the wrapped response-class name in the observed OpenAPI operation
+        ID. A separate router-state input mutates and rereads the default
+        placeholder value, then observes the selected response class in the
+        response and OpenAPI media type. This covers one documented read/write
+        path and selected route propagation; equality, truthiness, standalone
+        construction, and arbitrary wrapped values are outside the slice.
+        `DefaultPlaceholder` itself remains private/internal.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiDefaultPlaceholder::value
+        known_gaps:
+          - The linked inputs cover one wrapped response class and do not establish alternate value types or every mutation timing.
+          - The private class equality and truthiness methods are outside this supported field contract.
+
+    fastapi.routing.APIRouter.default_response_class:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::default_response_class
+      source_evidence:
+        - path: fastapi/routing.py
+          kind: source-definition
+          symbol: APIRouter
+          start_line: 2255
+          end_line: 6447
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: docs/en/docs/release-notes.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-overrides.yaml
+          case_id: fastapi.routing.include-router.default-response-class-openapi-media-type
+          workload_path: tests/fixtures/workloads/router_overrides.py
+          observation_selectors:
+            - docs.response.status
+            - http.status
+            - openapi.document
+            - openapi.paths
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-response-class.yaml
+          case_id: fastapi.routing.apirouter.default-response-class.direct-read-write
+          workload_path: tests/fixtures/workloads/apirouter_default_response_class.py
+          observation_selectors:
+            - construction.exception_class
+            - construction.exception_message
+            - construction.outcome
+            - docs.response.status
+            - http.body.bytes
+            - http.headers.ordered
+            - http.status
+            - openapi.document
+            - openapi.paths
+      feature_ids: [app-routing, openapi-docs, response-serialization]
+      observation_selectors:
+        - construction.exception_class
+        - construction.exception_message
+        - construction.outcome
+        - docs.response.status
+        - http.body.bytes
+        - http.headers.ordered
+        - http.status
+        - openapi.document
+        - openapi.paths
+      supported_slice: >-
+        One linked input observes media types selected from nested router
+        defaults at two inclusion levels. A second reads the direct field, changes
+        the wrapped placeholder value, assigns a concrete response class, and
+        observes response bodies and OpenAPI media types. Deletion, explicit None,
+        mutation after inclusion, and arbitrary response-class precedence remain
+        outside the slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::default_response_class
+        known_gaps:
+          - The linked inputs cover omitted placeholders and one concrete class but do not establish explicit None, deletion, or arbitrary response providers.
+          - Mutation after a router has already been included and every nested precedence combination remain unproven.
+
   inherited_candidate_reviews:
     fastapi.routing.APIRouter.host:
       kind: inherited_method

@@ -337,6 +337,28 @@
       ]
     },
     {
+      "id": "apirouter-default-response-class",
+      "input_path": "tests/fixtures/inputs/parity/apirouter-default-response-class.json",
+      "input_sha256": "bdde2b75c1103044e059627a77f8bb193041bbe31c0d3d3ff8be41c61e7c6306",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-default-response-class.yaml",
+      "recipe_sha256": "e4ed2e7a6db716c43a4fa8f34311df664cf4f0d23fead3ed2a0ed58f944c8988",
+      "case_ids": [
+        "fastapi.routing.apirouter.default-response-class.direct-read-write"
+      ],
+      "workload_path": "tests/fixtures/workloads/apirouter_default_response_class.py",
+      "workload_sha256": "365c8c2bcd749cd8fa0d02dc00e6a2902194a90177f8144983f6989ff8173926",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.default-response-class.direct-read-write",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/custom-response.md",
+            "source:upstream-test:tests/test_include_router_defaults_overrides.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "app-testing-main-b-upstream-wave",
       "input_path": "tests/fixtures/inputs/parity/app-testing-main-b-upstream-wave.json",
       "input_sha256": "e958bbddc5620f5ee507ab642c062dfe3fcca1a34d1dc7e3fbfaec6f5bac2886",
@@ -31732,6 +31754,40 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/custom-response.md",
+      "fixture_id": "fastapi.docs.advanced-custom-response",
+      "workflow_id": "apirouter-default-response-class",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.default-response-class.direct-read-write"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_include_router_defaults_overrides.py",
+      "fixture_id": "fastapi.test.test-include-router-defaults-overrides",
+      "workflow_id": "apirouter-default-response-class",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.default-response-class.direct-read-write"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status",
         "openapi.document",
         "openapi.paths"

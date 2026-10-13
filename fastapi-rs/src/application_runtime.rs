@@ -2484,6 +2484,11 @@ impl PyFastApiDefaultPlaceholder {
     fn value(&self, py: Python<'_>) -> Py<PyAny> {
         self.value.clone_ref(py)
     }
+
+    #[setter]
+    fn set_value(&mut self, value: Py<PyAny>) {
+        self.value = value;
+    }
 }
 
 /// Construct FastAPI's default-placeholder sentinel for Rust-owned signatures.
@@ -5248,6 +5253,21 @@ impl PyApiRouter {
     #[getter]
     fn prefix(&self) -> &str {
         &self.prefix
+    }
+
+    #[getter]
+    fn default_response_class(&self, py: Python<'_>) -> Py<PyAny> {
+        self.inner
+            .bind(py)
+            .borrow()
+            .default_response_class
+            .python_value(py)
+    }
+
+    #[setter]
+    fn set_default_response_class(&mut self, py: Python<'_>, value: Py<PyAny>) {
+        self.inner.bind(py).borrow_mut().default_response_class =
+            ResponseClassChoice::from_python(py, value);
     }
 
     #[getter]

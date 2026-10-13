@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: a6c1f32f2b1275e4630e99f3abb02c6e37481b0509cb1fb7f7d18e82d7a541b9
+    sha256: c2edc356bc946b94a4f3e923c9e4381f061670bf48a85f7fc328bdebe1745d0e
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 77704c94c67c83b399ad0fe2f6e3b243a798a8403987b8df07bdeb9d4f05b69a
+    sha256: 5ae4c649ce68bc75322e399ab8d970437e9ae1b1fa7dc09c49b06ab84d841b14
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 1105cbe964e5b321be9ea0964a3beeb6caec3830904ac1752a84b6b84fa91d09
+    sha256: 4da14a0cf9454aed71501655a8e9a2d777f057a574e7fa80df6a2a759c02628e
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 577
-      cases: 2422
-      partial_source_mappings: 1648
+      workflows: 578
+      cases: 2423
+      partial_source_mappings: 1650
 
 contract_metadata:
   aliases:
@@ -1076,8 +1076,7 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 2
-      slice-described: 473
+      slice-described: 475
     implementation_owner_plans:
       fastapi-rs: 444
       starlette-rs: 31
@@ -1089,8 +1088,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 110
-    symbols_with_operation_fixture_refs: 177
-    operation_fixture_refs: 1621
+    symbols_with_operation_fixture_refs: 179
+    operation_fixture_refs: 1625
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -17223,12 +17222,60 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: generate-unique-id-callback-values
+      input_path: tests/fixtures/inputs/parity/generate-unique-id-callback-values.json
+      input_sha256: 0d001eb8bf07c2bddd9ea31417e335cf43849eebdc1c24fec14dfe1379c6bcc9
+      recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+      recipe_sha256: 677ebdbccaab687492e9a6324267b69fcb3b7dcbef36a7bdbb731f1b53c3759d
+      workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+      workload_sha256: 5943494f19696a8dd77d9f45530b2bb63fd4daf558d38d81b6f80e0cb8178ab7
+      case_id: fastapi.routing.generate-unique-id-callback-construction-state
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: apirouter-default-response-class
+      input_path: tests/fixtures/inputs/parity/apirouter-default-response-class.json
+      input_sha256: bdde2b75c1103044e059627a77f8bb193041bbe31c0d3d3ff8be41c61e7c6306
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-response-class.yaml
+      recipe_sha256: e4ed2e7a6db716c43a4fa8f34311df664cf4f0d23fead3ed2a0ed58f944c8988
+      workload_path: tests/fixtures/workloads/apirouter_default_response_class.py
+      workload_sha256: 365c8c2bcd749cd8fa0d02dc00e6a2902194a90177f8144983f6989ff8173926
+      case_id: fastapi.routing.apirouter.default-response-class.direct-read-write
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - openapi-docs
+    - response-serialization
+    observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
+    - docs.response.status
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - openapi.document
+    - openapi.paths
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.DefaultPlaceholder.value/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.datastructures.DefaultPlaceholder.value
@@ -17237,8 +17284,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/303
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiDefaultPlaceholder::value
+      known_gaps:
+      - The linked inputs cover one wrapped response class and do not establish alternate value types
+        or every mutation timing.
+      - The private class equality and truthiness methods are outside this supported field contract.
   - id: fastapi.datastructures.FormData
     kind: import_binding
     source_candidate_ref: /api_candidates/306
@@ -43467,12 +43518,57 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-overrides
+      input_path: tests/fixtures/inputs/parity/router-overrides.json
+      input_sha256: 51e2eb7beb6b7076a8f086f0e8dcca4689833322660839c2535a982a2f97686e
+      recipe_path: tests/fixtures/input-recipes/parity/router-overrides.yaml
+      recipe_sha256: aa2f82e3579ca78f190b688bcf4b1a8924ac0230f792cc89175537a7f1037543
+      workload_path: tests/fixtures/workloads/router_overrides.py
+      workload_sha256: 396c39f2abf2e21cb312d0350f1ecc6e30983c1f306d9a69c73495d5b71e7980
+      case_id: fastapi.routing.include-router.default-response-class-openapi-media-type
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: apirouter-default-response-class
+      input_path: tests/fixtures/inputs/parity/apirouter-default-response-class.json
+      input_sha256: bdde2b75c1103044e059627a77f8bb193041bbe31c0d3d3ff8be41c61e7c6306
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-response-class.yaml
+      recipe_sha256: e4ed2e7a6db716c43a4fa8f34311df664cf4f0d23fead3ed2a0ed58f944c8988
+      workload_path: tests/fixtures/workloads/apirouter_default_response_class.py
+      workload_sha256: 365c8c2bcd749cd8fa0d02dc00e6a2902194a90177f8144983f6989ff8173926
+      case_id: fastapi.routing.apirouter.default-response-class.direct-read-write
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    - openapi-docs
+    - response-serialization
+    observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
+    - docs.response.status
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - openapi.document
+    - openapi.paths
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter.default_response_class/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.default_response_class
@@ -43481,8 +43577,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1111
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::default_response_class
+      known_gaps:
+      - The linked inputs cover omitted placeholders and one concrete class but do not establish explicit
+        None, deletion, or arbitrary response providers.
+      - Mutation after a router has already been included and every nested precedence combination remain
+        unproven.
   - id: fastapi.routing.APIRouter.delete
     kind: method
     source_candidate_ref: /api_candidates/1112
