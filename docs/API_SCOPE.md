@@ -21,14 +21,14 @@ and 492 `test_*.py` modules. These are inventory inputs, **not** the number of
 manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
 large value/model sets. The atlas has 1,624 source API candidates, classified by
-the atlas as 472 supported, 1,103 private/internal, and 49 uncertain; the atlas
+the atlas as 473 supported, 1,103 private/internal, and 48 uncertain; the atlas
 separately classifies 13 inherited `APIRouter` candidates. The active manifest
-indexes the 472 source-supported direct public symbols plus 9 supported
-inherited operations (481 supported public API entries). This is the reviewed
+indexes the 473 source-supported direct public symbols plus 9 supported
+inherited operations (482 supported public API entries). This is the reviewed
 public-entry scope, not an implementation-support count. It records 225
 runtime-reflected signatures, one unavailable constructor signature for
 `Example` (`TypedDict(total=False)`), one module object with no call signature,
-239 non-callable values/fields, and 6 source-recorded signatures. The source
+240 non-callable values/fields, and 6 source-recorded signatures. The source
 inventory records `Example`'s `total=False` class option; runtime reflection
 records its required and optional keys. Broader operation-level behavior and
 full implementation coverage remain pending.

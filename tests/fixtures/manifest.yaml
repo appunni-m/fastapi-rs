@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: a29d0404233926299e28e801d8a9d2a0968eecf83766cd22519917a7785eeca6
+    sha256: bb053b5bb6303d3e90769f7b8c37f48ded6415d0ee2c97d122e884da7e734ea5
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: e22772b37010d302dd87e8f66668b5753f2891b9d7a085b542b1dbe177cb5641
+    sha256: 6ec4c043ff17309547acc2444e8acf7c62acc5c75c32cd20c329abf5094e04b6
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: ee0f6090a269c8b87d595ab5488a257a8e37011cc80461b36c02015f1d0e6d92
+    sha256: dc0ebd620c1e2246a039fe8f5f7a40f99db9a6c0eca7aa183010f27303a739ec
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 576
-      cases: 2416
-      partial_source_mappings: 1639
+      workflows: 577
+      cases: 2417
+      partial_source_mappings: 1641
 
 contract_metadata:
   aliases:
@@ -1089,7 +1089,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 110
     symbols_with_operation_fixture_refs: 177
-    operation_fixture_refs: 1596
+    operation_fixture_refs: 1597
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -9344,6 +9344,22 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 9e1ff8b5c7434fb7e0fc1b46dc29e7bb1cd6c80408c04d1a8fdda77e7d2c5c74
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: c93866a0e535051258fd23b73e6d1b3eb82ba2b8f730cfb9271096035286ebcc
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 38b1111b8ca5341f73090719cdc94e1f1c07684053f498184e4686d062d3c4e6
+      case_id: fastapi.applications.constructor.openapi-tags
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
     - workflow_id: webhooks-constructor
       input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
       input_sha256: 4df72113beb82a387e211be01d3682ea1e84a2efe3c7e643daa63408ea13131a
@@ -11346,8 +11362,8 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
-      - Full FastAPI.__init__ parameter and attribute parity remains incomplete; FastAPI-RS currently
-        implements a selected subset of the public constructor contract.
+      - FastAPI.__init__ parameter and attribute parity remains incomplete; other constructor options
+        beyond the reviewed slices are unimplemented or unproven.
       - Visited included branches must prepare all own effective fields before publishing the vector,
         retry the whole unpublished branch after a later own constructor fails, descend into child branches
         only when matching reaches them, and retain successful fields across miss/redirect/handle paths.

@@ -923,9 +923,9 @@ reviewed_api_contract_overlay:
             concurrency/reentrancy, cancellation, dynamic warning filters, and
             broader sync validation/worker scheduling are outside this response-field
             gate.
-          - Full FastAPI.__init__ parameter and attribute parity remains incomplete;
-            FastAPI-RS currently implements a selected subset of the public
-            constructor contract.
+          - FastAPI.__init__ parameter and attribute parity remains incomplete;
+            other constructor options beyond the reviewed slices are unimplemented
+            or unproven.
           - &response_field_traversal_gap >-
             Visited included branches must prepare all own effective fields before
             publishing the vector, retry the whole unpublished branch after a later
@@ -1019,7 +1019,14 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: docs/en/docs/tutorial/metadata.md}
+        - {path: docs_src/metadata/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, symbol: test_openapi_schema}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
@@ -1481,7 +1488,12 @@ reviewed_api_contract_overlay:
         `metadata-summary-description-upstream`. That workflow also verifies a
         truthy constructor-provided `openapi_external_docs` mapping at
         `/externalDocs`; empty, omitted, and invalid values are not part of this
-        slice. The `dependencies` argument applies to direct WebSocket routes
+        slice. The `openapi_tags` constructor value is retained on the public app
+        attribute and emitted as the ordered top-level OpenAPI `tags` array,
+        including nested `externalDocs`; `constructor-openapi-tags` observes
+        both through the public app and `/openapi.json`. Empty, invalid, and
+        post-cache mutation behavior remain outside this slice. The
+        `dependencies` argument applies to direct WebSocket routes
         and included-router WebSocket routes. Selected cases observe app,
         include, router, and route dependency order through WebSocket messages
         and ASGI event order; other dependency forms and HTTP-path ordering are

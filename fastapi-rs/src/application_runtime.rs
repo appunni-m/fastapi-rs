@@ -2176,6 +2176,7 @@ pub(crate) struct PyFastApi {
     version: String,
     openapi_version: String,
     openapi_url: Option<String>,
+    openapi_tags: Py<PyAny>,
     servers: Py<PyAny>,
     swagger_ui_oauth2_redirect_url: Option<String>,
     swagger_ui_init_oauth: Option<Py<PyAny>>,
@@ -2282,6 +2283,7 @@ struct OpenApiAppSnapshot {
     summary: Option<String>,
     description: String,
     openapi_version: String,
+    openapi_tags: Py<PyAny>,
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
@@ -2316,6 +2318,7 @@ impl OpenApiAppSnapshot {
             summary: app.summary.clone(),
             description: app.description.clone(),
             openapi_version: app.openapi_version.clone(),
+            openapi_tags: app.openapi_tags.clone_ref(py),
             terms_of_service: app.terms_of_service.clone(),
             contact: app.contact.as_ref().map(|value| value.clone_ref(py)),
             license_info: app.license_info.as_ref().map(|value| value.clone_ref(py)),
@@ -2699,7 +2702,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -2712,6 +2715,7 @@ impl PyFastApi {
         description: &str,
         version: &str,
         openapi_url: Option<&str>,
+        openapi_tags: Option<Py<PyAny>>,
         servers: Option<Py<PyAny>>,
         docs_url: Option<&str>,
         redoc_url: Option<&str>,
@@ -2751,6 +2755,7 @@ impl PyFastApi {
             Some(servers) if servers.bind(py).is_truthy()? => servers,
             _ => PyList::empty(py).into_any().unbind(),
         };
+        let openapi_tags = openapi_tags.unwrap_or_else(|| py.None());
         let exception_handlers = match exception_handlers {
             Some(handlers) => py
                 .import("builtins")?
@@ -2836,6 +2841,7 @@ impl PyFastApi {
             version: version.to_owned(),
             openapi_version: "3.1.0".to_owned(),
             openapi_url: openapi_url.map(str::to_owned),
+            openapi_tags,
             servers,
             swagger_ui_oauth2_redirect_url: swagger_ui_oauth2_redirect_url.map(str::to_owned),
             swagger_ui_init_oauth,
@@ -2894,6 +2900,16 @@ impl PyFastApi {
             .as_deref()
             .map(|url| PyString::new(py, url).into_any().unbind())
             .unwrap_or_else(|| py.None())
+    }
+
+    #[getter]
+    fn openapi_tags(&self, py: Python<'_>) -> Py<PyAny> {
+        self.openapi_tags.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_openapi_tags(&mut self, openapi_tags: Py<PyAny>) {
+        self.openapi_tags = openapi_tags;
     }
 
     #[getter]
@@ -4734,7 +4750,7 @@ impl PyFastApi {
             OpenApiInfo {
                 title: &snapshot.title,
                 openapi_version: &snapshot.openapi_version,
-                tags: None,
+                tags: Some(&snapshot.openapi_tags),
                 summary: snapshot.summary.as_deref(),
                 description: &snapshot.description,
                 terms_of_service: snapshot.terms_of_service.as_deref(),
@@ -5093,6 +5109,7 @@ impl PyApiRouter {
                 "",
                 "0.1.0",
                 Some("/openapi.json"),
+                None,
                 None,
                 None,
                 None,

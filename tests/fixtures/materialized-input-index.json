@@ -2237,6 +2237,28 @@
       ]
     },
     {
+      "id": "constructor-openapi-tags",
+      "input_path": "tests/fixtures/inputs/parity/constructor-openapi-tags.json",
+      "input_sha256": "9e1ff8b5c7434fb7e0fc1b46dc29e7bb1cd6c80408c04d1a8fdda77e7d2c5c74",
+      "recipe_path": "tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml",
+      "recipe_sha256": "c93866a0e535051258fd23b73e6d1b3eb82ba2b8f730cfb9271096035286ebcc",
+      "case_ids": [
+        "fastapi.applications.constructor.openapi-tags"
+      ],
+      "workload_path": "tests/fixtures/workloads/constructor_openapi_tags.py",
+      "workload_sha256": "38b1111b8ca5341f73090719cdc94e1f1c07684053f498184e4686d062d3c4e6",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.applications.constructor.openapi-tags",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md",
+            "source:upstream-test:tests/test_tutorial/test_metadata/test_tutorial004.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "cookie-parameter-surface-review",
       "input_path": "tests/fixtures/inputs/parity/cookie-parameter-surface-review.json",
       "input_sha256": "819dcfee03571ad78b237dceef9813c352add95857d77ddfab861de9c127274d",
@@ -33443,6 +33465,36 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/metadata.md",
+      "fixture_id": "fastapi.docs.tutorial-metadata",
+      "workflow_id": "constructor-openapi-tags",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.constructor.openapi-tags"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_metadata/test_tutorial004.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-metadata-test-tutorial004",
+      "workflow_id": "constructor-openapi-tags",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.constructor.openapi-tags"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

@@ -1,0 +1,66 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/constructor_openapi_tags.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.applications.constructor.openapi-tags
+  factory_input:
+    tags:
+    - name: users
+      description: Operations with users. The **login** logic is also here.
+    - name: items
+      description: Manage items. So _fancy_ they have their own docs.
+      externalDocs:
+        description: Items external docs
+        url: https://fastapi.tiangolo.com/
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-public-app-attribute
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /configured-tags
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: observe-openapi-tag-metadata
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers: [/tags]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
