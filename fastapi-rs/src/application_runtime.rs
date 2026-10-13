@@ -193,6 +193,7 @@ enum ParameterSource {
     HttpConnection,
     Response,
     BackgroundTasks,
+    SecurityScopes,
     Dependency {
         plan: Box<CallablePlan>,
         use_cache: Py<PyAny>,
@@ -262,6 +263,7 @@ impl ParameterSource {
             Self::HttpConnection => Self::HttpConnection,
             Self::Response => Self::Response,
             Self::BackgroundTasks => Self::BackgroundTasks,
+            Self::SecurityScopes => Self::SecurityScopes,
             Self::Dependency {
                 plan,
                 use_cache,
@@ -372,10 +374,11 @@ impl CallablePlan {
         !self.own_oauth_scopes.is_empty()
             || self.is_security_scheme
             || self.parameters.iter().any(|parameter| {
-                matches!(
-                    &parameter.source,
-                    ParameterSource::Dependency { plan, .. } if plan.uses_oauth_scopes()
-                )
+                matches!(&parameter.source, ParameterSource::SecurityScopes)
+                    || matches!(
+                        &parameter.source,
+                        ParameterSource::Dependency { plan, .. } if plan.uses_oauth_scopes()
+                    )
             })
     }
 
@@ -7056,6 +7059,7 @@ impl CallablePlan {
                 ParameterSource::HttpConnection => false,
                 ParameterSource::Response => false,
                 ParameterSource::BackgroundTasks => false,
+                ParameterSource::SecurityScopes => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_openapi_parameter_inputs(),
             })
     }
@@ -7073,6 +7077,7 @@ impl CallablePlan {
                 | ParameterSource::HttpConnection
                 | ParameterSource::Response
                 | ParameterSource::BackgroundTasks
+                | ParameterSource::SecurityScopes
                 | ParameterSource::Dependency { .. } => {}
             }
         }
@@ -7099,6 +7104,7 @@ impl CallablePlan {
                 ParameterSource::HttpConnection => false,
                 ParameterSource::Response => false,
                 ParameterSource::BackgroundTasks => false,
+                ParameterSource::SecurityScopes => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_form_inputs(),
             })
     }
@@ -7262,7 +7268,8 @@ impl CallablePlan {
                 | ParameterSource::Request
                 | ParameterSource::HttpConnection
                 | ParameterSource::Response
-                | ParameterSource::BackgroundTasks => {}
+                | ParameterSource::BackgroundTasks
+                | ParameterSource::SecurityScopes => {}
             }
         }
         parameters.sort_by_key(|parameter| match parameter.location.as_str() {
@@ -7400,6 +7407,16 @@ impl CallablePlan {
                         tasks
                     };
                     kwargs.set_item(&parameter.name, tasks.bind(context.py))?;
+                }
+                ParameterSource::SecurityScopes => {
+                    let module = context.py.import("fastapi_rs._core")?;
+                    let scopes = PyList::new(context.py, &self.oauth_scopes)?;
+                    let arguments = PyDict::new(context.py);
+                    arguments.set_item("scopes", scopes)?;
+                    let value = module
+                        .getattr("SecurityScopes")?
+                        .call((), Some(&arguments))?;
+                    kwargs.set_item(&parameter.name, value)?;
                 }
                 ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => {}
             }
@@ -8015,7 +8032,8 @@ impl CallableParameter {
             | ParameterSource::Request
             | ParameterSource::HttpConnection
             | ParameterSource::Response
-            | ParameterSource::BackgroundTasks => Vec::new(),
+            | ParameterSource::BackgroundTasks
+            | ParameterSource::SecurityScopes => Vec::new(),
         }
     }
 }
@@ -8142,6 +8160,10 @@ fn parameter_source(
         .getattr("BackgroundTasks")?;
     if annotation_is_subclass(py, annotation, &background_tasks_type)? {
         return Ok(ParameterSource::BackgroundTasks);
+    }
+    let security_scopes_type = py.import("fastapi_rs._core")?.getattr("SecurityScopes")?;
+    if annotation_is_subclass(py, annotation, &security_scopes_type)? {
+        return Ok(ParameterSource::SecurityScopes);
     }
     for marker in metadata.iter().rev() {
         let marker = marker.bind(py);

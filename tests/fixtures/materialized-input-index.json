@@ -27187,16 +27187,18 @@
     {
       "id": "security-scopes-upstream",
       "input_path": "tests/fixtures/inputs/parity/security_scopes_upstream.json",
-      "input_sha256": "aa1a30d1c618d03e7f5b9ff5214b285f9d99000befff7ff40ee23d8767df207c",
+      "input_sha256": "6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94",
       "recipe_path": "tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml",
-      "recipe_sha256": "4db87eaae5a99e68fd11f59d8e7c1eeb006dde64d477396d0e213e392ca467ea",
+      "recipe_sha256": "b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90",
       "case_ids": [
         "fastapi.security.scopes.test-security-scopes-dependency-called-once",
         "fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate",
-        "fastapi.security.scopes-sub-dependency.test-security-scopes-sub-dependency-caching"
+        "fastapi.security.scopes-sub-dependency.test-security-scopes-sub-dependency-caching",
+        "fastapi.security.scopes.injected-scope-string",
+        "fastapi.security.scopes.constructor-contract"
       ],
       "workload_path": "tests/fixtures/workloads/security_scopes_upstream.py",
-      "workload_sha256": "6aea15eb2951cc9aab4493c9be515e452a8b34d4267015fa35afe76d0b1a5f18",
+      "workload_sha256": "3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910",
       "case_contracts": [
         {
           "case_id": "fastapi.security.scopes.test-security-scopes-dependency-called-once",
@@ -27217,6 +27219,20 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_security_scopes_sub_dependency.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.scopes.injected-scope-string",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_scopes.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.scopes.constructor-contract",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_scopes.py"
           ]
         }
       ]
@@ -54226,8 +54242,10 @@
       "fixture_id": "fastapi.test.test-security-scopes",
       "workflow_id": "security-scopes-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.security.scopes.constructor-contract",
+        "fastapi.security.scopes.injected-scope-string",
         "fastapi.security.scopes.test-security-scopes-dependency-called-once"
       ],
       "observation_selectors": [

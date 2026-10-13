@@ -44,6 +44,35 @@ def create_app() -> FastAPI:
     ) -> dict[str, list[str]]:
         return scopes
 
+    async def collect_scope_contract(scopes: SecurityScopes) -> dict[str, Any]:
+        return {"scopes": scopes.scopes, "scope_str": scopes.scope_str}
+
+    @app.get("/scopes/injected-scope-string")
+    def read_injected_scope_string(
+        scopes: Annotated[
+            dict[str, Any],
+            Security(collect_scope_contract, scopes=["items:read", "items:write"]),
+        ],
+    ) -> dict[str, Any]:
+        return scopes
+
+    @app.get("/scopes/constructor-contract")
+    def read_constructor_contract() -> dict[str, Any]:
+        default = SecurityScopes()
+        supplied = ["items:read", "items:write"]
+        explicit = SecurityScopes(supplied)
+        initial_scope_str = explicit.scope_str
+        supplied.append("items:later")
+        return {
+            "default": {"scopes": default.scopes, "scope_str": default.scope_str},
+            "explicit": {
+                "scopes": explicit.scopes,
+                "scope_str": explicit.scope_str,
+                "initial_scope_str": initial_scope_str,
+                "same_list": explicit.scopes is supplied,
+            },
+        }
+
     call_counts = {
         "get_db_session": 0,
         "get_current_user": 0,

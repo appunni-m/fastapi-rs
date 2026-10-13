@@ -416,7 +416,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 537cc3c36dcb9b3155b6e172eb4c122c191c9483dad8d0ac4628ad2fb7af81ea
+    sha256: 611b9c0edf6ff80739d6545c782e7a366477c44ff1929fd7e6734e7180e2f70f
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -452,7 +452,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 26c6bb324b3f80d38bbc10d299d5e87b0f57ebad0df1cdd6073aa0ba82dda49e
+    sha256: b2d86a0e82e519bccdfe1655575697d88ac0226258f68f9dc6e986447ca42dad
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 892
@@ -489,13 +489,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 6755e89639dd5ccfb72a5523d3767f33ebd252660f3d4dcb6b3970fe3d9fecd2
+    sha256: d8cb73e8106f80d6422d9f50a0c79cfd902c4f7c0d8e9c2e9ba8d951f7577b36
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 570
-      cases: 2386
+      cases: 2388
       partial_source_mappings: 1626
 
 contract_metadata:
@@ -1044,7 +1044,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 109
     symbols_with_operation_fixture_refs: 176
-    operation_fixture_refs: 1516
+    operation_fixture_refs: 1522
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -46455,12 +46455,36 @@ api_surface_contract:
       - python.signature
     - workflow_id: security-scopes-upstream
       input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
-      input_sha256: aa1a30d1c618d03e7f5b9ff5214b285f9d99000befff7ff40ee23d8767df207c
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
       recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
-      recipe_sha256: 4db87eaae5a99e68fd11f59d8e7c1eeb006dde64d477396d0e213e392ca467ea
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
       workload_path: tests/fixtures/workloads/security_scopes_upstream.py
-      workload_sha256: 6aea15eb2951cc9aab4493c9be515e452a8b34d4267015fa35afe76d0b1a5f18
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
       case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-scopes-upstream
+      input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
+      recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
+      workload_path: tests/fixtures/workloads/security_scopes_upstream.py
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
+      case_id: fastapi.security.scopes.constructor-contract
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-scopes-upstream
+      input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
+      recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
+      workload_path: tests/fixtures/workloads/security_scopes_upstream.py
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
+      case_id: fastapi.security.scopes.injected-scope-string
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -46519,11 +46543,11 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1454
         - /api_candidates/1539
-      status: unimplemented
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
       known_gaps:
-      - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection
-        contract.
+      - unusual truthiness and iterable error cases and arbitrary dependency graphs are not selected by
+        current fixtures.
   - id: fastapi.security.api_key.APIKeyBase.make_not_authenticated_error
     kind: method
     source_candidate_ref: /api_candidates/1459
@@ -52105,12 +52129,36 @@ api_surface_contract:
       - python.signature
     - workflow_id: security-scopes-upstream
       input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
-      input_sha256: aa1a30d1c618d03e7f5b9ff5214b285f9d99000befff7ff40ee23d8767df207c
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
       recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
-      recipe_sha256: 4db87eaae5a99e68fd11f59d8e7c1eeb006dde64d477396d0e213e392ca467ea
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
       workload_path: tests/fixtures/workloads/security_scopes_upstream.py
-      workload_sha256: 6aea15eb2951cc9aab4493c9be515e452a8b34d4267015fa35afe76d0b1a5f18
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
       case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-scopes-upstream
+      input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
+      recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
+      workload_path: tests/fixtures/workloads/security_scopes_upstream.py
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
+      case_id: fastapi.security.scopes.constructor-contract
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-scopes-upstream
+      input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
+      recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
+      workload_path: tests/fixtures/workloads/security_scopes_upstream.py
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
+      case_id: fastapi.security.scopes.injected-scope-string
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -52168,11 +52216,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1539
-      status: unimplemented
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
       known_gaps:
-      - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection
-        contract.
+      - unusual truthiness and iterable error cases and arbitrary dependency graphs are not selected by
+        current fixtures.
   - id: fastapi.security.oauth2.SecurityScopes.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1540
@@ -52242,12 +52290,36 @@ api_surface_contract:
       - python.signature
     - workflow_id: security-scopes-upstream
       input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
-      input_sha256: aa1a30d1c618d03e7f5b9ff5214b285f9d99000befff7ff40ee23d8767df207c
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
       recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
-      recipe_sha256: 4db87eaae5a99e68fd11f59d8e7c1eeb006dde64d477396d0e213e392ca467ea
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
       workload_path: tests/fixtures/workloads/security_scopes_upstream.py
-      workload_sha256: 6aea15eb2951cc9aab4493c9be515e452a8b34d4267015fa35afe76d0b1a5f18
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
       case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-scopes-upstream
+      input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
+      recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
+      workload_path: tests/fixtures/workloads/security_scopes_upstream.py
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
+      case_id: fastapi.security.scopes.constructor-contract
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-scopes-upstream
+      input_path: tests/fixtures/inputs/parity/security_scopes_upstream.json
+      input_sha256: 6c4c2a2c82fede565de2586da6978fe9f0a8e6c647f1b31cea3f2c477e3f7a94
+      recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+      recipe_sha256: b1fe58d4c405d7ab6328c6ab6badb8f8a15d0f8660f4be8d52486014514c3e90
+      workload_path: tests/fixtures/workloads/security_scopes_upstream.py
+      workload_sha256: 3a39a3e3ea720c54a2fe039ee57ba385ef010c4635d693bbc3c75cf02c7d2910
+      case_id: fastapi.security.scopes.injected-scope-string
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -52307,11 +52379,10 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1540
-      status: unimplemented
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/security.rs::initialize_security_scopes
       known_gaps:
-      - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection
-        contract.
+      - unusual truthiness and iterable error cases are not selected by current fixtures.
   - id: fastapi.security.open_id_connect_url.OpenIdConnect
     kind: class
     source_candidate_ref: /api_candidates/1547

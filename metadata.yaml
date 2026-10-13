@@ -7145,8 +7145,9 @@ reviewed_api_contract_overlay:
         the pinned keyword-only signature, and store the supplied dependency,
         scopes, and cache policy in the native dependency record. A regular
         dependency callable can be declared with Security and invoked through
-        the Rust dependency graph. Scope-aware SecurityScopes injection,
-        scope-sensitive dependency caching, SecurityBase behavior, and
+        the Rust dependency graph. The graph accumulates ordered effective
+        OAuth scopes, injects SecurityScopes, and uses scope-aware cache keys.
+        SecurityBase behavior and
         OpenAPI security scheme/requirement generation remain unsupported.
     fastapi.param_functions.Security:
       rust_binding: fastapi-rs/src/parameters.rs::security
@@ -8699,7 +8700,7 @@ reviewed_api_contract_overlay:
           - the FastAPI-RS security facades do not export the strict form class or implement its constructor and request form integration.
         rust_binding: null
     fastapi.security.SecurityScopes:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
       source_evidence:
         - path: fastapi/security/__init__.py
           symbol: SecurityScopes
@@ -8721,6 +8722,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.public-api.security-scopes
         - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
           case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes.constructor-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes.injected-scope-string
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.test-read-system-status
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
@@ -8728,18 +8733,19 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
-        Selected protected-request cases exercise scope injection through HTTP
-        authorization outcomes. Direct export identity, constructor values,
-        `scopes`, and `scope_str` observations, token verification, and
-        arbitrary dependency graphs are unverified.
+        The root and OAuth2 facades export one native class. Selected input-only
+        cases compare constructor defaulting, list retention, scope-string
+        derivation, injected scopes, and scope-aware dependency cache behavior.
+        Unusual truthiness/iterable error edges and arbitrary dependency graphs
+        remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection contract.
-        rust_binding: null
+          - unusual truthiness and iterable error cases and arbitrary dependency graphs are not selected by current fixtures.
+        rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
     fastapi.security.oauth2.SecurityScopes:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: SecurityScopes
@@ -8751,6 +8757,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.public-api.security-scopes
         - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
           case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes.constructor-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes.injected-scope-string
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.test-read-system-status
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
@@ -8758,18 +8768,19 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
-        Selected protected-request cases exercise scope injection through HTTP
-        authorization outcomes. Direct constructor values, `scopes`,
-        `scope_str`, token verification, and arbitrary dependency graphs are
-        unverified.
+        The native class implements the pinned constructor, mutable `scopes`
+        and `scope_str` attributes, and dependency injection. Selected fixtures
+        compare defaulting, list retention, scope-string derivation, scope
+        propagation, and cache keys. Unusual input edges and arbitrary graphs
+        remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection contract.
-        rust_binding: null
+          - unusual truthiness and iterable error cases and arbitrary dependency graphs are not selected by current fixtures.
+        rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
     fastapi.security.oauth2.SecurityScopes.__init__:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::initialize_security_scopes
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: __init__
@@ -8782,6 +8793,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.public-api.security-scopes
         - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
           case_id: fastapi.security.scopes-dont-propagate.test-security-scopes-dont-propagate
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes.constructor-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/security_scopes_upstream.yaml
+          case_id: fastapi.security.scopes.injected-scope-string
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.test-read-system-status
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
@@ -8789,15 +8804,15 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
-        Selected protected-request cases exercise the constructor indirectly
-        through FastAPI scope injection. Direct constructor inputs, defaulting
-        behavior, `scope_str`, and mutable-list edges are unverified.
+        The constructor matches the pinned positional/keyword `scopes` input,
+        falsey defaulting, scope retention, and one-time `scope_str` derivation.
+        Unusual truthiness and iterable error inputs remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection contract.
-        rust_binding: null
+          - unusual truthiness and iterable error cases are not selected by current fixtures.
+        rust_binding: fastapi-rs/src/security.rs::initialize_security_scopes
     fastapi.security.OpenIdConnect:
       rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
       source_evidence:

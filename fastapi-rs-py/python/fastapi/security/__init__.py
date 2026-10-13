@@ -11,6 +11,7 @@ from fastapi_rs._core import (
     OAuth2AuthorizationCodeBearer,
     OAuth2PasswordBearer,
     OpenIdConnect,
+    SecurityScopes,
 )
 
 __all__ = [
@@ -26,4 +27,5 @@ __all__ = [
     "OAuth2AuthorizationCodeBearer",
     "OAuth2PasswordBearer",
     "OpenIdConnect",
+    "SecurityScopes",
 ]

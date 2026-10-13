@@ -15,6 +15,24 @@ static PYTHON_COMPATIBLE_STANDARD_BASE64: GeneralPurpose = GeneralPurpose::new(
 );
 
 #[pyclass(
+    name = "SecurityScopes",
+    module = "fastapi.security.oauth2",
+    subclass,
+    dict
+)]
+struct PySecurityScopes;
+
+#[pymethods]
+impl PySecurityScopes {
+    #[new]
+    #[pyo3(signature = (*args, **kwargs))]
+    fn new(args: &Bound<'_, PyTuple>, kwargs: Option<&Bound<'_, PyDict>>) -> Self {
+        let _ = (args, kwargs);
+        Self
+    }
+}
+
+#[pyclass(
     name = "SecurityBase",
     module = "fastapi.security.base",
     subclass,
@@ -961,6 +979,7 @@ struct PyOAuth2AuthorizationCodeBearer;
 enum ConstructorInitKind {
     AuthorizationCode,
     OpenIdConnect,
+    SecurityScopes,
 }
 
 #[pyclass(name = "_ConstructorInit", module = "fastapi_rs._core", dict)]
@@ -1004,6 +1023,7 @@ impl ConstructorInit {
         match self.kind {
             ConstructorInitKind::AuthorizationCode => initialize_authorization_code(py, &arguments),
             ConstructorInitKind::OpenIdConnect => initialize_openid_connect(py, &arguments),
+            ConstructorInitKind::SecurityScopes => initialize_security_scopes(py, &arguments),
         }
     }
 }
@@ -1042,6 +1062,7 @@ fn bind_constructor_arguments<'py>(
     let callable_name = match initializer.kind {
         ConstructorInitKind::AuthorizationCode => "OAuth2AuthorizationCodeBearer.__init__",
         ConstructorInitKind::OpenIdConnect => "OpenIdConnect.__init__",
+        ConstructorInitKind::SecurityScopes => "SecurityScopes.__init__",
     };
     let kwargs = kwargs.cloned().unwrap_or_else(|| PyDict::new(py));
     for (keyword, _) in kwargs.iter() {
@@ -1166,6 +1187,25 @@ fn initialize_openid_connect(py: Python<'_>, arguments: &Bound<'_, PyDict>) -> P
         .call((), Some(&model_arguments))?;
     instance.setattr("model", model)?;
     initialize_security_attributes(&instance, arguments)
+}
+
+fn initialize_security_scopes(py: Python<'_>, arguments: &Bound<'_, PyDict>) -> PyResult<()> {
+    let instance = arguments.get_item("self")?.ok_or_else(|| {
+        PyRuntimeError::new_err("bound SecurityScopes initializer has no receiver")
+    })?;
+    let scopes = arguments
+        .get_item("scopes")?
+        .ok_or_else(|| PyRuntimeError::new_err("bound SecurityScopes initializer has no scopes"))?;
+    let scopes = if scopes.is_truthy()? {
+        scopes
+    } else {
+        PyList::empty(py).into_any()
+    };
+    instance.setattr("scopes", &scopes)?;
+    let scope_str = PyString::new(py, " ")
+        .call_method1("join", (&scopes,))?
+        .unbind();
+    instance.setattr("scope_str", scope_str)
 }
 
 fn initialize_authorization_code(py: Python<'_>, arguments: &Bound<'_, PyDict>) -> PyResult<()> {
@@ -2032,6 +2072,35 @@ fn openid_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<'_, PyAny
     ])
 }
 
+fn security_scopes_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let positional = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let string_type = py.get_type::<PyString>();
+    let list_type = py.import("builtins")?.getattr("list")?;
+    let string_list = list_type
+        .getattr("__class_getitem__")?
+        .call1((string_type.as_any(),))?;
+    let none_type = py.None().bind(py).get_type();
+    let optional_scopes = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((string_list, none_type))?;
+    let scopes = documented_annotation(
+        py,
+        &optional_scopes,
+        "\n                This will be filled by FastAPI.\n                ",
+    )?;
+    let none = py.None();
+    Ok(vec![constructor_parameter(
+        py,
+        "scopes",
+        &positional,
+        &scopes,
+        Some(none.bind(py)),
+    )?])
+}
+
 fn api_key_dependency_annotations(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let annotations = PyDict::new(py);
     annotations.set_item(
@@ -2503,6 +2572,14 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
     module.add_class::<ConstructorInit>()?;
     module.add_class::<ConstructorSignatureDescriptor>()?;
+    module.add_class::<PySecurityScopes>()?;
+    let security_scopes_type = py.get_type::<PySecurityScopes>();
+    attach_constructor_introspection(
+        py,
+        &security_scopes_type,
+        security_scopes_constructor_parameters(py)?,
+        ConstructorInitKind::SecurityScopes,
+    )?;
     let api_key_models = create_api_key_models(py)?;
     module.add(
         "SecuritySchemeType",

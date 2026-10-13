@@ -118,3 +118,73 @@ cases:
   source_evidence:
   - path: tests/test_security_scopes_sub_dependency.py
     kind: upstream_test
+- case_id: fastapi.security.scopes.injected-scope-string
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scopes/injected-scope-string
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_scopes.py
+    kind: upstream_test
+- case_id: fastapi.security.scopes.constructor-contract
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scopes/constructor-contract
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_scopes.py
+    kind: upstream_test
