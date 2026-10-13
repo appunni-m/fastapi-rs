@@ -2590,12 +2590,12 @@ fn documented_form_annotation<'py>(
     if let Some(pattern) = pattern {
         form_arguments.set_item("pattern", pattern)?;
     }
-    let form = module.getattr("Form")?.call((), Some(&form_arguments))?;
     if password_format {
         let extra = PyDict::new(py);
         extra.set_item("format", "password")?;
-        form.setattr("json_schema_extra", extra)?;
+        form_arguments.set_item("json_schema_extra", extra)?;
     }
+    let form = module.getattr("Form")?.call((), Some(&form_arguments))?;
     let doc = py
         .import("annotated_doc")?
         .getattr("Doc")?
@@ -2657,7 +2657,7 @@ fn oauth2_password_form_constructor_parameters<'py>(
         string_type.as_any(),
         "\n                `password` string. The OAuth2 spec requires the exact field name\n                `password`.\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
         None,
-        true,
+        !strict,
     )?;
     let scope = documented_form_annotation(
         py,
@@ -2681,7 +2681,7 @@ fn oauth2_password_form_constructor_parameters<'py>(
         &optional_string,
         "\n                If there's a `client_secret` (and a `client_id`), they can be sent\n                as part of the form fields. But the OAuth2 specification recommends\n                sending the `client_id` and `client_secret` (if any) using HTTP Basic\n                auth.\n                ",
         None,
-        true,
+        !strict,
     )?;
     let none = py.None();
     let empty_string = PyString::new(py, "");
