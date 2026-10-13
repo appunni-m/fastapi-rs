@@ -158,6 +158,7 @@ def validate_command(args: argparse.Namespace) -> dict[str, Any]:
         read_json(atlas_path),
         read_json(backlog_path),
         read_json(selector_path),
+        materialized_input_index=read_json(materialized_path),
         fastapi_source=source_root,
         starlette_source=args.starlette_source.resolve(),
     )
@@ -206,6 +207,7 @@ def _validate_indexed_api_workflow(
         atlas,
         backlog,
         selector_catalog,
+        materialized_input_index=index,
         fastapi_source=fastapi_source,
         starlette_source=starlette_source,
     )

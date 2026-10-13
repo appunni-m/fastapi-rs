@@ -20,15 +20,15 @@ source files, 24 reference Markdown pages, 61 unique reference autodoc targets,
 and 492 `test_*.py` modules. These are inventory inputs, **not** the number of
 manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
-large value/model sets. The source inventory has 1,593 symbol IDs, classified by
-the atlas as 468 supported, 1,102 private/internal, and 23 uncertain; the atlas
+large value/model sets. The atlas has 1,624 source API candidates, classified by
+the atlas as 472 supported, 1,103 private/internal, and 49 uncertain; the atlas
 separately classifies 13 inherited `APIRouter` candidates. The active manifest
-indexes the 468 source-supported direct public symbols plus 9 supported
-inherited operations (477 supported public API entries). This is the reviewed
+indexes the 472 source-supported direct public symbols plus 9 supported
+inherited operations (481 supported public API entries). This is the reviewed
 public-entry scope, not an implementation-support count. It records 225
 runtime-reflected signatures, one unavailable constructor signature for
 `Example` (`TypedDict(total=False)`), one module object with no call signature,
-235 non-callable values/fields, and 6 source-recorded signatures. The source
+239 non-callable values/fields, and 6 source-recorded signatures. The source
 inventory records `Example`'s `total=False` class option; runtime reflection
 records its required and optional keys. Broader operation-level behavior and
 full implementation coverage remain pending.
@@ -301,12 +301,15 @@ and `File` defaults to `multipart/form-data`. Exact definitions begin at
 lifetimes. Dependency signatures and generator/context-manager lifecycle are a
 major public behavior family, not just these two helper constructors.
 
-The `fastapi.params` module also defines importable `ParamTypes`, `Param`, and
+The `fastapi.params` module also defines source-importable `ParamTypes`, `Param`, and
 `FieldInfo` subclasses `Path`, `Query`, `Header`, `Cookie`, `Body`, `Form`,
 `File`, `Depends`, and `Security` (`params.py:19-753`). These class identities
-are distinct from the root helper functions of the same names. The documented
-root names refer to `param_functions` callables; keep both module surfaces
-separate in the inventory.
+are distinct from the root helper functions of the same names. `ParamTypes` and
+the base `Param` are classified private/internal: source importability and
+implementation tests do not establish public support. The concrete `FieldInfo`
+subclasses are separately reviewed in the manifest. The documented root names
+refer to `param_functions` callables; keep both module surfaces separate in the
+inventory.
 
 ### Other callable and data-object families
 

@@ -4,6 +4,7 @@ from fastapi_rs._core import (
     BaseModelWithConfig,
     Components,
     Discriminator,
+    Example,
     Schema,
     SecuritySchemeType,
 )
@@ -17,6 +18,7 @@ __all__ = [
     "BaseModelWithConfig",
     "Components",
     "Discriminator",
+    "Example",
     "Schema",
     "SecuritySchemeType",
     "SecurityBase",

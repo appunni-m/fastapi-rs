@@ -20,6 +20,7 @@ mod openapi_model_email;
 mod openapi_model_schema;
 mod openapi_models;
 mod operation;
+mod parameter_classes;
 mod parameter_signatures;
 mod parameters;
 mod response_field;
@@ -58,13 +59,14 @@ pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     datastructures::register(module)?;
     deprecated_api::register(module)?;
     docs::register(module)?;
-    security::register(module)?;
-    sse::register(module)?;
     openapi_models::register(module.py(), module)?;
     application_runtime::register(module)?;
     let default_placeholder =
         application_runtime::default_placeholder(module.py(), module.py().None())?;
     parameter_signatures::decorate_factories(module, default_placeholder.bind(module.py()))?;
+    parameters::register_classes(module, default_placeholder.bind(module.py()))?;
+    security::register(module)?;
+    sse::register(module)?;
     openapi::register(module)
 }
 

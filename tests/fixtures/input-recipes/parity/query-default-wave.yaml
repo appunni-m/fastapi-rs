@@ -1,12 +1,12 @@
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
-  file: tests/fixtures/workloads/param_class_query_wave.py
+  file: tests/fixtures/workloads/query_default_wave.py
   factory: create_app
   instantiate_per_case: true
 cases:
-- case_id: fastapi.param-class.query-default-absent
+- case_id: fastapi.query-default-wave.optional-missing
   actions:
-  - action_id: default-value
+  - action_id: missing-query
     kind: http_request
     scope:
       type: http
@@ -22,28 +22,24 @@ cases:
       headers:
       - - host
         - testserver
-      client:
-      - 127.0.0.1
-      - 123
-      server:
-      - testserver
-      - 80
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
     receive_events:
     - type: http.request
       body: ''
       more_body: false
     observations:
     - kind: http_response
-      selectors:
-      - status
-      - body
+      selectors: [status, body]
       comparison: exact
   source_evidence:
-  - path: tests/test_param_class.py
+  - path: tests/test_query.py
     kind: upstream_test
-- case_id: fastapi.param-class.query-value-present
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation
+- case_id: fastapi.query-default-wave.optional-provided
   actions:
-  - action_id: provided-query-value
+  - action_id: supplied-query
     kind: http_request
     scope:
       type: http
@@ -59,22 +55,18 @@ cases:
       headers:
       - - host
         - testserver
-      client:
-      - 127.0.0.1
-      - 123
-      server:
-      - testserver
-      - 80
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
     receive_events:
     - type: http.request
       body: ''
       more_body: false
     observations:
     - kind: http_response
-      selectors:
-      - status
-      - body
+      selectors: [status, body]
       comparison: exact
   source_evidence:
-  - path: tests/test_param_class.py
+  - path: tests/test_query.py
     kind: upstream_test
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation

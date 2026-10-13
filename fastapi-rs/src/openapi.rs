@@ -14,6 +14,8 @@ pub(crate) struct OpenApiParameter {
     pub(crate) required: bool,
     pub(crate) description: Option<String>,
     pub(crate) deprecated: bool,
+    pub(crate) example: Option<Py<PyAny>>,
+    pub(crate) openapi_examples: Option<Py<PyAny>>,
     pub(crate) schema: Py<PyAny>,
 }
 
@@ -45,6 +47,8 @@ pub(crate) struct OpenApiOperation {
     pub(crate) validation_parameters_present: bool,
     pub(crate) request_model_name: Option<String>,
     pub(crate) request_schema: Option<Py<PyAny>>,
+    pub(crate) request_example: Option<Py<PyAny>>,
+    pub(crate) request_examples: Option<Py<PyAny>>,
     pub(crate) request_required: bool,
     pub(crate) request_body_present: bool,
     pub(crate) request_body_content_before_required: bool,
@@ -313,6 +317,23 @@ pub(crate) fn openapi_document(
                 if parameter.deprecated {
                     parameter_document.set_item("deprecated", true)?;
                 }
+                let emit_openapi_examples = match parameter.openapi_examples.as_ref() {
+                    Some(examples) => examples.bind(py).is_truthy()?,
+                    None => false,
+                };
+                if emit_openapi_examples {
+                    if let Some(examples) = parameter.openapi_examples.as_ref() {
+                        parameter_document.set_item(
+                            "examples",
+                            crate::encoding::jsonable_encoder_default(py, examples.bind(py))?,
+                        )?;
+                    }
+                } else if let Some(example) = parameter.example.as_ref() {
+                    parameter_document.set_item(
+                        "example",
+                        crate::encoding::jsonable_encoder_default(py, example.bind(py))?,
+                    )?;
+                }
                 let schema = normalize_parameter_schema(py, parameter.schema.bind(py))?;
                 parameter_document.set_item("schema", schema)?;
                 parameters.append(parameter_document)?;
@@ -336,6 +357,23 @@ pub(crate) fn openapi_document(
                 _ => PyDict::new(py).into_any(),
             };
             media_type.set_item("schema", schema)?;
+            let emit_request_examples = match operation.request_examples.as_ref() {
+                Some(examples) => examples.bind(py).is_truthy()?,
+                None => false,
+            };
+            if emit_request_examples {
+                if let Some(examples) = operation.request_examples.as_ref() {
+                    media_type.set_item(
+                        "examples",
+                        crate::encoding::jsonable_encoder_default(py, examples.bind(py))?,
+                    )?;
+                }
+            } else if let Some(example) = operation.request_example.as_ref() {
+                media_type.set_item(
+                    "example",
+                    crate::encoding::jsonable_encoder_default(py, example.bind(py))?,
+                )?;
+            }
             content.set_item(&operation.request_media_type, media_type)?;
             request_body.set_item("content", content)?;
             if operation.request_required && operation.request_body_content_before_required {

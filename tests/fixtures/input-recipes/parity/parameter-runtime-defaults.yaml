@@ -1,0 +1,531 @@
+# Input-only cases compare public Query, Body, Form, and File default behavior.
+# Factory call order follows the pinned FastAPI parameter-extraction branches
+# cited in metadata.yaml; Pydantic's FieldInfo.get_default supplies the value.
+# String fallbacks for int/bytes parameters intentionally show that a missing
+# default is returned without request-value validation; provided values validate.
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/parameter_runtime_defaults.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.parameter-runtime-defaults.default-factory-none
+  actions:
+  - action_id: first-request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: second-request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation
+- case_id: fastapi.parameter-runtime-defaults.default-factory-value
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory-value
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation
+- case_id: fastapi.parameter-runtime-defaults.default-factory-value-provided
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory-value
+      query_string: q=41
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation
+- case_id: fastapi.parameter-runtime-defaults.default-factory-value-empty
+  actions:
+  - action_id: empty-query
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory-value
+      query_string: q=
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: missing-query-follow-up
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory-value
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation
+- case_id: fastapi.parameter-runtime-defaults.default-factory-value-invalid
+  actions:
+  - action_id: invalid-query
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory-value
+      query_string: q=not-an-int
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: missing-query-follow-up
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/default-factory-value
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation
+- case_id: fastapi.parameter-runtime-defaults.annotated-default-factory
+  actions:
+  - action_id: missing-query
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /annotated-default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_annotated.py
+    kind: upstream_test
+- case_id: fastapi.parameter-runtime-defaults.body-default-factory
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '0'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.parameter-runtime-defaults.body-default-factory-value-provided
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '2'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '41'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.parameter-runtime-defaults.form-default-factory
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '0'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_form_default.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.parameter-runtime-defaults.form-default-factory-provided
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '4'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: q=41
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_form_default.py
+    kind: upstream_test
+- case_id: fastapi.parameter-runtime-defaults.form-default-factory-empty
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '2'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: q=
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_form_default.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.parameter-runtime-defaults.file-default-factory
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastAPIFileFactory
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--FastAPIFileFactory--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional.py
+    kind: upstream_test
+- case_id: fastapi.parameter-runtime-defaults.file-default-factory-provided
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/default-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastAPIFileFactoryProvided
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--FastAPIFileFactoryProvided\r\nContent-Disposition: form-data; name=\"q\"; filename=\"sample.bin\"\r\nContent-Type: application/octet-stream\r\n\r\nabc\r\n--FastAPIFileFactoryProvided--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional.py
+    kind: upstream_test

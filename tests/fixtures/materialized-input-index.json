@@ -5665,7 +5665,7 @@
         "fastapi.deprecation.generate-operation-id-for-path"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
-      "workload_sha256": "8d7624c240a6de359a57be0d6ca253d8cb3d7942a40e95e27b4a3fe4652d90ba",
+      "workload_sha256": "b1c2d98beeda85111dfccb984b33479f753a0f3845eb8e5ea4cc8d71f5be8709",
       "api_definitions": [
         {
           "case_id": "fastapi.deprecation.body-example-warning",
@@ -13166,35 +13166,6 @@
       ]
     },
     {
-      "id": "param-class-query-wave",
-      "input_path": "tests/fixtures/inputs/parity/param-class-query-wave.json",
-      "input_sha256": "e8ecf55db26d0e3db7b99b203105b855f92ec808b9a708f05df5391626367f94",
-      "recipe_path": "tests/fixtures/input-recipes/parity/param-class-query-wave.yaml",
-      "recipe_sha256": "26faa5f4675f90fd514cd17ba14c5f045d8f47705c3bff32bdd6763c43606e8c",
-      "case_ids": [
-        "fastapi.param-class.query-default-absent",
-        "fastapi.param-class.query-value-present"
-      ],
-      "workload_path": "tests/fixtures/workloads/param_class_query_wave.py",
-      "workload_sha256": "8b72caa52dbe10bcf74dcc3e0f96b91f616d0e7c4ccedd213f2a4a691cdf230b",
-      "case_contracts": [
-        {
-          "case_id": "fastapi.param-class.query-default-absent",
-          "verification": "parity",
-          "requirement_refs": [
-            "source:upstream-test:tests/test_param_class.py"
-          ]
-        },
-        {
-          "case_id": "fastapi.param-class.query-value-present",
-          "verification": "parity",
-          "requirement_refs": [
-            "source:upstream-test:tests/test_param_class.py"
-          ]
-        }
-      ]
-    },
-    {
       "id": "parameter-class-constructor-signatures",
       "input_path": "tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json",
       "input_sha256": "0704d82edbce2b3fae993e81a0cb17ce331dc01e6d37352622aa3b7cbb03d40d",
@@ -13697,6 +13668,356 @@
           "requirement_refs": [
             "api:fastapi.Form",
             "api:fastapi.param_functions.Form"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parameter-metadata-projection",
+      "input_path": "tests/fixtures/inputs/parity/parameter-metadata-projection.json",
+      "input_sha256": "862a2ba9e02b23ebc8ab427e91cef2c981290ebdcb8e83e4927266d669761cbd",
+      "recipe_path": "tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml",
+      "recipe_sha256": "b50b1ad4b14ebf28f93501b648526e0f0403c96dfe8522029de3f633c190e7ac",
+      "case_ids": [
+        "fastapi.parameter-metadata-projection.path-alias-constraint",
+        "fastapi.parameter-metadata-projection.query-alias-default",
+        "fastapi.parameter-metadata-projection.query-default-factory",
+        "fastapi.parameter-metadata-projection.query-constraints-examples",
+        "fastapi.parameter-metadata-projection.header-alias",
+        "fastapi.parameter-metadata-projection.cookie-alias-default",
+        "fastapi.parameter-metadata-projection.body-media-embed",
+        "fastapi.parameter-metadata-projection.form-media-embed",
+        "fastapi.parameter-metadata-projection.file-media-embed"
+      ],
+      "workload_path": "tests/fixtures/workloads/parameter_metadata_projection.py",
+      "workload_sha256": "7d6e04fed8ba9b5062890b02d4d944ad608c35a6ee03191d737ddd8df14174fe",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.parameter-metadata-projection.body-media-embed",
+          "symbol_id": "fastapi.Body",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.cookie-alias-default",
+          "symbol_id": "fastapi.Cookie",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.file-media-embed",
+          "symbol_id": "fastapi.File",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.form-media-embed",
+          "symbol_id": "fastapi.Form",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.header-alias",
+          "symbol_id": "fastapi.Header",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.path-alias-constraint",
+          "symbol_id": "fastapi.Path",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-alias-default",
+          "symbol_id": "fastapi.Query",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-constraints-examples",
+          "symbol_id": "fastapi.Query",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-default-factory",
+          "symbol_id": "fastapi.Query",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.parameter-metadata-projection.body-media-embed",
+          "probe_id": "body-media-embed",
+          "symbol_id": "fastapi.Body",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.cookie-alias-default",
+          "probe_id": "cookie-alias-default",
+          "symbol_id": "fastapi.Cookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.file-media-embed",
+          "probe_id": "file-media-embed",
+          "symbol_id": "fastapi.File",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.form-media-embed",
+          "probe_id": "form-media-embed",
+          "symbol_id": "fastapi.Form",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.header-alias",
+          "probe_id": "header-alias",
+          "symbol_id": "fastapi.Header",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.path-alias-constraint",
+          "probe_id": "path-alias-constraint",
+          "symbol_id": "fastapi.Path",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-alias-default",
+          "probe_id": "query-alias-default",
+          "symbol_id": "fastapi.Query",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-constraints-examples",
+          "probe_id": "query-constraints-examples",
+          "symbol_id": "fastapi.Query",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-default-factory",
+          "probe_id": "query-default-factory",
+          "symbol_id": "fastapi.Query",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.parameter_metadata"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.parameter-metadata-projection.path-alias-constraint",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Path"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-alias-default",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Query"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-default-factory",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Query"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.query-constraints-examples",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Query"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.header-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Header"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.cookie-alias-default",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Cookie"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.body-media-embed",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Body"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.form-media-embed",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Form"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-metadata-projection.file-media-embed",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.File"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parameter-runtime-defaults",
+      "input_path": "tests/fixtures/inputs/parity/parameter-runtime-defaults.json",
+      "input_sha256": "6e35c16e1196fe6a7aecdbaa7a224f2fb690f5eecbd301496166b74bf7713068",
+      "recipe_path": "tests/fixtures/input-recipes/parity/parameter-runtime-defaults.yaml",
+      "recipe_sha256": "dad64f6b44902d6840b3527b9a7259471785b79892ae41b9f371b3f596262a05",
+      "case_ids": [
+        "fastapi.parameter-runtime-defaults.default-factory-none",
+        "fastapi.parameter-runtime-defaults.default-factory-value",
+        "fastapi.parameter-runtime-defaults.default-factory-value-provided",
+        "fastapi.parameter-runtime-defaults.default-factory-value-empty",
+        "fastapi.parameter-runtime-defaults.default-factory-value-invalid",
+        "fastapi.parameter-runtime-defaults.annotated-default-factory",
+        "fastapi.parameter-runtime-defaults.body-default-factory",
+        "fastapi.parameter-runtime-defaults.body-default-factory-value-provided",
+        "fastapi.parameter-runtime-defaults.form-default-factory",
+        "fastapi.parameter-runtime-defaults.form-default-factory-provided",
+        "fastapi.parameter-runtime-defaults.form-default-factory-empty",
+        "fastapi.parameter-runtime-defaults.file-default-factory",
+        "fastapi.parameter-runtime-defaults.file-default-factory-provided"
+      ],
+      "workload_path": "tests/fixtures/workloads/parameter_runtime_defaults.py",
+      "workload_sha256": "c8ba82e147a09ebef16a44c8da9e4d8fa7fa5e50e3506d79090ee141a2a05d0c",
+      "oracle_profile_extension": "standard-multipart",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.default-factory-none",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/parameters.md",
+            "source:upstream-test:tests/test_query.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.default-factory-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/parameters.md",
+            "source:upstream-test:tests/test_query.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.default-factory-value-provided",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/parameters.md",
+            "source:upstream-test:tests/test_query.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.default-factory-value-empty",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/parameters.md",
+            "source:upstream-test:tests/test_query.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.default-factory-value-invalid",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/parameters.md",
+            "source:upstream-test:tests/test_query.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.annotated-default-factory",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_annotated.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.body-default-factory",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_body/test_optional_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.body-default-factory-value-provided",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_body/test_optional_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.form-default-factory",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-forms.md",
+            "source:upstream-test:tests/test_form_default.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.form-default-factory-provided",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_form_default.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.form-default-factory-empty",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-forms.md",
+            "source:upstream-test:tests/test_form_default.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.file-default-factory",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_file/test_optional.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-runtime-defaults.file-default-factory-provided",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_file/test_optional.py"
           ]
         }
       ]
@@ -16556,7 +16877,7 @@
         "fastapi.params-repr.representative-default-categories"
       ],
       "workload_path": "tests/fixtures/workloads/public_model_edge_cases_upstream.py",
-      "workload_sha256": "0bed26f9836aab257453df0025504f23d029f881c90d39e439eaf2ed74f74186",
+      "workload_sha256": "40b4879536a7084fdbf1876ab037b09760f113dfd1f0d52cc2ace2d4299b82e8",
       "case_contracts": [
         {
           "case_id": "fastapi.depends-hashability.equivalent-dependencies",
@@ -16954,6 +17275,37 @@
           "case_id": "fastapi.query-default-isolation.mutable-default-is-copied-per-request",
           "verification": "parity",
           "requirement_refs": [
+            "source:upstream-test:tests/test_query.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "query-default-wave",
+      "input_path": "tests/fixtures/inputs/parity/query-default-wave.json",
+      "input_sha256": "182693672bbb944d6ef7956a040764cb7a89d8651dab762fca5fde2b375c15ad",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-default-wave.yaml",
+      "recipe_sha256": "c87b15a47adb4157a51e19d1ad3fea5b840b45912ce0b6b47d853d6f4e9e98b6",
+      "case_ids": [
+        "fastapi.query-default-wave.optional-missing",
+        "fastapi.query-default-wave.optional-provided"
+      ],
+      "workload_path": "tests/fixtures/workloads/query_default_wave.py",
+      "workload_sha256": "81e0bc504d8cc21bacbe9b7f66caaa7d620f81a5cd1b027582945e2b7166c611",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.query-default-wave.optional-missing",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/parameters.md",
+            "source:upstream-test:tests/test_query.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.query-default-wave.optional-provided",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/parameters.md",
             "source:upstream-test:tests/test_query.py"
           ]
         }
@@ -42951,14 +43303,110 @@
       ]
     },
     {
-      "source_item_id": "upstream-test:tests/test_param_class.py",
-      "fixture_id": "fastapi.test.test-param-class",
-      "workflow_id": "param-class-query-wave",
+      "source_item_id": "documented-page:reference/parameters.md",
+      "fixture_id": "fastapi.docs.reference-parameters",
+      "workflow_id": "parameter-runtime-defaults",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.parameter-runtime-defaults.default-factory-none",
+        "fastapi.parameter-runtime-defaults.default-factory-value",
+        "fastapi.parameter-runtime-defaults.default-factory-value-empty",
+        "fastapi.parameter-runtime-defaults.default-factory-value-invalid",
+        "fastapi.parameter-runtime-defaults.default-factory-value-provided"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-forms.md",
+      "fixture_id": "fastapi.docs.tutorial-request-forms",
+      "workflow_id": "parameter-runtime-defaults",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.param-class.query-default-absent",
-        "fastapi.param-class.query-value-present"
+        "fastapi.parameter-runtime-defaults.form-default-factory",
+        "fastapi.parameter-runtime-defaults.form-default-factory-empty"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_annotated.py",
+      "fixture_id": "fastapi.test.test-annotated",
+      "workflow_id": "parameter-runtime-defaults",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.parameter-runtime-defaults.annotated-default-factory"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_form_default.py",
+      "fixture_id": "fastapi.test.test-form-default",
+      "workflow_id": "parameter-runtime-defaults",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.parameter-runtime-defaults.form-default-factory",
+        "fastapi.parameter-runtime-defaults.form-default-factory-empty",
+        "fastapi.parameter-runtime-defaults.form-default-factory-provided"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_query.py",
+      "fixture_id": "fastapi.test.test-query",
+      "workflow_id": "parameter-runtime-defaults",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.parameter-runtime-defaults.default-factory-none",
+        "fastapi.parameter-runtime-defaults.default-factory-value",
+        "fastapi.parameter-runtime-defaults.default-factory-value-empty",
+        "fastapi.parameter-runtime-defaults.default-factory-value-invalid",
+        "fastapi.parameter-runtime-defaults.default-factory-value-provided"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_body/test_optional_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-body-test-optional-str",
+      "workflow_id": "parameter-runtime-defaults",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.parameter-runtime-defaults.body-default-factory",
+        "fastapi.parameter-runtime-defaults.body-default-factory-value-provided"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_file/test_optional.py",
+      "fixture_id": "fastapi.test.test-request-params-test-file-test-optional",
+      "workflow_id": "parameter-runtime-defaults",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.parameter-runtime-defaults.file-default-factory",
+        "fastapi.parameter-runtime-defaults.file-default-factory-provided"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -45500,6 +45948,36 @@
         "fastapi.query-default-isolation.invalid-default-is-validated",
         "fastapi.query-default-isolation.mutable-default-is-copied-per-request",
         "fastapi.query-default-isolation.pydantic-undefined-is-required"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/parameters.md",
+      "fixture_id": "fastapi.docs.reference-parameters",
+      "workflow_id": "query-default-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query-default-wave.optional-missing",
+        "fastapi.query-default-wave.optional-provided"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_query.py",
+      "fixture_id": "fastapi.test.test-query",
+      "workflow_id": "query-default-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query-default-wave.optional-missing",
+        "fastapi.query-default-wave.optional-provided"
       ],
       "observation_selectors": [
         "http.body.bytes",

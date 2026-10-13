@@ -231,12 +231,17 @@ server. Internal Rust timing attribution may be added as a measurement of this
 same implementation; it is not a separate target. Do not infer component costs
 by subtracting the Starlette control or from the end-to-end target time.
 
-#### Latest completed seven-workload run (2026-10-13; suite schema v2)
+#### Completed seven-workload run (2026-10-13; archived stale manifest)
 
 The suite completed at `2026-10-13T04:09:04Z` with suite ID
 `3bc888b0-18e3-439b-8c33-891ef5c8d081` and receipt
-`benchmark-results/suite-20261013T040904Z-3bc888b0-18e3-439b-8c33-891ef5c8d081.json`
+`benchmark-results/stale/suite-20261013T040904Z-3bc888b0-18e3-439b-8c33-891ef5c8d081.json`
 (SHA-256 `88d734af83a735173a1707df453650f1715476b2c3ee4fec78a738e873d10ce1`).
+Its comparison artifacts use manifest SHA-256
+`06e3652d0154dd0c6717b2c698d5978a6b3f40669d90f24e396591806104b73c`, while
+the current manifest is `f56d38c4d19e7b5440495b81410409b751a3041b3b070bf774502bde341e59dc`.
+The suite receipt is archived as historical evidence and is not current-contract
+benchmark evidence; its referenced workload artifacts remain in place.
 It ran against FastAPI-RS commit `43aee0f2c73087a94696dac8387d275cb9d5b27f`
 and manifest SHA-256
 `06e3652d0154dd0c6717b2c698d5978a6b3f40669d90f24e396591806104b73c`.

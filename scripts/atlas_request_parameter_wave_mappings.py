@@ -418,6 +418,14 @@ def _mapping_for_test_module(
     spans = _test_function_spans(test_path)
     if not spans:
         raise ValueError(f"expected test functions for candidate module {test_path}")
+    function_exclusions = _TOP_LEVEL_REQUEST_PARAMETER_FUNCTION_EXCLUSIONS.get(test_path, {})
+    spans_by_function = {span["role"].rsplit(" ", 1)[-1]: span for span in spans}
+    unknown_exclusions = set(function_exclusions) - set(spans_by_function)
+    if unknown_exclusions:
+        raise ValueError(
+            f"test-function exclusions do not match pinned source in {test_path}: "
+            f"{sorted(unknown_exclusions)}"
+        )
     workflow_cases = case_index.get(test_path, [])
     if not workflow_cases:
         raise ValueError(f"no source-linked input workflow for candidate module {test_path}")
@@ -438,6 +446,14 @@ def _mapping_for_test_module(
     return {
         "mapping_status": "source-reviewed-input-candidate; parity pending",
         "source_test_spans": spans,
+        "excluded_test_functions": [
+            {
+                "name": name,
+                "reason": reason,
+                "source_span": spans_by_function[name],
+            }
+            for name, reason in sorted(function_exclusions.items())
+        ],
         "workflow_cases": workflow_cases,
         "observation_selectors": selectors,
         "fastapi_implementation_sources": list(_FASTAPI_IMPLEMENTATION_SOURCES),
@@ -481,6 +497,32 @@ _UNSUPPORTED_REQUEST_PARAM_MODULES = {
     ),
 }
 
+_TOP_LEVEL_REQUEST_PARAMETER_EXCLUSIONS = {
+    "tests/test_param_class.py": (
+        "Both pinned tests directly import and construct fastapi.params.Param. The reviewed "
+        "FastAPI 0.141.1 atlas classifies Param as private/internal and its base constructor "
+        "as uncertain, so FastAPI-RS does not expose that base through the public facade. "
+        "Equivalent missing/provided optional-query behavior is mapped through the supported "
+        "Query factory in query-default-wave; this exclusion is limited to direct Param use."
+    ),
+}
+
+_TOP_LEVEL_REQUEST_PARAMETER_FUNCTION_EXCLUSIONS = {
+    "tests/test_params_repr.py": {
+        name: (
+            "Direct construction and repr of fastapi.params.Param is outside the reviewed "
+            "public contract; Param is classified private/internal."
+        )
+        for name in (
+            "test_param_repr_str",
+            "test_param_repr_none",
+            "test_param_repr_ellipsis",
+            "test_param_repr_number",
+            "test_param_repr_list",
+        )
+    },
+}
+
 _REQUEST_PARAM_SUPPORT_EXCLUSIONS = {
     "tests/test_request_params/__init__.py": "Empty package initializer; it declares no test or FastAPI behavior.",
     "tests/test_request_params/test_body/__init__.py": "Empty package initializer; it declares no test or FastAPI behavior.",
@@ -501,9 +543,14 @@ _SOURCE_LINK_INDEX = _source_link_index()
 
 REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {}
 for _test_path in TOP_LEVEL_REQUEST_PARAMETER_TESTS:
-    REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS[_test_path] = _mapping_for_test_module(
-        _test_path, _SOURCE_LINK_INDEX
-    )
+    if _test_path in _TOP_LEVEL_REQUEST_PARAMETER_EXCLUSIONS:
+        REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS[_test_path] = _source_exclusion(
+            _test_path, _TOP_LEVEL_REQUEST_PARAMETER_EXCLUSIONS[_test_path]
+        )
+    else:
+        REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS[_test_path] = _mapping_for_test_module(
+            _test_path, _SOURCE_LINK_INDEX
+        )
 
 for _test_path in REQUEST_PARAM_SOURCE_MODULES:
     if _test_path in _UNSUPPORTED_REQUEST_PARAM_MODULES:
@@ -1323,6 +1370,25 @@ def validate_request_parameter_mappings() -> list[str]:
             "source_test_spans"
         ] != _test_function_spans(test_path):
             errors.append(f"test function spans no longer match pinned source AST: {test_path}")
+        expected_function_exclusions = _TOP_LEVEL_REQUEST_PARAMETER_FUNCTION_EXCLUSIONS.get(
+            test_path, {}
+        )
+        actual_function_exclusions = {
+            item.get("name"): item.get("reason")
+            for item in mapping.get("excluded_test_functions", [])
+        }
+        if actual_function_exclusions != expected_function_exclusions:
+            errors.append(f"test-function exclusions do not match reviewed reasons: {test_path}")
+        source_spans = {
+            span["role"].rsplit(" ", 1)[-1]: span for span in _test_function_spans(test_path)
+        }
+        for item in mapping.get("excluded_test_functions", []):
+            if (
+                not item.get("name")
+                or not item.get("reason")
+                or item.get("source_span") != source_spans.get(item.get("name"))
+            ):
+                errors.append(f"invalid test-function exclusion source in {test_path}: {item}")
         for span in mapping.get("supporting_sources", []):
             if (
                 span

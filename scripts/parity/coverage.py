@@ -512,6 +512,7 @@ def validate_compatibility_artifacts(
     backlog: dict[str, Any],
     selector_catalog: dict[str, Any],
     *,
+    materialized_input_index: dict[str, Any],
     fastapi_source: Path,
     starlette_source: Path,
 ) -> dict[str, Any]:
@@ -1631,6 +1632,21 @@ def validate_compatibility_artifacts(
             _require(
                 row.get("id") in fixture_by_source,
                 f"mapped source {row.get('id')} has no fixture design",
+            )
+
+    indexed_workflows = materialized_input_index.get("workflows")
+    _require(isinstance(indexed_workflows, list), "materialized API workflow index is missing")
+    for workflow in indexed_workflows:
+        _require(isinstance(workflow, dict), "materialized workflow entry is malformed")
+        probes = workflow.get("api_probes", [])
+        _require(
+            isinstance(probes, list), f"workflow {workflow.get('id')} API probes are malformed"
+        )
+        for probe in probes:
+            _require(isinstance(probe, dict), "materialized API probe entry is malformed")
+            register_selectors(
+                probe.get("observation_selectors", []),
+                f"direct API workflow {workflow.get('id')} probe {probe.get('probe_id')}",
             )
 
     unused_definitions = selector_ids - used_selectors

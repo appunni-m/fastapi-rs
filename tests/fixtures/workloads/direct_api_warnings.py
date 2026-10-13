@@ -1,7 +1,7 @@
 """Argument bundles for FastAPI's deprecated parameter keyword observations.
 
-The direct API runner supplies the invocation frame, so warning locations are
-relative to that stable runner call site rather than an application file.
+Warning filename and line are part of the parity contract. Root File's source
+warning intentionally resolves to the pinned FastAPI wrapper at line 2249.
 """
 
 from __future__ import annotations

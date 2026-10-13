@@ -14,6 +14,8 @@ import sys
 import uuid
 import warnings
 from collections.abc import Mapping
+from decimal import Decimal
+from enum import Enum
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -41,6 +43,7 @@ WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow@5"
+WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -48,6 +51,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V3_ID,
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
+        WORKFLOW_SCHEMA_V6_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -56,12 +60,14 @@ RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
 RESULT_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow-result@5"
 RESULT_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow-result@6"
 RESULT_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow-result@7"
+RESULT_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow-result@8"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V3_ID: RESULT_SCHEMA_V4_ID,
     WORKFLOW_SCHEMA_V4_ID: RESULT_SCHEMA_V6_ID,
     WORKFLOW_SCHEMA_V5_ID: RESULT_SCHEMA_V7_ID,
+    WORKFLOW_SCHEMA_V6_ID: RESULT_SCHEMA_V8_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@6"
@@ -78,6 +84,43 @@ PINNED_AUTHORITIES = {
         "commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
     },
 }
+_PARAMETER_VALUE_MISSING = object()
+_PARAMETER_VALUE_ATTRIBUTES = (
+    "annotation",
+    "default",
+    "default_factory",
+    "alias",
+    "alias_priority",
+    "validation_alias",
+    "serialization_alias",
+    "title",
+    "description",
+    "examples",
+    "example",
+    "openapi_examples",
+    "deprecated",
+    "include_in_schema",
+    "json_schema_extra",
+    "discriminator",
+    "in_",
+    "convert_underscores",
+    "embed",
+    "media_type",
+)
+_PARAMETER_CONSTRAINT_ATTRIBUTES = (
+    "gt",
+    "ge",
+    "lt",
+    "le",
+    "multiple_of",
+    "min_length",
+    "max_length",
+    "max_digits",
+    "decimal_places",
+    "pattern",
+    "allow_inf_nan",
+    "strict",
+)
 
 
 def _error_record(error: Exception) -> dict[str, str]:
@@ -339,6 +382,119 @@ def _signature_component(
     ) from None
 
 
+def _parameter_value(value: Any, *, depth: int = 0) -> Any:
+    """Encode selected public parameter values without traversing object layouts."""
+    if value is _PARAMETER_VALUE_MISSING:
+        return {"kind": "not_present"}
+    if depth > 8:
+        value_type = type(value)
+        return {
+            "kind": "python_object",
+            "python_type": f"{value_type.__module__}.{value_type.__qualname__}",
+        }
+
+    from pydantic.aliases import AliasChoices, AliasPath
+
+    if isinstance(value, AliasPath):
+        return {
+            "kind": "pydantic_alias_path",
+            "path": [_parameter_value(part, depth=depth + 1) for part in value.path],
+        }
+    if isinstance(value, AliasChoices):
+        return {
+            "kind": "pydantic_alias_choices",
+            "choices": [_parameter_value(choice, depth=depth + 1) for choice in value.choices],
+        }
+    if isinstance(value, Enum):
+        encoded_value = _parameter_value(value.value, depth=depth + 1)
+        if isinstance(encoded_value, dict):
+            value_type = type(value)
+            return {
+                "kind": "python_object",
+                "python_type": f"{value_type.__module__}.{value_type.__qualname__}",
+            }
+        return {
+            "kind": "python_enum",
+            "qualified_name": f"{type(value).__module__}.{type(value).__qualname__}",
+            "value": encoded_value,
+        }
+    if isinstance(value, Decimal):
+        return {"kind": "python_decimal", "value": str(value)}
+    if type(value) is float and not math.isfinite(value):
+        if math.isnan(value):
+            label = "nan"
+        else:
+            label = "positive_infinity" if value > 0 else "negative_infinity"
+        return {"kind": "python_nonfinite_float", "value": label}
+
+    try:
+        return _signature_component(value)
+    except WorkerError:
+        value_type = type(value)
+        return {
+            "kind": "python_object",
+            "python_type": f"{value_type.__module__}.{value_type.__qualname__}",
+        }
+
+
+def _parameter_annotation(value: Any) -> Any:
+    try:
+        return project_annotation(value, _parameter_value)
+    except SignatureAnnotationError:
+        return _parameter_value(value)
+
+
+def _parameter_attribute(value: Any, name: str) -> Any:
+    try:
+        return getattr(value, name)
+    except AttributeError:
+        return _PARAMETER_VALUE_MISSING
+
+
+def _parameter_metadata_projection(value: Any) -> dict[str, Any]:
+    """Project public parameter semantics, never FieldInfo or marker internals."""
+    value_type = type(value)
+    required_method = _parameter_attribute(value, "is_required")
+    if callable(required_method):
+        required: Any = required_method()
+    else:
+        required = _PARAMETER_VALUE_MISSING
+
+    raw_constraints: dict[str, Any] = {}
+    for name in _PARAMETER_CONSTRAINT_ATTRIBUTES:
+        direct_value = _parameter_attribute(value, name)
+        if direct_value is not _PARAMETER_VALUE_MISSING and direct_value is not None:
+            raw_constraints[name] = direct_value
+    metadata = _parameter_attribute(value, "metadata")
+    if isinstance(metadata, (list, tuple)):
+        for item in metadata:
+            for name in _PARAMETER_CONSTRAINT_ATTRIBUTES:
+                if name in raw_constraints:
+                    continue
+                metadata_value = _parameter_attribute(item, name)
+                if metadata_value is not _PARAMETER_VALUE_MISSING and metadata_value is not None:
+                    raw_constraints[name] = metadata_value
+
+    attributes = {
+        name: (
+            _parameter_annotation(_parameter_attribute(value, name))
+            if name == "annotation"
+            else _parameter_value(_parameter_attribute(value, name))
+        )
+        for name in _PARAMETER_VALUE_ATTRIBUTES
+    }
+    return {
+        "type": {"module": value_type.__module__, "name": value_type.__name__},
+        "required": _parameter_value(required),
+        "attributes": attributes,
+        "constraints": {
+            name: _parameter_value(raw_constraints[name])
+            for name in _PARAMETER_CONSTRAINT_ATTRIBUTES
+            if name in raw_constraints
+        },
+    }
+
+
 def _signature_value(
     function: Any,
     *,
@@ -499,6 +655,18 @@ def _validate_workflow_callables(
                 raise WorkerError(
                     "Pydantic model result requires one v4 or v5 public-callable observation"
                 )
+            parameter_metadata_selected = any(
+                isinstance(observation, dict)
+                and observation.get("kind") == "python_parameter_metadata"
+                for observation in observations
+            )
+            if parameter_metadata_selected and (
+                workflow.get("schema") != WORKFLOW_SCHEMA_V6_ID
+                or len(observations) != 1
+                or "public_callable" not in probe
+                or "argument_bundle" not in probe
+            ):
+                raise WorkerError("parameter metadata requires one v6 public-callable observation")
             if "public_callable" in probe:
                 if any(
                     isinstance(observation, dict)
@@ -587,6 +755,10 @@ async def _run_probe(
             observation["kind"] == "python_pydantic_model_result"
             for observation in probe["observations"]
         )
+        has_parameter_metadata_observation = any(
+            observation["kind"] == "python_parameter_metadata"
+            for observation in probe["observations"]
+        )
         has_call_outcome_observation = any(
             observation["kind"] == "python_call_outcome" for observation in probe["observations"]
         )
@@ -601,7 +773,11 @@ async def _run_probe(
         )
         result = None
         call_outcome = None
-        if has_return_value_observation or has_pydantic_model_result_observation:
+        if (
+            has_return_value_observation
+            or has_pydantic_model_result_observation
+            or has_parameter_metadata_observation
+        ):
             args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
             result = await _invoke_public_callable(
                 function,
@@ -660,6 +836,8 @@ async def _run_probe(
                 values = {"value": projected}
                 if nonfinite_floats:
                     values["nonfinite_floats"] = nonfinite_floats
+            elif observation["kind"] == "python_parameter_metadata":
+                values = {"parameter_metadata": _parameter_metadata_projection(result)}
             elif observation["kind"] == "python_call_outcome":
                 values = {"outcome": call_outcome}
             else:

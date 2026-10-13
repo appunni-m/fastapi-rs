@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi import Depends, FastAPI, Security
 from fastapi.openapi.models import Schema
-from fastapi.params import Body, Cookie, Header, Param, Path, Query
+from fastapi.params import Body, Cookie, Header, Path, Query
 
 
 def _dependency_marker() -> str:
@@ -43,7 +43,7 @@ def create_app() -> FastAPI:
     @app.get("/parameter-representations")
     def parameter_representations() -> dict[str, list[str]]:
         values: list[object] = ["harbor-tag", None, ..., 29, ["bronze"]]
-        parameter_types = (Param, Query, Header, Cookie, Body)
+        parameter_types = (Query, Header, Cookie, Body)
         result = {
             parameter_type.__name__: [repr(parameter_type(value)) for value in values]
             for parameter_type in parameter_types

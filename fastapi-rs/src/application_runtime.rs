@@ -216,6 +216,8 @@ struct CallableParameter {
     name: String,
     annotation: Py<PyAny>,
     validation_adapter: Option<Py<PyAny>>,
+    field_info: Option<Py<PyAny>>,
+    required: bool,
     default: Option<Py<PyAny>>,
     default_delivery: ParameterDefaultDelivery,
     is_sequence: bool,
@@ -228,6 +230,8 @@ struct CallableParameter {
     deprecated: bool,
     include_in_schema: bool,
     body_embed: bool,
+    example: Option<Py<PyAny>>,
+    openapi_examples: Option<Py<PyAny>>,
     source: ParameterSource,
 }
 
@@ -297,6 +301,11 @@ impl CallableParameter {
                 .validation_adapter
                 .as_ref()
                 .map(|adapter| adapter.clone_ref(py)),
+            field_info: self
+                .field_info
+                .as_ref()
+                .map(|field_info| field_info.clone_ref(py)),
+            required: self.required,
             default: self.default.as_ref().map(|value| value.clone_ref(py)),
             default_delivery: self.default_delivery,
             is_sequence: self.is_sequence,
@@ -324,6 +333,11 @@ impl CallableParameter {
             deprecated: self.deprecated,
             include_in_schema: self.include_in_schema,
             body_embed: self.body_embed,
+            example: self.example.as_ref().map(|value| value.clone_ref(py)),
+            openapi_examples: self
+                .openapi_examples
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
             source: self.source.clone_ref(py),
         }
     }
@@ -1805,6 +1819,8 @@ pub(crate) fn direct_route_openapi_operation(
         validation_parameters_present: false,
         request_model_name: None,
         request_schema: None,
+        request_example: None,
+        request_examples: None,
         request_required: false,
         request_body_present: false,
         request_body_content_before_required: false,
@@ -2086,6 +2102,8 @@ struct ResponseModelOptions {
     name: Option<String>,
 }
 
+type ParameterOpenApiExamples = (Option<Py<PyAny>>, Option<Py<PyAny>>);
+
 struct ParameterOpenApiPlan {
     name: String,
     location: String,
@@ -2097,6 +2115,8 @@ struct ParameterOpenApiPlan {
     title: Option<String>,
     description: Option<String>,
     deprecated: bool,
+    example: Option<Py<PyAny>>,
+    openapi_examples: Option<Py<PyAny>>,
 }
 
 #[pyclass(name = "FastAPI", module = "fastapi_rs._core")]
@@ -4714,6 +4734,8 @@ impl PyFastApi {
                     required: parameter.required,
                     description: parameter.description,
                     deprecated: parameter.deprecated,
+                    example: parameter.example,
+                    openapi_examples: parameter.openapi_examples,
                     schema,
                 })
             })
@@ -4730,78 +4752,100 @@ impl PyFastApi {
         )?;
 
         let has_form_body = route.plan.has_form_inputs();
-        let (request_model_name, request_schema, request_required, request_media_type) =
-            if has_form_body {
-                let body_parameters = route.plan.all_body_parameters();
-                let aggregate_body = form_body_should_embed(py, &body_parameters)?;
-                if aggregate_body {
-                    let aggregate_name = format!("Body_{operation_id_text}");
-                    let aggregate_model =
-                        aggregate_body_model(py, &aggregate_name, &body_parameters)?;
-                    let request_schema =
-                        pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
-                    let request_required = body_parameters
-                        .iter()
-                        .any(|parameter| parameter.default.is_none());
-                    let media_type = aggregate_body_media_type(&body_parameters);
-                    (None, Some(request_schema), request_required, media_type)
-                } else {
-                    match body_parameters.first().copied() {
-                        Some(parameter) => (
-                            None,
-                            Some(body_parameter_schema(
-                                py,
-                                parameter,
-                                Some(&title_case(&parameter.body_alias().replace('_', " "))),
-                            )?),
-                            parameter.default.is_none(),
-                            parameter
-                                .media_type
-                                .as_deref()
-                                .unwrap_or("application/json")
-                                .to_owned(),
-                        ),
-                        None => (None, None, false, "application/json".to_owned()),
-                    }
-                }
+        let (
+            request_model_name,
+            request_schema,
+            request_required,
+            request_media_type,
+            request_example,
+            request_examples,
+        ) = if has_form_body {
+            let body_parameters = route.plan.all_body_parameters();
+            let aggregate_body = form_body_should_embed(py, &body_parameters)?;
+            if aggregate_body {
+                let aggregate_name = format!("Body_{operation_id_text}");
+                let aggregate_model = aggregate_body_model(py, &aggregate_name, &body_parameters)?;
+                let request_schema =
+                    pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
+                let request_required = body_parameters.iter().any(|parameter| parameter.required);
+                let media_type = aggregate_body_media_type(&body_parameters);
+                (
+                    None,
+                    Some(request_schema),
+                    request_required,
+                    media_type,
+                    None,
+                    None,
+                )
             } else {
-                let direct_body_parameters = route.plan.all_body_parameters();
-                let aggregate_body = body_fields_embedded(&direct_body_parameters);
-                if aggregate_body {
-                    let aggregate_name = format!("Body_{operation_id_text}");
-                    let aggregate_model =
-                        aggregate_body_model(py, &aggregate_name, &direct_body_parameters)?;
-                    let request_schema =
-                        pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
-                    let request_required = direct_body_parameters
-                        .iter()
-                        .any(|parameter| parameter.default.is_none());
-                    (
+                match body_parameters.first().copied() {
+                    Some(parameter) => (
                         None,
-                        Some(request_schema),
-                        request_required,
-                        aggregate_body_media_type(&direct_body_parameters),
-                    )
-                } else {
-                    match route.plan.body_parameter() {
-                        Some(parameter) => (
-                            None,
-                            Some(body_parameter_schema(
-                                py,
-                                parameter,
-                                Some(&title_case(&parameter.body_alias().replace('_', " "))),
-                            )?),
-                            parameter.default.is_none(),
-                            parameter
-                                .media_type
-                                .as_deref()
-                                .unwrap_or("application/json")
-                                .to_owned(),
-                        ),
-                        None => (None, None, false, "application/json".to_owned()),
-                    }
+                        Some(body_parameter_schema(
+                            py,
+                            parameter,
+                            Some(&title_case(&parameter.body_alias().replace('_', " "))),
+                        )?),
+                        parameter.required,
+                        parameter
+                            .media_type
+                            .as_deref()
+                            .unwrap_or("application/json")
+                            .to_owned(),
+                        parameter.example.as_ref().map(|value| value.clone_ref(py)),
+                        parameter
+                            .openapi_examples
+                            .as_ref()
+                            .map(|value| value.clone_ref(py)),
+                    ),
+                    None => (None, None, false, "application/json".to_owned(), None, None),
                 }
-            };
+            }
+        } else {
+            let direct_body_parameters = route.plan.all_body_parameters();
+            let aggregate_body = body_fields_embedded(&direct_body_parameters);
+            if aggregate_body {
+                let aggregate_name = format!("Body_{operation_id_text}");
+                let aggregate_model =
+                    aggregate_body_model(py, &aggregate_name, &direct_body_parameters)?;
+                let request_schema =
+                    pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
+                let request_required = direct_body_parameters
+                    .iter()
+                    .any(|parameter| parameter.required);
+                (
+                    None,
+                    Some(request_schema),
+                    request_required,
+                    aggregate_body_media_type(&direct_body_parameters),
+                    None,
+                    None,
+                )
+            } else {
+                match route.plan.body_parameter() {
+                    Some(parameter) => (
+                        None,
+                        Some(body_parameter_schema(
+                            py,
+                            parameter,
+                            Some(&title_case(&parameter.body_alias().replace('_', " "))),
+                        )?),
+                        parameter.required,
+                        parameter
+                            .media_type
+                            .as_deref()
+                            .unwrap_or("application/json")
+                            .to_owned(),
+                        parameter.example.as_ref().map(|value| value.clone_ref(py)),
+                        parameter
+                            .openapi_examples
+                            .as_ref()
+                            .map(|value| value.clone_ref(py)),
+                    ),
+                    None => (None, None, false, "application/json".to_owned(), None, None),
+                }
+            }
+        };
         let (response_model_name, response_schema) = match route.primary_field.as_ref() {
             Some(field) => {
                 let schema = response_schemas.schema(py, *next_field_key, field)?;
@@ -4924,6 +4968,8 @@ impl PyFastApi {
             validation_parameters_present,
             request_model_name,
             request_schema,
+            request_example,
+            request_examples,
             request_required,
             request_body_present,
             request_body_content_before_required: has_form_body,
@@ -6708,6 +6754,8 @@ impl CallablePlan {
                 };
                 let raw_default = item.getattr("default")?;
                 let (annotation, mut metadata) = annotation_parts(py, annotation)?;
+                let full_annotation =
+                    compose_parameter_annotation(py, annotation.bind(py), &metadata)?;
                 let annotated_marker = annotated_parameter_marker(py, &metadata)?;
                 let annotated_dependency_index = match annotated_marker {
                     Some(AnnotatedParameterMarker::Dependency(index)) => Some(index),
@@ -6715,9 +6763,23 @@ impl CallablePlan {
                 };
                 let has_annotated_field_marker =
                     matches!(annotated_marker, Some(AnnotatedParameterMarker::Field(_)));
+                let annotated_field_marker = match annotated_marker {
+                    Some(AnnotatedParameterMarker::Field(index)) => Some(
+                        metadata
+                            .get(index)
+                            .ok_or_else(|| {
+                                PyRuntimeError::new_err(
+                                    "selected FastAPI field marker is missing",
+                                )
+                            })?
+                            .clone_ref(py),
+                    ),
+                    _ => None,
+                };
                 if let Some(AnnotatedParameterMarker::Field(index)) = annotated_marker {
                     let field_marker = &metadata[index];
-                    if marker_default(py, std::slice::from_ref(field_marker))?.is_some() {
+                    let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
+                    if !field_marker.bind(py).getattr("default")?.is(&undefined) {
                         let field_name = match parameter_marker_kind(py, field_marker.bind(py))?
                             .as_deref()
                         {
@@ -6748,15 +6810,8 @@ impl CallablePlan {
                 }
                 let default_is_dependency_record =
                     !raw_default.is(&empty) && is_dependency_record(py, &raw_default)?;
-                let raw_default_marker_kind = if raw_default.is(&empty) {
-                    None
-                } else {
-                    parameter_marker_kind(py, &raw_default)?
-                };
-                let default_is_field_marker = matches!(
-                    raw_default_marker_kind.as_deref(),
-                    Some("body" | "path" | "query" | "header" | "cookie" | "form" | "file")
-                );
+                let default_is_field_info =
+                    !raw_default.is(&empty) && is_pydantic_field_info(py, &raw_default)?;
                 let conflict = if default_is_dependency_record {
                     if annotated_dependency_index.is_some() {
                         Some(
@@ -6769,7 +6824,7 @@ impl CallablePlan {
                     } else {
                         None
                     }
-                } else if default_is_field_marker && has_annotated_field_marker {
+                } else if default_is_field_info && has_annotated_field_marker {
                     Some(
                         "Cannot specify FastAPI annotations in `Annotated` and default value together for",
                     )
@@ -6792,33 +6847,76 @@ impl CallablePlan {
                     }
                 }
                 metadata = selected_metadata;
-                let default_is_parameter_marker =
-                    default_is_dependency_record || default_is_field_marker;
-                if default_is_parameter_marker {
+                if default_is_dependency_record {
                     metadata.push(raw_default.clone().unbind());
                 }
-                let default = if raw_default.is(&empty) && has_annotated_field_marker {
-                    None
-                } else if raw_default.is(&empty) || default_is_parameter_marker {
-                    marker_default(py, &metadata)?
-                } else {
-                    Some(raw_default.unbind())
+                let mut field_info = match annotated_marker {
+                    Some(AnnotatedParameterMarker::Field(_)) => Some(
+                        copy_annotated_field_info(
+                            py,
+                            annotated_field_marker
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    PyRuntimeError::new_err(
+                                        "selected FastAPI field marker was not retained",
+                                    )
+                                })?
+                                .bind(py),
+                            full_annotation.bind(py),
+                            (!raw_default.is(&empty)).then_some(&raw_default),
+                        )?,
+                    ),
+                    _ if default_is_field_info => {
+                        let field_info = raw_default.clone();
+                        field_info.setattr("annotation", annotation.bind(py))?;
+                        Some(field_info.unbind())
+                    }
+                    _ => None,
                 };
-                let (validated_annotation, default_delivery) = constrained_parameter_annotation(
-                    py,
-                    annotation.bind(py),
-                    &metadata,
-                    default.as_ref().map(|value| value.bind(py)),
-                )?;
-                let is_sequence = field_annotation_is_sequence(py, validated_annotation.bind(py))?;
-                let source = parameter_source(
+                let mut source = parameter_source(
                     py,
                     &name,
                     annotation.bind(py),
                     &metadata,
                     path_parameters,
                     true,
+                    field_info.as_ref().map(|value| value.bind(py)),
                 )?;
+                if field_info.is_none()
+                    && matches!(source, ParameterSource::Input { .. })
+                {
+                    field_info = Some(inferred_parameter_field_info(
+                        py,
+                        full_annotation.bind(py),
+                        &raw_default,
+                        &empty,
+                        path_parameters.contains(&name),
+                    )?);
+                    source = parameter_source(
+                        py,
+                        &name,
+                        annotation.bind(py),
+                        &metadata,
+                        path_parameters,
+                        true,
+                        field_info.as_ref().map(|value| value.bind(py)),
+                    )?;
+                }
+                let (required, default) = match field_info.as_ref() {
+                    Some(field_info) => parameter_field_info_defaults(py, field_info.bind(py))?,
+                    None => (false, None),
+                };
+                let (validated_annotation, default_delivery) = match field_info.as_ref() {
+                    Some(field_info) => (
+                        pydantic_field_schema_annotation(py, field_info.bind(py))?,
+                        ParameterDefaultDelivery::InAnnotation,
+                    ),
+                    None => (
+                        annotation.clone_ref(py),
+                        ParameterDefaultDelivery::External,
+                    ),
+                };
+                let is_sequence = field_annotation_is_sequence(py, validated_annotation.bind(py))?;
                 let (parameter_model_fields, parameter_model_config, model_convert_underscores) =
                     match &source {
                         ParameterSource::Input {
@@ -6832,7 +6930,9 @@ impl CallablePlan {
                             let model_config =
                                 annotation.bind(py).getattr("model_config")?.unbind();
                             let convert_underscores = if *model_source == InputSource::Header {
-                                Some(header_model_convert_underscores(py, &metadata)?)
+                                Some(header_model_convert_underscores(
+                                    field_info.as_ref().map(|value| value.bind(py)),
+                                )?)
                             } else {
                                 None
                             };
@@ -6848,22 +6948,46 @@ impl CallablePlan {
                 } else {
                     None
                 };
+                let (example, openapi_examples) = parameter_openapi_examples(
+                    py,
+                    field_info.as_ref().map(|value| value.bind(py)),
+                )?;
                 Ok(CallableParameter {
                     name,
                     annotation: validated_annotation,
                     validation_adapter,
+                    field_info: field_info
+                        .as_ref()
+                        .map(|value| value.clone_ref(py)),
+                    required,
                     default,
                     default_delivery,
                     is_sequence,
                     parameter_model_fields,
                     parameter_model_config,
                     model_convert_underscores,
-                    media_type: parameter_media_type(py, &source, &metadata)?,
-                    title: parameter_title(py, &source, &metadata)?,
-                    description: parameter_description(py, &source, &metadata)?,
-                    deprecated: parameter_deprecated(py, &source, &metadata)?,
-                    include_in_schema: parameter_include_in_schema(py, &source, &metadata)?,
-                    body_embed: parameter_body_embed(py, &source, &metadata)?,
+                    media_type: parameter_media_type(
+                        &source,
+                        field_info.as_ref().map(|value| value.bind(py)),
+                    )?,
+                    title: parameter_title(
+                        field_info.as_ref().map(|value| value.bind(py)),
+                    )?,
+                    description: parameter_description(
+                        field_info.as_ref().map(|value| value.bind(py)),
+                    )?,
+                    deprecated: parameter_deprecated(
+                        field_info.as_ref().map(|value| value.bind(py)),
+                    )?,
+                    include_in_schema: parameter_include_in_schema(
+                        field_info.as_ref().map(|value| value.bind(py)),
+                    )?,
+                    body_embed: parameter_body_embed(
+                        &source,
+                        field_info.as_ref().map(|value| value.bind(py)),
+                    )?,
+                    example,
+                    openapi_examples,
                     source,
                 })
             })
@@ -6925,6 +7049,7 @@ impl CallablePlan {
                 std::slice::from_ref(dependency),
                 &self.path_parameters,
                 false,
+                None,
             )?;
             let ParameterSource::Dependency {
                 mut plan,
@@ -6943,6 +7068,8 @@ impl CallablePlan {
                 name: String::new(),
                 annotation,
                 validation_adapter: None,
+                field_info: None,
+                required: false,
                 default: None,
                 default_delivery: ParameterDefaultDelivery::External,
                 is_sequence: false,
@@ -6955,6 +7082,8 @@ impl CallablePlan {
                 deprecated: false,
                 include_in_schema: true,
                 body_embed: false,
+                example: None,
+                openapi_examples: None,
                 source: ParameterSource::Dependency {
                     plan,
                     use_cache,
@@ -7252,7 +7381,7 @@ impl CallablePlan {
                         parameters.push(ParameterOpenApiPlan {
                             name: alias.clone(),
                             location: source.as_str().to_owned(),
-                            required: parameter.default.is_none(),
+                            required: parameter.required,
                             annotation: parameter.annotation.clone_ref(py),
                             schema_config: None,
                             default: parameter.default.as_ref().map(|value| value.clone_ref(py)),
@@ -7260,6 +7389,11 @@ impl CallablePlan {
                             title: parameter.title.clone(),
                             description: parameter.description.clone(),
                             deprecated: parameter.deprecated,
+                            example: parameter.example.as_ref().map(|value| value.clone_ref(py)),
+                            openapi_examples: parameter
+                                .openapi_examples
+                                .as_ref()
+                                .map(|value| value.clone_ref(py)),
                         });
                     }
                 }
@@ -7607,16 +7741,62 @@ impl CallablePlan {
             } else {
                 value
             };
+            let value = value.filter(|value| !value.is_none());
             let Some(value) = value else {
-                if let Some(default) = parameter.default.as_ref() {
-                    let default = context
-                        .py
-                        .import("copy")?
-                        .call_method1("deepcopy", (default.bind(context.py),))?;
-                    if default.is_none() || source == InputSource::Body {
-                        kwargs.set_item(&parameter.name, default)?;
+                let mut default_from_validation = matches!(
+                    source,
+                    InputSource::Body | InputSource::Form | InputSource::File
+                );
+                let default = if parameter.required {
+                    None
+                } else {
+                    let mut default = parameter_default_for_request(
+                        context.py,
+                        parameter.field_info.as_ref(),
+                        parameter.default.as_ref(),
+                        parameter.required,
+                    )?;
+                    if matches!(
+                        source,
+                        InputSource::Path
+                            | InputSource::Query
+                            | InputSource::Header
+                            | InputSource::Cookie
+                    ) {
+                        // FastAPI reads field.default once while collecting the multi-dict,
+                        // then reads it again while validating the collected value.
+                        default = parameter_default_for_request(
+                            context.py,
+                            parameter.field_info.as_ref(),
+                            parameter.default.as_ref(),
+                            parameter.required,
+                        )?;
+                        if default
+                            .as_ref()
+                            .is_some_and(|value| value.bind(context.py).is_none())
+                        {
+                            // A missing None value is read once more by
+                            // _validate_value_with_model_field.
+                            default_from_validation = true;
+                            default = parameter_default_for_request(
+                                context.py,
+                                parameter.field_info.as_ref(),
+                                parameter.default.as_ref(),
+                                parameter.required,
+                            )?;
+                        }
+                    }
+                    default
+                };
+                if let Some(default) = default {
+                    if default_from_validation || default.bind(context.py).is_none() {
+                        kwargs.set_item(&parameter.name, default.bind(context.py))?;
                     } else {
-                        match validate_python_value(context.py, validation_adapter, &default) {
+                        match validate_python_value(
+                            context.py,
+                            validation_adapter,
+                            default.bind(context.py),
+                        ) {
                             Ok(value) => kwargs.set_item(&parameter.name, value)?,
                             Err(error) if is_pydantic_validation_error(context.py, &error) => {
                                 context.failures.push(ValidationIssue::Input(Box::new(
@@ -7880,10 +8060,170 @@ fn dependency_callable_generator_kind(
 }
 
 fn parameter_marker_kind(py: Python<'_>, marker: &Bound<'_, PyAny>) -> PyResult<Option<String>> {
-    if is_dependency_record(py, marker)? || !marker.hasattr("kind")? {
+    if is_dependency_record(py, marker)? {
         return Ok(None);
     }
-    marker.getattr("kind")?.extract().map(Some)
+    let core = py.import("fastapi_rs._core")?;
+    for (class_name, kind) in [
+        ("ParamsFile", "file"),
+        ("ParamsForm", "form"),
+        ("ParamsBody", "body"),
+    ] {
+        let class = core.getattr(class_name)?;
+        if marker.is_instance(&class)? {
+            return Ok(Some(kind.to_owned()));
+        }
+    }
+    let parameter = core.getattr("ParamsParam")?;
+    if !marker.is_instance(&parameter)? {
+        return Ok(None);
+    }
+    if !marker.hasattr("in_")? {
+        return Ok(Some("query".to_owned()));
+    }
+    let location = marker.getattr("in_")?;
+    if location.is_none() {
+        return Ok(Some("query".to_owned()));
+    }
+    location.getattr("value")?.extract().map(Some)
+}
+
+fn is_pydantic_field_info(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<bool> {
+    value.is_instance(&py.import("pydantic.fields")?.getattr("FieldInfo")?)
+}
+
+fn copy_annotated_field_info(
+    py: Python<'_>,
+    marker: &Bound<'_, PyAny>,
+    full_annotation: &Bound<'_, PyAny>,
+    signature_default: Option<&Bound<'_, PyAny>>,
+) -> PyResult<Py<PyAny>> {
+    let merged = marker
+        .get_type()
+        .call_method1("from_annotation", (full_annotation,))?;
+    let copied = py.import("copy")?.call_method1("copy", (marker,))?;
+    copied.setattr("metadata", merged.getattr("metadata")?)?;
+    copied.setattr("annotation", merged.getattr("annotation")?)?;
+    let default = match signature_default {
+        Some(default) => default.clone(),
+        None => py.import("pydantic_core")?.getattr("PydanticUndefined")?,
+    };
+    copied.setattr("default", default)?;
+    Ok(copied.unbind())
+}
+
+fn compose_parameter_annotation(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+    metadata: &[Py<PyAny>],
+) -> PyResult<Py<PyAny>> {
+    if metadata.is_empty() {
+        return Ok(annotation.clone().unbind());
+    }
+    let arguments = PyList::empty(py);
+    arguments.append(annotation)?;
+    for item in metadata {
+        arguments.append(item.bind(py))?;
+    }
+    let tuple = py
+        .import("builtins")?
+        .getattr("tuple")?
+        .call1((arguments,))?;
+    py.import("typing")?
+        .getattr("Annotated")?
+        .get_item(tuple)
+        .map(Bound::unbind)
+}
+
+fn inferred_parameter_field_info(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+    raw_default: &Bound<'_, PyAny>,
+    empty: &Bound<'_, PyAny>,
+    is_path_parameter: bool,
+) -> PyResult<Py<PyAny>> {
+    let (class_name, default) = if is_path_parameter {
+        ("ParamsPath", py.import("builtins")?.getattr("Ellipsis")?)
+    } else if is_uploadfile_annotation(py, annotation)?
+        || is_uploadfile_sequence_annotation(py, annotation)?
+    {
+        (
+            "ParamsFile",
+            if raw_default.is(empty) {
+                py.import("pydantic_core")?.getattr("PydanticUndefined")?
+            } else {
+                raw_default.clone()
+            },
+        )
+    } else if field_annotation_is_complex(py, annotation)? {
+        (
+            "ParamsBody",
+            if raw_default.is(empty) {
+                py.import("pydantic_core")?.getattr("PydanticUndefined")?
+            } else {
+                raw_default.clone()
+            },
+        )
+    } else {
+        (
+            "ParamsQuery",
+            if raw_default.is(empty) {
+                py.import("pydantic_core")?.getattr("PydanticUndefined")?
+            } else {
+                raw_default.clone()
+            },
+        )
+    };
+    let class = py.import("fastapi_rs._core")?.getattr(class_name)?;
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("annotation", annotation)?;
+    kwargs.set_item("default", default)?;
+    class.call((), Some(&kwargs)).map(Bound::unbind)
+}
+
+fn parameter_field_info_defaults(
+    py: Python<'_>,
+    field_info: &Bound<'_, PyAny>,
+) -> PyResult<(bool, Option<Py<PyAny>>)> {
+    let required = field_info.call_method0("is_required")?.extract::<bool>()?;
+    if required {
+        return Ok((true, None));
+    }
+    let default = field_info.getattr("default")?;
+    let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
+    let default = if default.is(&undefined) {
+        None
+    } else {
+        Some(default.unbind())
+    };
+    Ok((false, default))
+}
+
+fn parameter_default_for_request(
+    py: Python<'_>,
+    field_info: Option<&Py<PyAny>>,
+    default: Option<&Py<PyAny>>,
+    required: bool,
+) -> PyResult<Option<Py<PyAny>>> {
+    if required {
+        return Ok(None);
+    }
+    let value = if let Some(field_info) = field_info {
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("call_default_factory", true)?;
+        field_info
+            .bind(py)
+            .call_method("get_default", (), Some(&kwargs))?
+            .unbind()
+    } else if let Some(default) = default {
+        default.clone_ref(py)
+    } else {
+        return Ok(None);
+    };
+    py.import("copy")?
+        .call_method1("deepcopy", (value.bind(py),))
+        .map(Bound::unbind)
+        .map(Some)
 }
 
 #[derive(Clone, Copy)]
@@ -7911,37 +8251,6 @@ fn annotated_parameter_marker(
     Ok(None)
 }
 
-fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<PyAny>>> {
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        let Some(kind) = parameter_marker_kind(py, marker)? else {
-            continue;
-        };
-        if kind == "header"
-            || kind == "query"
-            || kind == "cookie"
-            || kind == "body"
-            || kind == "form"
-            || kind == "file"
-        {
-            let default = marker.getattr("default")?;
-            let has_default = if matches!(
-                kind.as_str(),
-                "header" | "query" | "cookie" | "body" | "form" | "file"
-            ) && marker.hasattr("default_is_set")?
-            {
-                marker.getattr("default_is_set")?.extract::<bool>()?
-            } else {
-                !default.is_none()
-            };
-            if has_default {
-                return Ok(Some(default.unbind()));
-            }
-        }
-    }
-    Ok(None)
-}
-
 impl CallableParameter {
     fn populate_form_value(
         &self,
@@ -7961,8 +8270,15 @@ impl CallableParameter {
                 return Ok(());
             }
             if is_union_of_base_models(py, self.annotation.bind(py))? {
-                let model_values =
-                    form_union_values(py, form, alias, self.default.as_ref(), self.is_sequence)?;
+                let model_values = form_union_values(
+                    py,
+                    form,
+                    alias,
+                    self.field_info.as_ref(),
+                    self.default.as_ref(),
+                    self.required,
+                    self.is_sequence,
+                )?;
                 inputs.set_item(&self.name, model_values)?;
                 return Ok(());
             }
@@ -7978,13 +8294,17 @@ impl CallableParameter {
             let value = form.call_method1("get", (alias,))?;
             (!value.is_none()).then_some(value)
         };
-        if let Some(value) = value {
-            if !self.is_sequence
-                && value.is_instance_of::<PyString>()
-                && value.extract::<String>()?.is_empty()
+        let value = match value {
+            Some(value)
+                if !self.is_sequence
+                    && value.is_instance_of::<PyString>()
+                    && value.extract::<String>()?.is_empty() =>
             {
-                return Ok(());
+                None
             }
+            value => value,
+        };
+        if let Some(value) = value {
             if *source == InputSource::File
                 && self.is_sequence
                 && is_bytes_sequence_annotation(py, self.annotation.bind(py))?
@@ -8020,6 +8340,17 @@ impl CallableParameter {
             } else {
                 inputs.set_item(&self.name, value)?;
             }
+        } else if !self.required {
+            if let Some(default) = parameter_default_for_request(
+                py,
+                self.field_info.as_ref(),
+                self.default.as_ref(),
+                self.required,
+            )? {
+                if !default.bind(py).is_none() {
+                    inputs.set_item(&self.name, default.bind(py))?;
+                }
+            }
         }
         Ok(())
     }
@@ -8030,7 +8361,7 @@ impl CallableParameter {
                 name: self.name.clone(),
                 alias: alias.clone(),
                 location: source.location(),
-                required: self.default.is_none(),
+                required: self.required,
             }],
             ParameterSource::Dependency { plan, .. } => plan.input_parameters(),
             ParameterSource::WebSocket
@@ -8100,6 +8431,7 @@ fn parameter_source(
     metadata: &[Py<PyAny>],
     path_parameters: &[String],
     bind_value: bool,
+    field_info: Option<&Bound<'_, PyAny>>,
 ) -> PyResult<ParameterSource> {
     // Explicit Depends takes precedence over framework-managed parameter injection.
     for marker in metadata {
@@ -8145,64 +8477,102 @@ fn parameter_source(
         });
     }
     let request_type = py.import("starlette.requests")?.getattr("Request")?;
-    if annotation_is_subclass(py, annotation, &request_type)? {
-        return Ok(ParameterSource::Request);
-    }
     let websocket_type = py.import("starlette.websockets")?.getattr("WebSocket")?;
-    if annotation.is(&websocket_type) {
-        return Ok(ParameterSource::WebSocket);
-    }
     let connection_type = py.import("starlette.requests")?.getattr("HTTPConnection")?;
-    if annotation_is_subclass(py, annotation, &connection_type)? {
-        return Ok(ParameterSource::HttpConnection);
-    }
     let response_type = py.import("starlette.responses")?.getattr("Response")?;
-    if annotation_is_subclass(py, annotation, &response_type)? {
-        return Ok(ParameterSource::Response);
-    }
     let background_tasks_type = py
         .import("starlette.background")?
         .getattr("BackgroundTasks")?;
-    if annotation_is_subclass(py, annotation, &background_tasks_type)? {
-        return Ok(ParameterSource::BackgroundTasks);
-    }
     let security_scopes_type = py.import("fastapi_rs._core")?.getattr("SecurityScopes")?;
-    if annotation_is_subclass(py, annotation, &security_scopes_type)? {
-        return Ok(ParameterSource::SecurityScopes);
+    let injected_source = if annotation_is_subclass(py, annotation, &request_type)? {
+        Some(ParameterSource::Request)
+    } else if annotation_is_subclass(py, annotation, &websocket_type)? {
+        Some(ParameterSource::WebSocket)
+    } else if annotation_is_subclass(py, annotation, &connection_type)? {
+        Some(ParameterSource::HttpConnection)
+    } else if annotation_is_subclass(py, annotation, &response_type)? {
+        Some(ParameterSource::Response)
+    } else if annotation_is_subclass(py, annotation, &background_tasks_type)? {
+        Some(ParameterSource::BackgroundTasks)
+    } else if annotation_is_subclass(py, annotation, &security_scopes_type)? {
+        Some(ParameterSource::SecurityScopes)
+    } else {
+        None
+    };
+    if let Some(source) = injected_source {
+        if field_info.is_some() {
+            let annotation = annotation.repr()?.to_string_lossy().into_owned();
+            return Err(PyAssertionError::new_err(format!(
+                "Cannot specify FastAPI annotation for type {annotation}"
+            )));
+        }
+        return Ok(source);
     }
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        let Some(kind) = parameter_marker_kind(py, marker)? else {
-            continue;
+    if let Some(field_info) = field_info {
+        let core = py.import("fastapi_rs._core")?;
+        if path_parameters.iter().any(|path_name| path_name == name)
+            && !field_info.is_instance(&core.getattr("ParamsPath")?)?
+        {
+            let class_name = field_info
+                .get_type()
+                .getattr("__name__")?
+                .extract::<String>()?;
+            let parameter_name = PyString::new(py, name).repr()?;
+            return Err(PyAssertionError::new_err(format!(
+                "Cannot use `{class_name}` for path param {}",
+                parameter_name.to_string_lossy()
+            )));
+        }
+        let mut kind = parameter_marker_kind(py, field_info)?;
+        if kind.is_none() {
+            return Err(PyAssertionError::new_err(format!(
+                "non-body parameters must be in path, query, header or cookie: {name}"
+            )));
+        }
+        if matches!(
+            kind.as_deref(),
+            Some("query" | "header" | "path" | "cookie")
+        ) && (!field_info.hasattr("in_")? || field_info.getattr("in_")?.is_none())
+        {
+            let query_location = core.getattr("ParamsParamTypes")?.getattr("query")?;
+            field_info.setattr("in_", query_location)?;
+            kind = Some("query".to_owned());
+        }
+        let Some(kind) = kind else {
+            return Err(PyAssertionError::new_err(format!(
+                "non-body parameters must be in path, query, header or cookie: {name}"
+            )));
+        };
+        let declared_alias = field_info.getattr("alias")?;
+        let alias_is_truthy = declared_alias.is_truthy()?;
+        let convert_underscores = if field_info.hasattr("convert_underscores")? {
+            field_info.getattr("convert_underscores")?.is_truthy()?
+        } else {
+            false
+        };
+        let alias = if alias_is_truthy {
+            declared_alias
+        } else if kind == "header" && convert_underscores {
+            PyString::new(py, &name.replace('_', "-")).into_any()
+        } else {
+            PyString::new(py, name).into_any()
+        };
+        field_info.setattr("alias", &alias)?;
+        let validation_alias = field_info.getattr("validation_alias")?;
+        let alias = if validation_alias.is_instance_of::<PyString>()
+            && !validation_alias.extract::<String>()?.is_empty()
+        {
+            validation_alias.extract::<String>()?
+        } else {
+            alias.extract::<String>()?
         };
         if kind == "body" {
-            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
-            let validation_alias = marker.getattr("validation_alias")?;
-            let validation_alias =
-                if validation_alias.is_truthy()? && validation_alias.is_instance_of::<PyString>() {
-                    Some(validation_alias.extract::<String>()?)
-                } else {
-                    None
-                };
             return Ok(ParameterSource::Input {
                 source: InputSource::Body,
-                alias: validation_alias
-                    .or(declared_alias)
-                    .unwrap_or_else(|| name.to_owned()),
+                alias,
             });
         }
         if kind == "form" || kind == "file" {
-            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
-            let validation_alias = marker.getattr("validation_alias")?;
-            let validation_alias =
-                if validation_alias.is_truthy()? && validation_alias.is_instance_of::<PyString>() {
-                    Some(validation_alias.extract::<String>()?)
-                } else {
-                    None
-                };
-            let alias = validation_alias
-                .or(declared_alias)
-                .unwrap_or_else(|| name.to_owned());
             return Ok(ParameterSource::Input {
                 source: if kind == "form" {
                     InputSource::Form
@@ -8213,39 +8583,12 @@ fn parameter_source(
             });
         }
         if kind == "path" {
-            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
-            let validation_alias = marker.getattr("validation_alias")?;
-            let validation_alias =
-                if validation_alias.is_truthy()? && validation_alias.is_instance_of::<PyString>() {
-                    Some(validation_alias.extract::<String>()?)
-                } else {
-                    None
-                };
             return Ok(ParameterSource::Input {
                 source: InputSource::Path,
-                alias: validation_alias
-                    .or(declared_alias)
-                    .unwrap_or_else(|| name.to_owned()),
+                alias,
             });
         }
         if kind == "header" || kind == "query" || kind == "cookie" {
-            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
-            let validation_alias = marker.getattr("validation_alias")?;
-            let validation_alias = if validation_alias.is_instance_of::<PyString>() {
-                let validation_alias = validation_alias.extract::<String>()?;
-                (!validation_alias.is_empty()).then_some(validation_alias)
-            } else {
-                None
-            };
-            let alias = match validation_alias.or(declared_alias) {
-                Some(alias) => alias,
-                None if kind == "header"
-                    && marker.getattr("convert_underscores")?.extract::<bool>()? =>
-                {
-                    name.replace('_', "-")
-                }
-                None => name.to_owned(),
-            };
             return Ok(ParameterSource::Input {
                 source: if kind == "header" {
                     InputSource::Header
@@ -8367,145 +8710,64 @@ fn annotation_is_subclass(
 }
 
 fn parameter_media_type(
-    py: Python<'_>,
     source: &ParameterSource,
-    metadata: &[Py<PyAny>],
+    field_info: Option<&Bound<'_, PyAny>>,
 ) -> PyResult<Option<String>> {
-    let expected_kind = match source {
+    match source {
         ParameterSource::Input {
-            source: InputSource::Body,
+            source: InputSource::Body | InputSource::Form | InputSource::File,
             ..
-        } => "body",
-        ParameterSource::Input {
-            source: InputSource::Form,
-            ..
-        } => "form",
-        ParameterSource::Input {
-            source: InputSource::File,
-            ..
-        } => "file",
-        _ => return Ok(None),
-    };
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        if parameter_marker_kind(py, marker)?.as_deref() == Some(expected_kind) {
-            if let Some(media_type) = marker.getattr("media_type")?.extract::<Option<String>>()? {
-                return Ok(Some(media_type));
-            }
-        }
+        } => field_info
+            .map(|field_info| {
+                field_info
+                    .getattr("media_type")?
+                    .extract::<Option<String>>()
+            })
+            .transpose()
+            .map(Option::flatten),
+        _ => Ok(None),
     }
-    let default_media_type = match expected_kind {
-        "body" => "application/json",
-        "form" => "application/x-www-form-urlencoded",
-        "file" => "multipart/form-data",
-        _ => return Ok(None),
-    };
-    Ok(Some(default_media_type.to_owned()))
 }
 
-fn parameter_description(
-    py: Python<'_>,
-    source: &ParameterSource,
-    metadata: &[Py<PyAny>],
-) -> PyResult<Option<String>> {
-    let expected_kind = match source {
-        ParameterSource::Input {
-            source: InputSource::Query,
-            ..
-        } => "query",
-        ParameterSource::Input {
-            source: InputSource::Form,
-            ..
-        } => "form",
-        ParameterSource::Input {
-            source: InputSource::File,
-            ..
-        } => "file",
-        _ => return Ok(None),
-    };
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        if parameter_marker_kind(py, marker)?.as_deref() == Some(expected_kind) {
-            return marker.getattr("description")?.extract::<Option<String>>();
-        }
-    }
-    Ok(None)
+fn parameter_description(field_info: Option<&Bound<'_, PyAny>>) -> PyResult<Option<String>> {
+    field_info
+        .map(|field_info| {
+            field_info
+                .getattr("description")?
+                .extract::<Option<String>>()
+        })
+        .transpose()
+        .map(Option::flatten)
 }
 
-fn parameter_title(
-    py: Python<'_>,
-    source: &ParameterSource,
-    metadata: &[Py<PyAny>],
-) -> PyResult<Option<String>> {
-    if !matches!(
-        source,
-        ParameterSource::Input {
-            source: InputSource::Query,
-            ..
-        }
-    ) {
-        return Ok(None);
-    }
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        if parameter_marker_kind(py, marker)?.as_deref() == Some("query") {
-            return marker.getattr("title")?.extract::<Option<String>>();
-        }
-    }
-    Ok(None)
+fn parameter_title(field_info: Option<&Bound<'_, PyAny>>) -> PyResult<Option<String>> {
+    field_info
+        .map(|field_info| field_info.getattr("title")?.extract::<Option<String>>())
+        .transpose()
+        .map(Option::flatten)
 }
 
-fn parameter_deprecated(
-    py: Python<'_>,
-    source: &ParameterSource,
-    metadata: &[Py<PyAny>],
-) -> PyResult<bool> {
-    if !matches!(
-        source,
-        ParameterSource::Input {
-            source: InputSource::Query,
-            ..
+fn parameter_deprecated(field_info: Option<&Bound<'_, PyAny>>) -> PyResult<bool> {
+    match field_info {
+        Some(field_info) if field_info.hasattr("deprecated")? => {
+            field_info.getattr("deprecated")?.is_truthy()
         }
-    ) {
-        return Ok(false);
+        _ => Ok(false),
     }
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        if parameter_marker_kind(py, marker)?.as_deref() == Some("query") {
-            let deprecated = marker.getattr("deprecated")?;
-            return Ok(!deprecated.is_none() && deprecated.is_truthy()?);
-        }
-    }
-    Ok(false)
 }
 
-fn parameter_include_in_schema(
-    py: Python<'_>,
-    source: &ParameterSource,
-    metadata: &[Py<PyAny>],
-) -> PyResult<bool> {
-    if !matches!(
-        source,
-        ParameterSource::Input {
-            source: InputSource::Query,
-            ..
+fn parameter_include_in_schema(field_info: Option<&Bound<'_, PyAny>>) -> PyResult<bool> {
+    match field_info {
+        Some(field_info) if field_info.hasattr("include_in_schema")? => {
+            field_info.getattr("include_in_schema")?.extract::<bool>()
         }
-    ) {
-        return Ok(true);
+        _ => Ok(true),
     }
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        if parameter_marker_kind(py, marker)?.as_deref() == Some("query") {
-            return marker.getattr("include_in_schema")?.extract::<bool>();
-        }
-    }
-    Ok(true)
 }
 
 fn parameter_body_embed(
-    py: Python<'_>,
     source: &ParameterSource,
-    metadata: &[Py<PyAny>],
+    field_info: Option<&Bound<'_, PyAny>>,
 ) -> PyResult<bool> {
     if !matches!(
         source,
@@ -8516,14 +8778,35 @@ fn parameter_body_embed(
     ) {
         return Ok(false);
     }
-    for marker in metadata.iter().rev() {
-        let marker = marker.bind(py);
-        if parameter_marker_kind(py, marker)?.as_deref() == Some("body") {
-            let embed = marker.getattr("embed")?;
-            return Ok(!embed.is_none() && embed.is_truthy()?);
+    if let Some(field_info) = field_info {
+        if field_info.hasattr("embed")? {
+            return field_info.getattr("embed")?.is_truthy();
         }
     }
     Ok(false)
+}
+
+fn parameter_openapi_examples(
+    py: Python<'_>,
+    field_info: Option<&Bound<'_, PyAny>>,
+) -> PyResult<ParameterOpenApiExamples> {
+    let Some(field_info) = field_info else {
+        return Ok((None, None));
+    };
+    let openapi_examples = if field_info.hasattr("openapi_examples")? {
+        let examples = field_info.getattr("openapi_examples")?;
+        (!examples.is_none()).then(|| examples.unbind())
+    } else {
+        None
+    };
+    let example = if field_info.hasattr("example")? {
+        let example = field_info.getattr("example")?;
+        let unset = py.import("fastapi_rs._core")?.getattr("_Unset")?;
+        (!example.is(&unset)).then(|| example.unbind())
+    } else {
+        None
+    };
+    Ok((example, openapi_examples))
 }
 
 fn is_pydantic_model_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
@@ -8757,80 +9040,6 @@ fn is_uploadfile_sequence_annotation(
         }
     }
     Ok(true)
-}
-
-fn constrained_parameter_annotation(
-    py: Python<'_>,
-    annotation: &Bound<'_, PyAny>,
-    metadata: &[Py<PyAny>],
-    default: Option<&Bound<'_, PyAny>>,
-) -> PyResult<(Py<PyAny>, ParameterDefaultDelivery)> {
-    let mut annotated_arguments = vec![annotation.clone().unbind()];
-    let mut default_delivery = ParameterDefaultDelivery::External;
-    for marker in metadata {
-        let marker = marker.bind(py);
-        if is_dependency_record(py, marker)? {
-            continue;
-        }
-        let Some(kind) = parameter_marker_kind(py, marker)? else {
-            annotated_arguments.push(marker.clone().unbind());
-            continue;
-        };
-        if kind != "body" && kind != "query" && kind != "path" && kind != "form" {
-            continue;
-        }
-        let kwargs = PyDict::new(py);
-        let mut has_field_metadata = false;
-        for name in [
-            "gt",
-            "ge",
-            "lt",
-            "le",
-            "min_length",
-            "max_length",
-            "allow_inf_nan",
-            "pattern",
-            "title",
-            "description",
-            "deprecated",
-        ] {
-            let value = marker.getattr(name)?;
-            if value.is_none() || (name == "pattern" && value.extract::<String>()?.is_empty()) {
-                continue;
-            }
-            kwargs.set_item(name, value)?;
-            has_field_metadata = true;
-        }
-        let json_schema_extra = marker.getattr("json_schema_extra")?;
-        if json_schema_extra.is_truthy()? {
-            kwargs.set_item("json_schema_extra", json_schema_extra)?;
-            has_field_metadata = true;
-        }
-        if kind == "query" {
-            if let Some(default) = default {
-                kwargs.set_item("default", default)?;
-                has_field_metadata = true;
-                default_delivery = ParameterDefaultDelivery::InAnnotation;
-            }
-        }
-        if has_field_metadata {
-            let field = py
-                .import("pydantic")?
-                .getattr("Field")?
-                .call((), Some(&kwargs))?;
-            annotated_arguments.push(field.unbind());
-        }
-    }
-    if annotated_arguments.len() == 1 {
-        return Ok((annotated_arguments.remove(0), default_delivery));
-    }
-    let arguments = PyTuple::new(py, annotated_arguments)?;
-    let annotation = py
-        .import("typing")?
-        .getattr("Annotated")?
-        .get_item(arguments)?
-        .unbind();
-    Ok((annotation, default_delivery))
 }
 
 fn is_pydantic_model(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
@@ -9176,29 +9385,14 @@ fn aggregate_body_model(
     body_parameters: &[&CallableParameter],
 ) -> PyResult<Py<PyAny>> {
     let fields = PyDict::new(py);
-    let required = py.import("builtins")?.getattr("Ellipsis")?;
     for parameter in body_parameters {
-        let default = parameter
-            .default
+        let field_info = parameter
+            .field_info
             .as_ref()
-            .map_or_else(|| required.clone(), |value| value.bind(py).clone());
-        let field = match &parameter.source {
-            ParameterSource::Input {
-                source: InputSource::Body | InputSource::Form | InputSource::File,
-                alias,
-            } => {
-                let kwargs = PyDict::new(py);
-                kwargs.set_item("alias", alias)?;
-                if let Some(description) = parameter.description.as_deref() {
-                    kwargs.set_item("description", description)?;
-                }
-                py.import("pydantic")?
-                    .getattr("Field")?
-                    .call((default,), Some(&kwargs))?
-            }
-            _ => default,
-        };
-        fields.set_item(&parameter.name, (parameter.annotation.bind(py), field))?;
+            .ok_or_else(|| PyRuntimeError::new_err("body parameter lost its FieldInfo"))?
+            .bind(py);
+        let annotation = field_info.getattr("annotation")?;
+        fields.set_item(&parameter.name, (annotation, field_info))?;
     }
     py.import("pydantic")?
         .getattr("create_model")?
@@ -9220,26 +9414,7 @@ fn body_parameter_schema(
     parameter: &CallableParameter,
     title: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
-    let is_body = matches!(
-        &parameter.source,
-        ParameterSource::Input {
-            source: InputSource::Body,
-            ..
-        }
-    );
-    let Some(default) = parameter.default.as_ref().filter(|_| is_body) else {
-        return pydantic_schema(py, parameter.annotation.bind(py), "validation", title);
-    };
-    let field = py
-        .import("pydantic")?
-        .getattr("Field")?
-        .call1((default.bind(py),))?;
-    let annotation = PyTuple::new(py, [parameter.annotation.clone_ref(py), field.unbind()])?;
-    let annotation = py
-        .import("typing")?
-        .getattr("Annotated")?
-        .get_item(annotation)?;
-    pydantic_schema(py, &annotation, "validation", title)
+    pydantic_schema(py, parameter.annotation.bind(py), "validation", title)
 }
 
 fn pydantic_parameter_schema(
@@ -9369,10 +9544,25 @@ fn build_python_value_adapter(
     py: Python<'_>,
     annotation: &Bound<'_, PyAny>,
 ) -> PyResult<Py<PyAny>> {
-    py.import("pydantic")?
-        .getattr("TypeAdapter")?
-        .call1((annotation,))
-        .map(Bound::unbind)
+    let warnings = py.import("warnings")?;
+    let warning_context = warnings.call_method0("catch_warnings")?;
+    warning_context.call_method0("__enter__")?;
+    let result = (|| {
+        let unsupported_field_attribute = py
+            .import("pydantic.warnings")?
+            .getattr("UnsupportedFieldAttributeWarning")?;
+        warnings.call_method1("simplefilter", ("ignore", unsupported_field_attribute))?;
+        py.import("pydantic")?
+            .getattr("TypeAdapter")?
+            .call1((annotation,))
+            .map(Bound::unbind)
+    })();
+    let context_exit = warning_context.call_method1("__exit__", (py.None(), py.None(), py.None()));
+    match (result, context_exit) {
+        (Ok(adapter), Ok(_)) => Ok(adapter),
+        (Err(error), _) => Err(error),
+        (_, Err(error)) => Err(error),
+    }
 }
 
 fn validate_python_value(
@@ -9479,6 +9669,15 @@ fn is_sequence_class(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<
 fn is_bytes_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
     let typing = py.import("typing")?;
     let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let annotated = typing.getattr("Annotated")?;
+    if origin.is(&annotated) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        return is_bytes_annotation(py, &arguments.get_item(0)?);
+    }
+
     let types = py.import("types")?;
     let union = typing.getattr("Union")?;
     let union_type = types.getattr("UnionType")?;
@@ -9511,6 +9710,15 @@ fn is_bytes_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResul
 fn is_bytes_sequence_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
     let typing = py.import("typing")?;
     let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let annotated = typing.getattr("Annotated")?;
+    if origin.is(&annotated) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        return is_bytes_sequence_annotation(py, &arguments.get_item(0)?);
+    }
+
     let types = py.import("types")?;
     let union = typing.getattr("Union")?;
     let union_type = types.getattr("UnionType")?;
@@ -9623,14 +9831,13 @@ fn copied_pydantic_field_default<'py>(
         .map(Some)
 }
 
-fn header_model_convert_underscores(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<bool> {
-    for item in metadata.iter().rev() {
-        let marker = item.bind(py);
-        if parameter_marker_kind(py, marker)?.as_deref() == Some("header") {
-            return marker.getattr("convert_underscores")?.extract::<bool>();
+fn header_model_convert_underscores(field_info: Option<&Bound<'_, PyAny>>) -> PyResult<bool> {
+    match field_info {
+        Some(field_info) if field_info.hasattr("convert_underscores")? => {
+            field_info.getattr("convert_underscores")?.extract::<bool>()
         }
+        _ => Ok(true),
     }
-    Ok(true)
 }
 
 fn parameter_model_fields(
@@ -9731,6 +9938,7 @@ fn parameter_model_field_openapi_plan(
         .extract::<Option<String>>()?;
     let deprecated = field_info.getattr("deprecated")?.is_truthy()?;
     let annotation = pydantic_field_schema_annotation(py, field_info)?;
+    let (example, openapi_examples) = parameter_openapi_examples(py, Some(field_info))?;
     let name = if source == InputSource::Header
         && field
             .convert_underscores
@@ -9752,6 +9960,8 @@ fn parameter_model_field_openapi_plan(
         title: Some(title),
         description,
         deprecated,
+        example,
+        openapi_examples,
     }))
 }
 
@@ -9946,7 +10156,9 @@ fn form_union_values<'py>(
     py: Python<'py>,
     form: &Bound<'py, PyAny>,
     alias: &str,
+    field_info: Option<&Py<PyAny>>,
     default: Option<&Py<PyAny>>,
+    required: bool,
     sequence: bool,
 ) -> PyResult<Bound<'py, PyDict>> {
     let values = PyDict::new(py);
@@ -9973,13 +10185,8 @@ fn form_union_values<'py>(
                 .is_ok_and(|value| value.is_empty())
     }) || value.is_none()
     {
-        value = match default {
-            Some(default) => Some(
-                py.import("copy")?
-                    .call_method1("deepcopy", (default.bind(py),))?,
-            ),
-            None => None,
-        };
+        value = parameter_default_for_request(py, field_info, default, required)?
+            .map(|default| default.bind(py).clone());
     }
     if let Some(value) = value.filter(|value| !value.is_none()) {
         values.set_item(alias, value)?;

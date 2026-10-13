@@ -91,6 +91,20 @@ def validate_wheel(wheel_path: Path) -> list[str]:
             raise SystemExit("native FastAPI-RS wheel must set Root-Is-Purelib: false")
 
         expected_dependencies = [_requirement(value) for value in project.get("dependencies", [])]
+        optional_dependencies = project.get("optional-dependencies", {})
+        if not isinstance(optional_dependencies, dict):
+            raise SystemExit("pyproject.toml optional dependencies must be a table")
+        expected_extras = sorted(_canonical_name(extra) for extra in optional_dependencies)
+        for extra, requirements in optional_dependencies.items():
+            if not isinstance(extra, str) or not isinstance(requirements, list):
+                raise SystemExit(
+                    "pyproject.toml optional dependencies must map extra names to arrays"
+                )
+            for requirement in requirements:
+                name, specifier = _requirement(requirement)
+                expected_dependencies.append(
+                    (name, f"{specifier} ; extra == '{_canonical_name(extra)}'")
+                )
         actual_dependencies = [
             _requirement(value) for value in metadata.get_all("Requires-Dist", [])
         ]
@@ -101,6 +115,14 @@ def validate_wheel(wheel_path: Path) -> list[str]:
             )
         if any(name == "fastapi" for name, _ in actual_dependencies):
             raise SystemExit("release wheel has an original FastAPI runtime dependency")
+        actual_extras = sorted(
+            _canonical_name(extra) for extra in metadata.get_all("Provides-Extra", [])
+        )
+        if actual_extras != expected_extras:
+            raise SystemExit(
+                "wheel Provides-Extra does not match pyproject.toml: "
+                f"expected {expected_extras}, got {actual_extras}"
+            )
 
         source_setting = maturin.get("python-source")
         package_names = maturin.get("python-packages")
