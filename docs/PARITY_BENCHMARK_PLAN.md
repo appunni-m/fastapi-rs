@@ -233,9 +233,56 @@ by subtracting the Starlette control or from the end-to-end target time.
 
 #### Current completed seven-workload run (2026-10-13; current manifest)
 
+The suite completed at `2026-10-13T21:41:21Z` with suite ID
+`3daa276b-2a75-425b-82df-ce041294e2fd` and receipt
+`benchmark-results/suite-20261013T214121Z-3daa276b-2a75-425b-82df-ce041294e2fd.json`
+(SHA-256 `d1f5167992ff7c56e9af529603bfa60bbbf326d3ae7f52f670ef79673d217803`).
+It binds manifest SHA-256
+`8cc5b54492d24272f79c88ce8f8c16af6f5c88099f2104b52b1bc7e4b4e66b1b`,
+FastAPI-RS commit `d7d3f5fec9cf4af1ae192ea9be495a7c0eaa4b55`, FastAPI
+`0.141.1` at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette `1.6.0`
+at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
+`b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. It used CPython 3.12.13,
+Pydantic 2.13.4 / pydantic-core 2.46.4, macOS 15.7.7 arm64 (12 logical
+CPUs), Cargo/rustc 1.98.1, and the optimized release profile with
+`pyo3/extension-module`. All seven workloads completed, and their fresh
+identity-checked gates passed 42/42 selected observations with zero failures
+and zero not-run cases. Each subject used 50 warmups and 1,000 measured calls
+in five rounds. The target extension SHA-256 was
+`84b8bb08c9726620171da2abf7f550c941fc9c643bb5324e777c9c58070daf24`; the
+target binary SHA-256 was
+`d185784c161c241679b86890cd02e505dd716cdc2c982cf0a330fb48cf5e3569`.
+
+The table reports median and p95 direct-ASGI latency in microseconds. Ratios
+are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
+longer on this host. Raw samples and parity identities remain in the ignored
+suite and workload receipts referenced above.
+
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio | Parity |
+| --- | ---: | ---: | ---: | ---: |
+| Async nested dependencies, distinct query aliases | 483.6 / 517.9 µs | 660.3 / 726.1 µs | 1.365x / 1.402x | 2/2 |
+| Async nested dependencies, two query parameters | 431.4 / 467.6 µs | 657.6 / 758.3 µs | 1.524x / 1.621x | 2/2 |
+| Chunked request body | 134.4 / 143.8 µs | 143.3 / 176.0 µs | 1.066x / 1.223x | 12/12 |
+| Invalid request | 145.5 / 213.8 µs | 326.3 / 387.7 µs | 2.243x / 1.813x | 12/12 |
+| Valid request | 140.1 / 152.3 µs | 140.7 / 176.9 µs | 1.004x / 1.161x | 12/12 |
+| Large response model | 365.5 / 455.1 µs | 389.0 / 421.0 µs | 1.064x / 0.925x | 1/1 |
+| Repeated sequence query | 103.0 / 130.3 µs | 111.3 / 137.8 µs | 1.081x / 1.058x | 1/1 |
+
+FastAPI-RS had higher median latency on all seven workloads. Large-response
+p95 was lower than FastAPI's, while its median and the other p95 ratios were
+higher. The invalid-request path remains the largest gap. This is one host and
+a narrow direct-ASGI suite, not a global performance claim. It does not
+measure network/server latency or separate facade, PyO3, Rust, Pydantic, or
+Starlette-RS costs. The Starlette control remains contextual and is not
+subtracted from FastAPI timings. `make benchmark-contract-check` passed after
+the previous `cb1352a` suite receipt was retained under
+`benchmark-results/stale/`.
+
+#### Prior completed seven-workload run (2026-10-13; archived stale manifest)
+
 The suite completed at `2026-10-13T19:30:07Z` with suite ID
 `62b84e96-4d6d-4284-9f70-b6bf142a4aa7` and receipt
-`benchmark-results/suite-20261013T193007Z-62b84e96-4d6d-4284-9f70-b6bf142a4aa7.json`
+`benchmark-results/stale/suite-20261013T193007Z-62b84e96-4d6d-4284-9f70-b6bf142a4aa7.json`
 (SHA-256 `77541f828135f89b3fc77baaa2ac8152dcb19bc20952e104927a54d9e4233064`).
 It binds manifest SHA-256
 `9ecbd9e9ab4ec497a7e9febd4d5b6d3716c0c2660f208a5719c90371ad3f01e9`,
@@ -270,12 +317,12 @@ suite and workload receipts referenced above.
 
 FastAPI-RS had higher median latency on all seven workloads in this run. The
 largest gap was invalid-request handling; the two nested-query workloads were
-also slower than the previous revision-specific run. This is one host and a
-narrow direct-ASGI suite, not a global performance claim. It does not measure
+also slower than the previous revision-specific run. This was one host and a
+narrow direct-ASGI suite, not a global performance claim. It did not measure
 network/server latency or separate facade, PyO3, Rust, Pydantic, or
-Starlette-RS costs. The Starlette control remains contextual and is not
-subtracted from FastAPI timings. `make benchmark-contract-check` passed after
-older suite receipts tied to earlier manifests were retained under
+Starlette-RS costs. The Starlette control was contextual and was not
+subtracted from FastAPI timings. The suite remains historical because it used
+manifest `9ecbd9e9…` and target `cb1352a`; its receipt is retained under
 `benchmark-results/stale/`.
 
 #### Completed seven-workload run (2026-10-13; archived stale manifest)
