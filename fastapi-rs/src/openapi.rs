@@ -686,24 +686,22 @@ impl GetOpenApiCallable {
     ) -> PyResult<Py<PyAny>> {
         let _ = separate_input_output_schemas;
         let route_count = routes.len()?;
-        if route_count > 1
-            || webhooks
-                .as_ref()
-                .map(|items| items.len())
-                .transpose()?
-                .is_some_and(|length| length != 0)
+        if webhooks
+            .as_ref()
+            .map(|items| items.len())
+            .transpose()?
+            .is_some_and(|length| length != 0)
         {
             return Err(PyNotImplementedError::new_err(
-                "FastAPI-RS get_openapi supports empty routes or one native simple GET APIRoute; webhooks are unsupported",
+                "FastAPI-RS get_openapi supports native simple GET APIRoutes; webhooks are unsupported",
             ));
         }
-        let operations = if route_count == 1 {
-            vec![crate::application_runtime::direct_route_openapi_operation(
-                &routes.get_item(0)?,
-            )?]
-        } else {
-            Vec::new()
-        };
+        let mut operations = Vec::with_capacity(route_count);
+        for index in 0..route_count {
+            operations.push(crate::application_runtime::direct_route_openapi_operation(
+                &routes.get_item(index)?,
+            )?);
+        }
 
         let contact = contact.map(Bound::unbind);
         let license_info = license_info.map(Bound::unbind);

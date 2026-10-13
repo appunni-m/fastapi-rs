@@ -11975,6 +11975,46 @@
       ]
     },
     {
+      "id": "openapi-get-openapi-multi-route",
+      "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-multi-route.json",
+      "input_sha256": "c12f4104850d008510449b0b7afaf4fe3ecb75a70e0ca02d5baab6bd115460fb",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-get-openapi-multi-route.yaml",
+      "recipe_sha256": "a3e2caa759bb5bce853deec30f2efd4218b8974159af3b076df80fb275100e7f",
+      "case_ids": [
+        "fastapi.openapi.get-openapi.two-static-get-routes"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_get_openapi_multi_route.py",
+      "workload_sha256": "58e687dc86183024d9bc358705c22b0fa5630d2d896045686a82fa8d694db2f6",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi.get-openapi.two-static-get-routes",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi.get-openapi.two-static-get-routes",
+          "probe_id": "two-distinct-static-get-routes",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi.get-openapi.two-static-get-routes",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.get_openapi"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-get-openapi-public-api",
       "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json",
       "input_sha256": "05ef5b02a98cb8821010307a11cf219648e093ec7d60db95443605bb40e67db4",

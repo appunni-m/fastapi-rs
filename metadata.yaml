@@ -3749,6 +3749,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.single-route-tags-version
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-multi-route.yaml
+          case_id: fastapi.openapi.get-openapi.two-static-get-routes
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_multi_route.py
+          observation_selectors: [python.attribute_value]
       feature_ids: [openapi-docs]
       observation_selectors:
         - http.status
@@ -3760,18 +3764,20 @@ reviewed_api_contract_overlay:
         empty routes and webhooks return a JSON-compatible OpenAPI document with
         the requested OpenAPI version and an empty paths object. The metadata
         case covers title, version, summary, description, tags, servers, terms
-        of service, contact, license, and external documentation. One native,
-        static GET APIRoute with the default summary, operation ID, response
-        class, and an empty dependency/parameter plan produces its default
-        operation document. Other non-empty route shapes remain unsupported.
-        Route-level tags are preserved for that supported operation.
+        of service, contact, license, and external documentation. One or more
+        native, static GET APIRoutes with distinct paths and names containing
+        only lowercase ASCII letters, the default summary, operation ID, response class,
+        and empty dependency/parameter plans produce their default operation
+        documents. Other non-empty route shapes remain unsupported. Route-level
+        tags are preserved for supported operations.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Multiple routes, route contexts/included route trees, and non-empty webhooks are rejected; only one supported native APIRoute is traversed.
+          - Route contexts/included route trees and non-empty webhooks are rejected; only native APIRoutes with the supported simple GET configuration are traversed.
           - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct calls.
-          - The linked fixtures cover empty routes, metadata options, and one simple static GET; invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
+          - Default summary generation for endpoint names containing characters outside lowercase ASCII letters can differ from FastAPI title casing, including underscores and digit transitions.
+          - The linked fixtures cover empty routes, metadata options, one simple static GET, and two distinct simple static GET routes; invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       supported_slice: >-
