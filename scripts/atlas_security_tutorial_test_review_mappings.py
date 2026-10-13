@@ -813,14 +813,20 @@ SECURITY_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "test_tutorial005.py",
                 "test_token",
                 "The workflow submits synthetic login input and exercises a protected request that receives a bearer value.",
-                "The case samples FastAPI form and bearer dependency integration with independent scope/token inputs. It intentionally does not exercise tutorial pwdlib/JWT decoding or assert the complete source User object.",
+                "The cases sample FastAPI form binding, Unicode-whitespace scope splitting, and bearer dependency integration with independent inputs. They intentionally do not exercise tutorial pwdlib/JWT decoding or assert the complete source User object.",
                 [
                     _case(
                         _TUTORIAL005,
                         "fastapi.security-tutorial005.test-token",
                         ["submit-login", "protected-request"],
                         _HTTP,
-                    )
+                    ),
+                    _case(
+                        _TUTORIAL005,
+                        "fastapi.security-tutorial005.password-form-constructor-fields-scopes",
+                        ["submit-form-with-unicode-whitespace-scope"],
+                        _HTTP,
+                    ),
                 ],
                 (
                     _docs("tutorial005", 64, 67, "OAuth2PasswordBearer scopes"),

@@ -673838,6 +673838,7 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.security-tutorial005.password-form-constructor-fields-scopes",
               "fastapi.security-tutorial005.test-no-token",
               "fastapi.security-tutorial005.test-openapi-schema",
               "fastapi.security-tutorial005.test-read-items",
@@ -673846,7 +673847,7 @@
               "fastapi.security-tutorial005.test-token",
               "fastapi.security-tutorial005.test-token-no-scope"
             ],
-            "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
@@ -674221,6 +674222,18 @@
                 "protected-request"
               ],
               "case_id": "fastapi.security-tutorial005.test-no-token",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml"
+            },
+            {
+              "action_ids": [
+                "submit-form-with-unicode-whitespace-scope"
+              ],
+              "case_id": "fastapi.security-tutorial005.password-form-constructor-fields-scopes",
               "observation_selectors": [
                 "http.body.bytes",
                 "http.headers.ordered",

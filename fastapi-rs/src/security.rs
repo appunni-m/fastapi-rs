@@ -967,6 +967,45 @@ struct PyOAuth2PasswordBearer {
 }
 
 #[pyclass(
+    name = "OAuth2PasswordRequestForm",
+    module = "fastapi.security.oauth2",
+    subclass,
+    dict
+)]
+struct PyOAuth2PasswordRequestForm;
+
+#[pymethods]
+impl PyOAuth2PasswordRequestForm {
+    #[new]
+    #[pyo3(signature = (*args, **kwargs))]
+    fn new(args: &Bound<'_, PyTuple>, kwargs: Option<&Bound<'_, PyDict>>) -> Self {
+        let _ = (args, kwargs);
+        Self
+    }
+}
+
+#[pyclass(
+    name = "OAuth2PasswordRequestFormStrict",
+    module = "fastapi.security.oauth2",
+    extends = PyOAuth2PasswordRequestForm,
+    subclass
+)]
+struct PyOAuth2PasswordRequestFormStrict;
+
+#[pymethods]
+impl PyOAuth2PasswordRequestFormStrict {
+    #[new]
+    #[pyo3(signature = (*args, **kwargs))]
+    fn new(
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyClassInitializer<Self> {
+        let _ = (args, kwargs);
+        PyClassInitializer::from(PyOAuth2PasswordRequestForm).add_subclass(Self)
+    }
+}
+
+#[pyclass(
     name = "OAuth2AuthorizationCodeBearer",
     module = "fastapi.security.oauth2",
     extends = PyOAuth2,
@@ -980,6 +1019,8 @@ enum ConstructorInitKind {
     AuthorizationCode,
     OpenIdConnect,
     SecurityScopes,
+    OAuth2PasswordRequestForm,
+    OAuth2PasswordRequestFormStrict,
 }
 
 #[pyclass(name = "_ConstructorInit", module = "fastapi_rs._core", dict)]
@@ -1024,6 +1065,12 @@ impl ConstructorInit {
             ConstructorInitKind::AuthorizationCode => initialize_authorization_code(py, &arguments),
             ConstructorInitKind::OpenIdConnect => initialize_openid_connect(py, &arguments),
             ConstructorInitKind::SecurityScopes => initialize_security_scopes(py, &arguments),
+            ConstructorInitKind::OAuth2PasswordRequestForm => {
+                initialize_oauth2_password_request_form(&arguments)
+            }
+            ConstructorInitKind::OAuth2PasswordRequestFormStrict => {
+                initialize_oauth2_password_request_form(&arguments)
+            }
         }
     }
 }
@@ -1063,6 +1110,10 @@ fn bind_constructor_arguments<'py>(
         ConstructorInitKind::AuthorizationCode => "OAuth2AuthorizationCodeBearer.__init__",
         ConstructorInitKind::OpenIdConnect => "OpenIdConnect.__init__",
         ConstructorInitKind::SecurityScopes => "SecurityScopes.__init__",
+        ConstructorInitKind::OAuth2PasswordRequestForm => "OAuth2PasswordRequestForm.__init__",
+        ConstructorInitKind::OAuth2PasswordRequestFormStrict => {
+            "OAuth2PasswordRequestFormStrict.__init__"
+        }
     };
     let kwargs = kwargs.cloned().unwrap_or_else(|| PyDict::new(py));
     for (keyword, _) in kwargs.iter() {
@@ -1206,6 +1257,38 @@ fn initialize_security_scopes(py: Python<'_>, arguments: &Bound<'_, PyDict>) -> 
         .call_method1("join", (&scopes,))?
         .unbind();
     instance.setattr("scope_str", scope_str)
+}
+
+fn initialize_oauth2_password_request_form(arguments: &Bound<'_, PyDict>) -> PyResult<()> {
+    let instance = arguments.get_item("self")?.ok_or_else(|| {
+        PyRuntimeError::new_err("bound OAuth2 password form initializer has no receiver")
+    })?;
+    let grant_type = arguments
+        .get_item("grant_type")?
+        .ok_or_else(|| PyRuntimeError::new_err("password form initializer has no grant_type"))?;
+    let username = arguments
+        .get_item("username")?
+        .ok_or_else(|| PyRuntimeError::new_err("password form initializer has no username"))?;
+    let password = arguments
+        .get_item("password")?
+        .ok_or_else(|| PyRuntimeError::new_err("password form initializer has no password"))?;
+    let scope = arguments
+        .get_item("scope")?
+        .ok_or_else(|| PyRuntimeError::new_err("password form initializer has no scope"))?;
+    let client_id = arguments
+        .get_item("client_id")?
+        .ok_or_else(|| PyRuntimeError::new_err("password form initializer has no client_id"))?;
+    let client_secret = arguments
+        .get_item("client_secret")?
+        .ok_or_else(|| PyRuntimeError::new_err("password form initializer has no client_secret"))?;
+
+    instance.setattr("grant_type", grant_type)?;
+    instance.setattr("username", username)?;
+    instance.setattr("password", password)?;
+    let scopes = scope.call_method0("split")?;
+    instance.setattr("scopes", scopes)?;
+    instance.setattr("client_id", client_id)?;
+    instance.setattr("client_secret", client_secret)
 }
 
 fn initialize_authorization_code(py: Python<'_>, arguments: &Bound<'_, PyDict>) -> PyResult<()> {
@@ -2101,6 +2184,148 @@ fn security_scopes_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<
     )?])
 }
 
+fn documented_form_annotation<'py>(
+    py: Python<'py>,
+    module: &Bound<'py, PyModule>,
+    annotation: &Bound<'py, PyAny>,
+    documentation: &str,
+    pattern: Option<&str>,
+    password_format: bool,
+) -> PyResult<Bound<'py, PyAny>> {
+    let form_arguments = PyDict::new(py);
+    if let Some(pattern) = pattern {
+        form_arguments.set_item("pattern", pattern)?;
+    }
+    let form = module.getattr("Form")?.call((), Some(&form_arguments))?;
+    if password_format {
+        let extra = PyDict::new(py);
+        extra.set_item("format", "password")?;
+        form.setattr("json_schema_extra", extra)?;
+    }
+    let doc = py
+        .import("annotated_doc")?
+        .getattr("Doc")?
+        .call1((documentation,))?;
+    py.import("typing")?
+        .getattr("Annotated")?
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(py, [annotation.clone(), form, doc])?,))
+}
+
+fn oauth2_password_form_constructor_parameters<'py>(
+    py: Python<'py>,
+    module: &Bound<'py, PyModule>,
+    strict: bool,
+) -> PyResult<Vec<Bound<'py, PyAny>>> {
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let parameter_kind = if strict {
+        parameter_type.getattr("POSITIONAL_OR_KEYWORD")?
+    } else {
+        parameter_type.getattr("KEYWORD_ONLY")?
+    };
+    let string_type = py.get_type::<PyString>();
+    let none_type = py.None().bind(py).get_type();
+    let optional_string = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((string_type.as_any(), none_type))?;
+    let grant_type = if strict {
+        documented_form_annotation(
+            py,
+            module,
+            string_type.as_any(),
+            "\n                The OAuth2 spec says it is required and MUST be the fixed string\n                \"password\". This dependency is strict about it. If you want to be\n                permissive, use instead the `OAuth2PasswordRequestForm` dependency\n                class.\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
+            Some("^password$"),
+            false,
+        )?
+    } else {
+        documented_form_annotation(
+            py,
+            module,
+            &optional_string,
+            "\n                The OAuth2 spec says it is required and MUST be the fixed string\n                \"password\". Nevertheless, this dependency class is permissive and\n                allows not passing it. If you want to enforce it, use instead the\n                `OAuth2PasswordRequestFormStrict` dependency.\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
+            Some("^password$"),
+            false,
+        )?
+    };
+    let username = documented_form_annotation(
+        py,
+        module,
+        string_type.as_any(),
+        "\n                `username` string. The OAuth2 spec requires the exact field name\n                `username`.\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
+        None,
+        false,
+    )?;
+    let password = documented_form_annotation(
+        py,
+        module,
+        string_type.as_any(),
+        "\n                `password` string. The OAuth2 spec requires the exact field name\n                `password`.\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
+        None,
+        true,
+    )?;
+    let scope = documented_form_annotation(
+        py,
+        module,
+        string_type.as_any(),
+        "\n                A single string with actually several scopes separated by spaces. Each\n                scope is also a string.\n\n                For example, a single string with:\n\n                ```python\n                \"items:read items:write users:read profile openid\"\n                ````\n\n                would represent the scopes:\n\n                * `items:read`\n                * `items:write`\n                * `users:read`\n                * `profile`\n                * `openid`\n\n                Read more about it in the\n                [FastAPI docs for Simple OAuth2 with Password and Bearer](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/).\n                ",
+        None,
+        false,
+    )?;
+    let client_id = documented_form_annotation(
+        py,
+        module,
+        &optional_string,
+        "\n                If there's a `client_id`, it can be sent as part of the form fields.\n                But the OAuth2 specification recommends sending the `client_id` and\n                `client_secret` (if any) using HTTP Basic auth.\n                ",
+        None,
+        false,
+    )?;
+    let client_secret = documented_form_annotation(
+        py,
+        module,
+        &optional_string,
+        "\n                If there's a `client_secret` (and a `client_id`), they can be sent\n                as part of the form fields. But the OAuth2 specification recommends\n                sending the `client_id` and `client_secret` (if any) using HTTP Basic\n                auth.\n                ",
+        None,
+        true,
+    )?;
+    let none = py.None();
+    let empty_string = PyString::new(py, "");
+    let mut parameters = vec![constructor_parameter(
+        py,
+        "grant_type",
+        &parameter_kind,
+        &grant_type,
+        if strict { None } else { Some(none.bind(py)) },
+    )?];
+    parameters.extend([
+        constructor_parameter(py, "username", &parameter_kind, &username, None)?,
+        constructor_parameter(py, "password", &parameter_kind, &password, None)?,
+        constructor_parameter(
+            py,
+            "scope",
+            &parameter_kind,
+            &scope,
+            Some(empty_string.as_any()),
+        )?,
+        constructor_parameter(
+            py,
+            "client_id",
+            &parameter_kind,
+            &client_id,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "client_secret",
+            &parameter_kind,
+            &client_secret,
+            Some(none.bind(py)),
+        )?,
+    ]);
+    Ok(parameters)
+}
+
 fn api_key_dependency_annotations(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let annotations = PyDict::new(py);
     annotations.set_item(
@@ -2579,6 +2804,22 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         &security_scopes_type,
         security_scopes_constructor_parameters(py)?,
         ConstructorInitKind::SecurityScopes,
+    )?;
+    module.add_class::<PyOAuth2PasswordRequestForm>()?;
+    let password_form_type = py.get_type::<PyOAuth2PasswordRequestForm>();
+    attach_constructor_introspection(
+        py,
+        &password_form_type,
+        oauth2_password_form_constructor_parameters(py, module, false)?,
+        ConstructorInitKind::OAuth2PasswordRequestForm,
+    )?;
+    module.add_class::<PyOAuth2PasswordRequestFormStrict>()?;
+    let strict_password_form_type = py.get_type::<PyOAuth2PasswordRequestFormStrict>();
+    attach_constructor_introspection(
+        py,
+        &strict_password_form_type,
+        oauth2_password_form_constructor_parameters(py, module, true)?,
+        ConstructorInitKind::OAuth2PasswordRequestFormStrict,
     )?;
     let api_key_models = create_api_key_models(py)?;
     module.add(

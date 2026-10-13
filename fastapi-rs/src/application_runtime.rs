@@ -8771,7 +8771,7 @@ fn constrained_parameter_annotation(
             annotated_arguments.push(marker.clone().unbind());
             continue;
         };
-        if kind != "body" && kind != "query" && kind != "path" {
+        if kind != "body" && kind != "query" && kind != "path" && kind != "form" {
             continue;
         }
         let kwargs = PyDict::new(py);
@@ -8794,6 +8794,11 @@ fn constrained_parameter_annotation(
                 continue;
             }
             kwargs.set_item(name, value)?;
+            has_field_metadata = true;
+        }
+        let json_schema_extra = marker.getattr("json_schema_extra")?;
+        if json_schema_extra.is_truthy()? {
+            kwargs.set_item("json_schema_extra", json_schema_extra)?;
             has_field_metadata = true;
         }
         if kind == "query" {

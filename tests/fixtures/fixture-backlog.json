@@ -651033,7 +651033,7 @@
             "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: The case samples FastAPI form and bearer dependency integration with independent scope/token inputs. It intentionally does not exercise tutorial pwdlib/JWT decoding or assert the complete source User object.",
+            "contract_gate": "Partial: The cases sample FastAPI form binding, Unicode-whitespace scope splitting, and bearer dependency integration with independent inputs. They intentionally do not exercise tutorial pwdlib/JWT decoding or assert the complete source User object.",
             "rationale": "The workflow submits synthetic login input and exercises a protected request that receives a bearer value.",
             "source_evidence": [
               {
@@ -651338,7 +651338,7 @@
                 "start_line": 619
               }
             ],
-            "stimulus_notes": "Existing independent input-only case(s): tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml::fastapi.security-tutorial005.test-token actions submit-login, protected-request. The workflows contain no expected outputs."
+            "stimulus_notes": "Existing independent input-only case(s): tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml::fastapi.security-tutorial005.test-token actions submit-login, protected-request; tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml::fastapi.security-tutorial005.password-form-constructor-fields-scopes actions submit-form-with-unicode-whitespace-scope. The workflows contain no expected outputs."
           },
           "selector_evidence": [
             {
@@ -651365,7 +651365,7 @@
             "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Existing independent input-only case(s): tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml::fastapi.security-tutorial005.test-token actions submit-login, protected-request. The workflows contain no expected outputs."
+          "stimulus_design_notes": "Existing independent input-only case(s): tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml::fastapi.security-tutorial005.test-token actions submit-login, protected-request; tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml::fastapi.security-tutorial005.password-form-constructor-fields-scopes actions submit-form-with-unicode-whitespace-scope. The workflows contain no expected outputs."
         },
         {
           "feature_evidence": [
@@ -655565,6 +655565,7 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.security-tutorial005.password-form-constructor-fields-scopes",
             "fastapi.security-tutorial005.test-no-token",
             "fastapi.security-tutorial005.test-openapi-schema",
             "fastapi.security-tutorial005.test-read-items",
@@ -655573,7 +655574,7 @@
             "fastapi.security-tutorial005.test-token",
             "fastapi.security-tutorial005.test-token-no-scope"
           ],
-          "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "http.body.bytes",

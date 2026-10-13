@@ -3,7 +3,11 @@
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Security, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, SecurityScopes
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm,
+    SecurityScopes,
+)
 
 _USER = {
     "username": "johndoe",
@@ -65,6 +69,19 @@ def create_tutorial005_app() -> FastAPI:
         "synthetic-no-scopes": set(),
     }
 
+    @app.post("/password-form-fields")
+    async def password_form_fields(
+        form_data: OAuth2PasswordRequestForm = Depends(),  # noqa: B008
+    ) -> dict[str, object]:
+        return {
+            "grant_type": form_data.grant_type,
+            "username": form_data.username,
+            "password_matches": form_data.password == "secret",
+            "scopes": form_data.scopes,
+            "client_id": form_data.client_id,
+            "client_secret_matches": form_data.client_secret == "client-secret",
+        }
+
     @app.post("/token")
     async def login_for_access_token(
         form_data: OAuth2PasswordRequestForm = Depends(),  # noqa: B008
@@ -81,7 +98,7 @@ def create_tutorial005_app() -> FastAPI:
     async def get_current_user(
         security_scopes: SecurityScopes,
         token: Annotated[str, Depends(oauth2_scheme)],
-    ) -> dict[str, str]:
+    ) -> dict[str, str | bool]:
         required_scopes = security_scopes.scopes
         authenticate_value = (
             f'Bearer scope="{security_scopes.scope_str}"' if required_scopes else "Bearer"
@@ -104,20 +121,20 @@ def create_tutorial005_app() -> FastAPI:
         return _USER
 
     async def get_current_active_user(
-        current_user: Annotated[dict[str, str], Security(get_current_user, scopes=["me"])],
-    ) -> dict[str, str]:
+        current_user: Annotated[dict[str, str | bool], Security(get_current_user, scopes=["me"])],
+    ) -> dict[str, str | bool]:
         return current_user
 
     @app.get("/users/me/")
     async def read_users_me(
-        current_user: Annotated[dict[str, str], Depends(get_current_active_user)],
-    ) -> dict[str, str]:
+        current_user: Annotated[dict[str, str | bool], Depends(get_current_active_user)],
+    ) -> dict[str, str | bool]:
         return current_user
 
     @app.get("/users/me/items/")
     async def read_own_items(
         current_user: Annotated[
-            dict[str, str], Security(get_current_active_user, scopes=["items"])
+            dict[str, str | bool], Security(get_current_active_user, scopes=["items"])
         ],
     ) -> list[dict[str, str]]:
         return [{"item_id": "Foo", "owner": current_user["username"]}]

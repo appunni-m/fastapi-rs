@@ -37,6 +37,7 @@ pub(crate) struct ParameterMetadata {
     title: Option<String>,
     description: Option<String>,
     pattern: Option<String>,
+    json_schema_extra: Option<Py<PyAny>>,
     example: Option<Py<PyAny>>,
     examples: Option<Py<PyAny>>,
     deprecated: Option<Py<PyAny>>,
@@ -116,6 +117,40 @@ impl ParameterMetadata {
     #[getter]
     fn pattern(&self) -> Option<String> {
         self.pattern.clone()
+    }
+
+    #[getter]
+    fn json_schema_extra(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.json_schema_extra
+            .as_ref()
+            .map(|extra| extra.clone_ref(py))
+    }
+
+    #[setter]
+    fn set_json_schema_extra(&mut self, extra: Py<PyAny>) {
+        self.json_schema_extra = Some(extra);
+    }
+
+    fn __repr__(&self, py: Python<'_>) -> PyResult<String> {
+        let name = match self.kind.as_str() {
+            "body" => "Body",
+            "cookie" => "Cookie",
+            "file" => "File",
+            "form" => "Form",
+            "header" => "Header",
+            "path" => "Path",
+            "query" => "Query",
+            _ => "Parameter",
+        };
+        let default = match &self.default {
+            Some(default) => default.bind(py).repr()?.to_string(),
+            None => py
+                .import("pydantic_core")?
+                .getattr("PydanticUndefined")?
+                .repr()?
+                .to_string(),
+        };
+        Ok(format!("{name}({default})"))
     }
 
     #[getter]
@@ -342,6 +377,7 @@ fn header(
             title: None,
             description: None,
             pattern: normalize_pattern(pattern, regex),
+            json_schema_extra: None,
             example: normalized_example(example, py),
             examples,
             deprecated: None,
@@ -409,6 +445,7 @@ fn cookie(
             title: None,
             description: None,
             pattern: normalize_pattern(pattern, regex),
+            json_schema_extra: None,
             example: normalized_example(example, py),
             examples,
             deprecated: None,
@@ -517,6 +554,7 @@ fn query(
             title,
             description,
             pattern: normalize_pattern(pattern, regex),
+            json_schema_extra: None,
             example: normalized_example(example, py),
             examples,
             deprecated,
@@ -598,6 +636,7 @@ fn path(
             title: None,
             description: None,
             pattern: normalize_pattern(pattern, regex),
+            json_schema_extra: None,
             example: normalized_example(example, py),
             examples,
             deprecated: None,
@@ -672,6 +711,7 @@ fn body(
             title: None,
             description: None,
             pattern: normalize_pattern(pattern, regex),
+            json_schema_extra: None,
             example: normalized_example(example, py),
             examples,
             deprecated: None,
@@ -766,6 +806,7 @@ fn form(
             title: None,
             description,
             pattern: normalize_pattern(pattern, regex),
+            json_schema_extra: Some(PyDict::new(py).into_any().unbind()),
             example: normalized_example(example, py),
             examples,
             deprecated: None,
@@ -840,6 +881,7 @@ fn file(
             title: None,
             description,
             pattern: normalize_pattern(pattern, regex),
+            json_schema_extra: None,
             example: normalized_example(example, py),
             examples,
             deprecated: None,

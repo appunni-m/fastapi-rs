@@ -8479,7 +8479,7 @@ reviewed_api_contract_overlay:
           - malformed header and subclass override behavior beyond the selected cases remain unverified.
         rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::__call__
     fastapi.security.OAuth2PasswordRequestForm:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
       source_evidence:
         - path: fastapi/security/__init__.py
           symbol: OAuth2PasswordRequestForm
@@ -8505,25 +8505,25 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-tutorial005.test-read-items
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.password-form-constructor-fields-scopes
       feature_ids: [dependency-security, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
       supported_slice: >-
-        The public root name aliases the source permissive password-form
-        dependency. Its constructor declares username, password, scope,
-        optional grant_type, client_id, and client_secret as form fields; it
-        stores the submitted values and splits scope on whitespace. The
-        selected tutorial inputs exercise form submission, requested scopes,
-        and the generated request schema. Request.form parsing and FormData
-        remain within the pinned Starlette-RS contract; unselected encodings,
-        file parts, and parser-error variants are outside this slice.
+        Direct API probes compare the public constructor signatures. Selected
+        ASGI inputs verify username/password/client fields, omitted grant_type
+        and client fields, and Unicode-whitespace scope splitting; tutorial
+        inputs cover dependency integration and OpenAPI. Request.form parsing
+        and FormData remain within the pinned Starlette-RS contract; multipart,
+        file parts, and parser errors remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export the form class or implement its constructor and request form integration.
-        rust_binding: null
+          - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
     fastapi.security.oauth2.OAuth2PasswordRequestForm:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: OAuth2PasswordRequestForm
@@ -8539,24 +8539,25 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-tutorial005.test-read-items
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.password-form-constructor-fields-scopes
       feature_ids: [dependency-security, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
       supported_slice: >-
-        The source class accepts form fields for username, password, scope,
-        optional grant_type, client_id, and client_secret, stores their values,
-        and splits scope on whitespace. The selected tutorial inputs exercise
-        form submission, requested scopes, and request-schema generation.
-        Request.form parsing and FormData remain within the pinned
-        Starlette-RS contract; unselected encodings and parser-error variants
-        are outside this slice.
+        Direct API probes compare the public constructor signatures. Selected
+        ASGI inputs verify username/password/client fields, omitted grant_type
+        and client fields, Unicode-whitespace scope splitting, dependency
+        integration, and request-schema generation. Request.form parsing and
+        FormData remain within the pinned Starlette-RS contract; multipart,
+        file parts, and parser errors remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export the form class or implement its constructor and request form integration.
-        rust_binding: null
+          - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
     fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: __init__
@@ -8573,22 +8574,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-tutorial005.test-read-items
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
+          case_id: fastapi.security-tutorial005.password-form-constructor-fields-scopes
       feature_ids: [dependency-security, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
       supported_slice: >-
-        This constructor binds the declared OAuth2 password fields from FastAPI
-        Form parameters, assigns them to the instance, and splits the submitted
-        scope string on whitespace. The selected tutorial requests exercise
-        form submission and scope values; omitted defaults, direct constructor
-        calls, and unselected input-validation outcomes are not established.
+        The exact keyword-only constructor signature matches the source. An
+        independent URL-encoded request observes the stored username,
+        password/client-secret predicates, optional defaults, and scopes after
+        Unicode-whitespace splitting. Other encodings and direct-constructor
+        error wording are not selected.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export the form class or implement its constructor and request form integration.
-        rust_binding: null
+          - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+        rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
     fastapi.security.OAuth2PasswordRequestFormStrict:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestFormStrict
       source_evidence:
         - path: fastapi/security/__init__.py
           symbol: OAuth2PasswordRequestFormStrict
@@ -8619,21 +8622,19 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
       supported_slice: >-
-        The public root name aliases the strict source password-form
-        dependency. Its grant_type field is required and constrained to the
-        password value; the remaining declared form fields follow the base
-        class. Selected inputs cover absent, incorrect, and correct grant_type
-        values plus the generated login request schema. Form parsing is owned
-        by the pinned Starlette-RS Request.form/FormData contract, and other
-        parser behaviors remain outside this slice.
+        Direct API probes compare the source constructor signature. ASGI inputs
+        cover the required password grant_type constraint for absent, incorrect,
+        and correct values and the generated login request schema. Form parsing
+        is owned by the pinned Starlette-RS Request.form/FormData contract;
+        other parser behaviors remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export the strict form class or implement its constructor and request form integration.
-        rust_binding: null
+          - non-URL-encoded inputs, parser failures, and direct-constructor error wording are not selected.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestFormStrict
     fastapi.security.oauth2.OAuth2PasswordRequestFormStrict:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestFormStrict
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: OAuth2PasswordRequestFormStrict
@@ -8654,19 +8655,18 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
       supported_slice: >-
-        This strict source class inherits the permissive password-form fields
-        and changes grant_type to a required field constrained to "password".
-        The selected ASGI inputs cover missing, incorrect, and correct values
-        and the login request schema; other form fields and parser behavior
-        remain outside this slice.
+        Direct API probes compare the source constructor signature. Selected
+        ASGI inputs cover missing, incorrect, and correct grant_type values and
+        the login request schema; other form fields, non-URL-encoded inputs,
+        and parser behavior remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export the strict form class or implement its constructor and request form integration.
-        rust_binding: null
+          - non-URL-encoded inputs, parser failures, and direct-constructor error wording are not selected.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestFormStrict
     fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: __init__
@@ -8688,17 +8688,16 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
       supported_slice: >-
-        The constructor requires the password grant_type field, validates it
-        against the fixed password pattern, and forwards the remaining form
-        values to the base constructor. The selected inputs observe absent,
-        incorrect, and correct grant_type submissions and the generated
-        request schema; direct constructor validation cases are not selected.
+        The source positional-or-keyword constructor signature matches the
+        target. Selected ASGI inputs observe absent, incorrect, and correct
+        grant_type submissions and the generated request schema. Direct
+        constructor validation errors are not selected.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export the strict form class or implement its constructor and request form integration.
-        rust_binding: null
+          - direct-constructor validation errors and non-URL-encoded inputs are not selected.
+        rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
     fastapi.security.SecurityScopes:
       rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
       source_evidence:
