@@ -52,57 +52,102 @@ impl PyJsonableEncoder {
     }
 }
 
+fn annotated_parameter_type<'py>(
+    py: Python<'py>,
+    base: &Bound<'py, PyAny>,
+    documentation: &str,
+) -> PyResult<Bound<'py, PyAny>> {
+    let metadata = py
+        .import("annotated_doc")?
+        .getattr("Doc")?
+        .call1((documentation,))?;
+    py.import("typing")?
+        .getattr("Annotated")?
+        .call_method1("__class_getitem__", ((base, metadata),))
+}
+
 fn install_encoder_signature(py: Python<'_>, callable: &Bound<'_, PyAny>) -> PyResult<()> {
     let inspect = py.import("inspect")?;
     let parameter_type = inspect.getattr("Parameter")?;
     let kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
     let parameters = PyList::empty(py);
+    let typing = py.import("typing")?;
+    let any = typing.getattr("Any")?;
+    let boolean = py.import("builtins")?.getattr("bool")?;
+    let none_type = py.None().into_bound(py).get_type();
+    let optional = py.import("operator")?.getattr("or_")?;
+
+    let include_exclude = py.import("pydantic.main")?.getattr("IncEx")?;
+    let include_exclude_optional = optional.call1((&include_exclude, &none_type))?;
+
+    let callable_arguments = PyList::new(py, [any.clone()])?;
+    let callable_type = py
+        .import("collections.abc")?
+        .getattr("Callable")?
+        .call_method1("__class_getitem__", ((callable_arguments, &any),))?;
+    let encoder_mapping = py
+        .import("builtins")?
+        .getattr("dict")?
+        .call_method1("__class_getitem__", ((&any, callable_type),))?;
+    let custom_encoder_type = optional.call1((&encoder_mapping, &none_type))?;
+
+    let annotations = [
+        annotated_parameter_type(
+            py,
+            &any,
+            "\n            The input object to convert to JSON.\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &include_exclude_optional,
+            "\n            Pydantic's `include` parameter, passed to Pydantic models to set the\n            fields to include.\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &include_exclude_optional,
+            "\n            Pydantic's `exclude` parameter, passed to Pydantic models to set the\n            fields to exclude.\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &boolean,
+            "\n            Pydantic's `by_alias` parameter, passed to Pydantic models to define if\n            the output should use the alias names (when provided) or the Python\n            attribute names. In an API, if you set an alias, it's probably because you\n            want to use it in the result, so you probably want to leave this set to\n            `True`.\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &boolean,
+            "\n            Pydantic's `exclude_unset` parameter, passed to Pydantic models to define\n            if it should exclude from the output the fields that were not explicitly\n            set (and that only had their default values).\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &boolean,
+            "\n            Pydantic's `exclude_defaults` parameter, passed to Pydantic models to define\n            if it should exclude from the output the fields that had the same default\n            value, even when they were explicitly set.\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &boolean,
+            "\n            Pydantic's `exclude_none` parameter, passed to Pydantic models to define\n            if it should exclude from the output any fields that have a `None` value.\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &custom_encoder_type,
+            "\n            Pydantic's `custom_encoder` parameter, passed to Pydantic models to define\n            a custom encoder.\n            ",
+        )?,
+        annotated_parameter_type(
+            py,
+            &boolean,
+            "\n            Exclude from the output any fields that start with the name `_sa`.\n\n            This is mainly a hack for compatibility with SQLAlchemy objects, they\n            store internal SQLAlchemy-specific state in attributes named with `_sa`,\n            and those objects can't (and shouldn't be) serialized to JSON.\n            ",
+        )?,
+    ];
     let parameter_specs = [
-        (
-            "obj",
-            None,
-            "typing.Annotated[typing.Any, Doc('\\n            The input object to convert to JSON.\\n            ')]",
-        ),
-        (
-            "include",
-            Some(None),
-            "typing.Annotated[typing.Union[set[int], set[str], collections.abc.Mapping[int, typing.Union[ForwardRef('IncEx'), bool]], collections.abc.Mapping[str, typing.Union[ForwardRef('IncEx'), bool]], NoneType], Doc(\"\\n            Pydantic's `include` parameter, passed to Pydantic models to set the\\n            fields to include.\\n            \")]",
-        ),
-        (
-            "exclude",
-            Some(None),
-            "typing.Annotated[typing.Union[set[int], set[str], collections.abc.Mapping[int, typing.Union[ForwardRef('IncEx'), bool]], collections.abc.Mapping[str, typing.Union[ForwardRef('IncEx'), bool]], NoneType], Doc(\"\\n            Pydantic's `exclude` parameter, passed to Pydantic models to set the\\n            fields to exclude.\\n            \")]",
-        ),
-        (
-            "by_alias",
-            Some(Some(true)),
-            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `by_alias` parameter, passed to Pydantic models to define if\\n            the output should use the alias names (when provided) or the Python\\n            attribute names. In an API, if you set an alias, it's probably because you\\n            want to use it in the result, so you probably want to leave this set to\\n            `True`.\\n            \")]",
-        ),
-        (
-            "exclude_unset",
-            Some(Some(false)),
-            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `exclude_unset` parameter, passed to Pydantic models to define\\n            if it should exclude from the output the fields that were not explicitly\\n            set (and that only had their default values).\\n            \")]",
-        ),
-        (
-            "exclude_defaults",
-            Some(Some(false)),
-            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `exclude_defaults` parameter, passed to Pydantic models to define\\n            if it should exclude from the output the fields that had the same default\\n            value, even when they were explicitly set.\\n            \")]",
-        ),
-        (
-            "exclude_none",
-            Some(Some(false)),
-            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `exclude_none` parameter, passed to Pydantic models to define\\n            if it should exclude from the output any fields that have a `None` value.\\n            \")]",
-        ),
-        (
-            "custom_encoder",
-            Some(None),
-            "typing.Annotated[dict[typing.Any, collections.abc.Callable[[typing.Any], typing.Any]] | None, Doc(\"\\n            Pydantic's `custom_encoder` parameter, passed to Pydantic models to define\\n            a custom encoder.\\n            \")]",
-        ),
-        (
-            "sqlalchemy_safe",
-            Some(Some(true)),
-            "typing.Annotated[bool, Doc(\"\\n            Exclude from the output any fields that start with the name `_sa`.\\n\\n            This is mainly a hack for compatibility with SQLAlchemy objects, they\\n            store internal SQLAlchemy-specific state in attributes named with `_sa`,\\n            and those objects can't (and shouldn't be) serialized to JSON.\\n            \")]",
-        ),
+        ("obj", None, &annotations[0]),
+        ("include", Some(None), &annotations[1]),
+        ("exclude", Some(None), &annotations[2]),
+        ("by_alias", Some(Some(true)), &annotations[3]),
+        ("exclude_unset", Some(Some(false)), &annotations[4]),
+        ("exclude_defaults", Some(Some(false)), &annotations[5]),
+        ("exclude_none", Some(Some(false)), &annotations[6]),
+        ("custom_encoder", Some(None), &annotations[7]),
+        ("sqlalchemy_safe", Some(Some(true)), &annotations[8]),
     ];
 
     for (name, default, annotation) in parameter_specs {
@@ -119,7 +164,7 @@ fn install_encoder_signature(py: Python<'_>, callable: &Bound<'_, PyAny>) -> PyR
     }
 
     let signature_kwargs = PyDict::new(py);
-    signature_kwargs.set_item("return_annotation", "typing.Any")?;
+    signature_kwargs.set_item("return_annotation", any)?;
     let signature = inspect
         .getattr("Signature")?
         .call((parameters,), Some(&signature_kwargs))?;
