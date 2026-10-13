@@ -1589,6 +1589,27 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 4729
           end_line: 4774
+        - path: starlette/applications.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Starlette
+          symbol: build_middleware_stack
+          start_line: 63
+          end_line: 83
+        - path: starlette/applications.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Starlette
+          symbol: __call__
+          start_line: 92
+          end_line: 96
+        - path: starlette/middleware/exceptions.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: ExceptionMiddleware
+          symbol: __init__
+          start_line: 19
+          end_line: 34
         - {path: tests/test_exception_handlers.py, symbol: http_exception_handler}
         - {path: tests/test_ws_router.py, symbol: test_depend_err_handler}
         - path: docs/en/docs/tutorial/handling-errors.md
@@ -1636,6 +1657,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-validation-handler.form-body
         - recipe_path: tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml
           case_id: fastapi.applications.exception-handler.after-stack-cache
+          workload_path: tests/fixtures/workloads/exception_handler_after_stack_cache.py
+          observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.status, http.headers.ordered, http.body.bytes, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.default-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
@@ -1664,12 +1687,18 @@ reviewed_api_contract_overlay:
         The custom handler receives the same Request object used by the FastAPI
         path operation. Built-in Starlette HTTPException JSON handling is also
         included.
+        The exception-handler-after-stack-cache input first dispatches ASGI
+        lifespan, then registers one class handler through this decorator and
+        sends a matching request. FastAPI 0.141.1 and FastAPI-RS both retain
+        the already-built middleware handler snapshot: the request returns the
+        default 500 response and reports the propagated exception. This proves
+        the selected registration sequence only; other post-cache mutations
+        and exception classes remain unverified.
         Identity-checked inputs cover path, body, malformed-JSON and form
         RequestValidationError dispatch plus the default 422 response even
         when a server-error handler is registered. The WebSocket validation
         workflow checks the default handler-map entry, custom override
-        registration and both close outcomes. Handler registration after the
-        middleware stack has been cached and custom WebSocket exception-handler
+        registration and both close outcomes. Custom WebSocket exception-handler
         object identity/state parity remain outside this slice. Independent
         WebSocket workflows cover custom validation-error and
         WebSocketException handlers; the latter records the endpoint socket,
@@ -13170,6 +13199,13 @@ reviewed_api_contract_overlay:
           symbol: exception_handler
           start_line: 4729
           end_line: 4774
+        - path: starlette/applications.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Starlette
+          symbol: add_exception_handler
+          start_line: 109
+          end_line: 114
         - path: docs/en/docs/tutorial/handling-errors.md
           kind: documentation-text
           start_line: 82
@@ -13207,7 +13243,7 @@ reviewed_api_contract_overlay:
         known_gaps:
           - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and state when Starlette-RS invokes the handler.
           - Exact introspection metadata of the native WebSocket validation handler callable remains unverified.
-          - Registering handlers after the middleware stack has been cached does not rebuild the stack.
+          - Replacing an existing handler or registering multiple handlers after middleware-stack caching is not covered by the selected input.
     fastapi.applications.FastAPI.mount:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       source_evidence:
