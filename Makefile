@@ -50,7 +50,7 @@ RELEASE_CRATE_DIR ?= target/package
 RELEASE_VERSION ?= 0.1.0
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-target parity-prepare-target-testclient fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-target parity-prepare-target-testclient fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -291,13 +291,16 @@ parity-fault-target: parity-inputs fault-injection-build ## Execute fault-contra
 parity-compare: ## Compare live source/target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
 
-parity-api-validate: parity-inputs ## Validate a direct public Python API workflow
+signature-workflow-migration-check: ## Require every active signature recipe to use API workflow v5
+	$(PYTHON) scripts/migrate_signature_workflows.py
+
+parity-api-validate: parity-inputs signature-workflow-migration-check ## Validate a direct public Python API workflow
 	$(PYTHON) -m scripts.parity.cli api-validate --input "$(PARITY_API_INPUT)"
 
-parity-api-oracle: parity-inputs ## Execute a direct public API workflow against FastAPI 0.141.1
+parity-api-oracle: parity-inputs signature-workflow-migration-check ## Execute a direct public API workflow against FastAPI 0.141.1
 	$(PYTHON) -m scripts.parity.cli api-oracle --input "$(PARITY_API_INPUT)" --python "$(PARITY_API_ORACLE_PYTHON)" --profile-extension "$(PARITY_API_PROFILE_EXTENSION)"
 
-parity-api-target: parity-inputs ## Execute a direct public API workflow against FastAPI-RS
+parity-api-target: parity-inputs signature-workflow-migration-check ## Execute a direct public API workflow against FastAPI-RS
 	$(PARITY_API_TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 	$(PYTHON) -m scripts.parity.cli api-target \
 	  --input "$(PARITY_API_INPUT)" \
@@ -308,7 +311,7 @@ parity-api-target: parity-inputs ## Execute a direct public API workflow against
 	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
 	  --profile-extension "$(PARITY_API_PROFILE_EXTENSION)"
 
-parity-api-compare: ## Compare direct public API source and target result artifacts exactly
+parity-api-compare: signature-workflow-migration-check ## Compare direct public API source and target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli api-compare --input "$(PARITY_API_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)" $(if $(PARITY_API_PROFILE_EXTENSION),--profile-extension "$(PARITY_API_PROFILE_EXTENSION)")
 
 parity-first-slice: parity-validate ## Run and exactly compare the pinned first HTTP slice

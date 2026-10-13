@@ -529,7 +529,10 @@ def _validate_api_result(
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(result), key=lambda error: error.message)
     if errors:
-        details = "; ".join(error.message for error in errors)
+        details = "; ".join(
+            f"/{'/'.join(map(str, error.absolute_path))} [{error.validator}]"
+            for error in errors[:8]
+        )
         raise ContractError(f"direct API result does not match its schema: {details}")
     if result["input"]["sha256"] != input_digest:
         raise ContractError("direct API result references a different workflow input")

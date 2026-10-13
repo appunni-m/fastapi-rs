@@ -13,6 +13,7 @@ from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
     API_WORKFLOW_SCHEMA_V3_ID,
     API_WORKFLOW_SCHEMA_V4_ID,
+    API_WORKFLOW_SCHEMA_V5_ID,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
@@ -81,7 +82,12 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
     if "probes" in case:
         for probe in case["probes"]:
             if (
-                workflow_schema in {API_WORKFLOW_SCHEMA_V3_ID, API_WORKFLOW_SCHEMA_V4_ID}
+                workflow_schema
+                in {
+                    API_WORKFLOW_SCHEMA_V3_ID,
+                    API_WORKFLOW_SCHEMA_V4_ID,
+                    API_WORKFLOW_SCHEMA_V5_ID,
+                }
                 and probe.get("capture_warnings") is True
             ):
                 selectors.add("python.warnings")
