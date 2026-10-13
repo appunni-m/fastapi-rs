@@ -2161,7 +2161,7 @@ struct ParameterOpenApiPlan {
     openapi_examples: Option<Py<PyAny>>,
 }
 
-#[pyclass(name = "FastAPI", module = "fastapi_rs._core")]
+#[pyclass(name = "FastAPI", module = "fastapi.applications")]
 pub(crate) struct PyFastApi {
     state: Py<PyAny>,
     route_scope_prefix: String,
@@ -2440,7 +2440,7 @@ struct PyRawWebSocketDecorator {
     name: Option<String>,
 }
 
-#[pyclass(name = "APIRouter", module = "fastapi_rs._core", unsendable)]
+#[pyclass(name = "APIRouter", module = "fastapi.routing", unsendable)]
 pub(crate) struct PyApiRouter {
     inner: Py<PyFastApi>,
     prefix: String,
@@ -2627,95 +2627,12 @@ fn bound_operation_signature<'py>(
         .map(Bound::unbind)
 }
 
-fn route_signature_default<'py>(
-    py: Python<'py>,
-    specification: &Bound<'py, PyAny>,
-    generate_unique_id: &Bound<'py, PyAny>,
-) -> PyResult<Bound<'py, PyAny>> {
-    let kind = specification
-        .get_item("kind")
-        .and_then(|value| value.extract::<String>());
-    match kind.as_deref() {
-        Ok("fastapi_default_placeholder") => {
-            let value_specification = specification.get_item("value")?;
-            let value = route_signature_default(py, &value_specification, generate_unique_id)?;
-            Py::new(
-                py,
-                PyFastApiDefaultPlaceholder {
-                    value: value.unbind(),
-                },
-            )
-            .map(|placeholder| placeholder.into_bound(py).into_any())
-        }
-        Ok("class") => {
-            let qualified_name = specification
-                .get_item("qualified_name")?
-                .extract::<String>()?;
-            let (module_name, attribute) = qualified_name.rsplit_once('.').ok_or_else(|| {
-                PyValueError::new_err("invalid qualified class in route signature contract")
-            })?;
-            py.import(module_name)?.getattr(attribute)
-        }
-        Ok("callable") => Ok(generate_unique_id.clone()),
-        _ => Ok(specification.clone()),
-    }
-}
-
-fn route_operation_signature(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult<Py<PyAny>> {
-    let contract = py
-        .import("json")?
-        .call_method1("loads", (include_str!("route_signature.json"),))?;
-    if contract.get_item("schema")?.extract::<String>()? != "fastapi-rs/route-signature@1"
-        || contract
-            .get_item("source")?
-            .get_item("commit")?
-            .extract::<String>()?
-            != "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
-    {
-        return Err(PyRuntimeError::new_err(
-            "route signature contract is not pinned to FastAPI 0.141.1",
-        ));
-    }
-    let signature_specification = contract.get_item("signature")?;
-    let generate_unique_id = module.getattr("_generate_unique_id")?;
-    let inspect = py.import("inspect")?;
-    let parameter_type = inspect.getattr("Parameter")?;
-    let parameter_specifications = signature_specification
-        .get_item("parameters")?
-        .cast_into::<PyList>()?;
-    let parameters = PyList::empty(py);
-    for specification in parameter_specifications.iter() {
-        let name = specification.get_item("name")?.extract::<String>()?;
-        let kind_name = specification.get_item("kind")?.extract::<String>()?;
-        let kind = parameter_type.getattr(&kind_name)?;
-        let kwargs = PyDict::new(py);
-        if specification.get_item("has_default")?.extract::<bool>()? {
-            let default_specification = specification.get_item("default")?;
-            let default = route_signature_default(py, &default_specification, &generate_unique_id)?;
-            kwargs.set_item("default", default)?;
-        }
-        let annotation = specification.get_item("annotation")?;
-        if !annotation.is_none() {
-            kwargs.set_item("annotation", annotation)?;
-        }
-        parameters.append(parameter_type.call((name, kind), Some(&kwargs))?)?;
-    }
-    let signature_kwargs = PyDict::new(py);
-    let return_annotation = signature_specification.get_item("return_annotation")?;
-    if !return_annotation.is_none() {
-        signature_kwargs.set_item("return_annotation", return_annotation)?;
-    }
-    inspect
-        .getattr("Signature")?
-        .call((parameters,), Some(&signature_kwargs))
-        .map(Bound::unbind)
-}
-
 fn install_route_operation_descriptors(
     py: Python<'_>,
     module: &Bound<'_, PyModule>,
 ) -> PyResult<()> {
-    let signature = route_operation_signature(py, module)?;
+    let mut signatures = crate::application_signatures::ApplicationSignatureBuilder::new(module)?;
+    let signature = signatures.build_signature(py, "operation")?;
     let fast_api_type = py.get_type::<PyFastApi>();
     let api_router_type = py.get_type::<PyApiRouter>();
     for name in [
@@ -2741,6 +2658,29 @@ fn install_route_operation_descriptors(
         )?;
         api_router_type.setattr(name, router_descriptor)?;
     }
+
+    for (name, contract_name) in [
+        ("openapi", "openapi"),
+        ("websocket", "websocket"),
+        ("include_router", "include_router"),
+        ("frontend", "frontend"),
+        ("on_event", "on_event"),
+        ("middleware", "middleware"),
+        ("exception_handler", "exception_handler"),
+    ] {
+        let method = fast_api_type.getattr(name)?.unbind();
+        let signature = signatures.build_signature(py, contract_name)?;
+        let descriptor = Py::new(
+            py,
+            PyOperationRouteDescriptor {
+                method,
+                is_router: false,
+                signature,
+            },
+        )?;
+        fast_api_type.setattr(name, descriptor)?;
+    }
+    fast_api_type.setattr("__signature__", signatures.build_signature(py, "FastAPI")?)?;
     Ok(())
 }
 
@@ -3079,8 +3019,9 @@ impl PyFastApi {
     fn middleware(
         slf: Py<Self>,
         py: Python<'_>,
-        _middleware_type: &str,
+        middleware_type: &str,
     ) -> PyResult<Py<PyMiddlewareDecorator>> {
+        let _ = middleware_type;
         Py::new(py, PyMiddlewareDecorator { app: slf })
     }
 
@@ -13489,7 +13430,6 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyExceptionHandlerDecorator>()?;
     module.add_class::<PyFastApiCallNext>()?;
     module.add_class::<PyApiRouter>()?;
-    install_route_operation_descriptors(module.py(), module)?;
     module.add_class::<PyApiRoute>()?;
     module.add_class::<PyRouteContext>()?;
     module.add_class::<PyRouteContextIterator>()?;
@@ -13549,4 +13489,9 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         module.add(name, module.py().import(module_path)?.getattr(name)?)?;
     }
     Ok(())
+}
+
+/// Install source-derived Python introspection signatures after native API types register.
+pub(crate) fn register_signatures(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    install_route_operation_descriptors(module.py(), module)
 }

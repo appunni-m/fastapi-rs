@@ -5,6 +5,7 @@
 //! integration built on top of that boundary.
 
 mod application_runtime;
+mod application_signatures;
 mod awaitable;
 mod datastructures;
 mod dependency_records;
@@ -65,6 +66,7 @@ pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
         application_runtime::default_placeholder(module.py(), module.py().None())?;
     parameter_signatures::decorate_factories(module, default_placeholder.bind(module.py()))?;
     parameters::register_classes(module, default_placeholder.bind(module.py()))?;
+    application_runtime::register_signatures(module)?;
     security::register(module)?;
     sse::register(module)?;
     openapi::register(module)
