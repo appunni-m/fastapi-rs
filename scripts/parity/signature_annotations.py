@@ -304,14 +304,13 @@ def _require_reviewed_field_info_type(value: Any, field_info_type: type[Any]) ->
     """Allow only the pinned FieldInfo classes whose public slots are mapped."""
     name = _type_name(value)
     value_type = type(value)
-    if value_type is field_info_type:
-        return
-    if name not in FASTAPI_FIELD_INFO_TYPES:
-        raise SignatureAnnotationError(f"unreviewed FieldInfo annotation type: {name}")
-    module = importlib.import_module("fastapi.params")
-    expected = getattr(module, name.rsplit(".", maxsplit=1)[1], None)
-    if value_type is not expected:
-        raise SignatureAnnotationError(f"unreviewed FieldInfo annotation type: {name}")
+    if value_type is not field_info_type:
+        if name not in FASTAPI_FIELD_INFO_TYPES:
+            raise SignatureAnnotationError(f"unreviewed FieldInfo annotation type: {name}")
+        module = importlib.import_module("fastapi.params")
+        expected = getattr(module, name.rsplit(".", maxsplit=1)[1], None)
+        if value_type is not expected:
+            raise SignatureAnnotationError(f"unreviewed FieldInfo annotation type: {name}")
 
     allowed_slots = set(FIELD_INFO_ATTRIBUTES) | set(FASTAPI_FIELD_ATTRIBUTES) | {"metadata"}
     for cls in value_type.__mro__:
