@@ -43,6 +43,7 @@ API_RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v2
 API_RESULT_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v3.schema.json"
 API_RESULT_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v4.schema.json"
 API_RESULT_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v5.schema.json"
+API_RESULT_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v6.schema.json"
 API_COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-comparison-v1.schema.json"
 API_COMPARISON_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-comparison-v2.schema.json"
 API_COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-comparison-v3.schema.json"
@@ -86,6 +87,7 @@ API_RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 API_RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 API_RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
 API_RESULT_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow-result@5"
+API_RESULT_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow-result@6"
 API_COMPARISON_SCHEMA_ID = "fastapi-rs/python-api-comparison@1"
 API_COMPARISON_SCHEMA_V2_ID = "fastapi-rs/python-api-comparison@2"
 API_COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-api-comparison@3"
@@ -102,13 +104,14 @@ API_RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     API_WORKFLOW_SCHEMA_ID: API_RESULT_SCHEMA_ID,
     API_WORKFLOW_SCHEMA_V2_ID: API_RESULT_SCHEMA_V3_ID,
     API_WORKFLOW_SCHEMA_V3_ID: API_RESULT_SCHEMA_V4_ID,
-    API_WORKFLOW_SCHEMA_V4_ID: API_RESULT_SCHEMA_V5_ID,
+    API_WORKFLOW_SCHEMA_V4_ID: API_RESULT_SCHEMA_V6_ID,
 }
 API_RESULT_SCHEMAS_BY_ID = {
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
     API_RESULT_SCHEMA_V5_ID: API_RESULT_SCHEMA_V5,
+    API_RESULT_SCHEMA_V6_ID: API_RESULT_SCHEMA_V6,
 }
 API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     API_WORKFLOW_SCHEMA_ID: API_COMPARISON_SCHEMA_ID,
@@ -171,6 +174,7 @@ RESULT_SCHEMAS = {
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
     API_RESULT_SCHEMA_V5_ID: API_RESULT_SCHEMA_V5,
+    API_RESULT_SCHEMA_V6_ID: API_RESULT_SCHEMA_V6,
 }
 COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_ID: COMPARISON_SCHEMA,
@@ -330,7 +334,14 @@ def read_manifest() -> dict[str, Any]:
             "added_packages": {"python-multipart": "0.0.32"},
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-oracle-standard",
-        }
+        },
+        "testclient": {
+            "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1",
+            "base_profile": profile["id"],
+            "added_packages": {"httpx": "0.28.1"},
+            "fastapi_extra": "standard",
+            "prepare_target": "parity-prepare-oracle-testclient",
+        },
     }
     if manifest.get("oracle_profile_extensions") != expected_extensions:
         raise ContractError(
@@ -364,6 +375,29 @@ def read_manifest() -> dict[str, Any]:
         "commit": metadata_starlette_rs_commit,
     }:
         raise ContractError("manifest target must select Starlette-RS 0.1.0 for the 1.6.0 contract")
+    expected_target_extensions = {
+        "testclient": {
+            "id": "fastapi-rs-testclient-cpython-3.12.13-httpx-0.28.1",
+            "base_profile": target["id"],
+            "lock": {
+                "path": "requirements/target-testclient-cpython-3.12.13.lock",
+                "sha256": "c72266c50b04909783777ddf9949a79b4504d5af787c9ecbfe1014141f41f318",
+                "profile": "CPython 3.12.13 with HTTPX 0.28.1 fallback",
+            },
+            "added_packages": {
+                "certifi": "2026.1.4",
+                "h11": "0.16.0",
+                "httpcore": "1.0.9",
+                "httpx": "0.28.1",
+            },
+            "fastapi_extra": "testclient",
+            "prepare_target": "parity-prepare-target-testclient",
+        }
+    }
+    if manifest.get("target_profile_extensions") != expected_target_extensions:
+        raise ContractError(
+            "manifest target optional profile differs from the pinned TestClient profile"
+        )
     source_artifacts = manifest.get("source_artifacts")
     if not isinstance(source_artifacts, dict):
         raise ContractError("manifest source_artifacts must be a mapping")
@@ -745,13 +779,13 @@ def read_manifest() -> dict[str, Any]:
         raise ContractError("manifest direct Python API v4 workflow contract is missing")
     if (
         api_workflow_v4_contract.get("schema_id") != API_WORKFLOW_SCHEMA_V4_ID
-        or api_workflow_v4_contract.get("result_schema_id") != API_RESULT_SCHEMA_V5_ID
+        or api_workflow_v4_contract.get("result_schema_id") != API_RESULT_SCHEMA_V6_ID
         or api_workflow_v4_contract.get("comparison_schema_id") != API_COMPARISON_SCHEMA_V4_ID
     ):
         raise ContractError("manifest direct Python API v4 schema identities are unsupported")
     api_v4_schema_refs = (
         ("schema_path", "schema_sha256", "direct Python API v4 workflow schema"),
-        ("result_schema_path", "result_schema_sha256", "direct Python API v5 result schema"),
+        ("result_schema_path", "result_schema_sha256", "direct Python API v6 result schema"),
         (
             "comparison_schema_path",
             "comparison_schema_sha256",

@@ -283,6 +283,57 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
                 f"target runtime lock must not install source package {source_distribution}"
             )
 
+    optional_profiles = authority.get("optional_profiles")
+    manifest_profiles = manifest.get("target_profile_extensions")
+    if not isinstance(optional_profiles, dict) or set(optional_profiles) != {"testclient"}:
+        raise MetadataError("target runtime optional profile inventory must declare TestClient")
+    if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(optional_profiles):
+        raise MetadataError("manifest target profiles differ from metadata.yaml")
+    for profile_name, profile in optional_profiles.items():
+        if not isinstance(profile, dict):
+            raise MetadataError(f"target runtime profile {profile_name} must be a mapping")
+        profile_lock = profile.get("lock")
+        if not isinstance(profile_lock, dict):
+            raise MetadataError(f"target runtime profile {profile_name} has no lock reference")
+        profile_lock_path = artifact_path(profile_lock.get("path"))
+        profile_lock_digest = hashlib.sha256(profile_lock_path.read_bytes()).hexdigest()
+        require_equal(
+            f"target profile {profile_name} lock SHA-256",
+            profile_lock.get("sha256"),
+            profile_lock_digest,
+        )
+        profile_packages: dict[str, str] = {}
+        for line in profile_lock_path.read_text(encoding="utf-8").splitlines():
+            item = line.strip()
+            if not item or item.startswith("#") or "==" not in item:
+                continue
+            name, version = item.split("==", 1)
+            profile_packages[name.lower().replace("_", "-")] = version.split()[0].rstrip("\\")
+        added_packages = {
+            name: version
+            for name, version in profile_packages.items()
+            if packages.get(name) != version
+        }
+        require_equal(
+            f"target profile {profile_name} added package closure",
+            profile.get("added_packages"),
+            added_packages,
+        )
+        manifest_profile = manifest_profiles[profile_name]
+        for field in (
+            "id",
+            "base_profile",
+            "lock",
+            "added_packages",
+            "fastapi_extra",
+            "prepare_target",
+        ):
+            require_equal(
+                f"target profile {profile_name} {field}",
+                profile.get(field),
+                manifest_profile.get(field) if isinstance(manifest_profile, dict) else None,
+            )
+
 
 def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:
     if str(ROOT) not in sys.path:

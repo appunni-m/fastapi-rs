@@ -10525,9 +10525,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fastapi-testclient-public-alias",
-            "status": "optional-target-profile-and-alias-parity-pending",
-            "question": "Can FastAPI-RS expose `fastapi.testclient.TestClient` with the source alias identity and exact public signature under the matching optional profile, while delegating HTTP, WebSocket, and lifespan behavior to Starlette-RS?",
-            "evidence": "FastAPI 0.141.1 defines fastapi/testclient.py as a direct re-export of starlette.testclient.TestClient, and the candidate is reflected only in the standard optional profile. The pinned Starlette-RS source provides a TestClient facade over its Rust-owned transport, but the FastAPI-RS target has no standard-profile lock or direct API workflow for this alias. Both current core-profile interpreters fail to import the source and target TestClient modules because the optional httpx2 package is absent, so alias identity, signature, and client behavior parity are not established.",
+            "status": "live-optional-profile-and-direct-alias; sibling-signature-parity-pending",
+            "question": "Can the pinned Starlette-RS TestClient signature match Starlette 1.6.0 exactly while FastAPI-RS keeps the source-defined direct alias?",
+            "evidence": "FastAPI 0.141.1 defines fastapi/testclient.py as a direct re-export of starlette.testclient.TestClient. FastAPI-RS now exposes the same public path through a direct Starlette-RS re-export and a hashed HTTPX 0.28.1 optional profile; identity-checked CPython 3.12.13 oracle and target probes complete. Exact signature comparison reaches the observation and finds three sibling-owned annotation differences: source app ASGIApp vs target Any, backend Literal['asyncio', 'trio'] vs str, and cookies httpx._types.CookieTypes | None vs Any. Parameter names/kinds, defaults including tuple client=('testclient', 50000), remaining annotations, and return annotation match. Keep generic client behavior and signature in Starlette-RS; FastAPI-RS must remain a direct alias without a wrapper.",
         },
         {
             "id": "fastapi-security-module-runtime-surface",

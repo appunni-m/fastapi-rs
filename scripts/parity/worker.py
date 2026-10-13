@@ -45,7 +45,8 @@ ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
         "python-multipart": "0.0.32"
-    }
+    },
+    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1": {"httpx": "0.28.1"},
 }
 ORACLE_BASE_PACKAGES = {
     "annotated-doc": "0.0.4",

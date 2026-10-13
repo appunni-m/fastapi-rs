@@ -103,9 +103,19 @@ def _validate_identity_pair(
         )
     if target_identity["repositories"]["starlette_rs"] != starlette_rs["commit"]:
         raise ComparisonError("target Starlette-RS commit differs from the selected target profile")
-    expected_target_packages = SHARED_ORACLE_PACKAGES | {"fastapi-rs", "starlette-rs-py"}
+    optional_packages = target_profile.get("optional_runtime_packages", {})
+    if not isinstance(optional_packages, dict):
+        raise ComparisonError("target optional runtime package profile is malformed")
+    expected_target_packages = (
+        SHARED_ORACLE_PACKAGES | {"fastapi-rs", "starlette-rs-py"} | set(optional_packages)
+    )
     if set(target_identity["packages"]) != expected_target_packages:
         raise ComparisonError("target runtime package set differs from its declared fixed profile")
+    for package, version in optional_packages.items():
+        if target_identity["packages"].get(package) != version:
+            raise ComparisonError(
+                f"target optional {package} version differs from the selected target profile"
+            )
     if target_identity["python"] != source_identity["python"]:
         raise ComparisonError("source and target Python runtimes differ")
     if target_identity["platform"] != source_identity["platform"]:

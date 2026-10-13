@@ -400,6 +400,13 @@ def _target_identity(
             "starlette-rs-py": str(starlette_profile["version"]),
         }
     )
+    optional_runtime_packages = distribution_profile.get("optional_runtime_packages", {})
+    if not isinstance(optional_runtime_packages, dict) or any(
+        not isinstance(name, str) or not isinstance(version, str)
+        for name, version in optional_runtime_packages.items()
+    ):
+        raise WorkerError("target optional runtime package profile is malformed")
+    expected_packages.update(optional_runtime_packages)
     actual_packages = _distribution_packages()
     if actual_packages != expected_packages:
         missing = sorted(set(expected_packages) - set(actual_packages))

@@ -84,6 +84,29 @@ oracle_profile_extensions:
       python-multipart: 0.0.32
     fastapi_extra: standard
     prepare_target: parity-prepare-oracle-standard
+  testclient:
+    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1
+    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    added_packages:
+      httpx: 0.28.1
+    fastapi_extra: standard
+    prepare_target: parity-prepare-oracle-testclient
+
+target_profile_extensions:
+  testclient:
+    id: fastapi-rs-testclient-cpython-3.12.13-httpx-0.28.1
+    base_profile: fastapi-rs-python-consumer
+    lock:
+      path: requirements/target-testclient-cpython-3.12.13.lock
+      sha256: c72266c50b04909783777ddf9949a79b4504d5af787c9ecbfe1014141f41f318
+      profile: CPython 3.12.13 with HTTPX 0.28.1 fallback
+    added_packages:
+      certifi: 2026.1.4
+      h11: 0.16.0
+      httpcore: 1.0.9
+      httpx: 0.28.1
+    fastapi_extra: testclient
+    prepare_target: parity-prepare-target-testclient
 
 target:
   id: fastapi-rs-python-consumer
@@ -416,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 16061af5924dbd55f70f0b39cefe9b1043452d2128713146e9356f8b3dfa2a37
+    sha256: e0ebd8d95b32c5f8334950bba2e37b6baa6f87149689be0ec7f3a19ad4fcc572
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -489,13 +512,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 3783c35560a720f469a8d1a937db4615f5bcc62dc0d2f7bc328774a96519fab8
+    sha256: b26f80c2d5641855b6308144a1086469e72b869db0942fb79c46cf9996bddf62
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 570
-      cases: 2389
+      workflows: 571
+      cases: 2390
       partial_source_mappings: 1626
 
 contract_metadata:
@@ -775,20 +798,20 @@ unresolved:
       Adds ordered warning category, exact message, stable filename, and line
       observations on selected direct-call probes, including probes that raise.
   python_api_workflow_v4:
-    state: fixed-pydantic-model-result-projection; v1-v3-remain-supported
+    state: fixed-model-and-tuple-signature-defaults; v1-v3-remain-supported
     schema_id: fastapi-rs/python-api-workflow@4
     schema_path: tests/fixtures/schemas/python-api-workflow-v4.schema.json
     schema_sha256: 58a83dca483c33d15ac52a1c6baa0ee8e75c7c941305864a4d5c79bd79013cb4
-    result_schema_id: fastapi-rs/python-api-workflow-result@5
-    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v5.schema.json
-    result_schema_sha256: 91459ce78b6f648179d038fe693e4c2d0381eadece7db88b4f9c7d2e8d7646cd
+    result_schema_id: fastapi-rs/python-api-workflow-result@6
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v6.schema.json
+    result_schema_sha256: bb6f05159763cd53c253e799f675f424882d328b6ebced2b592a5dc54acff69f
     comparison_schema_id: fastapi-rs/python-api-comparison@4
     comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v4.schema.json
     comparison_schema_sha256: a92a654a21732378e09ec5b634262c3f945010d9a8fe140ba861f1489b60cad1
     coverage: >-
       Adds one exact model_dump(mode=json) projection for direct Pydantic
-      model results and tagged projections for Pydantic model-instance
-      signature defaults, with aliases and unset/default/None fields included.
+      model results, tagged model-instance defaults, and type-preserving tuple
+      projections in callable signatures.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -1042,7 +1065,7 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 109
+    symbols_with_direct_api_input_workflow_refs: 110
     symbols_with_operation_fixture_refs: 176
     operation_fixture_refs: 1525
     symbols_with_identity_workflow_refs: 44
@@ -54599,11 +54622,24 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: []
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: fastapi-testclient-public-alias
+      input_path: tests/fixtures/inputs/parity/fastapi-testclient-public-alias.json
+      input_sha256: 8d03591b854cbfc44cc1899dcbc66465474d8a0132fc83ddd350e48a531e9dde
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-public-alias.yaml
+      recipe_sha256: 1df21d34aa9d7c7137e44b3a48acdf45c9b8048296ff4b747c29335149329cd8
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.testclient.public-api.alias-signature
+      probe_id: testclient-alias-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
-    observation_selectors: []
+    observation_selectors:
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.testclient.TestClient/supported_slice

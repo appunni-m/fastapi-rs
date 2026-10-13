@@ -60,6 +60,13 @@ PUBLIC_FASTAPI_EXPORTS = [
     "__version__",
     "status",
 ]
+# These are FastAPI source aliases whose behavior is owned by the pinned
+# Starlette-RS dependency. Keep this allowlist aligned with the corresponding
+# reviewed import-binding evidence in metadata.yaml; these entries permit only
+# a direct import, never a wrapper or local implementation.
+REVIEWED_STARLETTE_REEXPORTS = {
+    "fastapi/testclient.py": ("starlette.testclient", frozenset({"TestClient"})),
+}
 FORBIDDEN_CONTROL_FLOW = tuple(
     node_type
     for node_type in (
@@ -245,6 +252,20 @@ def _is_native_extension_import(path: Path, node: ast.stmt, module_name: str) ->
     return imported_module == module_name and source_package == native_package
 
 
+def _is_reviewed_starlette_reexport(path: Path, node: ast.stmt) -> bool:
+    """Allow an exact source-reviewed direct alias to the Starlette-RS facade."""
+    if not isinstance(node, ast.ImportFrom) or node.level != 0:
+        return False
+    relative_path = path.relative_to(PYTHON_PACKAGE_ROOT).as_posix()
+    selected = REVIEWED_STARLETTE_REEXPORTS.get(relative_path)
+    if selected is None:
+        return False
+    module_name, expected_names = selected
+    return node.module == module_name and frozenset(
+        (alias.name, alias.asname or alias.name) for alias in node.names
+    ) == frozenset((name, name) for name in expected_names)
+
+
 def check_python_facade_pass_through() -> None:
     """Allow only native-extension re-exports and a matching literal ``__all__``."""
     python_files = sorted(PYTHON_PACKAGE_ROOT.rglob("*.py"))
@@ -276,10 +297,13 @@ def check_python_facade_pass_through() -> None:
                 all_assignments.append(node)
                 continue
             if isinstance(node, ast.ImportFrom):
-                if not _is_native_extension_import(path, node, native_module):
+                if not _is_native_extension_import(
+                    path, node, native_module
+                ) and not _is_reviewed_starlette_reexport(path, node):
                     violations.append(
                         f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: imports must be "
-                        f"direct re-exports from the configured native module {native_module!r}"
+                        "direct re-exports from the configured native module or an exact "
+                        "metadata-reviewed Starlette-RS alias"
                     )
                     continue
                 if any(alias.name == "*" for alias in node.names):
@@ -502,8 +526,8 @@ def main() -> int:
     if args.source_only:
         print(
             "Static target boundary valid: no original FastAPI runtime dependency or import, "
-            "and Python runtime modules re-export only configured native symbols via "
-            "literal __all__"
+            "and Python runtime modules contain only native symbols or reviewed direct "
+            "Starlette-RS aliases via literal __all__"
         )
         return 0
 
@@ -540,7 +564,8 @@ def main() -> int:
 
     print(
         "target runtime boundary valid: fastapi-rs installed; upstream fastapi absent; "
-        "Python facade contains only configured native re-exports; runtime metadata has no "
+        "Python facade contains only configured native re-exports and reviewed direct "
+        "Starlette-RS aliases; runtime metadata has no "
         "upstream dependency"
     )
     return 0

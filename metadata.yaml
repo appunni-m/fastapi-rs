@@ -51,6 +51,23 @@ target_runtime:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
     profile: CPython 3.12.13
+  optional_profiles:
+    testclient:
+      id: fastapi-rs-testclient-cpython-3.12.13-httpx-0.28.1
+      base_profile: fastapi-rs-python-consumer
+      lock:
+        path: requirements/target-testclient-cpython-3.12.13.lock
+        sha256: c72266c50b04909783777ddf9949a79b4504d5af787c9ecbfe1014141f41f318
+        profile: CPython 3.12.13 with HTTPX 0.28.1 fallback
+      added_packages:
+        certifi: 2026.1.4
+        h11: 0.16.0
+        httpcore: 1.0.9
+        httpx: 0.28.1
+      fastapi_extra: testclient
+      prepare_target: parity-prepare-target-testclient
+      source_profile: FastAPI 0.141.1 standard extra with HTTPX fallback
+      starlette_rs_profile: 1.6.0 test client with httpx2 absent
 
 fastapi_cli_policy:
   command: fastapi
@@ -2690,9 +2707,12 @@ reviewed_api_contract_overlay:
         optional standard extras include httpx for the test client; pinned
         Starlette 1.6.0 imports httpx2 when available and falls back to httpx
         with a deprecation warning. This describes the FastAPI source alias and
-        optional availability only; it establishes no FastAPI-RS target
-        identity or parity. Client, WebSocket, and lifespan behavior remain
-        Starlette-RS-owned.
+        optional availability. FastAPI-RS exposes the alias through a direct
+        `starlette.testclient` re-export; its `testclient` extra installs the
+        HTTPX version range supported by pinned Starlette-RS. Generic client,
+        WebSocket, and lifespan behavior remain owned by Starlette-RS. Exact
+        source/target signature and runtime parity are pending: pinned
+        Starlette-RS annotations differ from Starlette 1.6.0.
     fastapi.websockets.WebSocket:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:

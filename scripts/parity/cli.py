@@ -610,7 +610,7 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
         _manifest_api_inventory(manifest),
         input_path=_relative_path(workflow_path),
     )
-    oracle_profile = manifest["oracle_profile"]
+    oracle_profile = select_oracle_profile(manifest, args.profile_extension or None)
     command = [
         str(python),
         "-m",
@@ -705,6 +705,12 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
         _manifest_api_inventory(manifest),
         input_path=_relative_path(workflow_path),
     )
+    target_definition = dict(manifest["target"])
+    if args.profile_extension:
+        extension = manifest.get("target_profile_extensions", {}).get(args.profile_extension)
+        if not isinstance(extension, dict):
+            raise ContractError(f"unknown target package extension: {args.profile_extension}")
+        target_definition["optional_runtime_packages"] = extension["added_packages"]
     target_profile = {
         "python": manifest["oracle_profile"]["python"],
         "shared_runtime_packages": {
@@ -712,7 +718,7 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
             for name, version in manifest["oracle_profile"]["packages"].items()
             if name in SHARED_ORACLE_PACKAGES
         },
-        "target": manifest["target"],
+        "target": target_definition,
     }
     command = [
         str(python),
@@ -805,6 +811,13 @@ def api_compare_command(args: argparse.Namespace) -> dict[str, Any]:
     _validate_api_result_bindings(workflow, target)
     manifest_path = ROOT / "tests/fixtures/manifest.yaml"
     manifest = read_manifest()
+    oracle_profile = select_oracle_profile(manifest, args.profile_extension)
+    target_profile = dict(manifest["target"])
+    if args.profile_extension:
+        extension = manifest.get("target_profile_extensions", {}).get(args.profile_extension)
+        if not isinstance(extension, dict):
+            raise ContractError(f"unknown target package extension: {args.profile_extension}")
+        target_profile["optional_runtime_packages"] = extension["added_packages"]
     manifest_digest = sha256_file(manifest_path)
     command = [
         sys.executable,
@@ -818,12 +831,14 @@ def api_compare_command(args: argparse.Namespace) -> dict[str, Any]:
         "--target-result",
         target_path.relative_to(ROOT).as_posix(),
     ]
+    if args.profile_extension:
+        command.extend(["--profile-extension", args.profile_extension])
     comparison = compare_api_workflow_results(
         workflow=workflow,
         source=source,
         target=target,
-        oracle_profile=manifest["oracle_profile"],
-        target_profile=manifest["target"],
+        oracle_profile=oracle_profile,
+        target_profile=target_profile,
         manifest_sha256=manifest_digest,
         input_path=workflow_path.relative_to(ROOT).as_posix(),
         input_sha256=input_digest,
@@ -975,6 +990,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_oracle.add_argument("--python", type=Path, default=ROOT / ".venv-oracle/bin/python")
     api_oracle.add_argument("--fastapi-source", type=Path, default=DEFAULT_FASTAPI_SOURCE)
     api_oracle.add_argument("--starlette-source", type=Path, default=DEFAULT_STARLETTE_SOURCE)
+    api_oracle.add_argument("--profile-extension")
     api_oracle.add_argument("--timeout-seconds", type=int, default=180)
     api_oracle.add_argument(
         "--output-dir", type=Path, default=ROOT / "parity-results/python-api-oracle"
@@ -990,6 +1006,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_target.add_argument("--starlette-source", type=Path, default=DEFAULT_STARLETTE_SOURCE)
     api_target.add_argument("--target-source", type=Path, default=ROOT)
     api_target.add_argument("--starlette-rs-source", type=Path, default=DEFAULT_STARLETTE_RS_SOURCE)
+    api_target.add_argument("--profile-extension")
     api_target.add_argument("--timeout-seconds", type=int, default=180)
     api_target.add_argument(
         "--output-dir", type=Path, default=ROOT / "parity-results/python-api-target"
@@ -1003,6 +1020,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_compare.add_argument("--fastapi-source", type=Path, default=DEFAULT_FASTAPI_SOURCE)
     api_compare.add_argument("--source-result", required=True, type=Path)
     api_compare.add_argument("--target-result", required=True, type=Path)
+    api_compare.add_argument("--profile-extension")
     api_compare.set_defaults(handler=api_compare_command)
 
     compare = subparsers.add_parser(

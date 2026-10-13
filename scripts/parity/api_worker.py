@@ -20,6 +20,7 @@ from typing import Any
 from scripts.parity.schema_ids import MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 from scripts.parity.worker import (
     ORACLE_PROFILE_ID,
+    ORACLE_PROFILE_PACKAGE_EXTENSIONS,
     ROOT,
     WorkerError,
     _is_under,
@@ -40,11 +41,12 @@ RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
 RESULT_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow-result@5"
+RESULT_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow-result@6"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V3_ID: RESULT_SCHEMA_V4_ID,
-    WORKFLOW_SCHEMA_V4_ID: RESULT_SCHEMA_V5_ID,
+    WORKFLOW_SCHEMA_V4_ID: RESULT_SCHEMA_V6_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@6"
@@ -275,6 +277,19 @@ def _signature_component(
         return _json_safe(value)
     value_type = type(value)
     qualified_type = f"{value_type.__module__}.{value_type.__qualname__}"
+
+    if value_type is tuple:
+        return {
+            "kind": "python_tuple",
+            "items": [
+                _signature_component(
+                    item,
+                    depth=depth + 1,
+                    allow_pydantic_model_defaults=allow_pydantic_model_defaults,
+                )
+                for item in value
+            ],
+        }
 
     if qualified_type == "fastapi.datastructures.DefaultPlaceholder":
         return {
@@ -1050,7 +1065,10 @@ def main() -> int:
     args = parser.parse_args()
     try:
         profile = json.loads(args.oracle_profile)
-        if not isinstance(profile, dict) or profile.get("id") != ORACLE_PROFILE_ID:
+        if not isinstance(profile, dict) or profile.get("id") not in {
+            ORACLE_PROFILE_ID,
+            *ORACLE_PROFILE_PACKAGE_EXTENSIONS,
+        }:
             raise WorkerError("worker received an unsupported oracle profile")
         result = run_oracle(
             args.input,

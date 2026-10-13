@@ -8015,6 +8015,46 @@
       ]
     },
     {
+      "id": "fastapi-testclient-public-alias",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-testclient-public-alias.json",
+      "input_sha256": "8d03591b854cbfc44cc1899dcbc66465474d8a0132fc83ddd350e48a531e9dde",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-testclient-public-alias.yaml",
+      "recipe_sha256": "1df21d34aa9d7c7137e44b3a48acdf45c9b8048296ff4b747c29335149329cd8",
+      "case_ids": [
+        "fastapi.testclient.public-api.alias-signature"
+      ],
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.testclient.public-api.alias-signature",
+          "symbol_id": "fastapi.testclient.TestClient",
+          "path": "fastapi/testclient.py",
+          "sha256": "9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.testclient.public-api.alias-signature",
+          "probe_id": "testclient-alias-signature",
+          "symbol_id": "fastapi.testclient.TestClient",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.testclient.public-api.alias-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.testclient.TestClient"
+          ]
+        }
+      ]
+    },
+    {
       "id": "fastapi-version-value",
       "input_path": "tests/fixtures/inputs/parity/fastapi-version-value.json",
       "input_sha256": "ac9e10f5ee1b168d83fe0ac01bab21a57f217f227d46c258dd33ad807c2ab4ec",

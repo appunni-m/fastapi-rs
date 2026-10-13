@@ -1,0 +1,22 @@
+schema: fastapi-rs/python-api-workflow@4
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.testclient.public-api.alias-signature
+    probes:
+      - probe_id: testclient-alias-signature
+        public_callable:
+          module: fastapi.testclient
+          attribute: TestClient
+        argument_bundle: unused
+        observations:
+          - kind: python_signature
+            selector: signature
+            comparison: exact
+    source_evidence:
+      - path: fastapi/testclient.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.testclient.TestClient
+        sha256: 9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4
