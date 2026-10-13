@@ -5,6 +5,8 @@ from fastapi_rs._core import (
     Components,
     Discriminator,
     Example,
+    Info,
+    OpenAPI,
     Schema,
     SecuritySchemeType,
 )
@@ -19,6 +21,8 @@ __all__ = [
     "Components",
     "Discriminator",
     "Example",
+    "Info",
+    "OpenAPI",
     "Schema",
     "SecuritySchemeType",
     "SecurityBase",

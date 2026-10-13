@@ -10,7 +10,14 @@ use pyo3::types::{PyDict, PyModule, PyString, PyTuple};
 
 const MODEL_MODULE: &str = "fastapi.openapi.models";
 const ROOT_HANDLE: &str = "_FastApiOpenApiModel";
-const PUBLIC_MODEL_EXPORTS: &[&str] = &["Schema", "Discriminator", "Components", "Example"];
+const PUBLIC_MODEL_EXPORTS: &[&str] = &[
+    "Schema",
+    "Discriminator",
+    "Components",
+    "Example",
+    "Info",
+    "OpenAPI",
+];
 
 enum Annotation {
     Named(&'static str),
