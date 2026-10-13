@@ -59,6 +59,11 @@ jobs:
           rustup default 1.98.1
           rustc --version
           cargo --version
+      - name: Check Python-free native FastAPI crate graph
+        run: |
+          cargo check --package fastapi-rs --no-default-features --locked
+          cargo tree --package fastapi-rs --no-default-features --edges normal,build --format '{p}' | python -c 'import sys; packages = {line.strip().split(" ", 1)[0] for line in sys.stdin}; python_packages = sorted(name for name in packages if name.startswith("pyo3")); print("Python-free native dependency graph confirmed" if not python_packages else f"unexpected PyO3 packages: {python_packages}"); sys.exit(bool(python_packages))'
+        working-directory: fastapi-rs
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12.13"
