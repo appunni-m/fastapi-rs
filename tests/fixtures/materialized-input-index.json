@@ -1266,9 +1266,9 @@
     {
       "id": "background-tasks-injection-precedence",
       "input_path": "tests/fixtures/inputs/parity/background-tasks-injection-precedence.json",
-      "input_sha256": "5bc89e5b84a653c81ae962c591b247dc9af8d0b8380b2cd41cb0e9669916166b",
+      "input_sha256": "8e7b0397a6e79d96e192950af0926fda27854157acc2e35f4bb1229d65b28992",
       "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
-      "recipe_sha256": "e1fc342ae8fc8d8f4be510b585c0d46c04aaa60ee0825910d965a41cbc846de6",
+      "recipe_sha256": "f3e9d98dd5dcc22a19ece62ceab315bcec2358ff423c759d100fea64b745b059",
       "case_ids": [
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background"
@@ -1282,6 +1282,7 @@
           "requirement_refs": [
             "source:documented-example:docs_src/background_tasks/tutorial002_an_py310.py",
             "source:documented-example:docs_src/background_tasks/tutorial002_py310.py",
+            "source:documented-page:tutorial/background-tasks.md",
             "source:upstream-test:tests/test_response_dependency.py"
           ]
         },
@@ -32736,6 +32737,20 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/background-tasks.md",
+      "fixture_id": "fastapi.docs.tutorial-background-tasks",
+      "workflow_id": "background-tasks-injection-precedence",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_response_dependency.py",
       "fixture_id": "fastapi.test.test-response-dependency",
       "workflow_id": "background-tasks-injection-precedence",
@@ -39495,7 +39510,7 @@
       "fixture_id": "fastapi.docs.fastapi-cli",
       "workflow_id": "fastapi-cli-documented-process-v2",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 24 case(s); observes process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 24 case(s); observes http.body.bytes, http.status, process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.cli.process.dev-app-option",
         "fastapi.cli.process.dev-auto-discovery-api-object",
@@ -39523,6 +39538,8 @@
         "fastapi.cli.process.run-workers"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
         "process.exit_code",
         "process.stderr",
         "process.stdout"

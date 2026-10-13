@@ -13,25 +13,81 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "process.exit_code",
             "process.stdout",
             "process.stderr",
+            "http.status",
+            "http.body.bytes",
         ],
         "rationale": (
             "FastAPI 0.141.1 publishes the `fastapi` console entrypoint through its "
-            "optional fastapi-cli integration. The selected standard oracle pins "
-            "fastapi-cli 0.0.32, and the independent process recipe links one documented "
-            "missing-path invocation to this page."
+            "optional fastapi-cli integration. The standard oracle pins fastapi-cli "
+            "0.0.32. The independent process workflows cover the documented command "
+            "surface and a separate missing-optional-package outcome."
         ),
         "stimulus_notes": (
-            "The recipe runs `fastapi dev non_existent_file.py` from an isolated empty "
-            "directory with a controlled environment and captures exit status plus raw "
-            "stdout/stderr. It covers the missing-path process behavior only."
+            "The documented process workflow exercises help/version, app discovery, "
+            "pyproject and explicit entrypoints, `dev`/`run`, environment inputs, and "
+            "server responses in isolated trees. Separate inputs cover a missing app "
+            "path and the CLI-optional dependency being absent."
         ),
         "contract_gate": (
-            "Partial page coverage only: auto-discovery, configured entrypoints, `--entrypoint`, "
-            "`fastapi run`, reload behavior, bind options, environment selection, and server "
-            "launch behavior remain unrepresented. The target `fastapi` console entrypoint is "
-            "not implemented, so no target parity claim follows from this input mapping."
+            "Partial page coverage: the inputs do not change an application file while the "
+            "development server is running, so automatic reload behavior remains unobserved. "
+            "The target `fastapi` console entrypoint is not implemented; these oracle inputs "
+            "make no target parity claim."
         ),
         "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml",
+                "case_ids": [
+                    "fastapi.cli.process.root-help",
+                    "fastapi.cli.process.root-version",
+                    "fastapi.cli.process.dev-help",
+                    "fastapi.cli.process.run-help",
+                    "fastapi.cli.process.dev-no-app",
+                    "fastapi.cli.process.dev-entrypoint-conflict",
+                    "fastapi.cli.process.dev-invalid-pyproject-entrypoint",
+                ],
+                "observation_selectors": [
+                    "process.exit_code",
+                    "process.stdout",
+                    "process.stderr",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml",
+                "case_ids": [
+                    "fastapi.cli.process.dev-auto-discovery-environment-default",
+                    "fastapi.cli.process.dev-auto-discovery-app-py",
+                    "fastapi.cli.process.dev-auto-discovery-api-py",
+                    "fastapi.cli.process.dev-auto-discovery-app-main-py",
+                    "fastapi.cli.process.dev-auto-discovery-app-app-py",
+                    "fastapi.cli.process.dev-auto-discovery-app-api-py",
+                    "fastapi.cli.process.dev-auto-discovery-api-object",
+                    "fastapi.cli.process.dev-path-preserves-environment",
+                    "fastapi.cli.process.run-leaves-environment-unchanged",
+                    "fastapi.cli.process.run-auto-discovery-no-path",
+                    "fastapi.cli.process.dev-pyproject-entrypoint",
+                    "fastapi.cli.process.dev-explicit-entrypoint",
+                    "fastapi.cli.process.dev-explicit-entrypoint-short-alias",
+                    "fastapi.cli.process.run-explicit-entrypoint",
+                    "fastapi.cli.process.dev-app-option",
+                    "fastapi.cli.process.dev-port-environment",
+                    "fastapi.cli.process.run-workers",
+                ],
+                "observation_selectors": [
+                    "process.exit_code",
+                    "http.status",
+                    "http.body.bytes",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-missing-optional-process-v2.yaml",
+                "case_ids": ["fastapi.cli.process.missing-optional-cli"],
+                "observation_selectors": [
+                    "process.exit_code",
+                    "process.stdout",
+                    "process.stderr",
+                ],
+            },
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-process-workflow.yaml",
                 "case_ids": ["fastapi.cli.process.missing-path"],
@@ -40,7 +96,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                     "process.stdout",
                     "process.stderr",
                 ],
-            }
+            },
         ],
         "supporting_sources": [
             {

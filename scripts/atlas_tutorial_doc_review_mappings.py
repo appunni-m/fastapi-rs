@@ -1008,22 +1008,38 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "response-serialization",
         ],
         "observation_selectors": [
-            "http.status",
+            "http.body.bytes",
             "http.headers.ordered",
-            "http.body.json",
-            "route.match",
-            "dependency.call_order",
-            "response.background_effects",
-            "python.import_path",
-            "python.signature",
+            "http.status",
         ],
         "rationale": (
-            "The tutorial covers FastAPI injection of BackgroundTasks, merging tasks "
-            "from dependencies, and request values used by those tasks. File/path "
-            "tokens are incidental and do not justify request error/schema selectors. "
-            "FastAPI's BackgroundTasks is a subclass with an add_task wrapper; task "
-            "execution remains Starlette-owned."
+            "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks "
+            "from dependencies. The linked independent cases observe the HTTP response "
+            "and the recorded effects through follow-up requests; they do not claim direct "
+            "import/signature reflection or generic task-execution semantics. FastAPI's "
+            "BackgroundTasks subclass and injection are FastAPI-owned; execution is "
+            "Starlette-owned."
         ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-http-behaviors.yaml",
+                "case_ids": [
+                    "fastapi.docs.documentation-wave.http-behaviors.background-task-effect"
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+                "case_ids": [
+                    "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            },
+        ],
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/background-tasks.md",

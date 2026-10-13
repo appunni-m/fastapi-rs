@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: e04d1353c35cde1bf56aa859f469d9931ee465dfedf421517b35991434d12f3e
+    sha256: b150ce2583e17a4b3acb69e6ef374ead6be7e778b8a544a7149d80ead570d016
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 8bd362a658f399e8627307f3215ba1fe7a9e4c33fdeab5e8035f8a053a6be1b9
+    sha256: 0ca8c2cae17e5201b4eaba8838e58ced5c73862d2365b9e150538f145e851377
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 2c128248ca2c58d1eaf28343401baaa6746096432d65b4359a988af5402b5e6a
+    sha256: 424cff9b3be3bcdc2e593df3697f3eafac44dd939c1b91e2e9245cf2a7f17975
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 577
       cases: 2421
-      partial_source_mappings: 1646
+      partial_source_mappings: 1647
 
 contract_metadata:
   aliases:
@@ -17036,15 +17036,9 @@ api_surface_contract:
       fixture_id: fastapi.docs.tutorial-background-tasks
       fixture_design_ref: /fixture_designs/390
       observation_selectors:
-      - http.status
-      - http.headers.ordered
       - http.body.bytes
-      - http.body.json
-      - route.match
-      - dependency.call_order
-      - response.background_effects
-      - python.import_path
-      - python.signature
+      - http.headers.ordered
+      - http.status
     input_workflow_refs: []
     operation_fixture_refs:
     - workflow_id: worker-dispatch
@@ -17108,8 +17102,6 @@ api_surface_contract:
     - http.body.json
     - http.headers.ordered
     - http.status
-    - python.import_path
-    - python.signature
     - response.background_effects
     - route.match
     operation_scope:
