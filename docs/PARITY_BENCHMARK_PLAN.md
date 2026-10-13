@@ -233,13 +233,13 @@ by subtracting the Starlette control or from the end-to-end target time.
 
 #### Latest completed seven-workload run (2026-10-13; suite schema v2)
 
-The suite completed at `2026-10-13T01:56:24Z` with suite ID
-`dc3222f3-f075-42a0-9648-2f0271c6fe5e` and receipt
-`benchmark-results/suite-20261013T015624Z-dc3222f3-f075-42a0-9648-2f0271c6fe5e.json`
-(SHA-256 `7c44fc0b9bf79cb3da97b52b69b3b6333f45786c793eff5dc6dfd7b2b6e94779`).
-It ran against FastAPI-RS commit `adef6a0ffcce0a2b2fd1ca71bc71adaa513555e0`
-and current manifest SHA-256
-`b1db20de747cd2ae4d4f39212ab774f449afd3e50a40ff6779011a74dcac14f0`.
+The suite completed at `2026-10-13T02:45:45Z` with suite ID
+`f601c4c1-b599-43df-a56b-35eaca114cd5` and receipt
+`benchmark-results/suite-20261013T024545Z-f601c4c1-b599-43df-a56b-35eaca114cd5.json`
+(SHA-256 `6dd11aefc53715d9f5774439077ced8c49193dc3b0b69176c9134fe4e94d5f14`).
+It ran against FastAPI-RS commit `7f5145f7c74c1e42dea00db3d4cb77fd9115ec53`
+and manifest SHA-256
+`3c687cc307e36558fe25044cc8740d2e3a8589fc71b295539e153fb9b243ec24`.
 The source identities are FastAPI 0.141.1 at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
@@ -260,33 +260,33 @@ suite and workload receipts referenced above.
 
 | Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
 | --- | ---: | ---: | ---: |
-| Async nested dependencies, distinct query aliases | 530.1 / 660.3 µs | 320.5 / 361.2 µs | 0.605x / 0.547x |
-| Async nested dependencies, two query parameters | 413.5 / 423.8 µs | 276.7 / 303.2 µs | 0.669x / 0.715x |
-| Chunked request body | 134.2 / 140.2 µs | 140.7 / 166.6 µs | 1.048x / 1.188x |
-| Invalid request | 144.8 / 208.8 µs | 319.1 / 331.3 µs | 2.205x / 1.587x |
-| Valid request | 132.7 / 142.1 µs | 137.4 / 149.5 µs | 1.035x / 1.052x |
-| Large response model | 358.8 / 368.3 µs | 382.8 / 410.1 µs | 1.067x / 1.113x |
-| Repeated sequence query | 100.0 / 105.5 µs | 109.4 / 138.7 µs | 1.094x / 1.314x |
+| Async nested dependencies, distinct query aliases | 500.5 / 508.8 µs | 307.9 / 319.0 µs | 0.615x / 0.627x |
+| Async nested dependencies, two query parameters | 422.9 / 441.7 µs | 281.0 / 297.7 µs | 0.664x / 0.674x |
+| Chunked request body | 134.4 / 140.0 µs | 142.7 / 168.0 µs | 1.062x / 1.200x |
+| Invalid request | 144.8 / 210.6 µs | 319.1 / 331.3 µs | 2.204x / 1.573x |
+| Valid request | 134.5 / 139.6 µs | 137.3 / 158.0 µs | 1.021x / 1.132x |
+| Large response model | 363.0 / 386.8 µs | 385.1 / 409.6 µs | 1.061x / 1.059x |
+| Repeated sequence query | 99.2 / 104.9 µs | 110.2 / 126.1 µs | 1.112x / 1.202x |
 
 FastAPI-RS had lower median latency on the two nested-query workloads and
 higher median latency on the other five. This single-host direct-ASGI run
 does not measure network/server latency or isolate facade, PyO3, Rust, Pydantic,
-and Starlette-RS costs. `make benchmark-contract-check` passed against this
-current suite after the prior stale-manifest suite receipt was moved under
-`benchmark-results/stale/`. The previous completed run is retained below as
-historical evidence.
+and Starlette-RS costs. `make benchmark-contract-check` passed after the older
+suite receipt, whose comparisons reference a prior manifest, was moved under
+`benchmark-results/stale/`. The prior completed run is retained below as
+historical evidence only.
 
-#### Previous completed seven-workload run (2026-10-12; suite schema v2)
+#### Previous completed seven-workload run (2026-10-13; stale manifest)
 
-The suite completed at `2026-10-12T21:43:47Z` with suite ID
-`f2ef972b-6d9a-4a77-add3-d441720fc008` and receipt
-`benchmark-results/stale/suite-20261012T214347Z-f2ef972b-6d9a-4a77-add3-d441720fc008.json`
-(SHA-256 `9d7ad4fd341b98df837b26bd55801cdcc9b95495b792a5b1240bf84b3cf68083`).
-It ran against FastAPI-RS commit `6094094ba79d3cbf94a8d847f71dbc8f2ee0f449`
-and current manifest SHA-256
-`58acf66af845d7e958658a9fd3b9d2bfc1a1cb4ee1e4d7d8d64001859b24357f`.
-The receipt is archived because its manifest hash no longer matches the
-current benchmark contract; it is retained as historical evidence only.
+The suite completed at `2026-10-13T01:56:24Z` with suite ID
+`dc3222f3-f075-42a0-9648-2f0271c6fe5e` and archived receipt
+`benchmark-results/stale/suite-20261013T015624Z-dc3222f3-f075-42a0-9648-2f0271c6fe5e.json`
+(SHA-256 `7c44fc0b9bf79cb3da97b52b69b3b6333f45786c793eff5dc6dfd7b2b6e94779`).
+It ran against FastAPI-RS commit `adef6a0ffcce0a2b2fd1ca71bc71adaa513555e0`
+and manifest SHA-256
+`b1db20de747cd2ae4d4f39212ab774f449afd3e50a40ff6779011a74dcac14f0`.
+The receipt is archived because its comparison artifacts reference an older
+manifest; retain it as historical evidence only.
 The source identities are FastAPI 0.141.1 at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
