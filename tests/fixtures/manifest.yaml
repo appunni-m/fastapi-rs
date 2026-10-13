@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: bb053b5bb6303d3e90769f7b8c37f48ded6415d0ee2c97d122e884da7e734ea5
+    sha256: b8db619459df631851c693bca113a03fa55a42cd18b9a2cd3b121b446928a1ab
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 6ec4c043ff17309547acc2444e8acf7c62acc5c75c32cd20c329abf5094e04b6
+    sha256: 62bc6e4c7b04a48f28add3fdb2704aaca32798329855180f36bd4a8fd4f0580e
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: dc0ebd620c1e2246a039fe8f5f7a40f99db9a6c0eca7aa183010f27303a739ec
+    sha256: 5e250a77ecd99966390c73050783916e92e77e93a895c173aef083c2e632378f
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 577
-      cases: 2417
-      partial_source_mappings: 1641
+      cases: 2420
+      partial_source_mappings: 1646
 
 contract_metadata:
   aliases:
@@ -1089,7 +1089,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 110
     symbols_with_operation_fixture_refs: 177
-    operation_fixture_refs: 1597
+    operation_fixture_refs: 1605
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -9344,6 +9344,78 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.configured-over-incoming-scope
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.deprecated-prefix-fallback
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.precedence-and-server-gate
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.mutable-public-attributes
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
       input_sha256: 9e1ff8b5c7434fb7e0fc1b46dc29e7bb1cd6c80408c04d1a8fdda77e7d2c5c74
@@ -11362,8 +11434,8 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
-      - FastAPI.__init__ parameter and attribute parity remains incomplete; other constructor options
-        beyond the reviewed slices are unimplemented or unproven.
+      - Other FastAPI.__init__ options beyond the reviewed constructor slices remain unimplemented or
+        unproven.
       - Visited included branches must prepare all own effective fields before publishing the vector,
         retry the whole unpublished branch after a later own constructor fails, descend into child branches
         only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
@@ -14986,6 +15058,78 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.configured-over-incoming-scope
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.deprecated-prefix-fallback
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.precedence-and-server-gate
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4
+      case_id: fastapi.applications.root-path.mutable-public-attributes
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: generate-unique-id-duplicate-warnings
       input_path: tests/fixtures/inputs/parity/generate-unique-id-duplicate-warnings.json
       input_sha256: 35b0f23bf2a4863b9ff900126556da5f8300f1fe62eb2dfb1f4582ac19a61baa

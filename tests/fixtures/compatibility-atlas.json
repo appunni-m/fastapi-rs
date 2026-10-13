@@ -252396,6 +252396,23 @@
           },
           {
             "case_ids": [
+              "fastapi.applications.root-path.configured-over-incoming-scope",
+              "fastapi.applications.root-path.mutable-public-attributes",
+              "fastapi.applications.root-path.precedence-and-server-gate"
+            ],
+            "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml",
+            "workflow_id": "deprecated-openapi-prefix-tutorial-review"
+          },
+          {
+            "case_ids": [
               "fastapi.middleware-proxy.proxy-app-root-path",
               "fastapi.middleware-proxy.proxy-client-root-path",
               "fastapi.middleware-proxy.proxy-root-path-with-servers",
@@ -284300,6 +284317,22 @@
         ],
         "headings_indexed": 7,
         "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.applications.root-path.deprecated-prefix-fallback"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml",
+            "workflow_id": "deprecated-openapi-prefix-tutorial-review"
+          },
           {
             "case_ids": [
               "fastapi.docs.sub-applications.built-in-routes-root-path",
@@ -502273,15 +502306,17 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
-              "fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review"
+              "fastapi.applications.root-path.deprecated-prefix-fallback"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "docs.response.status",
               "http.body.bytes",
+              "http.headers.ordered",
               "http.status",
-              "openapi.document"
+              "openapi.document",
+              "openapi.paths"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml",
             "workflow_id": "deprecated-openapi-prefix-tutorial-review"
@@ -502341,7 +502376,7 @@
         ],
         "reviewed_module_mapping": {
           "rationale": "The module checks the deprecated openapi_prefix alias in request scope and in generated OpenAPI servers.",
-          "stimulus_notes": "Source-reviewed partial mappings to independent request sequences: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml::fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review; tests/fixtures/input-recipes/parity/openapi-operations.yaml::fastapi.openapi.deprecated-openapi-prefix.openapi. FastAPI owns the OpenAPI cache and root-path server projection; Starlette 1.6.0 owns TestClient construction of the ASGI root_path scope.",
+          "stimulus_notes": "Source-reviewed partial mappings to independent request sequences: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml::fastapi.applications.root-path.deprecated-prefix-fallback; tests/fixtures/input-recipes/parity/openapi-operations.yaml::fastapi.openapi.deprecated-openapi-prefix.openapi. FastAPI owns the OpenAPI cache and root-path server projection; Starlette 1.6.0 owns TestClient construction of the ASGI root_path scope.",
           "supporting_sources": [
             {
               "end_line": 19,
@@ -502403,9 +502438,9 @@
           "workflow_cases": [
             {
               "action_ids": [
-                "request-prefix-aware-route"
+                "read-deprecated-prefix-and-warning"
               ],
-              "case_id": "fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review",
+              "case_id": "fastapi.applications.root-path.deprecated-prefix-fallback",
               "observation_selectors": [
                 "http.status",
                 "http.body.bytes"
@@ -520782,6 +520817,22 @@
       "mapping_evidence": {
         "excluded_test_functions": [],
         "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.applications.root-path.mutable-public-attributes"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml",
+            "workflow_id": "deprecated-openapi-prefix-tutorial-review"
+          },
           {
             "case_ids": [
               "fastapi.openapi.openapi-cache-root-path.several-prefixes-then-clean-review"
@@ -589509,6 +589560,21 @@
           },
           {
             "case_ids": [
+              "fastapi.applications.root-path.configured-over-incoming-scope"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.body.bytes",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml",
+            "workflow_id": "deprecated-openapi-prefix-tutorial-review"
+          },
+          {
+            "case_ids": [
               "fastapi.middleware-proxy.proxy-app-root-path"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -590228,6 +590294,21 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial004-upstream.yaml",
             "workflow_id": "behind-proxy-tutorial004-upstream"
+          },
+          {
+            "case_ids": [
+              "fastapi.applications.root-path.precedence-and-server-gate"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.body.bytes",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml",
+            "workflow_id": "deprecated-openapi-prefix-tutorial-review"
           },
           {
             "case_ids": [

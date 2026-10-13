@@ -5518,20 +5518,48 @@
     {
       "id": "deprecated-openapi-prefix-tutorial-review",
       "input_path": "tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json",
-      "input_sha256": "53271e5d0e80019ccd92bcb3d2641fe20214959013c0946eca6afbf3a7ea42cd",
+      "input_sha256": "e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f",
       "recipe_path": "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml",
-      "recipe_sha256": "ea8efc11c4c1ca142c5232bf1f95079ea965a260628a666dd7c4d7df416dee3a",
+      "recipe_sha256": "a0834774d28ddd98e5e1bec8b44ec9908c3e0fdec2cf994047786581bcf1b2bf",
       "case_ids": [
-        "fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review"
+        "fastapi.applications.root-path.configured-over-incoming-scope",
+        "fastapi.applications.root-path.deprecated-prefix-fallback",
+        "fastapi.applications.root-path.precedence-and-server-gate",
+        "fastapi.applications.root-path.mutable-public-attributes"
       ],
       "workload_path": "tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py",
-      "workload_sha256": "ebdf767e46c09524c0436e43e418713c5a02552d3f5e523e661a877e758b6bb2",
+      "workload_sha256": "ffe87be8bc5f5ef7d53c7836bda3859380b3a8f35cc2f400bacc99ad08a36ed4",
       "case_contracts": [
         {
-          "case_id": "fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review",
+          "case_id": "fastapi.applications.root-path.configured-over-incoming-scope",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:advanced/behind-a-proxy.md",
+            "source:upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.applications.root-path.deprecated-prefix-fallback",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/sub-applications.md",
             "source:upstream-test:tests/test_deprecated_openapi_prefix.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.applications.root-path.precedence-and-server-gate",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/behind-a-proxy.md",
+            "source:upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.applications.root-path.mutable-public-attributes",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/behind-a-proxy.md",
+            "source:upstream-test:tests/test_openapi_cache_root_path.py"
           ]
         }
       ]
@@ -36652,13 +36680,99 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/behind-a-proxy.md",
+      "fixture_id": "fastapi.docs.advanced-behind-a-proxy",
+      "workflow_id": "deprecated-openapi-prefix-tutorial-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.root-path.configured-over-incoming-scope",
+        "fastapi.applications.root-path.mutable-public-attributes",
+        "fastapi.applications.root-path.precedence-and-server-gate"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/sub-applications.md",
+      "fixture_id": "fastapi.docs.advanced-sub-applications",
+      "workflow_id": "deprecated-openapi-prefix-tutorial-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.root-path.deprecated-prefix-fallback"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_deprecated_openapi_prefix.py",
       "fixture_id": "fastapi.test.test-deprecated-openapi-prefix",
       "workflow_id": "deprecated-openapi-prefix-tutorial-review",
       "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.root-path.deprecated-prefix-fallback"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_openapi_cache_root_path.py",
+      "fixture_id": "fastapi.test.test-openapi-cache-root-path",
+      "workflow_id": "deprecated-openapi-prefix-tutorial-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.root-path.mutable-public-attributes"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-behind-a-proxy-test-tutorial002",
+      "workflow_id": "deprecated-openapi-prefix-tutorial-review",
+      "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review"
+        "fastapi.applications.root-path.configured-over-incoming-scope"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-behind-a-proxy-test-tutorial004",
+      "workflow_id": "deprecated-openapi-prefix-tutorial-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.root-path.precedence-and-server-gate"
       ],
       "observation_selectors": [
         "docs.response.status",

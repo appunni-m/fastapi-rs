@@ -923,9 +923,8 @@ reviewed_api_contract_overlay:
             concurrency/reentrancy, cancellation, dynamic warning filters, and
             broader sync validation/worker scheduling are outside this response-field
             gate.
-          - FastAPI.__init__ parameter and attribute parity remains incomplete;
-            other constructor options beyond the reviewed slices are unimplemented
-            or unproven.
+          - Other FastAPI.__init__ options beyond the reviewed constructor slices
+            remain unimplemented or unproven.
           - &response_field_traversal_gap >-
             Visited included branches must prepare all own effective fields before
             publishing the vector, retry the whole unpublished branch after a later
@@ -1023,6 +1022,22 @@ reviewed_api_contract_overlay:
         - {path: docs_src/metadata/tutorial004_py310.py}
         - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, symbol: test_openapi_schema}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.configured-over-incoming-scope
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.deprecated-prefix-fallback
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.precedence-and-server-gate
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.mutable-public-attributes
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
           case_id: fastapi.applications.constructor.openapi-tags
           workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
@@ -4655,6 +4670,22 @@ reviewed_api_contract_overlay:
           symbol: get_openapi_path
         - path: docs/en/docs/how-to/extending-openapi.md
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.configured-over-incoming-scope
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.deprecated-prefix-fallback
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.precedence-and-server-gate
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.mutable-public-attributes
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, openapi.document]
         - *generate_unique_id_duplicate_warnings
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
@@ -4737,9 +4768,11 @@ reviewed_api_contract_overlay:
         it, as covered by openapi-cache-root-path. Assigning custom
         openapi_schema values, per-instance replacement of the openapi method,
         late mutation of already-included routers, callback declarations on
-        path operations, webhook mutation after OpenAPI caching,
-        root_path_in_servers configuration, and
-        complete OpenAPI parity remain outside this slice. In the pinned
+        path operations, webhook mutation after OpenAPI caching, and complete
+        OpenAPI parity remain outside this slice. The root-path fixture selects
+        configured-prefix fallback and precedence, ASGI scope propagation,
+        mutable `root_path` and `root_path_in_servers` attributes, and automatic
+        server insertion gating; it does not establish all OpenAPI behavior. In the pinned
         sub-applications workflow, parsed `/paths` match for the parent and
         mounted app, but exact response-body bytes differ because the target
         serializes schema-object keys in a different order; raw OpenAPI bytes

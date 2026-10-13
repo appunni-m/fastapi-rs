@@ -2178,6 +2178,8 @@ pub(crate) struct PyFastApi {
     openapi_url: Option<String>,
     openapi_tags: Py<PyAny>,
     servers: Py<PyAny>,
+    root_path: String,
+    root_path_in_servers: bool,
     swagger_ui_oauth2_redirect_url: Option<String>,
     swagger_ui_init_oauth: Option<Py<PyAny>>,
     swagger_ui_parameters: Option<Py<PyAny>>,
@@ -2702,7 +2704,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -2726,6 +2728,9 @@ impl PyFastApi {
         terms_of_service: Option<String>,
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
+        openapi_prefix: &str,
+        root_path: &str,
+        root_path_in_servers: bool,
         openapi_external_docs: Option<Py<PyAny>>,
         webhooks: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
@@ -2756,6 +2761,25 @@ impl PyFastApi {
             _ => PyList::empty(py).into_any().unbind(),
         };
         let openapi_tags = openapi_tags.unwrap_or_else(|| py.None());
+        if !openapi_prefix.is_empty() {
+            py.import("logging")?
+                .getattr("getLogger")?
+                .call1(("fastapi",))?
+                .call_method1(
+                    "warning",
+                    (concat!(
+                        "\"openapi_prefix\" has been deprecated in favor of \"root_path\", which ",
+                        "follows more closely the ASGI standard, is simpler, and more ",
+                        "automatic. Check the docs at ",
+                        "https://fastapi.tiangolo.com/advanced/sub-applications/"
+                    ),),
+                )?;
+        }
+        let root_path = if root_path.is_empty() {
+            openapi_prefix.to_owned()
+        } else {
+            root_path.to_owned()
+        };
         let exception_handlers = match exception_handlers {
             Some(handlers) => py
                 .import("builtins")?
@@ -2843,6 +2867,8 @@ impl PyFastApi {
             openapi_url: openapi_url.map(str::to_owned),
             openapi_tags,
             servers,
+            root_path,
+            root_path_in_servers,
             swagger_ui_oauth2_redirect_url: swagger_ui_oauth2_redirect_url.map(str::to_owned),
             swagger_ui_init_oauth,
             swagger_ui_parameters,
@@ -2900,6 +2926,26 @@ impl PyFastApi {
             .as_deref()
             .map(|url| PyString::new(py, url).into_any().unbind())
             .unwrap_or_else(|| py.None())
+    }
+
+    #[getter]
+    fn root_path(&self) -> &str {
+        &self.root_path
+    }
+
+    #[setter]
+    fn set_root_path(&mut self, root_path: String) {
+        self.root_path = root_path;
+    }
+
+    #[getter]
+    fn root_path_in_servers(&self) -> bool {
+        self.root_path_in_servers
+    }
+
+    #[setter]
+    fn set_root_path_in_servers(&mut self, root_path_in_servers: bool) {
+        self.root_path_in_servers = root_path_in_servers;
     }
 
     #[getter]
@@ -4051,6 +4097,10 @@ impl PyFastApi {
         receive: Py<PyAny>,
         send: Py<PyAny>,
     ) -> PyResult<Py<PyAny>> {
+        let root_path = slf.bind(py).borrow().root_path.clone();
+        if !root_path.is_empty() {
+            scope.bind(py).set_item("root_path", root_path)?;
+        }
         scope.bind(py).set_item("app", slf.clone_ref(py))?;
         Self::middleware_stack_for(slf, py)?
             .bind(py)
@@ -4592,8 +4642,9 @@ fn openapi_document_for_root_path(
     py: Python<'_>,
     schema: Py<PyAny>,
     root_path: &str,
+    root_path_in_servers: bool,
 ) -> PyResult<Py<PyAny>> {
-    if root_path.is_empty() {
+    if root_path.is_empty() || !root_path_in_servers {
         return Ok(schema);
     }
 
@@ -5120,6 +5171,9 @@ impl PyApiRouter {
                 None,
                 None,
                 None,
+                "",
+                "",
+                true,
                 None,
                 Some(py.None()),
                 None,
@@ -11633,7 +11687,14 @@ impl FastApiCall {
             .call1((scope,))?
             .extract::<String>()?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
-        let (openapi_url, title, redirect_url, init_oauth, swagger_ui_parameters) = {
+        let (
+            openapi_url,
+            title,
+            redirect_url,
+            init_oauth,
+            swagger_ui_parameters,
+            root_path_in_servers,
+        ) = {
             let app = self.app.bind(py).borrow();
             (
                 app.openapi_url.clone(),
@@ -11645,6 +11706,7 @@ impl FastApiCall {
                 app.swagger_ui_parameters
                     .as_ref()
                     .map(|parameters| parameters.clone_ref(py)),
+                app.root_path_in_servers,
             )
         };
         if let Some(openapi_url) = openapi_url.as_deref().filter(|url| !url.is_empty()) {
@@ -11654,6 +11716,7 @@ impl FastApiCall {
                     py,
                     PyFastApi::openapi(self.app.clone_ref(py), py)?,
                     root_path,
+                    root_path_in_servers,
                 )?;
                 self.response_status = 200;
                 self.response_body = json_bytes(py, document.bind(py))?;

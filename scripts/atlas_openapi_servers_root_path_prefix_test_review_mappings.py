@@ -392,12 +392,12 @@ OPENAPI_SERVERS_ROOT_PATH_PREFIX_TEST_REVIEW_MAPPINGS = {
                 (
                     _link(
                         _PREFIX_REVIEW_RECIPE,
-                        "fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review",
-                        ("request-prefix-aware-route",),
+                        "fastapi.applications.root-path.deprecated-prefix-fallback",
+                        ("read-deprecated-prefix-and-warning",),
                         _BODY,
                     ),
                 ),
-                "The workflow uses the deprecated constructor argument and observes the resulting root_path through an independently authored route. Its prefix, path, and body fields differ from the source; exact body bytes are stricter than response.json() equality. The source's HTTP status assertion is also observed. FastAPI's deprecation warning is not asserted by the test function and is not captured by this ASGI workflow.",
+                "The workflow uses the deprecated constructor argument and observes the resulting root_path through an independently authored route. Its prefix, path, and body fields differ from the source; exact body bytes are stricter than response.json() equality. The source's HTTP status assertion is also observed. The diagnostic body additionally reports the emitted deprecation log record, which the source test does not assert.",
                 (
                     _source(
                         "tests/test_deprecated_openapi_prefix.py",
@@ -418,8 +418,8 @@ OPENAPI_SERVERS_ROOT_PATH_PREFIX_TEST_REVIEW_MAPPINGS = {
                 (
                     _link(
                         _PREFIX_REVIEW_RECIPE,
-                        "fastapi.openapi.deprecated-openapi-prefix.route-and-openapi-review",
-                        ("request-openapi",),
+                        "fastapi.applications.root-path.deprecated-prefix-fallback",
+                        ("read-deprecated-prefix-openapi",),
                         _OPENAPI,
                     ),
                     _link(
@@ -429,7 +429,7 @@ OPENAPI_SERVERS_ROOT_PATH_PREFIX_TEST_REVIEW_MAPPINGS = {
                         _OPENAPI,
                     ),
                 ),
-                "The new case selects /servers and /paths for a route on an app configured directly with openapi_prefix; the existing case independently covers the same deprecated argument with different prefix/path values. Neither compares the complete source snapshot, including info, operationId, response description, or exact route; the selected JSON pointers and status remain the claimed observations. The constructor's deprecation warning is neither asserted by the test nor captured by the workflow.",
+                "The new case selects /servers and /paths for a route on an app configured directly with openapi_prefix; the existing OpenAPI operation case independently covers the same deprecated argument with different prefix/path values. Neither compares the complete source snapshot, including info, operationId, response description, or exact route; the selected JSON pointers and status remain the claimed observations. The constructor's deprecation log is exposed on the separate diagnostic route, although the source test does not assert it.",
                 (
                     _source(
                         "tests/test_deprecated_openapi_prefix.py",
