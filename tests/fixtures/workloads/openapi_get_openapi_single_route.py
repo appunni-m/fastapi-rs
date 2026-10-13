@@ -9,6 +9,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
     """Build native route inputs as public arguments; expected output stays in results."""
     router = APIRouter()
     tagged_router = APIRouter()
+    webhook_router = APIRouter()
 
     @router.get("/items")
     def items():
@@ -17,6 +18,11 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
     @tagged_router.get("/catalog", tags=["catalog"])
     def catalog():
         return {"items": []}
+
+    def stock_updated():
+        return {"accepted": True}
+
+    webhook_router.add_api_route("stock-updated", stock_updated, methods=["GET"])
 
     return {
         "single-route": {
@@ -33,6 +39,15 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "title": "Tagged Route OpenAPI Probe",
                 "version": "2.0.0",
                 "routes": tagged_router.routes,
+            },
+        },
+        "webhook-route": {
+            "args": [],
+            "kwargs": {
+                "title": "Webhook Route OpenAPI Probe",
+                "version": "1.0.0",
+                "routes": router.routes,
+                "webhooks": webhook_router.routes,
             },
         },
     }

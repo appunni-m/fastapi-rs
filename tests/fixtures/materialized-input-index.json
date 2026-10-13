@@ -12081,15 +12081,16 @@
     {
       "id": "openapi-get-openapi-single-route",
       "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json",
-      "input_sha256": "374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4",
+      "input_sha256": "f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5",
       "recipe_path": "tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml",
-      "recipe_sha256": "dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d",
+      "recipe_sha256": "37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d",
       "case_ids": [
         "fastapi.openapi.get-openapi.single-route",
-        "fastapi.openapi.get-openapi.single-route-tags-version"
+        "fastapi.openapi.get-openapi.single-route-tags-version",
+        "fastapi.openapi.get-openapi.webhook-route"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_get_openapi_single_route.py",
-      "workload_sha256": "ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68",
+      "workload_sha256": "fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.get-openapi.single-route",
@@ -12099,6 +12100,12 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi.single-route-tags-version",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.webhook-route",
           "symbol_id": "fastapi.openapi.utils.get_openapi",
           "path": "fastapi/openapi/utils.py",
           "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
@@ -12122,6 +12129,15 @@
           "observation_selectors": [
             "python.attribute_value"
           ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.webhook-route",
+          "probe_id": "separate-webhook-route",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
         }
       ],
       "case_contracts": [
@@ -12134,6 +12150,13 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi.single-route-tags-version",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.get_openapi"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.webhook-route",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.openapi.utils.get_openapi"
@@ -24386,7 +24409,7 @@
         "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths"
       ],
       "workload_path": "tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py",
-      "workload_sha256": "fd5f0ad38e8bd9ea69e14c1d96e551228b23562d04f6225a1365ba6bf2a2ee0f",
+      "workload_sha256": "876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice",
@@ -30462,6 +30485,29 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_validation_error_context.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "webhooks-constructor",
+      "input_path": "tests/fixtures/inputs/parity/webhooks-constructor.json",
+      "input_sha256": "4df72113beb82a387e211be01d3682ea1e84a2efe3c7e643daa63408ea13131a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-constructor.yaml",
+      "recipe_sha256": "1fd80a8ecc4431fc09c6b6000c45d8a2e04a0c4cb746b5351f1fba85cbf5ce6a",
+      "case_ids": [
+        "fastapi.webhooks.constructor-router.openapi-and-route-separation"
+      ],
+      "workload_path": "tests/fixtures/workloads/webhooks_constructor.py",
+      "workload_sha256": "f4a162b60ef62b1f9356e2b2cd7eaea7bcc14c43deaa48908f5513957bfd4f1e",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.webhooks.constructor-router.openapi-and-route-separation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/openapi-webhooks.md",
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:documented-page:tutorial/first-steps.md"
           ]
         }
       ]
@@ -57341,6 +57387,53 @@
         "http.body.bytes",
         "http.status",
         "validation.error_class"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/openapi-webhooks.md",
+      "fixture_id": "fastapi.docs.advanced-openapi-webhooks",
+      "workflow_id": "webhooks-constructor",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.webhooks.constructor-router.openapi-and-route-separation"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/bigger-applications.md",
+      "fixture_id": "fastapi.docs.tutorial-bigger-applications",
+      "workflow_id": "webhooks-constructor",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.webhooks.constructor-router.openapi-and-route-separation"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/first-steps.md",
+      "fixture_id": "fastapi.docs.tutorial-first-steps",
+      "workflow_id": "webhooks-constructor",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.webhooks.constructor-router.openapi-and-route-separation"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

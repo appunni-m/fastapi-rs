@@ -1129,9 +1129,10 @@ impl ResponseFieldState {
 struct FastApiRoute {
     path: String,
     path_format: String,
+    url_path_format: String,
     methods: Vec<String>,
     name: String,
-    route_scope: Py<PyAny>,
+    route_scope: Option<Py<PyAny>>,
     param_convertors: Py<PyDict>,
     summary: Option<String>,
     response_description: String,
@@ -1779,63 +1780,104 @@ fn openapi_warning_identity(
 
 pub(crate) fn direct_route_openapi_operation(
     route: &Bound<'_, PyAny>,
-) -> PyResult<OpenApiOperation> {
+    is_webhook: bool,
+) -> PyResult<Vec<OpenApiOperation>> {
     let route = route.extract::<PyRef<'_, PyApiRoute>>().map_err(|_| {
-        PyNotImplementedError::new_err(
-            "FastAPI-RS get_openapi supports only a native simple GET APIRoute",
-        )
+        PyNotImplementedError::new_err("FastAPI-RS get_openapi supports native APIRoutes")
     })?;
     let py = route.py();
     let methods = python_string_set_items(route.methods.bind(py))?;
-    if !route.direct_openapi_supported || methods.as_slice() != ["GET"] {
+    if !route.direct_openapi_supported {
         return Err(PyNotImplementedError::new_err(
-            "FastAPI-RS get_openapi supports only a native simple GET APIRoute",
+            "FastAPI-RS get_openapi supports only native simple APIRoutes",
         ));
     }
-    let method = &methods[0];
     let tags = route.tags.bind(py).extract::<Vec<String>>()?;
     let (endpoint_name, endpoint_file) = openapi_warning_identity(py, route.endpoint.bind(py))?;
-    Ok(OpenApiOperation {
-        path: route.path_format.clone(),
-        method: method.to_ascii_lowercase(),
-        summary: title_case(&route.name),
-        response_description: DEFAULT_RESPONSE_DESCRIPTION.to_owned(),
-        operation_id: PyString::new(py, &operation_id(&route.name, &route.path_format, method))
-            .into_any()
-            .unbind(),
-        endpoint_name,
-        endpoint_file,
-        deprecated: None,
-        tags: (!tags.is_empty()).then_some(tags),
-        openapi_extra: route
-            .openapi_extra
-            .as_ref()
-            .map(|value| value.clone_ref(route.py())),
-        status: None,
-        response_status_key: Some("200".to_owned()),
-        parameters: Vec::new(),
-        security_schemes: Vec::new(),
-        security_requirements: Vec::new(),
-        validation_parameters_present: false,
-        request_model_name: None,
-        request_schema: None,
-        request_example: None,
-        request_examples: None,
-        request_required: false,
-        request_body_present: false,
-        request_body_content_before_required: false,
-        request_media_type: "application/json".to_owned(),
-        response_model_name: None,
-        response_schema: None,
-        response_schema_title: Some(String::new()),
-        response_media_type: Some("application/json".to_owned()),
-        response_class_is_json: true,
-        jsonl_stream: false,
-        sse_stream: false,
-        stream_item_model_name: None,
-        stream_item_schema: None,
-        additional_responses: Vec::new(),
-    })
+    let summary = match route.summary.as_deref() {
+        Some(summary) => summary.to_owned(),
+        None => PyString::new(py, &route.name)
+            .call_method1("replace", ("_", " "))?
+            .call_method0("title")?
+            .extract::<String>()?,
+    };
+    let description = endpoint_openapi_description(py, route.endpoint.bind(py))?;
+    methods
+        .iter()
+        .map(|method| {
+            Ok(OpenApiOperation {
+                path: route.path_format.clone(),
+                is_webhook,
+                method: method.to_ascii_lowercase(),
+                summary: summary.clone(),
+                description: description.clone(),
+                response_description: DEFAULT_RESPONSE_DESCRIPTION.to_owned(),
+                operation_id: route
+                    .unique_id
+                    .as_ref()
+                    .map(|unique_id| unique_id.clone_ref(py))
+                    .unwrap_or_else(|| {
+                        PyString::new(py, &operation_id(&route.name, &route.path_format, method))
+                            .into_any()
+                            .unbind()
+                    }),
+                endpoint_name: endpoint_name.clone(),
+                endpoint_file: endpoint_file.clone(),
+                deprecated: None,
+                tags: (!tags.is_empty()).then(|| tags.clone()),
+                openapi_extra: route
+                    .openapi_extra
+                    .as_ref()
+                    .map(|value| value.clone_ref(py)),
+                status: None,
+                response_status_key: Some("200".to_owned()),
+                parameters: Vec::new(),
+                security_schemes: Vec::new(),
+                security_requirements: Vec::new(),
+                validation_parameters_present: false,
+                request_model_name: None,
+                request_schema: None,
+                request_example: None,
+                request_examples: None,
+                request_required: false,
+                request_body_present: false,
+                request_body_content_before_required: false,
+                request_media_type: "application/json".to_owned(),
+                response_model_name: None,
+                response_schema: None,
+                response_schema_title: Some(String::new()),
+                response_media_type: Some("application/json".to_owned()),
+                response_class_is_json: true,
+                jsonl_stream: false,
+                sse_stream: false,
+                stream_item_model_name: None,
+                stream_item_schema: None,
+                additional_responses: Vec::new(),
+            })
+        })
+        .collect()
+}
+
+fn endpoint_openapi_description(
+    py: Python<'_>,
+    endpoint: &Bound<'_, PyAny>,
+) -> PyResult<Option<String>> {
+    let docstring = endpoint.getattr("__doc__")?;
+    if docstring.is_none() || !docstring.is_truthy()? {
+        return Ok(None);
+    }
+    let description = py
+        .import("inspect")?
+        .getattr("cleandoc")?
+        .call1((docstring,))?
+        .extract::<String>()?;
+    let description = description
+        .split('\u{c}')
+        .next()
+        .unwrap_or_default()
+        .trim()
+        .to_owned();
+    Ok((!description.is_empty()).then_some(description))
 }
 
 #[pyfunction(name = "iter_route_contexts")]
@@ -2123,6 +2165,11 @@ struct ParameterOpenApiPlan {
 pub(crate) struct PyFastApi {
     state: Py<PyAny>,
     route_scope_prefix: String,
+    is_router_inner: bool,
+    router_tags: Vec<String>,
+    router_dependencies: Vec<Py<PyAny>>,
+    router_deprecated: Option<bool>,
+    router_include_in_schema: bool,
     title: String,
     summary: Option<String>,
     description: String,
@@ -2138,6 +2185,7 @@ pub(crate) struct PyFastApi {
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
     openapi_external_docs: Option<Py<PyAny>>,
+    webhooks: Py<PyAny>,
     dependencies: Vec<Py<PyAny>>,
     default_response_class: ResponseClassChoice,
     redirect_slashes: bool,
@@ -2163,6 +2211,7 @@ pub(crate) struct PyFastApi {
 
 struct OpenApiRouteSnapshot {
     path_format: String,
+    is_webhook: bool,
     method: String,
     name: String,
     endpoint: Py<PyAny>,
@@ -2186,9 +2235,15 @@ struct OpenApiRouteSnapshot {
 }
 
 impl OpenApiRouteSnapshot {
-    fn from_route(py: Python<'_>, route: &FastApiRoute, method: &str) -> PyResult<Self> {
+    fn from_route(
+        py: Python<'_>,
+        route: &FastApiRoute,
+        method: &str,
+        is_webhook: bool,
+    ) -> PyResult<Self> {
         Ok(Self {
             path_format: route.path_format.clone(),
+            is_webhook,
             method: method.to_owned(),
             name: route.name.clone(),
             endpoint: route.endpoint.clone_ref(py),
@@ -2238,13 +2293,24 @@ struct OpenApiAppSnapshot {
 
 impl OpenApiAppSnapshot {
     fn from_app(py: Python<'_>, app: &PyFastApi) -> PyResult<Self> {
-        let operations = app
+        let mut operations = app
             .routes
             .iter()
             .filter(|route| route.include_in_schema)
             .flat_map(|route| route.methods.iter().map(move |method| (route, method)))
-            .map(|(route, method)| OpenApiRouteSnapshot::from_route(py, route, method))
+            .map(|(route, method)| OpenApiRouteSnapshot::from_route(py, route, method, false))
             .collect::<PyResult<Vec<_>>>()?;
+        let webhook_router = app.webhooks.bind(py).extract::<PyRef<'_, PyApiRouter>>()?;
+        let webhook_app = webhook_router.inner.bind(py).borrow();
+        operations.extend(
+            webhook_app
+                .routes
+                .iter()
+                .filter(|route| webhook_router.include_in_schema && route.include_in_schema)
+                .flat_map(|route| route.methods.iter().map(move |method| (route, method)))
+                .map(|(route, method)| OpenApiRouteSnapshot::from_route(py, route, method, true))
+                .collect::<PyResult<Vec<_>>>()?,
+        );
         Ok(Self {
             title: app.title.clone(),
             summary: app.summary.clone(),
@@ -2693,7 +2759,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -2717,6 +2783,7 @@ impl PyFastApi {
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
         openapi_external_docs: Option<Py<PyAny>>,
+        webhooks: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
         redirect_slashes: bool,
@@ -2793,9 +2860,36 @@ impl PyFastApi {
             }
         }
         let lifespan = FastApiLifespan::new(py, on_startup, on_shutdown, lifespan)?;
+        let webhooks = match webhooks {
+            Some(webhooks) if webhooks.bind(py).is_none() => webhooks,
+            Some(webhooks) if webhooks.bind(py).is_truthy()? => webhooks,
+            _ => Py::new(
+                py,
+                PyApiRouter::new(
+                    py,
+                    "",
+                    None,
+                    None,
+                    ResponseClassArgument::Omitted,
+                    None,
+                    None,
+                    None,
+                    None,
+                    true,
+                    GenerateUniqueIdArgument::Omitted,
+                    None,
+                )?,
+            )?
+            .into_any(),
+        };
         Ok(Self {
             state,
             route_scope_prefix: String::new(),
+            is_router_inner: false,
+            router_tags: Vec::new(),
+            router_dependencies: Vec::new(),
+            router_deprecated: None,
+            router_include_in_schema: true,
             title: title.to_owned(),
             summary,
             description: description.to_owned(),
@@ -2811,6 +2905,7 @@ impl PyFastApi {
             contact,
             license_info,
             openapi_external_docs,
+            webhooks,
             dependencies: dependencies.unwrap_or_default(),
             default_response_class: default_response_class.into_choice(py)?,
             redirect_slashes,
@@ -2859,6 +2954,16 @@ impl PyFastApi {
             .as_deref()
             .map(|url| PyString::new(py, url).into_any().unbind())
             .unwrap_or_else(|| py.None())
+    }
+
+    #[getter]
+    fn webhooks(&self, py: Python<'_>) -> Py<PyAny> {
+        self.webhooks.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_webhooks(&mut self, webhooks: Py<PyAny>) {
+        self.webhooks = webhooks;
     }
 
     #[getter]
@@ -3780,21 +3885,13 @@ impl PyFastApi {
         let include_prefix = prefix.to_owned();
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
-        let tags = combined_router_tags(tags.as_deref(), &router.tags);
+        let tags = tags.unwrap_or_default();
         let mut inherited_dependencies = destination
             .dependencies
             .iter()
             .map(|dependency| dependency.clone_ref(py))
             .collect::<Vec<_>>();
         inherited_dependencies.extend(dependencies.unwrap_or_default());
-        inherited_dependencies.extend(
-            router
-                .dependencies
-                .iter()
-                .map(|dependency| dependency.clone_ref(py)),
-        );
-        let deprecated = combined_deprecated(deprecated, router.deprecated);
-        let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
         let route_position = destination.routes.len();
         let dependency_overrides_provider = slf.clone_ref(py).into_any();
@@ -3947,7 +4044,6 @@ impl PyFastApi {
             let exception = no_match_type.call1((name, path_params))?;
             return Err(PyErr::from_value(exception));
         };
-
         let convertors = route.param_convertors.bind(py);
         let mut formatted_path_params = Vec::with_capacity(path_params.len());
         for (parameter_name, value) in path_params.iter() {
@@ -3959,6 +4055,19 @@ impl PyFastApi {
                 .call_method1("to_string", (value,))?
                 .extract::<String>()?;
             formatted_path_params.push((parameter_name, formatted_value));
+        }
+
+        if route.route_scope.is_none() {
+            let path = formatted_path_params
+                .iter()
+                .fold(route.url_path_format.clone(), |path, (name, value)| {
+                    path.replace(&format!("{{{name}}}"), value)
+                });
+            return py
+                .import("starlette.datastructures")?
+                .getattr("URLPath")?
+                .call1((path, "http"))
+                .map(Bound::unbind);
         }
 
         let route_path = match self.named_routes.url_path_for(name, &formatted_path_params) {
@@ -4645,6 +4754,15 @@ impl PyFastApi {
         root_path: Option<&str>,
     ) -> PyResult<Py<PyAny>> {
         materialize_included_response_fields(py, app, None)?;
+        let webhook_app = {
+            let app = app.bind(py).borrow();
+            app.webhooks
+                .bind(py)
+                .extract::<PyRef<'_, PyApiRouter>>()?
+                .inner
+                .clone_ref(py)
+        };
+        materialize_included_response_fields(py, &webhook_app, None)?;
         let snapshot = {
             let app = app.bind(py).borrow();
             OpenApiAppSnapshot::from_app(py, &app)?
@@ -4939,8 +5057,10 @@ impl PyFastApi {
 
         Ok(OpenApiOperation {
             path: route.path_format.clone(),
+            is_webhook: route.is_webhook,
             method: route.method.to_ascii_lowercase(),
             summary,
+            description: endpoint_openapi_description(py, route.endpoint.bind(py))?,
             response_description: route.response_description.clone(),
             openapi_extra: route
                 .openapi_extra
@@ -5021,6 +5141,8 @@ impl PyApiRouter {
         strict_content_type: Option<bool>,
     ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
+        let router_tags = tags.unwrap_or_default();
+        let router_dependencies = dependencies.unwrap_or_default();
         let inner = Py::new(
             py,
             PyFastApi::new(
@@ -5041,6 +5163,7 @@ impl PyApiRouter {
                 None,
                 None,
                 None,
+                Some(py.None()),
                 None,
                 default_response_class,
                 true,
@@ -5055,15 +5178,23 @@ impl PyApiRouter {
         {
             let mut inner = inner.bind(py).borrow_mut();
             inner.route_scope_prefix = prefix.to_owned();
+            inner.is_router_inner = true;
+            inner.router_tags = router_tags.clone();
+            inner.router_dependencies = router_dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py))
+                .collect();
+            inner.router_deprecated = deprecated;
+            inner.router_include_in_schema = include_in_schema;
             inner.strict_content_type = strict_content_type;
         }
         Ok(Self {
             inner,
             prefix: prefix.to_owned(),
-            tags: tags.unwrap_or_default(),
+            tags: router_tags,
             deprecated,
             include_in_schema,
-            dependencies: dependencies.unwrap_or_default(),
+            dependencies: router_dependencies,
             strict_content_type,
         })
     }
@@ -5124,29 +5255,12 @@ impl PyApiRouter {
             .iter()
             .map(|method| method.extract::<String>())
             .collect::<PyResult<Vec<_>>>()?;
-        let (inner, router_tags, mut route_dependencies, router_deprecated, router_include) = {
-            let router = slf.bind(py).borrow();
-            (
-                router.inner.clone_ref(py),
-                router.tags.clone(),
-                router
-                    .dependencies
-                    .iter()
-                    .map(|dependency| dependency.clone_ref(py))
-                    .collect::<Vec<_>>(),
-                router.deprecated,
-                router.include_in_schema,
-            )
-        };
-        route_dependencies.extend(dependencies.unwrap_or_default());
-        let tags = combined_route_tags(&router_tags, tags.as_deref());
-        let deprecated = combined_deprecated(deprecated, router_deprecated);
-        let include_in_schema = include_in_schema && router_include;
+        let inner = slf.bind(py).borrow().inner.clone_ref(py);
         let decorator = PyFastApi::api_route(
             inner,
             py,
             path,
-            Some(route_dependencies),
+            dependencies,
             include_in_schema,
             name,
             openapi_extra,
@@ -5220,7 +5334,20 @@ impl PyApiRouter {
         include_in_schema: bool,
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
-        let inner = slf.bind(py).borrow().inner.clone_ref(py);
+        let (inner, parent_tags, parent_dependencies, parent_deprecated, parent_include_in_schema) = {
+            let parent = slf.bind(py).borrow();
+            (
+                parent.inner.clone_ref(py),
+                parent.tags.clone(),
+                parent
+                    .dependencies
+                    .iter()
+                    .map(|dependency| dependency.clone_ref(py))
+                    .collect::<Vec<_>>(),
+                parent.deprecated,
+                parent.include_in_schema,
+            )
+        };
         let include_response_class = default_response_class.into_choice(py)?;
         let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
         let inherited_response_class = {
@@ -5249,16 +5376,12 @@ impl PyApiRouter {
             ));
         }
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
-        let tags = combined_router_tags(tags.as_deref(), &router.tags);
-        let mut dependencies = dependencies.unwrap_or_default();
-        dependencies.extend(
-            router
-                .dependencies
-                .iter()
-                .map(|dependency| dependency.clone_ref(py)),
-        );
-        let deprecated = combined_deprecated(deprecated, router.deprecated);
-        let include_in_schema = include_in_schema && router.include_in_schema;
+        let mut inherited_tags = parent_tags;
+        inherited_tags.extend(tags.unwrap_or_default());
+        let mut inherited_dependencies = parent_dependencies;
+        inherited_dependencies.extend(dependencies.unwrap_or_default());
+        let deprecated = combined_deprecated(deprecated, parent_deprecated);
+        let include_in_schema = include_in_schema && parent_include_in_schema;
         let source = router.inner.bind(py).borrow();
         let mut destination = inner.bind(py).borrow_mut();
         if source.lifespan.is_included_by(py, &destination.lifespan)? {
@@ -5278,8 +5401,8 @@ impl PyApiRouter {
                 prefix: &prefix,
                 response_class: &inherited_response_class,
                 generate_unique_id_function: &inherited_generate_unique_id_function,
-                tags: &tags,
-                dependencies: &dependencies,
+                tags: &inherited_tags,
+                dependencies: &inherited_dependencies,
                 deprecated,
                 include_in_schema,
                 strict_content_type: inherited_strict_content_type,
@@ -5403,12 +5526,6 @@ fn prefix_url_path(
             url_path.getattr("host")?,
         ))
         .map(Bound::unbind)
-}
-
-fn combined_router_tags(include_tags: Option<&[String]>, router_tags: &[String]) -> Vec<String> {
-    let mut tags = include_tags.unwrap_or_default().to_vec();
-    tags.extend_from_slice(router_tags);
-    tags
 }
 
 fn combined_route_tags(
@@ -5778,7 +5895,6 @@ fn merge_router_routes(
         include_in_schema: inherited_include_in_schema,
         strict_content_type: inherited_strict_content_type,
     } = policy;
-    let mut effective_route_cache = HashMap::<usize, (Py<PyAny>, Py<PyAny>, String)>::new();
     for source_route in &source.routes {
         let path = format!("{prefix}{}", source_route.path);
         let mut route_dependencies = inherited_dependencies
@@ -5826,102 +5942,86 @@ fn merge_router_routes(
                 .or(inherited_strict_content_type),
         )?;
         let original_route = source_route.original_route.clone_ref(py);
-        let route_key = original_route.as_ptr() as usize;
-        let cached_route = effective_route_cache.get(&route_key).map(
-            |(effective_route_context, unique_id_value, unique_id)| {
-                (
-                    effective_route_context.clone_ref(py),
-                    unique_id_value.clone_ref(py),
-                    unique_id.clone(),
-                )
-            },
-        );
-        let (effective_route_context, unique_id_value, unique_id) = if let Some(cached_route) =
-            cached_route
-        {
-            cached_route
-        } else {
-            let effective_route = new_api_route_view(
-                py,
-                ApiRouteViewConfig {
-                    path: &path,
-                    path_format: &path_format,
-                    path_regex: &path_regex,
-                    param_convertors: &param_convertors,
-                    methods: &source_route.methods,
-                    name: &source_route.name,
-                    tags: tags.as_deref().unwrap_or_default(),
-                    summary: source_route.summary.as_deref(),
-                    response_description: &source_route.response_description,
-                    responses: &source_route.responses,
-                    deprecated: combined_deprecated(source_route.deprecated, inherited_deprecated),
-                    include_in_schema: inherited_include_in_schema
-                        && source_route.include_in_schema,
-                    operation_id: source_route.operation_id.as_deref(),
-                    openapi_extra: source_route.openapi_extra.as_ref(),
-                    generate_unique_id_function: &generate_unique_id_function,
-                    response_model_include: source_route.response_model_include.as_ref(),
-                    response_model_exclude: source_route.response_model_exclude.as_ref(),
-                    response_model_by_alias: source_route.response_model_by_alias,
-                    response_model_exclude_unset: source_route.response_model_exclude_unset,
-                    response_model_exclude_defaults: source_route.response_model_exclude_defaults,
-                    response_model_exclude_none: source_route.response_model_exclude_none,
-                    response_class: &response_class,
-                    dependency_overrides_provider: Some(dependency_overrides_provider),
-                    callbacks: None,
-                    strict_content_type: &strict_content_type,
-                    stream_item_type: source_route.stream_item_type.as_ref(),
-                    direct_openapi_supported: false,
-                },
-                source_route.endpoint.clone_ref(py),
-            )?;
-            let effective_route_context = new_route_context(
-                py,
-                original_route.clone_ref(py),
-                effective_route.clone_ref(py),
-            )?;
-            let unique_id_value = generated_unique_id(
-                py,
-                &generate_unique_id_function,
-                &effective_route_context,
-                source_route.operation_id.as_deref(),
-            )?;
-            set_api_route_unique_id(py, &effective_route, unique_id_value.bind(py))?;
-            let unique_id = python_string_value(unique_id_value.bind(py))?;
-            effective_route_cache.insert(
-                route_key,
-                (
-                    effective_route_context.clone_ref(py),
-                    unique_id_value.clone_ref(py),
-                    unique_id.clone(),
-                ),
-            );
-            (effective_route_context, unique_id_value, unique_id)
-        };
-        let methods = api_route_methods(effective_route_context.bind(py))?;
-        let (route_scope, _) = http_route_scope(
+        let effective_route = new_api_route_view(
             py,
-            &path,
-            source_route.endpoint.bind(py),
-            &methods,
-            &source_route.name,
+            ApiRouteViewConfig {
+                path: &path,
+                path_format: &path_format,
+                path_regex: &path_regex,
+                param_convertors: &param_convertors,
+                methods: &source_route.methods,
+                name: &source_route.name,
+                tags: tags.as_deref().unwrap_or_default(),
+                summary: source_route.summary.as_deref(),
+                response_description: &source_route.response_description,
+                responses: &source_route.responses,
+                deprecated: combined_deprecated(source_route.deprecated, inherited_deprecated),
+                include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
+                operation_id: source_route.operation_id.as_deref(),
+                openapi_extra: source_route.openapi_extra.as_ref(),
+                generate_unique_id_function: &generate_unique_id_function,
+                response_model_include: source_route.response_model_include.as_ref(),
+                response_model_exclude: source_route.response_model_exclude.as_ref(),
+                response_model_by_alias: source_route.response_model_by_alias,
+                response_model_exclude_unset: source_route.response_model_exclude_unset,
+                response_model_exclude_defaults: source_route.response_model_exclude_defaults,
+                response_model_exclude_none: source_route.response_model_exclude_none,
+                response_class: &response_class,
+                dependency_overrides_provider: Some(dependency_overrides_provider),
+                callbacks: None,
+                strict_content_type: &strict_content_type,
+                stream_item_type: source_route.stream_item_type.as_ref(),
+                direct_openapi_supported: false,
+            },
+            source_route.endpoint.clone_ref(py),
         )?;
+        let effective_route_context = new_route_context(
+            py,
+            original_route.clone_ref(py),
+            effective_route.clone_ref(py),
+        )?;
+        let unique_id_value = generated_unique_id(
+            py,
+            &generate_unique_id_function,
+            &effective_route_context,
+            source_route.operation_id.as_deref(),
+        )?;
+        set_api_route_unique_id(py, &effective_route, unique_id_value.bind(py))?;
+        let unique_id = python_string_value(unique_id_value.bind(py))?;
+        let methods = api_route_methods(effective_route_context.bind(py))?;
+        let route_scope = if path.starts_with('/') {
+            Some(
+                http_route_scope(
+                    py,
+                    &path,
+                    source_route.endpoint.bind(py),
+                    &methods,
+                    &source_route.name,
+                )?
+                .0,
+            )
+        } else {
+            None
+        };
         let actual_response_class = response_class.actual(py)?;
         let sse_stream = source_route.generator_kind.is_generator()
             && actual_response_class.bind(py).is_instance_of::<PyType>()
             && sse::is_event_source_response_class(py, actual_response_class.bind(py))?;
-        let index = app
-            .router
-            .add_operation_with_methods(&path, &methods, source_route.status_code)
-            .map_err(|error| PyValueError::new_err(error.to_string()))?;
-        app.named_routes
-            .add_route(&path, &source_route.name)
-            .map_err(|error| PyValueError::new_err(error.to_string()))?;
-        app.router
-            .set_parameters(index, plan.input_parameters())
-            .ok_or_else(|| PyRuntimeError::new_err("included FastAPI operation was lost"))?;
+        if route_scope.is_some() {
+            let index = app
+                .router
+                .add_operation_with_methods(&path, &methods, source_route.status_code)
+                .map_err(|error| PyValueError::new_err(error.to_string()))?;
+            app.named_routes
+                .add_route(&path, &source_route.name)
+                .map_err(|error| PyValueError::new_err(error.to_string()))?;
+            app.router
+                .set_parameters(index, plan.input_parameters())
+                .ok_or_else(|| PyRuntimeError::new_err("included FastAPI operation was lost"))?;
+        }
         app.routes.push(FastApiRoute {
             path,
+            url_path_format: path_format.clone(),
             path_format,
             methods,
             name: source_route.name.clone(),
@@ -6108,6 +6208,15 @@ fn register_multi_method_api_route(
     deprecated: Option<bool>,
     deprecated_precombined: bool,
 ) -> PyResult<()> {
+    let (inherited_tags, inherited_deprecated) = {
+        let decorator = decorator.bind(py).borrow();
+        (decorator.tags.clone(), decorator.deprecated)
+    };
+    let tags = combined_route_tags(
+        inherited_tags.as_deref().unwrap_or_default(),
+        tags.as_deref(),
+    );
+    let deprecated = combined_deprecated(deprecated, inherited_deprecated);
     {
         let mut decorator = decorator.bind(py).borrow_mut();
         decorator.callback_methods = callback_methods.clone();
@@ -6347,16 +6456,34 @@ fn operation_decorator(
     status_code: Option<u16>,
     response_model_options: ResponseModelOptions,
 ) -> PyResult<Py<PyOperationDecorator>> {
-    let generate_unique_id_function = {
+    let (
+        generate_unique_id_function,
+        router_tags,
+        router_dependencies,
+        router_deprecated,
+        router_include_in_schema,
+    ) = {
         let app = app.bind(py).borrow();
-        GenerateUniqueIdChoice::first_explicit(
-            py,
-            &[
-                &response_model_options.generate_unique_id_function,
-                &app.generate_unique_id_function,
-            ],
+        (
+            GenerateUniqueIdChoice::first_explicit(
+                py,
+                &[
+                    &response_model_options.generate_unique_id_function,
+                    &app.generate_unique_id_function,
+                ],
+            ),
+            app.router_tags.clone(),
+            app.router_dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py))
+                .collect::<Vec<_>>(),
+            app.router_deprecated,
+            app.router_include_in_schema,
         )
     };
+    let tags = combined_route_tags(&router_tags, response_model_options.tags.as_deref());
+    let mut dependencies = router_dependencies;
+    dependencies.extend(response_model_options.dependencies);
     Py::new(
         py,
         PyOperationDecorator {
@@ -6374,13 +6501,13 @@ fn operation_decorator(
             openapi_extra: response_model_options.openapi_extra,
             operation_id: response_model_options.operation_id,
             generate_unique_id_function,
-            deprecated: response_model_options.deprecated,
+            deprecated: combined_deprecated(response_model_options.deprecated, router_deprecated),
             deprecated_precombined: false,
-            tags: response_model_options.tags,
-            dependencies: response_model_options.dependencies,
+            tags,
+            dependencies,
             response_model,
             status_code,
-            include_in_schema: response_model_options.include_in_schema,
+            include_in_schema: response_model_options.include_in_schema && router_include_in_schema,
             response_model_include: response_model_options.include,
             response_model_exclude: response_model_options.exclude,
             response_model_by_alias: response_model_options.by_alias,
@@ -6399,22 +6526,34 @@ impl PyOperationDecorator {
         let (inferred_name, param_convertors) =
             route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
         let name = self.name.clone().unwrap_or(inferred_name);
-        let scope_path = {
+        let (scope_path, event_only) = {
             let app = self.app.bind(py).borrow();
-            format!("{}{}", app.route_scope_prefix, self.path)
+            let scope_path = format!("{}{}", app.route_scope_prefix, self.path);
+            let event_only = app.is_router_inner && !self.path.starts_with('/');
+            (scope_path, event_only)
         };
         let deprecated = if self.deprecated_precombined {
             self.deprecated
         } else {
             combined_deprecated(self.deprecated, None)
         };
-        let (_, path_format) = http_route_scope(
-            py,
-            &scope_path,
-            endpoint.bind(py),
-            &self.callback_methods,
-            &name,
-        )?;
+        let path_format = if event_only {
+            route_path_format(py, &scope_path)?
+        } else {
+            http_route_scope(
+                py,
+                &scope_path,
+                endpoint.bind(py),
+                &self.callback_methods,
+                &name,
+            )?
+            .1
+        };
+        let url_path_format = if event_only {
+            route_path_format(py, &self.path)?
+        } else {
+            path_format.clone()
+        };
         let callback_param_convertors = route_param_convertors(py, &scope_path)?;
         let path_regex = route_path_regex(py, &scope_path)?;
         let responses = route_response_declarations(py, self.responses.as_ref())?;
@@ -6498,7 +6637,7 @@ impl PyOperationDecorator {
             )
         };
         let endpoint_has_docstring = endpoint.bind(py).getattr("__doc__")?.is_truthy()?;
-        let direct_openapi_supported = self.callback_methods.as_slice() == ["GET"]
+        let direct_openapi_supported = !self.callback_methods.is_empty()
             && !scope_path.contains('{')
             && self.name.is_none()
             && self.summary.is_none()
@@ -6563,8 +6702,11 @@ impl PyOperationDecorator {
             self.registration_cache.as_ref(),
         )?;
         let methods = api_route_methods(public_route.bind(py))?;
-        let (route_scope, _) =
-            http_route_scope(py, &scope_path, endpoint.bind(py), &methods, &name)?;
+        let route_scope = if event_only {
+            None
+        } else {
+            Some(http_route_scope(py, &scope_path, endpoint.bind(py), &methods, &name)?.0)
+        };
         let (summary, tags) = api_route_callback_summary_tags(
             public_route.bind(py),
             self.summary.as_deref(),
@@ -6575,19 +6717,22 @@ impl PyOperationDecorator {
         let response_field = build_response_field(py, &unique_id_text, response_model.as_ref())?;
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
-        let index = app
-            .router
-            .add_operation_with_methods(&self.path, &methods, self.status_code)
-            .map_err(|error| PyValueError::new_err(error.to_string()))?;
-        app.named_routes
-            .add_route(&self.path, &name)
-            .map_err(|error| PyValueError::new_err(error.to_string()))?;
-        app.router
-            .set_parameters(index, inputs)
-            .ok_or_else(|| PyRuntimeError::new_err("registered FastAPI operation was lost"))?;
+        if self.path.starts_with('/') || !app.is_router_inner {
+            let index = app
+                .router
+                .add_operation_with_methods(&self.path, &methods, self.status_code)
+                .map_err(|error| PyValueError::new_err(error.to_string()))?;
+            app.named_routes
+                .add_route(&self.path, &name)
+                .map_err(|error| PyValueError::new_err(error.to_string()))?;
+            app.router
+                .set_parameters(index, inputs)
+                .ok_or_else(|| PyRuntimeError::new_err("registered FastAPI operation was lost"))?;
+        }
         app.routes.push(FastApiRoute {
             path: self.path.clone(),
             path_format,
+            url_path_format,
             methods,
             name,
             route_scope,
@@ -6643,14 +6788,14 @@ impl PyOperationDecorator {
 impl PyWebSocketDecorator {
     fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let path_parameters = path_parameter_names(&self.path);
-        let mut route_dependencies = self
-            .app
-            .bind(py)
-            .borrow()
+        let app = self.app.bind(py).borrow();
+        let mut route_dependencies = app
             .dependencies
             .iter()
+            .chain(&app.router_dependencies)
             .map(|dependency| dependency.clone_ref(py))
             .collect::<Vec<_>>();
+        drop(app);
         route_dependencies.extend(
             self.dependencies
                 .iter()
@@ -11664,7 +11809,15 @@ impl FastApiCall {
                         PyRuntimeError::new_err("selected FastAPI route was lost")
                     })?;
                     (
-                        route.route_scope.clone_ref(py),
+                        route
+                            .route_scope
+                            .as_ref()
+                            .ok_or_else(|| {
+                                PyRuntimeError::new_err(
+                                    "selected FastAPI route has no dispatch scope",
+                                )
+                            })?
+                            .clone_ref(py),
                         route
                             .effective_route_context
                             .as_ref()

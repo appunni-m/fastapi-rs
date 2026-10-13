@@ -14239,7 +14239,7 @@
       "candidate_kinds": [
         "class_member"
       ],
-      "classification": "uncertain",
+      "classification": "supported",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": null,
@@ -14265,7 +14265,7 @@
           "documented",
           "source-declaration"
         ],
-        "reason": "FastAPI 0.141.1 documents `FastAPI.webhooks`, but FastAPI-RS currently exposes neither the instance attribute nor its router and OpenAPI behavior. The linked input fails target construction, so keep this public field uncertain until its behavior is implemented and identity-checked.",
+        "reason": "FastAPI 0.141.1 documents `FastAPI.webhooks` as the APIRouter whose path operations describe outgoing webhooks. The source assignment confirms the public field; the constructor and OpenAPI operation contracts record the selected behavior coverage.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 937,
@@ -14274,7 +14274,18 @@
       },
       "id": "fastapi.applications.FastAPI.webhooks",
       "kind": "field",
-      "public_evidence": [],
+      "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 33,
+          "path": "docs/en/docs/advanced/openapi-webhooks.md"
+        },
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 15,
+          "path": "docs/en/docs/reference/fastapi.md"
+        }
+      ],
       "source_evidence": [
         {
           "end_line": 948,
@@ -75949,11 +75960,11 @@
       "candidate_ids_sha256": "01dd8633543cba28cc8fc64235130598e5dfd20225244b0da48f579503388141",
       "recommendation_counts": {
         "private/internal": 123,
-        "supported": 14,
-        "uncertain": 30
+        "supported": 15,
+        "uncertain": 29
       }
     },
-    "sha256": "5efeef36eb19b32364e0bc823211fe4286bce18a589068c6c649a9b8d72b6f3f",
+    "sha256": "c7b39a8a25c8a652dbd11ac5585ce991c4792adb765cff3fdc46618290d61907",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
@@ -76320,8 +76331,8 @@
     "api_candidates": 1624,
     "api_classifications": {
       "private/internal": 1103,
-      "supported": 472,
-      "uncertain": 49
+      "supported": 473,
+      "uncertain": 48
     },
     "documentation_pages": 155,
     "documentation_pages_candidate_links_pending_behavior_review": 0,
@@ -265845,6 +265856,20 @@
           },
           {
             "case_ids": [
+              "fastapi.webhooks.constructor-router.openapi-and-route-separation"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-constructor.yaml",
+            "workflow_id": "webhooks-constructor"
+          },
+          {
+            "case_ids": [
               "fastapi.webhooks.security.openapi-contract"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -395531,6 +395556,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/routing-surface.yaml",
             "workflow_id": "routing-surface"
+          },
+          {
+            "case_ids": [
+              "fastapi.webhooks.constructor-router.openapi-and-route-separation"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-constructor.yaml",
+            "workflow_id": "webhooks-constructor"
           }
         ],
         "linked_example_sources": [
@@ -425925,6 +425964,22 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml",
             "workflow_id": "starlette-url-converters-upstream"
+          },
+          {
+            "case_ids": [
+              "fastapi.webhooks.constructor-router.openapi-and-route-separation"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-constructor.yaml",
+            "workflow_id": "webhooks-constructor"
           }
         ],
         "linked_example_sources": [
@@ -697178,6 +697233,10 @@
         {
           "case_id": "fastapi.applications.url-path-for.included-router-context",
           "recipe_path": "tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml"
+        },
+        {
+          "case_id": "fastapi.webhooks.constructor-router.openapi-and-route-separation",
+          "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-constructor.yaml"
         }
       ],
       "id": "fastapi.applications.FastAPI.url_path_for",
@@ -697478,6 +697537,10 @@
         {
           "case_id": "fastapi.apirouter.url-path-for.repeated-inclusion-context",
           "recipe_path": "tests/fixtures/input-recipes/parity/inherited-apirouter-url-path-for.yaml"
+        },
+        {
+          "case_id": "fastapi.webhooks.constructor-router.openapi-and-route-separation",
+          "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-constructor.yaml"
         }
       ],
       "id": "fastapi.routing.APIRouter.url_path_for",
@@ -697516,7 +697579,7 @@
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
-          "The FastAPI input covers one repeated-inclusion context; sibling generic double-mount coverage does not prove FastAPI route-graph behavior. Broader FastAPI nested inclusion, route-parameter errors, and URLPath metadata behavior remain unestablished."
+          "The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader FastAPI nested inclusion, route-parameter errors, and custom-converter formatting remain unestablished."
         ],
         "rust_binding": "fastapi-rs/src/application_runtime.rs::PyFastApiRouter::url_path_for",
         "status": "partial-contract"

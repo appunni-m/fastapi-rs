@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 
 use crate::encoding::{JsonableEncoderInput, JsonableEncoderOptions, jsonable_encoder};
-use pyo3::exceptions::{PyKeyError, PyNotImplementedError, PyUserWarning, PyValueError};
+use pyo3::exceptions::{PyKeyError, PyUserWarning, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyModule, PySet, PyString, PyTuple};
 
@@ -29,8 +29,10 @@ pub(crate) struct OpenApiAdditionalResponse {
 /// The OpenAPI-facing contract for one registered FastAPI operation.
 pub(crate) struct OpenApiOperation {
     pub(crate) path: String,
+    pub(crate) is_webhook: bool,
     pub(crate) method: String,
     pub(crate) summary: String,
+    pub(crate) description: Option<String>,
     pub(crate) response_description: String,
     pub(crate) operation_id: Py<PyAny>,
     pub(crate) endpoint_name: String,
@@ -256,6 +258,7 @@ pub(crate) fn openapi_document(
     }
 
     let paths = PyDict::new(py);
+    let webhooks = PyDict::new(py);
     let operation_ids = PySet::empty(py)?;
     for operation in operations {
         let operation_id = operation.operation_id.bind(py);
@@ -277,7 +280,12 @@ pub(crate) fn openapi_document(
             ))?;
         }
         operation_ids.add(operation_id)?;
-        let path_item = match paths.get_item(&operation.path)? {
+        let operation_paths = if operation.is_webhook {
+            &webhooks
+        } else {
+            &paths
+        };
+        let path_item = match operation_paths.get_item(&operation.path)? {
             Some(value) => value.cast_into::<PyDict>().map_err(|_| {
                 PyErr::new::<pyo3::exceptions::PyTypeError, _>(
                     "OpenAPI path item must be a dictionary",
@@ -285,7 +293,7 @@ pub(crate) fn openapi_document(
             })?,
             None => {
                 let value = PyDict::new(py);
-                paths.set_item(&operation.path, &value)?;
+                operation_paths.set_item(&operation.path, &value)?;
                 value
             }
         };
@@ -299,6 +307,11 @@ pub(crate) fn openapi_document(
             operation_document.set_item("tags", tag_values)?;
         }
         operation_document.set_item("summary", &operation.summary)?;
+        if let Some(description) = operation.description.as_deref() {
+            if !description.is_empty() {
+                operation_document.set_item("description", description)?;
+            }
+        }
         operation_document.set_item("operationId", operation_id)?;
         if operation.deprecated == Some(true) {
             operation_document.set_item("deprecated", true)?;
@@ -612,6 +625,9 @@ pub(crate) fn openapi_document(
         document.set_item("servers", servers)?;
     }
     document.set_item("paths", paths)?;
+    if webhooks.len() > 0 {
+        document.set_item("webhooks", webhooks)?;
+    }
     if let Some(tags) = app_info.tags {
         let tags = tags.bind(py);
         if tags.is_truthy()? {
@@ -686,21 +702,25 @@ impl GetOpenApiCallable {
     ) -> PyResult<Py<PyAny>> {
         let _ = separate_input_output_schemas;
         let route_count = routes.len()?;
-        if webhooks
+        let webhook_count = webhooks
             .as_ref()
             .map(|items| items.len())
             .transpose()?
-            .is_some_and(|length| length != 0)
-        {
-            return Err(PyNotImplementedError::new_err(
-                "FastAPI-RS get_openapi supports native simple GET APIRoutes; webhooks are unsupported",
-            ));
-        }
-        let mut operations = Vec::with_capacity(route_count);
+            .unwrap_or(0);
+        let mut operations = Vec::with_capacity(route_count + webhook_count);
         for index in 0..route_count {
-            operations.push(crate::application_runtime::direct_route_openapi_operation(
+            operations.extend(crate::application_runtime::direct_route_openapi_operation(
                 &routes.get_item(index)?,
+                false,
             )?);
+        }
+        if let Some(webhooks) = webhooks {
+            for index in 0..webhook_count {
+                operations.extend(crate::application_runtime::direct_route_openapi_operation(
+                    &webhooks.get_item(index)?,
+                    true,
+                )?);
+            }
         }
 
         let contact = contact.map(Bound::unbind);

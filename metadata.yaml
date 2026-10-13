@@ -500,16 +500,16 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: 5efeef36eb19b32364e0bc823211fe4286bce18a589068c6c649a9b8d72b6f3f
+  sha256: c7b39a8a25c8a652dbd11ac5585ce991c4792adb765cff3fdc46618290d61907
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
     candidates: 167
-    supported: 14
+    supported: 15
     private_or_internal: 123
-    uncertain: 30
+    uncertain: 29
   candidate_ids_sha256: 01dd8633543cba28cc8fc64235130598e5dfd20225244b0da48f579503388141
 
 classification_atlas:
@@ -1020,6 +1020,10 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+          case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+          workload_path: tests/fixtures/workloads/webhooks_constructor.py
+          observation_selectors: [http.status, openapi.document]
         - &generate_unique_id_callback_precedence
           recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml
           case_id: fastapi.routing.generate-unique-id-function-precedence
@@ -1538,6 +1542,10 @@ reviewed_api_contract_overlay:
         The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Duplicate operation-ID warnings and operation values are sampled by `generate-unique-id-duplicate-warnings`. Multi-method registration passes the full method set to one callback on direct and included routes, sampled by `generate-unique-id-multi-methods`. Callback exceptions, integer/empty/unhashable results, duplicate integer IDs, operation-ID short-circuit behavior, summary/tag mutation, a selected pre-callback APIRoute state projection, and method addition, removal, and clearing for direct and included routes are mapped by `generate-unique-id-callback-values`. These are input mappings; live parity remains required. Other APIRoute state and mutations remain unproven.
 
         Its route view exposes the selected source fields and supports `summary`, tag-list, and method-set mutation during the unique-ID callback. Inputs observe direct and included route values, explicit false normalized to `None` for direct `deprecated`, inherited true `deprecated`, selected callback-time response-model options, response-class/default placeholder, route regex and converters, dependency provider, strict content type, stream item type, and the absence of selected later-initialized attributes. Dedicated input recipes map removal/addition of methods, clearing the method set, exact HTTP dispatch, and OpenAPI projection; live parity remains required. Mutations beyond these selected fields, complete APIRoute constructor behavior, and later route-method effects remain unproven.
+        Constructor-supplied `webhooks` APIRouter routes are emitted under the
+        OpenAPI `webhooks` map and are absent from the app's inbound paths and
+        dispatch, as observed by `webhooks-constructor`; this does not establish
+        full constructor-signature parity or arbitrary route-object support.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -3720,6 +3728,11 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 82
           end_line: 109
+        - path: tests/test_router_include_context.py
+          symbol: test_get_openapi_accepts_webhook_route_contexts
+          kind: source-definition
+          start_line: 112
+          end_line: 135
         - path: docs/en/docs/how-to/extending-openapi.md
           kind: documentation-text
           start_line: 19
@@ -3749,6 +3762,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.single-route-tags-version
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+          case_id: fastapi.openapi.get-openapi.webhook-route
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+          observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-multi-route.yaml
           case_id: fastapi.openapi.get-openapi.two-static-get-routes
           workload_path: tests/fixtures/workloads/openapi_get_openapi_multi_route.py
@@ -3769,15 +3786,20 @@ reviewed_api_contract_overlay:
         only lowercase ASCII letters, the default summary, operation ID, response class,
         and empty dependency/parameter plans produce their default operation
         documents. Other non-empty route shapes remain unsupported. Route-level
-        tags are preserved for supported operations.
+        tags are preserved for supported operations. The linked direct-call
+        fixture covers a non-empty `webhooks` input with one native simple
+        static GET APIRoute. Other methods and multi-method default operation
+        IDs remain outside this compared slice. Webhooks are emitted under a
+        separate top-level `webhooks` map while ordinary routes remain under
+        `paths`.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Route contexts/included route trees and non-empty webhooks are rejected; only native APIRoutes with the supported simple GET configuration are traversed.
-          - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct calls.
+          - Route contexts and included route trees remain rejected; only native APIRoutes with the supported simple static configuration are traversed for direct calls.
+          - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, multi-method operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct calls.
           - Default summary generation for endpoint names containing characters outside lowercase ASCII letters can differ from FastAPI title casing, including underscores and digit transitions.
-          - The linked fixtures cover empty routes, metadata options, one simple static GET, and two distinct simple static GET routes; invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
+          - The linked fixtures cover empty routes, metadata options, simple static GET routes, and one simple static webhook registered for GET; webhook routes with other or multiple methods, invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       supported_slice: >-
@@ -4248,6 +4270,19 @@ reviewed_api_contract_overlay:
         - {path: tests/test_response_model_as_return_annotation.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.parent-lifespan-state-override}
+        - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
+        - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends}
+        - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override}
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+          case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
         - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
         - *response_class_router_custom
@@ -4268,11 +4303,15 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
+        relative-path router case observes inclusion with prefix `/v2`, dispatch
+        at `/v2items/sku-17`, and URL reversal. The
         reviewed fixtures cover path parameters, repeated nested inclusions,
         the users router's scalar query dependency, and ordered string tag
         inheritance across app, parent-router, include, child-router, and route
         scopes. Router/include `deprecated` values propagate to OpenAPI, and
         `include_in_schema=False` omits routes without affecting dispatch.
+        The repeated-inclusion fixture observes each effective context's path,
+        inherited tags, and generated unique ID for all four concrete prefixes.
         Scalar-query dependencies supplied to `include_router` execute before
         the target router's dependencies and are included in its OpenAPI input
         parameters by router-dependencies-isolated.
@@ -4546,6 +4585,43 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - The linked input observes one direct cache assignment after generation; callable replacement, other mutations, and error paths remain outside this slice.
+    fastapi.applications.FastAPI.webhooks:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::webhooks
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: webhooks
+          owner: FastAPI
+          initializer: __init__
+          start_line: 937
+          end_line: 948
+        - path: docs/en/docs/advanced/openapi-webhooks.md
+          kind: documentation-text
+          start_line: 33
+          end_line: 45
+          required_text:
+            - 'When you create a **FastAPI** application, there is a `webhooks` attribute that you can use to define *webhooks*, the same way you would define *path operations*, for example with `@app.webhooks.post()`.'
+            - 'The `app.webhooks` object is actually just an `APIRouter`, the same type you would use when structuring your app with multiple files.'
+            - 'Notice that with webhooks you are actually not declaring a *path* (like `/items/`), the text you pass there is just an **identifier** of the webhook (the name of the event), for example in `@app.webhooks.post("new-subscription")`, the webhook name is `new-subscription`.'
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+          case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+          workload_path: tests/fixtures/workloads/webhooks_constructor.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      documentation_contract_refs:
+        - source_path: docs/en/docs/advanced/openapi-webhooks.md
+          fixture_id: fastapi.docs.advanced-openapi-webhooks
+          observation_selectors: [http.status, openapi.document]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Construction preserves the provided APIRouter on `app.webhooks`, and the
+        selected probe observes object identity. Router path operations are used
+        for OpenAPI documentation and remain absent from inbound app dispatch.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The linked input covers a supplied APIRouter and selected identity; default-router mutation, reassignment, other router values, and all constructor error behavior remain unestablished.
     fastapi.applications.FastAPI.openapi:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       source_evidence:
@@ -4610,6 +4686,18 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
           case_id: fastapi.openapi-array-items-query-wire.required-list
           workload_path: tests/fixtures/workloads/array_items_query_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-security.yaml
+          case_id: fastapi.webhooks.security.openapi-contract
+          workload_path: tests/fixtures/workloads/webhooks_security.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-webhook-route-separation-source-review.yaml
+          case_id: fastapi.openapi.webhooks.event-identifier-is-not-route
+          workload_path: tests/fixtures/workloads/openapi_webhook_route_separation_source_review.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+          case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+          workload_path: tests/fixtures/workloads/webhooks_constructor.py
+          observation_selectors: [http.status, openapi.document]
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema]
       supported_slice: >-
@@ -4633,12 +4721,15 @@ reviewed_api_contract_overlay:
         it, as covered by openapi-cache-root-path. Assigning custom
         openapi_schema values, per-instance replacement of the openapi method,
         late mutation of already-included routers, callback declarations on
-        path operations, webhooks, root_path_in_servers configuration, and
+        path operations, webhook mutation after OpenAPI caching,
+        root_path_in_servers configuration, and
         complete OpenAPI parity remain outside this slice. In the pinned
         sub-applications workflow, parsed `/paths` match for the parent and
         mounted app, but exact response-body bytes differ because the target
         serializes schema-object keys in a different order; raw OpenAPI bytes
-        remain a parity gap.
+        remain a parity gap. The linked webhook cases cover constructor-supplied
+        and default routers, body/security schema emission, and separation from
+        inbound paths.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
@@ -4664,7 +4755,9 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Nested route sets can be included repeatedly with distinct prefixes and
         string tags. The reviewed inputs observe four concrete routes after two
-        nested inclusions and ordered tags across five composition levels.
+        nested inclusions; the repeated-inclusion case compares effective
+        context paths, inherited tags, and generated unique IDs for each branch.
+        Ordered tags across five composition levels are also covered.
         `deprecated` and `include_in_schema` inheritance are also covered by
         router-schema-policy-upstream. Synchronous scalar-query dependencies
         at router and include scopes are covered by router-dependencies-isolated.
@@ -4687,6 +4780,19 @@ reviewed_api_contract_overlay:
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
       fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.parent-lifespan-state-override}
+        - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-self-include-construction}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-transitive-cycle-include-construction}
+        - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends}
+        - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override}
         - *generate_unique_id_callback_precedence
         - *response_traversal_parent_child
       target_binding:
@@ -12813,6 +12919,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-starlette-urlconvertors.test-route-converters-float-url-path-for
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml
           case_id: fastapi.applications.url-path-for.included-router-context
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+          case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:
@@ -12851,6 +12959,8 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-apirouter-url-path-for.yaml
           case_id: fastapi.apirouter.url-path-for.repeated-inclusion-context
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+          case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:
@@ -12858,7 +12968,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRouter::url_path_for
         known_gaps:
-          - The FastAPI input covers one repeated-inclusion context; sibling generic double-mount coverage does not prove FastAPI route-graph behavior. Broader FastAPI nested inclusion, route-parameter errors, and URLPath metadata behavior remain unestablished.
+          - The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader FastAPI nested inclusion, route-parameter errors, and custom-converter formatting remain unestablished.
     fastapi.routing.APIRouter.routes:
       kind: inherited_property
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter

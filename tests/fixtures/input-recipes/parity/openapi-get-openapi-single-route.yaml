@@ -45,3 +45,22 @@ cases:
     kind: upstream_api_definition
     sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
     symbol_id: fastapi.openapi.utils.get_openapi
+- case_id: fastapi.openapi.get-openapi.webhook-route
+  probes:
+  - probe_id: separate-webhook-route
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: get_openapi
+    argument_bundle: webhook-route
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.get_openapi
+  - path: docs/en/docs/advanced/openapi-webhooks.md
+    kind: upstream_documentation
+    sha256: 5ac99c21eaad3bc474811457e6f1f03d553f7da217a22f20d4b743f6d637d23e

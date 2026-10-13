@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 523bba42f8ccc499ed552175e230cb9febde07979f7477f6e8c9d261f5cca4e1
+    sha256: 3fbdb00769767e88943b22a660cde552a3ee37bd1fd2960f48f9e819c5034d5c
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -450,9 +450,9 @@ source_artifacts:
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 392
       source_classifications:
-        supported: 472
+        supported: 473
         private_or_internal: 1103
-        uncertain: 49
+        uncertain: 48
       alias_records: 69
       source_deprecations: 21
       error_candidates: 42
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 10a3f86647079faeecbddc04907930c9f9096084724e1578cf2f0558972f4c54
+    sha256: c01a444592fec64f7e7ff00f09ef2462a0b5d6533507e964116c495a5b79c86f
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 14a857e4a7d69e61545b94deac0e414c93cdb9a70ab5df9166d58d6fd6fef00b
+    sha256: cdeb4b594f490b6f8e8c93a9b585b06cf9a23bd5b8bb72cbf5d5d8ba7102e8c7
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 574
-      cases: 2413
-      partial_source_mappings: 1634
+      workflows: 575
+      cases: 2415
+      partial_source_mappings: 1637
 
 contract_metadata:
   aliases:
@@ -1064,32 +1064,32 @@ api_surface_contract:
   - source_artifacts.materialized_input_index.workflows
   - source_artifacts.materialized_input_index.mappings
   counts:
-    required_public_symbols: 472
+    required_public_symbols: 473
     required_inherited_operations: 9
-    required_public_api_candidates: 481
+    required_public_api_candidates: 482
     signature_contract_states:
       module-object-no-call-signature: 1
-      non-callable-surface: 239
+      non-callable-surface: 240
       runtime-signature-reflected: 225
       runtime-signature-unavailable: 1
       source-signature-recorded: 6
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      slice-described: 472
+      slice-described: 473
     implementation_owner_plans:
-      fastapi-rs: 441
+      fastapi-rs: 442
       starlette-rs: 31
     inherited_implementation_owner_plans:
       fastapi-rs: 8
       starlette-rs: 1
-    symbols_with_documented_feature_refs: 466
+    symbols_with_documented_feature_refs: 467
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 110
-    symbols_with_operation_fixture_refs: 176
-    operation_fixture_refs: 1564
+    symbols_with_operation_fixture_refs: 177
+    operation_fixture_refs: 1595
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -9344,6 +9344,20 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: webhooks-constructor
+      input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
+      input_sha256: 4df72113beb82a387e211be01d3682ea1e84a2efe3c7e643daa63408ea13131a
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+      recipe_sha256: 1fd80a8ecc4431fc09c6b6000c45d8a2e04a0c4cb746b5351f1fba85cbf5ce6a
+      workload_path: tests/fixtures/workloads/webhooks_constructor.py
+      workload_sha256: f4a162b60ef62b1f9356e2b2cd7eaea7bcc14c43deaa48908f5513957bfd4f1e
+      case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: generate-unique-id-function-precedence
       input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
       input_sha256: 792aa210ff309cd9dfc2315a9941c6e1d2de09f1014cff5e47bda6446f5b7af2
@@ -14219,6 +14233,178 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-tag-inheritance-upstream
+      input_path: tests/fixtures/inputs/parity/router-tag-inheritance-upstream.json
+      input_sha256: 18be957b2e0cfd1a6785ae8f31386b6b5977e9907d06fa6a282c77e131d94435
+      recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml
+      recipe_sha256: 30f3678b11be543e90a6c04f94b3eb717601312c2722d2f250cca9e566637230
+      workload_path: tests/fixtures/workloads/router_tag_inheritance_upstream.py
+      workload_sha256: 6d2f68129f4c64656239f1e6534d1d4ae8ac8d99dafb83643a5f7b612be828d7
+      case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-schema-policy-upstream
+      input_path: tests/fixtures/inputs/parity/router-schema-policy-upstream.json
+      input_sha256: 7d21a3af12fb47c79318df1ccc865c74273aafb45a451bf108a7ba40f6ef7718
+      recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml
+      recipe_sha256: 109631b5ad1fb4f01f0c7806c8880bb34be297d8caf52b0a7b9d973c81675460
+      workload_path: tests/fixtures/workloads/router_schema_policy_upstream.py
+      workload_sha256: 50e74f0ee481fc3afedc00fabaafc91b652ff9b33c704ccd615365488413fd08
+      case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: router-dependencies-isolated
+      input_path: tests/fixtures/inputs/parity/router-dependencies-isolated.json
+      input_sha256: 10a8fbff3f429d7ee5ac51364fa3b89fa59a5b43b5d1f1b6569e7f2c8059780c
+      recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml
+      recipe_sha256: 77ec723ef023c670b14d531083f6f1b37fdf680b0d48a1a5cd42e460889bd8ca
+      workload_path: tests/fixtures/workloads/router_dependencies_isolated.py
+      workload_sha256: af20c7a4f04290131fbdac019874e8f56f3ae6598b8c14940643f1389a584a7d
+      case_id: fastapi.routing.include-router.router-and-include-dependencies
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      case_id: fastapi.lifecycle.nested-lifespan-state
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      case_id: fastapi.lifecycle.parent-lifespan-state-override
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: strict-content-type-router-level-upstream
+      input_path: tests/fixtures/inputs/parity/strict-content-type-router-level-upstream.json
+      input_sha256: 9a68709f327a5046b61cfb7c75cfb1062bf956e8709b8fa87791bf92f19b5a15
+      recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml
+      recipe_sha256: abae6efd5c4239cdda08d4ee31e25d165b9f18289deda3c11c396ca91019d131
+      workload_path: tests/fixtures/workloads/strict_content_type_router_level_upstream.py
+      workload_sha256: ae9f8ebcfaa6ddac1a80fac4d01a0f35e2edd9f1a4238493228695e67519e8ca
+      case_id: fastapi.request.strict-content-type.app-and-nested-upstream
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: websocket-router-dependencies-upstream
+      input_path: tests/fixtures/inputs/parity/websocket-router-dependencies-upstream.json
+      input_sha256: e17ff49158b9cb434f5eff56d75b70001798d5ffa9ce9b6b964f2c6e6f7be0d0
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml
+      recipe_sha256: 3b3cbe92802fc7d1796f6ef929695f76ce78508c32efc6ed14ba7d4b79b61d7b
+      workload_path: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
+      workload_sha256: 1510421c8908b354f0fb8a5fed995e3050827692b94c564dff1e0108c61995a3
+      case_id: fastapi.test.test-ws-router.test-router-ws-depends
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: websocket-router-dependencies-upstream
+      input_path: tests/fixtures/inputs/parity/websocket-router-dependencies-upstream.json
+      input_sha256: e17ff49158b9cb434f5eff56d75b70001798d5ffa9ce9b6b964f2c6e6f7be0d0
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml
+      recipe_sha256: 3b3cbe92802fc7d1796f6ef929695f76ce78508c32efc6ed14ba7d4b79b61d7b
+      workload_path: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
+      workload_sha256: 1510421c8908b354f0fb8a5fed995e3050827692b94c564dff1e0108c61995a3
+      case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: webhooks-constructor
+      input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
+      input_sha256: 4df72113beb82a387e211be01d3682ea1e84a2efe3c7e643daa63408ea13131a
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+      recipe_sha256: 1fd80a8ecc4431fc09c6b6000c45d8a2e04a0c4cb746b5351f1fba85cbf5ce6a
+      workload_path: tests/fixtures/workloads/webhooks_constructor.py
+      workload_sha256: f4a162b60ef62b1f9356e2b2cd7eaea7bcc14c43deaa48908f5513957bfd4f1e
+      case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: generate-unique-id-function-precedence
       input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
       input_sha256: 792aa210ff309cd9dfc2315a9941c6e1d2de09f1014cff5e47bda6446f5b7af2
@@ -15087,6 +15273,45 @@ api_surface_contract:
       - openapi.document
       - python.warnings
       - warnings.category_message
+    - workflow_id: webhooks-security
+      input_path: tests/fixtures/inputs/parity/webhooks-security.json
+      input_sha256: da5fc269022718c1549acd7d0e5462b9709343d7706d50c3736286f8bf4c32ff
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-security.yaml
+      recipe_sha256: 6778b07020c5cf364c542da4ae3d2b9429c0c2392d330ffbaac1ba2d90c5a821
+      workload_path: tests/fixtures/workloads/webhooks_security.py
+      workload_sha256: bde5b33ac52502a858115c880592de6836016f2bfe726941e6d99102371663d5
+      case_id: fastapi.webhooks.security.openapi-contract
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.security
+    - workflow_id: openapi-webhook-route-separation-source-review
+      input_path: tests/fixtures/inputs/parity/openapi-webhook-route-separation-source-review.json
+      input_sha256: c53e322ab5f7c5146a674e0e1b2d625b99d7e941754078d1a4d38fd41527a69b
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-webhook-route-separation-source-review.yaml
+      recipe_sha256: 4d4518db2c3aea3b3d3dcd4b51e4ce8acbc472bcbcd76f7341fab0b9aab296ef
+      workload_path: tests/fixtures/workloads/openapi_webhook_route_separation_source_review.py
+      workload_sha256: 28c1093f4fcb5085262959a533358e9bbd7c2d58be5b950982c3182b60984675
+      case_id: fastapi.openapi.webhooks.event-identifier-is-not-route
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: webhooks-constructor
+      input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
+      input_sha256: 4df72113beb82a387e211be01d3682ea1e84a2efe3c7e643daa63408ea13131a
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+      recipe_sha256: 1fd80a8ecc4431fc09c6b6000c45d8a2e04a0c4cb746b5351f1fba85cbf5ce6a
+      workload_path: tests/fixtures/workloads/webhooks_constructor.py
+      workload_sha256: f4a162b60ef62b1f9356e2b2cd7eaea7bcc14c43deaa48908f5513957bfd4f1e
+      case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -16080,6 +16305,111 @@ api_surface_contract:
         - /api_candidates/235
       status: full-contract-not-established
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
+  - id: fastapi.applications.FastAPI.webhooks
+    kind: field
+    source_candidate_ref: /api_candidates/238
+    source_inventory_refs:
+    - /modules/5/definitions/1/members/24
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/237
+        status: reflected
+        object_identity: fastapi.routing.APIRouter
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/237
+        object_identity: fastapi.routing.APIRouter
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/477
+      source_path: docs/en/docs/advanced/openapi-webhooks.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.advanced-openapi-webhooks
+      fixture_design_ref: /fixture_designs/345
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.security
+    - coverage_matrix_ref: /coverage_matrix/541
+      source_path: docs/en/docs/reference/fastapi.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.reference-fastapi
+      fixture_design_ref: /fixture_designs/377
+      observation_selectors: *id006
+    - coverage_matrix_ref: /coverage_matrix/477
+      source_path: docs/en/docs/advanced/openapi-webhooks.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.advanced-openapi-webhooks
+      fixture_design_ref: /fixture_designs/345
+      observation_selectors:
+      - http.status
+      - openapi.document
+    input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: webhooks-constructor
+      input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
+      input_sha256: 4df72113beb82a387e211be01d3682ea1e84a2efe3c7e643daa63408ea13131a
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+      recipe_sha256: 1fd80a8ecc4431fc09c6b6000c45d8a2e04a0c4cb746b5351f1fba85cbf5ce6a
+      workload_path: tests/fixtures/workloads/webhooks_constructor.py
+      workload_sha256: f4a162b60ef62b1f9356e2b2cd7eaea7bcc14c43deaa48908f5513957bfd4f1e
+      case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    identity_workflow_refs: []
+    feature_ids:
+    - app-routing
+    - dependency-overrides
+    - middleware-integrations
+    - openapi-docs
+    - public-api-errors
+    - request-validation
+    - response-serialization
+    - websocket-lifecycle
+    observation_selectors:
+    - asgi.send.message_types
+    - docs.response.body.bytes
+    - docs.response.status
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - openapi.document
+    - openapi.paths
+    - openapi.security
+    - python.signature
+    - warnings.category_message
+    - websocket.event_order
+    - websocket.messages
+    operation_scope:
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.applications.FastAPI.webhooks/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.applications.FastAPI.webhooks
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/238
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::webhooks
+      known_gaps:
+      - The linked input covers a supplied APIRouter and selected identity; default-router mutation, reassignment,
+        other router values, and all constructor error behavior remain unestablished.
   - id: fastapi.applications.FastAPI.websocket
     kind: method
     source_candidate_ref: /api_candidates/239
@@ -35582,11 +35912,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
-      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
+      input_sha256: f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5
       recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
-      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
+      recipe_sha256: 37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d
       workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
-      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
+      workload_sha256: fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958
       case_id: fastapi.openapi.get-openapi.single-route
       probe_id: one-static-get-route
       probe_kind: callable
@@ -35594,13 +35924,25 @@ api_surface_contract:
       - python.attribute_value
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
-      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
+      input_sha256: f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5
       recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
-      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
+      recipe_sha256: 37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d
       workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
-      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
+      workload_sha256: fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958
       case_id: fastapi.openapi.get-openapi.single-route-tags-version
       probe_id: one-tagged-static-get-route
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: openapi-get-openapi-single-route
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
+      input_sha256: f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+      recipe_sha256: 37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+      workload_sha256: fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958
+      case_id: fastapi.openapi.get-openapi.webhook-route
+      probe_id: separate-webhook-route
       probe_kind: callable
       observation_selectors:
       - python.attribute_value
@@ -35628,22 +35970,32 @@ api_surface_contract:
       - python.attribute_value
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
-      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
+      input_sha256: f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5
       recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
-      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
+      recipe_sha256: 37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d
       workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
-      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
+      workload_sha256: fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958
       case_id: fastapi.openapi.get-openapi.single-route
       observation_selectors:
       - python.attribute_value
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
-      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
+      input_sha256: f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5
       recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
-      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
+      recipe_sha256: 37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d
       workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
-      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
+      workload_sha256: fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958
       case_id: fastapi.openapi.get-openapi.single-route-tags-version
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: openapi-get-openapi-single-route
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
+      input_sha256: f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+      recipe_sha256: 37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+      workload_sha256: fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958
+      case_id: fastapi.openapi.get-openapi.webhook-route
       observation_selectors:
       - python.attribute_value
     - workflow_id: openapi-get-openapi-multi-route
@@ -35679,15 +36031,16 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       known_gaps:
-      - Route contexts/included route trees and non-empty webhooks are rejected; only native APIRoutes
-        with the supported simple GET configuration are traversed.
-      - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID
-        warnings, and custom response metadata remain unimplemented for direct calls.
+      - Route contexts and included route trees remain rejected; only native APIRoutes with the supported
+        simple static configuration are traversed for direct calls.
+      - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, multi-method
+        operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct
+        calls.
       - Default summary generation for endpoint names containing characters outside lowercase ASCII letters
         can differ from FastAPI title casing, including underscores and digit transitions.
-      - The linked fixtures cover empty routes, metadata options, one simple static GET, and two distinct
-        simple static GET routes; invalid arguments, metadata validation errors, and the remaining route
-        shapes/options are not compared.
+      - The linked fixtures cover empty routes, metadata options, simple static GET routes, and one simple
+        static webhook registered for GET; webhook routes with other or multiple methods, invalid arguments,
+        metadata validation errors, and the remaining route shapes/options are not compared.
       - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish
         parity for this separately exported callable.
   - id: fastapi.param_functions.Body
@@ -43317,6 +43670,188 @@ api_surface_contract:
       observation_selectors: *id017
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: router-apiroute-context-upstream
+      input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
+      recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      workload_sha256: 6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: router-tag-inheritance-upstream
+      input_path: tests/fixtures/inputs/parity/router-tag-inheritance-upstream.json
+      input_sha256: 18be957b2e0cfd1a6785ae8f31386b6b5977e9907d06fa6a282c77e131d94435
+      recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml
+      recipe_sha256: 30f3678b11be543e90a6c04f94b3eb717601312c2722d2f250cca9e566637230
+      workload_path: tests/fixtures/workloads/router_tag_inheritance_upstream.py
+      workload_sha256: 6d2f68129f4c64656239f1e6534d1d4ae8ac8d99dafb83643a5f7b612be828d7
+      case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-schema-policy-upstream
+      input_path: tests/fixtures/inputs/parity/router-schema-policy-upstream.json
+      input_sha256: 7d21a3af12fb47c79318df1ccc865c74273aafb45a451bf108a7ba40f6ef7718
+      recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml
+      recipe_sha256: 109631b5ad1fb4f01f0c7806c8880bb34be297d8caf52b0a7b9d973c81675460
+      workload_path: tests/fixtures/workloads/router_schema_policy_upstream.py
+      workload_sha256: 50e74f0ee481fc3afedc00fabaafc91b652ff9b33c704ccd615365488413fd08
+      case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: router-dependencies-isolated
+      input_path: tests/fixtures/inputs/parity/router-dependencies-isolated.json
+      input_sha256: 10a8fbff3f429d7ee5ac51364fa3b89fa59a5b43b5d1f1b6569e7f2c8059780c
+      recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml
+      recipe_sha256: 77ec723ef023c670b14d531083f6f1b37fdf680b0d48a1a5cd42e460889bd8ca
+      workload_path: tests/fixtures/workloads/router_dependencies_isolated.py
+      workload_sha256: af20c7a4f04290131fbdac019874e8f56f3ae6598b8c14940643f1389a584a7d
+      case_id: fastapi.routing.include-router.router-and-include-dependencies
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      case_id: fastapi.lifecycle.nested-lifespan-state
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      case_id: fastapi.lifecycle.parent-lifespan-state-override
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: strict-content-type-router-level-upstream
+      input_path: tests/fixtures/inputs/parity/strict-content-type-router-level-upstream.json
+      input_sha256: 9a68709f327a5046b61cfb7c75cfb1062bf956e8709b8fa87791bf92f19b5a15
+      recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml
+      recipe_sha256: abae6efd5c4239cdda08d4ee31e25d165b9f18289deda3c11c396ca91019d131
+      workload_path: tests/fixtures/workloads/strict_content_type_router_level_upstream.py
+      workload_sha256: ae9f8ebcfaa6ddac1a80fac4d01a0f35e2edd9f1a4238493228695e67519e8ca
+      case_id: fastapi.request.strict-content-type.app-and-nested-upstream
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-circular-self-include-upstream
+      input_path: tests/fixtures/inputs/parity/router-circular-self-include-upstream.json
+      input_sha256: 39bcccf7d9fa3e0d0c129615e292023e1b56931759d246890d51df8ce5c2deb8
+      recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml
+      recipe_sha256: 231bd38683a8f0fe009305513351ab502c645b233ce6e6d9b58607baf051b3c2
+      workload_path: tests/fixtures/workloads/router_circular_self_include_upstream.py
+      workload_sha256: d04aef8c4abdb9619af4a11c1c1aeef9b9b040317e12e6778302362754b9ba5f
+      case_id: fastapi.routing.router-self-include-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: router-circular-self-include-upstream
+      input_path: tests/fixtures/inputs/parity/router-circular-self-include-upstream.json
+      input_sha256: 39bcccf7d9fa3e0d0c129615e292023e1b56931759d246890d51df8ce5c2deb8
+      recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml
+      recipe_sha256: 231bd38683a8f0fe009305513351ab502c645b233ce6e6d9b58607baf051b3c2
+      workload_path: tests/fixtures/workloads/router_circular_self_include_upstream.py
+      workload_sha256: d04aef8c4abdb9619af4a11c1c1aeef9b9b040317e12e6778302362754b9ba5f
+      case_id: fastapi.routing.router-transitive-cycle-include-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: websocket-router-dependencies-upstream
+      input_path: tests/fixtures/inputs/parity/websocket-router-dependencies-upstream.json
+      input_sha256: e17ff49158b9cb434f5eff56d75b70001798d5ffa9ce9b6b964f2c6e6f7be0d0
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml
+      recipe_sha256: 3b3cbe92802fc7d1796f6ef929695f76ce78508c32efc6ed14ba7d4b79b61d7b
+      workload_path: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
+      workload_sha256: 1510421c8908b354f0fb8a5fed995e3050827692b94c564dff1e0108c61995a3
+      case_id: fastapi.test.test-ws-router.test-router-ws-depends
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: websocket-router-dependencies-upstream
+      input_path: tests/fixtures/inputs/parity/websocket-router-dependencies-upstream.json
+      input_sha256: e17ff49158b9cb434f5eff56d75b70001798d5ffa9ce9b6b964f2c6e6f7be0d0
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml
+      recipe_sha256: 3b3cbe92802fc7d1796f6ef929695f76ce78508c32efc6ed14ba7d4b79b61d7b
+      workload_path: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
+      workload_sha256: 1510421c8908b354f0fb8a5fed995e3050827692b94c564dff1e0108c61995a3
+      case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.event_order
+      - websocket.messages
     - workflow_id: generate-unique-id-function-precedence
       input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
       input_sha256: 792aa210ff309cd9dfc2315a9941c6e1d2de09f1014cff5e47bda6446f5b7af2
@@ -55823,6 +56358,13 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+      case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+      workload_path: tests/fixtures/workloads/webhooks_constructor.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     feature_ids:
     - app-routing
     - middleware-integrations
@@ -55917,6 +56459,13 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
+      case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+      workload_path: tests/fixtures/workloads/webhooks_constructor.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     feature_ids:
     - app-routing
     - dependency-security
@@ -55964,9 +56513,8 @@ api_surface_contract:
         canonical_operation_ref: *id028
       status: partial-contract
       known_gaps:
-      - The FastAPI input covers one repeated-inclusion context; sibling generic double-mount coverage
-        does not prove FastAPI route-graph behavior. Broader FastAPI nested inclusion, route-parameter
-        errors, and URLPath metadata behavior remain unestablished.
+      - The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader
+        FastAPI nested inclusion, route-parameter errors, and custom-converter formatting remain unestablished.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRouter::url_path_for
   - id: fastapi.routing.APIRouter.routes
     kind: inherited_property
