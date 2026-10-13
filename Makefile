@@ -309,7 +309,7 @@ parity-api-target: parity-inputs ## Execute a direct public API workflow against
 	  --profile-extension "$(PARITY_API_PROFILE_EXTENSION)"
 
 parity-api-compare: ## Compare direct public API source and target result artifacts exactly
-	$(PYTHON) -m scripts.parity.cli api-compare --input "$(PARITY_API_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)" --profile-extension "$(PARITY_API_PROFILE_EXTENSION)"
+	$(PYTHON) -m scripts.parity.cli api-compare --input "$(PARITY_API_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)" $(if $(PARITY_API_PROFILE_EXTENSION),--profile-extension "$(PARITY_API_PROFILE_EXTENSION)")
 
 parity-first-slice: parity-validate ## Run and exactly compare the pinned first HTTP slice
 	$(PYTHON) scripts/parity/run_first_slice.py \
