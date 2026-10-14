@@ -2783,30 +2783,28 @@
     {
       "id": "custom-response-tutorial001-upstream",
       "input_path": "tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json",
-      "input_sha256": "198dd5c11e58c1ff62abfceddcbb7072ca8b9a587527e7ade001b9b42e0e9dfd",
+      "input_sha256": "60d9ed2f46d55bd422b1aef4a27983604a38272d01208e379571d089282e3a0e",
       "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml",
-      "recipe_sha256": "56f2f9e962fb8c7ee8dc87c0a1440db69445cfa85bec27fb75de747e44f1d0b9",
+      "recipe_sha256": "aba44b357e84bf4f18aa75b048b72660817b44d9c070238c8aca3898896e4507",
       "case_ids": [
         "fastapi.custom-response.tutorial001.items-response",
         "fastapi.custom-response.tutorial001.openapi"
       ],
       "workload_path": "tests/fixtures/workloads/custom_response_tutorial001_upstream.py",
-      "workload_sha256": "66483aa98ace38128eb44677892e115cda65c3e9d621fe644efc20747b3643e5",
+      "workload_sha256": "739504b2f3bdf997ae151327ea5f2a281609376b522554f4c9b0477ff16deade",
       "case_contracts": [
         {
           "case_id": "fastapi.custom-response.tutorial001.items-response",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/custom_response/tutorial001_py310.py",
-            "source:upstream-test:tests/test_tutorial/test_custom_response/test_tutorial001.py"
+            "source:documented-example:docs_src/custom_response/tutorial001_py310.py"
           ]
         },
         {
           "case_id": "fastapi.custom-response.tutorial001.openapi",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/custom_response/tutorial001_py310.py",
-            "source:upstream-test:tests/test_tutorial/test_custom_response/test_tutorial001.py"
+            "source:documented-example:docs_src/custom_response/tutorial001_py310.py"
           ]
         }
       ]
@@ -35536,32 +35534,17 @@
       "fixture_id": "fastapi.docs-example.custom-response-tutorial001-py310",
       "workflow_id": "custom-response-tutorial001-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.status, openapi.document, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.custom-response.tutorial001.items-response",
         "fastapi.custom-response.tutorial001.openapi"
       ],
       "observation_selectors": [
-        "http.body.bytes",
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
         "http.status",
-        "openapi.document"
-      ]
-    },
-    {
-      "source_item_id": "upstream-test:tests/test_tutorial/test_custom_response/test_tutorial001.py",
-      "fixture_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial001",
-      "workflow_id": "custom-response-tutorial001-upstream",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.custom-response.tutorial001.items-response",
-        "fastapi.custom-response.tutorial001.openapi"
-      ],
-      "observation_selectors": [
-        "docs.response.status",
-        "http.body.bytes",
-        "http.status",
-        "openapi.document"
+        "openapi.document",
+        "warnings.category_message"
       ]
     },
     {

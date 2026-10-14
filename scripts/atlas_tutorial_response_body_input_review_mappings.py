@@ -725,50 +725,6 @@ TUTORIAL_RESPONSE_BODY_INPUT_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
             ),
         },
     ),
-    _CUSTOM_ROOT + "test_tutorial001.py": _module(
-        "The module checks a configured UJSONResponse route, JSON output, and response-class OpenAPI projection.",
-        {
-            "test_get_custom_response": _function(
-                _CUSTOM_ROOT + "test_tutorial001.py",
-                "test_get_custom_response",
-                ("response-serialization",),
-                _JSON_RESPONSE,
-                "The route's UJSONResponse class serializes the returned list, and the assertion compares decoded JSON.",
-                (
-                    _one(
-                        _CUSTOM001,
-                        "fastapi.custom-response.tutorial001.items-response",
-                        "items",
-                        _JSON_RESPONSE,
-                    ),
-                ),
-                "The independent route returns the same JSON object but the recipe captures exact raw bytes; the source's JSON decoder ignores formatting. The upstream warning filter and deprecation warning are not represented as workflow observations.",
-                (
-                    *_FASTAPI_UJSON_RESPONSE,
-                    *_ROUTE_RESPONSE,
-                    *_STARLETTE_RESPONSE_RUNTIME,
-                    *_TESTCLIENT,
-                ),
-            ),
-            "test_openapi_schema": _function(
-                _CUSTOM_ROOT + "test_tutorial001.py",
-                "test_openapi_schema",
-                ("openapi-docs",),
-                _OPENAPI_RESPONSE,
-                "The exact snapshot checks the response media type and empty response schema for the configured JSON response class.",
-                (
-                    _one(
-                        _CUSTOM001,
-                        "fastapi.custom-response.tutorial001.openapi",
-                        "openapi",
-                        _OPENAPI_RESPONSE,
-                    ),
-                ),
-                "The workflow selects the independent operation's OpenAPI paths/info sections rather than the entire document; it does not observe deprecation warnings.",
-                (*_OPENAPI_DOCUMENT, *_ROUTE_RESPONSE, *_RESPONSE_CLASS_OPENAPI),
-            ),
-        },
-    ),
     _CUSTOM_ROOT + "test_tutorial002_tutorial003_tutorial004.py": _module(
         "The parametrized tests compare HTMLResponse class selection, direct HTMLResponse returns, and response-class OpenAPI media types.",
         {

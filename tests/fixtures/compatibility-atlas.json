@@ -77215,7 +77215,7 @@
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 13,
-    "fixture_backlog_items": 891,
+    "fixture_backlog_items": 890,
     "inherited_api_classifications": {
       "private/internal": 1,
       "supported": 9,
@@ -77231,16 +77231,16 @@
     "starlette_integration_edges": 133,
     "starlette_module_namespace_crosswalks": 1,
     "starlette_private_helper_behavior_crosswalks": 3,
-    "test_function_designs": 2118,
-    "test_functions_in_excluded_modules": 85,
+    "test_function_designs": 2116,
+    "test_functions_in_excluded_modules": 87,
     "test_functions_with_individual_exclusion": 10,
-    "test_functions_with_inherited_module_exclusion": 75,
+    "test_functions_with_inherited_module_exclusion": 77,
     "test_modules": 492,
     "test_modules_candidate_links_pending_behavior_review": 0,
-    "test_modules_excluded_from_parity": 39,
-    "test_modules_mapped_to_parity_backlog": 453,
-    "test_modules_with_independent_input_workflow_link": 453,
-    "test_modules_with_reviewed_partial_mapping": 453,
+    "test_modules_excluded_from_parity": 40,
+    "test_modules_mapped_to_parity_backlog": 452,
+    "test_modules_with_independent_input_workflow_link": 452,
+    "test_modules_with_reviewed_partial_mapping": 452,
     "unmatched_documentation_examples": 0
   },
   "coverage_matrix": [
@@ -112365,30 +112365,46 @@
       ],
       "mapping_evidence": {
         "example_observation_selectors": [
-          "http.body.bytes",
+          "asgi.application_error.exception",
+          "asgi.send.message_types",
           "http.status",
-          "openapi.document"
+          "openapi.document",
+          "warnings.category_message"
         ],
         "example_selector_evidence": [
           {
             "feature_id": "app-routing",
             "selectors": [
-              "http.body.bytes",
               "http.status"
             ]
           },
           {
             "feature_id": "openapi-docs",
             "selectors": [
-              "http.body.bytes",
               "openapi.document"
+            ]
+          },
+          {
+            "feature_id": "public-api-errors",
+            "selectors": [
+              "warnings.category_message"
             ]
           },
           {
             "feature_id": "response-serialization",
             "selectors": [
-              "http.body.bytes",
               "http.status"
+            ]
+          },
+          {
+            "feature_id": null,
+            "schema_extension_required": [
+              "asgi.application_error.exception",
+              "asgi.send.message_types"
+            ],
+            "selectors": [
+              "asgi.application_error.exception",
+              "asgi.send.message_types"
             ]
           }
         ],
@@ -112411,12 +112427,14 @@
               "fastapi.custom-response.tutorial001.items-response",
               "fastapi.custom-response.tutorial001.openapi"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.status, openapi.document, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
+              "asgi.application_error.exception",
+              "asgi.send.message_types",
               "http.status",
-              "openapi.document"
+              "openapi.document",
+              "warnings.category_message"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml",
             "workflow_id": "custom-response-tutorial001-upstream"
@@ -112516,7 +112534,7 @@
           "advanced/custom-response.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "The pinned example selects UJSONResponse for its route. The two cited cases observe the route response envelope and OpenAPI projection only; they do not establish UJSON encoding internals, optional dependency behavior, or response behavior beyond those selected observations.",
+          "rationale": "The pinned example selects UJSONResponse for its route. The independent OpenAPI case observes that response-class selection in the route schema. The base oracle profile lacks optional ujson, so the request case separately observes the deprecation warning and missing-dependency exception; successful UJSON serialization remains unmeasured until a hash-locked optional profile is added.",
           "source_evidence": [
             {
               "end_line": 9,
@@ -112524,16 +112542,39 @@
               "role": "documented UJSONResponse selection and item route",
               "sha256": "0001f32b8f6ec4c1e5c329302a3f5c65a2fafc1624b6a723ebcce84b5370ddfa",
               "start_line": 7
+            },
+            {
+              "end_line": 47,
+              "path": "fastapi/responses.py",
+              "role": "FastAPI decorates UJSONResponse with FastAPIDeprecationWarning",
+              "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
+              "start_line": 39
+            },
+            {
+              "end_line": 66,
+              "path": "fastapi/responses.py",
+              "role": "UJSONResponse.render asserts ujson is installed before serializing the body",
+              "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
+              "start_line": 64
             }
           ],
           "workflow_cases": [
             {
               "case_ids": [
-                "fastapi.custom-response.tutorial001.items-response",
+                "fastapi.custom-response.tutorial001.items-response"
+              ],
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "asgi.send.message_types",
+                "warnings.category_message"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml"
+            },
+            {
+              "case_ids": [
                 "fastapi.custom-response.tutorial001.openapi"
               ],
               "observation_selectors": [
-                "http.body.bytes",
                 "http.status",
                 "openapi.document"
               ],
@@ -633774,196 +633815,63 @@
     },
     {
       "benchmark_workload_id": null,
-      "exclusion_reason": null,
+      "exclusion_reason": "The module calls pytest.importorskip(\"orjson\") at module import before its fixture and test functions are defined. The selected base oracle profile omits both optional JSON packages, so its UJSONResponse success and OpenAPI tests are skipped as a whole; the separate documentation-example input observes the base-profile missing-ujson failure.",
       "feature_ids": [
         "openapi-docs",
-        "response-serialization"
+        "status-codes"
       ],
-      "fixture_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial001",
+      "fixture_id": null,
       "id": "upstream-test:tests/test_tutorial/test_custom_response/test_tutorial001.py",
       "kind": "upstream_test_module",
       "mapping_evidence": {
         "excluded_test_functions": [],
-        "independent_workflow_mappings": [
-          {
-            "case_ids": [
-              "fastapi.custom-response.tutorial001.items-response",
-              "fastapi.custom-response.tutorial001.openapi"
-            ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-            "coverage_status": "partial",
-            "observation_selectors": [
-              "docs.response.status",
-              "http.body.bytes",
-              "http.status",
-              "openapi.document"
-            ],
-            "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml",
-            "workflow_id": "custom-response-tutorial001-upstream"
-          }
-        ],
+        "independent_workflow_mappings": [],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
-        "matched_test_functions": [
+        "matched_test_functions": [],
+        "module_excluded_test_functions": [
           {
-            "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial001.test-get-custom-response",
+            "disposition": "inherited_module_exclusion",
             "end_line": 26,
             "line": 23,
-            "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get_custom_response"
+            "name": "test_get_custom_response",
+            "reason": "The module calls pytest.importorskip(\"orjson\") at module import before its fixture and test functions are defined. The selected base oracle profile omits both optional JSON packages, so its UJSONResponse success and OpenAPI tests are skipped as a whole; the separate documentation-example input observes the base-profile missing-ujson failure.",
+            "source_evidence": [
+              {
+                "end_line": 26,
+                "path": "tests/test_tutorial/test_custom_response/test_tutorial001.py",
+                "role": "upstream test function governed by its module exclusion",
+                "sha256": "7c0fa14f8f45144f8a46d1797dd072aa0c120c33f9c230920d4f10c36999abc1",
+                "start_line": 23
+              }
+            ]
           },
           {
-            "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial001.test-openapi-schema",
+            "disposition": "inherited_module_exclusion",
             "end_line": 52,
             "line": 30,
-            "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "reason": "The module calls pytest.importorskip(\"orjson\") at module import before its fixture and test functions are defined. The selected base oracle profile omits both optional JSON packages, so its UJSONResponse success and OpenAPI tests are skipped as a whole; the separate documentation-example input observes the base-profile missing-ujson failure.",
+            "source_evidence": [
+              {
+                "end_line": 52,
+                "path": "tests/test_tutorial/test_custom_response/test_tutorial001.py",
+                "role": "upstream test function governed by its module exclusion",
+                "sha256": "7c0fa14f8f45144f8a46d1797dd072aa0c120c33f9c230920d4f10c36999abc1",
+                "start_line": 30
+              }
+            ]
           }
         ],
-        "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "The module checks a configured UJSONResponse route, JSON output, and response-class OpenAPI projection.",
-          "stimulus_notes": "Source-reviewed partial workflow mapping. FastAPI owns route-level body/status integration and OpenAPI projection; Pydantic owns model validation/schema mechanics, and Starlette 1.6.0 owns generic ASGI request/response and TestClient behavior.",
+          "rationale": "The module calls pytest.importorskip(\"orjson\") at module import before its fixture and test functions are defined. The selected base oracle profile omits both optional JSON packages, so its UJSONResponse success and OpenAPI tests are skipped as a whole; the separate documentation-example input observes the base-profile missing-ujson failure.",
           "supporting_sources": [
             {
-              "end_line": 9,
-              "path": "docs_src/custom_response/tutorial001_py310.py",
-              "role": "deprecated UJSONResponse route configuration",
-              "sha256": "0001f32b8f6ec4c1e5c329302a3f5c65a2fafc1624b6a723ebcce84b5370ddfa",
-              "start_line": 1
-            },
-            {
-              "end_line": 66,
-              "path": "fastapi/responses.py",
-              "role": "FastAPI UJSONResponse implementation and deprecation",
-              "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
-              "start_line": 39
-            },
-            {
-              "end_line": 400,
-              "path": "fastapi/routing.py",
-              "role": "FastAPI response-class integration",
-              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-              "start_line": 375
-            },
-            {
-              "end_line": 647,
-              "path": "fastapi/openapi/utils.py",
-              "role": "FastAPI OpenAPI document generation",
-              "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
-              "start_line": 585
-            },
-            {
-              "end_line": 26,
+              "end_line": 7,
               "path": "tests/test_tutorial/test_custom_response/test_tutorial001.py",
-              "role": "pinned FastAPI 0.141.1 test inputs and assertions for test_get_custom_response",
+              "role": "The top-level pytest.importorskip(\"orjson\") skips the entire module before its UJSONResponse and OpenAPI tests are collected.",
               "sha256": "7c0fa14f8f45144f8a46d1797dd072aa0c120c33f9c230920d4f10c36999abc1",
-              "start_line": 23
-            },
-            {
-              "end_line": 66,
-              "path": "fastapi/responses.py",
-              "role": "FastAPI UJSONResponse is deprecated and renders JSON through its optional ujson dependency",
-              "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
-              "start_line": 39
-            },
-            {
-              "end_line": 400,
-              "path": "fastapi/routing.py",
-              "role": "FastAPI selects the configured response class for a route",
-              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-              "start_line": 375
-            },
-            {
-              "end_line": 750,
-              "path": "fastapi/routing.py",
-              "role": "FastAPI preserves a returned Response instance or serializes endpoint output through the selected response class",
-              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-              "start_line": 711
-            },
-            {
-              "end_line": 81,
-              "path": "starlette/responses.py",
-              "role": "Starlette 1.6.0 renders generic response bodies and initializes content headers",
-              "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
-              "source_authority": "Starlette 1.6.0",
-              "start_line": 33
-            },
-            {
-              "end_line": 168,
-              "path": "starlette/responses.py",
-              "role": "Starlette 1.6.0 sends the HTTP response start and body over ASGI",
-              "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
-              "source_authority": "Starlette 1.6.0",
-              "start_line": 163
-            },
-            {
-              "end_line": 374,
-              "path": "starlette/testclient.py",
-              "role": "Starlette 1.6.0 TestClient captures ASGI status, headers, and response bytes",
-              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
-              "source_authority": "Starlette 1.6.0",
-              "start_line": 327
-            },
-            {
-              "end_line": 420,
-              "path": "starlette/testclient.py",
-              "role": "Starlette 1.6.0 configures the TestClient transport and redirect policy",
-              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
-              "source_authority": "Starlette 1.6.0",
-              "start_line": 377
-            },
-            {
-              "end_line": 52,
-              "path": "tests/test_tutorial/test_custom_response/test_tutorial001.py",
-              "role": "pinned FastAPI 0.141.1 test inputs and assertions for test_openapi_schema",
-              "sha256": "7c0fa14f8f45144f8a46d1797dd072aa0c120c33f9c230920d4f10c36999abc1",
-              "start_line": 30
-            },
-            {
-              "end_line": 647,
-              "path": "fastapi/openapi/utils.py",
-              "role": "FastAPI generates the OpenAPI document from registered route contexts",
-              "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
-              "start_line": 585
-            },
-            {
-              "end_line": 330,
-              "path": "fastapi/openapi/utils.py",
-              "role": "FastAPI resolves the route's response class and media type for OpenAPI generation",
-              "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
-              "start_line": 325
-            },
-            {
-              "end_line": 472,
-              "path": "fastapi/openapi/utils.py",
-              "role": "FastAPI emits the selected response-class media type and schema",
-              "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
-              "start_line": 456
-            }
-          ],
-          "workflow_cases": [
-            {
-              "case_ids": [
-                "fastapi.custom-response.tutorial001.items-response"
-              ],
-              "observation_selectors": [
-                "http.body.json",
-                "http.status"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.custom-response.tutorial001.openapi"
-              ],
-              "observation_selectors": [
-                "http.status",
-                "openapi.document"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml"
+              "start_line": 7
             }
           ]
         },
@@ -633971,48 +633879,11 @@
         "test_function_count": 2,
         "unmatched_test_functions": []
       },
-      "mapping_status": "partially_mapped",
-      "observation_selectors": [
-        "docs.response.body.bytes",
-        "docs.response.headers",
-        "docs.response.status",
-        "http.body.bytes",
-        "http.body.json",
-        "http.cookies",
-        "http.headers.ordered",
-        "http.status",
-        "openapi.document",
-        "python.pydantic_model_result",
-        "response.background_effects",
-        "validation.error_class"
-      ],
-      "review_reason": "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow.",
-      "review_status": "reviewed_partial",
-      "selector_evidence": [
-        {
-          "feature_id": "openapi-docs",
-          "selectors": [
-            "docs.response.body.bytes",
-            "docs.response.headers",
-            "docs.response.status",
-            "http.body.bytes",
-            "openapi.document",
-            "python.pydantic_model_result"
-          ]
-        },
-        {
-          "feature_id": "response-serialization",
-          "selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.cookies",
-            "http.headers.ordered",
-            "http.status",
-            "response.background_effects",
-            "validation.error_class"
-          ]
-        }
-      ],
+      "mapping_status": "excluded",
+      "observation_selectors": [],
+      "review_reason": null,
+      "review_status": "excluded",
+      "selector_evidence": [],
       "source_path": "tests/test_tutorial/test_custom_response/test_tutorial001.py",
       "source_sha256": "7c0fa14f8f45144f8a46d1797dd072aa0c120c33f9c230920d4f10c36999abc1",
       "starlette_rs_contract_mappings": [
@@ -634073,65 +633944,16 @@
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
-          "feature_id": "response-serialization",
+          "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [
-            {
-              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
-              "operation_id": "__call__",
-              "relationship": "shared response dispatch boundary",
-              "requirement_ids": [
-                "starlette.asgi.get-hello.dispatch"
-              ],
-              "source_path": "starlette.applications.Starlette.__call__",
-              "surface_id": "starlette.applications.Starlette",
-              "target_support": {
-                "python-package": {
-                  "missing_requirements": [
-                    "starlette.compatibility.full-public-surface",
-                    "starlette.asgi.scope-mutation",
-                    "starlette.asgi.streaming",
-                    "starlette.asgi.boundary-cancellation"
-                  ],
-                  "reason": "The package implements the declared direct ASGI route, error, lifespan, and authentication integration workflows; remaining behavior is listed in missing requirements.",
-                  "status": "partial"
-                },
-                "rust-native": {
-                  "missing_requirements": [
-                    "starlette.compatibility.full-public-surface",
-                    "starlette.asgi.scope-mutation",
-                    "starlette.asgi.streaming",
-                    "starlette.asgi.python-callables",
-                    "starlette.asgi.http-exception.default-406-detail",
-                    "starlette.asgi.http-exception.no-content-204",
-                    "starlette.asgi.http-exception.not-modified-304",
-                    "starlette.asgi.http-exception.headers-200",
-                    "starlette.asgi.server-error.default-response",
-                    "starlette.asgi.server-error.status-500-handler",
-                    "starlette.asgi.server-error.exception-handler",
-                    "starlette.asgi.server-error.special-key-order",
-                    "starlette.asgi.server-error.debug-traceback",
-                    "starlette.asgi.server-error.response-started",
-                    "starlette.asgi.server-error.background-task-failure",
-                    "starlette.asgi.server-error.handled-http-exception-500"
-                  ],
-                  "reason": "The Rust-native API renders explicit exception details but does not expose the Python HTTPException constructor and its standard-library status-phrase defaults.",
-                  "status": "partial"
-                }
-              }
-            }
-          ],
-          "ownership_boundary": "shared response dispatch boundary",
-          "scope_note": "The linked operation covers generic Starlette ASGI dispatch; response-model filtering, validation, and serialization remain FastAPI-RS behavior.",
-          "status": "linked-to-current-contract-slice"
+          "operation_refs": [],
+          "ownership_boundary": "owner review required",
+          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "status": "out-of-current-contract-slice"
         }
       ],
-      "starlette_rs_planning_areas": [
-        "applications-requests-responses-background-concurrency",
-        "streaming-headers-cookies-errors-and-cleanup",
-        "wsgi-static-files-templates-schemas-configuration-testclient"
-      ]
+      "starlette_rs_planning_areas": []
     },
     {
       "benchmark_workload_id": null,
@@ -723403,7 +723225,7 @@
     }
   },
   "fixture_backlog_ref": {
-    "item_count": 891,
+    "item_count": 890,
     "path": "tests/fixtures/fixture-backlog.json",
     "schema": "fastapi-rs/fixture-backlog@1"
   },

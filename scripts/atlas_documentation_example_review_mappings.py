@@ -4743,24 +4743,42 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
             ],
         },
         "docs_src/custom_response/tutorial001_py310.py": {
-            "rationale": "The pinned example selects UJSONResponse for its route. The two cited cases observe the route response envelope and OpenAPI projection only; they do not establish UJSON encoding internals, optional dependency behavior, or response behavior beyond those selected observations.",
+            "rationale": "The pinned example selects UJSONResponse for its route. The independent OpenAPI case observes that response-class selection in the route schema. The base oracle profile lacks optional ujson, so the request case separately observes the deprecation warning and missing-dependency exception; successful UJSON serialization remains unmeasured until a hash-locked optional profile is added.",
             "supporting_sources": [
                 {
                     "path": "docs_src/custom_response/tutorial001_py310.py",
                     "start_line": 7,
                     "end_line": 9,
                     "role": "documented UJSONResponse selection and item route",
-                }
+                },
+                {
+                    "path": "fastapi/responses.py",
+                    "start_line": 39,
+                    "end_line": 47,
+                    "role": "FastAPI decorates UJSONResponse with FastAPIDeprecationWarning",
+                },
+                {
+                    "path": "fastapi/responses.py",
+                    "start_line": 64,
+                    "end_line": 66,
+                    "role": "UJSONResponse.render asserts ujson is installed before serializing the body",
+                },
             ],
             "workflow_cases": [
                 {
                     "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml",
-                    "case_ids": [
-                        "fastapi.custom-response.tutorial001.items-response",
-                        "fastapi.custom-response.tutorial001.openapi",
+                    "case_ids": ["fastapi.custom-response.tutorial001.items-response"],
+                    "observation_selectors": [
+                        "asgi.application_error.exception",
+                        "asgi.send.message_types",
+                        "warnings.category_message",
                     ],
-                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
-                }
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml",
+                    "case_ids": ["fastapi.custom-response.tutorial001.openapi"],
+                    "observation_selectors": ["http.status", "openapi.document"],
+                },
             ],
         },
         "docs_src/dependencies/tutorial002_an_py310.py": {

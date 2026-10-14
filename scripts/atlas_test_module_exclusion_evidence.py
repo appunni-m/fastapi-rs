@@ -19,6 +19,15 @@ def _source(path: str, start_line: int, end_line: int, role: str) -> dict[str, A
 
 
 TEST_MODULE_EXCLUSION_EVIDENCE: dict[str, list[dict[str, Any]]] = {
+    "tests/test_tutorial/test_custom_response/test_tutorial001.py": [
+        _source(
+            "tests/test_tutorial/test_custom_response/test_tutorial001.py",
+            7,
+            7,
+            'The top-level pytest.importorskip("orjson") skips the entire module before its '
+            "UJSONResponse and OpenAPI tests are collected.",
+        ),
+    ],
     "tests/benchmarks/test_general_performance.py": [
         _source(
             "tests/benchmarks/test_general_performance.py",

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/10",
   "title": "FastAPI-RS Python/ASGI workflow input v10",
-  "description": "Version 10 adds a target-only OpenAPI cache-publication failure contract with an HTTP 500 outcome and full-document retry/cache equality.",
+  "description": "Version 10 adds a target-only OpenAPI cache-publication failure contract and reviewed, source-backed warning-location normalizations for implementation-boundary call-stack differences.",
   "type": "object",
   "required": [
     "schema",
@@ -32,6 +32,35 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "warningLocation": {
+      "type": "object",
+      "required": ["filename", "lineno"],
+      "properties": {
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable repository/package-relative warning filename."
+        },
+        "lineno": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "warningLocationNormalization": {
+      "type": "object",
+      "required": ["category", "message", "source", "target", "rationale"],
+      "properties": {
+        "category": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1},
+        "source": {"$ref": "#/$defs/warningLocation"},
+        "target": {"$ref": "#/$defs/warningLocation"},
+        "rationale": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false,
+      "description": "Normalize only the exact source and target locations for this warning identity; all warning identities, order, counts, category, and message remain exact."
+    },
     "relativePythonFile": {
       "type": "string",
       "minLength": 1,
@@ -1048,6 +1077,13 @@
         "capture_warnings": {
           "const": true,
           "description": "Capture ordered warning records emitted during this ASGI action."
+        },
+        "warning_location_normalizations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/warningLocationNormalization"},
+          "description": "Reviewed, exact warning-origin mappings for source and target runtime frames that cannot correspond because implementation boundaries differ."
         },
         "receive_mode": {
           "enum": [

@@ -801,6 +801,12 @@ merge_test_review_mappings(
 )
 
 TEST_EXCLUSIONS = {
+    "tests/test_tutorial/test_custom_response/test_tutorial001.py": (
+        'The module calls pytest.importorskip("orjson") at module import before its fixture and '
+        "test functions are defined. The selected base oracle profile omits both optional JSON "
+        "packages, so its UJSONResponse success and OpenAPI tests are skipped as a whole; the "
+        "separate documentation-example input observes the base-profile missing-ujson failure."
+    ),
     "tests/test_orjson_response_class.py": (
         'The module calls pytest.importorskip("orjson") before defining its app. No selected locked '
         "oracle profile installs orjson, so this optional response implementation is unavailable in the "
@@ -6322,11 +6328,11 @@ class AtlasError(RuntimeError):
 # Every candidate documentation page links to exact materialized workflows.
 # Keep the links and their selector corrections in reviewed sidecars so the
 # generated atlas can verify their page, recipe, case, and observation scope.
-from atlas_documentation_page_case_links import (  # noqa: E402
-    DOC_PAGE_CASE_LINK_COMPLETIONS,
-)
 from atlas_documentation_case_selector_overrides import (  # noqa: E402
     DOC_PAGE_CASE_SELECTOR_OVERRIDES,
+)
+from atlas_documentation_page_case_links import (  # noqa: E402
+    DOC_PAGE_CASE_LINK_COMPLETIONS,
 )
 
 for _doc_page_path, _doc_page_rows in DOC_PAGE_CASE_LINK_COMPLETIONS.items():
@@ -6349,8 +6355,7 @@ for (
     _doc_page_mapping = DOC_PAGE_REVIEW_MAPPINGS.get(_doc_page_path)
     if _doc_page_mapping is None:
         raise AtlasError(
-            "documentation selector override has no reviewed page mapping: "
-            + _doc_page_path
+            "documentation selector override has no reviewed page mapping: " + _doc_page_path
         )
     _matched_workflow_rows = []
     for _workflow_row in _doc_page_mapping.get("workflow_cases", []):
@@ -6358,9 +6363,8 @@ for (
         if not isinstance(_linked_case_ids, list):
             _linked_case_id = _workflow_row.get("case_id")
             _linked_case_ids = [_linked_case_id] if isinstance(_linked_case_id, str) else []
-        if (
-            _workflow_row.get("recipe_path") == _recipe_path
-            and tuple(_linked_case_ids) == tuple(_case_ids)
+        if _workflow_row.get("recipe_path") == _recipe_path and tuple(_linked_case_ids) == tuple(
+            _case_ids
         ):
             _matched_workflow_rows.append(_workflow_row)
     if len(_matched_workflow_rows) != 1:

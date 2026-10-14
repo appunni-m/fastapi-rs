@@ -8,8 +8,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, Weak};
 
 use pyo3::exceptions::{
-    PyAssertionError, PyAttributeError, PyException, PyKeyError, PyNameError,
-    PyNotImplementedError, PyRuntimeError, PyStopAsyncIteration, PyTypeError, PyValueError,
+    PyAssertionError, PyAttributeError, PyException, PyKeyError, PyModuleNotFoundError,
+    PyNameError, PyNotImplementedError, PyRuntimeError, PyStopAsyncIteration, PyTypeError,
+    PyValueError,
 };
 use pyo3::prelude::*;
 use pyo3::sync::PyOnceLock;
@@ -37,6 +38,253 @@ use crate::{
 };
 
 const DEFAULT_RESPONSE_DESCRIPTION: &str = "Successful Response";
+const UJSON_RESPONSE_DEPRECATION_MESSAGE: &str = concat!(
+    "UJSONResponse is deprecated, FastAPI now serializes data directly to JSON ",
+    "bytes via Pydantic when a return type or response model is set, which is ",
+    "faster and doesn't need a custom response class. Read more in the FastAPI ",
+    "docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model ",
+    "and https://fastapi.tiangolo.com/tutorial/response-model/",
+);
+const UJSON_RESPONSE_DOC: &str = concat!(
+    "JSON response using the ujson library to serialize data to JSON.\n\n",
+    "    **Deprecated**: `UJSONResponse` is deprecated. FastAPI now serializes data\n",
+    "    directly to JSON bytes via Pydantic when a return type or response model is\n",
+    "    set, which is faster and doesn't need a custom response class.\n\n",
+    "    Read more in the\n",
+    "    [FastAPI docs for Custom Response](https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model)\n",
+    "    and the\n",
+    "    [FastAPI docs for Response Model](https://fastapi.tiangolo.com/tutorial/response-model/).\n\n",
+    "    **Note**: `ujson` is not included with FastAPI and must be installed\n",
+    "    separately, e.g. `pip install ujson`.\n",
+    "    "
+);
+const UJSON_RESPONSE_MISSING_ASSERTION: &str = "ujson must be installed to use UJSONResponse";
+
+#[pyclass(name = "_UjsonResponseRenderDescriptor")]
+struct UjsonResponseRenderDescriptor {
+    ujson: Option<Py<PyAny>>,
+    class_signature: Py<PyAny>,
+    instance_signature: Py<PyAny>,
+    annotations: Py<PyAny>,
+}
+
+#[pymethods]
+impl UjsonResponseRenderDescriptor {
+    fn __get__(
+        &self,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        _owner: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        let signature = if instance.is_some() {
+            self.instance_signature.bind(py)
+        } else {
+            self.class_signature.bind(py)
+        };
+        let method = Py::new(
+            py,
+            UjsonResponseRenderMethod {
+                ujson: self.ujson.as_ref().map(|module| module.clone_ref(py)),
+                signature: signature.clone().unbind(),
+            },
+        )?;
+        let method_bound = method.bind(py);
+        method_bound.setattr("__name__", "render")?;
+        method_bound.setattr("__doc__", py.None())?;
+        method_bound.setattr("__module__", "fastapi.responses")?;
+        method_bound.setattr("__qualname__", "UJSONResponse.render")?;
+        method_bound.setattr("__annotations__", self.annotations.bind(py))?;
+        method_bound.setattr("__signature__", signature)?;
+        Ok(method.into_any())
+    }
+}
+
+#[pyclass(name = "_UjsonResponseRenderMethod", dict)]
+struct UjsonResponseRenderMethod {
+    ujson: Option<Py<PyAny>>,
+    signature: Py<PyAny>,
+}
+
+#[pymethods]
+impl UjsonResponseRenderMethod {
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let bound_arguments = self.signature.bind(py).call_method("bind", args, kwargs)?;
+        let arguments = bound_arguments.getattr("arguments")?;
+        let arguments = arguments.cast::<PyDict>()?;
+        let content = arguments
+            .get_item("content")?
+            .ok_or_else(|| PyTypeError::new_err("missing required argument: 'content'"))?;
+        let Some(ujson) = self.ujson.as_ref() else {
+            return Err(PyAssertionError::new_err(UJSON_RESPONSE_MISSING_ASSERTION));
+        };
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("ensure_ascii", false)?;
+        let json = ujson
+            .bind(py)
+            .call_method("dumps", (content,), Some(&kwargs))?;
+        json.call_method1("encode", ("utf-8",)).map(Bound::unbind)
+    }
+}
+
+fn ujson_response_render_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
+    let inspect = py.import("inspect")?;
+    let parameter = inspect.getattr("Parameter")?;
+    let kind = parameter.getattr("POSITIONAL_OR_KEYWORD")?;
+    let self_parameter = parameter.call1(("self", kind.clone()))?;
+    let content_kwargs = PyDict::new(py);
+    content_kwargs.set_item("annotation", py.import("typing")?.getattr("Any")?)?;
+    let content_parameter = parameter.call(("content", kind), Some(&content_kwargs))?;
+    let parameters = PyTuple::new(py, [self_parameter, content_parameter])?;
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", py.get_type::<PyBytes>())?;
+    inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))
+        .map(Bound::unbind)
+}
+
+#[pyclass(name = "_UjsonResponseNew", dict)]
+struct UjsonResponseNew {
+    response_class: Py<PyAny>,
+}
+
+#[pymethods]
+impl UjsonResponseNew {
+    #[pyo3(signature = (cls, *args, **kwargs))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        cls: Bound<'_, PyAny>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let _ = (args, kwargs);
+        if cls.is(self.response_class.bind(py)) {
+            emit_ujson_response_deprecation_warning(py)?;
+        }
+        py.import("builtins")?
+            .getattr("object")?
+            .getattr("__new__")?
+            .call1((cls,))
+            .map(Bound::unbind)
+    }
+}
+
+#[pyclass(name = "_UjsonResponseInitSubclass", dict)]
+struct UjsonResponseInitSubclass {
+    response_class: Py<PyAny>,
+}
+
+#[pymethods]
+impl UjsonResponseInitSubclass {
+    #[pyo3(signature = (cls, *args, **kwargs))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        cls: Bound<'_, PyAny>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<()> {
+        emit_ujson_response_deprecation_warning(py)?;
+        let parent_init_subclass = py
+            .import("builtins")?
+            .getattr("super")?
+            .call1((self.response_class.bind(py), cls))?
+            .getattr("__init_subclass__")?;
+        parent_init_subclass.call(args, kwargs)?;
+        Ok(())
+    }
+}
+
+fn emit_ujson_response_deprecation_warning(py: Python<'_>) -> PyResult<()> {
+    let kwargs = PyDict::new(py);
+    // The source class adds one Python wrapper around construction. This native
+    // replacement has no corresponding frame, so step over one fewer frame.
+    kwargs.set_item("stacklevel", 2)?;
+    py.import("warnings")?.getattr("warn")?.call(
+        (
+            UJSON_RESPONSE_DEPRECATION_MESSAGE,
+            crate::errors::fastapi_deprecation_warning_type(py),
+        ),
+        Some(&kwargs),
+    )?;
+    Ok(())
+}
+
+fn register_ujson_response(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    let py = module.py();
+    let class_signature = ujson_response_render_signature(py)?;
+    let instance_signature = bound_operation_signature(py, class_signature.bind(py))?;
+    let annotations = PyDict::new(py);
+    annotations.set_item("content", py.import("typing")?.getattr("Any")?)?;
+    annotations.set_item("return", py.get_type::<PyBytes>())?;
+    module.add_class::<UjsonResponseRenderDescriptor>()?;
+    module.add_class::<UjsonResponseRenderMethod>()?;
+    module.add_class::<UjsonResponseNew>()?;
+    module.add_class::<UjsonResponseInitSubclass>()?;
+
+    let ujson = match py.import("ujson") {
+        Ok(module) => Some(module.into_any().unbind()),
+        Err(error) if error.is_instance_of::<PyModuleNotFoundError>(py) => None,
+        Err(error) => return Err(error),
+    };
+    let json_response = py.import("starlette.responses")?.getattr("JSONResponse")?;
+    let bases = PyTuple::new(py, [json_response.clone()])?;
+    let namespace = PyDict::new(py);
+    namespace.set_item("__module__", "fastapi.responses")?;
+    namespace.set_item("__doc__", UJSON_RESPONSE_DOC)?;
+    namespace.set_item("__deprecated__", UJSON_RESPONSE_DEPRECATION_MESSAGE)?;
+    namespace.set_item(
+        "render",
+        Py::new(
+            py,
+            UjsonResponseRenderDescriptor {
+                ujson,
+                class_signature,
+                instance_signature,
+                annotations: annotations.into_any().unbind(),
+            },
+        )?,
+    )?;
+    let response_class =
+        py.import("builtins")?
+            .getattr("type")?
+            .call1(("UJSONResponse", bases, namespace))?;
+
+    let new_method = Py::new(
+        py,
+        UjsonResponseNew {
+            response_class: response_class.clone().unbind(),
+        },
+    )?;
+    new_method.setattr(py, "__deprecated__", UJSON_RESPONSE_DEPRECATION_MESSAGE)?;
+    let staticmethod = py
+        .import("builtins")?
+        .getattr("staticmethod")?
+        .call1((new_method,))?;
+    response_class.setattr("__new__", staticmethod)?;
+
+    let init_subclass = Py::new(
+        py,
+        UjsonResponseInitSubclass {
+            response_class: response_class.clone().unbind(),
+        },
+    )?;
+    init_subclass.setattr(py, "__deprecated__", UJSON_RESPONSE_DEPRECATION_MESSAGE)?;
+    let classmethod = py
+        .import("builtins")?
+        .getattr("classmethod")?
+        .call1((init_subclass,))?;
+    response_class.setattr("__init_subclass__", classmethod)?;
+
+    module.add("UJSONResponse", response_class)
+}
 
 #[pyclass(name = "_PydanticBytesSchemaDescriptor")]
 struct PydanticBytesSchemaDescriptor;
@@ -14522,6 +14770,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     ] {
         module.add(name, module.py().import(module_path)?.getattr(name)?)?;
     }
+    register_ujson_response(module)?;
     Ok(())
 }
 

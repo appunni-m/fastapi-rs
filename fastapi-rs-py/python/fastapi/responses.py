@@ -22,6 +22,9 @@ from fastapi_rs._core import (
 from fastapi_rs._core import (
     StreamingResponse as StreamingResponse,
 )
+from fastapi_rs._core import (
+    UJSONResponse as UJSONResponse,
+)
 
 __all__ = [
     "EventSourceResponse",
@@ -32,4 +35,5 @@ __all__ = [
     "RedirectResponse",
     "Response",
     "StreamingResponse",
+    "UJSONResponse",
 ]

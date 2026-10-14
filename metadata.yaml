@@ -10573,17 +10573,39 @@ reviewed_api_contract_overlay:
         assertion when the optional package is absent.
 
     fastapi.responses.UJSONResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register_ujson_response
       source_evidence:
         - path: fastapi/responses.py
           kind: source-definition
           symbol: UJSONResponse
           start_line: 48
           end_line: 66
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
+          case_id: fastapi.custom-response.tutorial001.items-response
+          workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
+          observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
+          case_id: fastapi.custom-response.tutorial001.openapi
+          workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
+          observation_selectors: [http.status, openapi.document]
+      feature_ids: [public-api-errors, response-serialization]
+      observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message, http.status, openapi.document]
       supported_slice: >-
-        Deprecated JSON response class requiring optional `ujson`; class construction uses the
-        JSON response envelope, while serialization is the separately listed `render` operation.
+        Deprecated JSON response subclass with a route-level OpenAPI projection. In the pinned
+        base profile without optional `ujson`, the selected request observes the deprecation
+        warning and exact missing-dependency assertion before any response is sent. Successful
+        serialization with `ujson` installed, direct construction, and broader class behavior
+        remain unverified.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Successful serialization with optional `ujson`, direct construction, subclassing, and broader class reflection are not covered by the selected route and OpenAPI cases.
+          - The source warning points to FastAPI's Python routing frame, which has no native target counterpart; the selected parity recipe records and narrowly normalizes the exact pinned source/target warning locations.
 
     fastapi.responses.UJSONResponse.render:
+      rust_binding: fastapi-rs/src/application_runtime.rs::UjsonResponseRenderDescriptor
       source_evidence:
         - path: fastapi/responses.py
           kind: source-definition
@@ -10591,9 +10613,23 @@ reviewed_api_contract_overlay:
           owner: UJSONResponse
           start_line: 64
           end_line: 66
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
+          case_id: fastapi.custom-response.tutorial001.items-response
+          workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
+          observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message]
+      feature_ids: [public-api-errors, response-serialization]
+      observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message]
       supported_slice: >-
-        Serialize content using `ujson.dumps(..., ensure_ascii=False)` followed by UTF-8
-        encoding; preserve the source assertion when the optional package is absent.
+        Preserve the exact missing-`ujson` assertion reached when the pinned base-profile request
+        invokes rendering. Successful `ujson.dumps(..., ensure_ascii=False)` bytes, arbitrary
+        content, and direct method signature behavior remain unverified.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Successful optional-`ujson` serialization, arbitrary content, and direct render-signature behavior remain unverified.
+          - Warning filename and line differ because Rust-owned dispatch has no FastAPI Python routing frame; only the exact observed warning identity and location pair is normalized in the selected recipe.
 
     fastapi.routing.APIRoute.response_class:
       source_evidence:

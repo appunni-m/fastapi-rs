@@ -440,6 +440,12 @@ def _compare_warning_sidecar(
         raise ComparisonError("selected warning sidecar is missing from a source or target phase")
     if source_warnings == target_warnings:
         return []
+    normalizations = phase_spec.get("warning_location_normalizations", [])
+    if normalizations:
+        source_comparable = _normalize_warning_locations(source_warnings, normalizations, "source")
+        target_comparable = _normalize_warning_locations(target_warnings, normalizations, "target")
+        if source_comparable == target_comparable:
+            return []
     return [
         {
             "action_id": phase_id,
@@ -449,6 +455,32 @@ def _compare_warning_sidecar(
             "target": target_warnings,
         }
     ]
+
+
+def _normalize_warning_locations(
+    warnings: list[dict[str, Any]], normalizations: list[dict[str, Any]], side: str
+) -> list[dict[str, Any]]:
+    normalized = []
+    for warning in warnings:
+        comparable = dict(warning)
+        matches = [
+            rule
+            for rule in normalizations
+            if warning.get("category") == rule["category"]
+            and warning.get("message") == rule["message"]
+        ]
+        if len(matches) > 1:
+            raise ComparisonError("warning location normalization rules overlap")
+        if matches:
+            location = matches[0][side]
+            if (
+                warning.get("filename") == location["filename"]
+                and warning.get("lineno") == location["lineno"]
+            ):
+                comparable["filename"] = "<reviewed-runtime-frame-difference>"
+                comparable["lineno"] = 0
+        normalized.append(comparable)
+    return normalized
 
 
 def _compare_case_v4(

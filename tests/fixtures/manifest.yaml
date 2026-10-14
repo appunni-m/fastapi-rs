@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@8
-    sha256: 0a74bbb7cb86ce77ec52f77fcf0f9ee59784ce43c6e621b31f6d5488bb2b9a86
+    sha256: 32ceb29f9ebf0348f1f43ee6b18df8ec16b7dad0a9ce67cb22d62de55facf308
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,11 +475,11 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 6ba8ec694d6a1c8b89cd7937c5e0223eafda74d795846c80a78b0479c6173fc0
+    sha256: d1da5e87dfeaae0dd515219f78df2f96a032e5b03d68f988899631e2cb85cb51
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
-      designs: 891
-      test_case_designs: 2118
+      designs: 890
+      test_case_designs: 2116
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: bbbe35ede81741f99b6ba02ff06f709a0d7903784d0d39cdac5d4409ce4a124c
+    sha256: ed3ddf8c4030f507b92aa279003050c9a2cb30d181c41361a59c1d109f1360b0
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 587
       cases: 2454
-      partial_source_mappings: 1687
+      partial_source_mappings: 1686
 
 contract_metadata:
   aliases:
@@ -746,10 +746,10 @@ unresolved:
       PermissionError maps to 401, ValueError and ENAMETOOLONG map to 404, and
       other OSError instances propagate as application errors.
   python_asgi_workflow_v10:
-    state: v10-adds-openapi-cache-publication-retry-contract; v1-v9-remain-supported
+    state: v10-adds-openapi-cache-publication-retry-and-reviewed-warning-frame-normalization; v1-v9-remain-supported
     schema_id: fastapi-rs/python-asgi-workflow@10
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v10.schema.json
-    schema_sha256: 3f2525a6584f1ecef76c65f63ab28570da43b2ce9dc0677becb330f0947cdfc0
+    schema_sha256: f464ad6f5968a4842cc8265385835ef830bf27c950d41d92bc60a57247013201
     result_schema_id: fastapi-rs/python-asgi-workflow-result@10
     result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v10.schema.json
     result_schema_sha256: b7ea753af35c720b4672a9e0c833ce76c330fcdae7d796a1839dcc4f4b7fc82f
@@ -760,6 +760,8 @@ unresolved:
       Adds a target-only OpenAPI cache-publication fault contract that exposes
       the initial HTTP 500 and exception, then requires a successful retry and
       equality between the full retry document and a subsequent cached response.
+      Selected actions can declare exact source-backed warning-location pairs
+      where source and native call stacks have no corresponding frames.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1
@@ -1135,8 +1137,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 148
-    symbols_with_operation_fixture_refs: 241
-    operation_fixture_refs: 1812
+    symbols_with_operation_fixture_refs: 243
+    operation_fixture_refs: 1815
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -46446,15 +46448,50 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: custom-response-tutorial001-upstream
+      input_path: tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json
+      input_sha256: 60d9ed2f46d55bd422b1aef4a27983604a38272d01208e379571d089282e3a0e
+      recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
+      recipe_sha256: aba44b357e84bf4f18aa75b048b72660817b44d9c070238c8aca3898896e4507
+      workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
+      workload_sha256: 739504b2f3bdf997ae151327ea5f2a281609376b522554f4c9b0477ff16deade
+      case_id: fastapi.custom-response.tutorial001.items-response
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - warnings.category_message
+    - workflow_id: custom-response-tutorial001-upstream
+      input_path: tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json
+      input_sha256: 60d9ed2f46d55bd422b1aef4a27983604a38272d01208e379571d089282e3a0e
+      recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
+      recipe_sha256: aba44b357e84bf4f18aa75b048b72660817b44d9c070238c8aca3898896e4507
+      workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
+      workload_sha256: 739504b2f3bdf997ae151327ea5f2a281609376b522554f4c9b0477ff16deade
+      case_id: fastapi.custom-response.tutorial001.openapi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
     - response-serialization
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.send.message_types
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - openapi.document
+    - warnings.category_message
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.UJSONResponse/supported_slice
@@ -46467,8 +46504,14 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1041
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::register_ujson_response
+      known_gaps:
+      - Successful serialization with optional `ujson`, direct construction, subclassing, and broader
+        class reflection are not covered by the selected route and OpenAPI cases.
+      - The source warning points to FastAPI's Python routing frame, which has no native target counterpart;
+        the selected parity recipe records and narrowly normalizes the exact pinned source/target warning
+        locations.
   - id: fastapi.responses.UJSONResponse.render
     kind: method
     source_candidate_ref: /api_candidates/1042
@@ -46501,15 +46544,33 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: custom-response-tutorial001-upstream
+      input_path: tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json
+      input_sha256: 60d9ed2f46d55bd422b1aef4a27983604a38272d01208e379571d089282e3a0e
+      recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
+      recipe_sha256: aba44b357e84bf4f18aa75b048b72660817b44d9c070238c8aca3898896e4507
+      workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
+      workload_sha256: 739504b2f3bdf997ae151327ea5f2a281609376b522554f4c9b0477ff16deade
+      case_id: fastapi.custom-response.tutorial001.items-response
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
     - response-serialization
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.send.message_types
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - warnings.category_message
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.UJSONResponse.render/supported_slice
@@ -46522,8 +46583,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1042
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::UjsonResponseRenderDescriptor
+      known_gaps:
+      - Successful optional-`ujson` serialization, arbitrary content, and direct render-signature behavior
+        remain unverified.
+      - Warning filename and line differ because Rust-owned dispatch has no FastAPI Python routing frame;
+        only the exact observed warning identity and location pair is normalized in the selected recipe.
   - id: fastapi.routing.APIRoute
     kind: class
     source_candidate_ref: /api_candidates/1052

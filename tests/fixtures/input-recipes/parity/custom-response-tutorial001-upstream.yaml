@@ -1,13 +1,32 @@
-schema: fastapi-rs/python-asgi-workflow@2
+schema: fastapi-rs/python-asgi-workflow@10
 workload:
   file: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.custom-response.tutorial001.items-response
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  verification: parity
   actions:
   - action_id: items
     kind: http_request
+    capture_warnings: true
+    warning_location_normalizations:
+    - category: fastapi.exceptions.FastAPIDeprecationWarning
+      message: >-
+        UJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/
+      source: {filename: fastapi/routing.py, lineno: 144}
+      target: {filename: starlette/middleware/errors.py, lineno: 57}
+      rationale: >-
+        FastAPI 0.141.1's deprecated class wrapper warns through the Python frame at
+        fastapi/routing.py:144. FastAPI-RS performs the equivalent dispatch in Rust,
+        so that frame does not exist; the warning surfaces at the pinned Starlette-RS
+        ASGI trampoline. Preserve each real origin in run artifacts and normalize only
+        this exact warning identity and these exact source/target locations.
     scope:
       type: http
       asgi:
@@ -33,17 +52,22 @@ cases:
       body: ''
       more_body: false
     observations:
-    - kind: http_response
-      selectors:
-      - status
-      - body
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - kind: application_error
+      selector: exception
       comparison: exact
   source_evidence:
-  - path: tests/test_tutorial/test_custom_response/test_tutorial001.py
-    kind: upstream_test
   - path: docs_src/custom_response/tutorial001_py310.py
     kind: upstream_documentation_example
 - case_id: fastapi.custom-response.tutorial001.openapi
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  verification: parity
   actions:
   - action_id: openapi
     kind: http_request
@@ -83,7 +107,5 @@ cases:
       - /paths
       comparison: exact
   source_evidence:
-  - path: tests/test_tutorial/test_custom_response/test_tutorial001.py
-    kind: upstream_test
   - path: docs_src/custom_response/tutorial001_py310.py
     kind: upstream_documentation_example

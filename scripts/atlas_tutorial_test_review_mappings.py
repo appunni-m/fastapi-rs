@@ -856,50 +856,6 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
             ),
         },
     ),
-    "tests/test_tutorial/test_custom_response/test_tutorial001.py": _module(
-        [
-            {
-                "path": "docs_src/custom_response/tutorial001_py310.py",
-                "start_line": 1,
-                "end_line": 9,
-                "role": "deprecated UJSONResponse route configuration",
-            },
-            {
-                "path": "fastapi/responses.py",
-                "start_line": 39,
-                "end_line": 66,
-                "role": "FastAPI UJSONResponse implementation and deprecation",
-            },
-            {
-                "path": "fastapi/routing.py",
-                "start_line": 375,
-                "end_line": 400,
-                "role": "FastAPI response-class integration",
-            },
-            {
-                "path": "fastapi/openapi/utils.py",
-                "start_line": 585,
-                "end_line": 647,
-                "role": "FastAPI OpenAPI document generation",
-            },
-        ],
-        {
-            "test_get_custom_response": _case(
-                "tests/test_tutorial/test_custom_response/test_tutorial001.py",
-                23,
-                26,
-                ["response-serialization"],
-                ["http.status", "http.body.json"],
-                "The route returns JSON through the deprecated UJSONResponse class. The test suppresses its deprecation warning, so it is not evidence about warning emission.",
-            ),
-            "test_openapi_schema": _openapi(
-                "tests/test_tutorial/test_custom_response/test_tutorial001.py",
-                30,
-                52,
-                "The exact OpenAPI snapshot records the declared JSON response class's documented media type/schema.",
-            ),
-        },
-    ),
     "tests/test_tutorial/test_custom_response/test_tutorial001b.py": _module(
         [
             {
