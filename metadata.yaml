@@ -1215,6 +1215,10 @@ reviewed_api_contract_overlay:
         - {path: docs_src/metadata/tutorial004_py310.py}
         - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, symbol: test_openapi_schema}
       fixture_refs:
+        - &first_asgi_openapi
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.openapi
+          workload_path: tests/fixtures/workloads/first_slice.py
         - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
           workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
@@ -3824,6 +3828,50 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/strict-content-type.md}
       feature_ids: [request-validation, response-serialization]
       fixture_refs:
+        - &first_asgi_valid
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-valid
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_optional_query
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-optional-query-default
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_invalid_path
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-invalid-path-conversion
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_chunked_body
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-chunked-body
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_missing_header
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-missing-header
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_invalid
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-invalid
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_malformed_json
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-malformed-json
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_aggregated_errors
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-aggregated-errors
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_json_suffix
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-json-suffix-content-type
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_text_plain
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-text-plain-content-type
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_missing_content_type
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.create-item-missing-content-type
+          workload_path: tests/fixtures/workloads/first_slice.py
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
@@ -3873,9 +3921,11 @@ reviewed_api_contract_overlay:
         media types parse JSON only for `application/json` and
         `application/*+json`, including parameters; other types remain raw
         bytes. The strict app, router, and nested inheritance cases are
-        exercised by `strict-content-type-router-level-upstream`.
-        Route-level `APIRoute` mutation and
-        custom route classes remain outside the reviewed slice.
+        exercised by `strict-content-type-router-level-upstream`. The 11 routed
+        POST cases in `first-asgi-request` exercise selected default handler behavior
+        through the public app path. FastAPI-RS does not expose a binding for
+        `APIRoute.get_route_handler`; direct calls, subclass overrides, route mutation,
+        and custom route classes remain outside the target slice.
     fastapi.encoders.jsonable_encoder:
       supported_slice: >-
         Direct-call behavior is bounded to the listed encoder recipes: signature, recursive
@@ -4159,7 +4209,9 @@ reviewed_api_contract_overlay:
         other constructor options and app lifecycle remain outside this slice. A separate
         input probes callback-visible defaults through the source's semi-internal direct
         `add_api_route` registration path; this does not classify that method as a public
-        FastAPI contract.
+        FastAPI contract. The 13-case first ASGI slice also covers default app construction,
+        one POST registration, selected request handling, and the generated OpenAPI document;
+        it does not cover general constructor options or app lifecycle.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
@@ -4190,10 +4242,26 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
           case_id: fastapi.openapi-array-items-query-wire.required-list
           workload_path: tests/fixtures/workloads/array_items_query_wire.py
+        - *first_asgi_openapi
+        - *first_asgi_valid
+        - *first_asgi_optional_query
+        - *first_asgi_invalid_path
+        - &first_asgi_path_not_found
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.path-not-found
+          workload_path: tests/fixtures/workloads/first_slice.py
+        - *first_asgi_chunked_body
+        - *first_asgi_missing_header
+        - *first_asgi_invalid
+        - *first_asgi_malformed_json
+        - *first_asgi_aggregated_errors
+        - *first_asgi_json_suffix
+        - *first_asgi_text_plain
+        - *first_asgi_missing_content_type
       feature_ids: [app-routing]
       observation_selectors: [python.signature]
     fastapi.applications.FastAPI.__call__:
-      rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::__call__
       source_evidence:
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
@@ -4242,6 +4310,19 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - *first_asgi_openapi
+        - *first_asgi_valid
+        - *first_asgi_optional_query
+        - *first_asgi_invalid_path
+        - *first_asgi_path_not_found
+        - *first_asgi_chunked_body
+        - *first_asgi_missing_header
+        - *first_asgi_invalid
+        - *first_asgi_malformed_json
+        - *first_asgi_aggregated_errors
+        - *first_asgi_json_suffix
+        - *first_asgi_text_plain
+        - *first_asgi_missing_content_type
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -5128,6 +5209,7 @@ reviewed_api_contract_overlay:
           symbol: get_openapi_path
         - path: docs/en/docs/how-to/extending-openapi.md
       fixture_refs:
+        - *first_asgi_openapi
         - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
           workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
@@ -6257,6 +6339,18 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
       fixture_refs:
+        - *first_asgi_openapi
+        - *first_asgi_valid
+        - *first_asgi_optional_query
+        - *first_asgi_invalid_path
+        - *first_asgi_chunked_body
+        - *first_asgi_missing_header
+        - *first_asgi_invalid
+        - *first_asgi_malformed_json
+        - *first_asgi_aggregated_errors
+        - *first_asgi_json_suffix
+        - *first_asgi_text_plain
+        - *first_asgi_missing_content_type
         - *generator_await_propagated_future
         - *generator_await_unflagged_error
         - *generator_await_await_generator_error
