@@ -80,12 +80,23 @@ installed `pydantic-core` wheel is
 package is MIT-licensed; dependency license expressions are retained per
 resolved crate. This inventory does not bundle those crates into FastAPI-RS.
 
-The target's current `pyproject.toml` declares no optional dependency groups.
-The pinned Starlette-RS package separately declares `schemas` (`pyyaml`),
-`templates` (`jinja2`), and `testclient` (`httpx>=0.27,<0.29`, `httpx2>=2`)
-extras. FastAPI-RS does not currently request those extras, so their resolved
-versions, native parts, and license evidence are outside this base profile and
-remain **unresolved** for any future target feature that needs them.
+FastAPI-RS declares a `testclient` optional dependency group
+(`httpx>=0.27.0,<0.29.0`). Its CPython 3.12.13 TestClient parity profile is
+hash-locked in
+[`requirements/target-testclient-cpython-3.12.13.lock`](../requirements/target-testclient-cpython-3.12.13.lock)
+and adds `certifi==2026.1.4`, `h11==0.16.0`, `httpcore==1.0.9`, and
+`httpx==0.28.1` to the target runtime profile. Their purposes, implementation
+details, and license evidence are recorded in the
+[dependency atlas](dependency-atlas.md#optional-published-extras). This profile
+documents optional install and parity evidence only: the FastAPI-RS
+`fastapi.testclient.TestClient` binding remains
+`full-contract-not-established` in the
+[feature crosswalk](EXTRA_FEATURE_CROSSWALK.md#feature-ownership-and-target-mapping), so
+the profile does not claim public API support. The pinned Starlette-RS package
+also declares separate `schemas`, `templates`, and `testclient` extras; their
+use and support status are tracked independently from this FastAPI-RS profile.
+Their other optional package closures remain outside the target profiles and
+unresolved.
 `maturin==1.14.1` is pinned as the Python build backend, and its separate
 CPython 3.12.13 build-tool closure is hash-locked in
 [`requirements/build-tools-cpython-3.12.13.lock`](../requirements/build-tools-cpython-3.12.13.lock).

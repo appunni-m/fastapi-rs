@@ -591,6 +591,7 @@ path dependency.
 
 | Dependency | Declared by | Current purpose and source evidence |
 | --- | --- | --- |
+| `base64` 0.22.1 | `fastapi-rs` normal dependency | Decodes HTTP Basic credentials in the Rust-owned `HTTPBasic` dependency implementation; `fastapi-rs/src/security.rs` normalizes Python-compatible standard Base64 input before calling the crate decoder. |
 | `starlette-rs` 0.1.0 | `fastapi-rs` normal dependency | Rust routing and request-input primitives used by `fastapi-rs/src/operation.rs` (`RouteTable`, `DetailedRouteMatch`, `QueryParams`, `RequestHeaders`, and `RouteError`). FastAPI-RS owns ASGI orchestration, dependency execution, validation, response shaping, and OpenAPI integration in `fastapi-rs/src/application_runtime.rs`. |
 | `pyo3` 0.29.2 | `fastapi-rs` and `fastapi-rs-py` normal dependencies | Python/Rust binding API used by the Rust-owned FastAPI runtime in `fastapi-rs/src/application_runtime.rs` and `fastapi-rs/src/parameters.rs`, and by extension registration and existing bindings in `fastapi-rs-py/src/lib.rs`. `abi3-py310` sets the stable Python ABI minimum; Maturin enables `pyo3/extension-module` from `pyproject.toml`. |
 | `pyo3-build-config` 0.29.2 | `fastapi-rs-py` build dependency | PyO3 linker configuration invoked by `fastapi-rs-py/build.rs` so the Rust cdylib is linked as a Python extension. |
