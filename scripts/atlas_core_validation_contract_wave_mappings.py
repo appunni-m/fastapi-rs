@@ -274,7 +274,7 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
                         ["http.status", "openapi.document"],
                     )
                 ],
-                contract_gate="The independent workflow observes the MapPayload component pointer and adjacent curated components, not the empty-string OpenAPI document root asserted by the upstream snapshot. Coverage is therefore limited to selected component schema material until a root-pointer recipe is added.",
+                contract_gate="The independent workflow compares its complete generated document for a separately declared model with a typed dictionary field, without copying the upstream expected document.",
             ),
         },
     ),
@@ -327,7 +327,7 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
                 (39, 125),
                 ["openapi-docs"],
                 ["http.status", "openapi.document"],
-                "The source snapshots the full OpenAPI document, including the closed Foo model schema.",
+                "The source snapshots the full OpenAPI document, including a closed model schema. The independent input uses separately named schemas and observes its complete generated document.",
                 [
                     _workflow(
                         "schema-extensions.yaml",
@@ -336,7 +336,7 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
                         ["http.status", "openapi.document"],
                     )
                 ],
-                contract_gate="The workflow selects StrictPayload and other component pointers but not the empty-string document root asserted by the source. It samples additionalProperties=false without full-document coverage.",
+                contract_gate="The independent workflow compares its complete generated document, but uses different input models and names than the upstream fixture; it does not copy the upstream expected document.",
             ),
         },
     ),
