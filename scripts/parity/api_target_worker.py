@@ -13,6 +13,7 @@ from typing import Any
 
 from scripts.parity import api_worker
 from scripts.parity.target_worker import (
+    STARLETTE_PACKAGE_RELATIVE_PATH,
     TARGET_PACKAGE_ROOT,
     _read_workflow,
     _target_identity,
@@ -134,6 +135,7 @@ def run_target(
             factory,
             TARGET_IMPORT_ROOT,
             supported_symbols,
+            starlette_rs_source / STARLETTE_PACKAGE_RELATIVE_PATH,
             allow_nonfinite_floats=workflow["schema"]
             in {
                 api_worker.WORKFLOW_SCHEMA_V2_ID,

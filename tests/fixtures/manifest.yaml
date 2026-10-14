@@ -484,7 +484,7 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: f201df175d33b7f45a0db9445bd5cdb4a3a293ae4673c3d44808387ceab4971a
+    sha256: b19bbc8511ee54b52bfb28e85300e1ef8b50174154f0393c4b24acca6b33a0dc
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
       selectors: 52
@@ -512,13 +512,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: ed3ddf8c4030f507b92aa279003050c9a2cb30d181c41361a59c1d109f1360b0
+    sha256: f8c76cf2de8c737f167474d9c9144df71c8071841ce9aeeff162d6309c0251ba
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 587
-      cases: 2454
+      workflows: 588
+      cases: 2455
       partial_source_mappings: 1686
 
 contract_metadata:
@@ -869,6 +869,22 @@ unresolved:
       documented modules and their explicitly reviewed top-level bindings.
       Import identity does not establish class signatures, model validation,
       serialization, or OpenAPI behavior.
+  python_api_workflow_v8:
+    state: reviewed-cross-module-binding-identity-relation
+    schema_id: fastapi-rs/python-api-workflow@8
+    schema_path: tests/fixtures/schemas/python-api-workflow-v8.schema.json
+    schema_sha256: 3b6e3a634fdc23d748e68bccafdd9c9bbb6685374e9771056c6071d20738e567
+    result_schema_id: fastapi-rs/python-api-workflow-result@10
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v10.schema.json
+    result_schema_sha256: 0b61554f836e6f94ffbd7f09e899e86fd185781c2b7a972e7115d30150a463bd
+    comparison_schema_id: fastapi-rs/python-api-comparison@8
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v8.schema.json
+    comparison_schema_sha256: 01da569a1267213f27871f9f94e34c5119a596d94191471a0a3bdb987ebda14c
+    coverage: >-
+      Adds a public-attribute observation comparing exact Python object identity
+      with a reviewed canonical symbol from the selected Starlette package.
+      The comparator requires the source and target identity relations both be
+      true, preventing false/false agreement from passing.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -60919,6 +60935,18 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: []
     input_workflow_refs:
+    - workflow_id: fastapi-testclient-alias-identity
+      input_path: tests/fixtures/inputs/parity/fastapi-testclient-alias-identity.json
+      input_sha256: 22ed038d0c3fbac63348afec0ce3ba074a9c9f64de4ad6c0e3cee9fb302ae2cd
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-alias-identity.yaml
+      recipe_sha256: f95b87850840cb8aefeb68a8f9d35ea5e12fb69510d5b9caa24894a79bb89118
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      case_id: fastapi.testclient.public-api.alias-identity
+      probe_id: testclient-alias-identity
+      probe_kind: callable
+      observation_selectors:
+      - python.binding_identity
     - workflow_id: fastapi-testclient-public-alias
       input_path: tests/fixtures/inputs/parity/fastapi-testclient-public-alias.json
       input_sha256: a6551221a91218aa8008560027e8fc7ce009c47c7d7ccd086488f5a0e3ec193a
@@ -60935,6 +60963,7 @@ api_surface_contract:
     feature_ids:
     - public-api-errors
     observation_selectors:
+    - python.binding_identity
     - python.signature
     operation_scope:
       status: slice-described

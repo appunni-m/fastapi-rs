@@ -16,6 +16,7 @@ from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_V5_ID,
     API_WORKFLOW_SCHEMA_V6_ID,
     API_WORKFLOW_SCHEMA_V7_ID,
+    API_WORKFLOW_SCHEMA_V8_ID,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
@@ -42,6 +43,7 @@ INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v8.schema
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
+    "python_binding_identity": "python.binding_identity",
     "python_call_outcome": "python.call_outcome",
     "python_import_path": "python.import_path",
     "python_object_identity": "python.object_identity",
@@ -93,6 +95,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     API_WORKFLOW_SCHEMA_V5_ID,
                     API_WORKFLOW_SCHEMA_V6_ID,
                     API_WORKFLOW_SCHEMA_V7_ID,
+                    API_WORKFLOW_SCHEMA_V8_ID,
                 }
                 and probe.get("capture_warnings") is True
             ):
@@ -114,6 +117,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("python.import_path")
                 elif observation["kind"] == "python_object_identity":
                     selectors.add("python.object_identity")
+                elif observation["kind"] == "python_binding_identity":
+                    selectors.add("python.binding_identity")
         return selectors
 
     if workflow_schema in {

@@ -45,6 +45,7 @@ WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow@5"
 WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
+WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow@8"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -54,6 +55,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V5_ID,
         WORKFLOW_SCHEMA_V6_ID,
         WORKFLOW_SCHEMA_V7_ID,
+        WORKFLOW_SCHEMA_V8_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -64,6 +66,7 @@ RESULT_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow-result@6"
 RESULT_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow-result@7"
 RESULT_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow-result@9"
+RESULT_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow-result@10"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -72,11 +75,13 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V5_ID: RESULT_SCHEMA_V7_ID,
     WORKFLOW_SCHEMA_V6_ID: RESULT_SCHEMA_V8_ID,
     WORKFLOW_SCHEMA_V7_ID: RESULT_SCHEMA_V9_ID,
+    WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V10_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@8"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 _MODULE_PATH = re.compile(r"fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
+_STARLETTE_MODULE_PATH = re.compile(r"starlette(?:\.[A-Za-z_][A-Za-z0-9_]*)+\Z")
 _ATTRIBUTE_PATH = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 PINNED_AUTHORITIES = {
     "fastapi": {
@@ -660,6 +665,35 @@ def _public_module_observations(probe: dict[str, Any], fastapi_root: Path) -> li
     return observations
 
 
+def _binding_identity_values(
+    probe: dict[str, Any],
+    public_value: Any,
+    starlette_package_root: Path | None,
+) -> dict[str, Any]:
+    """Observe whether a FastAPI binding is the selected Starlette object itself."""
+    if starlette_package_root is None:
+        raise WorkerError("binding identity probe requires a selected Starlette package root")
+    public_reference = probe["public_callable"]
+    canonical_reference = probe["binding_identity"]
+    canonical_module = importlib.import_module(canonical_reference["module"])
+    canonical_module_file = getattr(canonical_module, "__file__", None)
+    if canonical_module_file is None or not _is_under(
+        Path(canonical_module_file), starlette_package_root
+    ):
+        raise WorkerError(
+            "canonical binding module is outside the selected Starlette package: "
+            f"{canonical_reference['module']}"
+        )
+    canonical_value = canonical_module
+    for segment in canonical_reference["attribute"].split("."):
+        canonical_value = getattr(canonical_value, segment)
+    return {
+        "public_symbol": f"{public_reference['module']}.{public_reference['attribute']}",
+        "canonical_symbol": f"{canonical_reference['module']}.{canonical_reference['attribute']}",
+        "same_object": public_value is canonical_value,
+    }
+
+
 def _require_supported_callable(spec: dict[str, str], supported_symbols: frozenset[str]) -> str:
     return _require_supported_symbol(spec, supported_symbols, label="callable")
 
@@ -707,6 +741,30 @@ def _validate_workflow_callables(
             observations = probe.get("observations")
             if not isinstance(observations, list):
                 raise WorkerError("direct Python API probe observations are malformed")
+            binding_identity_selected = any(
+                isinstance(observation, dict)
+                and observation.get("kind") == "python_binding_identity"
+                for observation in observations
+            )
+            if "binding_identity" in probe or binding_identity_selected:
+                binding_identity = probe.get("binding_identity")
+                if (
+                    workflow.get("schema") != WORKFLOW_SCHEMA_V8_ID
+                    or not binding_identity_selected
+                    or len(observations) != 1
+                    or "public_callable" not in probe
+                    or "argument_bundle" not in probe
+                    or "public_attribute" in probe
+                    or "public_module" in probe
+                    or not isinstance(binding_identity, dict)
+                    or not isinstance(binding_identity.get("module"), str)
+                    or _STARLETTE_MODULE_PATH.fullmatch(binding_identity["module"]) is None
+                    or not isinstance(binding_identity.get("attribute"), str)
+                    or _ATTRIBUTE_PATH.fullmatch(binding_identity["attribute"]) is None
+                ):
+                    raise WorkerError(
+                        "cross-module binding identity requires one v8 callable probe"
+                    )
             if "public_module" in probe:
                 if (
                     workflow.get("schema") != WORKFLOW_SCHEMA_V7_ID
@@ -841,6 +899,7 @@ async def _run_probe(
     bundles: Mapping[str, Any],
     fastapi_root: Path,
     supported_symbols: frozenset[str],
+    starlette_package_root: Path | None = None,
     *,
     allow_nonfinite_floats: bool = False,
     allow_pydantic_model_defaults: bool = False,
@@ -956,6 +1015,11 @@ async def _run_probe(
                 if not _is_strict_json_value(attribute_value):
                     raise ValueError("public attribute value is not strict JSON")
                 values = {"value": _json_safe(attribute_value)}
+            elif observation["kind"] == "python_binding_identity":
+                public_value = function if "public_callable" in probe else attribute_value
+                if public_value is None:
+                    raise WorkerError("binding identity observation has no public object")
+                values = _binding_identity_values(probe, public_value, starlette_package_root)
             elif observation["kind"] == "python_return_value":
                 if allow_nonfinite_floats:
                     projected, nonfinite_floats = _json_safe_with_nonfinite(result)
@@ -1003,6 +1067,7 @@ async def _run_case(
     factory: Any,
     fastapi_root: Path,
     supported_symbols: frozenset[str],
+    starlette_package_root: Path | None = None,
     *,
     allow_nonfinite_floats: bool = False,
     allow_pydantic_model_defaults: bool = False,
@@ -1021,6 +1086,7 @@ async def _run_case(
                 bundles,
                 fastapi_root,
                 supported_symbols,
+                starlette_package_root,
                 allow_nonfinite_floats=allow_nonfinite_floats,
                 allow_pydantic_model_defaults=allow_pydantic_model_defaults,
                 structural_signatures=structural_signatures,
@@ -1042,6 +1108,7 @@ async def _run_cases(
     factory: Any,
     fastapi_root: Path,
     supported_symbols: frozenset[str],
+    starlette_package_root: Path | None = None,
     *,
     allow_nonfinite_floats: bool = False,
     allow_pydantic_model_defaults: bool = False,
@@ -1055,6 +1122,7 @@ async def _run_cases(
                 factory,
                 fastapi_root,
                 supported_symbols,
+                starlette_package_root,
                 allow_nonfinite_floats=allow_nonfinite_floats,
                 allow_pydantic_model_defaults=allow_pydantic_model_defaults,
                 structural_signatures=structural_signatures,
@@ -1373,6 +1441,7 @@ def run_oracle(
             factory,
             fastapi_root,
             supported_symbols,
+            starlette_root / "starlette",
             allow_nonfinite_floats=workflow["schema"]
             in {
                 WORKFLOW_SCHEMA_V2_ID,

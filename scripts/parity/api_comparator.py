@@ -19,6 +19,7 @@ WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow@5"
 WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
+WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow@8"
 
 
 def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
@@ -168,6 +169,26 @@ def compare_api_workflow_results(
                         },
                     )
                 )
+            binding_identity_selected = any(
+                observation.get("kind") == "python_binding_identity"
+                for observation in probe_spec["observations"]
+            )
+            if binding_identity_selected and workflow_schema_id != WORKFLOW_SCHEMA_V8_ID:
+                raise ContractError("cross-module binding identity requires API workflow v8")
+            if binding_identity_selected and (
+                source_status != "completed" or target_status != "completed"
+            ):
+                diffs.append(
+                    _diff(
+                        probe_id,
+                        f"{base}/binding_identity_observation_completed",
+                        "completed on both products",
+                        {
+                            "source_status": source_status,
+                            "target_status": target_status,
+                        },
+                    )
+                )
             if workflow_schema_id in {
                 WORKFLOW_SCHEMA_V3_ID,
                 WORKFLOW_SCHEMA_V4_ID,
@@ -246,6 +267,21 @@ def compare_api_workflow_results(
                             target_observation.get("values"),
                         )
                     )
+                if kind == "python_binding_identity":
+                    for product, observation in (
+                        ("source", source_observation),
+                        ("target", target_observation),
+                    ):
+                        values = observation.get("values")
+                        if not isinstance(values, dict) or values.get("same_object") is not True:
+                            diffs.append(
+                                _diff(
+                                    probe_id,
+                                    f"{base}/observations/{index}/{product}_same_object",
+                                    True,
+                                    values.get("same_object") if isinstance(values, dict) else None,
+                                )
+                            )
 
         cases.append({"case_id": case_id, "outcome": "fail" if diffs else "pass", "diffs": diffs})
 
