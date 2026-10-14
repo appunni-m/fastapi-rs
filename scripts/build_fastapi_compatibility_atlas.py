@@ -6334,6 +6334,9 @@ from atlas_documentation_case_selector_overrides import (  # noqa: E402
 from atlas_documentation_page_case_links import (  # noqa: E402
     DOC_PAGE_CASE_LINK_COMPLETIONS,
 )
+from atlas_documentation_section_case_mappings import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS,
+)
 
 for _doc_page_path, _doc_page_rows in DOC_PAGE_CASE_LINK_COMPLETIONS.items():
     _doc_page_mapping = DOC_PAGE_REVIEW_MAPPINGS.get(_doc_page_path)
@@ -10503,6 +10506,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             return set()
 
     page_by_rel = {relative(path, docs_root): path for path in docs_root.rglob("*.md")}
+    reviewed_section_mapping_keys_seen: set[tuple[str, str]] = set()
     for rel, path in sorted(page_by_rel.items()):
         content = path.read_text(encoding="utf-8", errors="replace")
         lines = content.splitlines()
@@ -10527,6 +10531,105 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 continue
             section_feature_evidence.extend(section_evidence)
             section_features = [item["feature_id"] for item in section_evidence]
+            anchor_match = re.search(r"\{\s*#([A-Za-z0-9_-]+)\s*\}\s*$", heading["text"])
+            section_mapping_key = (rel, anchor_match.group(1)) if anchor_match else None
+            reviewed_section_mapping = (
+                DOC_SECTION_CASE_MAPPINGS.get(section_mapping_key)
+                if section_mapping_key is not None
+                else None
+            )
+            section_workflow_mappings = []
+            section_review_status = "pending"
+            section_exclusion_reason = None
+            section_review_rationale = None
+            page_exclusion = docs_exclusion(rel)
+            if page_exclusion:
+                section_review_status = "excluded"
+                section_exclusion_reason = page_exclusion
+            if reviewed_section_mapping is not None:
+                assert section_mapping_key is not None
+                reviewed_section_mapping_keys_seen.add(section_mapping_key)
+                section_label = f"docs/en/docs/{rel}#{section_mapping_key[1]} section mapping"
+                if page_exclusion:
+                    documented_page_validation_errors.append(
+                        f"{section_label} cannot override an excluded documentation page"
+                    )
+                if (
+                    reviewed_section_mapping.get("heading") != heading["text"]
+                    or reviewed_section_mapping.get("start_line") != heading["line"]
+                    or reviewed_section_mapping.get("end_line") != end_line
+                ):
+                    documented_page_validation_errors.append(
+                        f"{section_label} heading or pinned source span has changed"
+                    )
+                recipe_path = reviewed_section_mapping.get("recipe_path")
+                if not isinstance(recipe_path, str) or not recipe_path:
+                    documented_page_validation_errors.append(
+                        f"{section_label} must name an exact recipe path"
+                    )
+                    recipe_path = ""
+                case_ids = reviewed_case_ids(reviewed_section_mapping, section_label)
+                selector_claims = reviewed_selector_claims(
+                    reviewed_section_mapping.get("observation_selectors"), section_label
+                )
+                if not selector_claims:
+                    documented_page_validation_errors.append(
+                        f"{section_label} must claim at least one observation selector"
+                    )
+                if not reviewed_section_mapping.get("scope_note"):
+                    documented_page_validation_errors.append(
+                        f"{section_label} must explain the sampled behavior"
+                    )
+                if not reviewed_section_mapping.get("rationale"):
+                    documented_page_validation_errors.append(
+                        f"{section_label} must record the review rationale"
+                    )
+                unknown_selectors = sorted(selector_claims - selector_ids)
+                if unknown_selectors:
+                    documented_page_validation_errors.append(
+                        f"{section_label} names unknown selectors: {unknown_selectors}"
+                    )
+                projected_by_case = {
+                    case_id: project_documented_page_case(
+                        page_rel=rel,
+                        page_source_path="docs/en/docs/" + rel,
+                        recipe_path=recipe_path,
+                        case_id=case_id,
+                        source_selectors=selector_ids,
+                    )
+                    for case_id in case_ids
+                }
+                projected_selectors = (
+                    set().union(*projected_by_case.values()) if projected_by_case else set()
+                )
+                if selector_claims != projected_selectors:
+                    documented_page_validation_errors.append(
+                        f"{section_label} selectors must exactly match its linked cases: "
+                        f"missing={sorted(selector_claims - projected_selectors)}, "
+                        f"unlisted={sorted(projected_selectors - selector_claims)}"
+                    )
+                workflows_for_recipe = indexed_workflows_by_recipe.get(recipe_path, [])
+                if len(workflows_for_recipe) != 1:
+                    documented_page_validation_errors.append(
+                        f"{section_label} recipe must identify exactly one indexed workflow"
+                    )
+                if recipe_path and case_ids and selector_claims:
+                    workflow_id = (
+                        workflows_for_recipe[0]["id"] if len(workflows_for_recipe) == 1 else None
+                    )
+                    section_workflow_mappings = [
+                        {
+                            "workflow_id": workflow_id,
+                            "recipe_path": recipe_path,
+                            "case_ids": case_ids,
+                            "observation_selectors": sorted(selector_claims),
+                            "coverage_status": "partial",
+                            "scope_note": reviewed_section_mapping["scope_note"],
+                        }
+                    ]
+                    section_review_status = "reviewed_partial"
+                    section_exclusion_reason = None
+                    section_review_rationale = reviewed_section_mapping["rationale"]
             documented_sections.append(
                 {
                     "heading": heading["text"],
@@ -10536,6 +10639,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "feature_evidence": section_evidence,
                     "observation_selectors": selectors_for(section_features),
                     "selector_evidence": selector_evidence(section_features),
+                    "review_status": section_review_status,
+                    "independent_workflow_mappings": section_workflow_mappings,
+                    "exclusion_reason": section_exclusion_reason,
+                    "review_rationale": section_review_rationale,
                 }
             )
         linked_examples = sorted(examples_by_page.get(rel, []), key=lambda item: item["path"])
@@ -10946,6 +11053,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 }
             )
 
+    unmapped_section_keys = set(DOC_SECTION_CASE_MAPPINGS) - reviewed_section_mapping_keys_seen
+    if unmapped_section_keys:
+        documented_page_validation_errors.extend(
+            "reviewed section mapping does not match a feature-evidence heading: "
+            f"docs/en/docs/{section_path}#{anchor}"
+            for section_path, anchor in sorted(unmapped_section_keys)
+        )
     if documented_page_validation_errors:
         details = "\n - ".join(documented_page_validation_errors)
         raise AtlasError("documented-page selector/source validation failed:\n - " + details)
@@ -11862,7 +11976,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     reviewed_inherited_api_candidates.sort(key=lambda row: row["id"])
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@8",
+        "schema": "fastapi-rs/compatibility-atlas@9",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -12066,6 +12180,35 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 1
                 for item in coverage_items
                 if item["kind"] == "documented_feature_page" and item["exclusion_reason"]
+            ),
+            "documentation_section_candidates": sum(
+                len(item["mapping_evidence"].get("documented_sections", []))
+                for item in coverage_items
+                if item["kind"] == "documented_feature_page"
+            ),
+            "documentation_sections_with_reviewed_partial_mapping": sum(
+                section.get("review_status") == "reviewed_partial"
+                for item in coverage_items
+                if item["kind"] == "documented_feature_page"
+                for section in item["mapping_evidence"].get("documented_sections", [])
+            ),
+            "documentation_sections_pending_behavior_review": sum(
+                section.get("review_status") == "pending"
+                for item in coverage_items
+                if item["kind"] == "documented_feature_page"
+                for section in item["mapping_evidence"].get("documented_sections", [])
+            ),
+            "documentation_sections_excluded": sum(
+                section.get("review_status") == "excluded"
+                for item in coverage_items
+                if item["kind"] == "documented_feature_page"
+                for section in item["mapping_evidence"].get("documented_sections", [])
+            ),
+            "documentation_headings_without_feature_signal": sum(
+                item["mapping_evidence"].get("headings_indexed", 0)
+                - len(item["mapping_evidence"].get("documented_sections", []))
+                for item in coverage_items
+                if item["kind"] == "documented_feature_page"
             ),
             "documentation_python_examples": sum(
                 1 for item in coverage_items if item["kind"] == "documented_python_example_source"
@@ -12333,6 +12476,25 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 counts["documentation_python_examples_pending_behavior_review"],
                 counts["documentation_python_examples_excluded"]
                 + counts["documentation_support_files_excluded"],
+            ),
+            "| Documentation section candidates (feature signals) | %d | %d | %d | %d | %d |"
+            % (
+                counts["documentation_section_candidates"],
+                counts["documentation_sections_with_reviewed_partial_mapping"],
+                counts["documentation_sections_with_reviewed_partial_mapping"],
+                counts["documentation_sections_pending_behavior_review"],
+                counts["documentation_sections_excluded"],
+            ),
+            "| Documentation headings without feature signal | %d | — | — | — | — |"
+            % counts["documentation_headings_without_feature_signal"],
+            "",
+            "Section candidates are a finer-grained discovery view, not a replacement for the page denominator. Of %d feature-signal sections, %d have reviewed independent case links, %d remain pending review, and %d inherit an explicit excluded-page rationale. Another %d Markdown headings produced no feature signal and are not silently counted as features."
+            % (
+                counts["documentation_section_candidates"],
+                counts["documentation_sections_with_reviewed_partial_mapping"],
+                counts["documentation_sections_pending_behavior_review"],
+                counts["documentation_sections_excluded"],
+                counts["documentation_headings_without_feature_signal"],
             ),
             "",
             "Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and %d package initializers. Of the remaining examples, %d have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised."

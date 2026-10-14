@@ -573,7 +573,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@8", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@9", "unsupported atlas schema")
     _require(
         backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
         "unsupported fixture backlog schema",
@@ -1463,6 +1463,13 @@ def validate_compatibility_artifacts(
 
     fixture_rows = backlog.get("fixture_designs")
     _require(isinstance(fixture_rows, list) and bool(fixture_rows), "fixture designs are missing")
+    indexed_workflows = {
+        row.get("id"): row for row in materialized_input_index.get("workflows", [])
+    }
+    indexed_mappings = {
+        (row.get("source_item_id"), row.get("workflow_id")): row
+        for row in materialized_input_index.get("mappings", [])
+    }
     fixture_by_source: dict[str, dict[str, Any]] = {}
     fixture_ids: set[str] = set()
     case_ids: set[str] = set()
@@ -1591,6 +1598,62 @@ def validate_compatibility_artifacts(
                     section["observation_selectors"], f"documented section in {fixture_id}"
                 )
                 _reject_output_values(section, f"documented section in {fixture_id}")
+                section_status = section.get("review_status")
+                _require(
+                    section_status in {"pending", "reviewed_partial", "excluded"},
+                    f"documented section in {fixture_id} has no explicit review status",
+                )
+                section_mappings = section.get("independent_workflow_mappings")
+                _require(
+                    isinstance(section_mappings, list),
+                    f"documented section in {fixture_id} has no workflow mapping list",
+                )
+                if section_status == "reviewed_partial":
+                    _require(
+                        bool(section_mappings)
+                        and bool(section.get("review_rationale"))
+                        and not section.get("exclusion_reason"),
+                        f"reviewed documented section in {fixture_id} lacks mapping evidence",
+                    )
+                    for mapping in section_mappings:
+                        _require(
+                            isinstance(mapping.get("workflow_id"), str)
+                            and bool(mapping.get("recipe_path"))
+                            and isinstance(mapping.get("case_ids"), list)
+                            and bool(mapping.get("case_ids"))
+                            and bool(mapping.get("scope_note")),
+                            f"reviewed documented section in {fixture_id} has an incomplete workflow link",
+                        )
+                        register_selectors(
+                            mapping.get("observation_selectors"),
+                            f"documented section workflow in {fixture_id}",
+                        )
+                        workflow = indexed_workflows.get(mapping.get("workflow_id"))
+                        _require(
+                            isinstance(workflow, dict)
+                            and workflow.get("recipe_path") == mapping.get("recipe_path"),
+                            f"documented section in {fixture_id} references an unknown workflow",
+                        )
+                        page_mapping = indexed_mappings.get(
+                            (source_id, mapping.get("workflow_id")), {}
+                        )
+                        _require(
+                            set(mapping.get("case_ids", []))
+                            <= set(page_mapping.get("case_ids", []))
+                            and set(mapping.get("observation_selectors", []))
+                            <= set(page_mapping.get("observation_selectors", [])),
+                            f"documented section in {fixture_id} exceeds its indexed page workflow",
+                        )
+                elif section_status == "excluded":
+                    _require(
+                        bool(section.get("exclusion_reason")) and not section_mappings,
+                        f"excluded documented section in {fixture_id} needs a reason and no workflow links",
+                    )
+                else:
+                    _require(
+                        not section_mappings and not section.get("exclusion_reason"),
+                        f"pending documented section in {fixture_id} cannot claim coverage or exclusion",
+                    )
         elif source_row.get("kind") == "documented_python_example_source":
             source_mapping = source_row.get("mapping_evidence", {})
             _require(
@@ -1934,6 +1997,23 @@ def validate_compatibility_artifacts(
     )
 
     kinds = Counter(row.get("kind") for row in coverage_rows)
+    documented_sections = [
+        section
+        for row in coverage_rows
+        if row.get("kind") == "documented_feature_page"
+        for section in row.get("mapping_evidence", {}).get("documented_sections", [])
+    ]
+    section_statuses = Counter(section.get("review_status") for section in documented_sections)
+    _require(
+        atlas.get("counts", {}).get("documentation_section_candidates") == len(documented_sections)
+        and atlas.get("counts", {}).get("documentation_sections_with_reviewed_partial_mapping")
+        == section_statuses["reviewed_partial"]
+        and atlas.get("counts", {}).get("documentation_sections_pending_behavior_review")
+        == section_statuses["pending"]
+        and atlas.get("counts", {}).get("documentation_sections_excluded")
+        == section_statuses["excluded"],
+        "documentation-section status counts differ from the coverage matrix",
+    )
     statuses = Counter(
         row.get("mapping_status") for row in coverage_rows if row.get("kind") in FIXTURE_KINDS
     )
@@ -1949,6 +2029,10 @@ def validate_compatibility_artifacts(
         "api_classifications": dict(sorted(classifications.items())),
         "upstream_test_modules": kinds["upstream_test_module"],
         "documented_feature_pages": kinds["documented_feature_page"],
+        "documented_sections": len(documented_sections),
+        "documented_sections_with_reviewed_partial_mapping": section_statuses["reviewed_partial"],
+        "documented_sections_pending_behavior_review": section_statuses["pending"],
+        "documented_sections_excluded": section_statuses["excluded"],
         "documentation_python_examples": len(documentation_examples),
         "documentation_python_examples_grouped_with_page": sum(
             row.get("mapping_status") == "supporting_source" for row in documentation_examples

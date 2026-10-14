@@ -6,9 +6,7 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
     (
         "advanced/additional-responses.md",
         "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
-        (
-            "fastapi.additional-response-openapi-wave.media-content.test-openapi-schema",
-        ),
+        ("fastapi.additional-response-openapi-wave.media-content.test-openapi-schema",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -17,7 +15,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "advanced/behind-a-proxy.md",
         "tests/fixtures/input-recipes/parity/behind-proxy-tutorial002-upstream.yaml",
@@ -35,7 +32,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.document",
         ],
     },
-
     (
         "advanced/behind-a-proxy.md",
         "tests/fixtures/input-recipes/parity/behind-proxy-tutorial003-upstream.yaml",
@@ -53,7 +49,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.document",
         ],
     },
-
     (
         "advanced/behind-a-proxy.md",
         "tests/fixtures/input-recipes/parity/behind-proxy-tutorial004-upstream.yaml",
@@ -71,13 +66,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.document",
         ],
     },
-
     (
         "advanced/json-base64-bytes.md",
         "tests/fixtures/input-recipes/parity/json_base64_bytes.yaml",
-        (
-            "fastapi.docs.json-base64-bytes.input-output-and-schema",
-        ),
+        ("fastapi.docs.json-base64-bytes.input-output-and-schema",),
     ): {
         "observation_selectors": [
             "docs.response.body.bytes",
@@ -89,13 +81,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.document",
         ],
     },
-
     (
         "advanced/path-operation-advanced-configuration.md",
         "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial003-upstream.yaml",
-        (
-            "fastapi.path-operation-advanced-configurations.tutorial003",
-        ),
+        ("fastapi.path-operation-advanced-configurations.tutorial003",),
     ): {
         "observation_selectors": [
             "http.body.bytes",
@@ -104,7 +93,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "advanced/security/oauth2-scopes.md",
         "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
@@ -124,13 +112,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.security",
         ],
     },
-
     (
         "advanced/security/oauth2-scopes.md",
         "tests/fixtures/input-recipes/parity/security-scopes-dont-propagate-openapi-source-review.yaml",
-        (
-            "fastapi.security.scopes-dont-propagate.nested-openapi-sibling-scopes",
-        ),
+        ("fastapi.security.scopes-dont-propagate.nested-openapi-sibling-scopes",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -140,13 +125,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.security",
         ],
     },
-
     (
         "advanced/sub-applications.md",
         "tests/fixtures/input-recipes/parity/sub_applications.yaml",
-        (
-            "fastapi.docs.sub-applications.mount-and-own-openapi",
-        ),
+        ("fastapi.docs.sub-applications.mount-and-own-openapi",),
     ): {
         "observation_selectors": [
             "docs.response.body.bytes",
@@ -159,13 +141,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "advanced/using-request-directly.md",
         "tests/fixtures/input-recipes/parity/using_request_directly.yaml",
-        (
-            "fastapi.docs.using-request-directly.client-host",
-        ),
+        ("fastapi.docs.using-request-directly.client-host",),
     ): {
         "observation_selectors": [
             "docs.response.headers",
@@ -177,13 +156,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "how-to/authentication-error-status-code.md",
         "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
-        (
-            "fastapi.docs.documentation-wave.dependencies-security.authentication-error-status",
-        ),
+        ("fastapi.docs.documentation-wave.dependencies-security.authentication-error-status",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -195,13 +171,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.security",
         ],
     },
-
     (
         "how-to/conditional-openapi.md",
         "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
-        (
-            "fastapi.docs.openapi-interface.how-to-conditional-openapi.disabled-schema-endpoint",
-        ),
+        ("fastapi.docs.openapi-interface.how-to-conditional-openapi.disabled-schema-endpoint",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -212,13 +185,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "how-to/extending-openapi.md",
         "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
-        (
-            "fastapi.docs.openapi-interface.how-to-extending-openapi.custom-openapi-fields",
-        ),
+        ("fastapi.docs.openapi-interface.how-to-extending-openapi.custom-openapi-fields",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -227,13 +197,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "how-to/extending-openapi.md",
         "tests/fixtures/input-recipes/parity/sub_applications.yaml",
-        (
-            "fastapi.docs.sub-applications.route-list-after-mount",
-        ),
+        ("fastapi.docs.sub-applications.route-list-after-mount",),
     ): {
         "observation_selectors": [
             "http.body.bytes",
@@ -241,13 +208,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "http.status",
         ],
     },
-
     (
         "python-types.md",
         "tests/fixtures/input-recipes/parity/docs-types-frontend.yaml",
-        (
-            "fastapi.docs.reference-wave.types.typed-path-and-query-inputs",
-        ),
+        ("fastapi.docs.reference-wave.types.typed-path-and-query-inputs",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -258,13 +222,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "reference/dependencies.md",
         "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
-        (
-            "fastapi.docs.reference-wave.http.security-dependency",
-        ),
+        ("fastapi.docs.reference-wave.http.security-dependency",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -276,13 +237,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.security",
         ],
     },
-
     (
         "reference/fastapi.md",
         "tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml",
-        (
-            "fastapi.docs.reference-wave.openapi.fastapi-application-settings",
-        ),
+        ("fastapi.docs.reference-wave.openapi.fastapi-application-settings",),
     ): {
         "observation_selectors": [
             "docs.response.body.bytes",
@@ -299,13 +257,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "application OpenAPI endpoint. The schema example is not a complete OpenAPI contract."
         ),
     },
-
     (
         "reference/fastapi.md",
         "tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml",
-        (
-            "fastapi.frontend.dependencies-override",
-        ),
+        ("fastapi.frontend.dependencies-override",),
     ): {
         "observation_selectors": [
             "construction.exception_class",
@@ -320,13 +275,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "linked case also records construction outcomes."
         ),
     },
-
     (
         "reference/fastapi.md",
         "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml",
-        (
-            "fastapi.applications.exception-handler.decorator",
-        ),
+        ("fastapi.applications.exception-handler.decorator",),
     ): {
         "observation_selectors": [
             "asgi.lifespan.application_errors",
@@ -346,13 +298,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "selected HTTP response. The case also records construction and ASGI lifespan outcomes."
         ),
     },
-
     (
         "reference/fastapi.md",
         "tests/fixtures/input-recipes/parity/instance-openapi-version.yaml",
-        (
-            "fastapi.instance-openapi-version.mutated-field",
-        ),
+        ("fastapi.instance-openapi-version.mutated-field",),
     ): {
         "observation_selectors": [
             "construction.exception_class",
@@ -367,7 +316,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "The linked case also records construction outcomes."
         ),
     },
-
     (
         "reference/fastapi.md",
         "tests/fixtures/input-recipes/parity/middleware.yaml",
@@ -386,13 +334,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "reference/fastapi.md",
         "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
-        (
-            "fastapi.lifecycle.router-events-legacy",
-        ),
+        ("fastapi.lifecycle.router-events-legacy",),
     ): {
         "observation_selectors": [
             "asgi.lifespan.application_errors",
@@ -414,13 +359,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "lifespan configuration is outside this link."
         ),
     },
-
     (
         "reference/parameters.md",
         "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
-        (
-            "fastapi.docs.reference-wave.http.parameter-source-matrix",
-        ),
+        ("fastapi.docs.reference-wave.http.parameter-source-matrix",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -431,13 +373,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "reference/uploadfile.md",
         "tests/fixtures/input-recipes/parity/docs-reference-asgi.yaml",
-        (
-            "fastapi.docs.reference-wave.asgi.uploadfile-multipart",
-        ),
+        ("fastapi.docs.reference-wave.asgi.uploadfile-multipart",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -449,7 +388,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
     (
         "tutorial/bigger-applications.md",
         "tests/fixtures/input-recipes/parity/routing-surface.yaml",
@@ -470,7 +408,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/body-fields.md",
         "tests/fixtures/input-recipes/parity/body-fields-doc-tutorial001-review.yaml",
@@ -489,13 +426,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
     (
         "tutorial/body-fields.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-        (
-            "fastapi.docs.request-schema.tutorial-body-fields.body-fields",
-        ),
+        ("fastapi.docs.request-schema.tutorial-body-fields.body-fields",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -506,7 +440,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/body-multiple-params.md",
         "tests/fixtures/input-recipes/parity/body-surface.yaml",
@@ -530,13 +463,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
     (
         "tutorial/body-nested-models.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-        (
-            "fastapi.docs.request-schema.tutorial-body-nested-models.nested-body",
-        ),
+        ("fastapi.docs.request-schema.tutorial-body-nested-models.nested-body",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -547,13 +477,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/body-updates.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-        (
-            "fastapi.docs.request-schema.tutorial-body-updates.partial-update",
-        ),
+        ("fastapi.docs.request-schema.tutorial-body-updates.partial-update",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -564,7 +491,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/body.md",
         "tests/fixtures/input-recipes/parity/body-surface.yaml",
@@ -587,7 +513,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
     (
         "tutorial/body.md",
         "tests/fixtures/input-recipes/parity/body-tutorial003-model-upstream.yaml",
@@ -608,7 +533,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/body.md",
         "tests/fixtures/input-recipes/parity/body-tutorial004-model-upstream.yaml",
@@ -629,7 +553,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/body.md",
         "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
@@ -651,13 +574,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
     (
         "tutorial/cookie-param-models.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-        (
-            "fastapi.docs.request-schema.tutorial-cookie-param-models.cookie-model",
-        ),
+        ("fastapi.docs.request-schema.tutorial-cookie-param-models.cookie-model",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -668,13 +588,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/dependencies/classes-as-dependencies.md",
         "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
-        (
-            "fastapi.docs.documentation-wave.dependencies-security.classes-as-dependencies",
-        ),
+        ("fastapi.docs.documentation-wave.dependencies-security.classes-as-dependencies",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -685,13 +602,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/dependencies/dependencies-in-path-operation-decorators.md",
         "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
-        (
-            "fastapi.docs.documentation-wave.dependencies-security.path-operation-dependencies",
-        ),
+        ("fastapi.docs.documentation-wave.dependencies-security.path-operation-dependencies",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -702,7 +616,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/dependencies/dependencies-with-yield.md",
         "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
@@ -723,13 +636,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "validation.error_class",
         ],
     },
-
     (
         "tutorial/dependencies/global-dependencies.md",
         "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
-        (
-            "fastapi.docs.documentation-wave.dependencies-security.global-dependencies",
-        ),
+        ("fastapi.docs.documentation-wave.dependencies-security.global-dependencies",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -740,7 +650,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/dependencies/index.md",
         "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
@@ -762,13 +671,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
     (
         "tutorial/extra-data-types.md",
         "tests/fixtures/input-recipes/parity/docs-openapi-schema.yaml",
-        (
-            "fastapi.docs.documentation-wave.openapi-schema.extra-data-types",
-        ),
+        ("fastapi.docs.documentation-wave.openapi-schema.extra-data-types",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -779,13 +685,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/extra-models.md",
         "tests/fixtures/input-recipes/parity/docs-openapi-schema.yaml",
-        (
-            "fastapi.docs.documentation-wave.openapi-schema.extra-models",
-        ),
+        ("fastapi.docs.documentation-wave.openapi-schema.extra-models",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -796,13 +699,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/header-param-models.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-        (
-            "fastapi.docs.request-schema.tutorial-header-param-models.header-model",
-        ),
+        ("fastapi.docs.request-schema.tutorial-header-param-models.header-model",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -813,7 +713,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/path-params-numeric-validations.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
@@ -833,7 +732,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/path-params.md",
         "tests/fixtures/input-recipes/parity/routing-surface.yaml",
@@ -856,7 +754,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/query-param-models.md",
         "tests/fixtures/input-recipes/parity/query-param-models.yaml",
@@ -875,7 +772,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/query-params-str-validations.md",
         "tests/fixtures/input-recipes/parity/array-items-query-wire.yaml",
@@ -901,13 +797,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "warnings.category_message",
         ],
     },
-
     (
         "tutorial/query-params-str-validations.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-        (
-            "fastapi.docs.request-schema.tutorial-query-params-str-validations.query-boundary",
-        ),
+        ("fastapi.docs.request-schema.tutorial-query-params-str-validations.query-boundary",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -918,7 +811,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/query-params-str-validations.md",
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
@@ -936,13 +828,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/query-params-str-validations.md",
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml",
-        (
-            "fastapi.docs-example.query-params-str-validations.tutorial014",
-        ),
+        ("fastapi.docs-example.query-params-str-validations.tutorial014",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -952,7 +841,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/query-params-str-validations.md",
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml",
@@ -969,13 +857,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/request-form-models.md",
         "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-        (
-            "fastapi.docs.request-schema.tutorial-request-form-models.form-model",
-        ),
+        ("fastapi.docs.request-schema.tutorial-request-form-models.form-model",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -986,7 +871,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.paths",
         ],
     },
-
     (
         "tutorial/response-model.md",
         "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
@@ -1008,7 +892,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
     (
         "tutorial/response-model.md",
         "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
@@ -1029,7 +912,6 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "validation.error_class",
         ],
     },
-
     (
         "tutorial/security/first-steps.md",
         "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
@@ -1051,13 +933,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.security",
         ],
     },
-
     (
         "tutorial/security/get-current-user.md",
         "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
-        (
-            "fastapi.docs.documentation-wave.dependencies-security.current-user",
-        ),
+        ("fastapi.docs.documentation-wave.dependencies-security.current-user",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -1069,13 +948,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.security",
         ],
     },
-
     (
         "tutorial/security/simple-oauth2.md",
         "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
-        (
-            "fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form",
-        ),
+        ("fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form",),
     ): {
         "observation_selectors": [
             "docs.response.status",
@@ -1087,5 +963,4 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.request_schema",
         ],
     },
-
 }
