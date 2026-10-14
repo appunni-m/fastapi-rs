@@ -6319,6 +6319,62 @@ class AtlasError(RuntimeError):
     pass
 
 
+# Every candidate documentation page links to exact materialized workflows.
+# Keep the links and their selector corrections in reviewed sidecars so the
+# generated atlas can verify their page, recipe, case, and observation scope.
+from atlas_documentation_page_case_links import (  # noqa: E402
+    DOC_PAGE_CASE_LINK_COMPLETIONS,
+)
+from atlas_documentation_case_selector_overrides import (  # noqa: E402
+    DOC_PAGE_CASE_SELECTOR_OVERRIDES,
+)
+
+for _doc_page_path, _doc_page_rows in DOC_PAGE_CASE_LINK_COMPLETIONS.items():
+    _doc_page_mapping = DOC_PAGE_REVIEW_MAPPINGS.get(_doc_page_path)
+    if _doc_page_mapping is None:
+        raise AtlasError(
+            "documentation case completion has no reviewed page mapping: " + _doc_page_path
+        )
+    if _doc_page_mapping.get("workflow_cases"):
+        raise AtlasError(
+            "documentation case completion duplicates reviewed workflow rows: " + _doc_page_path
+        )
+    _doc_page_mapping["workflow_cases"] = [dict(row) for row in _doc_page_rows]
+
+for (
+    _doc_page_path,
+    _recipe_path,
+    _case_ids,
+), _selector_correction in DOC_PAGE_CASE_SELECTOR_OVERRIDES.items():
+    _doc_page_mapping = DOC_PAGE_REVIEW_MAPPINGS.get(_doc_page_path)
+    if _doc_page_mapping is None:
+        raise AtlasError(
+            "documentation selector override has no reviewed page mapping: "
+            + _doc_page_path
+        )
+    _matched_workflow_rows = []
+    for _workflow_row in _doc_page_mapping.get("workflow_cases", []):
+        _linked_case_ids = _workflow_row.get("case_ids")
+        if not isinstance(_linked_case_ids, list):
+            _linked_case_id = _workflow_row.get("case_id")
+            _linked_case_ids = [_linked_case_id] if isinstance(_linked_case_id, str) else []
+        if (
+            _workflow_row.get("recipe_path") == _recipe_path
+            and tuple(_linked_case_ids) == tuple(_case_ids)
+        ):
+            _matched_workflow_rows.append(_workflow_row)
+    if len(_matched_workflow_rows) != 1:
+        raise AtlasError(
+            "documentation selector override must match exactly one reviewed workflow row: "
+            + _doc_page_path
+            + " / "
+            + _recipe_path
+            + " / "
+            + repr(tuple(_case_ids))
+        )
+    _matched_workflow_rows[0].update(_selector_correction)
+
+
 def run_git(repo: Path, *args: str) -> str:
     try:
         result = subprocess.run(
@@ -10645,13 +10701,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             observed_for_mapping = set().union(*projected_by_case.values())
             mapping_claims = indexed_mapping_claims[id(mapping)]
             missing = mapping_claims - observed_for_mapping
-            if missing:
+            unselected = observed_for_mapping - mapping_claims
+            if missing or unselected:
                 per_case = "; ".join(
                     f"{case_id}={sorted(projected_by_case[case_id])}" for case_id in case_ids
                 )
                 documented_page_validation_errors.append(
-                    f"{mapping_label} claims selectors absent from its exact linked cases "
-                    f"{case_ids}: {sorted(missing)}; projected selectors by case: {per_case}"
+                    f"{mapping_label} selector set must exactly match its linked cases "
+                    f"{case_ids}: missing={sorted(missing)}, unlisted={sorted(unselected)}; "
+                    f"projected selectors by case: {per_case}"
                 )
             exact_page_selectors.update(observed_for_mapping)
 
@@ -10673,23 +10731,35 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             }
             observed_for_link = set().union(*projected_by_case.values())
             missing = selectors - observed_for_link
+            unlisted = observed_for_link - selectors
             unsupported = sorted(
                 selector
                 for selector in selectors
                 if selector_support.get(selector) not in {"supported", "partial"}
             )
-            if missing or unsupported:
+            if missing or unlisted or unsupported:
                 action_scope = f" actions {action_ids}" if action_ids is not None else ""
                 per_case = "; ".join(
                     f"{case_id}={sorted(projected_by_case[case_id])}" for case_id in case_ids
                 )
                 documented_page_validation_errors.append(
                     f"{link_label} recipe {recipe_path} cases {case_ids}{action_scope} "
-                    f"claims selectors not established by those exact cases: "
-                    f"missing={sorted(missing)}, unsupported={unsupported}; "
+                    f"selector set must exactly match those cases: "
+                    f"missing={sorted(missing)}, unlisted={sorted(unlisted)}, "
+                    f"unsupported={unsupported}; "
                     f"projected selectors by case: {per_case}"
                 )
             exact_page_selectors.update(observed_for_link)
+
+        if features and not exclusion:
+            if not independent_workflow_mappings:
+                documented_page_validation_errors.append(
+                    f"{page_source_path} has no exact indexed input workflow mapping"
+                )
+            if not reviewed_workflow_cases:
+                documented_page_validation_errors.append(
+                    f"{page_source_path} has no reviewed page-to-recipe/case selector mapping"
+                )
 
         if independent_workflow_mappings and not exact_page_selectors:
             documented_page_validation_errors.append(
@@ -10714,18 +10784,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "FastAPI class-reference member crosswalk drift; "
                     f"unmapped={missing}, undocumented={extra}"
                 )
-            declared_selectors: set[str] = set()
             for row_index, row in enumerate(member_rows):
                 _, _, _, selectors = reviewed_row_claims[row_index]
                 if not row.get("scope_note") or not row.get("member_names") or not selectors:
                     raise AtlasError(
                         "FastAPI class-reference member rows require members, selectors, and a scope note"
                     )
-                declared_selectors.update(selectors)
-            if declared_selectors != page_selector_claims:
-                raise AtlasError(
-                    "FastAPI class-reference page selectors must equal the union of its member links"
-                )
         review_status = (
             "excluded"
             if exclusion
