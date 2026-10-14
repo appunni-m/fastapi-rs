@@ -4481,6 +4481,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
+        - {path: tests/test_response_model_data_filter.py, symbol: test_filter_top_level_model}
+        - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
@@ -4497,6 +4499,15 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
           workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-valid
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-invalid-body
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-router-include-context.included-nested-router-model-openapi
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
@@ -4584,6 +4595,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
+        - {path: tests/test_response_model_data_filter.py, symbol: test_filter_top_level_model}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_with_no_token}
@@ -4613,6 +4627,15 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
           workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-router-include-context.included-nested-router-model-openapi
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-valid
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-invalid-body
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
@@ -5243,6 +5266,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: tests/test_response_model_data_filter.py, symbol: test_filter_top_level_model}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, public-api-errors, response-serialization]
@@ -5290,6 +5314,15 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
           workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-valid
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-invalid-body
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-router-include-context.included-nested-router-model-openapi
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
@@ -5628,13 +5661,24 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: post}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_additional_responses_router.py}
+        - {path: tests/test_response_model_data_filter.py, symbol: test_filter_top_level_model}
         - {path: docs/en/docs/advanced/additional-responses.md}
+        - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_router_include_context.py}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
-      feature_ids: [app-routing, openapi-docs]
-      observation_selectors: [http.status, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-valid
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-response-model-data-filter.included-nested-router-invalid-body
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
+          case_id: fastapi.test.test-router-include-context.included-nested-router-model-openapi
+          workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+      feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Native attribute forwarding exposes the POST route decorator. Explicit
         response descriptions appear in included-route OpenAPI, covered by
@@ -5643,8 +5687,12 @@ reviewed_api_contract_overlay:
         Route-level `responses` maps with one or more non-colliding Python
         integer (not bool) status keys and one non-empty string `description`
         per key emit description-only OpenAPI response objects, sampled by
-        `path-operation-other-verbs-responses`. Multiple fields per response,
-        response models, content, headers, links, extensions, string status
+        `path-operation-other-verbs-responses`. One nested included POST with
+        a required Pydantic request field and a response model is sampled by
+        router-included-request-response-models: valid and missing-field HTTP
+        outcomes plus request/response schema pointers in OpenAPI. It establishes
+        only this composed route shape. Other response models, content,
+        headers, links, extensions, string status
         keys, empty descriptions, and router/include-level response maps remain
         outside this slice.
         Explicit `status_code=None` matches omission for the default

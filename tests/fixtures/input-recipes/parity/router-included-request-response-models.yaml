@@ -1,0 +1,91 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/router_included_request_response_models.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.test.test-response-model-data-filter.included-nested-router-valid
+    actions:
+      - action_id: valid-included-model-request
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /v1/items/records
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '{"name":"field-kit"}', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+    source_evidence:
+      - {path: tests/test_router_include_context.py, kind: upstream_test}
+      - {path: tests/test_response_model_data_filter.py, kind: upstream_test}
+      - {path: docs/en/docs/tutorial/bigger-applications.md, kind: upstream_documentation}
+      - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
+  - case_id: fastapi.test.test-response-model-data-filter.included-nested-router-invalid-body
+    actions:
+      - action_id: missing-required-model-field
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /v1/items/records
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '{}', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+    source_evidence:
+      - {path: tests/test_router_include_context.py, kind: upstream_test}
+      - {path: tests/test_response_model_data_filter.py, kind: upstream_test}
+      - {path: docs/en/docs/tutorial/bigger-applications.md, kind: upstream_documentation}
+      - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
+  - case_id: fastapi.test.test-router-include-context.included-nested-router-model-openapi
+    actions:
+      - action_id: included-route-model-schemas
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: openapi
+            json_pointers:
+              - /paths/~1v1~1items~1records/post/requestBody
+              - /paths/~1v1~1items~1records/post/responses/200/content/application~1json/schema
+              - /components/schemas/CreateRecord
+              - /components/schemas/PublicRecord
+            comparison: exact
+    source_evidence:
+      - {path: tests/test_router_include_context.py, kind: upstream_test}
+      - {path: tests/test_response_model_data_filter.py, kind: upstream_test}
+      - {path: docs/en/docs/tutorial/bigger-applications.md, kind: upstream_documentation}
+      - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
