@@ -57,13 +57,25 @@ pass-through `fastapi` facade, isolated workers, and an exact comparator. The
 `make parity-first-slice` command runs both pinned products and stores the
 comparison in ignored `parity-results/`; CI runs this gate. This only validates
 the current first slice. It does not establish broader API or feature parity.
+On 2026-10-14, the live comparison passed 13/13 on FastAPI-RS `c6b5246` and
+Starlette-RS `b4c8a65`, with FastAPI 0.141.1 and Starlette 1.6.0 as the pinned
+oracle; comparison receipt
+`parity-results/comparisons/bd7fa5a5-86c2-4ad9-9445-0688df0e2256.json`
+binds manifest SHA-256
+`d808858a9fd54ded33b713a8b1fa31db3c9cf17e0fcbfc6d07dd3815e88b8b1c`.
 
-Direct Python callable probes also have isolated source and target workers, a
-versioned result schema, and an exact comparison command. The initial
-`encoding.yaml` workflow observes JSON-encoder return values and signatures; run it with
-`make parity-api-oracle`, `make parity-api-target`, then
-`make parity-api-compare SOURCE_RESULT=... TARGET_RESULT=...`. Its nine cases
-are a narrow direct-call slice and do not establish the rest of the public API.
+Direct Python API workflows use isolated source and target workers, a versioned
+result schema, and exact comparison. On 2026-10-14, all 24 active workflows
+completed across 111 observations: 110 passed, with one failure in the
+Starlette-RS-owned TestClient signature. `fastapi.testclient.TestClient` is a
+direct re-export; the source annotations `ASGIApp`, `Literal['asyncio',
+'trio']`, and `httpx._types.CookieTypes | None` appear as `Any`, `str`, and
+`Any` on the pinned Starlette-RS target. Names, defaults, and other signature
+fields match. The comparison receipt is
+`parity-results/comparisons/241549b2-c7b4-47df-b17d-79ddb245e870.json`; this
+is not a complete public API parity claim, and FastAPI-RS keeps the direct
+alias boundary. The nine-case `encoding.yaml` workflow is one covered slice,
+not the entire API surface.
 
 Workflow v2 also reads non-callable public attributes through the same
 identity-checked workers. A `public_attribute` probe emits a
@@ -231,7 +243,53 @@ server. Internal Rust timing attribution may be added as a measurement of this
 same implementation; it is not a separate target. Do not infer component costs
 by subtracting the Starlette control or from the end-to-end target time.
 
-#### Current completed seven-workload run (2026-10-14; commit 7d42eee)
+#### Current completed seven-workload run (2026-10-14; commit c6b5246)
+
+The suite completed at `2026-10-14T10:05:13Z` with suite ID
+`923415bf-56b3-499a-9ab2-83402aeca3a1` and receipt
+`benchmark-results/suite-20261014T100513Z-923415bf-56b3-499a-9ab2-83402aeca3a1.json`
+(SHA-256 `71bf96b4e547abf1c0f2640ceb3a3f92475b99ffa80f355aa294200ec194a381`).
+Each workload parity comparison binds manifest SHA-256
+`d808858a9fd54ded33b713a8b1fa31db3c9cf17e0fcbfc6d07dd3815e88b8b1c`.
+The suite binds FastAPI-RS commit `c6b5246a68a8b9f6e9f562be6c669e69c03f171b`,
+FastAPI `0.141.1` at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette
+`1.6.0` at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
+`b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. It used CPython 3.12.13,
+Pydantic 2.13.4 / pydantic-core 2.46.4, macOS 15.7.7 arm64 (12 logical
+CPUs), Cargo/rustc 1.98.1, and the optimized release profile with
+`pyo3/extension-module`. All seven identity-checked parity gates passed
+45/45 selected observations with zero failures or not-run cases. Each subject
+used 50 warmups and 1,000 measured calls in five rounds. The target extension
+SHA-256 was `cbe98cd6a778cba516ef4391f796b0302595d740bf7a889aea8e622e26636cb6`;
+the target binary SHA-256 was
+`e596867dc86fc3c07ee768774e0101ea0e2b745cd2319af5aded8ab019aa7670`.
+
+The table reports median and p95 direct-ASGI latency in microseconds. Ratios
+are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
+longer on this host. Raw samples and parity identities remain in the ignored
+suite and workload receipts referenced below.
+
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio | Parity | Raw receipt |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Async nested dependencies, distinct query aliases | 517.0 / 553.7 µs | 686.4 / 753.7 µs | 1.328x / 1.361x | 2/2 | `benchmark-results/20261014T095651Z-b84ad218-15f9-46b7-92d4-6fbc482e0de4.json` |
+| Async nested dependencies, two query parameters | 434.1 / 478.7 µs | 669.0 / 748.6 µs | 1.541x / 1.564x | 2/2 | `benchmark-results/20261014T095817Z-3ca5b793-9701-4938-ab74-0be568a571f3.json` |
+| Chunked request body | 134.8 / 147.2 µs | 141.4 / 163.5 µs | 1.049x / 1.111x | 13/13 | `benchmark-results/20261014T095943Z-ea597c4b-602a-4ebc-96f1-ffc2fb6a9c53.json` |
+| Invalid request | 145.4 / 212.8 µs | 327.2 / 377.2 µs | 2.250x / 1.772x | 13/13 | `benchmark-results/20261014T100106Z-e84f95e1-af43-4c0f-8acb-f857702d5d11.json` |
+| Valid request | 132.8 / 140.3 µs | 139.5 / 158.3 µs | 1.050x / 1.128x | 13/13 | `benchmark-results/20261014T100228Z-1c14c18a-392c-499e-8a8e-41f8e928f73b.json` |
+| Large response model | 360.2 / 381.5 µs | 386.0 / 413.2 µs | 1.071x / 1.083x | 1/1 | `benchmark-results/20261014T100352Z-196dee93-8e77-453a-9cbf-1fb86ac83669.json` |
+| Repeated sequence query | 93.6 / 105.5 µs | 112.5 / 135.6 µs | 1.202x / 1.286x | 1/1 | `benchmark-results/20261014T100513Z-130cb956-4f73-4bfb-8b96-c205a211d287.json` |
+
+FastAPI-RS had higher median and p95 latency on all seven workloads; invalid
+requests had the largest relative median gap. Starlette 1.6.0 controls are
+contextual and are not subtracted from FastAPI timings. This is a single-host
+direct-ASGI result, not a global performance claim; it does not measure
+network/server latency or separate facade, PyO3, Rust, Pydantic, or Starlette-RS
+costs. `make benchmark-contract-check` passed and validated this suite and all
+seven receipts against the current manifest. The older `b0d64fd` suite receipt
+is retained under `benchmark-results/archive/stale-manifest-20261014/` because
+its parity comparisons used an older manifest.
+
+#### Previous completed seven-workload run (2026-10-14; commit 7d42eee; stale manifest)
 
 The suite completed at `2026-10-14T04:14:26Z` with suite ID
 `975d019c-1e79-4184-b6e8-34fd215639c7` and receipt
@@ -275,8 +333,8 @@ was also measured for the chunked-body and valid-request lanes (5.3 and
 timings. This is one host and a narrow direct-ASGI suite, not a global
 performance claim. It does not measure network/server latency or separate
 facade, PyO3, Rust, Pydantic, or Starlette-RS costs.
-`make benchmark-contract-check` passed and validated this suite and its seven
-workload receipts against the current manifest.
+At the time, `make benchmark-contract-check` passed for this run. Its manifest
+is historical and no longer satisfies the current benchmark evidence gate.
 
 #### Previous completed seven-workload run (2026-10-14; commit acf511f)
 
