@@ -243,11 +243,53 @@ server. Internal Rust timing attribution may be added as a measurement of this
 same implementation; it is not a separate target. Do not infer component costs
 by subtracting the Starlette control or from the end-to-end target time.
 
-#### Current completed seven-workload run (2026-10-14; commit c6b5246)
+#### Current completed seven-workload run (2026-10-14; commit 2553434)
+
+The suite completed at `2026-10-14T11:13:20Z` with suite ID
+`b8d9a7d5-1ad2-4cfd-8ed0-5004857d4d88` and receipt
+`benchmark-results/suite-20261014T111320Z-b8d9a7d5-1ad2-4cfd-8ed0-5004857d4d88.json`
+(SHA-256 `9d11041054a9e6ade3a57ae4052db393019be56381dfa04ca5d3f3b48a9fc6bb`).
+Each workload parity comparison binds the current manifest SHA-256
+`b7ceba9309b7da96ccf30a40e910d734b293ad55451d3d006c47c63a8ed55d2c`. The
+suite binds FastAPI-RS commit `2553434c596c8af2a73f62a9f687921e8fd695c5`,
+FastAPI `0.141.1` at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette
+`1.6.0` at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
+`b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. It used CPython 3.12.13,
+Pydantic 2.13.4 / pydantic-core 2.46.4, macOS 15.7.7 arm64 (12 logical
+CPUs), Cargo/rustc 1.98.1, and the optimized release profile with
+`pyo3/extension-module`. All seven identity-checked parity gates passed 45/45
+selected observations with zero failures or not-run cases. Each subject used
+50 warmups and 1,000 measured calls in five rounds. The target extension
+SHA-256 was `cbe98cd6a778cba516ef4391f796b0302595d740bf7a889aea8e622e26636cb6`;
+the target binary SHA-256 was
+`e596867dc86fc3c07ee768774e0101ea0e2b745cd2319af5aded8ab019aa7670`.
+
+The table reports median and p95 direct-ASGI latency in microseconds. Ratios
+are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
+longer on this host. Raw samples and parity identities remain in the ignored
+suite and workload receipts referenced below.
+
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio | Parity | Raw receipt |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Async nested dependencies, distinct query aliases | 505.7 / 515.7 µs | 679.0 / 739.8 µs | 1.343x / 1.435x | 2/2 | `benchmark-results/20261014T110459Z-fe1c4fda-152a-452d-8ef6-339a9ad40143.json` |
+| Async nested dependencies, two query parameters | 428.3 / 440.9 µs | 658.2 / 699.5 µs | 1.537x / 1.587x | 2/2 | `benchmark-results/20261014T110625Z-1533f4ec-9f74-4a61-b9f6-0083a117afcd.json` |
+| Chunked request body | 134.0 / 138.6 µs | 139.5 / 149.5 µs | 1.041x / 1.078x | 13/13 | `benchmark-results/20261014T110748Z-e78aede1-2256-4782-bae9-187c251f23f9.json` |
+| Invalid request | 145.0 / 212.8 µs | 327.5 / 366.8 µs | 2.258x / 1.723x | 13/13 | `benchmark-results/20261014T110909Z-1e208705-85bb-4bfa-82f4-444f1d00c9d5.json` |
+| Valid request | 130.5 / 138.2 µs | 137.3 / 157.0 µs | 1.052x / 1.136x | 13/13 | `benchmark-results/20261014T111032Z-6cb07edf-bc07-45a3-b49b-9f04f8d9cd54.json` |
+| Large response model | 358.1 / 373.2 µs | 385.2 / 408.6 µs | 1.076x / 1.095x | 1/1 | `benchmark-results/20261014T111154Z-f7f59db7-8483-4403-b99e-0b478028e317.json` |
+| Repeated sequence query | 95.5 / 106.4 µs | 105.2 / 124.7 µs | 1.101x / 1.172x | 1/1 | `benchmark-results/20261014T111320Z-0a1eb35d-8763-4583-9097-f3f74beb3be9.json` |
+
+FastAPI-RS had higher median and p95 latency on all seven workloads; invalid
+requests had the largest median gap. This is a single-host direct-ASGI result,
+not a global performance claim; it does not measure network/server latency or
+separate facade, PyO3, Rust, Pydantic, or Starlette-RS costs. Starlette 1.6.0
+controls remain contextual and are not subtracted from FastAPI timings.
+
+#### Previous completed seven-workload run (2026-10-14; commit c6b5246; stale manifest)
 
 The suite completed at `2026-10-14T10:05:13Z` with suite ID
 `923415bf-56b3-499a-9ab2-83402aeca3a1` and receipt
-`benchmark-results/suite-20261014T100513Z-923415bf-56b3-499a-9ab2-83402aeca3a1.json`
+`benchmark-results/stale/suite-20261014T100513Z-923415bf-56b3-499a-9ab2-83402aeca3a1.json`
 (SHA-256 `71bf96b4e547abf1c0f2640ceb3a3f92475b99ffa80f355aa294200ec194a381`).
 Each workload parity comparison binds manifest SHA-256
 `d808858a9fd54ded33b713a8b1fa31db3c9cf17e0fcbfc6d07dd3815e88b8b1c`.
@@ -279,15 +321,15 @@ suite and workload receipts referenced below.
 | Large response model | 360.2 / 381.5 µs | 386.0 / 413.2 µs | 1.071x / 1.083x | 1/1 | `benchmark-results/20261014T100352Z-196dee93-8e77-453a-9cbf-1fb86ac83669.json` |
 | Repeated sequence query | 93.6 / 105.5 µs | 112.5 / 135.6 µs | 1.202x / 1.286x | 1/1 | `benchmark-results/20261014T100513Z-130cb956-4f73-4bfb-8b96-c205a211d287.json` |
 
-FastAPI-RS had higher median and p95 latency on all seven workloads; invalid
-requests had the largest relative median gap. Starlette 1.6.0 controls are
-contextual and are not subtracted from FastAPI timings. This is a single-host
-direct-ASGI result, not a global performance claim; it does not measure
-network/server latency or separate facade, PyO3, Rust, Pydantic, or Starlette-RS
-costs. `make benchmark-contract-check` passed and validated this suite and all
-seven receipts against the current manifest. The older `b0d64fd` suite receipt
-is retained under `benchmark-results/archive/stale-manifest-20261014/` because
-its parity comparisons used an older manifest.
+At the time it was generated, `make benchmark-contract-check` passed. The
+manifest changed in commit `2553434`, so its suite receipt is retained under
+`benchmark-results/stale/` and is not current evidence. FastAPI-RS had higher
+median and p95 latency on all seven workloads; invalid requests had the largest
+relative median gap. Starlette 1.6.0 controls are contextual and are not
+subtracted from FastAPI timings. This single-host direct-ASGI result is not a
+global performance claim. The older `b0d64fd` suite receipt remains under
+`benchmark-results/archive/stale-manifest-20261014/` because its parity
+comparisons used an older manifest.
 
 #### Previous completed seven-workload run (2026-10-14; commit 7d42eee; stale manifest)
 
