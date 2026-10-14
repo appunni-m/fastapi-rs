@@ -11717,6 +11717,11 @@ enum InputDecodeError {
     Other(PyErr),
 }
 
+struct DecodedInputValues {
+    values: Py<PyDict>,
+    request_body: Option<Py<PyAny>>,
+}
+
 fn should_parse_json_body(headers: &[(Vec<u8>, Vec<u8>)], strict_content_type: bool) -> bool {
     let Some((_, value)) = headers
         .iter()
@@ -11744,8 +11749,9 @@ fn decode_input_values(
     py: Python<'_>,
     request: crate::FastApiRequestMatch,
     parse_json_body: bool,
-) -> Result<Py<PyDict>, InputDecodeError> {
+) -> Result<DecodedInputValues, InputDecodeError> {
     let values = PyDict::new(py);
+    let mut request_body = None;
     for input in request.inputs {
         let Some(value) = input.value else {
             continue;
@@ -11781,11 +11787,18 @@ fn decode_input_values(
                 .call_method1("decode", ("utf-8",))
                 .map_err(InputDecodeError::Other)?,
         };
+        let value = value.unbind();
+        if input.location == FastApiInputLocation::Body && request_body.is_none() {
+            request_body = Some(value.clone_ref(py));
+        }
         values
-            .set_item(input.name, value)
+            .set_item(input.name, value.bind(py))
             .map_err(InputDecodeError::Other)?;
     }
-    Ok(values.unbind())
+    Ok(DecodedInputValues {
+        values: values.unbind(),
+        request_body,
+    })
 }
 
 fn response_start(
@@ -13213,7 +13226,7 @@ impl FastApiCall {
                 .unbind(),
         );
         let values = match decode_input_values(py, inputs, false) {
-            Ok(values) => values,
+            Ok(values) => values.values,
             Err(InputDecodeError::Other(error)) => return Err(error),
             Err(InputDecodeError::JsonValidation(error) | InputDecodeError::BodyParse(error)) => {
                 return Err(error);
@@ -13471,11 +13484,7 @@ impl FastApiCall {
             .borrow()
             .router
             .resolve_inputs(&path, &root_path, &method, &query, headers, body);
-        let request_has_body = inputs
-            .inputs
-            .iter()
-            .any(|input| input.location == FastApiInputLocation::Body);
-        let values = match decode_input_values(py, inputs, parse_json_body) {
+        let decoded = match decode_input_values(py, inputs, parse_json_body) {
             Ok(values) => values,
             Err(InputDecodeError::JsonValidation(error)) => {
                 let response_body = json_decode_validation_response_body(py, &error)?;
@@ -13502,21 +13511,10 @@ impl FastApiCall {
             }
             Err(InputDecodeError::Other(error)) => return Err(error),
         };
-        let request_body = if request_has_body && !body.is_empty() {
-            let body = PyBytes::new(py, body);
-            let body = if parse_json_body {
-                py.import("json")?.getattr("loads")?.call1((body,))?
-            } else {
-                body.into_any()
-            };
-            Some(body.unbind())
-        } else {
-            None
-        };
         self.invocation = Some(RequestInvocation {
-            inputs: values,
+            inputs: decoded.values,
             query_params,
-            request_body,
+            request_body: decoded.request_body,
             form_body_embedded: false,
             failures: Vec::new(),
             dependency_cache: HashMap::new(),
@@ -13552,7 +13550,7 @@ impl FastApiCall {
             &[],
         );
         let values = match decode_input_values(py, inputs, false) {
-            Ok(values) => values,
+            Ok(values) => values.values,
             Err(InputDecodeError::Other(error)) => return Err(error),
             Err(InputDecodeError::JsonValidation(error) | InputDecodeError::BodyParse(error)) => {
                 return Err(error);
