@@ -14,6 +14,10 @@ class LateResponse(JSONResponse):
     media_type = "application/x-late+json"
 
 
+class AfterObservationResponse(JSONResponse):
+    media_type = "application/x-after-observation+json"
+
+
 def create_app(factory_input: dict[str, str], event_trace: list[str]) -> FastAPI:
     del event_trace
 
@@ -23,6 +27,10 @@ def create_app(factory_input: dict[str, str], event_trace: list[str]) -> FastAPI
     def get_items() -> dict[str, str]:
         return {"source": "router"}
 
+    @router.get("/groups")
+    def get_groups() -> dict[str, str]:
+        return {"source": "sibling"}
+
     app = FastAPI()
     app.include_router(router, default_response_class=IncludedResponse)
 
@@ -30,4 +38,11 @@ def create_app(factory_input: dict[str, str], event_trace: list[str]) -> FastAPI
         app.openapi()
 
     router.default_response_class = LateResponse
+    if factory_input["observe_contexts_after_mutation"] == "true":
+        from fastapi.routing import iter_route_contexts
+
+        route_contexts = iter_route_contexts(app.routes)
+        next(context for context in route_contexts if context.path == "/items")
+        router.default_response_class = AfterObservationResponse
+        next(context for context in route_contexts if context.path == "/groups")
     return app

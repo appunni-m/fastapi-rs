@@ -24290,15 +24290,16 @@
     {
       "id": "router-default-response-class-late-mutation",
       "input_path": "tests/fixtures/inputs/parity/router-default-response-class-late-mutation.json",
-      "input_sha256": "aea4cebaded3182013b12de85f1b5888f0a00005fbc4ed164ceb233942736888",
+      "input_sha256": "5f0461f3780cb34486d9154af31ae0f5d9829ef55e13cebbe1b0cc60e6317029",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-default-response-class-late-mutation.yaml",
-      "recipe_sha256": "1f7f4f4929820715519bf7130ede51820ed2cf5b661c7b23beb9b8028bafa987",
+      "recipe_sha256": "e868f18f63841fb7cced8fd7317cf49c3c052cf87df3430d3c9e8307493dcc6f",
       "case_ids": [
         "fastapi.include-router.default-response-class.late-assignment-before-materialization",
-        "fastapi.include-router.default-response-class.assignment-after-openapi-materialization"
+        "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+        "fastapi.include-router.default-response-class.iteration-freezes-route-context"
       ],
       "workload_path": "tests/fixtures/workloads/router_default_response_class_late_mutation.py",
-      "workload_sha256": "3258d44c3732fb417680d14dbd5cd5a41690252e5c7c28676f7ffc3add5140a9",
+      "workload_sha256": "a1dee33bb04647dd456737a3c6202e3d67da009cbcddce9c984c35f441c21a84",
       "case_contracts": [
         {
           "case_id": "fastapi.include-router.default-response-class.late-assignment-before-materialization",
@@ -24314,6 +24315,15 @@
           "requirement_refs": [
             "source:upstream-test:tests/test_default_response_class.py",
             "source:upstream-test:tests/test_default_response_class_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.include-router.default-response-class.iteration-freezes-route-context",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_default_response_class.py",
+            "source:upstream-test:tests/test_default_response_class_router.py",
+            "source:upstream-test:tests/test_router_include_context.py"
           ]
         }
       ]
@@ -54171,9 +54181,10 @@
       "fixture_id": "fastapi.test.test-default-response-class",
       "workflow_id": "router-default-response-class-late-mutation",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+        "fastapi.include-router.default-response-class.iteration-freezes-route-context",
         "fastapi.include-router.default-response-class.late-assignment-before-materialization"
       ],
       "observation_selectors": [
@@ -54187,15 +54198,33 @@
       "fixture_id": "fastapi.test.test-default-response-class-router",
       "workflow_id": "router-default-response-class-late-mutation",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+        "fastapi.include-router.default-response-class.iteration-freezes-route-context",
         "fastapi.include-router.default-response-class.late-assignment-before-materialization"
       ],
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-default-response-class-late-mutation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.include-router.default-response-class.iteration-freezes-route-context"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

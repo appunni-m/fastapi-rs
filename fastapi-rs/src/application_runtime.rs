@@ -4,8 +4,8 @@ use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap, HashSet, VecDeque};
 use std::path::Path;
 use std::rc::Rc;
-use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, Mutex, Weak};
 
 use pyo3::exceptions::{
     PyAssertionError, PyAttributeError, PyException, PyKeyError, PyNameError,
@@ -1194,8 +1194,82 @@ impl ResponseClassResolutionCandidate {
     }
 }
 
-struct ResponseClassResolution {
+struct ResponseClassResolutionState {
     candidates: Vec<ResponseClassResolutionCandidate>,
+    resolved: Mutex<Option<ResponseClassChoice>>,
+}
+
+impl ResponseClassResolutionState {
+    fn choose(&self, py: Python<'_>) -> ResponseClassChoice {
+        let choices = self
+            .candidates
+            .iter()
+            .map(|candidate| candidate.current_choice(py))
+            .collect::<Vec<_>>();
+        let references = choices.iter().collect::<Vec<_>>();
+        ResponseClassChoice::first_explicit(py, &references)
+    }
+
+    fn cached_choice(&self, py: Python<'_>) -> Option<ResponseClassChoice> {
+        self.resolved
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .as_ref()
+            .map(|choice| choice.clone_ref(py))
+    }
+
+    fn resolve(&self, py: Python<'_>) -> ResponseClassChoice {
+        if let Some(resolved) = self.cached_choice(py) {
+            return resolved;
+        }
+        let choice = self.choose(py);
+        let mut resolved = self
+            .resolved
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        if let Some(resolved) = resolved.as_ref() {
+            return resolved.clone_ref(py);
+        }
+        *resolved = Some(choice.clone_ref(py));
+        choice
+    }
+}
+
+struct ResponseClassResolutionGroup {
+    members: Mutex<Vec<Weak<ResponseClassResolutionState>>>,
+}
+
+impl ResponseClassResolutionGroup {
+    fn new() -> Arc<Self> {
+        Arc::new(Self {
+            members: Mutex::new(Vec::new()),
+        })
+    }
+
+    fn register(&self, state: &Arc<ResponseClassResolutionState>) {
+        self.members
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .push(Arc::downgrade(state));
+    }
+
+    fn resolve_all(&self, py: Python<'_>) {
+        let members = self
+            .members
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .iter()
+            .filter_map(Weak::upgrade)
+            .collect::<Vec<_>>();
+        for state in members {
+            state.resolve(py);
+        }
+    }
+}
+
+struct ResponseClassResolution {
+    state: Arc<ResponseClassResolutionState>,
+    group: Arc<ResponseClassResolutionGroup>,
 }
 
 impl ResponseClassResolution {
@@ -1204,9 +1278,11 @@ impl ResponseClassResolution {
         route: &FastApiRoute,
         source_router: &Py<PyFastApi>,
         inherited: &ResponseClassChoice,
+        group: &Arc<ResponseClassResolutionGroup>,
     ) -> Self {
         let mut candidates = match route.response_class_resolution.as_ref() {
             Some(resolution) => resolution
+                .state
                 .candidates
                 .iter()
                 .map(|candidate| candidate.clone_ref(py))
@@ -1219,26 +1295,30 @@ impl ResponseClassResolution {
         candidates.push(ResponseClassResolutionCandidate::Static(
             inherited.clone_ref(py),
         ));
-        Self { candidates }
+        let state = Arc::new(ResponseClassResolutionState {
+            candidates,
+            resolved: Mutex::new(None),
+        });
+        group.register(&state);
+        Self {
+            state,
+            group: Arc::clone(group),
+        }
+    }
+
+    fn provisional_choice(&self, py: Python<'_>) -> ResponseClassChoice {
+        self.state.choose(py)
     }
 
     fn resolve(&self, py: Python<'_>) -> ResponseClassChoice {
-        let choices = self
-            .candidates
-            .iter()
-            .map(|candidate| candidate.current_choice(py))
-            .collect::<Vec<_>>();
-        let references = choices.iter().collect::<Vec<_>>();
-        ResponseClassChoice::first_explicit(py, &references)
+        self.group.resolve_all(py);
+        self.state.resolve(py)
     }
 
-    fn clone_ref(&self, py: Python<'_>) -> Self {
+    fn clone_ref(&self) -> Self {
         Self {
-            candidates: self
-                .candidates
-                .iter()
-                .map(|candidate| candidate.clone_ref(py))
-                .collect(),
+            state: Arc::clone(&self.state),
+            group: Arc::clone(&self.group),
         }
     }
 }
@@ -1361,6 +1441,7 @@ struct PyApiRoute {
     response_model_exclude_defaults: bool,
     response_model_exclude_none: bool,
     response_class: Py<PyAny>,
+    response_class_resolution: Option<ResponseClassResolution>,
     dependency_overrides_provider: Option<Py<PyAny>>,
     callbacks: Py<PyAny>,
     strict_content_type: Py<PyAny>,
@@ -1532,7 +1613,10 @@ impl PyApiRoute {
 
     #[getter]
     fn response_class(&self, py: Python<'_>) -> Py<PyAny> {
-        self.response_class.clone_ref(py)
+        self.response_class_resolution
+            .as_ref()
+            .map(|resolution| resolution.resolve(py).python_value(py))
+            .unwrap_or_else(|| self.response_class.clone_ref(py))
     }
 
     #[getter]
@@ -1577,6 +1661,36 @@ impl PyRouteContext {
     }
 }
 
+fn materialize_api_route_response_class(py: Python<'_>, route: &Py<PyAny>) -> PyResult<()> {
+    if !route.bind(py).is_instance_of::<PyApiRoute>() {
+        return Ok(());
+    }
+    let resolution = {
+        let route = route.bind(py).extract::<PyRef<'_, PyApiRoute>>()?;
+        route
+            .response_class_resolution
+            .as_ref()
+            .map(ResponseClassResolution::clone_ref)
+    };
+    let Some(resolution) = resolution else {
+        return Ok(());
+    };
+    let response_class = resolution.resolve(py).python_value(py);
+    let retired = {
+        let mut route = route.bind(py).extract::<PyRefMut<'_, PyApiRoute>>()?;
+        if route.response_class_resolution.is_some() {
+            Some((
+                std::mem::replace(&mut route.response_class, response_class),
+                route.response_class_resolution.take(),
+            ))
+        } else {
+            None
+        }
+    };
+    drop(retired);
+    Ok(())
+}
+
 #[pymethods]
 impl PyRouteContextIterator {
     fn __iter__(self_: Py<Self>) -> Py<Self> {
@@ -1613,9 +1727,17 @@ impl PyRouteContextIterator {
             }
         };
         if route.is_instance_of::<PyRouteContext>() {
-            return Ok(Some(route.unbind()));
+            let context = route.unbind();
+            let effective_route = context
+                .bind(py)
+                .extract::<PyRef<'_, PyRouteContext>>()?
+                .effective_route
+                .clone_ref(py);
+            materialize_api_route_response_class(py, &effective_route)?;
+            return Ok(Some(context));
         }
         let route = route.unbind();
+        materialize_api_route_response_class(py, &route)?;
         match new_route_context(py, route.clone_ref(py), route) {
             Ok(context) => Ok(Some(context)),
             Err(error) => {
@@ -1649,6 +1771,7 @@ struct ApiRouteViewConfig<'a> {
     response_model_exclude_defaults: bool,
     response_model_exclude_none: bool,
     response_class: &'a ResponseClassChoice,
+    response_class_resolution: Option<&'a ResponseClassResolution>,
     dependency_overrides_provider: Option<&'a Py<PyAny>>,
     callbacks: Option<&'a Py<PyAny>>,
     strict_content_type: &'a Py<PyAny>,
@@ -1696,6 +1819,9 @@ fn new_api_route_view(
             response_model_exclude_defaults: config.response_model_exclude_defaults,
             response_model_exclude_none: config.response_model_exclude_none,
             response_class: config.response_class.python_value(py),
+            response_class_resolution: config
+                .response_class_resolution
+                .map(ResponseClassResolution::clone_ref),
             dependency_overrides_provider: config
                 .dependency_overrides_provider
                 .map(|value| value.clone_ref(py)),
@@ -2226,7 +2352,7 @@ fn materialize_included_response_fields(
                         response_class_resolution: route
                             .response_class_resolution
                             .as_ref()
-                            .map(|resolution| resolution.clone_ref(py)),
+                            .map(ResponseClassResolution::clone_ref),
                         generator_kind: route.generator_kind,
                         effective_route_context: route
                             .effective_route_context
@@ -2300,22 +2426,19 @@ fn materialize_included_response_fields(
                     PyRuntimeError::new_err("included route field destination was lost")
                 })?;
                 let old_field = std::mem::replace(&mut route.response_field, update.response_field);
-                let (old_response_class, old_resolution) = match update.response_class {
+                let old_response_class = match update.response_class {
                     Some(class_update) => {
                         route.sse_stream = class_update.sse_stream;
                         public_response_class_updates
                             .push((class_update.effective_route, class_update.python_value));
-                        (
-                            Some(std::mem::replace(
-                                &mut route.response_class,
-                                class_update.response_class,
-                            )),
-                            route.response_class_resolution.take(),
-                        )
+                        Some(std::mem::replace(
+                            &mut route.response_class,
+                            class_update.response_class,
+                        ))
                     }
-                    None => (None, None),
+                    None => None,
                 };
-                retired.push((old_field, old_response_class, old_resolution));
+                retired.push((old_field, old_response_class));
             }
             if let Some(branch) = app
                 .router_includes
@@ -2327,13 +2450,16 @@ fn materialize_included_response_fields(
             retired
         };
         for (effective_route, response_class) in public_response_class_updates {
-            let old = {
+            let retired = {
                 let mut route = effective_route
                     .bind(py)
                     .extract::<PyRefMut<'_, PyApiRoute>>()?;
-                std::mem::replace(&mut route.response_class, response_class)
+                (
+                    std::mem::replace(&mut route.response_class, response_class),
+                    route.response_class_resolution.take(),
+                )
             };
-            drop(old);
+            drop(retired);
         }
         // Finalizers can call user code, so drop replaced Python references only
         // after releasing the mutable app borrow.
@@ -6302,6 +6428,11 @@ fn merge_router_routes(
         include_in_schema: inherited_include_in_schema,
         strict_content_type: inherited_strict_content_type,
     } = policy;
+    let direct_route_group = ResponseClassResolutionGroup::new();
+    let mut included_route_groups: Vec<(
+        Arc<ResponseClassResolutionGroup>,
+        Arc<ResponseClassResolutionGroup>,
+    )> = Vec::new();
     for source_route in &source.routes {
         let path = format!("{prefix}{}", source_route.path);
         let mut route_dependencies = inherited_dependencies
@@ -6323,13 +6454,30 @@ fn merge_router_routes(
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
         let path_regex = route_path_regex(py, &path)?;
+        let response_class_resolution_group = match source_route.response_class_resolution.as_ref()
+        {
+            Some(resolution) => {
+                if let Some((_, group)) = included_route_groups
+                    .iter()
+                    .find(|(source_group, _)| Arc::ptr_eq(source_group, &resolution.group))
+                {
+                    Arc::clone(group)
+                } else {
+                    let group = ResponseClassResolutionGroup::new();
+                    included_route_groups.push((Arc::clone(&resolution.group), Arc::clone(&group)));
+                    group
+                }
+            }
+            None => Arc::clone(&direct_route_group),
+        };
         let response_class_resolution = ResponseClassResolution::for_included_route(
             py,
             source_route,
             source_router,
             inherited_response_class,
+            &response_class_resolution_group,
         );
-        let response_class = response_class_resolution.resolve(py);
+        let response_class = response_class_resolution.provisional_choice(py);
         let path_format = route_path_format(py, &path)?;
         let tags = combined_route_tags(inherited_tags, source_route.tags.as_deref());
         let generate_unique_id_function = GenerateUniqueIdChoice::first_explicit(
@@ -6373,6 +6521,7 @@ fn merge_router_routes(
                 response_model_exclude_defaults: source_route.response_model_exclude_defaults,
                 response_model_exclude_none: source_route.response_model_exclude_none,
                 response_class: &response_class,
+                response_class_resolution: Some(&response_class_resolution),
                 dependency_overrides_provider: Some(dependency_overrides_provider),
                 callbacks: None,
                 strict_content_type: &strict_content_type,
@@ -7094,6 +7243,7 @@ impl PyOperationDecorator {
                 response_model_exclude_defaults: self.response_model_exclude_defaults,
                 response_model_exclude_none: self.response_model_exclude_none,
                 response_class: &response_class,
+                response_class_resolution: None,
                 dependency_overrides_provider: self.dependency_overrides_provider.as_ref(),
                 callbacks: None,
                 strict_content_type: &strict_content_type_value,
