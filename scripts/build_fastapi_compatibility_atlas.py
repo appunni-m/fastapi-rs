@@ -6853,6 +6853,61 @@ def docs_exclusion(path: str) -> str | None:
     return None
 
 
+def validate_doc_section_mapping_shape(
+    mapping: Any, section_label: str
+) -> tuple[str | None, list[str]]:
+    """Validate one reviewed documentation-section mapping discriminator."""
+    if not isinstance(mapping, dict):
+        return None, [f"{section_label} must be an object"]
+
+    common_fields = {"heading", "start_line", "end_line"}
+    workflow_fields = {"recipe_path", "case_ids", "observation_selectors", "scope_note"}
+    exclusion_fields = {"exclusion_reason"}
+    status = mapping.get("status", "workflow")
+    errors = []
+    if "status" in mapping and (
+        not isinstance(status, str) or status not in {"workflow", "excluded"}
+    ):
+        return None, [f"{section_label} has invalid status {status!r}"]
+
+    if status == "excluded":
+        allowed_fields = common_fields | exclusion_fields | {"status", "rationale"}
+        required_fields = common_fields | exclusion_fields | {"status", "rationale"}
+        mixed_fields = sorted(workflow_fields.intersection(mapping))
+        if mixed_fields:
+            errors.append(
+                f"{section_label} exclusion cannot include workflow fields: {mixed_fields}"
+            )
+    else:
+        allowed_fields = common_fields | workflow_fields | {"status", "rationale"}
+        required_fields = common_fields | workflow_fields | {"rationale"}
+        mixed_fields = sorted(exclusion_fields.intersection(mapping))
+        if mixed_fields:
+            errors.append(
+                f"{section_label} workflow cannot include exclusion fields: {mixed_fields}"
+            )
+
+    unknown_fields = sorted((key for key in mapping if key not in allowed_fields), key=str)
+    if unknown_fields:
+        errors.append(f"{section_label} has unknown fields: {unknown_fields}")
+    missing_fields = sorted(required_fields - mapping.keys())
+    if missing_fields:
+        errors.append(f"{section_label} is missing required fields: {missing_fields}")
+
+    if status == "excluded":
+        for field in ("exclusion_reason", "rationale"):
+            value = mapping.get(field)
+            if not isinstance(value, str) or not value.strip():
+                errors.append(f"{section_label} {field} must be a nonempty string")
+    else:
+        for field in ("recipe_path", "scope_note", "rationale"):
+            value = mapping.get(field)
+            if not isinstance(value, str) or not value.strip():
+                errors.append(f"{section_label} {field} must be a nonempty string")
+
+    return status, errors
+
+
 def reviewed_source_spans(
     root: Path,
     spans: Sequence[dict[str, Any]],
@@ -10618,17 +10673,40 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 assert section_mapping_key is not None
                 reviewed_section_mapping_keys_seen.add(section_mapping_key)
                 section_label = f"docs/en/docs/{rel}#{section_mapping_key[1]} section mapping"
-                if page_exclusion:
-                    documented_page_validation_errors.append(
-                        f"{section_label} cannot override an excluded documentation page"
-                    )
-                if (
+                section_mapping_status, shape_errors = validate_doc_section_mapping_shape(
+                    reviewed_section_mapping, section_label
+                )
+                documented_page_validation_errors.extend(shape_errors)
+                if not isinstance(reviewed_section_mapping, dict):
+                    reviewed_section_mapping = None
+                elif (
                     reviewed_section_mapping.get("heading") != heading["text"]
+                    or type(reviewed_section_mapping.get("start_line")) is not int
                     or reviewed_section_mapping.get("start_line") != heading["line"]
+                    or type(reviewed_section_mapping.get("end_line")) is not int
                     or reviewed_section_mapping.get("end_line") != end_line
                 ):
                     documented_page_validation_errors.append(
                         f"{section_label} heading or pinned source span has changed"
+                    )
+                if section_mapping_status == "excluded":
+                    if page_exclusion:
+                        documented_page_validation_errors.append(
+                            f"{section_label} cannot add a section exclusion to an excluded page"
+                        )
+                    elif isinstance(reviewed_section_mapping, dict):
+                        section_review_status = "excluded"
+                        section_exclusion_reason = reviewed_section_mapping.get(
+                            "exclusion_reason"
+                        )
+                        section_review_rationale = reviewed_section_mapping.get("rationale")
+                    reviewed_section_mapping = None
+                elif section_mapping_status is None:
+                    reviewed_section_mapping = None
+            if reviewed_section_mapping is not None:
+                if page_exclusion:
+                    documented_page_validation_errors.append(
+                        f"{section_label} cannot override an excluded documentation page"
                     )
                 recipe_path = reviewed_section_mapping.get("recipe_path")
                 if not isinstance(recipe_path, str) or not recipe_path:

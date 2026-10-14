@@ -1,4 +1,4 @@
-"""Reviewed section-level links from FastAPI documentation to input cases."""
+"""Reviewed section-to-workflow links and behavior-based exclusions."""
 
 DOC_SECTION_CASE_MAPPINGS = {
     ("tutorial/cors.md", "cors-preflight-requests"): {
@@ -310,6 +310,21 @@ DOC_SECTION_CASE_MAPPINGS = {
         "rationale": (
             "FastAPI resolves the router's default response class when constructing a route "
             "and reads its media type for OpenAPI."
+        ),
+    },
+    ("tutorial/static-files.md", "more-info"): {
+        "status": "excluded",
+        "heading": "More info { #more-info }",
+        "start_line": 46,
+        "end_line": 48,
+        "exclusion_reason": (
+            "This section only links to Starlette's StaticFiles documentation and defines no "
+            "additional FastAPI runtime or API behavior."
+        ),
+        "rationale": (
+            "The pinned source span is a single link to generic Starlette StaticFiles options. "
+            "FastAPI's static-file integration is described in the preceding sections; this "
+            "link adds no independently observable FastAPI contract."
         ),
     },
 }
