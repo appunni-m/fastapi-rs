@@ -243,11 +243,53 @@ server. Internal Rust timing attribution may be added as a measurement of this
 same implementation; it is not a separate target. Do not infer component costs
 by subtracting the Starlette control or from the end-to-end target time.
 
-#### Current completed seven-workload run (2026-10-14; commit 9dd48e5)
+#### Current completed seven-workload run (2026-10-14; commit fbd71dd)
+
+The suite completed at `2026-10-14T13:31:05Z` with suite ID
+`ee508354-1cac-42f4-b5ee-3a34c0e09f6a` and receipt
+`benchmark-results/suite-20261014T133105Z-ee508354-1cac-42f4-b5ee-3a34c0e09f6a.json`
+(SHA-256 `8336e61ffdf369f96f98e3ee3189638cd4607d2c73d1e69445e6d84a583557fe`).
+Every workload comparison binds the current manifest SHA-256
+`d3ecf179662e9431af687579ccf5606081e0ce6d75a6b91984136d4a5c0d0ef7`. The
+suite binds FastAPI-RS commit `fbd71dd58a83751a09c02b3e676c70f34d0e95c3`,
+FastAPI `0.141.1` at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette
+`1.6.0` at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
+`b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. It used CPython 3.12.13,
+Pydantic 2.13.4 / pydantic-core 2.46.4, macOS 15.7.7 arm64 (12 logical
+CPUs), Cargo/rustc 1.98.1, and the optimized release profile with
+`pyo3/extension-module`. All seven identity-checked parity gates passed 45/45
+selected observations with zero failures or not-run cases. Each subject used
+50 warmups and 1,000 measured calls in five rounds. The target extension
+SHA-256 was `e2c157ef20cadbe79cd0c69375ec8c0d916498c400d3d902a5a3d297b576fd95`;
+the target binary SHA-256 was
+`c9e6ea51f61335da030d97335680577fa5914e55316d7a65b9c13885dde5329f`.
+
+The table reports median and p95 direct-ASGI latency in microseconds. Ratios
+are FastAPI-RS divided by FastAPI; values above `1.0x` mean FastAPI-RS took
+longer on this host. Each raw receipt is referenced below; the suite receipt
+binds every workload receipt by SHA-256.
+
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio | Parity | Raw receipt |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Async nested dependencies, distinct query aliases | 496.1 / 521.0 µs | 666.1 / 720.9 µs | 1.343x / 1.384x | 2/2 | `benchmark-results/20261014T132243Z-4a36ae20-68f9-4a73-87ae-b885f24c3624.json` |
+| Async nested dependencies, two query parameters | 407.5 / 420.1 µs | 631.6 / 673.4 µs | 1.550x / 1.603x | 2/2 | `benchmark-results/20261014T132408Z-61d949ba-1b97-4f03-8355-0a091cb4b7e6.json` |
+| Chunked request body | 133.2 / 138.5 µs | 140.6 / 152.9 µs | 1.055x / 1.104x | 13/13 | `benchmark-results/20261014T132531Z-71a4336a-29d7-41c1-98b0-070924b09171.json` |
+| Invalid request | 144.4 / 212.6 µs | 321.9 / 343.0 µs | 2.229x / 1.613x | 13/13 | `benchmark-results/20261014T132655Z-cad3a259-a590-43c5-9240-5e05a8916b65.json` |
+| Valid request | 126.8 / 138.1 µs | 141.6 / 174.6 µs | 1.117x / 1.264x | 13/13 | `benchmark-results/20261014T132818Z-5d369a94-bc71-460b-a2c1-4afe35d2d0ff.json` |
+| Large response model | 361.7 / 383.0 µs | 384.5 / 421.3 µs | 1.063x / 1.100x | 1/1 | `benchmark-results/20261014T132942Z-fc5a8fc6-a1e0-4957-bd0f-0afcc825f499.json` |
+| Repeated sequence query | 100.6 / 106.9 µs | 110.3 / 126.2 µs | 1.096x / 1.181x | 1/1 | `benchmark-results/20261014T133105Z-27d13fa3-e350-45b1-8ef8-a431b8731d7c.json` |
+
+FastAPI-RS had higher median and p95 latency on all seven workloads; invalid
+requests had the largest median gap. This is a single-host direct-ASGI result,
+not a global performance claim; it does not measure network/server latency or
+separate facade, PyO3, Rust, Pydantic, or Starlette-RS costs. Starlette 1.6.0
+controls remain contextual and are not subtracted from FastAPI timings.
+
+#### Previous completed seven-workload run (2026-10-14; commit 9dd48e5; stale manifest)
 
 The suite completed at `2026-10-14T12:48:35Z` with suite ID
 `6ca3d22d-72fe-4f15-b997-7f80dbe29af7` and receipt
-`benchmark-results/suite-20261014T124835Z-6ca3d22d-72fe-4f15-b997-7f80dbe29af7.json`
+`benchmark-results/stale/suite-20261014T124835Z-6ca3d22d-72fe-4f15-b997-7f80dbe29af7.json`
 (SHA-256 `77834a2a9c4ab77d5287587438832f461bae6c42a26788bd70bdf7c13f4abd79`).
 Each workload comparison binds manifest SHA-256
 `2f57de585d287bcf8fca27caf098b8788a61124001262df3ab109ab173126cec`. The
@@ -284,6 +326,9 @@ requests had the largest median gap. This is a single-host direct-ASGI result,
 not a global performance claim; it does not measure network/server latency or
 separate facade, PyO3, Rust, Pydantic, or Starlette-RS costs. Starlette 1.6.0
 controls remain contextual and are not subtracted from FastAPI timings.
+
+This suite is retained as historical evidence; its workload comparisons bind
+the previous manifest and are not the current benchmark contract.
 
 #### Previous completed seven-workload run (2026-10-14; commit c94b5d4; stale manifest)
 
