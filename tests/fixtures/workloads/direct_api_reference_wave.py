@@ -15,4 +15,5 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
     return {
         "unused": {"args": [], "kwargs": {}},
         "dataclass-record": {"args": [Record(name="foo", count=100)], "kwargs": {}},
+        "debug-true": {"args": [], "kwargs": {"debug": True}},
     }

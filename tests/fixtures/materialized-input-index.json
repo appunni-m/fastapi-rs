@@ -5478,7 +5478,7 @@
         "fastapi.dependencies.depends-yield-scope-signature"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_probes": [
         {
           "case_id": "fastapi.dependencies.depends-yield-scope-signature",
@@ -5610,7 +5610,7 @@
         "fastapi.direct-api-reference-wave.openapi-info-signature"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_probes": [
         {
           "case_id": "fastapi.direct-api-reference-wave.encoder-reference-dataclass",
@@ -8137,6 +8137,55 @@
       ]
     },
     {
+      "id": "fastapi-constructor-debug",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-constructor-debug.json",
+      "input_sha256": "861b6aea5d8df1a3eab729038726375581fc2bab00b797ed695143d701fc87ce",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml",
+      "recipe_sha256": "2f2d6eb45a18ea7cdcc4794e6d08b4a5956131fd194f4d8cce42ad1c1a330b28",
+      "case_ids": [
+        "fastapi.applications.constructor-debug"
+      ],
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.applications.constructor-debug",
+          "symbol_id": "fastapi.FastAPI",
+          "path": "fastapi/applications.py",
+          "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.applications.constructor-debug",
+          "probe_id": "constructor-signature",
+          "symbol_id": "fastapi.FastAPI",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.applications.constructor-debug",
+          "probe_id": "debug-keyword-construction",
+          "symbol_id": "fastapi.FastAPI",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.applications.constructor-debug",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.FastAPI"
+          ]
+        }
+      ]
+    },
+    {
       "id": "fastapi-testclient-public-alias",
       "input_path": "tests/fixtures/inputs/parity/fastapi-testclient-public-alias.json",
       "input_sha256": "a6551221a91218aa8008560027e8fc7ce009c47c7d7ccd086488f5a0e3ec193a",
@@ -8146,7 +8195,7 @@
         "fastapi.testclient.public-api.alias-signature"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.testclient.public-api.alias-signature",
@@ -8186,7 +8235,7 @@
         "fastapi.public-api.package-version-value"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.public-api.package-version-value",
@@ -11978,7 +12027,7 @@
         "fastapi.openapi.docs.public-api.swagger-default-parameters"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.docs.public-api.oauth-redirect-signature",
@@ -13136,7 +13185,7 @@
         "fastapi.openapi-models.components.signature"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.components.signature",
@@ -14359,7 +14408,7 @@
         "fastapi.parameter-class-constructor-signatures.form"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.parameter-class-constructor-signatures.body",
@@ -14538,7 +14587,7 @@
         "fastapi.parameter-factory-signatures.form"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.parameter-factory-signatures.body",
@@ -27614,7 +27663,7 @@
         "fastapi.security.public-api.open-id-connect"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.security.public-api.api-key-cookie",
@@ -28446,7 +28495,7 @@
         "fastapi.security.public-api.open-id-connect-target"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
       "api_definitions": [
         {
           "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",

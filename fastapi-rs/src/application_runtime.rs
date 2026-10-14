@@ -2542,6 +2542,7 @@ struct ParameterOpenApiPlan {
 #[pyclass(name = "FastAPI", module = "fastapi.applications")]
 pub(crate) struct PyFastApi {
     state: Py<PyAny>,
+    debug: bool,
     route_scope_prefix: String,
     is_router_inner: bool,
     router_tags: Vec<String>,
@@ -3126,7 +3127,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, debug = false, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -3134,6 +3135,7 @@ impl PyFastApi {
     )]
     fn new(
         py: Python<'_>,
+        debug: bool,
         title: &str,
         summary: Option<String>,
         description: &str,
@@ -3284,6 +3286,7 @@ impl PyFastApi {
         };
         Ok(Self {
             state,
+            debug,
             route_scope_prefix: String::new(),
             is_router_inner: false,
             router_tags: Vec::new(),
@@ -3340,6 +3343,16 @@ impl PyFastApi {
     #[getter]
     fn state(&self, py: Python<'_>) -> Py<PyAny> {
         self.state.clone_ref(py)
+    }
+
+    #[getter]
+    fn debug(&self) -> bool {
+        self.debug
+    }
+
+    #[setter]
+    fn set_debug(&mut self, debug: bool) {
+        self.debug = debug;
     }
 
     #[getter]
@@ -5148,7 +5161,7 @@ impl PyFastApi {
     }
 
     fn middleware_stack_for(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let (cached, registrations, exception_handlers) = {
+        let (cached, registrations, exception_handlers, debug) = {
             let app = slf.bind(py).borrow();
             (
                 app.middleware_stack
@@ -5159,6 +5172,7 @@ impl PyFastApi {
                     .map(|registration| registration.clone_ref(py))
                     .collect::<Vec<_>>(),
                 app.exception_handlers.clone_ref(py),
+                app.debug,
             )
         };
         if let Some(cached) = cached {
@@ -5194,6 +5208,7 @@ impl PyFastApi {
         }
         let exception_kwargs = PyDict::new(py);
         exception_kwargs.set_item("handlers", handlers)?;
+        exception_kwargs.set_item("debug", debug)?;
         stack = exception_middleware
             .call((stack.bind(py),), Some(&exception_kwargs))?
             .unbind();
@@ -5213,7 +5228,7 @@ impl PyFastApi {
             .getattr("ServerErrorMiddleware")?;
         let server_error_kwargs = PyDict::new(py);
         server_error_kwargs.set_item("handler", server_error_handler)?;
-        server_error_kwargs.set_item("debug", false)?;
+        server_error_kwargs.set_item("debug", debug)?;
         stack = server_error_middleware
             .call((stack.bind(py),), Some(&server_error_kwargs))?
             .unbind();
@@ -5658,6 +5673,7 @@ impl PyApiRouter {
             py,
             PyFastApi::new(
                 py,
+                false,
                 "FastAPI",
                 None,
                 "",

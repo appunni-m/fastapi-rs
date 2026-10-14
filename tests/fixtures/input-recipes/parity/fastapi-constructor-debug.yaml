@@ -1,0 +1,31 @@
+schema: fastapi-rs/python-api-workflow@5
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.applications.constructor-debug
+    probes:
+      - probe_id: debug-keyword-construction
+        public_callable:
+          module: fastapi
+          attribute: FastAPI
+        argument_bundle: debug-true
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+      - probe_id: constructor-signature
+        public_callable:
+          module: fastapi
+          attribute: FastAPI
+        argument_bundle: unused
+        observations:
+          - kind: python_signature
+            selector: signature
+            comparison: exact
+    source_evidence:
+      - path: fastapi/applications.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.FastAPI
+        sha256: 38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c
