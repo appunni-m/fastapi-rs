@@ -1,0 +1,70 @@
+profile = "developer-tools-cpython-3.12.13"
+python = "CPython 3.12.13"
+input = "requirements/developer-tools-cpython-3.12.13.in"
+lock = "requirements/developer-tools-cpython-3.12.13.lock"
+output = "docs/DEVELOPER_TOOL_DEPENDENCIES.md"
+exclude_newer = "2026-10-13T23:59:59Z"
+resolver_version = "0.11.29"
+
+[[packages]]
+name = "attrs"
+roles = ["dev"]
+purpose = "Provides compact class and attribute helpers used by JSON Schema validation and reference resolution."
+implementation = "Pure Python distribution."
+license = "MIT"
+
+[[packages]]
+name = "jsonschema"
+roles = ["dev"]
+purpose = "Validates parity recipes, process workflows, and benchmark declarations against JSON Schema."
+implementation = "Pure Python validator and bundled schema data."
+license = "MIT"
+
+[[packages]]
+name = "jsonschema-specifications"
+roles = ["dev"]
+purpose = "Supplies the JSON Schema metaschemas and vocabularies used by jsonschema."
+implementation = "Pure Python package with JSON schema data."
+license = "MIT"
+
+[[packages]]
+name = "PyYAML"
+roles = ["dev"]
+purpose = "Loads and emits the reviewed YAML metadata, dependency declarations, and input recipes."
+implementation = "Python package with a native C accelerator in supported wheels."
+license = "MIT"
+
+[[packages]]
+name = "referencing"
+roles = ["dev"]
+purpose = "Resolves JSON Schema resources and references for jsonschema."
+implementation = "Pure Python distribution."
+license = "MIT"
+
+[[packages]]
+name = "rpds-py"
+roles = ["dev"]
+purpose = "Provides persistent data structures used by JSON Schema resource and reference registries."
+implementation = "Python bindings to a Rust implementation, shipped as native wheels."
+license = "MIT"
+
+[[packages]]
+name = "ruff"
+roles = ["dev"]
+purpose = "Formats and lints the Python facade, scripts, and active workloads in make fmt and make format."
+implementation = "Rust-native formatter/linter distributed through a Python wheel."
+license = "MIT"
+
+[[packages]]
+name = "typing-extensions"
+roles = ["dev"]
+purpose = "Provides typing backports required by referencing on the pinned Python 3.12 interpreter."
+implementation = "Pure Python distribution."
+license = "PSF-2.0"
+
+[[packages]]
+name = "uv"
+roles = ["dev", "build"]
+purpose = "Resolves hash-locked Python profiles and creates or synchronizes isolated development and build environments."
+implementation = "Rust-native package and environment manager distributed as a platform-specific Python wheel."
+license = "MIT OR Apache-2.0"

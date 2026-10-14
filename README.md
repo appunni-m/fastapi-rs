@@ -63,6 +63,11 @@ remains in progress, so no overall compatibility claim is made.
   language/native components, and license evidence. The [dependency summary](docs/DEPENDENCIES.md)
   and [full lock graph](docs/DEPENDENCY_GRAPH.md) provide compact and exhaustive
   views.
+- [Developer-tool dependency profile](docs/DEVELOPER_TOOL_DEPENDENCIES.md)
+  records the hash-locked Ruff, uv, JSON Schema, and PyYAML closure separately
+  from the target runtime. Use `make developer-tools-prepare` to install it,
+  `make developer-tools-inventory-check` to check it offline, and
+  `make developer-tools-inventory-update` to resolve and refresh it.
 - [Parity and benchmark plan](docs/PARITY_BENCHMARK_PLAN.md) and
   [license analysis](docs/LICENSING.md) define the next contract and release work.
 

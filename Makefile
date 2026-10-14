@@ -21,6 +21,11 @@ TARGET_TESTCLIENT_LOCK ?= $(CURDIR)/requirements/target-testclient-cpython-3.12.
 BUILD_TOOLS_ENV ?= $(CURDIR)/.venv-build-tools
 BUILD_TOOLS_PYTHON ?= $(BUILD_TOOLS_ENV)/bin/python
 BUILD_TOOLS_LOCK ?= $(CURDIR)/requirements/build-tools-cpython-3.12.13.lock
+DEVELOPER_TOOLS_ENV ?= $(CURDIR)/.venv-developer-tools
+DEVELOPER_TOOLS_PYTHON ?= $(DEVELOPER_TOOLS_ENV)/bin/python
+DEVELOPER_TOOLS_UV ?= $(DEVELOPER_TOOLS_ENV)/bin/uv
+DEVELOPER_TOOLS_LOCK ?= $(CURDIR)/requirements/developer-tools-cpython-3.12.13.lock
+DEVELOPER_TOOLS_UV_CACHE_DIR ?= $(CURDIR)/target/developer-tools-uv-cache
 FASTAPI_SOURCE ?= $(abspath ../fastapi)
 STARLETTE_SOURCE ?= $(abspath ../starlette)
 STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
@@ -50,7 +55,7 @@ RELEASE_CRATE_DIR ?= target/package
 RELEASE_VERSION ?= 0.1.0
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-target parity-prepare-target-testclient fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-target parity-prepare-target-testclient fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -64,6 +69,9 @@ help: ## Show common development commands
 	  '  make build-rust     Build all Rust workspace crates' \
 	  '  make build-python   Build the Python wheel under target/wheels' \
 	  '  make build-tools-prepare Prepare hash-locked CPython 3.12.13 Maturin environment' \
+	  '  make developer-tools-prepare Install the hash-locked Ruff/uv/schema/YAML tool profile' \
+	  '  make developer-tools-inventory-update Resolve and render the developer-tool dependency closure' \
+	  '  make developer-tools-inventory-check Check the lock and rendered developer-tool inventory' \
 	  '  make compatibility-atlas-update Rebuild the source atlas, backlog, index, and API contract' \
 	  '  make api-contract-update Refresh per-symbol source/runtime API links in manifest.yaml' \
 	  '  make api-contract-check Check per-symbol API links are current' \
@@ -105,10 +113,10 @@ help: ## Show common development commands
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'Builds use the separate hash-locked CPython 3.12.13 Maturin environment; override BUILD_TOOLS_ENV, CARGO, or MATURIN as needed.'
 
-fmt: rust-policy-check ## Check Rust formatting and Python lint
+fmt: rust-policy-check developer-tools-prepare ## Check Rust formatting and Python lint
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py -- --check
-	$(PYTHON) -m ruff format --check fastapi-rs-py/python scripts tests/fixtures/workloads
-	$(PYTHON) -m ruff check fastapi-rs-py/python scripts tests/fixtures/workloads
+	$(DEVELOPER_TOOLS_PYTHON) -m ruff format --check fastapi-rs-py/python scripts tests/fixtures/workloads
+	$(DEVELOPER_TOOLS_PYTHON) -m ruff check fastapi-rs-py/python scripts tests/fixtures/workloads
 	$(MAKE) python-facade-check
 
 python-facade-check: ## Require imports/re-exports only in the Python runtime package
@@ -127,9 +135,9 @@ license-artifact-check: license-notices-check ## Check already-built wheel and C
 	@test -n "$(RELEASE_NOTICE_WHEEL)" || { printf '%s\n' 'set RELEASE_NOTICE_WHEEL to the already-built release wheel'; exit 2; }
 	$(PYTHON) scripts/check_release_notices.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)" --wheel "$(RELEASE_NOTICE_WHEEL)" --crate "fastapi-rs=$(RELEASE_CRATE_DIR)/fastapi-rs-$(RELEASE_VERSION).crate" --crate "fastapi-rs-py=$(RELEASE_CRATE_DIR)/fastapi-rs-py-$(RELEASE_VERSION).crate" --require-all-crates
 
-format: ## Apply Rust formatting
+format: developer-tools-prepare ## Apply Rust formatting
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py
-	$(PYTHON) -m ruff format fastapi-rs-py/python scripts tests/fixtures/workloads
+	$(DEVELOPER_TOOLS_PYTHON) -m ruff format fastapi-rs-py/python scripts tests/fixtures/workloads
 
 clippy: rust-policy-check ## Run strict workspace Clippy
 	$(PYTHON) scripts/build_target_extension.py --clippy --cargo "$(CARGO)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
@@ -142,6 +150,19 @@ build-tools-prepare: ## Prepare isolated hash-locked CPython 3.12.13 build tools
 	$(BUILD_TOOLS_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("build-tool lock requires CPython 3.12.13")'
 	$(UV) pip sync --python "$(BUILD_TOOLS_PYTHON)" --require-hashes "$(BUILD_TOOLS_LOCK)"
 	$(BUILD_TOOLS_PYTHON) -m maturin --version
+
+developer-tools-inventory-update: ## Resolve and render the hash-locked developer-tool dependency closure
+	UV_CACHE_DIR="$(DEVELOPER_TOOLS_UV_CACHE_DIR)" $(PYTHON) scripts/render_developer_tool_dependency_inventory.py --update --uv "$(UV)"
+
+developer-tools-inventory-check: ## Check the developer-tool closure and generated inventory without network access
+	$(PYTHON) scripts/render_developer_tool_dependency_inventory.py --check
+
+developer-tools-prepare: developer-tools-inventory-check ## Prepare the isolated hash-locked CPython 3.12.13 developer-tool environment
+	test -x "$(DEVELOPER_TOOLS_PYTHON)" || UV_CACHE_DIR="$(DEVELOPER_TOOLS_UV_CACHE_DIR)" $(UV) venv --python 3.12.13 "$(DEVELOPER_TOOLS_ENV)"
+	$(DEVELOPER_TOOLS_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("developer-tool lock requires CPython 3.12.13")'
+	UV_CACHE_DIR="$(DEVELOPER_TOOLS_UV_CACHE_DIR)" $(UV) pip sync --python "$(DEVELOPER_TOOLS_PYTHON)" --require-hashes "$(DEVELOPER_TOOLS_LOCK)"
+	$(DEVELOPER_TOOLS_PYTHON) -m ruff --version
+	$(DEVELOPER_TOOLS_UV) --version
 
 build-python: build-tools-prepare ## Build and statically validate the release wheel under target/wheels
 	$(PYTHON) scripts/build_target_extension.py --release-wheel --python "$(BUILD_TOOLS_PYTHON)" --maturin "$(MATURIN)" --out target/wheels --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
