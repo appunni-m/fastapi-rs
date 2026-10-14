@@ -5030,6 +5030,85 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     },
 }
 
+# The reference page's task-injection example has one exact HTTP workflow. Keep
+# its reviewed claims to selectors actually projected by that case; the direct
+# background-effects selector is still planned, even though a later state read
+# makes this task's effect visible in raw response bytes.
+DOC_PAGE_REVIEW_MAPPINGS["reference/background.md"] = {
+    "replace_features": True,
+    "feature_ids": ["app-routing", "dependency-security", "response-serialization"],
+    "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+    "rationale": (
+        "FastAPI injects its BackgroundTasks subclass into a path operation and "
+        "delegates task storage to Starlette. The exact linked HTTP case schedules "
+        "one task and reads state afterward; it observes only raw HTTP body, headers, "
+        "and status."
+    ),
+    "stimulus_notes": (
+        "The linked input uses the documented BackgroundTasks route parameter, "
+        "then reads the task's state in a follow-up request. The recorded selectors "
+        "are input observations, not expected outputs or parity claims."
+    ),
+    "contract_gate": (
+        "Partial page coverage: the one route-injection case makes its task effect "
+        "visible through a later raw response body, but does not select a direct "
+        "background-effects projection. Dependency-function injection, multiple-task "
+        "ordering, task failures, and sync/async task execution remain unobserved. "
+        "The direct response.background_effects selector is planned. Starlette 1.6.0 "
+        "owns task collection and post-send execution."
+    ),
+    "workflow_cases": [
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
+            "case_id": "fastapi.docs.reference-wave.http.background-task-injection",
+            "action_ids": ["schedule", "read-state"],
+            "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+            ],
+            "scope_note": (
+                "One path-operation injection schedules one task, then observes the "
+                "task's state through a follow-up HTTP response."
+            ),
+        }
+    ],
+    "supporting_sources": [
+        {
+            "path": "docs/en/docs/reference/background.md",
+            "start_line": 1,
+            "end_line": 11,
+            "role": "The reference documents path-operation/dependency injection and post-response task scheduling.",
+        },
+        {
+            "path": "fastapi/background.py",
+            "start_line": 5,
+            "end_line": 11,
+            "role": "FastAPI BackgroundTasks subclasses the pinned Starlette collection.",
+        },
+        {
+            "path": "fastapi/background.py",
+            "start_line": 40,
+            "end_line": 61,
+            "role": "FastAPI add_task delegates to the Starlette implementation.",
+        },
+    ],
+    "starlette_contract_sources": [
+        {
+            "path": "starlette/background.py",
+            "start_line": 26,
+            "end_line": 36,
+            "role": "Starlette 1.6.0 stores and runs background tasks in insertion order.",
+        },
+        {
+            "path": "starlette/responses.py",
+            "start_line": 163,
+            "end_line": 170,
+            "role": "Starlette 1.6.0 sends the response before invoking its background task collection.",
+        },
+    ],
+}
+
 DOC_PAGE_EXCLUSION_MAPPINGS = {
     "_llm-test.md": {
         "exclusion_reason": "Repository meta-test page, not a user-facing FastAPI feature.",

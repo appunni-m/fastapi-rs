@@ -24288,6 +24288,37 @@
       ]
     },
     {
+      "id": "router-default-response-class-late-mutation",
+      "input_path": "tests/fixtures/inputs/parity/router-default-response-class-late-mutation.json",
+      "input_sha256": "aea4cebaded3182013b12de85f1b5888f0a00005fbc4ed164ceb233942736888",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-default-response-class-late-mutation.yaml",
+      "recipe_sha256": "1f7f4f4929820715519bf7130ede51820ed2cf5b661c7b23beb9b8028bafa987",
+      "case_ids": [
+        "fastapi.include-router.default-response-class.late-assignment-before-materialization",
+        "fastapi.include-router.default-response-class.assignment-after-openapi-materialization"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_default_response_class_late_mutation.py",
+      "workload_sha256": "3258d44c3732fb417680d14dbd5cd5a41690252e5c7c28676f7ffc3add5140a9",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.include-router.default-response-class.late-assignment-before-materialization",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_default_response_class.py",
+            "source:upstream-test:tests/test_default_response_class_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_default_response_class.py",
+            "source:upstream-test:tests/test_default_response_class_router.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "router-dependencies-isolated",
       "input_path": "tests/fixtures/inputs/parity/router-dependencies-isolated.json",
       "input_sha256": "10a8fbff3f429d7ee5ac51364fa3b89fa59a5b43b5d1f1b6569e7f2c8059780c",
@@ -54132,6 +54163,38 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_default_response_class.py",
+      "fixture_id": "fastapi.test.test-default-response-class",
+      "workflow_id": "router-default-response-class-late-mutation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+        "fastapi.include-router.default-response-class.late-assignment-before-materialization"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_default_response_class_router.py",
+      "fixture_id": "fastapi.test.test-default-response-class-router",
+      "workflow_id": "router-default-response-class-late-mutation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+        "fastapi.include-router.default-response-class.late-assignment-before-materialization"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

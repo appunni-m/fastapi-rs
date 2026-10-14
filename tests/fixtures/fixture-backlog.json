@@ -66379,14 +66379,21 @@
         }
       ],
       "candidate_selector_scope": {
-        "unobserved_reviewed_selector_claims": [
-          "dependency.call_order",
-          "http.body.json",
-          "response.background_effects",
-          "route.match"
-        ],
-        "workflow_scope_notes": []
+        "contract_gate": "Partial page coverage: the one route-injection case makes its task effect visible through a later raw response body, but does not select a direct background-effects projection. Dependency-function injection, multiple-task ordering, task failures, and sync/async task execution remain unobserved. The direct response.background_effects selector is planned. Starlette 1.6.0 owns task collection and post-send execution.",
+        "unobserved_reviewed_selector_claims": [],
+        "workflow_scope_notes": [
+          {
+            "action_ids": [
+              "schedule",
+              "read-state"
+            ],
+            "case_id": "fastapi.docs.reference-wave.http.background-task-injection",
+            "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
+            "scope_note": "One path-operation injection schedules one task, then observes the task's state through a follow-up HTTP response."
+          }
+        ]
       },
+      "contract_gate": "Partial page coverage: the one route-injection case makes its task effect visible through a later raw response body, but does not select a direct background-effects projection. Dependency-function injection, multiple-task ordering, task failures, and sync/async task execution remain unobserved. The direct response.background_effects selector is planned. Starlette 1.6.0 owns task collection and post-send execution.",
       "documented_sections": [
         {
           "end_line": 11,
@@ -66529,28 +66536,65 @@
       ],
       "related_usage_sources": [],
       "reviewed_source_mapping": {
-        "rationale": "FastAPI injects and merges BackgroundTasks for route/dependency use; the task executes after the response. Remove request-validation. Starlette owns the inherited task collection and post-send execution semantics.",
+        "contract_gate": "Partial page coverage: the one route-injection case makes its task effect visible through a later raw response body, but does not select a direct background-effects projection. Dependency-function injection, multiple-task ordering, task failures, and sync/async task execution remain unobserved. The direct response.background_effects selector is planned. Starlette 1.6.0 owns task collection and post-send execution.",
+        "rationale": "FastAPI injects its BackgroundTasks subclass into a path operation and delegates task storage to Starlette. The exact linked HTTP case schedules one task and reads state afterward; it observes only raw HTTP body, headers, and status.",
         "source_evidence": [
           {
             "end_line": 11,
             "path": "docs/en/docs/reference/background.md",
-            "role": "documented BackgroundTasks injection and FastAPI import",
+            "role": "The reference documents path-operation/dependency injection and post-response task scheduling.",
             "sha256": "895ad7f9418b148b66ecd9a50b66e02bc1bf55a0f4abb0b6db87090ec60122d1",
             "start_line": 1
           },
           {
             "end_line": 11,
             "path": "fastapi/background.py",
-            "role": "FastAPI BackgroundTasks subclasses Starlette's collection",
+            "role": "FastAPI BackgroundTasks subclasses the pinned Starlette collection.",
             "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205",
             "start_line": 5
           },
           {
             "end_line": 61,
             "path": "fastapi/background.py",
-            "role": "FastAPI add_task delegates to Starlette",
+            "role": "FastAPI add_task delegates to the Starlette implementation.",
             "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205",
             "start_line": 40
+          }
+        ],
+        "starlette_contract_authority": "1.6.0",
+        "starlette_source_evidence": [
+          {
+            "end_line": 36,
+            "path": "starlette/background.py",
+            "role": "Starlette 1.6.0 stores and runs background tasks in insertion order.",
+            "sha256": "0fe5e952915181406765e035b4783330e82e6dee8809564594e03830bd2ad53f",
+            "source_authority": "Starlette 1.6.0",
+            "start_line": 26
+          },
+          {
+            "end_line": 170,
+            "path": "starlette/responses.py",
+            "role": "Starlette 1.6.0 sends the response before invoking its background task collection.",
+            "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+            "source_authority": "Starlette 1.6.0",
+            "start_line": 163
+          }
+        ],
+        "stimulus_notes": "The linked input uses the documented BackgroundTasks route parameter, then reads the task's state in a follow-up request. The recorded selectors are input observations, not expected outputs or parity claims.",
+        "workflow_cases": [
+          {
+            "action_ids": [
+              "schedule",
+              "read-state"
+            ],
+            "case_id": "fastapi.docs.reference-wave.http.background-task-injection",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
+            "scope_note": "One path-operation injection schedules one task, then observes the task's state through a follow-up HTTP response."
           }
         ]
       },
@@ -66588,23 +66632,39 @@
         {
           "end_line": 11,
           "path": "docs/en/docs/reference/background.md",
-          "role": "documented BackgroundTasks injection and FastAPI import",
+          "role": "The reference documents path-operation/dependency injection and post-response task scheduling.",
           "sha256": "895ad7f9418b148b66ecd9a50b66e02bc1bf55a0f4abb0b6db87090ec60122d1",
           "start_line": 1
         },
         {
           "end_line": 11,
           "path": "fastapi/background.py",
-          "role": "FastAPI BackgroundTasks subclasses Starlette's collection",
+          "role": "FastAPI BackgroundTasks subclasses the pinned Starlette collection.",
           "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205",
           "start_line": 5
         },
         {
           "end_line": 61,
           "path": "fastapi/background.py",
-          "role": "FastAPI add_task delegates to Starlette",
+          "role": "FastAPI add_task delegates to the Starlette implementation.",
           "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205",
           "start_line": 40
+        },
+        {
+          "end_line": 36,
+          "path": "starlette/background.py",
+          "role": "Starlette 1.6.0 stores and runs background tasks in insertion order.",
+          "sha256": "0fe5e952915181406765e035b4783330e82e6dee8809564594e03830bd2ad53f",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 26
+        },
+        {
+          "end_line": 170,
+          "path": "starlette/responses.py",
+          "role": "Starlette 1.6.0 sends the response before invoking its background task collection.",
+          "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 163
         }
       ],
       "source_item_id": "documented-page:reference/background.md",
@@ -66621,7 +66681,17 @@
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ],
-      "workflow_scope_notes": []
+      "workflow_scope_notes": [
+        {
+          "action_ids": [
+            "schedule",
+            "read-state"
+          ],
+          "case_id": "fastapi.docs.reference-wave.http.background-task-injection",
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
+          "scope_note": "One path-operation injection schedules one task, then observes the task's state through a follow-up HTTP response."
+        }
+      ]
     },
     {
       "candidate_observation_selectors": [
@@ -138018,6 +138088,21 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
           "workflow_id": "response-policy-matrix"
+        },
+        {
+          "case_ids": [
+            "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+            "fastapi.include-router.default-response-class.late-assignment-before-materialization"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-default-response-class-late-mutation.yaml",
+          "workflow_id": "router-default-response-class-late-mutation"
         }
       ],
       "input_only": true,
@@ -140510,6 +140595,21 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
           "workflow_id": "response-policy-matrix"
+        },
+        {
+          "case_ids": [
+            "fastapi.include-router.default-response-class.assignment-after-openapi-materialization",
+            "fastapi.include-router.default-response-class.late-assignment-before-materialization"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-default-response-class-late-mutation.yaml",
+          "workflow_id": "router-default-response-class-late-mutation"
         }
       ],
       "input_only": true,
