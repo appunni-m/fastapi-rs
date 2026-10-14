@@ -11360,7 +11360,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         row["id"]: index for index, row in enumerate(source_api_candidates)
     }
     reviewed_api_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
-    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@7":
+    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@8":
         raise AtlasError("metadata.yaml reviewed API contract overlay schema is unsupported")
     inherited_api_overlay = reviewed_api_overlay.get("inherited_operations", {})
     if not isinstance(inherited_api_overlay, dict):
@@ -12074,6 +12074,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "fastapi-rs/public-api-contract@8",
         "fastapi-rs/public-api-contract@9",
         "fastapi-rs/public-api-contract@10",
+        "fastapi-rs/public-api-contract@11",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)

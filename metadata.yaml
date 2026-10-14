@@ -881,7 +881,7 @@ pydantic_core_dependency_inventory:
     feature guarantee.
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@7
+  schema: fastapi-rs/reviewed-api-contract-overlay@8
   purpose: >-
     Source-backed overlays link selected supported operations to documented
     features, observable selectors, and candidate error records. Inherited
@@ -889,8 +889,16 @@ reviewed_api_contract_overlay:
     the exact sibling-contract gap and source signature. Classification-only
     inherited candidates record their reviewed source disposition without
     creating a target operation contract. Identity workflow references link
-    root import bindings to runtime identity relations; an error link does not
-    promote an uncertain exception into the public import contract.
+    root and module import bindings to runtime identity relations. Documented module
+    targets use separate module-target identity workflow links; an error link
+    does not promote an uncertain exception into the public import contract.
+  module_target_identity_refs:
+    fastapi.openapi.models:
+      workflow_id: openapi-model-module-identity
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      binding_count: 43
+      observation_selectors: [python.import_path, python.object_identity]
   identity_workflow_refs:
     fastapi.status:
       - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_starlette_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}

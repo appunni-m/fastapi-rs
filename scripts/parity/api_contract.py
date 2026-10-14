@@ -20,10 +20,10 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@10"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@11"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@7"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@8"
 
 
 def _read_project_metadata() -> dict[str, Any]:
@@ -93,6 +93,8 @@ def _documented_module_targets(
     standard_modules: dict[str, tuple[str, dict[str, Any]]],
     coverage_by_doc_path: dict[str, tuple[str, dict[str, Any]]],
     backlog_by_id: dict[str, str],
+    module_target_identity_refs: dict[str, Any],
+    api_input_refs_by_symbol: dict[str, list[dict[str, Any]]],
 ) -> list[dict[str, Any]]:
     """Link documented source modules to their pinned source and runtime records."""
     inventory_modules = {
@@ -102,6 +104,17 @@ def _documented_module_targets(
     documented_targets = inventory.get("documented_targets", [])
     if not isinstance(documented_targets, list):
         raise ContractError("API inventory documented_targets must be a list")
+    documented_module_ids = {
+        row.get("id")
+        for row in documented_targets
+        if isinstance(row, dict) and row.get("resolution_kind") == "module"
+    }
+    if any(not isinstance(target_id, str) for target_id in module_target_identity_refs) or (
+        set(module_target_identity_refs) - documented_module_ids
+    ):
+        raise ContractError(
+            "reviewed module-target identity refs must name documented source module targets"
+        )
 
     candidates_by_module: dict[str, tuple[list[str], list[str]]] = {}
     for candidate in atlas_candidates:
@@ -187,35 +200,121 @@ def _documented_module_targets(
             )
         module_pointer, _module_row = inventory_modules[module_id]
         candidate_refs, candidate_ids = candidates_by_module.get(module_id, ([], []))
-        targets.append(
-            {
-                "id": target_id,
-                "target_kind": "source_module",
-                "contract_state": (
-                    "documentation-and-runtime-linked; module-import-identity-and-behavior-pending"
-                ),
-                "source_documented_target_ref": _pointer("documented_targets", documented_index),
-                "source_target_ref": module_pointer,
-                "source_candidate_refs": candidate_refs,
-                "source_candidate_ids": candidate_ids,
-                "runtime_reflections": {
-                    "core": {
-                        "module_ref": core_module[0],
-                        "status": core_module[1].get("status"),
-                    },
-                    "standard": {
-                        "module_ref": standard_module[0],
-                        "status": standard_module[1].get("status"),
-                    },
-                },
-                "documentation_refs": target_refs,
-                "target_binding": {
-                    "target_profile": TARGET_PROFILE,
-                    "public_python_path": target_id,
-                    "status": "full-contract-not-established",
-                },
+        identity_review = module_target_identity_refs.get(target_id)
+        identity_workflow_ref = None
+        if identity_review is not None:
+            required_fields = {
+                "workflow_id",
+                "case_id",
+                "probe_id",
+                "binding_count",
+                "observation_selectors",
             }
-        )
+            if not isinstance(identity_review, dict) or set(identity_review) != required_fields:
+                raise ContractError(
+                    f"reviewed module-target identity reference is malformed: {target_id}"
+                )
+            workflow_id = identity_review.get("workflow_id")
+            case_id = identity_review.get("case_id")
+            probe_id = identity_review.get("probe_id")
+            binding_count = identity_review.get("binding_count")
+            selectors = identity_review.get("observation_selectors")
+            expected_selectors = ["python.import_path", "python.object_identity"]
+            if (
+                not all(
+                    isinstance(value, str) and value for value in (workflow_id, case_id, probe_id)
+                )
+                or not isinstance(binding_count, int)
+                or isinstance(binding_count, bool)
+                or binding_count < 1
+                or selectors != expected_selectors
+            ):
+                raise ContractError(
+                    "reviewed module-target identity selector or binding policy is invalid: "
+                    f"{target_id}"
+                )
+            matched_symbols: list[str] = []
+            matched_refs: list[dict[str, Any]] = []
+            for symbol_id in candidate_ids:
+                for input_ref in api_input_refs_by_symbol.get(symbol_id, []):
+                    if (
+                        input_ref.get("workflow_id") == workflow_id
+                        and input_ref.get("case_id") == case_id
+                        and input_ref.get("probe_id") == probe_id
+                    ):
+                        matched_symbols.append(symbol_id)
+                        matched_refs.append(input_ref)
+            if len(matched_symbols) != binding_count or len(set(matched_symbols)) != binding_count:
+                raise ContractError(
+                    "reviewed module-target identity reference must bind its exact supported "
+                    f"module binding denominator: {target_id} expected {binding_count}, "
+                    f"found {len(matched_symbols)}"
+                )
+            shared_fields = (
+                "workflow_id",
+                "input_path",
+                "input_sha256",
+                "recipe_path",
+                "recipe_sha256",
+                "workload_path",
+                "workload_sha256",
+                "case_id",
+                "probe_id",
+                "probe_kind",
+                "observation_selectors",
+            )
+            first_ref = matched_refs[0]
+            if (
+                any(
+                    any(input_ref.get(field) != first_ref.get(field) for field in shared_fields)
+                    for input_ref in matched_refs[1:]
+                )
+                or first_ref.get("observation_selectors") != expected_selectors
+            ):
+                raise ContractError(
+                    "module-target identity workflow does not resolve to one exact input probe: "
+                    f"{target_id}"
+                )
+            identity_workflow_ref = {
+                "metadata_ref": _pointer(
+                    "reviewed_api_contract_overlay", "module_target_identity_refs", target_id
+                ),
+                **first_ref,
+                "symbol_ids": sorted(matched_symbols),
+            }
+        target = {
+            "id": target_id,
+            "target_kind": "source_module",
+            "contract_state": (
+                "documentation-and-runtime-and-module-import-identity-linked; "
+                "module-behavior-pending"
+                if identity_workflow_ref is not None
+                else "documentation-and-runtime-linked; module-import-identity-and-behavior-pending"
+            ),
+            "source_documented_target_ref": _pointer("documented_targets", documented_index),
+            "source_target_ref": module_pointer,
+            "source_candidate_refs": candidate_refs,
+            "source_candidate_ids": candidate_ids,
+            "runtime_reflections": {
+                "core": {
+                    "module_ref": core_module[0],
+                    "status": core_module[1].get("status"),
+                },
+                "standard": {
+                    "module_ref": standard_module[0],
+                    "status": standard_module[1].get("status"),
+                },
+            },
+            "documentation_refs": target_refs,
+            "target_binding": {
+                "target_profile": TARGET_PROFILE,
+                "public_python_path": target_id,
+                "status": "full-contract-not-established",
+            },
+        }
+        if identity_workflow_ref is not None:
+            target["module_identity_workflow_ref"] = identity_workflow_ref
+        targets.append(target)
     return targets
 
 
@@ -1809,6 +1908,9 @@ def build_api_surface_contract(
     overlay_operations = overlay.get("operations")
     if not isinstance(overlay_operations, dict):
         raise ContractError("reviewed API contract overlay operations must be a mapping")
+    module_target_identity_refs = overlay.get("module_target_identity_refs", {})
+    if not isinstance(module_target_identity_refs, dict):
+        raise ContractError("reviewed module-target identity refs must be a mapping")
     inherited_operations = overlay.get("inherited_operations", {})
     if not isinstance(inherited_operations, dict):
         raise ContractError("reviewed inherited API operations must be a mapping")
@@ -3443,6 +3545,8 @@ def build_api_surface_contract(
         standard_modules=standard_modules,
         coverage_by_doc_path=coverage_by_doc_path,
         backlog_by_id=backlog_by_id,
+        module_target_identity_refs=module_target_identity_refs,
+        api_input_refs_by_symbol=api_input_refs_by_symbol,
     )
 
     return {
@@ -3466,6 +3570,9 @@ def build_api_surface_contract(
         "reviewed_operation_overlay_source": "metadata.yaml:/reviewed_api_contract_overlay",
         "identity_workflow_source": (
             "metadata.yaml:/reviewed_api_contract_overlay/identity_workflow_refs"
+        ),
+        "module_target_identity_source": (
+            "metadata.yaml:/reviewed_api_contract_overlay/module_target_identity_refs"
         ),
         "inherited_operation_source": (
             "metadata.yaml:/reviewed_api_contract_overlay/inherited_operations"
@@ -3582,6 +3689,40 @@ def validate_api_workflow_public_surface(
     for case in workflow.get("cases", []):
         selected_in_case: set[str] = set()
         for probe in case.get("probes", []):
+            module_probe = probe.get("public_module")
+            if isinstance(module_probe, dict):
+                module = module_probe.get("module")
+                bindings = module_probe.get("bindings")
+                if not isinstance(module, str) or not isinstance(bindings, list):
+                    raise ContractError("direct Python API module probe is malformed")
+                for binding in bindings:
+                    symbol_id = f"{module}.{binding}"
+                    symbol = symbols_by_id.get(symbol_id)
+                    if symbol is None:
+                        raise ContractError(
+                            "direct Python API workflow references a symbol outside the supported "
+                            f"source API contract: {symbol_id}"
+                        )
+                    input_refs = symbol.get("input_workflow_refs", [])
+                    matches = [
+                        reference
+                        for reference in input_refs
+                        if isinstance(reference, dict)
+                        and reference.get("input_path") == input_path
+                        and reference.get("case_id") == case.get("case_id")
+                        and reference.get("probe_id") == probe.get("probe_id")
+                        and reference.get("symbol_id", symbol_id) == symbol_id
+                    ]
+                    if len(matches) != 1:
+                        raise ContractError(
+                            "direct Python API module binding has no unique manifest "
+                            "input-workflow link: "
+                            f"{input_path}::{case.get('case_id')}::{probe.get('probe_id')} "
+                            f"-> {symbol_id}"
+                        )
+                    selected.add(symbol_id)
+                    selected_in_case.add(symbol_id)
+                continue
             public_symbol = probe.get("public_callable", probe.get("public_attribute", {}))
             module = public_symbol.get("module")
             attribute = public_symbol.get("attribute")

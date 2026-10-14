@@ -573,6 +573,45 @@ def _validate_api_result_bindings(workflow: dict[str, Any], result: dict[str, An
                     range(len(expected_observations))
                 ):
                     raise ContractError(f"direct API result observation indexes differ: {case_id}")
+                module_probe = expected_probe.get("public_module")
+                if isinstance(module_probe, dict):
+                    expected_module = module_probe.get("module")
+                    import_path_rows = [
+                        row for row in actual_observations if row["kind"] == "python_import_path"
+                    ]
+                    import_path_values = (
+                        import_path_rows[0].get("values") if len(import_path_rows) == 1 else None
+                    )
+                    if (
+                        not isinstance(expected_module, str)
+                        or not isinstance(import_path_values, dict)
+                        or import_path_values.get("module_name") != expected_module
+                        or import_path_values.get("spec_name") != expected_module
+                    ):
+                        raise ContractError(
+                            "direct API module import path result differs from input: "
+                            f"{case_id}::{expected_probe['probe_id']}"
+                        )
+                    expected_bindings = module_probe.get("bindings")
+                    identity_rows = [
+                        row
+                        for row in actual_observations
+                        if row["kind"] == "python_object_identity"
+                    ]
+                    observed_bindings = (
+                        identity_rows[0].get("values", {}).get("bindings")
+                        if len(identity_rows) == 1
+                        else None
+                    )
+                    if (
+                        not isinstance(expected_bindings, list)
+                        or not isinstance(observed_bindings, list)
+                        or [row.get("name") for row in observed_bindings] != expected_bindings
+                    ):
+                        raise ContractError(
+                            "direct API module identity result bindings differ from input: "
+                            f"{case_id}::{expected_probe['probe_id']}"
+                        )
             else:
                 if "error" not in actual_probe or actual_probe["observations"] != []:
                     raise ContractError(

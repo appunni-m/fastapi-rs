@@ -44,6 +44,7 @@ WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow@5"
 WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
+WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -52,6 +53,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
         WORKFLOW_SCHEMA_V6_ID,
+        WORKFLOW_SCHEMA_V7_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -61,6 +63,7 @@ RESULT_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow-result@5"
 RESULT_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow-result@6"
 RESULT_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow-result@7"
 RESULT_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow-result@8"
+RESULT_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow-result@9"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -68,6 +71,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V4_ID: RESULT_SCHEMA_V6_ID,
     WORKFLOW_SCHEMA_V5_ID: RESULT_SCHEMA_V7_ID,
     WORKFLOW_SCHEMA_V6_ID: RESULT_SCHEMA_V8_ID,
+    WORKFLOW_SCHEMA_V7_ID: RESULT_SCHEMA_V9_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@8"
@@ -594,6 +598,68 @@ def _resolve_public_attribute_value(spec: dict[str, str], fastapi_root: Path) ->
     return value
 
 
+def _public_module_observations(probe: dict[str, Any], fastapi_root: Path) -> list[dict[str, Any]]:
+    """Project module import metadata and reviewed same-process identity relations."""
+    specification = probe["public_module"]
+    module_name = specification["module"]
+    module = importlib.import_module(module_name)
+    module_file = getattr(module, "__file__", None)
+    if module_file is None or not _is_under(Path(module_file), fastapi_root / "fastapi"):
+        raise WorkerError(f"public module is outside the selected FastAPI package: {module_name}")
+    module_spec = getattr(module, "__spec__", None)
+    if module_spec is None:
+        raise WorkerError(f"public module has no import specification: {module_name}")
+    parent_name, _, attribute_name = module_name.rpartition(".")
+    parent = importlib.import_module(parent_name) if parent_name else None
+    repeated = importlib.import_module(module_name)
+    import_path = {
+        "module_name": getattr(module, "__name__", ""),
+        "package": getattr(module, "__package__", None),
+        "spec_name": getattr(module_spec, "name", ""),
+        "spec_parent": getattr(module_spec, "parent", ""),
+        "is_package": module_spec.submodule_search_locations is not None,
+    }
+    bindings: list[dict[str, Any]] = []
+    for name in specification["bindings"]:
+        if name not in vars(module):
+            bindings.append({"name": name, "exists": False})
+            continue
+        value = vars(module)[name]
+        value_type = type(value)
+        value_type_name = f"{value_type.__module__}.{value_type.__qualname__}"
+        bindings.append(
+            {
+                "name": name,
+                "exists": True,
+                "binding_kind": (
+                    "type" if inspect.isclass(value) else "callable" if callable(value) else "value"
+                ),
+                "module": getattr(value, "__module__", None),
+                "qualname": getattr(value, "__qualname__", None),
+                "python_type": value_type_name,
+                "same_on_reimport": vars(repeated).get(name) is value,
+            }
+        )
+    object_identity = {
+        "module_is_sys_modules": sys.modules.get(module_name) is module,
+        "module_is_parent_binding": (
+            parent is not None and vars(parent).get(attribute_name) is module
+        ),
+        "module_is_reimport": repeated is module,
+        "bindings": bindings,
+    }
+    observations: list[dict[str, Any]] = []
+    for index, observation in enumerate(probe["observations"]):
+        if observation["kind"] == "python_import_path":
+            values = import_path
+        elif observation["kind"] == "python_object_identity":
+            values = object_identity
+        else:
+            raise WorkerError(f"unsupported module identity observation: {observation['kind']}")
+        observations.append({"index": index, "kind": observation["kind"], "values": values})
+    return observations
+
+
 def _require_supported_callable(spec: dict[str, str], supported_symbols: frozenset[str]) -> str:
     return _require_supported_symbol(spec, supported_symbols, label="callable")
 
@@ -641,13 +707,64 @@ def _validate_workflow_callables(
             observations = probe.get("observations")
             if not isinstance(observations, list):
                 raise WorkerError("direct Python API probe observations are malformed")
+            if "public_module" in probe:
+                if (
+                    workflow.get("schema") != WORKFLOW_SCHEMA_V7_ID
+                    or any(
+                        key in probe
+                        for key in (
+                            "public_callable",
+                            "public_attribute",
+                            "argument_bundle",
+                            "capture_warnings",
+                        )
+                    )
+                    or len(observations) != 2
+                    or {row.get("kind") for row in observations if isinstance(row, dict)}
+                    != {"python_import_path", "python_object_identity"}
+                ):
+                    raise WorkerError(
+                        "module identity requires one v7 module probe with both identity "
+                        "observations"
+                    )
+                module_spec = probe["public_module"]
+                module_name = module_spec.get("module") if isinstance(module_spec, dict) else None
+                bindings = module_spec.get("bindings") if isinstance(module_spec, dict) else None
+                if (
+                    not isinstance(module_name, str)
+                    or _MODULE_PATH.fullmatch(module_name) is None
+                    or not isinstance(bindings, list)
+                    or not bindings
+                    or any(not isinstance(name, str) for name in bindings)
+                    or len(set(bindings)) != len(bindings)
+                ):
+                    raise WorkerError("direct Python API module reference is malformed")
+                for binding in bindings:
+                    if (
+                        _ATTRIBUTE_PATH.fullmatch(binding) is None
+                        or f"{module_name}.{binding}" not in supported_symbols
+                    ):
+                        raise WorkerError(
+                            "direct Python API module binding is outside the supported pinned "
+                            "API atlas: "
+                            f"{module_name}.{binding}"
+                        )
+                    selected.add(f"{module_name}.{binding}")
+                continue
+            if any(
+                isinstance(observation, dict)
+                and observation.get("kind") in {"python_import_path", "python_object_identity"}
+                for observation in observations
+            ):
+                raise WorkerError("module identity observations require a public_module probe")
             model_result_selected = any(
                 isinstance(observation, dict)
                 and observation.get("kind") == "python_pydantic_model_result"
                 for observation in observations
             )
             if model_result_selected and (
-                workflow.get("schema") not in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}
+                workflow.get("schema")
+                not in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID, WORKFLOW_SCHEMA_V7_ID}
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
@@ -661,7 +778,7 @@ def _validate_workflow_callables(
                 for observation in observations
             )
             if parameter_metadata_selected and (
-                workflow.get("schema") != WORKFLOW_SCHEMA_V6_ID
+                workflow.get("schema") not in {WORKFLOW_SCHEMA_V6_ID, WORKFLOW_SCHEMA_V7_ID}
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
@@ -729,6 +846,22 @@ async def _run_probe(
     allow_pydantic_model_defaults: bool = False,
     structural_signatures: bool = False,
 ) -> dict[str, Any]:
+    if "public_module" in probe:
+        try:
+            return {
+                "probe_id": probe["probe_id"],
+                "status": "completed",
+                "observations": _public_module_observations(probe, fastapi_root),
+            }
+        except WorkerError:
+            raise
+        except Exception as exc:
+            return {
+                "probe_id": probe["probe_id"],
+                "status": "product_error",
+                "error": _error_record(exc),
+                "observations": [],
+            }
     capture_warnings = probe.get("capture_warnings") is True
     captured_warnings: list[dict[str, Any]] = []
     try:
@@ -1116,6 +1249,12 @@ def _validate_indexed_workflow(
             for key in ("public_callable", "public_attribute")
             if isinstance((reference := probe.get(key)), dict)
         }
+        probed_symbols.update(
+            f"{probe['public_module']['module']}.{binding}"
+            for probe in case["probes"]
+            if isinstance(probe.get("public_module"), dict)
+            for binding in probe["public_module"].get("bindings", [])
+        )
         if any(
             definition["symbol_id"] not in probed_symbols for definition in expected_definitions
         ):

@@ -484,7 +484,7 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 22160aa7e369767a6163eab965c0846e7b9035e929cad71b01c4ba53b7a1e5eb
+    sha256: f201df175d33b7f45a0db9445bd5cdb4a3a293ae4673c3d44808387ceab4971a
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
       selectors: 52
@@ -512,13 +512,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: 22323f7640c67a16a03752ef1f8d161c9417d5a991b4d1fab79ad6be7fc9e4f3
+    sha256: c7deee391165f406d66e6c308b33e90b14933f0f465b2277975e5a8c48710d18
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 580
-      cases: 2431
+      workflows: 581
+      cases: 2432
       partial_source_mappings: 1680
 
 contract_metadata:
@@ -851,6 +851,22 @@ unresolved:
       aliases, defaults and factory identity, annotation, normalized known
       constraints, examples/deprecation, and media/embed values. It does not
       traverse repr strings or implementation-private object layouts.
+  python_api_workflow_v7:
+    state: documented-module-import-and-binding-identity-projection
+    schema_id: fastapi-rs/python-api-workflow@7
+    schema_path: tests/fixtures/schemas/python-api-workflow-v7.schema.json
+    schema_sha256: 9876b984c334753ab4aa6f15064ccc261cb57311a9bc903e860336db021cfe05
+    result_schema_id: fastapi-rs/python-api-workflow-result@9
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v9.schema.json
+    result_schema_sha256: 006f8549b687e116498a0d4252b628f4566e314816d8b948d1253fa61acffec3
+    comparison_schema_id: fastapi-rs/python-api-comparison@7
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v7.schema.json
+    comparison_schema_sha256: 1471a3e64c3538ae4bc2e00cf7ed8c0d385dc1f6e8f3d02f51406d820516fd88
+    coverage: >-
+      Adds a normalized import-path and same-process identity projection for
+      documented modules and their explicitly reviewed top-level bindings.
+      Import identity does not establish class signatures, model validation,
+      serialization, or OpenAPI behavior.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -1048,7 +1064,7 @@ evidence_policy:
 
 # BEGIN GENERATED PER-SYMBOL API CONTRACT
 api_surface_contract:
-  schema: fastapi-rs/public-api-contract@10
+  schema: fastapi-rs/public-api-contract@11
   status: source-api-linked; behavior-and-target-contract-incomplete
   authority:
     fastapi:
@@ -1068,6 +1084,7 @@ api_surface_contract:
   classification_source: source_artifacts.compatibility_atlas.api_candidates
   reviewed_operation_overlay_source: metadata.yaml:/reviewed_api_contract_overlay
   identity_workflow_source: metadata.yaml:/reviewed_api_contract_overlay/identity_workflow_refs
+  module_target_identity_source: metadata.yaml:/reviewed_api_contract_overlay/module_target_identity_refs
   inherited_operation_source: metadata.yaml:/reviewed_api_contract_overlay/inherited_operations
   signature_source:
   - source_artifacts.api_inventory
@@ -1118,7 +1135,7 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 110
+    symbols_with_direct_api_input_workflow_refs: 147
     symbols_with_operation_fixture_refs: 180
     operation_fixture_refs: 1633
     symbols_with_identity_workflow_refs: 44
@@ -21560,6 +21577,19 @@ api_surface_contract:
       - openapi.paths
       - python.signature
     input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id026
+      - python.import_path
+      - python.object_identity
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
       input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
@@ -21719,6 +21749,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -22344,7 +22376,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -22492,6 +22537,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -23116,7 +23163,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -23127,6 +23187,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -23173,6 +23235,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
       input_sha256: 02884a8d801a94324460fd98db10a9754deda6407f45d1329198e2c0fb40cbe8
@@ -23228,6 +23303,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -23838,7 +23915,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -23849,6 +23939,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -24063,6 +24155,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
       input_sha256: 02884a8d801a94324460fd98db10a9754deda6407f45d1329198e2c0fb40cbe8
@@ -24118,6 +24223,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -24279,7 +24386,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -24290,6 +24410,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -24615,7 +24737,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -24626,6 +24761,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -24951,7 +25088,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -24962,6 +25112,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -25119,7 +25271,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25130,6 +25295,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -25287,7 +25454,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25298,6 +25478,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -25455,7 +25637,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25466,6 +25661,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -25524,6 +25721,19 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25534,6 +25744,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -25971,7 +26183,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25982,6 +26207,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -26195,7 +26422,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -26206,6 +26446,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -26587,7 +26829,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -26598,6 +26853,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -26867,7 +27124,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -26878,6 +27148,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -27035,7 +27307,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -27046,6 +27331,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -27203,7 +27490,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -27214,6 +27514,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -27371,7 +27673,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -27382,6 +27697,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -27483,7 +27800,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -27494,6 +27824,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -27595,7 +27927,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -27606,6 +27951,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -27707,7 +28054,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -27718,6 +28078,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -28000,6 +28362,19 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -28010,6 +28385,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -28615,7 +28992,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -28626,6 +29016,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -28783,7 +29175,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -28794,6 +29199,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -29511,7 +29918,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -29522,6 +29942,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -29679,7 +30101,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -29690,6 +30125,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -30295,7 +30732,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -30306,6 +30756,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -30575,7 +31027,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -30586,6 +31051,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -31359,7 +31826,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -31370,6 +31850,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -31471,7 +31953,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -31482,6 +31977,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -31695,7 +32192,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -31706,6 +32216,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -31988,6 +32500,19 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
       input_sha256: 02884a8d801a94324460fd98db10a9754deda6407f45d1329198e2c0fb40cbe8
@@ -32043,6 +32568,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -35509,7 +36036,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35520,6 +36060,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -35565,7 +36107,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35576,6 +36131,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -35621,7 +36178,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -35769,6 +36339,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -36200,7 +36772,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -36211,6 +36796,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -36256,7 +36843,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -36404,6 +37004,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -36810,7 +37412,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -36821,6 +37436,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -37034,7 +37651,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -37045,6 +37675,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -37258,7 +37890,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -37269,6 +37914,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -37482,7 +38129,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -37493,6 +38153,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -58213,7 +58875,7 @@ api_surface_contract:
   module_targets:
   - id: fastapi.openapi.models
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/27
     source_target_ref: /modules/27
     source_candidate_refs:
@@ -58747,6 +59409,63 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.models
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.openapi.models
+      workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id026
+      symbol_ids:
+      - fastapi.openapi.models.APIKey
+      - fastapi.openapi.models.APIKeyIn
+      - fastapi.openapi.models.BaseModelWithConfig
+      - fastapi.openapi.models.Components
+      - fastapi.openapi.models.Contact
+      - fastapi.openapi.models.Discriminator
+      - fastapi.openapi.models.Encoding
+      - fastapi.openapi.models.Example
+      - fastapi.openapi.models.ExternalDocumentation
+      - fastapi.openapi.models.HTTPBase
+      - fastapi.openapi.models.HTTPBearer
+      - fastapi.openapi.models.Header
+      - fastapi.openapi.models.Info
+      - fastapi.openapi.models.License
+      - fastapi.openapi.models.Link
+      - fastapi.openapi.models.MediaType
+      - fastapi.openapi.models.OAuth2
+      - fastapi.openapi.models.OAuthFlow
+      - fastapi.openapi.models.OAuthFlowAuthorizationCode
+      - fastapi.openapi.models.OAuthFlowClientCredentials
+      - fastapi.openapi.models.OAuthFlowImplicit
+      - fastapi.openapi.models.OAuthFlowPassword
+      - fastapi.openapi.models.OAuthFlows
+      - fastapi.openapi.models.OpenAPI
+      - fastapi.openapi.models.OpenIdConnect
+      - fastapi.openapi.models.Operation
+      - fastapi.openapi.models.Parameter
+      - fastapi.openapi.models.ParameterBase
+      - fastapi.openapi.models.ParameterInType
+      - fastapi.openapi.models.PathItem
+      - fastapi.openapi.models.Reference
+      - fastapi.openapi.models.RequestBody
+      - fastapi.openapi.models.Response
+      - fastapi.openapi.models.Schema
+      - fastapi.openapi.models.SchemaOrBool
+      - fastapi.openapi.models.SchemaType
+      - fastapi.openapi.models.SecurityBase
+      - fastapi.openapi.models.SecurityScheme
+      - fastapi.openapi.models.SecuritySchemeType
+      - fastapi.openapi.models.Server
+      - fastapi.openapi.models.ServerVariable
+      - fastapi.openapi.models.Tag
+      - fastapi.openapi.models.XML
   inherited_operations:
   - id: fastapi.applications.FastAPI.add_route
     kind: inherited_method
@@ -58800,7 +59519,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id026
+    canonical_operation_ref: &id027
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -58836,7 +59555,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id026
+        canonical_operation_ref: *id027
       status: partial-contract
       known_gaps:
       - Current parity covers basic registration and dispatch plus a method miss; argument and signature
@@ -58887,7 +59606,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id027
+    signature_source_ref: &id028
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -58899,7 +59618,7 @@ api_surface_contract:
       end_line: 102
       signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id028
+    sibling_contract_gap: &id029
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       expected_operation_id: starlette.applications.Starlette.host
       reason: The pinned Starlette-RS review classifies Starlette.host as supported, but the API source
@@ -58927,8 +59646,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id027
-        sibling_contract_gap_ref: *id028
+        signature_source_ref: *id028
+        sibling_contract_gap_ref: *id029
       status: partial-contract
       known_gaps:
       - Current parity covers one named subdomain dispatch; other host patterns, named host-route reversal,
@@ -59017,7 +59736,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id029
+    canonical_operation_ref: &id030
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -59053,7 +59772,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id029
+        canonical_operation_ref: *id030
       status: partial-contract
       known_gaps:
       - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing
@@ -59117,7 +59836,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id030
+    canonical_operation_ref: &id031
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -59153,7 +59872,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id030
+        canonical_operation_ref: *id031
       status: partial-contract
       known_gaps:
       - The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader
@@ -59206,7 +59925,7 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
-    attribute_source_ref: &id031
+    attribute_source_ref: &id032
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -59219,7 +59938,7 @@ api_surface_contract:
       end_line: 586
       assignment: self.routes = [] if routes is None else list(routes)
     attribute_contract_state: source-assignment-linked; sibling-accessor-missing
-    sibling_contract_gap: &id032
+    sibling_contract_gap: &id033
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       expected_operation_id: starlette.routing.Router.routes
       candidate_state: no_exact_row
@@ -59255,8 +59974,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-attribute-assignment-with-sibling-accessor-gap
-        attribute_source_ref: *id031
-        sibling_contract_gap_ref: *id032
+        attribute_source_ref: *id032
+        sibling_contract_gap_ref: *id033
       status: partial-contract
       known_gaps:
       - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; empty or multi-route
@@ -59325,7 +60044,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id033
+    canonical_operation_ref: &id034
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -59361,7 +60080,7 @@ api_surface_contract:
       implementation_owner: starlette-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id033
+        canonical_operation_ref: *id034
       status: full-contract-not-established
   - id: fastapi.applications.FastAPI.add_exception_handler
     kind: inherited_method
@@ -59491,7 +60210,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id034
+    canonical_operation_ref: &id035
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -59527,7 +60246,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id034
+        canonical_operation_ref: *id035
       status: partial-contract
       known_gaps:
       - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
@@ -59593,7 +60312,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id035
+    signature_source_ref: &id036
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -59605,7 +60324,7 @@ api_surface_contract:
       end_line: 99
       signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id036
+    sibling_contract_gap: &id037
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       expected_operation_id: starlette.applications.Starlette.mount
       reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
@@ -59634,8 +60353,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id035
-        sibling_contract_gap_ref: *id036
+        signature_source_ref: *id036
+        sibling_contract_gap_ref: *id037
       status: partial-contract
       known_gaps:
       - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
@@ -59684,7 +60403,7 @@ api_surface_contract:
     - openapi-docs
     observation_selectors:
     - http.body.bytes
-    canonical_operation_ref: &id037
+    canonical_operation_ref: &id038
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -59720,7 +60439,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id037
+        canonical_operation_ref: *id038
       status: partial-contract
       known_gaps:
       - The projection does not establish route-tree or mount structure, generic or non-HTTP routes, custom

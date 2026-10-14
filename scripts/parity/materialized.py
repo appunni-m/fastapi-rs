@@ -15,6 +15,7 @@ from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_V4_ID,
     API_WORKFLOW_SCHEMA_V5_ID,
     API_WORKFLOW_SCHEMA_V6_ID,
+    API_WORKFLOW_SCHEMA_V7_ID,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
@@ -91,6 +92,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     API_WORKFLOW_SCHEMA_V4_ID,
                     API_WORKFLOW_SCHEMA_V5_ID,
                     API_WORKFLOW_SCHEMA_V6_ID,
+                    API_WORKFLOW_SCHEMA_V7_ID,
                 }
                 and probe.get("capture_warnings") is True
             ):
@@ -108,6 +110,10 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("python.pydantic_model_result")
                 elif observation["kind"] == "python_parameter_metadata":
                     selectors.add("python.parameter_metadata")
+                elif observation["kind"] == "python_import_path":
+                    selectors.add("python.import_path")
+                elif observation["kind"] == "python_object_identity":
+                    selectors.add("python.object_identity")
         return selectors
 
     if workflow_schema in {
@@ -343,6 +349,12 @@ def validate_materialized_input_index(
                 for key in ("public_callable", "public_attribute")
                 if isinstance(probe.get(key), dict)
             }
+            public_symbol_ids.update(
+                f"{probe['public_module']['module']}.{binding}"
+                for probe in case.get("probes", [])
+                if isinstance(probe.get("public_module"), dict)
+                for binding in probe["public_module"].get("bindings", [])
+            )
             for evidence in case["source_evidence"]:
                 if evidence["kind"] != "upstream_api_definition":
                     continue
@@ -393,6 +405,27 @@ def validate_materialized_input_index(
         if workflow["schema"] in API_WORKFLOW_SCHEMA_IDS:
             for case in workflow["cases"]:
                 for probe in case.get("probes", []):
+                    if isinstance(probe.get("public_module"), dict):
+                        module = probe["public_module"]["module"]
+                        for binding in probe["public_module"]["bindings"]:
+                            symbol_id = f"{module}.{binding}"
+                            if symbol_id not in supported_api_symbols:
+                                _fail(
+                                    "direct API module binding is outside the supported source API "
+                                    f"contract: {case['case_id']} -> {symbol_id}"
+                                )
+                            expected_api_probes.append(
+                                {
+                                    "case_id": case["case_id"],
+                                    "probe_id": probe["probe_id"],
+                                    "symbol_id": symbol_id,
+                                    "probe_kind": "attribute",
+                                    "observation_selectors": _api_probe_selectors(
+                                        probe, selector_support
+                                    ),
+                                }
+                            )
+                        continue
                     reference = probe.get("public_callable", probe.get("public_attribute"))
                     symbol_id = f"{reference['module']}.{reference['attribute']}"
                     if symbol_id not in supported_api_symbols:

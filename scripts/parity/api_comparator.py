@@ -18,6 +18,7 @@ WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow@5"
 WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
+WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
 
 
 def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
@@ -153,11 +154,26 @@ def compare_api_workflow_results(
             base = f"/probes/{probe_id}"
             if source_status != target_status:
                 diffs.append(_diff(probe_id, f"{base}/status", source_status, target_status))
+            if "public_module" in probe_spec and (
+                source_status != "completed" or target_status != "completed"
+            ):
+                diffs.append(
+                    _diff(
+                        probe_id,
+                        f"{base}/module_import_succeeded",
+                        "completed on both products",
+                        {
+                            "source_status": source_status,
+                            "target_status": target_status,
+                        },
+                    )
+                )
             if workflow_schema_id in {
                 WORKFLOW_SCHEMA_V3_ID,
                 WORKFLOW_SCHEMA_V4_ID,
                 WORKFLOW_SCHEMA_V5_ID,
                 WORKFLOW_SCHEMA_V6_ID,
+                WORKFLOW_SCHEMA_V7_ID,
             }:
                 if probe_spec.get("capture_warnings") is True:
                     source_warnings = source_probe.get("warnings")

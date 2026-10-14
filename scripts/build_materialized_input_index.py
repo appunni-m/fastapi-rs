@@ -204,30 +204,49 @@ def build_index() -> dict[str, Any]:
             public_symbol_ids: set[str] = set()
             case_probes = case.get("probes", [])
             for probe in case_probes:
+                if "public_module" in probe:
+                    module = probe["public_module"]["module"]
+                    public_symbol_ids.update(
+                        f"{module}.{binding}" for binding in probe["public_module"]["bindings"]
+                    )
+                    continue
                 for key in ("public_callable", "public_attribute"):
                     reference = probe.get(key)
                     if isinstance(reference, dict):
                         public_symbol_ids.add(f"{reference['module']}.{reference['attribute']}")
             if workflow["schema"] in API_WORKFLOW_SCHEMA_IDS:
                 for probe in case_probes:
-                    reference = probe.get("public_callable", probe.get("public_attribute"))
-                    symbol_id = f"{reference['module']}.{reference['attribute']}"
-                    if symbol_id not in supported_api_symbols:
-                        raise ContractError(
-                            "direct API workflow probe is outside the supported source API "
-                            f"contract: {case['case_id']} -> {symbol_id}"
+                    if "public_module" in probe:
+                        module = probe["public_module"]["module"]
+                        references = [
+                            (f"{module}.{binding}", "attribute")
+                            for binding in probe["public_module"]["bindings"]
+                        ]
+                    else:
+                        reference = probe.get("public_callable", probe.get("public_attribute"))
+                        references = [
+                            (
+                                f"{reference['module']}.{reference['attribute']}",
+                                "callable" if "public_callable" in probe else "attribute",
+                            )
+                        ]
+                    for symbol_id, probe_kind in references:
+                        if symbol_id not in supported_api_symbols:
+                            raise ContractError(
+                                "direct API workflow probe is outside the supported source API "
+                                f"contract: {case['case_id']} -> {symbol_id}"
+                            )
+                        api_probes.append(
+                            {
+                                "case_id": case["case_id"],
+                                "probe_id": probe["probe_id"],
+                                "symbol_id": symbol_id,
+                                "probe_kind": probe_kind,
+                                "observation_selectors": _api_probe_selectors(
+                                    probe, selector_support
+                                ),
+                            }
                         )
-                    api_probes.append(
-                        {
-                            "case_id": case["case_id"],
-                            "probe_id": probe["probe_id"],
-                            "symbol_id": symbol_id,
-                            "probe_kind": (
-                                "callable" if "public_callable" in probe else "attribute"
-                            ),
-                            "observation_selectors": _api_probe_selectors(probe, selector_support),
-                        }
-                    )
             for evidence in case["source_evidence"]:
                 if evidence["kind"] != "upstream_api_definition":
                     continue
