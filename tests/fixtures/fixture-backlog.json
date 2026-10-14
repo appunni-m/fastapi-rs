@@ -9879,6 +9879,20 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.encoder-tutorial.update-item-valid"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/encoder-tutorial-asgi.yaml",
+          "workflow_id": "encoder-tutorial-asgi"
+        },
+        {
+          "case_ids": [
             "fastapi.response-directly.tutorial001.path-response"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -9928,7 +9942,7 @@
         "Call the documented FastAPI encoder with representative Python/Pydantic values and options, then observe its public return value and callable signature.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
-      "stimulus_design_notes": "The example passes a Pydantic model to jsonable_encoder before storing the result. The independent ASGI route uses the encoder on a different Pydantic model before returning JSONResponse and observes response status, headers, and bytes; the fake database mutation is not covered."
+      "stimulus_design_notes": "The example passes a Pydantic model to jsonable_encoder before storing the result. One independent direct-response case calls the encoder on a different model and observes response status, headers, and bytes. A separate ASGI case executes this example's valid PUT route and observes the HTTP response. The fake database mutation remains unobserved."
     },
     {
       "feature_ids": [
@@ -508630,10 +508644,12 @@
           "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
             "python.attribute_value"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI validates the Item request and jsonable_encoder converts it to JSON-compatible data stored by the example. The fake_db key/value are application-owned state; datetime encoding is the encoder behavior being exercised.",
+            "rationale": "FastAPI validates the Item request and jsonable_encoder converts it to JSON-compatible data stored by the example. The independently authored ASGI workflow observes the HTTP response; the separate direct encoder workflow observes a returned encoded value.",
             "source_evidence": [
               {
                 "end_line": 45,
@@ -508678,7 +508694,7 @@
                 "start_line": 28
               }
             ],
-            "stimulus_notes": "The test inspects application state rather than an HTTP response body; it does not test response serialization."
+            "stimulus_notes": "The source assertion inspects fake_db state. The ASGI case does not claim that application-owned mutation; it compares the route response, while encoding.yaml separately compares the public encoder result."
           },
           "selector_evidence": [
             {
@@ -508690,7 +508706,9 @@
             {
               "feature_id": "request-validation",
               "selectors": [
-                "http.status"
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
               ]
             }
           ],
@@ -508701,7 +508719,7 @@
             "Call the documented FastAPI encoder with representative Python/Pydantic values and options, then observe its public return value and callable signature.",
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
           ],
-          "stimulus_design_notes": "The test inspects application state rather than an HTTP response body; it does not test response serialization."
+          "stimulus_design_notes": "The source assertion inspects fake_db state. The ASGI case does not claim that application-owned mutation; it compares the route response, while encoding.yaml separately compares the public encoder result."
         },
         {
           "feature_evidence": [
@@ -508724,13 +508742,11 @@
           "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "http.status",
-            "http.body.bytes",
-            "http.body.json",
-            "validation.error_details",
-            "python.attribute_value"
+            "http.headers.ordered",
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI rejects the invalid timestamp before the endpoint mutates fake_db. Pydantic supplies the exact datetime parsing error; database state is application-owned.",
+            "rationale": "FastAPI rejects the invalid timestamp with the exact 422 response before the endpoint stores an item. The independently authored ASGI workflow compares status, ordered headers, and raw error-body bytes.",
             "source_evidence": [
               {
                 "end_line": 70,
@@ -508781,18 +508797,8 @@
               "feature_id": "request-validation",
               "selectors": [
                 "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_details"
-              ]
-            },
-            {
-              "feature_id": null,
-              "schema_extension_required": [
-                "python.attribute_value"
-              ],
-              "selectors": [
-                "python.attribute_value"
+                "http.headers.ordered",
+                "http.body.bytes"
               ]
             }
           ],
@@ -508843,7 +508849,7 @@
             "openapi.document"
           ],
           "reviewed_mapping": {
-            "rationale": "The exact snapshot checks the endpoint's generated request/response document; model-field JSON Schema details are Pydantic-owned.",
+            "rationale": "The exact snapshot checks the endpoint's generated request/response document; the independently authored ASGI workflow selects the complete OpenAPI document, while model-field JSON Schema details remain Pydantic-owned.",
             "source_evidence": [
               {
                 "end_line": 212,
@@ -508920,6 +508926,27 @@
       ],
       "id": "fastapi.test.test-tutorial-test-encoder-test-tutorial001",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.encoder-tutorial.openapi-document",
+            "fastapi.encoder-tutorial.update-item-invalid-datetime",
+            "fastapi.encoder-tutorial.update-item-valid"
+          ],
+          "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "asgi.send.message_types",
+            "docs.response.body.bytes",
+            "docs.response.headers",
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/encoder-tutorial-asgi.yaml",
+          "workflow_id": "encoder-tutorial-asgi"
+        },
         {
           "case_ids": [
             "fastapi.jsonable-encoder.tutorial.datetime-model"

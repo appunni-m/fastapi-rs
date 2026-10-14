@@ -7479,6 +7479,44 @@
       ]
     },
     {
+      "id": "encoder-tutorial-asgi",
+      "input_path": "tests/fixtures/inputs/parity/encoder-tutorial-asgi.json",
+      "input_sha256": "06731628772383668c3203331b63db3c1b5e8ec699f71ee0fbcf6468df1f1002",
+      "recipe_path": "tests/fixtures/input-recipes/parity/encoder-tutorial-asgi.yaml",
+      "recipe_sha256": "b19a9473ed9c683cfaf85796156c9876001347859e4075430d6982df8609917d",
+      "case_ids": [
+        "fastapi.encoder-tutorial.update-item-valid",
+        "fastapi.encoder-tutorial.update-item-invalid-datetime",
+        "fastapi.encoder-tutorial.openapi-document"
+      ],
+      "workload_path": "tests/fixtures/workloads/encoder_tutorial_asgi.py",
+      "workload_sha256": "4833f21499f78a9b7c7d9abf3bd02371de52a7aca2cb336e42f02686a323b121",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.encoder-tutorial.update-item-valid",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/encoder/tutorial001_py310.py",
+            "source:upstream-test:tests/test_tutorial/test_encoder/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.encoder-tutorial.update-item-invalid-datetime",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_encoder/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.encoder-tutorial.openapi-document",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_encoder/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "encoding",
       "input_path": "tests/fixtures/inputs/parity/encoding.json",
       "input_sha256": "a0cac87626862efb8a46d76074f308cad77542f186bdcad84e840cf41458bfa5",
@@ -40679,6 +40717,43 @@
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/encoder/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.encoder-tutorial001-py310",
+      "workflow_id": "encoder-tutorial-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.encoder-tutorial.update-item-valid"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_encoder/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-encoder-test-tutorial001",
+      "workflow_id": "encoder-tutorial-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.encoder-tutorial.openapi-document",
+        "fastapi.encoder-tutorial.update-item-invalid-datetime",
+        "fastapi.encoder-tutorial.update-item-valid"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.body.bytes",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

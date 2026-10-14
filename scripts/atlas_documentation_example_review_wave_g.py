@@ -520,9 +520,10 @@ DOC_EXAMPLE_CITATION_WAVE_G = {
     "docs_src/encoder/tutorial001_py310.py": _review(
         (
             "The example passes a Pydantic model to jsonable_encoder before storing the "
-            "result. The independent ASGI route uses the encoder on a different Pydantic "
-            "model before returning JSONResponse and observes response status, headers, "
-            "and bytes; the fake database mutation is not covered."
+            "result. One independent direct-response case calls the encoder on a different "
+            "model and observes response status, headers, and bytes. A separate ASGI case "
+            "executes this example's valid PUT route and observes the HTTP response. The "
+            "fake database mutation remains unobserved."
         ),
         [
             _span(
@@ -537,7 +538,12 @@ DOC_EXAMPLE_CITATION_WAVE_G = {
                 "response-directly-tutorial001-wave.yaml",
                 "fastapi.response-directly.tutorial001.path-response",
                 ["http.body.bytes", "http.headers.ordered", "http.status"],
-            )
+            ),
+            _case(
+                "encoder-tutorial-asgi.yaml",
+                "fastapi.encoder-tutorial.update-item-valid",
+                ["http.body.bytes", "http.headers.ordered", "http.status"],
+            ),
         ],
     ),
     "docs_src/extra_data_types/tutorial001_py310.py": _review(

@@ -1,0 +1,117 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/encoder_tutorial_asgi.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.encoder-tutorial.update-item-valid
+  actions:
+  - action_id: put-valid-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /items/123
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"title":"Foo","timestamp":"2023-01-01T12:00:00","description":"An optional description"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_encoder/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/encoder/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.encoder-tutorial.update-item-invalid-datetime
+  actions:
+  - action_id: put-invalid-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /items/345
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"title":"Foo","timestamp":"not a date"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_encoder/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.encoder-tutorial.openapi-document
+  actions:
+  - action_id: read-openapi-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+    - kind: openapi
+      json_pointers: ['']
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_encoder/test_tutorial001.py
+    kind: upstream_test
