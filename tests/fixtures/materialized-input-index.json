@@ -23400,9 +23400,9 @@
     {
       "id": "request-validation-wave",
       "input_path": "tests/fixtures/inputs/parity/request-validation-wave.json",
-      "input_sha256": "3b70a38c77e289b676575f996c1a8df5679995740d81c765a3a1b77b17bf30bd",
+      "input_sha256": "2cb781bdbf138a9dfc7dbd8360c615f18286050d568b8808a874f5937c183336",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-wave.yaml",
-      "recipe_sha256": "12fe00eb19095e2483806d195a72d4be6f4815a04677280ba204a268d2f96435",
+      "recipe_sha256": "ce287149879eed100f0277220ab8d46b071bf1ef042fb4b644349b309f8822d8",
       "case_ids": [
         "fastapi.request-validation-wave.allow-inf-nan.test-allow-inf-nan-body",
         "fastapi.request-validation-wave.required-nullable.test-required-noneable-body-embed-value",
@@ -23411,6 +23411,7 @@
         "fastapi.request-validation-wave.inferred-optional-parameters.test-get-item-2",
         "fastapi.request-validation-wave.body-type-coercion.test-post-with-str-float",
         "fastapi.request-validation-wave.numeric-path-validation.test-read-items-item-id-less-than-one",
+        "fastapi.request-validation-wave.numeric-path-validation.test-read-items-valid",
         "fastapi.request-validation-wave.query-string-validation.test-query-params-str-validations-q-too-long",
         "fastapi.request-validation-wave.cookie-parameter.test",
         "fastapi.request-validation-wave.header-parameter.test"
@@ -23462,6 +23463,13 @@
         },
         {
           "case_id": "fastapi.request-validation-wave.numeric-path-validation.test-read-items-item-id-less-than-one",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_path_params_numeric_validations/test_tutorial004.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-validation-wave.numeric-path-validation.test-read-items-valid",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_tutorial/test_path_params_numeric_validations/test_tutorial004.py"
@@ -52732,9 +52740,10 @@
       "fixture_id": "fastapi.test.test-tutorial-test-path-params-numeric-validations-test-tutorial004",
       "workflow_id": "request-validation-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.request-validation-wave.numeric-path-validation.test-read-items-item-id-less-than-one"
+        "fastapi.request-validation-wave.numeric-path-validation.test-read-items-item-id-less-than-one",
+        "fastapi.request-validation-wave.numeric-path-validation.test-read-items-valid"
       ],
       "observation_selectors": [
         "http.body.bytes",

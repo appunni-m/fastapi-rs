@@ -271,6 +271,43 @@ cases:
   source_evidence:
   - path: tests/test_tutorial/test_path_params_numeric_validations/test_tutorial004.py
     kind: upstream_test
+- case_id: fastapi.request-validation-wave.numeric-path-validation.test-read-items-valid
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/1
+      query_string: q=somequery
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_params_numeric_validations/test_tutorial004.py
+    kind: upstream_test
 - case_id: fastapi.request-validation-wave.query-string-validation.test-query-params-str-validations-q-too-long
   actions:
   - action_id: dispatch
