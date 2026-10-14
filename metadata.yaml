@@ -2198,6 +2198,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_schema}
         - {path: tests/test_request_body_parameters_media_type.py, symbol: test_openapi_schema}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
           case_id: fastapi.request-body-media-type.upstream.openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
@@ -2307,6 +2309,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_request_params/test_form/test_required_str.py, symbol: test_required_alias_and_validation_alias_schema}
         - {path: docs/en/docs/tutorial/request-forms.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.form-placement
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.form
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml
@@ -2344,6 +2348,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_request_params/test_file/test_list.py, symbol: test_list_alias_and_validation_alias_by_validation_alias}
         - {path: docs/en/docs/tutorial/request-files.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.file-placement
         - recipe_path: tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml
           case_id: fastapi.request-files.openapi-documented-shapes
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
@@ -2549,6 +2555,8 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/using-request-directly.md}
         - {path: tests/test_tutorial/test_using_request_directly/test_tutorial001.py}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-raw-yaml-body
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -4224,6 +4232,16 @@ reviewed_api_contract_overlay:
         - {path: fastapi/__init__.py}
         - {path: fastapi/applications.py, symbol: FastAPI}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-merge-add-override
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -4263,6 +4281,16 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-merge-add-override
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - *generate_unique_id_multi_methods
         - *generate_unique_id_app_add_api_route
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
@@ -5079,6 +5107,11 @@ reviewed_api_contract_overlay:
           required_text:
             - "You can set the following fields that are used in the OpenAPI specification and the automatic API docs UIs:"
             - "| `title` | `str` | The title of the API. |"
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-merge-add-override
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-raw-yaml-body
       supported_slice: >-
         The pinned constructor declares `title` as `str` with default `FastAPI`
         and stores it on the application. `openapi()` passes the stored value
@@ -5256,6 +5289,16 @@ reviewed_api_contract_overlay:
           symbol: get_openapi_path
         - path: docs/en/docs/how-to/extending-openapi.md
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-merge-add-override
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - *first_asgi_openapi
         - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
@@ -6386,6 +6429,14 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-merge-add-override
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+          case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.file-placement
         - *first_asgi_openapi
         - *first_asgi_valid
         - *first_asgi_optional_query
@@ -6485,6 +6536,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, response-serialization, openapi-docs]
@@ -7491,6 +7544,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: default}
         - {path: fastapi/_compat/v2.py, symbol: get_default}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
           case_id: fastapi.root-alias-identity.http-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
@@ -7813,6 +7868,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: default}
         - {path: fastapi/_compat/v2.py, symbol: get_default}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.file-placement
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.file
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml
@@ -7852,6 +7909,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: default}
         - {path: fastapi/_compat/v2.py, symbol: get_default}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+          case_id: fastapi.schema-extra-example.openapi-examples.form-placement
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.form
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml

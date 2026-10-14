@@ -5476,7 +5476,7 @@
         "fastapi.dependencies.depends-yield-scope-signature"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_probes": [
         {
           "case_id": "fastapi.dependencies.depends-yield-scope-signature",
@@ -5596,19 +5596,40 @@
     {
       "id": "direct-api-reference-wave",
       "input_path": "tests/fixtures/inputs/parity/direct-api-reference-wave.json",
-      "input_sha256": "23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e",
+      "input_sha256": "b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339",
       "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml",
-      "recipe_sha256": "4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f",
+      "recipe_sha256": "cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef",
       "case_ids": [
         "fastapi.direct-api-reference-wave.http-exception-signature",
         "fastapi.direct-api-reference-wave.websocket-exception-signature",
         "fastapi.direct-api-reference-wave.openapi-schema-signature",
         "fastapi.direct-api-reference-wave.encoder-reference-dataclass",
         "fastapi.direct-api-reference-wave.openapi-model-signature",
-        "fastapi.direct-api-reference-wave.openapi-info-signature"
+        "fastapi.direct-api-reference-wave.openapi-info-signature",
+        "fastapi.direct-api-reference-wave.include-router-live-openapi"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "symbol_id": "fastapi.applications.FastAPI.include_router",
+          "path": "fastapi/applications.py",
+          "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c"
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "symbol_id": "fastapi.applications.FastAPI.openapi",
+          "path": "fastapi/applications.py",
+          "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c"
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "symbol_id": "fastapi.routing.APIRouter.include_router",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        }
+      ],
       "api_probes": [
         {
           "case_id": "fastapi.direct-api-reference-wave.encoder-reference-dataclass",
@@ -5627,6 +5648,33 @@
           "probe_kind": "callable",
           "observation_selectors": [
             "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "probe_id": "apirouter-include-router",
+          "symbol_id": "fastapi.routing.APIRouter.include_router",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "probe_id": "fastapi-include-router",
+          "symbol_id": "fastapi.applications.FastAPI.include_router",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "probe_id": "fastapi-openapi-after-inclusion",
+          "symbol_id": "fastapi.applications.FastAPI.openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
           ]
         },
         {
@@ -5714,6 +5762,15 @@
           "requirement_refs": [
             "api:fastapi.openapi.models.Info",
             "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.applications.FastAPI.include_router",
+            "api:fastapi.applications.FastAPI.openapi",
+            "api:fastapi.routing.APIRouter.include_router"
           ]
         }
       ]
@@ -8144,7 +8201,7 @@
         "fastapi.applications.constructor-debug"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.applications.constructor-debug",
@@ -8193,7 +8250,7 @@
         "fastapi.testclient.public-api.alias-identity"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.testclient.public-api.alias-identity",
@@ -8233,7 +8290,7 @@
         "fastapi.testclient.public-api.alias-signature"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.testclient.public-api.alias-signature",
@@ -8273,7 +8330,7 @@
         "fastapi.public-api.package-version-value"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.public-api.package-version-value",
@@ -12065,7 +12122,7 @@
         "fastapi.openapi.docs.public-api.swagger-default-parameters"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.docs.public-api.oauth-redirect-signature",
@@ -12199,6 +12256,71 @@
       ]
     },
     {
+      "id": "openapi-examples-file-placement",
+      "input_path": "tests/fixtures/inputs/parity/openapi-examples-file-placement.json",
+      "input_sha256": "4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml",
+      "recipe_sha256": "31af42b09354e0511b369fe5288a188a2a6f3540a6ef53c848c955ea58a34cd0",
+      "case_ids": [
+        "fastapi.schema-extra-example.openapi-examples.file-placement"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_examples_file_placement.py",
+      "workload_sha256": "cbfb2e1557ca632420f7b53388506d1dc4329bf3db1195e7b80045031f68c65d",
+      "oracle_profile_extension": "standard-multipart",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.schema-extra-example.openapi-examples.file-placement",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/schema-extra-example.md"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openapi-examples-form-placement",
+      "input_path": "tests/fixtures/inputs/parity/openapi-examples-form-placement.json",
+      "input_sha256": "08b5258eb6ff526475492f55c5e76adfa8ee85afabab40ed133ecbdca5a9a29d",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml",
+      "recipe_sha256": "b78e6352c3d5a216cdf6f1b27bbb90743bc5204c4cf69ae9bbda7e3b927f460d",
+      "case_ids": [
+        "fastapi.schema-extra-example.openapi-examples.form-placement"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_examples_form_placement.py",
+      "workload_sha256": "68076ea12ed87d8d6fad81ecce6d34349b8bde7e6b3ffe65e6c4d5f393eeaf2c",
+      "oracle_profile_extension": "standard-multipart",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.schema-extra-example.openapi-examples.form-placement",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/schema-extra-example.md"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openapi-examples-named-body-external",
+      "input_path": "tests/fixtures/inputs/parity/openapi-examples-named-body-external.json",
+      "input_sha256": "872c7c7277a6f3e98762cd330d2c878cc384cdef9eaa4d307b79e52cd4de61b0",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml",
+      "recipe_sha256": "21a1e3ddbb6cdda3e31cc296c2a6adf72b033033204c5ed2ba08f5c89e37f658",
+      "case_ids": [
+        "fastapi.schema-extra-example.openapi-examples.named-body-external-value"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_examples_named_body_external.py",
+      "workload_sha256": "05a72381625c306999804ab7876a21bcff503e3de4555320d5560b9c6bbb8674",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.schema-extra-example.openapi-examples.named-body-external-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/schema-extra-example.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-extra-deep-merge",
       "input_path": "tests/fixtures/inputs/parity/openapi-extra-deep-merge.json",
       "input_sha256": "e2e13bd2728d30719d33fdca8d64e6ef704768dccf1f0659e010883205211d93",
@@ -12212,6 +12334,28 @@
       "case_contracts": [
         {
           "case_id": "fastapi.openapi-extra.deep-merge-and-router-inclusion",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/path-operation-advanced-configuration.md",
+            "source:upstream-test:tests/test_openapi_route_extensions.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openapi-extra-deep-merge-full-document-review",
+      "input_path": "tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json",
+      "input_sha256": "6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml",
+      "recipe_sha256": "cc0817627012d9dee2ff1fa615ffab6e6b651ad6cf003ae64f6045b6caab92ac",
+      "case_ids": [
+        "fastapi.openapi-extra.full-document-merge-add-override"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_extra_deep_merge_full_document_review.py",
+      "workload_sha256": "32aadad8b4d48f6f660c43d706ad93267b0030bc68dcd543fae9052297b04427",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-extra.full-document-merge-add-override",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:advanced/path-operation-advanced-configuration.md",
@@ -13401,7 +13545,7 @@
         "fastapi.openapi-models.components.signature"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.components.signature",
@@ -13793,6 +13937,28 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_openapi_examples.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openapi-raw-yaml-body-full-document-review",
+      "input_path": "tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json",
+      "input_sha256": "4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml",
+      "recipe_sha256": "21145d4dea637920deb851fdab017ca86bc7a1d101939599fea5647330cb9840",
+      "case_ids": [
+        "fastapi.openapi-extra.full-document-raw-yaml-body"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py",
+      "workload_sha256": "ca7f408754706193211c7479ef51eb4b1ff3d02b8a5ee9de43e89924a63f6596",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-extra.full-document-raw-yaml-body",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/path-operation-advanced-configuration.md",
+            "source:upstream-test:tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial007.py"
           ]
         }
       ]
@@ -14649,7 +14815,7 @@
         "fastapi.parameter-class-constructor-signatures.form"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.parameter-class-constructor-signatures.body",
@@ -14828,7 +14994,7 @@
         "fastapi.parameter-factory-signatures.form"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.parameter-factory-signatures.body",
@@ -27978,7 +28144,7 @@
         "fastapi.security.public-api.open-id-connect"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.security.public-api.api-key-cookie",
@@ -28810,7 +28976,7 @@
         "fastapi.security.public-api.open-id-connect-target"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
       "api_definitions": [
         {
           "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
@@ -45133,6 +45299,51 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/schema-extra-example.md",
+      "fixture_id": "fastapi.docs.tutorial-schema-extra-example",
+      "workflow_id": "openapi-examples-file-placement",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.schema-extra-example.openapi-examples.file-placement"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/schema-extra-example.md",
+      "fixture_id": "fastapi.docs.tutorial-schema-extra-example",
+      "workflow_id": "openapi-examples-form-placement",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.schema-extra-example.openapi-examples.form-placement"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/schema-extra-example.md",
+      "fixture_id": "fastapi.docs.tutorial-schema-extra-example",
+      "workflow_id": "openapi-examples-named-body-external",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.schema-extra-example.openapi-examples.named-body-external-value"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "documented-page:advanced/path-operation-advanced-configuration.md",
       "fixture_id": "fastapi.docs.advanced-path-operation-advanced-configuration",
       "workflow_id": "openapi-extra-deep-merge",
@@ -45158,6 +45369,32 @@
       "observation_selectors": [
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/path-operation-advanced-configuration.md",
+      "fixture_id": "fastapi.docs.advanced-path-operation-advanced-configuration",
+      "workflow_id": "openapi-extra-deep-merge-full-document-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-extra.full-document-merge-add-override"
+      ],
+      "observation_selectors": [
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_openapi_route_extensions.py",
+      "fixture_id": "fastapi.test.test-openapi-route-extensions",
+      "workflow_id": "openapi-extra-deep-merge-full-document-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-extra.full-document-merge-add-override"
+      ],
+      "observation_selectors": [
+        "openapi.document"
       ]
     },
     {
@@ -45368,6 +45605,36 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/path-operation-advanced-configuration.md",
+      "fixture_id": "fastapi.docs.advanced-path-operation-advanced-configuration",
+      "workflow_id": "openapi-raw-yaml-body-full-document-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-extra.full-document-raw-yaml-body"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial007.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-operation-advanced-configurations-test-tutorial007",
+      "workflow_id": "openapi-raw-yaml-body-full-document-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-extra.full-document-raw-yaml-body"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

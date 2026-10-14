@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@8
-    sha256: 8f6927c557e2cf46ebdf150780b4270100f5dc1295c961a621189f257fb9a8a3
+    sha256: 36be97edb208237c54c300ac70d7897970c276fb4a2267fe9350d8bff5bb849f
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 74ede4d9d5f321c4ea79b43222fd40b4ee06c71d3a70c3f0a0f5f49808abac71
+    sha256: a8f3cef3f20ba86d5b4626a3d0a91d6afcc9ba197b9299609c26d90545f6ba12
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: 90ae1f262154b2164940f6902b101154feab68cbe1ac2679bc41cb88fb1e5c87
+    sha256: c7eae8bfb896a3ab495160ae17a4a0b626e85d139d1b9d09403932ab3db994ea
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 588
-      cases: 2456
-      partial_source_mappings: 1686
+      workflows: 593
+      cases: 2462
+      partial_source_mappings: 1693
 
 contract_metadata:
   aliases:
@@ -1152,9 +1152,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 148
-    symbols_with_operation_fixture_refs: 243
-    operation_fixture_refs: 1815
+    symbols_with_direct_api_input_workflow_refs: 149
+    symbols_with_operation_fixture_refs: 244
+    operation_fixture_refs: 1844
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1748,7 +1748,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.body
       probe_id: root-body-signature
       probe_kind: callable
@@ -1767,6 +1767,18 @@ api_surface_contract:
       observation_selectors:
       - python.parameter_metadata
     operation_fixture_refs:
+    - workflow_id: openapi-examples-named-body-external
+      input_path: tests/fixtures/inputs/parity/openapi-examples-named-body-external.json
+      input_sha256: 872c7c7277a6f3e98762cd330d2c878cc384cdef9eaa4d307b79e52cd4de61b0
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+      recipe_sha256: 21a1e3ddbb6cdda3e31cc296c2a6adf72b033033204c5ed2ba08f5c89e37f658
+      workload_path: tests/fixtures/workloads/openapi_examples_named_body_external.py
+      workload_sha256: 05a72381625c306999804ab7876a21bcff503e3de4555320d5560b9c6bbb8674
+      case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: request-body-media-type-upstream-v3
       input_path: tests/fixtures/inputs/parity/request-body-media-type-upstream-v3.json
       input_sha256: 646cff7e480e6b213063e8297825aa86962d4b5e1167ff0a68424ec9193b9706
@@ -2216,7 +2228,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.body
       observation_selectors:
       - python.signature
@@ -2376,7 +2388,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.cookie
       probe_id: root-cookie-signature
       probe_kind: callable
@@ -2456,7 +2468,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.cookie
       observation_selectors:
       - python.signature
@@ -2578,7 +2590,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/depends-signature.yaml
       recipe_sha256: e32f553ee6b50cee3469dcc4af2095a8e778fe097e156db135189902d62fd836
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.dependencies.depends-yield-scope-signature
       probe_id: depends-yield-scope-signature
       probe_kind: callable
@@ -2590,7 +2602,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.depends
       probe_id: root-depends-signature
       probe_kind: callable
@@ -4707,7 +4719,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/depends-signature.yaml
       recipe_sha256: e32f553ee6b50cee3469dcc4af2095a8e778fe097e156db135189902d62fd836
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.dependencies.depends-yield-scope-signature
       observation_selectors:
       - python.signature
@@ -4717,7 +4729,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.depends
       observation_selectors:
       - python.signature
@@ -4913,7 +4925,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
       recipe_sha256: 2f2d6eb45a18ea7cdcc4794e6d08b4a5956131fd194f4d8cce42ad1c1a330b28
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.applications.constructor-debug
       probe_id: constructor-signature
       probe_kind: callable
@@ -4925,7 +4937,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
       recipe_sha256: 2f2d6eb45a18ea7cdcc4794e6d08b4a5956131fd194f4d8cce42ad1c1a330b28
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.applications.constructor-debug
       probe_id: debug-keyword-construction
       probe_kind: callable
@@ -4944,6 +4956,64 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-extra-deep-merge-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
+      input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+      recipe_sha256: cc0817627012d9dee2ff1fa615ffab6e6b651ad6cf003ae64f6045b6caab92ac
+      workload_path: tests/fixtures/workloads/openapi_extra_deep_merge_full_document_review.py
+      workload_sha256: 32aadad8b4d48f6f660c43d706ad93267b0030bc68dcd543fae9052297b04427
+      case_id: fastapi.openapi-extra.full-document-merge-add-override
+      observation_selectors:
+      - openapi.document
+    - workflow_id: openapi-raw-yaml-body-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json
+      input_sha256: 4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+      recipe_sha256: 21145d4dea637920deb851fdab017ca86bc7a1d101939599fea5647330cb9840
+      workload_path: tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py
+      workload_sha256: ca7f408754706193211c7479ef51eb4b1ff3d02b8a5ee9de43e89924a63f6596
+      case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-form-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-form-placement.json
+      input_sha256: 08b5258eb6ff526475492f55c5e76adfa8ee85afabab40ed133ecbdca5a9a29d
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+      recipe_sha256: b78e6352c3d5a216cdf6f1b27bbb90743bc5204c4cf69ae9bbda7e3b927f460d
+      workload_path: tests/fixtures/workloads/openapi_examples_form_placement.py
+      workload_sha256: 68076ea12ed87d8d6fad81ecce6d34349b8bde7e6b3ffe65e6c4d5f393eeaf2c
+      case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-file-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-file-placement.json
+      input_sha256: 4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+      recipe_sha256: 31af42b09354e0511b369fe5288a188a2a6f3540a6ef53c848c955ea58a34cd0
+      workload_path: tests/fixtures/workloads/openapi_examples_file_placement.py
+      workload_sha256: cbfb2e1557ca632420f7b53388506d1dc4329bf3db1195e7b80045031f68c65d
+      case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-named-body-external
+      input_path: tests/fixtures/inputs/parity/openapi-examples-named-body-external.json
+      input_sha256: 872c7c7277a6f3e98762cd330d2c878cc384cdef9eaa4d307b79e52cd4de61b0
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+      recipe_sha256: 21a1e3ddbb6cdda3e31cc296c2a6adf72b033033204c5ed2ba08f5c89e37f658
+      workload_path: tests/fixtures/workloads/openapi_examples_named_body_external.py
+      workload_sha256: 05a72381625c306999804ab7876a21bcff503e3de4555320d5560b9c6bbb8674
+      case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: openapi-validation-response
       input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
       input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
@@ -5262,7 +5332,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.file
       probe_id: root-file-signature
       probe_kind: callable
@@ -5281,6 +5351,18 @@ api_surface_contract:
       observation_selectors:
       - python.parameter_metadata
     operation_fixture_refs:
+    - workflow_id: openapi-examples-file-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-file-placement.json
+      input_sha256: 4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+      recipe_sha256: 31af42b09354e0511b369fe5288a188a2a6f3540a6ef53c848c955ea58a34cd0
+      workload_path: tests/fixtures/workloads/openapi_examples_file_placement.py
+      workload_sha256: cbfb2e1557ca632420f7b53388506d1dc4329bf3db1195e7b80045031f68c65d
+      case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: request-files-openapi-documented-shapes
       input_path: tests/fixtures/inputs/parity/request-files-openapi-documented-shapes.json
       input_sha256: 53ec41a31d9d459a69185bb81162bb0be778a131b05747dae5936b26d76a1658
@@ -5298,7 +5380,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.file
       observation_selectors:
       - python.signature
@@ -5458,7 +5540,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.form
       probe_id: root-form-signature
       probe_kind: callable
@@ -5477,13 +5559,25 @@ api_surface_contract:
       observation_selectors:
       - python.parameter_metadata
     operation_fixture_refs:
+    - workflow_id: openapi-examples-form-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-form-placement.json
+      input_sha256: 08b5258eb6ff526475492f55c5e76adfa8ee85afabab40ed133ecbdca5a9a29d
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+      recipe_sha256: b78e6352c3d5a216cdf6f1b27bbb90743bc5204c4cf69ae9bbda7e3b927f460d
+      workload_path: tests/fixtures/workloads/openapi_examples_form_placement.py
+      workload_sha256: 68076ea12ed87d8d6fad81ecce6d34349b8bde7e6b3ffe65e6c4d5f393eeaf2c
+      case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: parameter-factory-signatures
       input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
       input_sha256: a11788eb6f3ada7a89f3a2cb3f0ba7ce90da527586bf6c39a17f9c958935961d
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.form
       observation_selectors:
       - python.signature
@@ -5636,11 +5730,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.http-exception-signature
       probe_id: http-exception-signature
       probe_kind: callable
@@ -5649,11 +5743,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.http-exception-signature
       observation_selectors:
       - python.signature
@@ -5784,7 +5878,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.header
       probe_id: root-header-signature
       probe_kind: callable
@@ -5842,7 +5936,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.header
       observation_selectors:
       - python.signature
@@ -5979,7 +6073,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.path
       probe_id: root-path-signature
       probe_kind: callable
@@ -6096,7 +6190,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.path
       observation_selectors:
       - python.signature
@@ -6226,7 +6320,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.query
       probe_id: root-query-signature
       probe_kind: callable
@@ -6787,7 +6881,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.query
       observation_selectors:
       - python.signature
@@ -6954,6 +7048,18 @@ api_surface_contract:
       - http.status
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: openapi-raw-yaml-body-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json
+      input_sha256: 4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+      recipe_sha256: 21145d4dea637920deb851fdab017ca86bc7a1d101939599fea5647330cb9840
+      workload_path: tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py
+      workload_sha256: ca7f408754706193211c7479ef51eb4b1ff3d02b8a5ee9de43e89924a63f6596
+      case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
     - workflow_id: next-openapi-response-fields
       input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
       input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
@@ -7928,11 +8034,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
       probe_id: websocket-exception-signature
       probe_kind: callable
@@ -7941,11 +8047,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
       observation_selectors:
       - python.signature
@@ -8052,7 +8158,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-version-value.yaml
       recipe_sha256: 1e9dd3ae2f56d85c669622a8610009d8f183eb9622298c1c8635b80379f38ce0
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.public-api.package-version-value
       probe_id: package-version
       probe_kind: attribute
@@ -8111,6 +8217,64 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: openapi-extra-deep-merge-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
+      input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+      recipe_sha256: cc0817627012d9dee2ff1fa615ffab6e6b651ad6cf003ae64f6045b6caab92ac
+      workload_path: tests/fixtures/workloads/openapi_extra_deep_merge_full_document_review.py
+      workload_sha256: 32aadad8b4d48f6f660c43d706ad93267b0030bc68dcd543fae9052297b04427
+      case_id: fastapi.openapi-extra.full-document-merge-add-override
+      observation_selectors:
+      - openapi.document
+    - workflow_id: openapi-raw-yaml-body-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json
+      input_sha256: 4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+      recipe_sha256: 21145d4dea637920deb851fdab017ca86bc7a1d101939599fea5647330cb9840
+      workload_path: tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py
+      workload_sha256: ca7f408754706193211c7479ef51eb4b1ff3d02b8a5ee9de43e89924a63f6596
+      case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-form-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-form-placement.json
+      input_sha256: 08b5258eb6ff526475492f55c5e76adfa8ee85afabab40ed133ecbdca5a9a29d
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+      recipe_sha256: b78e6352c3d5a216cdf6f1b27bbb90743bc5204c4cf69ae9bbda7e3b927f460d
+      workload_path: tests/fixtures/workloads/openapi_examples_form_placement.py
+      workload_sha256: 68076ea12ed87d8d6fad81ecce6d34349b8bde7e6b3ffe65e6c4d5f393eeaf2c
+      case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-file-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-file-placement.json
+      input_sha256: 4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+      recipe_sha256: 31af42b09354e0511b369fe5288a188a2a6f3540a6ef53c848c955ea58a34cd0
+      workload_path: tests/fixtures/workloads/openapi_examples_file_placement.py
+      workload_sha256: cbfb2e1557ca632420f7b53388506d1dc4329bf3db1195e7b80045031f68c65d
+      case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-named-body-external
+      input_path: tests/fixtures/inputs/parity/openapi-examples-named-body-external.json
+      input_sha256: 872c7c7277a6f3e98762cd330d2c878cc384cdef9eaa4d307b79e52cd4de61b0
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+      recipe_sha256: 21a1e3ddbb6cdda3e31cc296c2a6adf72b033033204c5ed2ba08f5c89e37f658
+      workload_path: tests/fixtures/workloads/openapi_examples_named_body_external.py
+      workload_sha256: 05a72381625c306999804ab7876a21bcff503e3de4555320d5560b9c6bbb8674
+      case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: generate-unique-id-multi-methods
       input_path: tests/fixtures/inputs/parity/generate-unique-id-multi-methods.json
       input_sha256: 571f620554e1486b63844fc2f2fe80841f892bff1744e6140c938cfef41e9455
@@ -15158,6 +15322,18 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/377
       observation_selectors: *id006
     input_workflow_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-reference-wave.include-router-live-openapi
+      probe_id: fastapi-include-router
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     - workflow_id: operation-signatures-upstream
       input_path: tests/fixtures/inputs/parity/operation-signatures-upstream.json
       input_sha256: bd5667909aee83b60f9f20cf7b52b499cd2becda3d2352e36aa5b9bacbf8f6ba
@@ -15673,6 +15849,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.call_outcome
     - python.signature
     - python.warnings
     - warnings.category_message
@@ -15962,6 +16139,18 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/377
       observation_selectors: *id006
     input_workflow_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-reference-wave.include-router-live-openapi
+      probe_id: fastapi-openapi-after-inclusion
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     - workflow_id: operation-signatures-upstream
       input_path: tests/fixtures/inputs/parity/operation-signatures-upstream.json
       input_sha256: bd5667909aee83b60f9f20cf7b52b499cd2becda3d2352e36aa5b9bacbf8f6ba
@@ -15975,6 +16164,64 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-extra-deep-merge-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
+      input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+      recipe_sha256: cc0817627012d9dee2ff1fa615ffab6e6b651ad6cf003ae64f6045b6caab92ac
+      workload_path: tests/fixtures/workloads/openapi_extra_deep_merge_full_document_review.py
+      workload_sha256: 32aadad8b4d48f6f660c43d706ad93267b0030bc68dcd543fae9052297b04427
+      case_id: fastapi.openapi-extra.full-document-merge-add-override
+      observation_selectors:
+      - openapi.document
+    - workflow_id: openapi-raw-yaml-body-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json
+      input_sha256: 4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+      recipe_sha256: 21145d4dea637920deb851fdab017ca86bc7a1d101939599fea5647330cb9840
+      workload_path: tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py
+      workload_sha256: ca7f408754706193211c7479ef51eb4b1ff3d02b8a5ee9de43e89924a63f6596
+      case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-form-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-form-placement.json
+      input_sha256: 08b5258eb6ff526475492f55c5e76adfa8ee85afabab40ed133ecbdca5a9a29d
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+      recipe_sha256: b78e6352c3d5a216cdf6f1b27bbb90743bc5204c4cf69ae9bbda7e3b927f460d
+      workload_path: tests/fixtures/workloads/openapi_examples_form_placement.py
+      workload_sha256: 68076ea12ed87d8d6fad81ecce6d34349b8bde7e6b3ffe65e6c4d5f393eeaf2c
+      case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-file-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-file-placement.json
+      input_sha256: 4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+      recipe_sha256: 31af42b09354e0511b369fe5288a188a2a6f3540a6ef53c848c955ea58a34cd0
+      workload_path: tests/fixtures/workloads/openapi_examples_file_placement.py
+      workload_sha256: cbfb2e1557ca632420f7b53388506d1dc4329bf3db1195e7b80045031f68c65d
+      case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-named-body-external
+      input_path: tests/fixtures/inputs/parity/openapi-examples-named-body-external.json
+      input_sha256: 872c7c7277a6f3e98762cd330d2c878cc384cdef9eaa4d307b79e52cd4de61b0
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+      recipe_sha256: 21a1e3ddbb6cdda3e31cc296c2a6adf72b033033204c5ed2ba08f5c89e37f658
+      workload_path: tests/fixtures/workloads/openapi_examples_named_body_external.py
+      workload_sha256: 05a72381625c306999804ab7876a21bcff503e3de4555320d5560b9c6bbb8674
+      case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
       input_sha256: f937e7552eb473629234576db598707748fe0a6570e5b3982022af21d4d86fbe
@@ -16484,6 +16731,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.attribute_value
     - python.signature
     - python.warnings
     - warnings.category_message
@@ -17030,6 +17278,52 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-extra-deep-merge-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
+      input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+      recipe_sha256: cc0817627012d9dee2ff1fa615ffab6e6b651ad6cf003ae64f6045b6caab92ac
+      workload_path: tests/fixtures/workloads/openapi_extra_deep_merge_full_document_review.py
+      workload_sha256: 32aadad8b4d48f6f660c43d706ad93267b0030bc68dcd543fae9052297b04427
+      case_id: fastapi.openapi-extra.full-document-merge-add-override
+      observation_selectors:
+      - openapi.document
+    - workflow_id: openapi-raw-yaml-body-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json
+      input_sha256: 4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+      recipe_sha256: 21145d4dea637920deb851fdab017ca86bc7a1d101939599fea5647330cb9840
+      workload_path: tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py
+      workload_sha256: ca7f408754706193211c7479ef51eb4b1ff3d02b8a5ee9de43e89924a63f6596
+      case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-form-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-form-placement.json
+      input_sha256: 08b5258eb6ff526475492f55c5e76adfa8ee85afabab40ed133ecbdca5a9a29d
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+      recipe_sha256: b78e6352c3d5a216cdf6f1b27bbb90743bc5204c4cf69ae9bbda7e3b927f460d
+      workload_path: tests/fixtures/workloads/openapi_examples_form_placement.py
+      workload_sha256: 68076ea12ed87d8d6fad81ecce6d34349b8bde7e6b3ffe65e6c4d5f393eeaf2c
+      case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: openapi-examples-file-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-file-placement.json
+      input_sha256: 4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+      recipe_sha256: 31af42b09354e0511b369fe5288a188a2a6f3540a6ef53c848c955ea58a34cd0
+      workload_path: tests/fixtures/workloads/openapi_examples_file_placement.py
+      workload_sha256: cbfb2e1557ca632420f7b53388506d1dc4329bf3db1195e7b80045031f68c65d
+      case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
       input_sha256: f937e7552eb473629234576db598707748fe0a6570e5b3982022af21d4d86fbe
@@ -17500,6 +17794,18 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-examples-named-body-external
+      input_path: tests/fixtures/inputs/parity/openapi-examples-named-body-external.json
+      input_sha256: 872c7c7277a6f3e98762cd330d2c878cc384cdef9eaa4d307b79e52cd4de61b0
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+      recipe_sha256: 21a1e3ddbb6cdda3e31cc296c2a6adf72b033033204c5ed2ba08f5c89e37f658
+      workload_path: tests/fixtures/workloads/openapi_examples_named_body_external.py
+      workload_sha256: 05a72381625c306999804ab7876a21bcff503e3de4555320d5560b9c6bbb8674
+      case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: operation-signatures-upstream
       input_path: tests/fixtures/inputs/parity/operation-signatures-upstream.json
       input_sha256: bd5667909aee83b60f9f20cf7b52b499cd2becda3d2352e36aa5b9bacbf8f6ba
@@ -17815,6 +18121,29 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/367
       observation_selectors: *id008
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-extra-deep-merge-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
+      input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
+      recipe_sha256: cc0817627012d9dee2ff1fa615ffab6e6b651ad6cf003ae64f6045b6caab92ac
+      workload_path: tests/fixtures/workloads/openapi_extra_deep_merge_full_document_review.py
+      workload_sha256: 32aadad8b4d48f6f660c43d706ad93267b0030bc68dcd543fae9052297b04427
+      case_id: fastapi.openapi-extra.full-document-merge-add-override
+      observation_selectors:
+      - openapi.document
+    - workflow_id: openapi-raw-yaml-body-full-document-review
+      input_path: tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json
+      input_sha256: 4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
+      recipe_sha256: 21145d4dea637920deb851fdab017ca86bc7a1d101939599fea5647330cb9840
+      workload_path: tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py
+      workload_sha256: ca7f408754706193211c7479ef51eb4b1ff3d02b8a5ee9de43e89924a63f6596
+      case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -19602,11 +19931,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.encoder-reference-dataclass
       probe_id: encode-dataclass-record
       probe_kind: callable
@@ -21864,7 +22193,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.redoc-signature
       probe_id: redoc-signature
       probe_kind: callable
@@ -21877,7 +22206,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.redoc-signature
       observation_selectors:
       - python.signature
@@ -21956,7 +22285,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.swagger-ui-signature
       probe_id: swagger-ui-signature
       probe_kind: callable
@@ -21969,7 +22298,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.swagger-ui-signature
       observation_selectors:
       - python.signature
@@ -22141,7 +22470,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.oauth-redirect-signature
       probe_id: oauth-redirect-signature
       probe_kind: callable
@@ -22154,7 +22483,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.oauth-redirect-signature
       observation_selectors:
       - python.signature
@@ -22232,7 +22561,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.swagger-default-parameters
       probe_id: swagger-default-parameters
       probe_kind: attribute
@@ -22245,7 +22574,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
       recipe_sha256: 01fd84593ee4ec7e4c900291c72eee8bb13f674b3cb02f0326cdbcb64067f181
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi.docs.public-api.swagger-default-parameters
       observation_selectors:
       - python.attribute_value
@@ -24022,7 +24351,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
       recipe_sha256: d92b5f9e71ec36b2114cefe38de8aaa24cc6d2edf1663e34fa892ef921d91d32
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.components.signature
       probe_id: components-signature
       probe_kind: callable
@@ -24047,7 +24376,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
       recipe_sha256: d92b5f9e71ec36b2114cefe38de8aaa24cc6d2edf1663e34fa892ef921d91d32
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.components.signature
       observation_selectors:
       - python.signature
@@ -24942,7 +25271,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
       recipe_sha256: d92b5f9e71ec36b2114cefe38de8aaa24cc6d2edf1663e34fa892ef921d91d32
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.discriminator.signature
       probe_id: discriminator-signature
       probe_kind: callable
@@ -24967,7 +25296,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
       recipe_sha256: d92b5f9e71ec36b2114cefe38de8aaa24cc6d2edf1663e34fa892ef921d91d32
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.discriminator.signature
       observation_selectors:
       - python.signature
@@ -26479,11 +26808,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.openapi-info-signature
       probe_id: openapi-info-signature
       probe_kind: callable
@@ -29120,11 +29449,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.openapi-model-signature
       probe_id: openapi-model-signature
       probe_kind: callable
@@ -33258,11 +33587,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
-      input_sha256: 23c01637a63370ad7e57ccbe9b5aaf9ddd09cd543bc9f0033170dbd5e9f5d18e
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
-      recipe_sha256: 4871d4b72d6634b7ffa397fe41d9049e6be756960ab65635713a1b5c833a740f
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.openapi-schema-signature
       probe_id: openapi-schema-signature
       probe_kind: callable
@@ -33287,7 +33616,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
       recipe_sha256: d92b5f9e71ec36b2114cefe38de8aaa24cc6d2edf1663e34fa892ef921d91d32
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.schema.signature
       probe_id: schema-signature
       probe_kind: callable
@@ -33384,7 +33713,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
       recipe_sha256: d92b5f9e71ec36b2114cefe38de8aaa24cc6d2edf1663e34fa892ef921d91d32
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.schema.signature
       observation_selectors:
       - python.signature
@@ -40861,13 +41190,25 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.body
       probe_id: module-body-signature
       probe_kind: callable
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-examples-named-body-external
+      input_path: tests/fixtures/inputs/parity/openapi-examples-named-body-external.json
+      input_sha256: 872c7c7277a6f3e98762cd330d2c878cc384cdef9eaa4d307b79e52cd4de61b0
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
+      recipe_sha256: 21a1e3ddbb6cdda3e31cc296c2a6adf72b033033204c5ed2ba08f5c89e37f658
+      workload_path: tests/fixtures/workloads/openapi_examples_named_body_external.py
+      workload_sha256: 05a72381625c306999804ab7876a21bcff503e3de4555320d5560b9c6bbb8674
+      case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: 3dd478edbe1ef213c36a4495906edec9adf732f372d7184275c1cd630a7b5801
@@ -40885,7 +41226,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.body
       observation_selectors:
       - python.signature
@@ -40992,7 +41333,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.cookie
       probe_id: module-cookie-signature
       probe_kind: callable
@@ -41005,7 +41346,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.cookie
       observation_selectors:
       - python.signature
@@ -41089,7 +41430,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.depends
       probe_id: module-depends-signature
       probe_kind: callable
@@ -42644,7 +42985,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.depends
       observation_selectors:
       - python.signature
@@ -42755,20 +43096,32 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.file
       probe_id: module-file-signature
       probe_kind: callable
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-examples-file-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-file-placement.json
+      input_sha256: 4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-file-placement.yaml
+      recipe_sha256: 31af42b09354e0511b369fe5288a188a2a6f3540a6ef53c848c955ea58a34cd0
+      workload_path: tests/fixtures/workloads/openapi_examples_file_placement.py
+      workload_sha256: cbfb2e1557ca632420f7b53388506d1dc4329bf3db1195e7b80045031f68c65d
+      case_id: fastapi.schema-extra-example.openapi-examples.file-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: parameter-factory-signatures
       input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
       input_sha256: a11788eb6f3ada7a89f3a2cb3f0ba7ce90da527586bf6c39a17f9c958935961d
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.file
       observation_selectors:
       - python.signature
@@ -42875,20 +43228,32 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.form
       probe_id: module-form-signature
       probe_kind: callable
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-examples-form-placement
+      input_path: tests/fixtures/inputs/parity/openapi-examples-form-placement.json
+      input_sha256: 08b5258eb6ff526475492f55c5e76adfa8ee85afabab40ed133ecbdca5a9a29d
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-form-placement.yaml
+      recipe_sha256: b78e6352c3d5a216cdf6f1b27bbb90743bc5204c4cf69ae9bbda7e3b927f460d
+      workload_path: tests/fixtures/workloads/openapi_examples_form_placement.py
+      workload_sha256: 68076ea12ed87d8d6fad81ecce6d34349b8bde7e6b3ffe65e6c4d5f393eeaf2c
+      case_id: fastapi.schema-extra-example.openapi-examples.form-placement
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
     - workflow_id: parameter-factory-signatures
       input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
       input_sha256: a11788eb6f3ada7a89f3a2cb3f0ba7ce90da527586bf6c39a17f9c958935961d
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.form
       observation_selectors:
       - python.signature
@@ -43006,7 +43371,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.header
       probe_id: module-header-signature
       probe_kind: callable
@@ -43030,7 +43395,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.header
       observation_selectors:
       - python.signature
@@ -43115,7 +43480,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.path
       probe_id: module-path-signature
       probe_kind: callable
@@ -43151,7 +43516,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.path
       observation_selectors:
       - python.signature
@@ -43261,7 +43626,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.query
       probe_id: module-query-signature
       probe_kind: callable
@@ -43299,7 +43664,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
       recipe_sha256: 3731e39796743af9b2d2cc51360973253cfdee1cced1a17aca5e714ea22d2a66
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-factory-signatures.query
       observation_selectors:
       - python.signature
@@ -43835,7 +44200,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.body
       probe_id: body-class-constructor-signature
       probe_kind: callable
@@ -43848,7 +44213,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.body
       observation_selectors:
       - python.signature
@@ -43921,7 +44286,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.cookie
       probe_id: cookie-class-constructor-signature
       probe_kind: callable
@@ -43934,7 +44299,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.cookie
       observation_selectors:
       - python.signature
@@ -44007,7 +44372,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.file
       probe_id: file-class-constructor-signature
       probe_kind: callable
@@ -44020,7 +44385,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.file
       observation_selectors:
       - python.signature
@@ -44093,7 +44458,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.form
       probe_id: form-class-constructor-signature
       probe_kind: callable
@@ -44106,7 +44471,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.form
       observation_selectors:
       - python.signature
@@ -44179,7 +44544,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.header
       probe_id: header-class-constructor-signature
       probe_kind: callable
@@ -44192,7 +44557,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.header
       observation_selectors:
       - python.signature
@@ -44265,7 +44630,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.path
       probe_id: path-class-constructor-signature
       probe_kind: callable
@@ -44278,7 +44643,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.path
       observation_selectors:
       - python.signature
@@ -44351,7 +44716,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.query
       probe_id: query-class-constructor-signature
       probe_kind: callable
@@ -44364,7 +44729,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
       recipe_sha256: b35f269cc8ab6db3841fffac3391fbb30d67adf8f5855bd2137db4e790c3d50e
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.parameter-class-constructor-signatures.query
       observation_selectors:
       - python.signature
@@ -48865,7 +49230,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-apirouter
       fixture_design_ref: /fixture_designs/372
       observation_selectors: *id019
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-reference-wave.include-router-live-openapi
+      probe_id: apirouter-include-router
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     operation_fixture_refs:
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
@@ -49140,6 +49517,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.call_outcome
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter.include_router/supported_slice
@@ -50707,7 +51085,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-cookie
       probe_id: root-api-key-cookie-signature
       probe_kind: callable
@@ -50852,7 +51230,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
@@ -50926,7 +51304,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-header
       probe_id: root-api-key-header-signature
       probe_kind: callable
@@ -51015,7 +51393,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-header
       observation_selectors:
       - python.signature
@@ -51089,7 +51467,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-query
       probe_id: root-api-key-query-signature
       probe_kind: callable
@@ -51234,7 +51612,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
@@ -51306,7 +51684,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-authorization-credentials
       probe_id: root-http-authorization-credentials-signature
       probe_kind: callable
@@ -51331,7 +51709,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-authorization-credentials
       observation_selectors:
       - python.signature
@@ -51405,7 +51783,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic
       probe_id: root-http-basic-signature
       probe_kind: callable
@@ -51516,7 +51894,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic
       observation_selectors:
       - python.signature
@@ -51588,7 +51966,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic-credentials
       probe_id: root-http-basic-credentials-signature
       probe_kind: callable
@@ -51601,7 +51979,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic-credentials
       observation_selectors:
       - python.signature
@@ -51684,7 +52062,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-bearer
       probe_id: root-http-bearer-signature
       probe_kind: callable
@@ -51721,7 +52099,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-bearer
       observation_selectors:
       - python.signature
@@ -51796,7 +52174,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-digest
       probe_id: root-http-digest-signature
       probe_kind: callable
@@ -51833,7 +52211,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-digest
       observation_selectors:
       - python.signature
@@ -51908,7 +52286,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2
       probe_id: root-oauth2-signature
       probe_kind: callable
@@ -51945,7 +52323,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2
       observation_selectors:
       - python.signature
@@ -52020,7 +52398,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
       probe_id: root-oauth2-authorization-code-bearer-signature
       probe_kind: callable
@@ -52032,7 +52410,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
       probe_id: root-oauth2-authorization-code-bearer-signature
       probe_kind: callable
@@ -52045,7 +52423,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
       observation_selectors:
       - python.signature
@@ -52055,7 +52433,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
       observation_selectors:
       - python.signature
@@ -52228,7 +52606,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-bearer
       probe_id: root-oauth2-password-bearer-signature
       probe_kind: callable
@@ -52255,7 +52633,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-bearer
       observation_selectors:
       - python.signature
@@ -52329,7 +52707,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form
       probe_id: root-oauth2-password-request-form-signature
       probe_kind: callable
@@ -52342,7 +52720,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form
       observation_selectors:
       - python.signature
@@ -52466,7 +52844,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form-strict
       probe_id: root-oauth2-password-request-form-strict-signature
       probe_kind: callable
@@ -52479,7 +52857,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form-strict
       observation_selectors:
       - python.signature
@@ -52603,7 +52981,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect
       probe_id: root-open-id-connect-signature
       probe_kind: callable
@@ -52615,7 +52993,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect-target
       probe_id: root-open-id-connect-signature
       probe_kind: callable
@@ -52628,7 +53006,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect
       observation_selectors:
       - python.signature
@@ -52638,7 +53016,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect-target
       observation_selectors:
       - python.signature
@@ -52828,7 +53206,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.security-scopes
       probe_id: root-security-scopes-signature
       probe_kind: callable
@@ -52841,7 +53219,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.security-scopes
       observation_selectors:
       - python.signature
@@ -53100,7 +53478,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-cookie
       probe_id: module-api-key-cookie-signature
       probe_kind: callable
@@ -53245,7 +53623,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
@@ -53449,7 +53827,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
@@ -53520,7 +53898,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-cookie
       probe_id: module-a-p-i-key-cookie-init-signature
       probe_kind: callable
@@ -53665,7 +54043,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
@@ -53737,7 +54115,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-header
       probe_id: module-api-key-header-signature
       probe_kind: callable
@@ -53826,7 +54204,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-header
       observation_selectors:
       - python.signature
@@ -53974,7 +54352,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-header
       observation_selectors:
       - python.signature
@@ -54045,7 +54423,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-header
       probe_id: module-a-p-i-key-header-init-signature
       probe_kind: callable
@@ -54134,7 +54512,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-header
       observation_selectors:
       - python.signature
@@ -54206,7 +54584,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-query
       probe_id: module-api-key-query-signature
       probe_kind: callable
@@ -54351,7 +54729,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
@@ -54555,7 +54933,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
@@ -54626,7 +55004,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-query
       probe_id: module-a-p-i-key-query-init-signature
       probe_kind: callable
@@ -54771,7 +55149,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
@@ -54926,7 +55304,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-authorization-credentials
       probe_id: module-http-authorization-credentials-signature
       probe_kind: callable
@@ -54951,7 +55329,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-authorization-credentials
       observation_selectors:
       - python.signature
@@ -55259,7 +55637,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic
       probe_id: module-http-basic-signature
       probe_kind: callable
@@ -55370,7 +55748,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic
       observation_selectors:
       - python.signature
@@ -55587,7 +55965,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic
       probe_id: module-h-t-t-p-basic-init-signature
       probe_kind: callable
@@ -55626,7 +56004,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic
       observation_selectors:
       - python.signature
@@ -55696,7 +56074,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic-credentials
       probe_id: module-http-basic-credentials-signature
       probe_kind: callable
@@ -55709,7 +56087,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-basic-credentials
       observation_selectors:
       - python.signature
@@ -55958,7 +56336,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-bearer
       probe_id: module-http-bearer-signature
       probe_kind: callable
@@ -55995,7 +56373,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-bearer
       observation_selectors:
       - python.signature
@@ -56153,7 +56531,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-bearer
       probe_id: module-h-t-t-p-bearer-init-signature
       probe_kind: callable
@@ -56190,7 +56568,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-bearer
       observation_selectors:
       - python.signature
@@ -56262,7 +56640,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-digest
       probe_id: module-http-digest-signature
       probe_kind: callable
@@ -56299,7 +56677,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-digest
       observation_selectors:
       - python.signature
@@ -56457,7 +56835,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-digest
       probe_id: module-h-t-t-p-digest-init-signature
       probe_kind: callable
@@ -56494,7 +56872,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.http-digest
       observation_selectors:
       - python.signature
@@ -56566,7 +56944,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2
       probe_id: module-oauth2-signature
       probe_kind: callable
@@ -56603,7 +56981,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2
       observation_selectors:
       - python.signature
@@ -56761,7 +57139,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2
       probe_id: module-o-auth2-init-signature
       probe_kind: callable
@@ -56798,7 +57176,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2
       observation_selectors:
       - python.signature
@@ -56950,7 +57328,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
       probe_id: module-oauth2-authorization-code-bearer-signature
       probe_kind: callable
@@ -56962,7 +57340,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
       probe_id: module-oauth2-authorization-code-bearer-signature
       probe_kind: callable
@@ -56975,7 +57353,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
       observation_selectors:
       - python.signature
@@ -56985,7 +57363,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
       observation_selectors:
       - python.signature
@@ -57359,7 +57737,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
       probe_id: module-o-auth2-authorization-code-bearer-init-signature
       probe_kind: callable
@@ -57371,7 +57749,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
       probe_id: module-oauth2-authorization-code-bearer-init-signature
       probe_kind: callable
@@ -57384,7 +57762,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
       observation_selectors:
       - python.signature
@@ -57394,7 +57772,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
       observation_selectors:
       - python.signature
@@ -57654,7 +58032,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-bearer
       probe_id: module-oauth2-password-bearer-signature
       probe_kind: callable
@@ -57681,7 +58059,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-bearer
       observation_selectors:
       - python.signature
@@ -57838,7 +58216,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-bearer
       probe_id: module-o-auth2-password-bearer-init-signature
       probe_kind: callable
@@ -57865,7 +58243,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-bearer
       observation_selectors:
       - python.signature
@@ -57937,7 +58315,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form
       probe_id: module-oauth2-password-request-form-signature
       probe_kind: callable
@@ -57950,7 +58328,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form
       observation_selectors:
       - python.signature
@@ -58071,7 +58449,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form
       probe_id: module-o-auth2-password-request-form-init-signature
       probe_kind: callable
@@ -58084,7 +58462,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form
       observation_selectors:
       - python.signature
@@ -58206,7 +58584,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form-strict
       probe_id: module-oauth2-password-request-form-strict-signature
       probe_kind: callable
@@ -58219,7 +58597,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form-strict
       observation_selectors:
       - python.signature
@@ -58340,7 +58718,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form-strict
       probe_id: module-o-auth2-password-request-form-strict-init-signature
       probe_kind: callable
@@ -58353,7 +58731,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.oauth2-password-request-form-strict
       observation_selectors:
       - python.signature
@@ -58475,7 +58853,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.security-scopes
       probe_id: module-security-scopes-signature
       probe_kind: callable
@@ -58488,7 +58866,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.security-scopes
       observation_selectors:
       - python.signature
@@ -58636,7 +59014,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.security-scopes
       probe_id: module-security-scopes-init-signature
       probe_kind: callable
@@ -58649,7 +59027,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.security-scopes
       observation_selectors:
       - python.signature
@@ -58784,7 +59162,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect
       probe_id: module-open-id-connect-signature
       probe_kind: callable
@@ -58796,7 +59174,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect-target
       probe_id: module-open-id-connect-signature
       probe_kind: callable
@@ -58809,7 +59187,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect
       observation_selectors:
       - python.signature
@@ -58819,7 +59197,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect-target
       observation_selectors:
       - python.signature
@@ -59177,7 +59555,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect
       probe_id: module-open-id-connect-init-signature
       probe_kind: callable
@@ -59189,7 +59567,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect-target
       probe_id: module-open-id-connect-init-signature
       probe_kind: callable
@@ -59202,7 +59580,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
       recipe_sha256: 6f1f4c4c1d6ac62c9e1bd78c947cd37b69a4180288a40073d5255dfafce14eaf
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect
       observation_selectors:
       - python.signature
@@ -59212,7 +59590,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
       recipe_sha256: b99be0e5c15fa86081dd0f66d9b6e31a0d4b772155e2d93a71e089d7ebcd845f
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.security.public-api.open-id-connect-target
       observation_selectors:
       - python.signature
@@ -60941,7 +61319,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-alias-identity.yaml
       recipe_sha256: f95b87850840cb8aefeb68a8f9d35ea5e12fb69510d5b9caa24894a79bb89118
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.testclient.public-api.alias-identity
       probe_id: testclient-alias-identity
       probe_kind: callable
@@ -60953,7 +61331,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-public-alias.yaml
       recipe_sha256: 5c8540e34b34098d0102b941abb94bb6bc336bf9c9bf2f7d905b808c3478d1a7
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
-      workload_sha256: ecf8bea0f736466fcfa9fc4db9820e217c1d47bebe2456156f4de835cce53f86
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.testclient.public-api.alias-signature
       probe_id: testclient-alias-signature
       probe_kind: callable

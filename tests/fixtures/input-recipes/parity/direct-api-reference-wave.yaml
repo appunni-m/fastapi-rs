@@ -109,3 +109,48 @@ cases:
   - path: docs/en/docs/reference/openapi/models.md
     kind: upstream_documentation
     sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
+- case_id: fastapi.direct-api-reference-wave.include-router-live-openapi
+  probes:
+  - probe_id: apirouter-include-router
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.include_router
+    argument_bundle: apirouter-include-router
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: fastapi-include-router
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.include_router
+    argument_bundle: fastapi-include-router
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: fastapi-openapi-after-inclusion
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.openapi
+    argument_bundle: fastapi-openapi
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/routing.py
+    kind: upstream_api_definition
+    sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55
+    symbol_id: fastapi.routing.APIRouter.include_router
+  - path: fastapi/applications.py
+    kind: upstream_api_definition
+    sha256: 38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c
+    symbol_id: fastapi.applications.FastAPI.include_router
+  - path: fastapi/applications.py
+    kind: upstream_api_definition
+    sha256: 38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c
+    symbol_id: fastapi.applications.FastAPI.openapi
+  - path: docs/en/docs/tutorial/bigger-applications.md
+    kind: upstream_documentation
+    sha256: 943368d567d4a841ac0710f2a97bf0775c11e4f3b7e9ece2a9a76268eb618133
