@@ -4766,6 +4766,119 @@ reviewed_api_contract_overlay:
         stack. Other middleware_type values, arbitrary dispatch behavior,
         composition and ordering beyond these cases, and broader middleware
         error, lifecycle, and protocol behavior remain outside this slice.
+    fastapi.applications.FastAPI.openapi_url:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: source-definition
+          owner: FastAPI
+          symbol: __init__
+          start_line: 58
+          end_line: 1018
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: openapi_url
+          owner: FastAPI
+          initializer: __init__
+          start_line: 881
+          end_line: 881
+        - path: fastapi/applications.py
+          kind: source-definition
+          symbol: setup
+          start_line: 1105
+          end_line: 1158
+        - path: docs/en/docs/tutorial/metadata.md
+          kind: documentation-text
+          start_line: 95
+          end_line: 105
+          required_text:
+            - By default, the OpenAPI schema is served at `/openapi.json`.
+            - But you can configure it with the parameter `openapi_url`.
+            - If you want to disable the OpenAPI schema completely you can set `openapi_url=None`, that will also disable the documentation user interfaces that use it.
+      supported_slice: >-
+        The pinned constructor declares `openapi_url` as `str | None` with default
+        `/openapi.json` and stores it on the application. `setup()` registers the
+        schema route only when the value is truthy; the automatic Swagger UI and
+        ReDoc routes that use it are also gated by that value. The documented
+        `None` case disables the schema and those automatic documentation UIs.
+        URL rewriting, custom UI configuration, and request/response behavior are
+        outside this field scope.
+    fastapi.applications.FastAPI.router:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: router
+          owner: FastAPI
+          initializer: __init__
+          start_line: 984
+          end_line: 999
+      supported_slice: >-
+        During initialization, FastAPI assigns `app.router` to a newly created
+        `routing.APIRouter`. The constructor wiring supplies the initial route
+        list, redirect setting, the app as dependency-overrides provider,
+        lifecycle handlers, and the listed route configuration values. This
+        scope covers only that initial attribute construction and wiring; later
+        mutation or replacement, route-inclusion semantics, routing behavior,
+        and ASGI dispatch are outside it.
+    fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: source-definition
+          owner: FastAPI
+          symbol: __init__
+          start_line: 58
+          end_line: 1018
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: swagger_ui_oauth2_redirect_url
+          owner: FastAPI
+          initializer: __init__
+          start_line: 886
+          end_line: 886
+        - path: fastapi/applications.py
+          kind: source-use
+          symbol: setup
+          start_line: 1121
+          end_line: 1148
+      supported_slice: >-
+        The constructor declares this value as `str | None`, defaults it to
+        `/docs/oauth2-redirect`, and documents it for Swagger UI OAuth2. When
+        OpenAPI and Swagger UI are enabled, `setup()` passes a truthy value to
+        the Swagger UI configuration and registers the redirect route at that
+        value; a falsey value omits that route. Root-path adjustment, OAuth2
+        flows, and endpoint response behavior are outside this field scope.
+    fastapi.applications.FastAPI.title:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: source-definition
+          owner: FastAPI
+          symbol: __init__
+          start_line: 58
+          end_line: 1018
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: title
+          owner: FastAPI
+          initializer: __init__
+          start_line: 874
+          end_line: 874
+        - path: fastapi/applications.py
+          kind: source-use
+          symbol: openapi
+          start_line: 1084
+          end_line: 1103
+        - path: docs/en/docs/tutorial/metadata.md
+          kind: documentation-text
+          start_line: 7
+          end_line: 11
+          required_text:
+            - "You can set the following fields that are used in the OpenAPI specification and the automatic API docs UIs:"
+            - "| `title` | `str` | The title of the API. |"
+      supported_slice: >-
+        The pinned constructor declares `title` as `str` with default `FastAPI`
+        and stores it on the application. `openapi()` passes the stored value
+        as the generated OpenAPI document title, matching the metadata docs.
+        Other metadata fields, title validation, and full document/UI generation
+        are outside this field scope.
     fastapi.applications.FastAPI.openapi_version:
       source_evidence:
         - path: fastapi/applications.py
@@ -9743,11 +9856,10 @@ reviewed_api_contract_overlay:
     fastapi.openapi.models.Schema:
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       supported_slice: >-
-        The active inputs declare signature and model-result observations. The model-result
-        stimulus supplies schema_ (serialized by alias), id, title, type, required, properties
-        (including nested type/minLength), additionalProperties, discriminator, and one
-        extension key. Other keywords and constraints, alias-name input, validation failures,
-        and schema generation are outside this input slice.
+        Active inputs compare the constructor signature, existing model projection, all 12 JSON Schema
+        wire aliases, Python field-name inputs as allowed extras, empty-model defaults, and invalid
+        multipleOf, minLength, and maxItems values. These cases do not establish other coercions or
+        constraint boundaries, recursive schema behavior, alternate serialization, or schema generation.
       source_evidence:
         - path: fastapi/openapi/models.py
           symbol: Schema
@@ -9759,13 +9871,25 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi-models.schema.signature
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
           case_id: fastapi.openapi-models.schema.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.invalid-multiple-of
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.invalid-min-length
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.invalid-max-items
       feature_ids: [openapi-docs]
-      observation_selectors: [python.signature, python.pydantic_model_result]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Only the exact constructor signature and one successful model_dump projection are verified; unexercised fields and constraints, alias-name input, invalid values, recursive schemas, alternate serialization, and JSON Schema behavior remain unproven.
+          - Only the declared constructor signature, selected model_dump projections, 12 alias-related field inputs, empty-model defaults, and three invalid constraint values are compared; other validation/coercion boundaries, recursive schemas, alternate serialization, and JSON Schema generation remain unproven.
         rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
     fastapi.openapi.models.APIKeyIn:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
@@ -12116,10 +12240,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None; parent input
-        sample only through openapi-models.schema.model-result; no field-row fixture link.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
+        behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.allOf:
       source_evidence:
@@ -12129,9 +12257,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.anchor:
       source_evidence:
@@ -12142,8 +12275,19 @@ reviewed_api_contract_overlay:
           end_line: 204
       supported_slice: >-
         Declared field only: annotation str | None; default None; serialization alias '$anchor'.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Direct model_dump parity covers wire-alias input and Python field-name input. Wire aliases
+        populate the declared field; Python names are retained as allowed extras. The empty-model
+        case also compares this field's default. Other validation/coercion and schema behavior are
+        not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.anyOf:
       source_evidence:
@@ -12153,9 +12297,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.comment:
       source_evidence:
@@ -12165,9 +12314,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None; serialization alias
-        '$comment'. Pydantic validation/coercion, default omission, alias parsing/dump, errors,
-        and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None; serialization alias '$comment'.
+        Direct model_dump parity covers wire-alias input and Python field-name input. Wire aliases
+        populate the declared field; Python names are retained as allowed extras. The empty-model
+        case also compares this field's default. Other validation/coercion and schema behavior are
+        not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.const:
       source_evidence:
@@ -12177,8 +12337,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Any | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation Any | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.contains:
       source_evidence:
@@ -12188,9 +12354,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.contentEncoding:
       source_evidence:
@@ -12200,8 +12371,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.contentMediaType:
       source_evidence:
@@ -12211,8 +12388,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.contentSchema:
       source_evidence:
@@ -12222,9 +12405,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.default:
       source_evidence:
@@ -12234,8 +12422,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Any | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation Any | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.defs:
       source_evidence:
@@ -12246,8 +12440,19 @@ reviewed_api_contract_overlay:
           end_line: 204
       supported_slice: >-
         Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None;
-        serialization alias '$defs'. Pydantic validation/coercion, default omission, alias
-        parsing/dump, errors, and full schema behavior are not claimed.
+        serialization alias '$defs'. Direct model_dump parity covers wire-alias input and Python
+        field-name input. Wire aliases populate the declared field; Python names are retained as
+        allowed extras. The empty-model case also compares this field's default. Other
+        validation/coercion and schema behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.dependentRequired:
       source_evidence:
@@ -12257,9 +12462,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation dict[str, set[str]] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation dict[str, set[str]] | None; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.dependentSchemas:
       source_evidence:
@@ -12269,9 +12479,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.deprecated:
       source_evidence:
@@ -12281,8 +12496,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation bool | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.description:
       source_evidence:
@@ -12292,8 +12513,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.discriminator:
       source_evidence:
@@ -12303,10 +12530,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Discriminator | None; default None; parent input sample
-        only through openapi-models.schema.model-result; no field-row fixture link. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation Discriminator | None; default None. The empty-model input
+        compares this field's default in the exact model_dump result; validation and other behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.dynamicAnchor:
       source_evidence:
@@ -12317,8 +12548,19 @@ reviewed_api_contract_overlay:
           end_line: 204
       supported_slice: >-
         Declared field only: annotation str | None; default None; serialization alias
-        '$dynamicAnchor'. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        '$dynamicAnchor'. Direct model_dump parity covers wire-alias input and Python field-name
+        input. Wire aliases populate the declared field; Python names are retained as allowed
+        extras. The empty-model case also compares this field's default. Other validation/coercion
+        and schema behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.dynamicRef:
       source_evidence:
@@ -12328,9 +12570,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None; serialization alias
-        '$dynamicRef'. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None; serialization alias '$dynamicRef'.
+        Direct model_dump parity covers wire-alias input and Python field-name input. Wire aliases
+        populate the declared field; Python names are retained as allowed extras. The empty-model
+        case also compares this field's default. Other validation/coercion and schema behavior are
+        not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.else_:
       source_evidence:
@@ -12340,9 +12593,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization
-        alias 'else'. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization alias
+        'else'. Direct model_dump parity covers wire-alias input and Python field-name input. Wire
+        aliases populate the declared field; Python names are retained as allowed extras. The empty-
+        model case also compares this field's default. Other validation/coercion and schema behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.enum:
       source_evidence:
@@ -12352,9 +12616,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation list[Any] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation list[Any] | None; default None. The empty-model input
+        compares this field's default in the exact model_dump result; validation and other behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.example:
       source_evidence:
@@ -12365,9 +12634,14 @@ reviewed_api_contract_overlay:
           end_line: 204
       supported_slice: >-
         Declared field only: annotation Annotated[ Any | None, typing_deprecated( "Deprecated in
-        OpenAPI 3.1.0 that now uses JSON Schema 2020-12, " "although still supported. Use
-        examples instead." ), ]; default None. Pydantic validation/coercion, default omission,
-        alias parsing/dump, errors, and full schema behavior are not claimed.
+        OpenAPI 3.1.0 that now uses JSON Schema 2020-12, " "although still supported. Use examples
+        instead." ), ]; default None. The empty-model input compares this field's default in the
+        exact model_dump result; validation and other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.examples:
       source_evidence:
@@ -12377,9 +12651,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation list[Any] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation list[Any] | None; default None. The empty-model input
+        compares this field's default in the exact model_dump result; validation and other behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.exclusiveMaximum:
       source_evidence:
@@ -12389,9 +12668,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation float | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation float | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.exclusiveMinimum:
       source_evidence:
@@ -12401,9 +12685,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation float | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation float | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.externalDocs:
       source_evidence:
@@ -12413,9 +12702,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation ExternalDocumentation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation ExternalDocumentation | None; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.format:
       source_evidence:
@@ -12425,8 +12719,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.id:
       source_evidence:
@@ -12436,10 +12736,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None; serialization alias '$id';
-        parent input sample only through openapi-models.schema.model-result; no field-row
-        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None; serialization alias '$id'. Direct
+        model_dump parity covers wire-alias input and Python field-name input. Wire aliases populate
+        the declared field; Python names are retained as allowed extras. The empty-model case also
+        compares this field's default. Other validation/coercion and schema behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.if_:
       source_evidence:
@@ -12449,9 +12759,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization
-        alias 'if'. Pydantic validation/coercion, default omission, alias parsing/dump, errors,
-        and full schema behavior are not claimed.
+        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization alias
+        'if'. Direct model_dump parity covers wire-alias input and Python field-name input. Wire
+        aliases populate the declared field; Python names are retained as allowed extras. The empty-
+        model case also compares this field's default. Other validation/coercion and schema behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.items:
       source_evidence:
@@ -12461,9 +12782,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.maxContains:
       source_evidence:
@@ -12473,9 +12799,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.maxItems:
       source_evidence:
@@ -12485,9 +12816,17 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The linked
+        invalid input is rejected and its public call outcome is compared. The empty-model case also
+        compares this field's default. Only this invalid value is covered; other coercions and
+        constraint boundaries are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.invalid-max-items
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Schema.maxLength:
       source_evidence:
@@ -12497,9 +12836,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.maxProperties:
       source_evidence:
@@ -12509,9 +12853,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.maximum:
       source_evidence:
@@ -12521,9 +12870,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation float | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation float | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.minContains:
       source_evidence:
@@ -12533,9 +12887,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.minItems:
       source_evidence:
@@ -12545,9 +12904,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.minLength:
       source_evidence:
@@ -12557,10 +12921,17 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0; parent
-        input sample only through openapi-models.schema.model-result (nested properties schema);
-        no field-row fixture link. Pydantic validation/coercion, default omission, alias
-        parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The linked
+        invalid input is rejected and its public call outcome is compared. The empty-model case also
+        compares this field's default. Only this invalid value is covered; other coercions and
+        constraint boundaries are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.invalid-min-length
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Schema.minProperties:
       source_evidence:
@@ -12570,9 +12941,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation int | None; default None; Field constraint ge=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation int | None; default None; Field constraint ge=0. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.minimum:
       source_evidence:
@@ -12582,9 +12958,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation float | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation float | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.multipleOf:
       source_evidence:
@@ -12594,9 +12975,17 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation float | None; default None; Field constraint gt=0.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation float | None; default None; Field constraint gt=0. The
+        linked invalid input is rejected and its public call outcome is compared. The empty-model
+        case also compares this field's default. Only this invalid value is covered; other coercions
+        and constraint boundaries are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.invalid-multiple-of
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Schema.not_:
       source_evidence:
@@ -12606,9 +12995,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization
-        alias 'not'. Pydantic validation/coercion, default omission, alias parsing/dump, errors,
-        and full schema behavior are not claimed.
+        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization alias
+        'not'. Direct model_dump parity covers wire-alias input and Python field-name input. Wire
+        aliases populate the declared field; Python names are retained as allowed extras. The empty-
+        model case also compares this field's default. Other validation/coercion and schema behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.oneOf:
       source_evidence:
@@ -12618,9 +13018,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.pattern:
       source_evidence:
@@ -12630,8 +13035,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.patternProperties:
       source_evidence:
@@ -12641,9 +13052,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.prefixItems:
       source_evidence:
@@ -12653,9 +13069,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.properties:
       source_evidence:
@@ -12665,10 +13086,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None; parent
-        input sample only through openapi-models.schema.model-result; no field-row fixture link.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None. The empty-
+        model input compares this field's default in the exact model_dump result; validation and
+        other behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.propertyNames:
       source_evidence:
@@ -12678,9 +13103,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.readOnly:
       source_evidence:
@@ -12690,8 +13120,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation bool | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.ref:
       source_evidence:
@@ -12701,9 +13137,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None; serialization alias '$ref'.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field only: annotation str | None; default None; serialization alias '$ref'. Direct
+        model_dump parity covers wire-alias input and Python field-name input. Wire aliases populate
+        the declared field; Python names are retained as allowed extras. The empty-model case also
+        compares this field's default. Other validation/coercion and schema behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.required:
       source_evidence:
@@ -12713,10 +13160,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation list[str] | None; default None; parent input sample only
-        through openapi-models.schema.model-result; no field-row fixture link. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation list[str] | None; default None. The empty-model input
+        compares this field's default in the exact model_dump result; validation and other behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.schema_:
       source_evidence:
@@ -12726,10 +13177,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None; serialization alias '$schema';
-        parent input sample only through openapi-models.schema.model-result; no field-row
-        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None; serialization alias '$schema'.
+        Direct model_dump parity covers wire-alias input and Python field-name input. Wire aliases
+        populate the declared field; Python names are retained as allowed extras. The empty-model
+        case also compares this field's default. Other validation/coercion and schema behavior are
+        not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.then:
       source_evidence:
@@ -12739,9 +13200,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.title:
       source_evidence:
@@ -12751,10 +13217,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None; parent input sample only
-        through openapi-models.schema.model-result; no field-row fixture link. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field only: annotation str | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.type:
       source_evidence:
@@ -12764,10 +13234,17 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation SchemaType | list[SchemaType] | None; default None;
-        parent input sample only through openapi-models.schema.model-result; no field-row
-        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        Declared field only: annotation SchemaType | list[SchemaType] | None; default None. The
+        empty-model input compares this field's default in the exact model_dump result; validation
+        and other behavior are not claimed. A nested type value is also observed in the wire-alias
+        case.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.unevaluatedItems:
       source_evidence:
@@ -12777,9 +13254,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.unevaluatedProperties:
       source_evidence:
@@ -12789,9 +13271,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. The empty-model
+        input compares this field's default in the exact model_dump result; validation and other
         behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.uniqueItems:
       source_evidence:
@@ -12801,8 +13288,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation bool | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.vocabulary:
       source_evidence:
@@ -12812,9 +13305,20 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation str | None; default None; serialization alias
-        '$vocabulary'. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        Declared field only: annotation str | None; default None; serialization alias '$vocabulary'.
+        Direct model_dump parity covers wire-alias input and Python field-name input. Wire aliases
+        populate the declared field; Python names are retained as allowed extras. The empty-model
+        case also compares this field's default. Other validation/coercion and schema behavior are
+        not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-wire-name
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.writeOnly:
       source_evidence:
@@ -12824,8 +13328,14 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation bool | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Schema.xml:
       source_evidence:
@@ -12835,8 +13345,15 @@ reviewed_api_contract_overlay:
           start_line: 123
           end_line: 204
       supported_slice: >-
-        Declared field only: annotation XML | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field only: annotation XML | None; default None. The empty-model input compares
+        this field's default in the exact model_dump result; validation and other behavior are not
+        claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+          case_id: fastapi.openapi-models.schema.field-defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
+
 
     fastapi.openapi.models.SchemaOrBool:
       source_evidence:
@@ -13182,6 +13699,40 @@ reviewed_api_contract_overlay:
           - The linked inputs cover one wrapped response class and do not establish alternate value types or every mutation timing.
           - The private class equality and truthiness methods are outside this supported field contract.
 
+    fastapi.routing.APIRouter.route_class:
+      source_evidence:
+        - path: fastapi/routing.py
+          kind: source-definition
+          owner: APIRouter
+          symbol: __init__
+          start_line: 2282
+          end_line: 2568
+        - path: fastapi/routing.py
+          kind: instance-assignment
+          symbol: route_class
+          owner: APIRouter
+          initializer: __init__
+          start_line: 2562
+          end_line: 2562
+        - path: fastapi/routing.py
+          kind: source-use
+          symbol: add_api_route
+          start_line: 2921
+          end_line: 2940
+        - path: docs/en/docs/how-to/custom-request-and-route.md
+          kind: documentation-text
+          start_line: 101
+          end_line: 107
+          required_text:
+            - "You can also set the `route_class` parameter of an `APIRouter`:"
+            - In this example, the *path operations* under the `router` will use the custom `TimedRoute` class
+      supported_slice: >-
+        The constructor declares `route_class` as `type[APIRoute]` with default
+        `APIRoute` and stores it on the router. When adding an API route, the
+        source selects a truthy `route_class_override` or falls back to the
+        stored class, then instantiates the selected class. The docs describe
+        using this parameter for a router's path operations. Custom route-class
+        internals and the broader APIRoute contract are outside this field scope.
     fastapi.routing.APIRouter.default_response_class:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::default_response_class
       source_evidence:

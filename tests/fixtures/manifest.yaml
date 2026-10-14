@@ -512,13 +512,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: c7deee391165f406d66e6c308b33e90b14933f0f465b2277975e5a8c48710d18
+    sha256: 0a92f1bc040cec59929f5d187222ae075ebd94f71c999f2148ad252722f68fcc
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 581
-      cases: 2432
+      workflows: 582
+      cases: 2438
       partial_source_mappings: 1680
 
 contract_metadata:
@@ -1123,8 +1123,7 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 5
-      slice-described: 475
+      slice-described: 480
     implementation_owner_plans:
       fastapi-rs: 449
       starlette-rs: 31
@@ -1136,8 +1135,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 147
-    symbols_with_operation_fixture_refs: 180
-    operation_fixture_refs: 1633
+    symbols_with_operation_fixture_refs: 241
+    operation_fixture_refs: 1728
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -16055,8 +16054,9 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.applications.FastAPI.openapi_url/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.openapi_url
@@ -16836,8 +16836,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.applications.FastAPI.router/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.router
@@ -17005,8 +17006,9 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url
@@ -17062,8 +17064,9 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.applications.FastAPI.title/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.title
@@ -32537,6 +32540,78 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      probe_id: schema-python-field-names
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      probe_id: schema-alias-wire-name
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      probe_id: schema-field-defaults
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-max-items
+      probe_id: schema-invalid-max-items
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-min-length
+      probe_id: schema-invalid-min-length
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-multiple-of
+      probe_id: schema-invalid-multiple-of
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     operation_fixture_refs:
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
@@ -32558,6 +32633,66 @@ api_surface_contract:
       case_id: fastapi.openapi-models.schema.model-result
       observation_selectors:
       - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-multiple-of
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-min-length
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-max-items
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32568,6 +32703,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.call_outcome
     - python.import_path
     - python.object_identity
     - python.pydantic_model_result
@@ -32587,9 +32723,9 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
-      - Only the exact constructor signature and one successful model_dump projection are verified; unexercised
-        fields and constraints, alias-name input, invalid values, recursive schemas, alternate serialization,
-        and JSON Schema behavior remain unproven.
+      - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
+        inputs, empty-model defaults, and three invalid constraint values are compared; other validation/coercion
+        boundaries, recursive schemas, alternate serialization, and JSON Schema generation remain unproven.
   - id: fastapi.openapi.models.Schema.additionalProperties
     kind: field
     source_candidate_ref: /api_candidates/794
@@ -32621,6 +32757,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32631,6 +32778,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -32677,6 +32825,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32687,6 +32846,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -32733,6 +32893,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32743,6 +32934,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -32789,6 +32981,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32799,6 +33002,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -32845,6 +33049,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32855,6 +33090,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -32901,6 +33137,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32911,6 +33158,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -32957,6 +33205,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -32967,6 +33226,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33013,6 +33273,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33023,6 +33294,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33069,6 +33341,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33079,6 +33362,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33125,6 +33409,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33135,6 +33430,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33181,6 +33477,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33191,6 +33498,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33237,6 +33545,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33247,6 +33586,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33293,6 +33633,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33303,6 +33654,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33349,6 +33701,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33359,6 +33722,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33405,6 +33769,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33415,6 +33790,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33461,6 +33837,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33471,6 +33858,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33517,6 +33905,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33527,6 +33926,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33573,6 +33973,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33583,6 +34014,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33629,6 +34061,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33639,6 +34102,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33685,6 +34149,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33695,6 +34190,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33741,6 +34237,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33751,6 +34258,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33797,6 +34305,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33807,6 +34326,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33853,6 +34373,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33863,6 +34394,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33909,6 +34441,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33919,6 +34462,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -33965,6 +34509,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -33975,6 +34530,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34021,6 +34577,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34031,6 +34598,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34077,6 +34645,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34087,6 +34666,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34133,6 +34713,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34143,6 +34754,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34189,6 +34801,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34199,6 +34842,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34245,6 +34889,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34255,6 +34910,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34301,6 +34957,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34311,6 +34978,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34357,6 +35025,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-max-items
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34367,6 +35056,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.call_outcome
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34413,6 +35104,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34423,6 +35125,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34469,6 +35172,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34479,6 +35193,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34525,6 +35240,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34535,6 +35261,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34581,6 +35308,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34591,6 +35329,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34637,6 +35376,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34647,6 +35397,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34693,6 +35444,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-min-length
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34703,6 +35475,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.call_outcome
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34749,6 +35523,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34759,6 +35544,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34805,6 +35591,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34815,6 +35612,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34861,6 +35659,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.invalid-multiple-of
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34871,6 +35690,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.call_outcome
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34917,6 +35738,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34927,6 +35779,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -34973,6 +35826,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -34983,6 +35847,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35029,6 +35894,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35039,6 +35915,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35085,6 +35962,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35095,6 +35983,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35141,6 +36030,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35151,6 +36051,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35197,6 +36098,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35207,6 +36119,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35253,6 +36166,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35263,6 +36187,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35309,6 +36234,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35319,6 +36255,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35365,6 +36302,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35375,6 +36343,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35421,6 +36390,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35431,6 +36411,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35477,6 +36458,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35487,6 +36499,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35533,6 +36546,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35543,6 +36567,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35589,6 +36614,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35599,6 +36635,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35645,6 +36682,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35655,6 +36713,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35701,6 +36760,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35711,6 +36781,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35757,6 +36828,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35767,6 +36849,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35813,6 +36896,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35823,6 +36917,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35869,6 +36964,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-wire-name
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.aliases-python-field-names
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35879,6 +37005,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35925,6 +37052,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35935,6 +37073,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -35981,6 +37120,17 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-schema-field-inputs
+      input_path: tests/fixtures/inputs/parity/openapi-schema-field-inputs.json
+      input_sha256: 393f7fa18ce57bb41c0a99de2b252b7a7163987e001cef9e272a15c14fd9577a
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-schema-field-inputs.yaml
+      recipe_sha256: a734b196cc2105db8d99e167c0eff201c9b32fb23020c7e7a6cc5f36158d56df
+      workload_path: tests/fixtures/workloads/openapi_schema_field_inputs.py
+      workload_sha256: 9c3cd33a97d4ceda78753a323c0b5d0033b2d67d4eb9a81ea73aea256c19cd88
+      case_id: fastapi.openapi-models.schema.field-defaults
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -35991,6 +37141,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -47211,8 +48362,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter.route_class/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.route_class

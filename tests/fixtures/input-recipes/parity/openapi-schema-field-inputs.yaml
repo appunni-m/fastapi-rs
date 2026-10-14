@@ -1,0 +1,85 @@
+schema: fastapi-rs/python-api-workflow@5
+workload:
+  file: tests/fixtures/workloads/openapi_schema_field_inputs.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-models.schema.aliases-wire-name
+  probes:
+  - probe_id: schema-alias-wire-name
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-alias-wire
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: &schema_model_source
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Schema
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
+- case_id: fastapi.openapi-models.schema.aliases-python-field-names
+  probes:
+  - probe_id: schema-python-field-names
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-python-field-names
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: *schema_model_source
+- case_id: fastapi.openapi-models.schema.field-defaults
+  probes:
+  - probe_id: schema-field-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: *schema_model_source
+- case_id: fastapi.openapi-models.schema.invalid-multiple-of
+  probes:
+  - probe_id: schema-invalid-multiple-of
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-invalid-multiple-of
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *schema_model_source
+- case_id: fastapi.openapi-models.schema.invalid-min-length
+  probes:
+  - probe_id: schema-invalid-min-length
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-invalid-min-length
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *schema_model_source
+- case_id: fastapi.openapi-models.schema.invalid-max-items
+  probes:
+  - probe_id: schema-invalid-max-items
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-invalid-max-items
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *schema_model_source
