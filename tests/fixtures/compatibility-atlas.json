@@ -77248,8 +77248,8 @@
     "documentation_python_source_files": 461,
     "documentation_section_candidates": 1556,
     "documentation_sections_excluded": 797,
-    "documentation_sections_pending_behavior_review": 757,
-    "documentation_sections_with_reviewed_partial_mapping": 2,
+    "documentation_sections_pending_behavior_review": 745,
+    "documentation_sections_with_reviewed_partial_mapping": 14,
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 13,
@@ -255029,7 +255029,23 @@
               "request-validation"
             ],
             "heading": "Additional media types for the main response { #additional-media-types-for-the-main-response }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.additional-response-openapi-wave.media-content.test-openapi-schema"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.status",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+                "scope_note": "This case observes the documented image/png response declaration in the selected OpenAPI operation. It does not claim file-response transport behavior.",
+                "workflow_id": "additional-response-openapi-wave"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -255041,8 +255057,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI combines route response declarations and response-field schemas in OpenAPI; file and response-class behavior belongs to Starlette.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -261231,7 +261247,21 @@
               "request-validation"
             ],
             "heading": "Setting the `root_path` in the FastAPI app { #setting-the-root-path-in-the-fastapi-app }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.behind-proxy.tutorial002.app-root-path"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial002-upstream.yaml",
+                "scope_note": "The example returns the app root_path from the scope. Generic path matching and proxy-server behavior remain Starlette/server-owned.",
+                "workflow_id": "behind-proxy-tutorial002-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -261243,8 +261273,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI stores the app root_path and places it in the ASGI scope.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "root-path",
@@ -261773,7 +261803,24 @@
               "openapi-docs"
             ],
             "heading": "Additional servers { #additional-servers }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.behind-proxy.tutorial004.openapi-servers"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial004-upstream.yaml",
+                "scope_note": "This case selects the OpenAPI servers array after a root_path request. It does not assert generic proxy-header interpretation.",
+                "workflow_id": "behind-proxy-tutorial004-upstream"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -261789,8 +261836,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI can prepend the request root_path as an OpenAPI server when configured; proxy handling itself remains outside this claim.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "root-path",
@@ -265183,7 +265230,23 @@
               "request-validation"
             ],
             "heading": "Default response class { #default-response-class }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.routing.include-router.default-response-class-openapi-media-type"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.status",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/router-overrides.yaml",
+                "scope_note": "This input samples the router default response class's OpenAPI media type only. Response-class construction and wire behavior belong to Starlette.",
+                "workflow_id": "router-overrides"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -265195,8 +265258,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI resolves the router's default response class when constructing a route and reads its media type for OpenAPI.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -278152,7 +278215,21 @@
               "openapi-docs"
             ],
             "heading": "OpenAPI operationId { #openapi-operationid }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.path-operation.post-operation-id-isolated"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-operation-id-isolated.yaml",
+                "scope_note": "This input observes the selected path operation ID. It does not claim ID uniqueness or every schema-generation path.",
+                "workflow_id": "path-operation-post-operation-id-isolated"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -278169,8 +278246,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI selects the route operation ID and writes it into the generated OpenAPI operation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -278849,7 +278926,23 @@
               "openapi-docs"
             ],
             "heading": "OpenAPI Extensions { #openapi-extensions }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.path-operation-advanced-configurations.tutorial005"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial005-upstream.yaml",
+                "scope_note": "The OpenAPI observation targets the tutorial's route extension. The endpoint response body is authored by the example and is included only as a separate observed output.",
+                "workflow_id": "path-operation-advanced-configurations-tutorial005-upstream"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -278866,8 +278959,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI merges the route's openapi_extra value into the generated operation; the selected OpenAPI pointer scopes this claim to the documented extension.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -281280,7 +281373,23 @@
               "status-codes"
             ],
             "heading": "Use a `Response` parameter { #use-a-response-parameter }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.response.dependency-status",
+                  "fastapi.response.status-overwrite"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+                "scope_note": "These inputs sample dependency-set status and endpoint status overwrite through the injected temporary Response. The Response class and wire semantics belong to Starlette.",
+                "workflow_id": "response-policy-matrix"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -281297,8 +281406,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI injects the temporary response and merges its status and headers into the returned response; Starlette owns the Response implementation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -320141,7 +320250,23 @@
               "middleware-integrations"
             ],
             "heading": "Conditional OpenAPI from settings and env vars { #conditional-openapi-from-settings-and-env-vars }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.atlas-openapi-tutorial.conditional-hidden-docs",
+                  "fastapi.atlas-openapi-tutorial.default-docs-and-schema"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.status",
+                  "http.status",
+                  "openapi.document"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/atlas-openapi-conditional-interface-review.yaml",
+                "scope_note": "These inputs sample hidden docs and default docs/schema routes through FastAPI's URL options. External settings construction is outside the case.",
+                "workflow_id": "atlas-openapi-conditional-interface-review"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -320159,8 +320284,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI registers its schema and documentation routes according to openapi_url, docs_url, and redoc_url configuration.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -327003,7 +327128,23 @@
               "openapi-docs"
             ],
             "heading": "Cache the OpenAPI schema { #cache-the-openapi-schema }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.applications.openapi.cache-direct-add-api-route"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/openapi-cache-direct-add-api-route.yaml",
+                "scope_note": "This input samples the direct-add-route cache invalidation scenario only. It does not claim every OpenAPI cache lifecycle.",
+                "workflow_id": "openapi-cache-direct-add-api-route"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -327012,8 +327153,8 @@
               "openapi.document",
               "python.pydantic_model_result"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI caches the generated schema and tracks route-list version changes for direct route additions.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "openapi-docs",
@@ -487763,7 +487904,21 @@
               "response-serialization"
             ],
             "heading": "Use the `response_model_exclude_unset` parameter { #use-the-response-model-exclude-unset-parameter }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.response-model.post-policy.exclude-unset"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-post-policy-options-review.yaml",
+                "scope_note": "This POST input samples response_model_exclude_unset=True with an explicitly set nullable field and alias. It does not claim every exclude policy or model serialization behavior.",
+                "workflow_id": "response-model-post-policy-options-review"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -487777,8 +487932,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI routes the decorator's exclude_unset option into response-model serialization; Pydantic performs the value serialization.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -487929,7 +488084,23 @@
               "openapi-docs"
             ],
             "heading": "`response_model_include` and `response_model_exclude` { #response-model-include-and-response-model-exclude }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.response-model.include.nested",
+                  "fastapi.response-model.exclude.nested"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
+                "scope_note": "The two GET inputs sample nested include and exclude field selection. They do not claim changes to the complete Pydantic model schema in OpenAPI.",
+                "workflow_id": "response-model-serialization"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -487948,8 +488119,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI passes the decorator's include and exclude selections to response serialization; Pydantic performs the value serialization.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -493233,7 +493404,22 @@
               "openapi-docs"
             ],
             "heading": "Using the `openapi_examples` Parameter { #using-the-openapi-examples-parameter }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.schema-extra-example.openapi-examples.named-body-external-value"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.status",
+                  "http.status",
+                  "openapi.document"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml",
+                "scope_note": "This input samples one named external body example in generated OpenAPI and the documented response status. It does not claim other parameter locations.",
+                "workflow_id": "openapi-examples-named-body-external"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -493248,8 +493434,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI retains openapi_examples on parameter metadata and emits it into the OpenAPI operation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
