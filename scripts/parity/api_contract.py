@@ -20,7 +20,7 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@9"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@10"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@7"
@@ -75,6 +75,148 @@ def _runtime_rows(surface: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any
     return {
         row["id"]: (_pointer("symbols", index), row) for index, row in enumerate(surface["symbols"])
     }
+
+
+def _runtime_module_rows(surface: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
+    return {
+        row["id"]: (_pointer("modules", index), row) for index, row in enumerate(surface["modules"])
+    }
+
+
+def _documented_module_targets(
+    *,
+    inventory: dict[str, Any],
+    atlas_candidates: list[dict[str, Any]],
+    candidate_indexes: dict[str, int],
+    inventory_refs: dict[str, list[str]],
+    core_modules: dict[str, tuple[str, dict[str, Any]]],
+    standard_modules: dict[str, tuple[str, dict[str, Any]]],
+    coverage_by_doc_path: dict[str, tuple[str, dict[str, Any]]],
+    backlog_by_id: dict[str, str],
+) -> list[dict[str, Any]]:
+    """Link documented source modules to their pinned source and runtime records."""
+    inventory_modules = {
+        row["id"]: (_pointer("modules", index), row)
+        for index, row in enumerate(inventory["modules"])
+    }
+    documented_targets = inventory.get("documented_targets", [])
+    if not isinstance(documented_targets, list):
+        raise ContractError("API inventory documented_targets must be a list")
+
+    candidates_by_module: dict[str, tuple[list[str], list[str]]] = {}
+    for candidate in atlas_candidates:
+        if candidate.get("classification") != "supported":
+            continue
+        candidate_id = candidate["id"]
+        source_refs = inventory_refs.get(candidate_id, [])
+        candidate_ref = _pointer("api_candidates", candidate_indexes[candidate_id])
+        candidate_modules: set[str] = set()
+        for source_ref in source_refs:
+            candidate_modules.add(_module_id_for_inventory_ref(source_ref, candidate, inventory))
+        for module_id in candidate_modules:
+            candidate_refs, candidate_ids = candidates_by_module.setdefault(module_id, ([], []))
+            if candidate_id not in candidate_ids:
+                candidate_refs.append(candidate_ref)
+                candidate_ids.append(candidate_id)
+
+    def documentation_references(documented_target: dict[str, Any]) -> list[dict[str, Any]]:
+        references: list[dict[str, Any]] = []
+        source_references = documented_target.get("references", [])
+        if not isinstance(source_references, list):
+            raise ContractError(
+                f"documented API target references must be a list: {documented_target.get('id')}"
+            )
+        for source_ref in source_references:
+            if not isinstance(source_ref, dict):
+                raise ContractError(
+                    "documented API target reference must be a mapping: "
+                    f"{documented_target.get('id')}"
+                )
+            source_path = source_ref.get("path")
+            if not isinstance(source_path, str) or not source_path.startswith("docs/en/docs/"):
+                continue
+            coverage_ref = coverage_by_doc_path.get(source_path)
+            if coverage_ref is None:
+                references.append(
+                    {
+                        "source_path": source_path,
+                        "source_line": source_ref.get("line"),
+                        "coverage_status": "documentation-coverage-link-pending",
+                    }
+                )
+                continue
+            coverage_pointer, coverage_row = coverage_ref
+            fixture_id = coverage_row.get("fixture_id")
+            references.append(
+                {
+                    "source_path": source_path,
+                    "source_line": source_ref.get("line"),
+                    "coverage_matrix_ref": coverage_pointer,
+                    "mapping_status": coverage_row["mapping_status"],
+                    "fixture_id": fixture_id,
+                    "fixture_design_ref": backlog_by_id.get(fixture_id) if fixture_id else None,
+                    "observation_selectors": coverage_row["observation_selectors"],
+                }
+            )
+        return references
+
+    targets: list[dict[str, Any]] = []
+    target_ids: set[str] = set()
+    for documented_index, documented_target in enumerate(documented_targets):
+        if not isinstance(documented_target, dict) or not isinstance(
+            documented_target.get("id"), str
+        ):
+            raise ContractError("API inventory documented target must have a stable ID")
+        target_id = documented_target["id"]
+        if documented_target.get("resolution_kind") != "module":
+            continue
+        if target_id in target_ids:
+            raise ContractError(f"documented source module target is duplicated: {target_id}")
+        target_ids.add(target_id)
+        target_refs = documentation_references(documented_target)
+        module_id = documented_target.get("resolved_source_path")
+        if module_id != target_id or module_id not in inventory_modules:
+            raise ContractError(
+                f"documented module target must resolve to its pinned inventory module: {target_id}"
+            )
+        core_module = core_modules.get(module_id)
+        standard_module = standard_modules.get(module_id)
+        if core_module is None or standard_module is None:
+            raise ContractError(
+                f"documented source module lacks core or standard runtime identity: {module_id}"
+            )
+        module_pointer, _module_row = inventory_modules[module_id]
+        candidate_refs, candidate_ids = candidates_by_module.get(module_id, ([], []))
+        targets.append(
+            {
+                "id": target_id,
+                "target_kind": "source_module",
+                "contract_state": (
+                    "documentation-and-runtime-linked; module-import-identity-and-behavior-pending"
+                ),
+                "source_documented_target_ref": _pointer("documented_targets", documented_index),
+                "source_target_ref": module_pointer,
+                "source_candidate_refs": candidate_refs,
+                "source_candidate_ids": candidate_ids,
+                "runtime_reflections": {
+                    "core": {
+                        "module_ref": core_module[0],
+                        "status": core_module[1].get("status"),
+                    },
+                    "standard": {
+                        "module_ref": standard_module[0],
+                        "status": standard_module[1].get("status"),
+                    },
+                },
+                "documentation_refs": target_refs,
+                "target_binding": {
+                    "target_profile": TARGET_PROFILE,
+                    "public_python_path": target_id,
+                    "status": "full-contract-not-established",
+                },
+            }
+        )
+    return targets
 
 
 def _module_id_for_inventory_ref(
@@ -1957,6 +2099,7 @@ def build_api_surface_contract(
         row["id"]: (_pointer("modules", index), row)
         for index, row in enumerate(runtime_core["modules"])
     }
+    standard_modules = _runtime_module_rows(runtime_standard)
     atlas_candidates = atlas["api_candidates"]
     candidates_by_id = {candidate["id"]: candidate for candidate in atlas_candidates}
     candidate_indexes = {candidate["id"]: index for index, candidate in enumerate(atlas_candidates)}
@@ -3291,6 +3434,17 @@ def build_api_surface_contract(
             }
         )
 
+    module_targets = _documented_module_targets(
+        inventory=inventory,
+        atlas_candidates=atlas_candidates,
+        candidate_indexes=candidate_indexes,
+        inventory_refs=inventory_refs,
+        core_modules=core_modules,
+        standard_modules=standard_modules,
+        coverage_by_doc_path=coverage_by_doc_path,
+        backlog_by_id=backlog_by_id,
+    )
+
     return {
         "schema": CONTRACT_SCHEMA,
         "status": "source-api-linked; behavior-and-target-contract-incomplete",
@@ -3329,10 +3483,30 @@ def build_api_surface_contract(
             "source_artifacts.materialized_input_index.workflows",
             "source_artifacts.materialized_input_index.mappings",
         ],
+        "module_target_source": [
+            "source_artifacts.api_inventory.documented_targets",
+            "source_artifacts.api_inventory.modules",
+            "source_artifacts.api_inventory.import_bindings",
+            "source_artifacts.compatibility_atlas.api_candidates",
+            "source_artifacts.compatibility_atlas.coverage_matrix",
+            "source_artifacts.fixture_backlog",
+            "source_artifacts.runtime_api_surface_core.modules",
+            "source_artifacts.runtime_api_surface_standard.modules",
+        ],
         "counts": {
             "required_public_symbols": len(symbols),
             "required_inherited_operations": len(inherited_operation_contracts),
             "required_public_api_candidates": len(symbols) + len(inherited_operation_contracts),
+            "required_documented_module_targets": len(module_targets),
+            "documented_source_module_targets": sum(
+                target["target_kind"] == "source_module" for target in module_targets
+            ),
+            "module_targets_with_documentation_refs": sum(
+                bool(target["documentation_refs"]) for target in module_targets
+            ),
+            "module_targets_with_supported_symbols": sum(
+                bool(target["source_candidate_ids"]) for target in module_targets
+            ),
             "signature_contract_states": dict(sorted(signature_statuses.items())),
             "symbols_with_constructor_definition_refs": sum(
                 bool(symbol.get("source_constructor_definition_refs")) for symbol in symbols
@@ -3383,6 +3557,7 @@ def build_api_surface_contract(
             ),
         },
         "symbols": symbols,
+        "module_targets": module_targets,
         "inherited_operations": inherited_operation_contracts,
     }
 

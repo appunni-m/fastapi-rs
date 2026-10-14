@@ -14,7 +14,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 | Candidates | Supported by source evidence | Private/internal | Uncertain |
 |---:|---:|---:|---:|
-| 1643 | 475 | 1106 | 62 |
+| 1643 | 480 | 1106 | 57 |
 
 `api_candidates` in the machine-readable atlas carries a FastAPI source path/line for every row plus public evidence or an explicit uncertainty/private rule. `supported` classifies the upstream API surface only; it does not claim target implementation support.
 
@@ -28,13 +28,13 @@ Supported inherited candidates link FastAPI inheritance, documentation, and sibl
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 475 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (484 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 469 direct symbols link to a documented-page fixture design and 110 to a direct API input workflow. Its operation-scope field distinguishes 475 source-described slices from 0 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 480 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (489 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 474 direct symbols link to a documented-page fixture design and 110 to a direct API input workflow. Its operation-scope field distinguishes 475 source-described slices from 5 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
 | `module-object-no-call-signature` | 1 |
-| `non-callable-surface` | 242 |
-| `runtime-signature-reflected` | 225 |
+| `non-callable-surface` | 246 |
+| `runtime-signature-reflected` | 226 |
 | `runtime-signature-unavailable` | 1 |
 | `source-signature-recorded` | 6 |
 
@@ -53,6 +53,8 @@ Review state is separate from coverage completeness. `reviewed_partial` means pi
 `mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.
 
 Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
+
+For the 85 executable functions in excluded test modules, the atlas now records 10 function-specific exclusions and 75 functions that inherit an explicit module-level exclusion, each with the exact pinned-source function span. An inherited disposition locates the function and preserves the module rationale; it is not a separate function review or a parity case.
 
 `make parity-validate` checks 1643 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 52 declared observation selectors. It also validates 891 input-only design records, including 2118 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 580 input-only workflows, 2431 cases, and 1680 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 

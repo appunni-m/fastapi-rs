@@ -8299,7 +8299,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     starlette_review_records: dict[str, list[dict[str, str]]] = defaultdict(list)
     with starlette_review_path.open(encoding="utf-8", newline="") as stream:
         for row in csv.DictReader(stream):
-            starlette_review_records[row.get("qualified_name", "")].append(row)
+            starlette_review_records[row.get("qualified_name", "")].append(
+                {
+                    "catalog_row": row.get("catalog_row", ""),
+                    "qualified_name": row.get("qualified_name", ""),
+                    "api_disposition": row.get("api_disposition", ""),
+                }
+            )
 
     inventory_path = args.inventory.resolve()
     inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
@@ -8529,31 +8535,48 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         )
 
     starlette_catalog_path = starlette_surface_catalog_path
-    catalog_records: dict[str, list[dict[str, str]]] = defaultdict(list)
+    catalog_records: dict[str, list[int]] = defaultdict(list)
     if starlette_catalog_path.exists():
         with starlette_catalog_path.open(encoding="utf-8", newline="") as stream:
-            for row in csv.DictReader(stream):
-                catalog_records[row.get("qualified_name", "")].append(row)
+            for row_id, row in enumerate(csv.DictReader(stream), start=2):
+                catalog_records[row.get("qualified_name", "")].append(row_id)
 
     def starlette_crosswalk_evidence(
         symbol: str,
         source_ref: dict[str, Any] | None,
         fastapi_ref: dict[str, Any] | None = None,
     ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-        exact_catalog = catalog_records.get(symbol, [])
-        exact_review = starlette_review_records.get(symbol, [])
-        if exact_catalog or exact_review:
-            return exact_catalog, [
-                {
-                    "review_origin": "Starlette-RS merged API review",
-                    "qualified_name": item.get("qualified_name"),
-                    "catalog_row": item.get("catalog_row"),
-                    "api_disposition": item.get("api_disposition"),
-                    "evidence_refs": item.get("evidence_refs"),
-                    "rationale": item.get("rationale"),
-                }
-                for item in exact_review
-            ]
+        exact_catalog_rows = catalog_records.get(symbol, [])
+        exact_review_rows = starlette_review_records.get(symbol, [])
+        if exact_catalog_rows or exact_review_rows:
+            return (
+                [
+                    {
+                        "artifact_path": "docs/api-surface.csv",
+                        "artifact_sha256": sha256(starlette_surface_catalog_path),
+                        "qualified_name": symbol,
+                        "row_ids": exact_catalog_rows,
+                    }
+                ]
+                if exact_catalog_rows
+                else [],
+                [
+                    {
+                        "artifact_path": "docs/atlas/api-review.csv",
+                        "artifact_sha256": sha256(starlette_review_path),
+                        "qualified_name": symbol,
+                        "rows": [
+                            {
+                                "catalog_row": item.get("catalog_row"),
+                                "api_disposition": item.get("api_disposition"),
+                            }
+                            for item in exact_review_rows
+                        ],
+                    }
+                ]
+                if exact_review_rows
+                else [],
+            )
 
         if source_ref and source_ref.get("status") == "module-surface":
             return [
@@ -8591,7 +8614,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "rationale": "FastAPI imports this helper from an underscore-private Starlette module. Preserve any observable FastAPI integration behavior through its owning public contract; do not promise this helper as Starlette-RS public API.",
                 }
             ]
-        return exact_catalog, []
+        return [], []
 
     def starlette_contract_operation_ref(
         surface_id: str,
@@ -8904,6 +8927,137 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         return resolved
 
     starlette_operation_aliases = load_starlette_operation_aliases()
+
+    def load_starlette_integration_operation_refs() -> dict[str, dict[str, Any]]:
+        """Resolve exact FastAPI source uses to sibling-owned operations."""
+        specifications = project_metadata.get("starlette_rs", {}).get("integration_operation_refs")
+        expected_ids = {
+            "fastapi.routing.iterate_in_threadpool",
+            "fastapi.routing.run_in_threadpool",
+            "fastapi.dependencies.utils.run_in_threadpool",
+            "fastapi.applications.FastAPI.__call__",
+            "fastapi.routing.Request",
+            "fastapi.routing.FormData",
+            "fastapi.dependencies.utils.FormData",
+            "fastapi.dependencies.utils.Headers",
+            "fastapi.dependencies.utils.QueryParams",
+            "fastapi.routing.Response",
+            "fastapi.routing.StreamingResponse",
+        }
+        if not isinstance(specifications, dict) or set(specifications) != expected_ids:
+            raise AtlasError(
+                "Starlette integration operation refs must cover the exact reviewed source edges"
+            )
+        bindings = {
+            row.get("id"): row
+            for row in inventory.get("import_bindings", [])
+            if isinstance(row, dict) and isinstance(row.get("id"), str)
+        }
+        base_edges = {
+            row.get("class_id"): row
+            for row in inventory.get("delegated_scope", {})
+            .get("starlette", {})
+            .get("base_edges", [])
+            if isinstance(row, dict)
+        }
+        resolved: dict[str, dict[str, Any]] = {}
+        for fastapi_id, specification in specifications.items():
+            if not isinstance(specification, dict) or set(specification) != {
+                "starlette_symbol",
+                "fastapi_source_uses",
+                "target_refs",
+                "scope_note",
+            }:
+                raise AtlasError(
+                    "Starlette integration operation ref fields are invalid: " + fastapi_id
+                )
+            symbol = specification.get("starlette_symbol")
+            source_uses = specification.get("fastapi_source_uses")
+            target_refs = specification.get("target_refs")
+            scope_note = specification.get("scope_note")
+            is_subclass_method = fastapi_id == "fastapi.applications.FastAPI.__call__"
+            binding_id = fastapi_id.rsplit(".", 1)[0] if is_subclass_method else fastapi_id
+            binding = base_edges.get(binding_id) if is_subclass_method else bindings.get(binding_id)
+            expected_symbol = (
+                (binding or {}).get("base") + ".__call__"
+                if is_subclass_method and isinstance((binding or {}).get("base"), str)
+                else (binding or {}).get("target_path")
+            )
+            if (
+                binding is None
+                or not isinstance(symbol, str)
+                or symbol != expected_symbol
+                or not isinstance(source_uses, list)
+                or not source_uses
+                or not isinstance(target_refs, list)
+                or not target_refs
+                or not isinstance(scope_note, str)
+                or not scope_note.strip()
+            ):
+                raise AtlasError(
+                    "Starlette integration operation ref identity is invalid: " + fastapi_id
+                )
+            source_lines: set[int] = set()
+            for use in source_uses:
+                if (
+                    not isinstance(use, dict)
+                    or set(use) != {"path", "line", "expression"}
+                    or not isinstance(use.get("path"), str)
+                    or not isinstance(use.get("line"), int)
+                    or isinstance(use.get("line"), bool)
+                    or not isinstance(use.get("expression"), str)
+                    or not use["expression"].strip()
+                ):
+                    raise AtlasError("Starlette source-use row is malformed: " + fastapi_id)
+                source_file = (fastapi_root / use["path"]).resolve()
+                if fastapi_root.resolve() not in source_file.parents or not source_file.is_file():
+                    raise AtlasError("Starlette source-use path is invalid: " + fastapi_id)
+                lines = source_file.read_text(encoding="utf-8").splitlines()
+                line = use["line"]
+                if (
+                    line < 1
+                    or line > len(lines)
+                    or " ".join(use["expression"].split()) not in " ".join(lines[line - 1].split())
+                ):
+                    raise AtlasError(
+                        "Starlette source-use expression differs from pinned FastAPI: " + fastapi_id
+                    )
+                if line in source_lines:
+                    raise AtlasError("Starlette source-use line is duplicated: " + fastapi_id)
+                source_lines.add(line)
+            operation_refs = []
+            for reference in target_refs:
+                if (
+                    not isinstance(reference, dict)
+                    or set(reference) != {"surface_id", "operation_id", "source_use_lines"}
+                    or not isinstance(reference.get("surface_id"), str)
+                    or not isinstance(reference.get("operation_id"), str)
+                    or reference.get("operation_id") == "route-dispatch"
+                    or not isinstance(reference.get("source_use_lines"), list)
+                    or not reference["source_use_lines"]
+                    or reference["source_use_lines"] != sorted(set(reference["source_use_lines"]))
+                    or any(line not in source_lines for line in reference["source_use_lines"])
+                ):
+                    raise AtlasError(
+                        "Starlette exact operation reference is malformed: " + fastapi_id
+                    )
+                operation_ref = starlette_contract_operation_ref(
+                    reference["surface_id"],
+                    reference["operation_id"],
+                    [],
+                    "exact generic Starlette operation used by FastAPI; FastAPI-RS parity remains FastAPI-owned",
+                )
+                operation_ref["source_use_lines"] = reference["source_use_lines"]
+                operation_refs.append(operation_ref)
+            resolved[fastapi_id] = {
+                "starlette_symbol": symbol,
+                "fastapi_source_uses": source_uses,
+                "target_operation_refs": operation_refs,
+                "scope_note": scope_note,
+            }
+        return resolved
+
+    starlette_integration_operation_refs = load_starlette_integration_operation_refs()
 
     def has_middleware_registration_source(coverage_item: dict[str, Any]) -> bool:
         source_path = coverage_item.get("source_path")
@@ -9503,6 +9657,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         + binding["id"]
                     )
                 edge["starlette_rs_operation_aliases"] = operation_alias
+            integration_operation_refs = starlette_integration_operation_refs.get(binding["id"])
+            if integration_operation_refs is not None:
+                if integration_operation_refs["starlette_symbol"] != target_symbol:
+                    raise AtlasError(
+                        "Starlette integration operation target differs from import binding: "
+                        + binding["id"]
+                    )
+                edge["starlette_rs_integration_operation_refs"] = integration_operation_refs
             starlette_edges.append(edge)
     for edge in starlette.get("base_edges", []):
         symbol = edge["base"]
@@ -9510,22 +9672,31 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         target_catalog_evidence, target_review_evidence = starlette_crosswalk_evidence(
             symbol, source_ref, edge.get("source_ref")
         )
-        starlette_edges.append(
-            {
-                "id": "fastapi-starlette:subclass:%s" % norm_id(edge["class_id"]),
-                "fastapi_binding": edge["class_id"],
-                "fastapi_source": edge["source_ref"],
-                "relation": "subclass_edge",
-                "starlette_symbol": symbol,
-                "starlette_source": source_ref,
-                "starlette_rs_planning_areas": starlette_area_for_symbol(
-                    symbol, starlette_areas, source_ref
-                ),
-                "starlette_rs_catalog_evidence": target_catalog_evidence,
-                "starlette_rs_review_evidence": target_review_evidence,
-                "status": "source-mapped; inheritance contract must be verified through FastAPI",
-            }
+        subclass_edge = {
+            "id": "fastapi-starlette:subclass:%s" % norm_id(edge["class_id"]),
+            "fastapi_binding": edge["class_id"],
+            "fastapi_source": edge["source_ref"],
+            "relation": "subclass_edge",
+            "starlette_symbol": symbol,
+            "starlette_source": source_ref,
+            "starlette_rs_planning_areas": starlette_area_for_symbol(
+                symbol, starlette_areas, source_ref
+            ),
+            "starlette_rs_catalog_evidence": target_catalog_evidence,
+            "starlette_rs_review_evidence": target_review_evidence,
+            "status": "source-mapped; inheritance contract must be verified through FastAPI",
+        }
+        integration_operation_refs = starlette_integration_operation_refs.get(
+            edge["class_id"] + ".__call__"
         )
+        if integration_operation_refs is not None:
+            if integration_operation_refs["starlette_symbol"] != symbol + ".__call__":
+                raise AtlasError(
+                    "Starlette integration operation target differs from subclass base: "
+                    + edge["class_id"]
+                )
+            subclass_edge["starlette_rs_integration_operation_refs"] = integration_operation_refs
+        starlette_edges.append(subclass_edge)
     starlette_edges.sort(key=lambda x: x["id"])
     behavior_crosswalk_counts = Counter(
         edge.get("starlette_rs_behavior_crosswalk", {}).get("kind")
@@ -9825,6 +9996,33 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "reasons recorded below; this module contributes no independent FastAPI "
                 "behavioral parity input." % len(test_functions)
             )
+        module_excluded_test_functions = []
+        if exclusion:
+            for test in test_functions:
+                if test["mapping_status"] == "excluded":
+                    continue
+                function_source_evidence = reviewed_source_spans(
+                    fastapi_root,
+                    [
+                        {
+                            "path": rel,
+                            "start_line": test["line"],
+                            "end_line": test["end_line"],
+                            "role": "upstream test function governed by its module exclusion",
+                        }
+                    ],
+                    starlette_root,
+                )
+                module_excluded_test_functions.append(
+                    {
+                        "name": test["qualified_name"],
+                        "line": test["line"],
+                        "end_line": test["end_line"],
+                        "disposition": "inherited_module_exclusion",
+                        "reason": exclusion,
+                        "source_evidence": function_source_evidence,
+                    }
+                )
         case_designs = []
         used_case_ids: set[str] = set()
         if not exclusion:
@@ -10027,6 +10225,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     ],
                     "unmatched_test_functions": unmatched_test_functions,
                     "excluded_test_functions": excluded_test_functions,
+                    "module_excluded_test_functions": module_excluded_test_functions,
                     "independent_workflow_mappings": independent_workflow_mappings,
                     **(
                         {"app_dependency_wave_scope_review": app_scope_review_record}
@@ -11581,7 +11780,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "source_evidence": source_evidence,
                 "starlette_rs_review_ref": {
                     "path": "docs/atlas/api-review.csv",
-                    **starlette_rs_review,
+                    "sha256": sha256(starlette_review_path),
+                    "qualified_name": qualified_name,
+                    "catalog_row": sibling_rows[0].get("catalog_row"),
+                    "api_disposition": api_disposition,
                 },
                 "reviewed_overlay_ref": (
                     "/reviewed_api_contract_overlay/inherited_candidate_reviews/"
@@ -11592,7 +11794,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     reviewed_inherited_api_candidates.sort(key=lambda row: row["id"])
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@6",
+        "schema": "fastapi-rs/compatibility-atlas@8",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -11755,6 +11957,21 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 for item in coverage_items
                 if item["kind"] == "upstream_test_module" and item["exclusion_reason"]
             ),
+            "test_functions_in_excluded_modules": sum(
+                item["mapping_evidence"]["test_function_count"]
+                for item in coverage_items
+                if item["kind"] == "upstream_test_module" and item["exclusion_reason"]
+            ),
+            "test_functions_with_individual_exclusion": sum(
+                len(item["mapping_evidence"]["excluded_test_functions"])
+                for item in coverage_items
+                if item["kind"] == "upstream_test_module" and item["exclusion_reason"]
+            ),
+            "test_functions_with_inherited_module_exclusion": sum(
+                len(item["mapping_evidence"]["module_excluded_test_functions"])
+                for item in coverage_items
+                if item["kind"] == "upstream_test_module" and item["exclusion_reason"]
+            ),
             "documentation_pages": sum(
                 1 for item in coverage_items if item["kind"] == "documented_feature_page"
             ),
@@ -11856,6 +12073,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "fastapi-rs/public-api-contract@7",
         "fastapi-rs/public-api-contract@8",
         "fastapi-rs/public-api-contract@9",
+        "fastapi-rs/public-api-contract@10",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
@@ -12065,6 +12283,13 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "`mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.",
             "",
             "Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.",
+            "",
+            "For the %d executable functions in excluded test modules, the atlas now records %d function-specific exclusions and %d functions that inherit an explicit module-level exclusion, each with the exact pinned-source function span. An inherited disposition locates the function and preserves the module rationale; it is not a separate function review or a parity case."
+            % (
+                counts["test_functions_in_excluded_modules"],
+                counts["test_functions_with_individual_exclusion"],
+                counts["test_functions_with_inherited_module_exclusion"],
+            ),
             "",
             "`make parity-validate` checks %d API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all %d test modules and %d documentation pages, direct Starlette 1.6.0 dependency edges, and all %d declared observation selectors. It also validates %d input-only design records, including %d per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains %d input-only workflows, %d cases, and %d partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support."
             % (

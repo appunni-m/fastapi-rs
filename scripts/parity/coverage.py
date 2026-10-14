@@ -573,7 +573,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@6", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@8", "unsupported atlas schema")
     _require(
         backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
         "unsupported fixture backlog schema",
@@ -1221,6 +1221,132 @@ def validate_compatibility_artifacts(
             digest_key="source_sha256",
         )
         register_selectors(row.get("observation_selectors", []), identifier)
+        if row.get("kind") == "upstream_test_module" and row.get("mapping_status") == "excluded":
+            mapping = row.get("mapping_evidence", {})
+            function_count = mapping.get("test_function_count")
+            explicit_exclusions = mapping.get("excluded_test_functions")
+            inherited_exclusions = mapping.get("module_excluded_test_functions")
+            _require(
+                isinstance(function_count, int)
+                and not isinstance(function_count, bool)
+                and function_count >= 0,
+                f"excluded test module {identifier} has no valid function count",
+            )
+            _require(
+                isinstance(explicit_exclusions, list) and isinstance(inherited_exclusions, list),
+                f"excluded test module {identifier} has no per-function dispositions",
+            )
+            _require(
+                all(isinstance(item, dict) for item in explicit_exclusions)
+                and all(isinstance(item, dict) for item in inherited_exclusions),
+                f"excluded test module {identifier} has malformed per-function dispositions",
+            )
+            explicit_names = [item.get("name") for item in explicit_exclusions]
+            inherited_names = [item.get("name") for item in inherited_exclusions]
+            all_disposition_names = explicit_names + inherited_names
+            _require(
+                all(isinstance(name, str) and bool(name) for name in all_disposition_names)
+                and len(all_disposition_names) == len(set(all_disposition_names))
+                and len(all_disposition_names) == function_count,
+                f"excluded test module {identifier} does not disposition every function "
+                "exactly once",
+            )
+            for disposition in explicit_exclusions:
+                function_name = disposition["name"]
+                _require(
+                    isinstance(disposition.get("line"), int)
+                    and not isinstance(disposition.get("line"), bool)
+                    and isinstance(disposition.get("end_line"), int)
+                    and not isinstance(disposition.get("end_line"), bool),
+                    f"excluded test function {identifier}::{function_name} has an invalid "
+                    "source span",
+                )
+                evidence = disposition.get("source_evidence")
+                _require(
+                    bool(disposition.get("reason"))
+                    and isinstance(evidence, list)
+                    and bool(evidence)
+                    and all(isinstance(source, dict) for source in evidence),
+                    f"excluded test function {identifier}::{function_name} "
+                    "has no individual evidence",
+                )
+                exact_function_source = False
+                for source in evidence:
+                    source_root = (
+                        starlette_source
+                        if str(source.get("source_authority", "")).startswith("Starlette")
+                        else fastapi_source
+                    )
+                    _verify_source_ref(
+                        source_root,
+                        {
+                            "path": source.get("path"),
+                            "line": source.get("start_line"),
+                            "end_line": source.get("end_line"),
+                            "sha256": source.get("sha256"),
+                        },
+                        f"excluded test function {identifier}::{function_name} source",
+                        digest_key="sha256",
+                    )
+                    exact_function_source = exact_function_source or (
+                        source.get("path") == row.get("source_path")
+                        and source.get("start_line") == disposition.get("line")
+                        and source.get("end_line") == disposition.get("end_line")
+                        and source.get("sha256") == row.get("source_sha256")
+                    )
+                _require(
+                    exact_function_source,
+                    f"excluded test function {identifier}::{function_name} does not link its "
+                    "exact source span",
+                )
+            for disposition in inherited_exclusions:
+                function_name = disposition["name"]
+                _require(
+                    disposition.get("disposition") == "inherited_module_exclusion"
+                    and disposition.get("reason") == row.get("exclusion_reason")
+                    and isinstance(disposition.get("line"), int)
+                    and not isinstance(disposition.get("line"), bool)
+                    and isinstance(disposition.get("end_line"), int)
+                    and not isinstance(disposition.get("end_line"), bool),
+                    f"excluded test function {identifier}::{function_name} has an invalid "
+                    "inherited disposition",
+                )
+                evidence = disposition.get("source_evidence")
+                _require(
+                    isinstance(evidence, list)
+                    and bool(evidence)
+                    and all(isinstance(source, dict) for source in evidence),
+                    f"excluded test function {identifier}::{function_name} has no source evidence",
+                )
+                exact_function_source = False
+                for source in evidence:
+                    source_root = (
+                        starlette_source
+                        if str(source.get("source_authority", "")).startswith("Starlette")
+                        else fastapi_source
+                    )
+                    _verify_source_ref(
+                        source_root,
+                        {
+                            "path": source.get("path"),
+                            "line": source.get("start_line"),
+                            "end_line": source.get("end_line"),
+                            "sha256": source.get("sha256"),
+                        },
+                        f"excluded test function {identifier}::{function_name} source",
+                        digest_key="sha256",
+                    )
+                    exact_function_source = exact_function_source or (
+                        source.get("path") == row.get("source_path")
+                        and source.get("start_line") == disposition.get("line")
+                        and source.get("end_line") == disposition.get("end_line")
+                        and source.get("sha256") == row.get("source_sha256")
+                    )
+                _require(
+                    exact_function_source,
+                    f"excluded test function {identifier}::{function_name} does not link its "
+                    "exact source span",
+                )
         if row.get("kind") in FIXTURE_KINDS:
             if row.get("mapping_status") == "excluded":
                 _require(
@@ -1309,6 +1435,31 @@ def validate_compatibility_artifacts(
                         and bool(page_review.get("source_evidence")),
                         f"documented source {identifier} has no reviewed source evidence",
                     )
+
+    excluded_test_modules = [
+        row
+        for row in coverage_rows
+        if row.get("kind") == "upstream_test_module" and row.get("mapping_status") == "excluded"
+    ]
+    inherited_module_exclusion_count = sum(
+        len(row.get("mapping_evidence", {}).get("module_excluded_test_functions", []))
+        for row in excluded_test_modules
+    )
+    _require(
+        atlas.get("counts", {}).get("test_functions_in_excluded_modules")
+        == sum(
+            row.get("mapping_evidence", {}).get("test_function_count", 0)
+            for row in excluded_test_modules
+        )
+        and atlas.get("counts", {}).get("test_functions_with_individual_exclusion")
+        == sum(
+            len(row.get("mapping_evidence", {}).get("excluded_test_functions", []))
+            for row in excluded_test_modules
+        )
+        and atlas.get("counts", {}).get("test_functions_with_inherited_module_exclusion")
+        == inherited_module_exclusion_count,
+        "excluded test-function disposition counts differ from the coverage matrix",
+    )
 
     fixture_rows = backlog.get("fixture_designs")
     _require(isinstance(fixture_rows, list) and bool(fixture_rows), "fixture designs are missing")
@@ -1822,6 +1973,21 @@ def validate_compatibility_artifacts(
         "excluded_test_modules": sum(
             row.get("kind") == "upstream_test_module" and row.get("mapping_status") == "excluded"
             for row in coverage_rows
+        ),
+        "test_functions_in_excluded_modules": sum(
+            row.get("mapping_evidence", {}).get("test_function_count", 0)
+            for row in coverage_rows
+            if row.get("kind") == "upstream_test_module" and row.get("mapping_status") == "excluded"
+        ),
+        "test_functions_with_inherited_module_exclusion": sum(
+            len(row.get("mapping_evidence", {}).get("module_excluded_test_functions", []))
+            for row in coverage_rows
+            if row.get("kind") == "upstream_test_module" and row.get("mapping_status") == "excluded"
+        ),
+        "test_functions_with_individual_exclusion": sum(
+            len(row.get("mapping_evidence", {}).get("excluded_test_functions", []))
+            for row in coverage_rows
+            if row.get("kind") == "upstream_test_module" and row.get("mapping_status") == "excluded"
         ),
         "excluded_documentation_pages": sum(
             row.get("kind") == "documented_feature_page" and row.get("mapping_status") == "excluded"

@@ -511,21 +511,21 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: a53fadfdb15234b7909dcd87e82112dd2691fc1b4155c3fdd21623b1e4d17557
+  sha256: 99edbec7ec4dca5689fb912788474be13fab92da281ea858ba07dedc3bbfb82d
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
     candidates: 183
-    supported: 17
+    supported: 22
     private_or_internal: 123
-    uncertain: 43
+    uncertain: 38
   candidate_ids_sha256: 0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
-  schema: fastapi-rs/compatibility-atlas@6
+  schema: fastapi-rs/compatibility-atlas@8
   candidates_pointer: /api_candidates
   inherited_candidates_pointer: /reviewed_inherited_api_candidates
   classification_pointer: /classification
@@ -718,6 +718,127 @@ starlette_rs:
         sibling namespace catalog by digest; operation and member inventories remain
         owned by Starlette-RS and are not copied here. FastAPI-specific route graph
         and OpenAPI behavior remains separately owned.
+
+  integration_operation_refs:
+    fastapi.routing.iterate_in_threadpool:
+      starlette_symbol: starlette.concurrency.iterate_in_threadpool
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 556, expression: "sse_aiter = iterate_in_threadpool(gen)"}
+      target_refs:
+        - {surface_id: starlette.concurrency, operation_id: iterate_in_threadpool, source_use_lines: [556]}
+      scope_note: >-
+        FastAPI uses the sibling iterator adapter for synchronous server-sent-event
+        generators. This is an operation ownership link; it does not establish
+        FastAPI-RS parity.
+    fastapi.routing.run_in_threadpool:
+      starlette_symbol: starlette.concurrency.run_in_threadpool
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 131, expression: "functools.partial(run_in_threadpool, func)"}
+        - {path: fastapi/routing.py, line: 319, expression: "value, errors = await run_in_threadpool("}
+        - {path: fastapi/routing.py, line: 354, expression: "return await run_in_threadpool(dependant.call, **values)"}
+      target_refs:
+        - {surface_id: starlette.concurrency, operation_id: run_in_threadpool, source_use_lines: [131, 319, 354]}
+      scope_note: >-
+        FastAPI routes synchronous endpoint and dependency calls through the sibling
+        worker-thread helper. This ownership link does not establish FastAPI-RS parity.
+    fastapi.dependencies.utils.run_in_threadpool:
+      starlette_symbol: starlette.concurrency.run_in_threadpool
+      fastapi_source_uses:
+        - {path: fastapi/dependencies/utils.py, line: 676, expression: "solved = await run_in_threadpool(call, **solved_result.values)"}
+      target_refs:
+        - {surface_id: starlette.concurrency, operation_id: run_in_threadpool, source_use_lines: [676]}
+      scope_note: >-
+        FastAPI executes synchronous dependencies through the sibling worker-thread
+        helper. This ownership link does not establish FastAPI-RS parity.
+    fastapi.applications.FastAPI.__call__:
+      starlette_symbol: starlette.applications.Starlette.__call__
+      fastapi_source_uses:
+        - {path: fastapi/applications.py, line: 1163, expression: "await super().__call__(scope, receive, send)"}
+      target_refs:
+        - {surface_id: starlette.applications.Starlette, operation_id: __call__, source_use_lines: [1163]}
+      scope_note: >-
+        FastAPI delegates its ASGI entrypoint to the inherited Starlette application
+        call. The link preserves the generic application boundary and makes no
+        FastAPI-RS parity claim.
+    fastapi.routing.Request:
+      starlette_symbol: starlette.requests.Request
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 135, expression: "request = Request(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 430, expression: "body = await request.form()"}
+        - {path: fastapi/routing.py, line: 433, expression: "body_bytes = await request.body()"}
+        - {path: fastapi/routing.py, line: 439, expression: "json_body = await request.json()"}
+        - {path: fastapi/routing.py, line: 446, expression: "json_body = await request.json()"}
+      target_refs:
+        - {surface_id: starlette.requests.Request, operation_id: form, source_use_lines: [135, 430]}
+        - {surface_id: starlette.requests.Request, operation_id: body-stream-json, source_use_lines: [135, 433, 439, 446]}
+      scope_note: >-
+        These links cover FastAPI's routed request construction and body/form parsing
+        calls only. Other Request conveniences remain without an exact operation link.
+    fastapi.routing.FormData:
+      starlette_symbol: starlette.datastructures.FormData
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 484, expression: "body=cast(dict[str, Any] | FormData | bytes | None, body)"}
+      target_refs:
+        - {surface_id: starlette.datastructures.FormData, operation_id: multidict-lookups, source_use_lines: [484]}
+      scope_note: >-
+        FastAPI carries the parsed form value through its route/dependency boundary.
+        The uncertain FormData.close behavior has no exact link here.
+    fastapi.dependencies.utils.FormData:
+      starlette_symbol: starlette.datastructures.FormData
+      fastapi_source_uses:
+        - {path: fastapi/dependencies/utils.py, line: 590, expression: "body: dict[str, Any] | FormData | bytes | None = None,"}
+        - {path: fastapi/dependencies/utils.py, line: 914, expression: "received_body: FormData,"}
+        - {path: fastapi/dependencies/utils.py, line: 953, expression: "received_body: dict[str, Any] | FormData | bytes | None,"}
+        - {path: fastapi/dependencies/utils.py, line: 968, expression: "and isinstance(received_body, FormData)"}
+        - {path: fastapi/dependencies/utils.py, line: 972, expression: "if isinstance(received_body, FormData):"}
+      target_refs:
+        - {surface_id: starlette.datastructures.FormData, operation_id: multidict-lookups, source_use_lines: [590, 914, 953, 968, 972]}
+      scope_note: >-
+        FastAPI preserves and branches on Starlette FormData values during dependency
+        extraction. The uncertain FormData.close behavior has no exact link here.
+    fastapi.dependencies.utils.Headers:
+      starlette_symbol: starlette.datastructures.Headers
+      fastapi_source_uses:
+        - {path: fastapi/dependencies/utils.py, line: 756, expression: "and isinstance(values, (ImmutableMultiDict, Headers))"}
+        - {path: fastapi/dependencies/utils.py, line: 782, expression: "received_params: Mapping[str, Any] | QueryParams | Headers,"}
+        - {path: fastapi/dependencies/utils.py, line: 811, expression: "if isinstance(received_params, Headers):"}
+        - {path: fastapi/dependencies/utils.py, line: 832, expression: "if isinstance(received_params, (ImmutableMultiDict, Headers)):"}
+      target_refs:
+        - {surface_id: starlette.datastructures.Headers, operation_id: consumer-sequence, source_use_lines: [756, 782, 811, 832]}
+      scope_note: >-
+        FastAPI recognizes Headers as a dependency input and delegates generic
+        sequence/mapping behavior to Starlette. This is an ownership link only.
+    fastapi.dependencies.utils.QueryParams:
+      starlette_symbol: starlette.datastructures.QueryParams
+      fastapi_source_uses:
+        - {path: fastapi/dependencies/utils.py, line: 782, expression: "received_params: Mapping[str, Any] | QueryParams | Headers,"}
+      target_refs:
+        - {surface_id: starlette.datastructures.QueryParams, operation_id: construction-and-mapping-sequence, source_use_lines: [782]}
+      scope_note: >-
+        FastAPI accepts Starlette QueryParams in its dependency parameter extraction
+        boundary. This is an ownership link only.
+    fastapi.routing.Response:
+      starlette_symbol: starlette.responses.Response
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 145, expression: "await response(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 741, expression: "response = Response("}
+      target_refs:
+        - {surface_id: starlette.responses.Response, operation_id: asgi-call, source_use_lines: [145, 741]}
+      scope_note: >-
+        FastAPI constructs a generic Response in its route wrapper and invokes the
+        resulting ASGI response. FastAPI-specific response serialization remains
+        separately owned.
+    fastapi.routing.StreamingResponse:
+      starlette_symbol: starlette.responses.StreamingResponse
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 145, expression: "await response(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 638, expression: "response = StreamingResponse("}
+        - {path: fastapi/routing.py, line: 677, expression: "response = StreamingResponse("}
+      target_refs:
+        - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call, source_use_lines: [145, 638, 677]}
+      scope_note: >-
+        FastAPI constructs Starlette streaming responses in its route wrapper and
+        invokes the resulting ASGI response. This is an ownership link only.
 
 cargo_dependency_inventory:
   schema: fastapi-rs/cargo-dependency-inventory-annotations@1
