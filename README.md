@@ -88,11 +88,11 @@ cases and six separate fault contracts; its incremental coverage added 42 Rust
 regions. See the
 [checkpoint report](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
 for that run's identity, scope and remaining schema-order gaps. The latest
-2026-10-14 direct-ASGI suite ran against FastAPI-RS commit `b317219` and passed
+2026-10-14 direct-ASGI suite ran against FastAPI-RS commit `bd54328` and passed
 all seven workload gates (45/45 selected comparisons). FastAPI-RS had higher
-median latency on all seven workloads, with the largest gap on invalid
+median latency on all seven workloads, with the largest median gap on invalid
 requests; see the
-[current benchmark record](docs/PARITY_BENCHMARK_PLAN.md#current-completed-seven-workload-run-2026-10-14-manifest-b317219)
+[current benchmark record](docs/PARITY_BENCHMARK_PLAN.md#current-completed-seven-workload-run-2026-10-14-commit-bd54328)
 for identities, timings and limits. Neither scoped evidence set establishes
 full API parity.
 
