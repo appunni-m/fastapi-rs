@@ -338,8 +338,10 @@ class-name-only inventory entries.
 ## Module-level import-compatible aliases and optional surfaces
 
 Some behavior is a FastAPI import facade over the selected Starlette package.
-These names are intentionally reexported in source, even if they are not root
-exports:
+This table records import bindings found in the pinned source; it does not
+declare FastAPI-RS support. Candidate support classifications remain in
+`metadata.yaml` and the compatibility atlas. These names may be reexported
+without being root exports:
 
 | FastAPI module path | Reexported API |
 | --- | --- |

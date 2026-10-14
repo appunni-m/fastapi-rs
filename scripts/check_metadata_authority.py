@@ -907,6 +907,66 @@ def validate() -> None:
                 catalog_reference,
                 namespace_evidence[0] if namespace_evidence else None,
             )
+    operation_alias_specs = metadata.get("starlette_rs", {}).get("operation_aliases")
+    if not isinstance(operation_alias_specs, dict) or not operation_alias_specs:
+        raise MetadataError("metadata Starlette operation aliases must be a nonempty mapping")
+    operation_alias_edges = {
+        edge.get("fastapi_binding"): edge
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict) and isinstance(edge.get("starlette_rs_operation_aliases"), dict)
+    }
+    require_equal(
+        "Starlette operation alias projection denominator",
+        set(operation_alias_edges),
+        set(operation_alias_specs),
+    )
+    starlette_contract_id = (
+        atlas.get("authorities", {}).get("starlette_rs", {}).get("current_contract_id")
+    )
+    for binding_id, specification in operation_alias_specs.items():
+        edge = operation_alias_edges.get(binding_id)
+        projected = edge.get("starlette_rs_operation_aliases") if isinstance(edge, dict) else None
+        if not isinstance(specification, dict) or not isinstance(projected, dict):
+            raise MetadataError(
+                "atlas is missing a reviewed Starlette operation alias: " + str(binding_id)
+            )
+        require_equal(
+            f"atlas Starlette operation alias {binding_id} relationship",
+            edge.get("relation"),
+            "direct_reexport",
+        )
+        for field in ("starlette_symbol", "scope_note"):
+            require_equal(
+                f"atlas Starlette operation alias {binding_id} {field}",
+                projected.get(field),
+                specification.get(field),
+            )
+        require_equal(
+            f"atlas Starlette operation alias {binding_id} resolution",
+            projected.get("resolution"),
+            "direct-reexport-operation-alias",
+        )
+        actual_refs = [
+            {
+                "surface_id": reference.get("surface_id"),
+                "operation_id": reference.get("operation_id"),
+                "requirement_ids": reference.get("requirement_ids"),
+            }
+            for reference in projected.get("target_operation_refs", [])
+        ]
+        require_equal(
+            f"atlas Starlette operation alias {binding_id} target references",
+            actual_refs,
+            specification.get("target_refs"),
+        )
+        require_equal(
+            f"atlas Starlette operation alias {binding_id} contract identities",
+            {
+                reference.get("contract_id")
+                for reference in projected.get("target_operation_refs", [])
+            },
+            {starlette_contract_id},
+        )
     reviewed_starlette_import_ids = {
         candidate.get("id")
         for candidate in candidates

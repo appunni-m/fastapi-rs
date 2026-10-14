@@ -719024,6 +719024,41 @@
           "source": "starlette/concurrency.py"
         }
       ],
+      "starlette_rs_operation_aliases": {
+        "resolution": "direct-reexport-operation-alias",
+        "scope_note": "FastAPI directly binds this Starlette function under the same name. This links delegated behavior requirements only; the FastAPI import path remains uncertain as a supported FastAPI API and has no FastAPI-RS parity proof.",
+        "starlette_symbol": "starlette.concurrency.iterate_in_threadpool",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+            "operation_id": "iterate_in_threadpool",
+            "relationship": "generic behavior owner for FastAPI direct import alias; FastAPI publicness and parity remain separately owned",
+            "requirement_ids": [
+              "starlette.concurrency.iterate_in_threadpool.items-order",
+              "starlette.concurrency.iterate_in_threadpool.worker-thread",
+              "starlette.concurrency.iterate_in_threadpool.exhaustion",
+              "starlette.concurrency.iterate_in_threadpool.invalid-athrow-preserves-iteration",
+              "starlette.concurrency.iterate_in_threadpool.athrow-stop-async-iteration-pep479",
+              "starlette.concurrency.iterate_in_threadpool.athrow-stop-iteration-pep479",
+              "starlette.concurrency.iterate_in_threadpool.pre-start-throw-closes-iterator"
+            ],
+            "source_path": "starlette.concurrency.iterate_in_threadpool",
+            "surface_id": "starlette.concurrency",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The helper consumes arbitrary Python iterables and returns a Python async iterator; the Rust-native profile does not accept Python iteration protocols.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup"
@@ -719068,6 +719103,41 @@
           "source": "starlette/concurrency.py"
         }
       ],
+      "starlette_rs_operation_aliases": {
+        "resolution": "direct-reexport-operation-alias",
+        "scope_note": "FastAPI directly binds this Starlette function under the same name. This links delegated behavior requirements only; the FastAPI import path remains uncertain as a supported FastAPI API and has no FastAPI-RS parity proof.",
+        "starlette_symbol": "starlette.concurrency.run_in_threadpool",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+            "operation_id": "run_in_threadpool",
+            "relationship": "generic behavior owner for FastAPI direct import alias; FastAPI publicness and parity remain separately owned",
+            "requirement_ids": [
+              "starlette.concurrency.run_in_threadpool.arguments-result",
+              "starlette.concurrency.run_in_threadpool.exception-identity",
+              "starlette.concurrency.run_in_threadpool.worker-thread",
+              "starlette.concurrency.run_in_threadpool.event-loop-progress",
+              "starlette.concurrency.run_in_threadpool.default-token-limit",
+              "starlette.concurrency.run_in_threadpool.shared-anyio-capacity",
+              "starlette.concurrency.run_in_threadpool.limiter-adjustment"
+            ],
+            "source_path": "starlette.concurrency.run_in_threadpool",
+            "surface_id": "starlette.concurrency",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This direct helper boundary requires invoking arbitrary Python callables; the Rust-native profile does not accept Python callables.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup"
@@ -719112,6 +719182,39 @@
           "source": "starlette/concurrency.py"
         }
       ],
+      "starlette_rs_operation_aliases": {
+        "resolution": "direct-reexport-operation-alias",
+        "scope_note": "FastAPI directly binds this deprecated Starlette function under the same name. This links delegated behavior requirements only; the FastAPI import path remains uncertain as a supported FastAPI API and has no FastAPI-RS parity proof.",
+        "starlette_symbol": "starlette.concurrency.run_until_first_complete",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+            "operation_id": "run_until_first_complete",
+            "relationship": "generic behavior owner for FastAPI direct import alias; FastAPI publicness and parity remain separately owned",
+            "requirement_ids": [
+              "starlette.concurrency.run_until_first_complete.first-completion-cancels-peers",
+              "starlette.concurrency.run_until_first_complete.deprecation-warning",
+              "starlette.concurrency.run_until_first_complete.kwargs-mapping",
+              "starlette.concurrency.run_until_first_complete.child-exception-propagation",
+              "starlette.concurrency.run_until_first_complete.external-cancellation-finalization"
+            ],
+            "source_path": "starlette.concurrency.run_until_first_complete",
+            "surface_id": "starlette.concurrency",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This deprecated helper accepts arbitrary Python coroutine callables and kwargs and owns their cancellation on the Python event loop.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup"

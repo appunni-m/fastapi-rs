@@ -8836,6 +8836,75 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
 
     internal_behavior_crosswalks = load_internal_starlette_behavior_crosswalks()
 
+    def load_starlette_operation_aliases() -> dict[str, dict[str, Any]]:
+        """Resolve reviewed FastAPI direct aliases to sibling-owned operations."""
+        aliases = project_metadata.get("starlette_rs", {}).get("operation_aliases")
+        if not isinstance(aliases, dict) or not aliases:
+            raise AtlasError("metadata.yaml Starlette operation aliases must be a nonempty mapping")
+        import_bindings = {
+            row.get("id"): row
+            for row in inventory.get("import_bindings", [])
+            if isinstance(row, dict) and isinstance(row.get("id"), str)
+        }
+        resolved: dict[str, dict[str, Any]] = {}
+        for binding_id, entry in aliases.items():
+            if not isinstance(entry, dict) or set(entry) != {
+                "starlette_symbol",
+                "target_refs",
+                "scope_note",
+            }:
+                raise AtlasError("Starlette operation alias fields are unsupported: " + binding_id)
+            binding = import_bindings.get(binding_id)
+            symbol = entry.get("starlette_symbol")
+            target_refs = entry.get("target_refs")
+            scope_note = entry.get("scope_note")
+            if (
+                binding is None
+                or binding.get("starlette_delegation") != "direct_reexport"
+                or not isinstance(symbol, str)
+                or binding.get("target_path") != symbol
+                or not isinstance(target_refs, list)
+                or not target_refs
+                or not isinstance(scope_note, str)
+                or not scope_note.strip()
+            ):
+                raise AtlasError("Starlette operation alias identity is invalid: " + binding_id)
+            operation_refs = []
+            for reference in target_refs:
+                if (
+                    not isinstance(reference, dict)
+                    or set(reference) != {"surface_id", "operation_id", "requirement_ids"}
+                    or not isinstance(reference.get("surface_id"), str)
+                    or not isinstance(reference.get("operation_id"), str)
+                    or not isinstance(reference.get("requirement_ids"), list)
+                    or not reference["requirement_ids"]
+                    or any(
+                        not isinstance(requirement_id, str) or not requirement_id
+                        for requirement_id in reference["requirement_ids"]
+                    )
+                    or len(reference["requirement_ids"]) != len(set(reference["requirement_ids"]))
+                ):
+                    raise AtlasError(
+                        "Starlette operation alias reference is malformed: " + binding_id
+                    )
+                operation_refs.append(
+                    starlette_contract_operation_ref(
+                        reference["surface_id"],
+                        reference["operation_id"],
+                        reference["requirement_ids"],
+                        "generic behavior owner for FastAPI direct import alias; FastAPI publicness and parity remain separately owned",
+                    )
+                )
+            resolved[binding_id] = {
+                "resolution": "direct-reexport-operation-alias",
+                "starlette_symbol": symbol,
+                "target_operation_refs": operation_refs,
+                "scope_note": scope_note,
+            }
+        return resolved
+
+    starlette_operation_aliases = load_starlette_operation_aliases()
+
     def has_middleware_registration_source(coverage_item: dict[str, Any]) -> bool:
         source_path = coverage_item.get("source_path")
         if not isinstance(source_path, str):
@@ -9423,6 +9492,17 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "behavior requirements; FastAPI parity remains unproven"
                     )
                 edge["starlette_rs_behavior_crosswalk"] = behavior_crosswalk
+            operation_alias = starlette_operation_aliases.get(binding["id"])
+            if operation_alias is not None:
+                if (
+                    relation != "direct_reexport"
+                    or operation_alias["starlette_symbol"] != target_symbol
+                ):
+                    raise AtlasError(
+                        "Starlette operation alias target differs from direct import binding: "
+                        + binding["id"]
+                    )
+                edge["starlette_rs_operation_aliases"] = operation_alias
             starlette_edges.append(edge)
     for edge in starlette.get("base_edges", []):
         symbol = edge["base"]
@@ -9461,9 +9541,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         (PROJECT / "tests/fixtures/observation-selectors.json").read_text(encoding="utf-8")
     )
     selector_support = {
-        row["id"]: row["workflow_support"]
-        for row in selector_catalog["selectors"]
-        if "id" in row
+        row["id"]: row["workflow_support"] for row in selector_catalog["selectors"] if "id" in row
     }
     selector_ids = set(selector_support)
     indexed_workflows = {row["id"]: row for row in materialized_index["workflows"]}
@@ -9517,8 +9595,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             workflow = json.loads(input_path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             raise AtlasError(
-                "cannot read documented-page workflow input "
-                f"{workflow_ref['input_path']}: {exc}"
+                f"cannot read documented-page workflow input {workflow_ref['input_path']}: {exc}"
             ) from exc
         recipe_file = (PROJECT / recipe_path).resolve()
         try:
@@ -9535,7 +9612,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             recipe_workflow = read_recipe(recipe_file)
         except (ImportError, OSError, ValueError) as exc:
             raise AtlasError(
-                "cannot read documented-page input recipe " f"{recipe_path}: {exc}"
+                f"cannot read documented-page input recipe {recipe_path}: {exc}"
             ) from exc
         if recipe_workflow != workflow:
             raise AtlasError(
@@ -10093,8 +10170,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         if "action_ids" not in row:
             return None
         action_ids = row["action_ids"]
-        if not isinstance(action_ids, list) or not action_ids or any(
-            not isinstance(action_id, str) or not action_id for action_id in action_ids
+        if (
+            not isinstance(action_ids, list)
+            or not action_ids
+            or any(not isinstance(action_id, str) or not action_id for action_id in action_ids)
         ):
             documented_page_validation_errors.append(
                 f"{label} action_ids must be a non-empty list of non-empty strings"
@@ -10142,8 +10221,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         stale_evidence = [
             evidence
             for evidence in source_evidence
-            if evidence.get("sha256") is not None
-            and evidence.get("sha256") != expected_digest
+            if evidence.get("sha256") is not None and evidence.get("sha256") != expected_digest
         ]
         if stale_evidence:
             documented_page_validation_errors.append(
@@ -10302,9 +10380,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 recipe_path = ""
             case_ids = reviewed_case_ids(row, link_label)
             action_ids = reviewed_action_ids(row, link_label)
-            selectors = reviewed_selector_claims(
-                row.get("observation_selectors"), link_label
-            )
+            selectors = reviewed_selector_claims(row.get("observation_selectors"), link_label)
             unknown_row_selectors = sorted(selectors - selector_ids)
             if unknown_row_selectors:
                 documented_page_validation_errors.append(
@@ -10372,8 +10448,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             missing = mapping_claims - observed_for_mapping
             if missing:
                 per_case = "; ".join(
-                    f"{case_id}={sorted(projected_by_case[case_id])}"
-                    for case_id in case_ids
+                    f"{case_id}={sorted(projected_by_case[case_id])}" for case_id in case_ids
                 )
                 documented_page_validation_errors.append(
                     f"{mapping_label} claims selectors absent from its exact linked cases "
@@ -10381,7 +10456,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 )
             exact_page_selectors.update(observed_for_mapping)
 
-        for row_index, row in enumerate(reviewed_workflow_cases):
+        for row_index, _row in enumerate(reviewed_workflow_cases):
             recipe_path, case_ids, action_ids, selectors = reviewed_row_claims[row_index]
             link_label = f"{page_source_path} workflow_cases[{row_index}]"
             if not recipe_path or not case_ids:
@@ -10407,8 +10482,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             if missing or unsupported:
                 action_scope = f" actions {action_ids}" if action_ids is not None else ""
                 per_case = "; ".join(
-                    f"{case_id}={sorted(projected_by_case[case_id])}"
-                    for case_id in case_ids
+                    f"{case_id}={sorted(projected_by_case[case_id])}" for case_id in case_ids
                 )
                 documented_page_validation_errors.append(
                     f"{link_label} recipe {recipe_path} cases {case_ids}{action_scope} "
@@ -10465,14 +10539,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         mapping_status = "excluded" if exclusion else "candidate" if features else "review_required"
         page_selectors = sorted(exact_page_selectors)
         candidate_page_selectors = (
-            []
-            if exclusion
-            else sorted(page_selector_candidates - exact_page_selectors)
+            [] if exclusion else sorted(page_selector_candidates - exact_page_selectors)
         )
         candidate_selector_evidence = (
-            []
-            if exclusion
-            else selector_evidence(features, candidate_page_selectors)
+            [] if exclusion else selector_evidence(features, candidate_page_selectors)
         )
         unobserved_page_selector_claims = sorted(page_selector_claims - exact_page_selectors)
         page_scope_notes = [
@@ -10611,9 +10681,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
 
     if documented_page_validation_errors:
         details = "\n - ".join(documented_page_validation_errors)
-        raise AtlasError(
-            "documented-page selector/source validation failed:\n - " + details
-        )
+        raise AtlasError("documented-page selector/source validation failed:\n - " + details)
 
     for path in sorted(examples_root.rglob("*.py")):
         rel = relative(path, fastapi_root)

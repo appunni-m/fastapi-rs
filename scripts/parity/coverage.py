@@ -269,6 +269,62 @@ def _validate_starlette_behavior_crosswalks(
             )
 
 
+def _validate_starlette_operation_aliases(edges: list[dict[str, Any]]) -> None:
+    expected_aliases = {
+        f"fastapi.concurrency.{name}": f"starlette.concurrency.{name}"
+        for name in (
+            "iterate_in_threadpool",
+            "run_in_threadpool",
+            "run_until_first_complete",
+        )
+    }
+    alias_edges = {
+        edge.get("fastapi_binding"): edge
+        for edge in edges
+        if isinstance(edge.get("starlette_rs_operation_aliases"), dict)
+    }
+    _require(
+        set(alias_edges) == set(expected_aliases),
+        "Starlette operation aliases must cover the reviewed FastAPI concurrency bindings",
+    )
+    for binding_id, expected_symbol in expected_aliases.items():
+        edge = alias_edges[binding_id]
+        alias = edge["starlette_rs_operation_aliases"]
+        _require(
+            edge.get("relation") == "direct_reexport"
+            and edge.get("starlette_symbol") == expected_symbol
+            and edge.get("fastapi_source", {}).get("path") == "fastapi/concurrency.py"
+            and alias.get("resolution") == "direct-reexport-operation-alias"
+            and alias.get("starlette_symbol") == expected_symbol
+            and isinstance(alias.get("scope_note"), str)
+            and bool(alias["scope_note"].strip()),
+            f"Starlette operation alias source binding is invalid: {binding_id}",
+        )
+        refs = alias.get("target_operation_refs")
+        operation_id = expected_symbol.rsplit(".", 1)[-1]
+        _require(
+            isinstance(refs, list) and bool(refs),
+            f"Starlette operation alias has no sibling operation reference: {binding_id}",
+        )
+        for reference in refs:
+            _require(
+                isinstance(reference, dict)
+                and reference.get("surface_id") == "starlette.concurrency"
+                and reference.get("operation_id") == operation_id
+                and isinstance(reference.get("contract_id"), str)
+                and bool(reference["contract_id"])
+                and isinstance(reference.get("requirement_ids"), list)
+                and bool(reference["requirement_ids"])
+                and all(
+                    isinstance(requirement_id, str) and bool(requirement_id)
+                    for requirement_id in reference["requirement_ids"]
+                )
+                and reference.get("source_path") == expected_symbol
+                and isinstance(reference.get("target_support"), dict),
+                f"Starlette operation alias reference is incomplete: {binding_id}",
+            )
+
+
 def _walk_source_references(
     value: Any,
     fastapi_root: Path,
@@ -1657,6 +1713,7 @@ def validate_compatibility_artifacts(
 
     integration_edges = atlas.get("starlette_integration_edges", [])
     _validate_starlette_behavior_crosswalks(atlas, fastapi_source, integration_edges)
+    _validate_starlette_operation_aliases(integration_edges)
     for edge in integration_edges:
         _require(
             bool(edge.get("starlette_rs_planning_areas")),
