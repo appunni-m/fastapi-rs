@@ -327,4 +327,88 @@ DOC_SECTION_CASE_MAPPINGS = {
             "link adds no independently observable FastAPI contract."
         ),
     },
+    ("tutorial/path-params.md", "recap"): {
+        "status": "excluded",
+        "heading": "Recap { #recap }",
+        "start_line": 240,
+        "end_line": 251,
+        "exclusion_reason": (
+            "This section summarizes earlier path-parameter claims and adds no independent "
+            "FastAPI request or API behavior."
+        ),
+        "rationale": (
+            "The pinned span recaps editor support, parsing, validation, and API documentation; "
+            "its unbounded performance comparison defines no separately testable behavior."
+        ),
+    },
+    ("tutorial/query-params-str-validations.md", "understand-that-code"): {
+        "status": "excluded",
+        "heading": "Understand that Code { #understand-that-code }",
+        "start_line": 399,
+        "end_line": 428,
+        "exclusion_reason": (
+            "This optional explanation repeats the preceding AfterValidator behavior and adds "
+            "no separate FastAPI contract."
+        ),
+        "rationale": (
+            "The pinned text identifies AfterValidator inside Annotated as the key point, then "
+            "introduces optional details whose child sections are reviewed independently."
+        ),
+    },
+    ("tutorial/query-params-str-validations.md", "string-with-value-startswith"): {
+        "status": "excluded",
+        "heading": "String with `value.startswith()` { #string-with-value-startswith }",
+        "start_line": 407,
+        "end_line": 412,
+        "exclusion_reason": (
+            "This section explains standard Python string-prefix behavior inside an application "
+            "validator, not an independent FastAPI behavior."
+        ),
+        "rationale": (
+            "The pinned code uses str.startswith(tuple); FastAPI's AfterValidator integration "
+            "is covered separately, while the builtin string operation belongs to Python."
+        ),
+    },
+    ("tutorial/query-params-str-validations.md", "recap"): {
+        "status": "excluded",
+        "heading": "Recap { #recap }",
+        "start_line": 429,
+        "end_line": 450,
+        "exclusion_reason": (
+            "This section lists validations and metadata already described in preceding "
+            "sections and adds no independent input/output behavior."
+        ),
+        "rationale": (
+            "The pinned span is a recap of alias, metadata, string constraints, and "
+            "AfterValidator, followed by a pointer to later chapters."
+        ),
+    },
+    ("tutorial/response-model.md", "response-model-or-return-type"): {
+        "status": "excluded",
+        "heading": "`response_model` or Return Type { #response-model-or-return-type }",
+        "start_line": 125,
+        "end_line": 132,
+        "exclusion_reason": (
+            "This section concerns editor/type-checker diagnostics and repeats the already "
+            "shown response_model choice without adding runtime behavior."
+        ),
+        "rationale": (
+            "The pinned span describes tools rejecting different Python model classes; editor "
+            "diagnostics are outside the observable FastAPI runtime contract."
+        ),
+    },
+    ("tutorial/response-model.md", "recap"): {
+        "status": "excluded",
+        "heading": "Recap { #recap }",
+        "start_line": 340,
+        "end_line": 344,
+        "exclusion_reason": (
+            "This section restates response filtering and exclude_unset behavior from earlier "
+            "sections and introduces no new contract."
+        ),
+        "rationale": (
+            "The pinned span is explicitly a summary of previously described response-model "
+            "claims and defines no new request, response, or OpenAPI behavior."
+        ),
+    },
 }
