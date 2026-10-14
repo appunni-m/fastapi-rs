@@ -2804,13 +2804,6 @@ fn attach_api_key_dependency_introspection(
     Ok(())
 }
 
-fn optional_type<'py>(py: Python<'py>, inner: &Bound<'py, PyAny>) -> PyResult<Bound<'py, PyAny>> {
-    py.import("typing")?
-        .getattr("Optional")?
-        .getattr("__getitem__")?
-        .call1((inner,))
-}
-
 fn create_http_basic_credentials_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let pydantic = py.import("pydantic")?;
     let typing = py.import("typing")?;
@@ -2840,28 +2833,9 @@ fn create_http_basic_credentials_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .map(Bound::unbind)
 }
 
-fn create_http_basic_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
-    let pydantic = py.import("pydantic")?;
-    let string_type = py.get_type::<PyString>();
-    let optional_string = optional_type(py, string_type.as_any())?;
-    let type_field_arguments = PyDict::new(py);
-    type_field_arguments.set_item("default", "http")?;
-    type_field_arguments.set_item("alias", "type")?;
-    let type_field = pydantic
-        .getattr("Field")?
-        .call((), Some(&type_field_arguments))?;
-
-    let fields = PyDict::new(py);
-    fields.set_item("__module__", "fastapi.openapi.models")?;
-    fields.set_item("type_", (string_type.as_any(), type_field))?;
-    fields.set_item("description", (optional_string, py.None()))?;
-    fields.set_item("scheme", string_type.as_any())?;
-    pydantic
-        .getattr("create_model")?
-        .call(("HTTPBase",), Some(&fields))
-        .map(Bound::unbind)
+fn create_http_basic_model(module: &Bound<'_, PyModule>) -> PyResult<Py<PyAny>> {
+    module.getattr("_OpenAPIHTTPBase").map(Bound::unbind)
 }
-
 struct OAuth2ModelTypes {
     password_flow: Py<PyAny>,
     authorization_code_flow: Py<PyAny>,
@@ -2870,116 +2844,15 @@ struct OAuth2ModelTypes {
     openid_connect: Py<PyAny>,
 }
 
-fn create_oauth2_models(py: Python<'_>) -> PyResult<OAuth2ModelTypes> {
-    let pydantic = py.import("pydantic")?;
-    let typing = py.import("typing")?;
-    let string_type = py.get_type::<PyString>();
-    let optional_string = optional_type(py, string_type.as_any())?;
-    let string_mapping = typing
-        .getattr("Dict")?
-        .getattr("__getitem__")?
-        .call1(((string_type.as_any(), string_type.as_any()),))?;
-
-    let implicit_flow_fields = PyDict::new(py);
-    implicit_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
-    implicit_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
-    implicit_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
-    implicit_flow_fields.set_item("authorizationUrl", string_type.as_any())?;
-    let implicit_flow_model = pydantic
-        .getattr("create_model")?
-        .call(("OAuthFlowImplicit",), Some(&implicit_flow_fields))?;
-
-    let password_flow_fields = PyDict::new(py);
-    password_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
-    password_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
-    password_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
-    password_flow_fields.set_item("tokenUrl", string_type.as_any())?;
-    let password_flow_model = pydantic
-        .getattr("create_model")?
-        .call(("OAuthFlowPassword",), Some(&password_flow_fields))?;
-
-    let client_credentials_flow_fields = PyDict::new(py);
-    client_credentials_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
-    client_credentials_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
-    client_credentials_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
-    client_credentials_flow_fields.set_item("tokenUrl", string_type.as_any())?;
-    let client_credentials_flow_model = pydantic.getattr("create_model")?.call(
-        ("OAuthFlowClientCredentials",),
-        Some(&client_credentials_flow_fields),
-    )?;
-
-    let authorization_flow_fields = PyDict::new(py);
-    authorization_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
-    authorization_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
-    authorization_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
-    authorization_flow_fields.set_item("authorizationUrl", string_type.as_any())?;
-    authorization_flow_fields.set_item("tokenUrl", string_type.as_any())?;
-    let authorization_flow_model = pydantic.getattr("create_model")?.call(
-        ("OAuthFlowAuthorizationCode",),
-        Some(&authorization_flow_fields),
-    )?;
-
-    let optional_implicit_flow = optional_type(py, implicit_flow_model.as_any())?;
-    let optional_password_flow = optional_type(py, password_flow_model.as_any())?;
-    let optional_client_credentials_flow =
-        optional_type(py, client_credentials_flow_model.as_any())?;
-    let optional_authorization_flow = optional_type(py, authorization_flow_model.as_any())?;
-    let flows_fields = PyDict::new(py);
-    flows_fields.set_item("__module__", "fastapi.openapi.models")?;
-    flows_fields.set_item("implicit", (optional_implicit_flow, py.None()))?;
-    flows_fields.set_item("password", (optional_password_flow, py.None()))?;
-    flows_fields.set_item(
-        "clientCredentials",
-        (optional_client_credentials_flow, py.None()),
-    )?;
-    flows_fields.set_item(
-        "authorizationCode",
-        (optional_authorization_flow, py.None()),
-    )?;
-    let flows_model = pydantic
-        .getattr("create_model")?
-        .call(("OAuthFlows",), Some(&flows_fields))?;
-
-    let type_field_arguments = PyDict::new(py);
-    type_field_arguments.set_item("default", "oauth2")?;
-    type_field_arguments.set_item("alias", "type")?;
-    let type_field = pydantic
-        .getattr("Field")?
-        .call((), Some(&type_field_arguments))?;
-    let optional_description = optional_type(py, string_type.as_any())?;
-    let oauth2_fields = PyDict::new(py);
-    oauth2_fields.set_item("__module__", "fastapi.openapi.models")?;
-    oauth2_fields.set_item("type_", (string_type.as_any(), type_field))?;
-    oauth2_fields.set_item("description", (optional_description, py.None()))?;
-    oauth2_fields.set_item("flows", flows_model.as_any())?;
-    let oauth2_model = pydantic
-        .getattr("create_model")?
-        .call(("OAuth2",), Some(&oauth2_fields))?;
-
-    let type_field_arguments = PyDict::new(py);
-    type_field_arguments.set_item("default", "openIdConnect")?;
-    type_field_arguments.set_item("alias", "type")?;
-    let type_field = pydantic
-        .getattr("Field")?
-        .call((), Some(&type_field_arguments))?;
-    let openid_fields = PyDict::new(py);
-    openid_fields.set_item("__module__", "fastapi.openapi.models")?;
-    openid_fields.set_item("type_", (string_type.as_any(), type_field))?;
-    openid_fields.set_item("description", (optional_string, py.None()))?;
-    openid_fields.set_item("openIdConnectUrl", string_type.as_any())?;
-    let openid_model = pydantic
-        .getattr("create_model")?
-        .call(("OpenIdConnect",), Some(&openid_fields))?;
-
+fn create_oauth2_models(module: &Bound<'_, PyModule>) -> PyResult<OAuth2ModelTypes> {
     Ok(OAuth2ModelTypes {
-        password_flow: password_flow_model.unbind(),
-        authorization_code_flow: authorization_flow_model.unbind(),
-        flows: flows_model.unbind(),
-        oauth2: oauth2_model.unbind(),
-        openid_connect: openid_model.unbind(),
+        password_flow: module.getattr("OAuthFlowPassword")?.unbind(),
+        authorization_code_flow: module.getattr("OAuthFlowAuthorizationCode")?.unbind(),
+        flows: module.getattr("OAuthFlows")?.unbind(),
+        oauth2: module.getattr("_OpenAPIOAuth2")?.unbind(),
+        openid_connect: module.getattr("_OpenAPIOpenIdConnect")?.unbind(),
     })
 }
-
 fn create_credentials_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let create_model = py.import("pydantic")?.getattr("create_model")?;
     let string_type = py.get_type::<PyString>();
@@ -3002,137 +2875,18 @@ fn create_credentials_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .map(Bound::unbind)
 }
 
-fn create_http_bearer_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
-    let pydantic = py.import("pydantic")?;
-    let typing = py.import("typing")?;
-    let string_type = py.get_type::<PyString>();
-    let optional_string = typing
-        .getattr("Optional")?
-        .getattr("__getitem__")?
-        .call1((string_type.as_any(),))?;
-    let bearer_literal = typing
-        .getattr("Literal")?
-        .getattr("__getitem__")?
-        .call1(("bearer",))?;
-    let type_field_kwargs = PyDict::new(py);
-    type_field_kwargs.set_item("default", "http")?;
-    type_field_kwargs.set_item("alias", "type")?;
-    let type_field = pydantic
-        .getattr("Field")?
-        .call((), Some(&type_field_kwargs))?;
-
-    let fields = PyDict::new(py);
-    fields.set_item("__module__", "fastapi.openapi.models")?;
-    fields.set_item("type_", (string_type.as_any(), type_field))?;
-    fields.set_item("description", (optional_string.clone(), py.None()))?;
-    fields.set_item("scheme", (bearer_literal, "bearer"))?;
-    fields.set_item("bearerFormat", (optional_string, py.None()))?;
-    pydantic
-        .getattr("create_model")?
-        .call(("HTTPBearer",), Some(&fields))
-        .map(Bound::unbind)
+fn create_http_bearer_model(module: &Bound<'_, PyModule>) -> PyResult<Py<PyAny>> {
+    module.getattr("_OpenAPIHTTPBearer").map(Bound::unbind)
 }
-
-fn create_string_enum(py: Python<'_>, name: &str, members: &[(&str, &str)]) -> PyResult<Py<PyAny>> {
-    let enum_members = PyDict::new(py);
-    for (member, value) in members {
-        enum_members.set_item(member, value)?;
-    }
-    let arguments = PyDict::new(py);
-    arguments.set_item("module", "fastapi.openapi.models")?;
-    py.import("enum")?
-        .getattr("Enum")?
-        .call((name, enum_members), Some(&arguments))
-        .map(Bound::unbind)
-}
-
-fn create_api_key_models(py: Python<'_>) -> PyResult<ApiKeyModels> {
-    let security_scheme_type = create_string_enum(
-        py,
-        "SecuritySchemeType",
-        &[
-            ("apiKey", "apiKey"),
-            ("http", "http"),
-            ("oauth2", "oauth2"),
-            ("openIdConnect", "openIdConnect"),
-        ],
-    )?;
-    let api_key_in = create_string_enum(
-        py,
-        "APIKeyIn",
-        &[
-            ("query", "query"),
-            ("header", "header"),
-            ("cookie", "cookie"),
-        ],
-    )?;
-
-    let pydantic = py.import("pydantic")?;
-    let extra_config = PyDict::new(py);
-    extra_config.set_item("extra", "allow")?;
-    let base_fields = PyDict::new(py);
-    base_fields.set_item("__module__", "fastapi.openapi.models")?;
-    base_fields.set_item("__config__", extra_config)?;
-    let base_model = pydantic
-        .getattr("create_model")?
-        .call(("BaseModelWithConfig",), Some(&base_fields))?;
-
-    let string_type = py.get_type::<PyString>();
-    let optional_string = optional_type(py, string_type.as_any())?;
-    let type_field_arguments = PyDict::new(py);
-    type_field_arguments.set_item("alias", "type")?;
-    let required_type_field = pydantic
-        .getattr("Field")?
-        .call((), Some(&type_field_arguments))?;
-    let security_base_fields = PyDict::new(py);
-    security_base_fields.set_item("__module__", "fastapi.openapi.models")?;
-    security_base_fields.set_item("__base__", base_model.as_any())?;
-    security_base_fields.set_item(
-        "type_",
-        (security_scheme_type.bind(py).as_any(), required_type_field),
-    )?;
-    security_base_fields.set_item("description", (optional_string, py.None()))?;
-    let security_base_model = pydantic
-        .getattr("create_model")?
-        .call(("SecurityBase",), Some(&security_base_fields))?;
-
-    let api_key_type = security_scheme_type.bind(py).getattr("apiKey")?;
-    let api_key_type_field_arguments = PyDict::new(py);
-    api_key_type_field_arguments.set_item("default", api_key_type)?;
-    api_key_type_field_arguments.set_item("alias", "type")?;
-    let api_key_type_field = pydantic
-        .getattr("Field")?
-        .call((), Some(&api_key_type_field_arguments))?;
-    let api_key_location_field_arguments = PyDict::new(py);
-    api_key_location_field_arguments.set_item("alias", "in")?;
-    let api_key_location_field = pydantic
-        .getattr("Field")?
-        .call((), Some(&api_key_location_field_arguments))?;
-    let api_key_fields = PyDict::new(py);
-    api_key_fields.set_item("__module__", "fastapi.openapi.models")?;
-    api_key_fields.set_item("__base__", security_base_model.as_any())?;
-    api_key_fields.set_item(
-        "type_",
-        (security_scheme_type.bind(py).as_any(), api_key_type_field),
-    )?;
-    api_key_fields.set_item(
-        "in_",
-        (api_key_in.bind(py).as_any(), api_key_location_field),
-    )?;
-    api_key_fields.set_item("name", string_type.as_any())?;
-    let api_key_model = pydantic
-        .getattr("create_model")?
-        .call(("APIKey",), Some(&api_key_fields))?;
-
+fn create_api_key_models(module: &Bound<'_, PyModule>) -> PyResult<ApiKeyModels> {
     Ok(ApiKeyModels {
-        security_scheme_type,
-        api_key_in_type: api_key_in,
-        base_model_type: base_model.unbind(),
-        security_base_model_type: security_base_model.unbind(),
-        api_key_model_type: api_key_model.unbind(),
+        security_scheme_type: module.getattr("SecuritySchemeType")?.unbind(),
+        api_key_in_type: module.getattr("APIKeyIn")?.unbind(),
+        base_model_type: module.getattr("BaseModelWithConfig")?.unbind(),
+        security_base_model_type: module.getattr("_OpenAPISecurityBase")?.unbind(),
+        api_key_model_type: module.getattr("APIKey")?.unbind(),
     })
 }
-
 fn create_api_key_model(
     py: Python<'_>,
     location: &Bound<'_, PyAny>,
@@ -3226,7 +2980,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         oauth2_password_form_constructor_parameters(py, module, true)?,
         ConstructorInitKind::OAuth2PasswordRequestFormStrict,
     )?;
-    let api_key_models = create_api_key_models(py)?;
+    let api_key_models = create_api_key_models(module)?;
     module.add(
         "SecuritySchemeType",
         api_key_models.security_scheme_type.bind(py),
@@ -3250,13 +3004,13 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
 
     let credentials_type = create_credentials_model(py)?;
     module.add("HTTPAuthorizationCredentials", credentials_type.bind(py))?;
-    let model_type = create_http_bearer_model(py)?;
+    let model_type = create_http_bearer_model(module)?;
     module.add("_HTTPBearerModel", model_type.bind(py))?;
     let basic_credentials_type = create_http_basic_credentials_model(py)?;
     module.add("HTTPBasicCredentials", basic_credentials_type.bind(py))?;
-    let basic_model_type = create_http_basic_model(py)?;
+    let basic_model_type = create_http_basic_model(module)?;
     module.add("_HTTPBasicModel", basic_model_type.bind(py))?;
-    let models = create_oauth2_models(py)?;
+    let models = create_oauth2_models(module)?;
     module.add("_OAuth2PasswordFlowModel", models.password_flow.bind(py))?;
     module.add(
         "_OAuth2AuthorizationCodeFlowModel",

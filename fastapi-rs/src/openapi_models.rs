@@ -1,8 +1,8 @@
-//! Private Pydantic graph used to validate assembled OpenAPI documents.
+//! Pydantic model graph for the pinned OpenAPI declarations.
 //!
 //! Rust constructs the pinned model definitions through Pydantic's public
-//! dynamic-model API. The graph is not a public OpenAPI model implementation:
-//! only its root validator is retained on the native module.
+//! dynamic-model API and publishes their native bindings. The root validator
+//! remains private to document assembly.
 
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
@@ -11,11 +11,48 @@ use pyo3::types::{PyDict, PyModule, PyString, PyTuple};
 const MODEL_MODULE: &str = "fastapi.openapi.models";
 const ROOT_HANDLE: &str = "_FastApiOpenApiModel";
 const PUBLIC_MODEL_EXPORTS: &[&str] = &[
-    "Schema",
-    "Discriminator",
-    "Components",
-    "Example",
+    "BaseModelWithConfig",
+    "Contact",
+    "License",
     "Info",
+    "ServerVariable",
+    "Server",
+    "Reference",
+    "Discriminator",
+    "XML",
+    "ExternalDocumentation",
+    "SchemaType",
+    "Schema",
+    "SchemaOrBool",
+    "Example",
+    "ParameterInType",
+    "Encoding",
+    "MediaType",
+    "ParameterBase",
+    "Parameter",
+    "Header",
+    "RequestBody",
+    "Link",
+    "Response",
+    "Operation",
+    "PathItem",
+    "SecuritySchemeType",
+    "SecurityBase",
+    "APIKeyIn",
+    "APIKey",
+    "HTTPBase",
+    "HTTPBearer",
+    "OAuthFlow",
+    "OAuthFlowImplicit",
+    "OAuthFlowPassword",
+    "OAuthFlowClientCredentials",
+    "OAuthFlowAuthorizationCode",
+    "OAuthFlows",
+    "OAuth2",
+    "OpenIdConnect",
+    "SecurityScheme",
+    "Components",
+    "Tag",
     "OpenAPI",
 ];
 
@@ -127,9 +164,23 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
     }
     module.add(ROOT_HANDLE, named(&namespace, "OpenAPI")?)?;
     for name in PUBLIC_MODEL_EXPORTS {
-        module.add(*name, named(&namespace, name)?)?;
+        module.add(model_binding_name(name), named(&namespace, name)?)?;
     }
     Ok(())
+}
+
+/// Keep OpenAPI model handles distinct from same-named native FastAPI exports.
+fn model_binding_name(name: &str) -> &str {
+    match name {
+        "SecurityBase" => "_OpenAPISecurityBase",
+        "Header" => "_OpenAPIHeader",
+        "Response" => "_OpenAPIResponse",
+        "HTTPBase" => "_OpenAPIHTTPBase",
+        "HTTPBearer" => "_OpenAPIHTTPBearer",
+        "OAuth2" => "_OpenAPIOAuth2",
+        "OpenIdConnect" => "_OpenAPIOpenIdConnect",
+        _ => name,
+    }
 }
 
 /// Applies the private source-shaped root model to a complete raw document.
