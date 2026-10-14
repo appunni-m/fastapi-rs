@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: b265c24bead1f5f7e6de54cbe35cec1dc24d7978433a96e773318b6ec5edb232
+    sha256: 6b9b8720de335db2c317eeee8f7f7b2b513893b5c570573499460cb08dfd0d1b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 2f7841f3f221cb92b157a9853d0918e1178963b7f751b8b2e6c17c11bddf554b
+    sha256: 0607c0decd0ebf75a3ea2883023e6ec8a7f1302105c446b7ac712362ec798003
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -511,15 +511,15 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@7
-    sha256: 46eb51fa7b07f53c6aaf88939396095d65f3ffe36b72d2e0dda5e5ba8280fd5d
-    schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
-    schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
+    schema: fastapi-rs/materialized-input-index@8
+    sha256: e8a509ad4dc5f9221b91f8962f9a14cff5155414ea5f9ac398ef448c1cb8feb9
+    schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
+    schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 578
-      cases: 2426
-      partial_source_mappings: 1676
+      workflows: 579
+      cases: 2427
+      partial_source_mappings: 1677
 
 contract_metadata:
   aliases:
@@ -745,6 +745,21 @@ unresolved:
       Adds target-only contracts for FastAPI frontend static lookup exceptions:
       PermissionError maps to 401, ValueError and ENAMETOOLONG map to 404, and
       other OSError instances propagate as application errors.
+  python_asgi_workflow_v10:
+    state: v10-adds-openapi-cache-publication-retry-contract; v1-v9-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@10
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v10.schema.json
+    schema_sha256: 3f2525a6584f1ecef76c65f63ab28570da43b2ce9dc0677becb330f0947cdfc0
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@10
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v10.schema.json
+    result_schema_sha256: b7ea753af35c720b4672a9e0c833ce76c330fcdae7d796a1839dcc4f4b7fc82f
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@11
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v11.schema.json
+    comparison_schema_sha256: c175119de8e6218f868932c5405d4b97c43a97dee08acb49863ce79ed0cd3d1d
+    coverage: >-
+      Adds a target-only OpenAPI cache-publication fault contract that exposes
+      the initial HTTP 500 and exception, then requires a successful retry and
+      equality between the full retry document and a subsequent cached response.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1

@@ -24,6 +24,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V7_ID,
     WORKFLOW_SCHEMA_V8_ID,
     WORKFLOW_SCHEMA_V9_ID,
+    WORKFLOW_SCHEMA_V10_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -36,7 +37,7 @@ from scripts.parity.process_contract import (
     load_process_workflow,
 )
 
-INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v7.schema.json"
+INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v8.schema.json"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
@@ -117,6 +118,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V7_ID,
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
+        WORKFLOW_SCHEMA_V10_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -130,6 +132,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V7_ID,
             WORKFLOW_SCHEMA_V8_ID,
             WORKFLOW_SCHEMA_V9_ID,
+            WORKFLOW_SCHEMA_V10_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -144,6 +147,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V7_ID,
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -430,6 +434,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V7_ID,
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)
@@ -438,7 +443,7 @@ def validate_materialized_input_index(
                         f"materialized input index: invalid case contract {case_id}: {exc}"
                     ) from exc
             elif "verification" in case or "fault" in case:
-                _fail(f"verification lanes require Python/ASGI workflow v7 through v9: {case_id}")
+                _fail(f"verification lanes require Python/ASGI workflow v7 through v10: {case_id}")
             if indexed_contracts[case_id]["verification"] != expected_mode:
                 _fail(f"indexed verification lane differs from workflow: {case_id}")
             if expected_mode == "fault-contract" and indexed_contracts[case_id].get(

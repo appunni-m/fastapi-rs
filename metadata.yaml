@@ -171,6 +171,17 @@ fault_contract_policy:
         first_effect: {kind: application_error, selector: exception, exception_class: builtins.OSError}
         first_response: {kind: http_response, status: 500}
       excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: openapi.cache.publish.before
+      contract: openapi-cache-publication-error-returns-500-and-retries-full-document
+      assertion:
+        first_effect: {kind: application_error, selector: exception, exception_class: builtins.RuntimeError}
+        first_send: {kind: asgi_send, selector: message_types, value: [http.response.start, http.response.body]}
+        first_response: {kind: http_response, selector: status, value: 500}
+        later_effect:
+          kind: http_response
+          status: 200
+          body: {retry_and_cached_document_equal: true}
+      excludes: [exception_message, stack_trace, source_line, private_state]
 
 manifest:
   path: tests/fixtures/manifest.yaml

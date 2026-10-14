@@ -1,5 +1,5 @@
 {
-  "schema": "fastapi-rs/materialized-input-index@7",
+  "schema": "fastapi-rs/materialized-input-index@8",
   "authority": {
     "fastapi": "0.141.1",
     "starlette": "1.6.0"
@@ -11649,6 +11649,31 @@
             "source:upstream-test:tests/test_extra_routes.py",
             "source:upstream-test:tests/test_router_include_context.py"
           ]
+        }
+      ]
+    },
+    {
+      "id": "openapi-cache-publication-fault-contract",
+      "input_path": "tests/fixtures/inputs/parity/openapi-cache-publication-fault-contract.json",
+      "input_sha256": "ddcbb6a23ec554e86b632ed04f795db22ebc0624ad20d657a44b949e4e5e5bdf",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-cache-publication-fault-contract.yaml",
+      "recipe_sha256": "ceaf08dc37281273b6bfa5d86b05b929f222a7b756934c72498f93c39d891db2",
+      "case_ids": [
+        "fastapi.fault-contract.openapi.cache-publication-error-retry-full-document"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_cache_publication_fault_contract.py",
+      "workload_sha256": "9bd710d84c6226638b7a3cd9408ec2be2f92ed4f72cd1307db96e9ed3f9fa674",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.fault-contract.openapi.cache-publication-error-retry-full-document",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_extending_openapi/test_tutorial001.py"
+          ],
+          "fault": {
+            "point": "openapi.cache.publish.before",
+            "contract": "openapi-cache-publication-error-returns-500-and-retries-full-document"
+          }
         }
       ]
     },
@@ -43442,6 +43467,23 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_extending_openapi/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-extending-openapi-test-tutorial001",
+      "workflow_id": "openapi-cache-publication-fault-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.status, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.fault-contract.openapi.cache-publication-error-retry-full-document"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.body.bytes",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

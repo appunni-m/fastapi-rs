@@ -471,6 +471,24 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
                 },
                 "first_response": {"kind": "http_response", "status": 500},
             },
+            "openapi-cache-publication-error-returns-500-and-retries-full-document": {
+                "first_effect": {
+                    "kind": "application_error",
+                    "selector": "exception",
+                    "exception_class": "builtins.RuntimeError",
+                },
+                "first_send": {
+                    "kind": "asgi_send",
+                    "selector": "message_types",
+                    "value": ["http.response.start", "http.response.body"],
+                },
+                "first_response": {"kind": "http_response", "selector": "status", "value": 500},
+                "later_effect": {
+                    "kind": "http_response",
+                    "status": 200,
+                    "body": {"retry_and_cached_document_equal": True},
+                },
+            },
         },
     )
     excluded_observations = {row["contract"]: row.get("excludes") for row in contracts}
@@ -483,7 +501,7 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
         },
     )
 
-    workflow = manifest["unresolved"]["python_asgi_workflow_v9"]
+    workflow = manifest["unresolved"]["python_asgi_workflow_v10"]
     schema_path = artifact_path(workflow["schema_path"])
     schema = load_json(schema_path)
     schema_fault_points: dict[str, set[str]] = {}

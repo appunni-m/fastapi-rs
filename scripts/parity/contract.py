@@ -19,6 +19,7 @@ from scripts.parity.fault_contracts import (
     HTTP_FRONTEND_LOOKUP_VALUE_ERROR_CONTRACT,
     HTTP_REQUEST_FORM_PARSE_CONTRACT,
     HTTP_REQUEST_JSON_DECODE_CONTRACT,
+    OPENAPI_CACHE_PUBLISH_RETRY_CONTRACT,
     FaultContractError,
     verification_mode,
 )
@@ -33,6 +34,7 @@ WORKFLOW_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v6.sche
 WORKFLOW_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v7.schema.json"
 WORKFLOW_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v8.schema.json"
 WORKFLOW_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v9.schema.json"
+WORKFLOW_SCHEMA_V10 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v10.schema.json"
 PROCESS_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-process-workflow.schema.json"
 PROCESS_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-process-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
@@ -62,6 +64,7 @@ RESULT_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v6
 RESULT_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v7.schema.json"
 RESULT_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v8.schema.json"
 RESULT_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v9.schema.json"
+RESULT_SCHEMA_V10 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v10.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
 COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.schema.json"
 COMPARISON_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v4.schema.json"
@@ -71,6 +74,7 @@ COMPARISON_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v7.
 COMPARISON_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v8.schema.json"
 COMPARISON_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v9.schema.json"
 COMPARISON_SCHEMA_V10 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v10.schema.json"
+COMPARISON_SCHEMA_V11 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v11.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
@@ -79,6 +83,7 @@ WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
+WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow@10"
 PROCESS_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-process-workflow@1"
 PROCESS_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow@2"
 PROCESS_WORKFLOW_SCHEMA_IDS = frozenset({PROCESS_WORKFLOW_SCHEMA_ID, PROCESS_WORKFLOW_SCHEMA_V2_ID})
@@ -156,6 +161,7 @@ RESULT_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow-result@6"
 RESULT_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow-result@7"
 RESULT_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow-result@9"
+RESULT_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow-result@10"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
 COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-asgi-comparison@3"
 COMPARISON_SCHEMA_V4_ID = "fastapi-rs/python-asgi-comparison@4"
@@ -165,6 +171,7 @@ COMPARISON_SCHEMA_V7_ID = "fastapi-rs/python-asgi-comparison@7"
 COMPARISON_SCHEMA_V8_ID = "fastapi-rs/python-asgi-comparison@8"
 COMPARISON_SCHEMA_V9_ID = "fastapi-rs/python-asgi-comparison@9"
 COMPARISON_SCHEMA_V10_ID = "fastapi-rs/python-asgi-comparison@10"
+COMPARISON_SCHEMA_V11_ID = "fastapi-rs/python-asgi-comparison@11"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
@@ -175,6 +182,7 @@ WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_V7_ID: WORKFLOW_SCHEMA_V7,
     WORKFLOW_SCHEMA_V8_ID: WORKFLOW_SCHEMA_V8,
     WORKFLOW_SCHEMA_V9_ID: WORKFLOW_SCHEMA_V9,
+    WORKFLOW_SCHEMA_V10_ID: WORKFLOW_SCHEMA_V10,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
@@ -196,6 +204,7 @@ RESULT_SCHEMAS = {
     RESULT_SCHEMA_V7_ID: RESULT_SCHEMA_V7,
     RESULT_SCHEMA_V8_ID: RESULT_SCHEMA_V8,
     RESULT_SCHEMA_V9_ID: RESULT_SCHEMA_V9,
+    RESULT_SCHEMA_V10_ID: RESULT_SCHEMA_V10,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
@@ -214,6 +223,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_V8_ID: COMPARISON_SCHEMA_V8,
     COMPARISON_SCHEMA_V9_ID: COMPARISON_SCHEMA_V9,
     COMPARISON_SCHEMA_V10_ID: COMPARISON_SCHEMA_V10,
+    COMPARISON_SCHEMA_V11_ID: COMPARISON_SCHEMA_V11,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -230,6 +240,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V7_ID: RESULT_SCHEMA_V7_ID,
     WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V8_ID,
     WORKFLOW_SCHEMA_V9_ID: RESULT_SCHEMA_V9_ID,
+    WORKFLOW_SCHEMA_V10_ID: RESULT_SCHEMA_V10_ID,
     **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
@@ -241,6 +252,7 @@ COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V7_ID: COMPARISON_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V8_ID: COMPARISON_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V9_ID: COMPARISON_SCHEMA_V10_ID,
+    WORKFLOW_SCHEMA_V10_ID: COMPARISON_SCHEMA_V11_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -736,6 +748,26 @@ def read_manifest() -> dict[str, Any]:
             workflow_v9_contract.get(digest_key),
             label,
         )
+    workflow_v10_contract = unresolved.get("python_asgi_workflow_v10")
+    if not isinstance(workflow_v10_contract, dict):
+        raise ContractError("manifest Python/ASGI v10 workflow contract is missing")
+    if (
+        workflow_v10_contract.get("schema_id") != WORKFLOW_SCHEMA_V10_ID
+        or workflow_v10_contract.get("result_schema_id") != RESULT_SCHEMA_V10_ID
+        or workflow_v10_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V11_ID
+    ):
+        raise ContractError("manifest Python/ASGI v10 schema identities are unsupported")
+    workflow_v10_schema_refs = (
+        ("schema_path", "schema_sha256", "python-asgi-workflow v10 schema"),
+        ("result_schema_path", "result_schema_sha256", "workflow result v10 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v11 schema"),
+    )
+    for path_key, digest_key, label in workflow_v10_schema_refs:
+        _verify_digest_ref(
+            workflow_v10_contract.get(path_key),
+            workflow_v10_contract.get(digest_key),
+            label,
+        )
     api_workflow_contract = (
         unresolved.get("python_api_workflow") if isinstance(unresolved, dict) else None
     )
@@ -1002,6 +1034,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V7_ID,
             WORKFLOW_SCHEMA_V8_ID,
             WORKFLOW_SCHEMA_V9_ID,
+            WORKFLOW_SCHEMA_V10_ID,
         }:
             try:
                 mode = verification_mode(case)
@@ -1057,6 +1090,46 @@ def load_workflow(
                         raise ContractError(
                             "propagated frontend OSError fault requires an exception observation"
                         )
+                elif case["fault"]["contract"] == OPENAPI_CACHE_PUBLISH_RETRY_CONTRACT:
+                    request_actions = [
+                        action
+                        for action in actions
+                        if action["kind"] == "http_request"
+                        and action["scope"]["method"] == "GET"
+                        and action["scope"]["path"] == "/openapi.json"
+                    ]
+                    if len(actions) != 3 or len(request_actions) != 3:
+                        raise ContractError(
+                            "OpenAPI cache publication fault requires an initial request and "
+                            "two later requests to /openapi.json"
+                        )
+                    first_kinds = {
+                        (observation["kind"], observation.get("selector"))
+                        for observation in actions[0]["observations"]
+                    }
+                    if not {
+                        ("application_error", "exception"),
+                        ("asgi_send", "message_types"),
+                    }.issubset(first_kinds) or not any(
+                        observation["kind"] == "http_response"
+                        and {"status"}.issubset(observation["selectors"])
+                        for observation in actions[0]["observations"]
+                    ):
+                        raise ContractError(
+                            "OpenAPI cache publication fault must observe the initial error, "
+                            "complete ASGI send, and HTTP status"
+                        )
+                    if any(
+                        not any(
+                            observation["kind"] == "http_response"
+                            and {"status", "body"}.issubset(observation["selectors"])
+                            for observation in action["observations"]
+                        )
+                        for action in actions[1:]
+                    ):
+                        raise ContractError(
+                            "OpenAPI retry and cache requests must observe response status and body"
+                        )
                 elif (
                     len(actions) < 2
                     or actions[0]["kind"] != "http_request"
@@ -1088,6 +1161,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V7_ID,
             WORKFLOW_SCHEMA_V8_ID,
             WORKFLOW_SCHEMA_V9_ID,
+            WORKFLOW_SCHEMA_V10_ID,
         }:
             _validate_unique_ids(case["actions"], "action_id", f"actions in {case['case_id']}")
             if workflow_schema_id in {
@@ -1098,6 +1172,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V7_ID,
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
             }:
                 lifespan_positions = [
                     index
@@ -1160,6 +1235,7 @@ def load_workflow(
                         WORKFLOW_SCHEMA_V7_ID,
                         WORKFLOW_SCHEMA_V8_ID,
                         WORKFLOW_SCHEMA_V9_ID,
+                        WORKFLOW_SCHEMA_V10_ID,
                     }
                     and action["kind"] == "websocket_conversation"
                 ):

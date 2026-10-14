@@ -33,6 +33,7 @@ WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
+WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow@10"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -41,6 +42,7 @@ RESULT_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow-result@6"
 RESULT_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow-result@7"
 RESULT_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow-result@9"
+RESULT_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow-result@10"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -1434,6 +1436,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V7_ID,
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
+        WORKFLOW_SCHEMA_V10_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1451,6 +1454,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V7_ID,
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
+        WORKFLOW_SCHEMA_V10_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1462,6 +1466,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V7_ID,
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
+        WORKFLOW_SCHEMA_V10_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1473,17 +1478,25 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V7_ID,
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
             }
             else []
         )
         cases = asyncio.run(
             _run_cases_v7_oracle(workflow, factory, warning_package_roots)
             if workflow["schema"]
-            in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID, WORKFLOW_SCHEMA_V9_ID}
+            in {
+                WORKFLOW_SCHEMA_V7_ID,
+                WORKFLOW_SCHEMA_V8_ID,
+                WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
+            }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V9_ID
+            RESULT_SCHEMA_V10_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V10_ID
+            else RESULT_SCHEMA_V9_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V9_ID
             else RESULT_SCHEMA_V8_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V8_ID

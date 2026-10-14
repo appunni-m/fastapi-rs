@@ -34,6 +34,10 @@ HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_FAULT_POINT = "http.frontend.lookup.name-too-
 HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_CONTRACT = "frontend-static-lookup-name-too-long-404"
 HTTP_FRONTEND_LOOKUP_OS_ERROR_FAULT_POINT = "http.frontend.lookup.os-error"
 HTTP_FRONTEND_LOOKUP_OS_ERROR_CONTRACT = "frontend-static-lookup-os-error-propagates"
+OPENAPI_CACHE_PUBLISH_BEFORE_FAULT_POINT = "openapi.cache.publish.before"
+OPENAPI_CACHE_PUBLISH_RETRY_CONTRACT = (
+    "openapi-cache-publication-error-returns-500-and-retries-full-document"
+)
 HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT = (
     "http-route-invocation-error-orders-function-and-request-dependency-cleanup"
 )
@@ -68,6 +72,7 @@ FAULT_POINT_CONTRACTS: dict[str, frozenset[str]] = {
         {HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_CONTRACT}
     ),
     HTTP_FRONTEND_LOOKUP_OS_ERROR_FAULT_POINT: frozenset({HTTP_FRONTEND_LOOKUP_OS_ERROR_CONTRACT}),
+    OPENAPI_CACHE_PUBLISH_BEFORE_FAULT_POINT: frozenset({OPENAPI_CACHE_PUBLISH_RETRY_CONTRACT}),
 }
 
 
@@ -357,6 +362,67 @@ def _assert_http_frontend_lookup_os_error_propagates(
     _assert_http_response_status(case_result, 500, "Propagated frontend OSError lookup fault")
 
 
+def _response_json_document(observation: Mapping[str, Any], context: str) -> Mapping[str, Any]:
+    values = observation.get("values")
+    body = values.get("body") if isinstance(values, Mapping) else None
+    if not isinstance(body, Mapping) or body.get("encoding") != "base64":
+        raise FaultContractError(f"{context} body must use base64 encoding")
+    encoded_body = body.get("data")
+    if not isinstance(encoded_body, str):
+        raise FaultContractError(f"{context} body must contain base64 data")
+    try:
+        document = json.loads(base64.b64decode(encoded_body, validate=True))
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise FaultContractError(f"{context} body must be JSON") from exc
+    if not isinstance(document, Mapping) or not document:
+        raise FaultContractError(f"{context} must contain a non-empty OpenAPI document")
+    return document
+
+
+def _assert_openapi_cache_publication_error_retries_full_document(
+    case_result: Mapping[str, Any],
+) -> None:
+    if case_result.get("status") != "completed":
+        raise FaultContractError("OpenAPI cache publication fault case did not complete")
+    actions = case_result.get("actions")
+    if not isinstance(actions, Sequence) or isinstance(actions, (str, bytes)) or len(actions) != 3:
+        raise FaultContractError(
+            "OpenAPI cache publication fault must run one failing request and two retries"
+        )
+    errors = [
+        (action_index, observation)
+        for action_index, observation in _observation_rows(case_result)
+        if observation.get("kind") == "application_error"
+    ]
+    if len(errors) != 1 or errors[0][0] != 0:
+        raise FaultContractError(
+            "OpenAPI cache publication fault must expose one error on the initial request"
+        )
+    error_observation = errors[0][1]
+    error_values = error_observation.get("values")
+    if (
+        error_observation.get("selector") != "exception"
+        or not isinstance(error_values, Mapping)
+        or error_values.get("exception_class") != "builtins.RuntimeError"
+    ):
+        raise FaultContractError(
+            "OpenAPI cache publication fault must expose builtins.RuntimeError"
+        )
+    _assert_server_error_response(actions, 0)
+
+    successful_responses = _later_successful_http_responses(actions, 0)
+    if len(successful_responses) != 2:
+        raise FaultContractError(
+            "OpenAPI cache publication fault must expose two later HTTP 200 responses"
+        )
+    retry_document = _response_json_document(successful_responses[0], "OpenAPI retry")
+    cached_document = _response_json_document(successful_responses[1], "cached OpenAPI response")
+    if retry_document != cached_document:
+        raise FaultContractError(
+            "the successful retry and subsequent cached response must have equal full documents"
+        )
+
+
 CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
     HTTP_ROUTE_INVOCATION_CONTRACT: _assert_http_route_invocation_error_and_recovery,
     HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT: _assert_http_route_invocation_error_cleans_dependencies,
@@ -371,6 +437,9 @@ CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
     HTTP_FRONTEND_LOOKUP_VALUE_ERROR_CONTRACT: _assert_http_frontend_lookup_value_error_404,
     HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_CONTRACT: (_assert_http_frontend_lookup_name_too_long_404),
     HTTP_FRONTEND_LOOKUP_OS_ERROR_CONTRACT: _assert_http_frontend_lookup_os_error_propagates,
+    OPENAPI_CACHE_PUBLISH_RETRY_CONTRACT: (
+        _assert_openapi_cache_publication_error_retries_full_document
+    ),
 }
 
 

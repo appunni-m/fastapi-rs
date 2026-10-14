@@ -4084,6 +4084,12 @@ impl PyFastApi {
         }
 
         let schema = Self::openapi_document(&slf, py, None)?;
+        #[cfg(feature = "fault-injection")]
+        if crate::fault_injection::take_openapi_cache_publish_before() {
+            return Err(PyRuntimeError::new_err(
+                "Fault injected at openapi.cache.publish.before",
+            ));
+        }
         let retired = {
             let app = slf.bind(py).borrow();
             let mut cache = app

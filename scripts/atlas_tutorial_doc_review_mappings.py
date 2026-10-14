@@ -1594,7 +1594,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "workflow_cases": [
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
-                "case_ids": ["fastapi.docs.request-schema.tutorial-query-params-str-validations.query-boundary"],
+                "case_ids": [
+                    "fastapi.docs.request-schema.tutorial-query-params-str-validations.query-boundary"
+                ],
                 "observation_selectors": [
                     "http.status",
                     "http.headers.ordered",

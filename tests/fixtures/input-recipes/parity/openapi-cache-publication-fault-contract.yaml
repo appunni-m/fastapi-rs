@@ -1,0 +1,75 @@
+schema: fastapi-rs/python-asgi-workflow@10
+workload:
+  file: tests/fixtures/workloads/openapi_cache_publication_fault_contract.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.fault-contract.openapi.cache-publication-error-retry-full-document
+  verification: fault-contract
+  fault:
+    point: openapi.cache.publish.before
+    contract: openapi-cache-publication-error-returns-500-and-retries-full-document
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: openapi-cache-publication-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: retry-openapi-generation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-cached-openapi-document
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_tutorial/test_extending_openapi/test_tutorial001.py, kind: upstream_test}

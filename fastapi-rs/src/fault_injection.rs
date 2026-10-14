@@ -9,6 +9,7 @@ const HTTP_FRONTEND_LOOKUP_PERMISSION_ERROR: &str = "http.frontend.lookup.permis
 const HTTP_FRONTEND_LOOKUP_VALUE_ERROR: &str = "http.frontend.lookup.value-error";
 const HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG: &str = "http.frontend.lookup.name-too-long";
 const HTTP_FRONTEND_LOOKUP_OS_ERROR: &str = "http.frontend.lookup.os-error";
+const OPENAPI_CACHE_PUBLISH_BEFORE: &str = "openapi.cache.publish.before";
 
 static HTTP_ROUTE_INVOKE_BEFORE_ARMED: AtomicBool = AtomicBool::new(false);
 static HTTP_ROUTE_INVOKE_AFTER_DEPENDENCIES_BEFORE_ARMED: AtomicBool = AtomicBool::new(false);
@@ -18,6 +19,7 @@ static HTTP_FRONTEND_LOOKUP_PERMISSION_ERROR_ARMED: AtomicBool = AtomicBool::new
 static HTTP_FRONTEND_LOOKUP_VALUE_ERROR_ARMED: AtomicBool = AtomicBool::new(false);
 static HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_ARMED: AtomicBool = AtomicBool::new(false);
 static HTTP_FRONTEND_LOOKUP_OS_ERROR_ARMED: AtomicBool = AtomicBool::new(false);
+static OPENAPI_CACHE_PUBLISH_BEFORE_ARMED: AtomicBool = AtomicBool::new(false);
 
 pub(crate) enum FrontendLookupFault {
     PermissionError,
@@ -38,6 +40,7 @@ pub(crate) fn arm(point: &str) -> Result<(), &'static str> {
         HTTP_FRONTEND_LOOKUP_VALUE_ERROR => &HTTP_FRONTEND_LOOKUP_VALUE_ERROR_ARMED,
         HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG => &HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_ARMED,
         HTTP_FRONTEND_LOOKUP_OS_ERROR => &HTTP_FRONTEND_LOOKUP_OS_ERROR_ARMED,
+        OPENAPI_CACHE_PUBLISH_BEFORE => &OPENAPI_CACHE_PUBLISH_BEFORE_ARMED,
         _ => return Err("unknown fault injection point"),
     };
     armed
@@ -78,6 +81,10 @@ pub(crate) fn take_http_frontend_lookup_fault() -> Option<FrontendLookupFault> {
     None
 }
 
+pub(crate) fn take_openapi_cache_publish_before() -> bool {
+    OPENAPI_CACHE_PUBLISH_BEFORE_ARMED.swap(false, Ordering::SeqCst)
+}
+
 pub(crate) fn clear() {
     HTTP_ROUTE_INVOKE_BEFORE_ARMED.store(false, Ordering::SeqCst);
     HTTP_ROUTE_INVOKE_AFTER_DEPENDENCIES_BEFORE_ARMED.store(false, Ordering::SeqCst);
@@ -87,4 +94,5 @@ pub(crate) fn clear() {
     HTTP_FRONTEND_LOOKUP_VALUE_ERROR_ARMED.store(false, Ordering::SeqCst);
     HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_ARMED.store(false, Ordering::SeqCst);
     HTTP_FRONTEND_LOOKUP_OS_ERROR_ARMED.store(false, Ordering::SeqCst);
+    OPENAPI_CACHE_PUBLISH_BEFORE_ARMED.store(false, Ordering::SeqCst);
 }
