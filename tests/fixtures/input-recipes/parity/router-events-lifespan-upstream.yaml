@@ -939,3 +939,19 @@ cases:
   source_evidence:
   - path: docs/en/docs/advanced/events.md
     kind: upstream_documentation
+- case_id: fastapi.lifecycle.add-event-handler-invalid-string
+  factory_input:
+    application:
+      routers:
+      - direct_event_handlers:
+        - stage: maintenance
+          marker: invalid-event-type
+          async: false
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation

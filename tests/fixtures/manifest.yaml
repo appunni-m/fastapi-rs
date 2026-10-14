@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 6b9b8720de335db2c317eeee8f7f7b2b513893b5c570573499460cb08dfd0d1b
+    sha256: b8f86290d9744243433f34202e829534c387b5cfe63588d361f175f838955b32
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 0607c0decd0ebf75a3ea2883023e6ec8a7f1302105c446b7ac712362ec798003
+    sha256: 5ce85a5a048a4e1a81147460dd0784c897451c092f957e1ada5636a74a32a3ba
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,13 +512,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: e8a509ad4dc5f9221b91f8962f9a14cff5155414ea5f9ac398ef448c1cb8feb9
+    sha256: f2b492c1cacf14ebe135b4eee560498f346f6ed0a2f05febe776a822bd12c76d
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 579
-      cases: 2427
+      cases: 2428
       partial_source_mappings: 1677
 
 contract_metadata:
@@ -1105,8 +1105,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 110
-    symbols_with_operation_fixture_refs: 179
-    operation_fixture_refs: 1631
+    symbols_with_operation_fixture_refs: 180
+    operation_fixture_refs: 1633
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -14687,9 +14687,9 @@ api_surface_contract:
       - openapi.paths
     - workflow_id: router-events-lifespan-upstream
       input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
-      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      input_sha256: 3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
-      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
       workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
       case_id: fastapi.lifecycle.nested-lifespan-state
@@ -14706,9 +14706,9 @@ api_surface_contract:
       - http.status
     - workflow_id: router-events-lifespan-upstream
       input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
-      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      input_sha256: 3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
-      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
       workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
       case_id: fastapi.lifecycle.parent-lifespan-state-override
@@ -44747,14 +44747,50 @@ api_surface_contract:
     error_contract_refs: []
     documentation_contract_refs: []
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: 3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      case_id: fastapi.lifecycle.parameter-event-handlers
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: 3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      case_id: fastapi.lifecycle.add-event-handler-invalid-string
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     identity_workflow_refs: []
     feature_ids:
+    - public-api-errors
     - websocket-lifecycle
     observation_selectors:
     - asgi.lifespan.event_order
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
     - asgi.lifespan.workload_trace
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter.add_event_handler/supported_slice
@@ -44767,8 +44803,14 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1105
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
+      known_gaps:
+      - Non-string event_type inputs have not been compared, so their accepted types and exception outcomes
+        are not claimed.
+      - Only the unsupported string "maintenance" is compared; other unsupported strings are not directly
+        exercised.
+      - Asynchronous callbacks registered through this method and callback failure behavior are not covered.
   - id: fastapi.routing.APIRouter.default_response_class
     kind: field
     source_candidate_ref: /api_candidates/1111
@@ -45629,9 +45671,9 @@ api_surface_contract:
       - openapi.paths
     - workflow_id: router-events-lifespan-upstream
       input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
-      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      input_sha256: 3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
-      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
       workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
       case_id: fastapi.lifecycle.nested-lifespan-state
@@ -45648,9 +45690,9 @@ api_surface_contract:
       - http.status
     - workflow_id: router-events-lifespan-upstream
       input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
-      input_sha256: 1149e7101cd6a22222d2deeedc02fa824c5b2e42b1734ca49a81cba20e524871
+      input_sha256: 3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
-      recipe_sha256: c4bbc1e774cf7f787d06ba3c089743d7cd95afd69f1e51fc41e52287f6fa540d
+      recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
       workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
       case_id: fastapi.lifecycle.parent-lifespan-state-override

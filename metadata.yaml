@@ -5140,13 +5140,30 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 6396
           end_line: 6413
-      feature_ids: [websocket-lifecycle]
-      observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.workload_trace]
+      feature_ids: [websocket-lifecycle, public-api-errors]
+      observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
-        Adds a synchronous startup or shutdown callback to an APIRouter; the
-        input workflow invokes it for an included router and observes lifecycle
-        order and cleanup. Invalid event types and callback failure behavior
-        are not covered.
+        Registers synchronous startup and shutdown callbacks on an APIRouter.
+        The parameter-event-handlers input links a router with both direct
+        callbacks into an application and observes lifecycle order and the
+        callback trace. The add-event-handler-invalid-string input passes the
+        unsupported string "maintenance" and observes a construction-time
+        AssertionError with an empty message. Non-string event_type inputs,
+        other unsupported strings, asynchronous callbacks registered through
+        this method, and callback failure behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+          case_id: fastapi.lifecycle.parameter-event-handlers
+        - recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+          case_id: fastapi.lifecycle.add-event-handler-invalid-string
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
+        known_gaps:
+          - Non-string event_type inputs have not been compared, so their accepted types and exception outcomes are not claimed.
+          - Only the unsupported string "maintenance" is compared; other unsupported strings are not directly exercised.
+          - Asynchronous callbacks registered through this method and callback failure behavior are not covered.
     fastapi.routing.APIRouter.on_event:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::on_event
       source_evidence:
