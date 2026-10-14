@@ -65,17 +65,15 @@ binds manifest SHA-256
 `d808858a9fd54ded33b713a8b1fa31db3c9cf17e0fcbfc6d07dd3815e88b8b1c`.
 
 Direct Python API workflows use isolated source and target workers, a versioned
-result schema, and exact comparison. On 2026-10-14, all 24 active workflows
-completed across 111 observations: 110 passed, with one failure in the
-Starlette-RS-owned TestClient signature. `fastapi.testclient.TestClient` is a
-direct re-export; the source annotations `ASGIApp`, `Literal['asyncio',
-'trio']`, and `httpx._types.CookieTypes | None` appear as `Any`, `str`, and
-`Any` on the pinned Starlette-RS target. Names, defaults, and other signature
-fields match. The comparison receipt is
-`parity-results/comparisons/241549b2-c7b4-47df-b17d-79ddb245e870.json`; this
-is not a complete public API parity claim, and FastAPI-RS keeps the direct
-alias boundary. The nine-case `encoding.yaml` workflow is one covered slice,
-not the entire API surface.
+result schema, and exact comparison. The 2026-10-14 receipt below contains one
+selected case, `fastapi.testclient.public-api.alias-signature`, which failed
+(0/1 passed). The source annotations `ASGIApp`, `Literal['asyncio', 'trio']`,
+and `httpx._types.CookieTypes | None` appear as `Any`, `str`, and `Any` on the
+pinned Starlette-RS target; the parameter names, defaults, and other signature
+fields match. This single-case receipt makes no aggregate claim about other
+workflows. It is not a complete public API parity result, and FastAPI-RS keeps
+the direct alias boundary. The nine-case `encoding.yaml` workflow is one
+covered slice, not the entire API surface.
 
 Workflow v2 also reads non-callable public attributes through the same
 identity-checked workers. A `public_attribute` probe emits a
