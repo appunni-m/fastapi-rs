@@ -95,6 +95,14 @@ class HeaderToken(BaseModel):
     token: str
 
 
+def shared_token(token: Annotated[str, Header(alias="x-record-token")]) -> str:
+    return token
+
+
+def decorate_token(token: Annotated[str, Header(alias="x-record-token")]) -> str:
+    return token
+
+
 def _configure_routes(app: FastAPI) -> None:
     @app.post("/schema/items/", responses={402: {"model": SplitItem}})
     def create_split_item(item: SplitItem) -> SplitItem:
@@ -150,12 +158,6 @@ def _configure_routes(app: FastAPI) -> None:
     @app.get("/described", response_model=FormFeedRecord)
     async def get_described_record() -> dict[str, str]:
         return {"value": "sample"}
-
-    def shared_token(token: Annotated[str, Header(alias="x-record-token")]) -> str:
-        return token
-
-    def decorate_token(token: Annotated[str, Header(alias="x-record-token")]) -> str:
-        return token
 
     @app.get("/dependency-schema")
     async def dependency_schema(

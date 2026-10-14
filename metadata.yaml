@@ -1042,6 +1042,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor.openapi-tags
           workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
           observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schemas.yaml
+          case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema
+          workload_path: tests/fixtures/workloads/openapi_schemas.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schemas.yaml
+          case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema-no-separate
+          workload_path: tests/fixtures/workloads/openapi_schemas.py
+          observation_selectors: [http.status, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
@@ -1581,6 +1589,10 @@ reviewed_api_contract_overlay:
         OpenAPI `webhooks` map and are absent from the app's inbound paths and
         dispatch, as observed by `webhooks-constructor`; this does not establish
         full constructor-signature parity or arbitrary route-object support.
+        The documented `separate_input_output_schemas` keyword defaults to true;
+        false maps ordinary response fields to validation-mode schemas while
+        models with computed fields retain serialization-mode schemas. The
+        linked inputs compare both modes through the generated OpenAPI document.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -3839,6 +3851,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.document-metadata
           workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
+          case_id: fastapi.openapi.get-openapi.response-model-schemas-split
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
+          case_id: fastapi.openapi.get-openapi.response-model-schemas-shared
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
+          observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
           case_id: fastapi.openapi.get-openapi.single-route
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
@@ -3870,7 +3890,9 @@ reviewed_api_contract_overlay:
         native, static GET APIRoutes with distinct paths and names containing
         only lowercase ASCII letters, the default summary, operation ID, response class,
         and empty dependency/parameter plans produce their default operation
-        documents. Other non-empty route shapes remain unsupported. Route-level
+        documents. Static GET routes with a primary response model also emit
+        its shared or split response schema according to the flag. Other non-empty
+        route shapes remain unsupported. Route-level
         tags are preserved for supported operations. The linked direct-call
         fixture covers a non-empty `webhooks` input with one native simple
         static GET APIRoute. Other methods and multi-method default operation
@@ -3882,9 +3904,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - Route contexts and included route trees remain rejected; only native APIRoutes with the supported simple static configuration are traversed for direct calls.
-          - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, multi-method operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct calls.
+          - Request/body schemas, additional response schemas, security schemes, callbacks, custom route operation IDs, multi-method operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct calls.
           - Default summary generation for endpoint names containing characters outside lowercase ASCII letters can differ from FastAPI title casing, including underscores and digit transitions.
-          - The linked fixtures cover empty routes, metadata options, simple static GET routes, and one simple static webhook registered for GET; webhook routes with other or multiple methods, invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
+          - The linked fixtures cover empty routes, metadata options, simple static GET routes, primary response-model schemas in both modes, and one simple static webhook registered for GET; webhook routes with other or multiple methods, invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       supported_slice: >-
@@ -4744,6 +4766,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.root-path.mutable-public-attributes
           workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schemas.yaml
+          case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema
+          workload_path: tests/fixtures/workloads/openapi_schemas.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-schemas.yaml
+          case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema-no-separate
+          workload_path: tests/fixtures/workloads/openapi_schemas.py
+          observation_selectors: [http.status, openapi.document]
         - *generate_unique_id_duplicate_warnings
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
@@ -4838,6 +4868,8 @@ reviewed_api_contract_overlay:
         and default routers, body/security schema emission, and separation from
         inbound paths. A same-ID path/webhook pair emits the pinned duplicate
         operation warning while retaining each operation in its separate map.
+        The separate-schema cases compare the constructor setting for ordinary
+        and computed-field response models.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:

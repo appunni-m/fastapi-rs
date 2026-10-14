@@ -700,28 +700,13 @@ impl GetOpenApiCallable {
         separate_input_output_schemas: bool,
         external_docs: Option<Bound<'_, PyAny>>,
     ) -> PyResult<Py<PyAny>> {
-        let _ = separate_input_output_schemas;
-        let route_count = routes.len()?;
-        let webhook_count = webhooks
-            .as_ref()
-            .map(|items| items.len())
-            .transpose()?
-            .unwrap_or(0);
-        let mut operations = Vec::with_capacity(route_count + webhook_count);
-        for index in 0..route_count {
-            operations.extend(crate::application_runtime::direct_route_openapi_operation(
-                &routes.get_item(index)?,
-                false,
-            )?);
-        }
-        if let Some(webhooks) = webhooks {
-            for index in 0..webhook_count {
-                operations.extend(crate::application_runtime::direct_route_openapi_operation(
-                    &webhooks.get_item(index)?,
-                    true,
-                )?);
-            }
-        }
+        let (operations, response_definitions) =
+            crate::application_runtime::direct_openapi_operations(
+                py,
+                routes,
+                webhooks.as_ref(),
+                separate_input_output_schemas,
+            )?;
 
         let contact = contact.map(Bound::unbind);
         let license_info = license_info.map(Bound::unbind);
@@ -745,7 +730,7 @@ impl GetOpenApiCallable {
             },
             &operations,
             None,
-            None,
+            Some(&response_definitions),
         )
     }
 }

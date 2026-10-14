@@ -1290,6 +1290,7 @@ struct PyApiRoute {
     callbacks: Py<PyAny>,
     strict_content_type: Py<PyAny>,
     stream_item_type: Option<Py<PyAny>>,
+    response_field: Option<ResponseField>,
     direct_openapi_supported: bool,
 }
 
@@ -1629,6 +1630,7 @@ fn new_api_route_view(
                 .unwrap_or_else(|| PyList::empty(py).unbind().into_any()),
             strict_content_type: config.strict_content_type.clone_ref(py),
             stream_item_type: config.stream_item_type.map(|value| value.clone_ref(py)),
+            response_field: None,
             direct_openapi_supported: config.direct_openapi_supported,
         },
     )
@@ -1726,6 +1728,18 @@ fn set_api_route_unique_id(
     Ok(())
 }
 
+fn set_api_route_response_field(
+    py: Python<'_>,
+    route: &Py<PyAny>,
+    field: Option<&ResponseField>,
+) -> PyResult<()> {
+    route
+        .bind(py)
+        .extract::<PyRefMut<'_, PyApiRoute>>()?
+        .response_field = field.map(|field| field.clone_ref(py));
+    Ok(())
+}
+
 fn python_string_value(value: &Bound<'_, PyAny>) -> PyResult<String> {
     Ok(value.str()?.to_string_lossy().into_owned())
 }
@@ -1778,9 +1792,11 @@ fn openapi_warning_identity(
     Ok((endpoint_name, endpoint_file))
 }
 
-pub(crate) fn direct_route_openapi_operation(
+fn direct_route_openapi_operation(
     route: &Bound<'_, PyAny>,
     is_webhook: bool,
+    response_schemas: &ResponseFieldSchemaBatch,
+    next_field_key: &mut usize,
 ) -> PyResult<Vec<OpenApiOperation>> {
     let route = route.extract::<PyRef<'_, PyApiRoute>>().map_err(|_| {
         PyNotImplementedError::new_err("FastAPI-RS get_openapi supports native APIRoutes")
@@ -1802,6 +1818,14 @@ pub(crate) fn direct_route_openapi_operation(
             .extract::<String>()?,
     };
     let description = endpoint_openapi_description(py, route.endpoint.bind(py))?;
+    let response_schema = match route.response_field.as_ref() {
+        Some(field) => {
+            let schema = response_schemas.schema(py, *next_field_key, field)?;
+            *next_field_key += 1;
+            Some(schema)
+        }
+        None => None,
+    };
     methods
         .iter()
         .map(|method| {
@@ -1844,8 +1868,8 @@ pub(crate) fn direct_route_openapi_operation(
                 request_body_content_before_required: false,
                 request_media_type: "application/json".to_owned(),
                 response_model_name: None,
-                response_schema: None,
-                response_schema_title: Some(String::new()),
+                response_schema: response_schema.as_ref().map(|schema| schema.clone_ref(py)),
+                response_schema_title: response_schema.is_none().then(String::new),
                 response_media_type: Some("application/json".to_owned()),
                 response_class_is_json: true,
                 jsonl_stream: false,
@@ -1856,6 +1880,59 @@ pub(crate) fn direct_route_openapi_operation(
             })
         })
         .collect()
+}
+
+pub(crate) fn direct_openapi_operations<'py>(
+    py: Python<'py>,
+    routes: &Bound<'py, PyAny>,
+    webhooks: Option<&Bound<'py, PyAny>>,
+    separate_input_output_schemas: bool,
+) -> PyResult<(Vec<OpenApiOperation>, Py<PyDict>)> {
+    let route_count = routes.len()?;
+    let webhook_count = webhooks.map(|items| items.len()).transpose()?.unwrap_or(0);
+    let mut direct_routes = Vec::with_capacity(route_count + webhook_count);
+    for index in 0..route_count {
+        direct_routes.push((routes.get_item(index)?, false));
+    }
+    if let Some(webhooks) = webhooks {
+        for index in 0..webhook_count {
+            direct_routes.push((webhooks.get_item(index)?, true));
+        }
+    }
+
+    let route_refs = direct_routes
+        .iter()
+        .map(|(route, _)| {
+            route.extract::<PyRef<'py, PyApiRoute>>().map_err(|_| {
+                PyNotImplementedError::new_err("FastAPI-RS get_openapi supports native APIRoutes")
+            })
+        })
+        .collect::<PyResult<Vec<_>>>()?;
+    if route_refs
+        .iter()
+        .any(|route| !route.direct_openapi_supported)
+    {
+        return Err(PyNotImplementedError::new_err(
+            "FastAPI-RS get_openapi supports only native simple APIRoutes",
+        ));
+    }
+    let response_fields = route_refs
+        .iter()
+        .filter_map(|route| route.response_field.as_ref())
+        .collect::<Vec<_>>();
+    let response_schemas =
+        ResponseFieldSchemaBatch::new(py, &response_fields, &[], separate_input_output_schemas)?;
+    let mut next_field_key = 0;
+    let mut operations = Vec::with_capacity(route_count + webhook_count);
+    for (route, is_webhook) in direct_routes {
+        operations.extend(direct_route_openapi_operation(
+            &route,
+            is_webhook,
+            &response_schemas,
+            &mut next_field_key,
+        )?);
+    }
+    Ok((operations, response_schemas.definitions.clone_ref(py)))
 }
 
 fn endpoint_openapi_description(
@@ -2184,6 +2261,7 @@ pub(crate) struct PyFastApi {
     swagger_ui_init_oauth: Option<Py<PyAny>>,
     swagger_ui_parameters: Option<Py<PyAny>>,
     generate_unique_id_function: GenerateUniqueIdChoice,
+    separate_input_output_schemas: bool,
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
@@ -2234,6 +2312,7 @@ struct OpenApiRouteSnapshot {
     response_model: Option<Py<PyAny>>,
     primary_field: Option<ResponseField>,
     additional_fields: Vec<AdditionalResponseField>,
+    request_schema_key: Option<usize>,
     plan: CallablePlan,
 }
 
@@ -2275,6 +2354,7 @@ impl OpenApiRouteSnapshot {
                 .map(|value| value.clone_ref(py)),
             primary_field: route.response_field.field(py)?,
             additional_fields: route.response_field.additional_fields(py)?,
+            request_schema_key: None,
             plan: route.plan.clone_ref(py),
         })
     }
@@ -2292,6 +2372,7 @@ struct OpenApiAppSnapshot {
     openapi_external_docs: Option<Py<PyAny>>,
     servers: Py<PyAny>,
     version: String,
+    separate_input_output_schemas: bool,
     operations: Vec<OpenApiRouteSnapshot>,
 }
 
@@ -2330,9 +2411,38 @@ impl OpenApiAppSnapshot {
                 .map(|value| value.clone_ref(py)),
             servers: app.servers.clone_ref(py),
             version: app.version.clone(),
+            separate_input_output_schemas: app.separate_input_output_schemas,
             operations,
         })
     }
+}
+
+fn openapi_request_schema_annotation(
+    py: Python<'_>,
+    route: &OpenApiRouteSnapshot,
+) -> PyResult<Option<Py<PyAny>>> {
+    let body_parameters = route.plan.all_body_parameters();
+    let aggregate_body = if route.plan.has_form_inputs() {
+        form_body_should_embed(py, &body_parameters)?
+    } else {
+        body_fields_embedded(&body_parameters)
+    };
+    if aggregate_body {
+        let operation_id = route
+            .operation_id
+            .as_deref()
+            .filter(|value| !value.is_empty())
+            .unwrap_or(&route.unique_id);
+        return aggregate_body_model(py, &format!("Body_{operation_id}"), &body_parameters)
+            .map(Some);
+    }
+
+    let parameter = if route.plan.has_form_inputs() {
+        body_parameters.first().copied()
+    } else {
+        route.plan.body_parameter()
+    };
+    Ok(parameter.map(|parameter| parameter.annotation.clone_ref(py)))
 }
 
 struct OpenApiCache {
@@ -2715,7 +2825,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -2736,6 +2846,7 @@ impl PyFastApi {
         swagger_ui_init_oauth: Option<Py<PyAny>>,
         swagger_ui_parameters: Option<Py<PyAny>>,
         generate_unique_id_function: GenerateUniqueIdArgument,
+        separate_input_output_schemas: bool,
         terms_of_service: Option<String>,
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
@@ -2892,6 +3003,7 @@ impl PyFastApi {
             swagger_ui_init_oauth,
             swagger_ui_parameters,
             generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
+            separate_input_output_schemas,
             terms_of_service,
             contact,
             license_info,
@@ -2937,6 +3049,16 @@ impl PyFastApi {
     #[setter]
     fn set_openapi_version(&mut self, openapi_version: String) {
         self.openapi_version = openapi_version;
+    }
+
+    #[getter]
+    fn separate_input_output_schemas(&self) -> bool {
+        self.separate_input_output_schemas
+    }
+
+    #[setter]
+    fn set_separate_input_output_schemas(&mut self, value: bool) {
+        self.separate_input_output_schemas = value;
     }
 
     #[getter]
@@ -4810,10 +4932,29 @@ impl PyFastApi {
                 .clone_ref(py)
         };
         materialize_included_response_fields(py, &webhook_app, None)?;
-        let snapshot = {
+        let mut snapshot = {
             let app = app.bind(py).borrow();
             OpenApiAppSnapshot::from_app(py, &app)?
         };
+        let response_field_count = snapshot
+            .operations
+            .iter()
+            .flat_map(|route| {
+                route.primary_field.iter().chain(
+                    route
+                        .additional_fields
+                        .iter()
+                        .filter_map(|response| response.field.as_ref()),
+                )
+            })
+            .count();
+        let mut request_annotations = Vec::new();
+        for route in &mut snapshot.operations {
+            if let Some(annotation) = openapi_request_schema_annotation(py, route)? {
+                route.request_schema_key = Some(response_field_count + request_annotations.len());
+                request_annotations.push(annotation);
+            }
+        }
         let response_fields = snapshot
             .operations
             .iter()
@@ -4828,12 +4969,25 @@ impl PyFastApi {
             .collect::<Vec<_>>();
         // Source collects primary then extras before the shared two-pass JSON
         // generator. The snapshot retains owners across callbacks and errors.
-        let response_schemas = ResponseFieldSchemaBatch::new(py, &response_fields)?;
+        let response_schemas = ResponseFieldSchemaBatch::new(
+            py,
+            &response_fields,
+            &request_annotations,
+            snapshot.separate_input_output_schemas,
+        )?;
         let mut next_field_key = 0;
         let operations = snapshot
             .operations
             .iter()
-            .map(|route| Self::openapi_operation(py, route, &response_schemas, &mut next_field_key))
+            .map(|route| {
+                Self::openapi_operation(
+                    py,
+                    route,
+                    &response_schemas,
+                    snapshot.separate_input_output_schemas,
+                    &mut next_field_key,
+                )
+            })
             .collect::<PyResult<Vec<_>>>()?;
         openapi_document(
             py,
@@ -4860,6 +5014,7 @@ impl PyFastApi {
         py: Python<'_>,
         route: &OpenApiRouteSnapshot,
         response_schemas: &ResponseFieldSchemaBatch,
+        separate_input_output_schemas: bool,
         next_field_key: &mut usize,
     ) -> PyResult<OpenApiOperation> {
         let name = route.name.as_str();
@@ -4875,12 +5030,9 @@ impl PyFastApi {
             .as_ref()
             .filter(|operation_id| !operation_id.is_empty())
             .cloned();
-        let (operation_id, operation_id_text) = match explicit_operation_id {
-            Some(operation_id) => (
-                PyString::new(py, &operation_id).into_any().unbind(),
-                operation_id,
-            ),
-            None => (route.unique_id_value.clone_ref(py), route.unique_id.clone()),
+        let operation_id = match explicit_operation_id {
+            Some(operation_id) => PyString::new(py, &operation_id).into_any().unbind(),
+            None => route.unique_id_value.clone_ref(py),
         };
         let parameters = route
             .plan
@@ -4928,10 +5080,7 @@ impl PyFastApi {
             let body_parameters = route.plan.all_body_parameters();
             let aggregate_body = form_body_should_embed(py, &body_parameters)?;
             if aggregate_body {
-                let aggregate_name = format!("Body_{operation_id_text}");
-                let aggregate_model = aggregate_body_model(py, &aggregate_name, &body_parameters)?;
-                let request_schema =
-                    pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
+                let request_schema = request_schema_from_batch(py, route, response_schemas, None)?;
                 let request_required = body_parameters.iter().any(|parameter| parameter.required);
                 let media_type = aggregate_body_media_type(&body_parameters);
                 (
@@ -4946,9 +5095,10 @@ impl PyFastApi {
                 match body_parameters.first().copied() {
                     Some(parameter) => (
                         None,
-                        Some(body_parameter_schema(
+                        Some(request_schema_from_batch(
                             py,
-                            parameter,
+                            route,
+                            response_schemas,
                             Some(&title_case(&parameter.body_alias().replace('_', " "))),
                         )?),
                         parameter.required,
@@ -4970,11 +5120,7 @@ impl PyFastApi {
             let direct_body_parameters = route.plan.all_body_parameters();
             let aggregate_body = body_fields_embedded(&direct_body_parameters);
             if aggregate_body {
-                let aggregate_name = format!("Body_{operation_id_text}");
-                let aggregate_model =
-                    aggregate_body_model(py, &aggregate_name, &direct_body_parameters)?;
-                let request_schema =
-                    pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
+                let request_schema = request_schema_from_batch(py, route, response_schemas, None)?;
                 let request_required = direct_body_parameters
                     .iter()
                     .any(|parameter| parameter.required);
@@ -4990,9 +5136,10 @@ impl PyFastApi {
                 match route.plan.body_parameter() {
                     Some(parameter) => (
                         None,
-                        Some(body_parameter_schema(
+                        Some(request_schema_from_batch(
                             py,
-                            parameter,
+                            route,
+                            response_schemas,
                             Some(&title_case(&parameter.body_alias().replace('_', " "))),
                         )?),
                         parameter.required,
@@ -5023,7 +5170,12 @@ impl PyFastApi {
                 // Stream paths do not yet retain a primary response field.
                 // Their existing standalone schema behavior remains separate.
                 Some(model) => {
-                    let schema = pydantic_schema(py, model.bind(py), "serialization", None)?;
+                    let schema = pydantic_response_schema(
+                        py,
+                        model.bind(py),
+                        separate_input_output_schemas,
+                        None,
+                    )?;
                     let model_name = match schema_definition_name(schema.bind(py))? {
                         Some(name) => Some(name),
                         None => {
@@ -5080,8 +5232,12 @@ impl PyFastApi {
         let (stream_item_model_name, stream_item_schema) = if jsonl_stream || sse_stream {
             match route.stream_item_type.as_ref() {
                 Some(stream_item_type) => {
-                    let schema =
-                        pydantic_schema(py, stream_item_type.bind(py), "serialization", None)?;
+                    let schema = pydantic_response_schema(
+                        py,
+                        stream_item_type.bind(py),
+                        separate_input_output_schemas,
+                        None,
+                    )?;
                     let model_name = match schema_definition_name(schema.bind(py))? {
                         Some(name) => Some(name),
                         None => {
@@ -5207,6 +5363,7 @@ impl PyApiRouter {
                 None,
                 None,
                 generate_unique_id_function,
+                true,
                 None,
                 None,
                 None,
@@ -6716,7 +6873,6 @@ impl PyOperationDecorator {
             && responses.bind(py).is_empty()
             && self.response_class.is_default()
             && !has_default_response_class
-            && response_model.is_none()
             && self.response_model_include.is_none()
             && self.response_model_exclude.is_none()
             && self.response_model_by_alias
@@ -6726,7 +6882,6 @@ impl PyOperationDecorator {
             && !has_app_dependencies
             && self.dependencies.is_empty()
             && plan.parameters.is_empty()
-            && plan.return_annotation.is_none()
             && !generator_kind.is_generator()
             && !endpoint_has_docstring;
         let strict_content_type = self.app.bind(py).borrow().strict_content_type;
@@ -6781,6 +6936,7 @@ impl PyOperationDecorator {
         let unique_id_text = python_string_value(unique_id.bind(py))?;
         let additional = build_additional_response_fields(py, responses.bind(py), &unique_id_text)?;
         let response_field = build_response_field(py, &unique_id_text, response_model.as_ref())?;
+        set_api_route_response_field(py, &public_route, response_field.as_ref())?;
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
         if self.path.starts_with('/') || !app.is_router_inner {
@@ -9611,21 +9767,16 @@ fn aggregate_body_model(
         .map(Bound::unbind)
 }
 
-fn pydantic_schema(
+fn request_schema_from_batch(
     py: Python<'_>,
-    annotation: &Bound<'_, PyAny>,
-    mode: &str,
+    route: &OpenApiRouteSnapshot,
+    response_schemas: &ResponseFieldSchemaBatch,
     title: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
-    pydantic_schema_with_config(py, annotation, mode, title, None)
-}
-
-fn body_parameter_schema(
-    py: Python<'_>,
-    parameter: &CallableParameter,
-    title: Option<&str>,
-) -> PyResult<Py<PyAny>> {
-    pydantic_schema(py, parameter.annotation.bind(py), "validation", title)
+    let key = route
+        .request_schema_key
+        .ok_or_else(|| PyRuntimeError::new_err("OpenAPI request schema field was not collected"))?;
+    response_schemas.validation_schema(py, key, title)
 }
 
 fn pydantic_parameter_schema(
@@ -9694,6 +9845,35 @@ fn pydantic_schema_with_config(
         .import("pydantic")?
         .getattr("TypeAdapter")?
         .call((annotation,), Some(&adapter_kwargs))?;
+    pydantic_schema_from_adapter(py, &adapter, mode, title)
+}
+
+fn pydantic_response_schema(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+    separate_input_output_schemas: bool,
+    title: Option<&str>,
+) -> PyResult<Py<PyAny>> {
+    let adapter = py
+        .import("pydantic")?
+        .getattr("TypeAdapter")?
+        .call1((annotation,))?;
+    let core_schema = adapter.getattr("core_schema")?;
+    let mut has_computed_fields = false;
+    if let Ok(core_schema) = core_schema.cast::<PyDict>() {
+        if let Some(schema) = core_schema.get_item("schema")? {
+            if let Ok(schema) = schema.cast::<PyDict>() {
+                if let Some(fields) = schema.get_item("computed_fields")? {
+                    has_computed_fields = fields.len()? > 0;
+                }
+            }
+        }
+    }
+    let mode = if separate_input_output_schemas || has_computed_fields {
+        "serialization"
+    } else {
+        "validation"
+    };
     pydantic_schema_from_adapter(py, &adapter, mode, title)
 }
 

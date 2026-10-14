@@ -1,6 +1,6 @@
 //! Construction and ownership of FastAPI response fields.
 
-use pyo3::exceptions::{PyImportError, PyTypeError, PyUserWarning};
+use pyo3::exceptions::{PyImportError, PyTypeError, PyUserWarning, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyString, PyTuple, PyType};
 
@@ -229,6 +229,34 @@ impl ResponseField {
             config: self.config.clone_ref(py),
         }
     }
+
+    fn schema_mode(
+        &self,
+        py: Python<'_>,
+        separate_input_output_schemas: bool,
+    ) -> PyResult<&'static str> {
+        if separate_input_output_schemas || self.has_computed_fields(py)? {
+            return Ok(self.mode);
+        }
+        Ok("validation")
+    }
+
+    fn has_computed_fields(&self, py: Python<'_>) -> PyResult<bool> {
+        let core_schema = self.adapter.bind(py).getattr("core_schema")?;
+        let Ok(core_schema) = core_schema.cast::<PyDict>() else {
+            return Ok(false);
+        };
+        let Some(schema) = core_schema.get_item("schema")? else {
+            return Ok(false);
+        };
+        let Ok(schema) = schema.cast::<PyDict>() else {
+            return Ok(false);
+        };
+        let Some(computed_fields) = schema.get_item("computed_fields")? else {
+            return Ok(false);
+        };
+        Ok(computed_fields.len()? > 0)
+    }
 }
 
 /// Document-local schemas generated together from retained response adapters.
@@ -239,10 +267,16 @@ impl ResponseField {
 pub(crate) struct ResponseFieldSchemaBatch {
     field_mapping: Py<PyDict>,
     pub(crate) definitions: Py<PyDict>,
+    field_modes: Vec<&'static str>,
 }
 
 impl ResponseFieldSchemaBatch {
-    pub(crate) fn new(py: Python<'_>, fields: &[&ResponseField]) -> PyResult<Self> {
+    pub(crate) fn new(
+        py: Python<'_>,
+        fields: &[&ResponseField],
+        validation_annotations: &[Py<PyAny>],
+        separate_input_output_schemas: bool,
+    ) -> PyResult<Self> {
         let generator_options = PyDict::new(py);
         generator_options.set_item("ref_template", "#/components/schemas/{model}")?;
         let generator = py
@@ -250,15 +284,34 @@ impl ResponseFieldSchemaBatch {
             .getattr("_FastApiGenerateJsonSchema")?
             .call((), Some(&generator_options))?;
         let inputs = PyList::empty(py);
+        let mut field_modes = Vec::with_capacity(fields.len() + validation_annotations.len());
         for (key, field) in fields.iter().enumerate() {
+            let mode = field.schema_mode(py, separate_input_output_schemas)?;
+            field_modes.push(mode);
             inputs.append(PyTuple::new(
                 py,
                 [
                     key.into_pyobject(py)?.into_any(),
-                    PyString::new(py, field.mode).into_any(),
+                    PyString::new(py, mode).into_any(),
                     field.adapter.bind(py).getattr("core_schema")?,
                 ],
             )?)?;
+        }
+        for (index, annotation) in validation_annotations.iter().enumerate() {
+            let key = fields.len() + index;
+            let adapter = py
+                .import("pydantic")?
+                .getattr("TypeAdapter")?
+                .call1((annotation.bind(py),))?;
+            inputs.append(PyTuple::new(
+                py,
+                [
+                    key.into_pyobject(py)?.into_any(),
+                    PyString::new(py, "validation").into_any(),
+                    adapter.getattr("core_schema")?,
+                ],
+            )?)?;
+            field_modes.push("validation");
         }
         // Pydantic owns both passes, reference sharing and definitions remapping.
         // A hook error aborts this local batch without an alternate generator.
@@ -280,6 +333,7 @@ impl ResponseFieldSchemaBatch {
         Ok(Self {
             field_mapping: field_mapping.unbind(),
             definitions: definitions.unbind(),
+            field_modes,
         })
     }
 
@@ -290,12 +344,41 @@ impl ResponseFieldSchemaBatch {
         field: &ResponseField,
     ) -> PyResult<Py<PyAny>> {
         let alias = field.serialization_field_alias(py)?;
+        let mode = self
+            .field_modes
+            .get(key)
+            .copied()
+            .ok_or_else(|| PyValueError::new_err("response schema field key is unavailable"))?;
         let schema = self
             .field_mapping
             .bind(py)
-            .call_method1("__getitem__", ((key, field.mode),))?
+            .call_method1("__getitem__", ((key, mode),))?
             .cast_into::<PyDict>()?;
         field.apply_schema_title(py, &schema, alias.bind(py))?;
+        Ok(schema.into_any().unbind())
+    }
+
+    pub(crate) fn validation_schema(
+        &self,
+        py: Python<'_>,
+        key: usize,
+        title: Option<&str>,
+    ) -> PyResult<Py<PyAny>> {
+        let mode = self
+            .field_modes
+            .get(key)
+            .copied()
+            .ok_or_else(|| PyValueError::new_err("request schema field key is unavailable"))?;
+        let schema = self
+            .field_mapping
+            .bind(py)
+            .call_method1("__getitem__", ((key, mode),))?
+            .cast_into::<PyDict>()?;
+        if schema.get_item("$ref")?.is_none() {
+            if let Some(title) = title {
+                schema.set_item("title", title)?;
+            }
+        }
         Ok(schema.into_any().unbind())
     }
 }

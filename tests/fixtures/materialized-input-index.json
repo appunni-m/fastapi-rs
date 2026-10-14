@@ -2608,7 +2608,7 @@
         "fastapi.openapi.schema-ref-pydantic-v2.response"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_schemas.py",
-      "workload_sha256": "907eecd1f264b8011228ea55dc489f0d4ee3dac90b8ea6f9db028552c77d6222",
+      "workload_sha256": "ae4e13882635f0025b3ff31b02e8d8f2ddb9c0719f7ca3389aa40f494378b9c3",
       "case_contracts": [
         {
           "case_id": "fastapi.openapi.schema-compat-pydantic-v2.response",
@@ -12090,15 +12090,17 @@
     {
       "id": "openapi-get-openapi-public-api",
       "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json",
-      "input_sha256": "05ef5b02a98cb8821010307a11cf219648e093ec7d60db95443605bb40e67db4",
+      "input_sha256": "897dc544c340d32a3e7a150e25b5f001194fd403732928d96674079711608250",
       "recipe_path": "tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml",
-      "recipe_sha256": "93ebb0d0e2af055a8ce98409805218f0401db494b8b90414a0c5490c6c14fd2c",
+      "recipe_sha256": "da2c98c7c3bf7644b9a33027032f1689698ca1ac8d0e841421c3fdcaad9a4b7b",
       "case_ids": [
         "fastapi.openapi.get-openapi.empty-routes",
-        "fastapi.openapi.get-openapi.document-metadata"
+        "fastapi.openapi.get-openapi.document-metadata",
+        "fastapi.openapi.get-openapi.response-model-schemas-split",
+        "fastapi.openapi.get-openapi.response-model-schemas-shared"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_get_openapi_public_api.py",
-      "workload_sha256": "c537d9ce6ab385eb186af19d52b38e21d4e93d270c183dda96259047a69a4478",
+      "workload_sha256": "34dbe488f9d41413df2fd932b461bc69e5737a7d2acbfc9a851f818c2a85aab3",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.get-openapi.document-metadata",
@@ -12108,6 +12110,18 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi.empty-routes",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.response-model-schemas-shared",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.response-model-schemas-split",
           "symbol_id": "fastapi.openapi.utils.get_openapi",
           "path": "fastapi/openapi/utils.py",
           "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
@@ -12132,6 +12146,24 @@
             "python.attribute_value",
             "python.signature"
           ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.response-model-schemas-shared",
+          "probe_id": "response-model-shared",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.response-model-schemas-split",
+          "probe_id": "response-model-split",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
         }
       ],
       "case_contracts": [
@@ -12144,6 +12176,20 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi.document-metadata",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.get_openapi"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.response-model-schemas-split",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.get_openapi"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.response-model-schemas-shared",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.openapi.utils.get_openapi"
@@ -12664,7 +12710,7 @@
         "fastapi.openapi.tutorial-separate-openapi-schemas-tutorial001.openapi-schema"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_schemas.py",
-      "workload_sha256": "907eecd1f264b8011228ea55dc489f0d4ee3dac90b8ea6f9db028552c77d6222",
+      "workload_sha256": "ae4e13882635f0025b3ff31b02e8d8f2ddb9c0719f7ca3389aa40f494378b9c3",
       "case_contracts": [
         {
           "case_id": "fastapi.openapi.duplicate-models-openapi.openapi-schema",
