@@ -12335,17 +12335,18 @@
     {
       "id": "openapi-get-openapi-route-contexts",
       "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-route-contexts.json",
-      "input_sha256": "d8e99917abfa8ac5bc563bea05c6e75585ca04b1099f839978c308244756acbd",
+      "input_sha256": "ca963d29a6e0b07d984bd45755891c3a4afe58da80a8241472d668e887b066ae",
       "recipe_path": "tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml",
-      "recipe_sha256": "101b05c160360cf3e5417b1737848ddf22b52dc8585f02897dd5c4eab1ab462f",
+      "recipe_sha256": "98fc91d5d035b08ae0327fc0f79f46919be668031703cacf7a506e50bfbc292c",
       "case_ids": [
         "fastapi.openapi.get-openapi.filtered-included-route-context",
         "fastapi.openapi.get-openapi-mutated-route-methods",
         "fastapi.openapi.get-openapi-mutated-route-responses",
+        "fastapi.openapi.get-openapi.excluded-included-invalid-response",
         "fastapi.openapi.get-openapi.webhook-route-context"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_get_openapi_route_contexts.py",
-      "workload_sha256": "53c72af1b08bcd72040dcc6681bc78b99a4758eeb31d7cf7a7c65a3b6434ba85",
+      "workload_sha256": "ac09d6fe99f9d30742754141f971cfef1e130d9500f52cde203db38426a50299",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.get-openapi-mutated-route-methods",
@@ -12355,6 +12356,12 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi-mutated-route-responses",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.excluded-included-invalid-response",
           "symbol_id": "fastapi.openapi.utils.get_openapi",
           "path": "fastapi/openapi/utils.py",
           "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
@@ -12389,6 +12396,15 @@
           "probe_kind": "callable",
           "observation_selectors": [
             "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.excluded-included-invalid-response",
+          "probe_id": "excluded-included-invalid-response",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
           ]
         },
         {
@@ -12427,6 +12443,13 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi-mutated-route-responses",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.get_openapi"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.excluded-included-invalid-response",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.openapi.utils.get_openapi"

@@ -73,6 +73,20 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "content": {"application/json": {"example": {"id": 1}}},
     }
 
+    excluded_response_app = FastAPI()
+    excluded_response_router = APIRouter()
+
+    @excluded_response_router.get("/hidden")
+    def hidden_response():
+        return {"hidden": True}
+
+    excluded_response_app.include_router(
+        excluded_response_router,
+        prefix="/private",
+        include_in_schema=False,
+    )
+    excluded_response_router.routes[0].responses[204] = {"model": str}
+
     return {
         "filtered-included-route-context": {
             "args": [],
@@ -105,6 +119,14 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "title": "Mutable Responses API",
                 "version": "1.0.0",
                 "routes": [mutable_responses_context],
+            },
+        },
+        "excluded-included-invalid-response": {
+            "args": [],
+            "kwargs": {
+                "title": "Excluded Included API",
+                "version": "1.0.0",
+                "routes": excluded_response_app.routes,
             },
         },
     }

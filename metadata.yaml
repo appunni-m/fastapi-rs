@@ -4143,11 +4143,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi-mutated-route-responses
           workload_path: tests/fixtures/workloads/openapi_get_openapi_route_contexts.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml
+          case_id: fastapi.openapi.get-openapi.excluded-included-invalid-response
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_route_contexts.py
+          observation_selectors: [python.call_outcome]
       feature_ids: [openapi-docs]
       observation_selectors:
         - http.status
         - openapi.document
         - python.attribute_value
+        - python.call_outcome
         - python.signature
       supported_slice: >-
         Direct calls require the keyword-only title, version, and routes inputs;
@@ -4164,8 +4169,10 @@ reviewed_api_contract_overlay:
         cover filtered RouteContext inputs from included routers, effective
         paths and dependency security, webhook RouteContext inputs with request
         schemas and security, and live method and response declarations read at
-        OpenAPI generation time. These direct-call fixtures do not establish
-        parity for all combinations of route options. Webhooks are emitted
+        OpenAPI generation time. They also check the source-matched error for an
+        invalid response model on an excluded included route when OpenAPI
+        consumes the application route tree. These direct-call fixtures do not
+        establish parity for all combinations of route options. Webhooks are emitted
         under a separate top-level `webhooks` map while ordinary routes remain
         under `paths`.
       target_binding:

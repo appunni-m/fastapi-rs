@@ -55,6 +55,25 @@ cases:
     kind: upstream_api_definition
     sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
     symbol_id: fastapi.openapi.utils.get_openapi
+- case_id: fastapi.openapi.get-openapi.excluded-included-invalid-response
+  probes:
+  - probe_id: excluded-included-invalid-response
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: get_openapi
+    argument_bundle: excluded-included-invalid-response
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_include_context.py
+    kind: upstream_test
+    sha256: 60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.get_openapi
 - case_id: fastapi.openapi.get-openapi.webhook-route-context
   probes:
   - probe_id: webhook-route-context
