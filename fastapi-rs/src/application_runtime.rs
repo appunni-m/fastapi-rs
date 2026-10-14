@@ -1147,6 +1147,7 @@ struct FastApiRoute {
     status_code: Option<u16>,
     include_in_schema: bool,
     response_class: ResponseClassChoice,
+    response_class_resolution: Option<ResponseClassResolution>,
     strict_content_type: Option<bool>,
     sse_stream: bool,
     generator_kind: FastApiGeneratorKind,
@@ -1166,6 +1167,80 @@ struct FastApiRoute {
     response_model_exclude_none: bool,
     router_dependencies: Vec<Py<PyAny>>,
     plan: CallablePlan,
+}
+
+enum ResponseClassResolutionCandidate {
+    Static(ResponseClassChoice),
+    RouterDefault(Py<PyFastApi>),
+}
+
+impl ResponseClassResolutionCandidate {
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        match self {
+            Self::Static(value) => Self::Static(value.clone_ref(py)),
+            Self::RouterDefault(router) => Self::RouterDefault(router.clone_ref(py)),
+        }
+    }
+
+    fn current_choice(&self, py: Python<'_>) -> ResponseClassChoice {
+        match self {
+            Self::Static(value) => value.clone_ref(py),
+            Self::RouterDefault(router) => router
+                .bind(py)
+                .borrow()
+                .default_response_class
+                .clone_ref(py),
+        }
+    }
+}
+
+struct ResponseClassResolution {
+    candidates: Vec<ResponseClassResolutionCandidate>,
+}
+
+impl ResponseClassResolution {
+    fn for_included_route(
+        py: Python<'_>,
+        route: &FastApiRoute,
+        source_router: &Py<PyFastApi>,
+        inherited: &ResponseClassChoice,
+    ) -> Self {
+        let mut candidates = match route.response_class_resolution.as_ref() {
+            Some(resolution) => resolution
+                .candidates
+                .iter()
+                .map(|candidate| candidate.clone_ref(py))
+                .collect(),
+            None => vec![
+                ResponseClassResolutionCandidate::Static(route.response_class.clone_ref(py)),
+                ResponseClassResolutionCandidate::RouterDefault(source_router.clone_ref(py)),
+            ],
+        };
+        candidates.push(ResponseClassResolutionCandidate::Static(
+            inherited.clone_ref(py),
+        ));
+        Self { candidates }
+    }
+
+    fn resolve(&self, py: Python<'_>) -> ResponseClassChoice {
+        let choices = self
+            .candidates
+            .iter()
+            .map(|candidate| candidate.current_choice(py))
+            .collect::<Vec<_>>();
+        let references = choices.iter().collect::<Vec<_>>();
+        ResponseClassChoice::first_explicit(py, &references)
+    }
+
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        Self {
+            candidates: self
+                .candidates
+                .iter()
+                .map(|candidate| candidate.clone_ref(py))
+                .collect(),
+        }
+    }
 }
 
 struct ResponseModelConfig {
@@ -2072,6 +2147,46 @@ struct ResponseFieldInput {
     unique_id: String,
     model: Option<Py<PyAny>>,
     responses: Py<PyDict>,
+    response_class_resolution: Option<ResponseClassResolution>,
+    generator_kind: FastApiGeneratorKind,
+    effective_route_context: Option<Py<PyAny>>,
+}
+
+struct IncludedResponseClassUpdate {
+    response_class: ResponseClassChoice,
+    sse_stream: bool,
+    effective_route: Py<PyAny>,
+    python_value: Py<PyAny>,
+}
+
+struct PreparedIncludedRoute {
+    index: usize,
+    response_field: ResponseFieldState,
+    response_class: Option<IncludedResponseClassUpdate>,
+}
+
+fn included_route_sse_stream(
+    py: Python<'_>,
+    generator_kind: FastApiGeneratorKind,
+    response_class: &ResponseClassChoice,
+) -> PyResult<bool> {
+    if !generator_kind.is_generator() {
+        return Ok(false);
+    }
+    let actual_response_class = response_class.actual(py)?;
+    if !actual_response_class.bind(py).is_instance_of::<PyType>() {
+        return Ok(false);
+    }
+    sse::is_event_source_response_class(py, actual_response_class.bind(py))
+}
+
+fn included_effective_api_route(py: Python<'_>, route_context: &Py<PyAny>) -> PyResult<Py<PyAny>> {
+    let context = route_context
+        .bind(py)
+        .extract::<PyRef<'_, PyRouteContext>>()?;
+    let route = context.effective_route.clone_ref(py);
+    route.bind(py).extract::<PyRef<'_, PyApiRoute>>()?;
+    Ok(route)
 }
 
 fn materialize_included_response_fields(
@@ -2108,6 +2223,15 @@ fn materialize_included_response_fields(
                             .as_ref()
                             .map(|model| model.clone_ref(py)),
                         responses: route.responses.clone_ref(py),
+                        response_class_resolution: route
+                            .response_class_resolution
+                            .as_ref()
+                            .map(|resolution| resolution.clone_ref(py)),
+                        generator_kind: route.generator_kind,
+                        effective_route_context: route
+                            .effective_route_context
+                            .as_ref()
+                            .map(|context| context.clone_ref(py)),
                     })
                 })
                 .collect::<PyResult<Vec<_>>>()?
@@ -2119,17 +2243,42 @@ fn materialize_included_response_fields(
             let additional =
                 build_additional_response_fields(py, input.responses.bind(py), &input.unique_id)?;
             let field = build_response_field(py, &input.unique_id, input.model.as_ref())?;
-            prepared.push((
-                input.index,
-                ResponseFieldState::Ready(RouteResponseFields {
+            let response_class = input
+                .response_class_resolution
+                .as_ref()
+                .map(|resolution| -> PyResult<IncludedResponseClassUpdate> {
+                    let response_class = resolution.resolve(py);
+                    let route_context =
+                        input.effective_route_context.as_ref().ok_or_else(|| {
+                            PyRuntimeError::new_err(
+                                "included route response class has no effective route context",
+                            )
+                        })?;
+                    Ok(IncludedResponseClassUpdate {
+                        sse_stream: included_route_sse_stream(
+                            py,
+                            input.generator_kind,
+                            &response_class,
+                        )?,
+                        effective_route: included_effective_api_route(py, route_context)?,
+                        python_value: response_class.python_value(py),
+                        response_class,
+                    })
+                })
+                .transpose()?;
+            prepared.push(PreparedIncludedRoute {
+                index: input.index,
+                response_field: ResponseFieldState::Ready(RouteResponseFields {
                     primary: field,
                     additional,
                 }),
-            ));
+                response_class,
+            });
         }
+        let mut public_response_class_updates = Vec::new();
         let retired = {
             let mut app = app.bind(py).borrow_mut();
-            if prepared.iter().any(|(index, _)| *index >= app.routes.len()) {
+            if prepared.iter().any(|route| route.index >= app.routes.len()) {
                 return Err(PyRuntimeError::new_err(
                     "included route field destination was lost",
                 ));
@@ -2145,12 +2294,29 @@ fn materialize_included_response_fields(
             {
                 return Err(PyRuntimeError::new_err("included field branch was lost"));
             }
-            let retired = prepared
-                .into_iter()
-                .map(|(index, field)| {
-                    std::mem::replace(&mut app.routes[index].response_field, field)
-                })
-                .collect::<Vec<_>>();
+            let mut retired = Vec::with_capacity(prepared.len());
+            for update in prepared {
+                let route = app.routes.get_mut(update.index).ok_or_else(|| {
+                    PyRuntimeError::new_err("included route field destination was lost")
+                })?;
+                let old_field = std::mem::replace(&mut route.response_field, update.response_field);
+                let (old_response_class, old_resolution) = match update.response_class {
+                    Some(class_update) => {
+                        route.sse_stream = class_update.sse_stream;
+                        public_response_class_updates
+                            .push((class_update.effective_route, class_update.python_value));
+                        (
+                            Some(std::mem::replace(
+                                &mut route.response_class,
+                                class_update.response_class,
+                            )),
+                            route.response_class_resolution.take(),
+                        )
+                    }
+                    None => (None, None),
+                };
+                retired.push((old_field, old_response_class, old_resolution));
+            }
             if let Some(branch) = app
                 .router_includes
                 .get_mut(*include_index)
@@ -2160,6 +2326,15 @@ fn materialize_included_response_fields(
             }
             retired
         };
+        for (effective_route, response_class) in public_response_class_updates {
+            let old = {
+                let mut route = effective_route
+                    .bind(py)
+                    .extract::<PyRefMut<'_, PyApiRoute>>()?;
+                std::mem::replace(&mut route.response_class, response_class)
+            };
+            drop(old);
+        }
         // Finalizers can call user code, so drop replaced Python references only
         // after releasing the mutable app borrow.
         drop(retired);
@@ -4042,6 +4217,7 @@ impl PyFastApi {
         merge_router_routes(
             py,
             destination,
+            &router.inner,
             &source,
             &dependency_overrides_provider,
             RouterIncludePolicy {
@@ -5624,6 +5800,7 @@ impl PyApiRouter {
         merge_router_routes(
             py,
             &mut destination,
+            &router.inner,
             &source,
             &dependency_overrides_provider,
             RouterIncludePolicy {
@@ -6110,6 +6287,7 @@ fn add_frontend_route(
 fn merge_router_routes(
     py: Python<'_>,
     app: &mut PyFastApi,
+    source_router: &Py<PyFastApi>,
     source: &PyFastApi,
     dependency_overrides_provider: &Py<PyAny>,
     policy: RouterIncludePolicy<'_>,
@@ -6145,14 +6323,13 @@ fn merge_router_routes(
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
         let path_regex = route_path_regex(py, &path)?;
-        let response_class = ResponseClassChoice::first_explicit(
+        let response_class_resolution = ResponseClassResolution::for_included_route(
             py,
-            &[
-                &source_route.response_class,
-                &source.default_response_class,
-                inherited_response_class,
-            ],
+            source_route,
+            source_router,
+            inherited_response_class,
         );
+        let response_class = response_class_resolution.resolve(py);
         let path_format = route_path_format(py, &path)?;
         let tags = combined_route_tags(inherited_tags, source_route.tags.as_deref());
         let generate_unique_id_function = GenerateUniqueIdChoice::first_explicit(
@@ -6232,10 +6409,9 @@ fn merge_router_routes(
         } else {
             None
         };
-        let actual_response_class = response_class.actual(py)?;
-        let sse_stream = source_route.generator_kind.is_generator()
-            && actual_response_class.bind(py).is_instance_of::<PyType>()
-            && sse::is_event_source_response_class(py, actual_response_class.bind(py))?;
+        // Included routes are lazy in FastAPI. Resolve class-dependent stream
+        // behavior alongside response fields at first dispatch/OpenAPI access.
+        let sse_stream = false;
         if route_scope.is_some() {
             let index = app
                 .router
@@ -6272,6 +6448,7 @@ fn merge_router_routes(
             status_code: source_route.status_code,
             include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
             response_class,
+            response_class_resolution: Some(response_class_resolution),
             strict_content_type: source_route
                 .strict_content_type
                 .or(source.strict_content_type)
@@ -6978,6 +7155,7 @@ impl PyOperationDecorator {
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,
             response_class,
+            response_class_resolution: None,
             strict_content_type,
             sse_stream,
             generator_kind,
