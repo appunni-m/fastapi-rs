@@ -8,9 +8,10 @@ direct native re-exports and literal `__all__`, with no functions, branches,
 loops, or fallback behavior. FastAPI-specific routing, dependency resolution,
 validation orchestration, serialization/OpenAPI, middleware, lifecycle, and
 protocol control flow belong in Rust. The Python dependency graph here describes
-the oracle environment, not the FastAPI-RS runtime manifest. The target may
-separately select pinned Pydantic and Starlette-RS runtime components; this graph
-does not carry over every upstream package.
+the oracle environment, not the FastAPI-RS runtime manifest. The target has
+separate exact Pydantic and Pydantic Core pins; their edges and ownership are
+documented in the [target Pydantic profile](#fastapi-rs-target-pydantic-profile).
+This oracle graph does not carry over every upstream package.
 
 ## Fixed identities and provenance
 
@@ -26,6 +27,59 @@ does not carry over every upstream package.
 | FastAPI license | MIT in the pinned FastAPI project metadata; preserve the upstream [LICENSE](https://github.com/fastapi/fastapi/blob/0.141.1/LICENSE). |
 
 The exact-version license links below point to PyPI JSON metadata for that locked distribution version: SPDX expression where present, otherwise the release's legacy license and license-file fields. Preserve upstream notices separately.
+
+## FastAPI-RS target Pydantic profile
+
+This target profile is separate from the FastAPI 0.141.1 source-oracle graph
+below. The target's [`pyproject.toml`](../pyproject.toml#L13-L18) directly pins
+`pydantic==2.13.4` and `pydantic-core==2.46.4`. The CPython 3.12.13 external
+runtime input and hash lock ([input](../requirements/target-runtime-cpython-3.12.13.in#L1-L18),
+[lock](../requirements/target-runtime-cpython-3.12.13.lock#L23-L29)) record the
+resolved wheel closure, including Pydantic's transitive packages. By contrast,
+FastAPI's oracle declares `pydantic>=2.9.0`; its lock resolves Pydantic 2.13.4
+and reaches `pydantic-core==2.46.4` through Pydantic. Those source-oracle edges
+are recorded in the [FastAPI dependency graph](DEPENDENCY_GRAPH.md), not as
+target dependency declarations.
+
+| Package | FastAPI 0.141.1 oracle edge | FastAPI-RS target role | Implementation, owner, and license |
+|---|---|---|---|
+| `pydantic` 2.13.4 | Direct FastAPI dependency (`pydantic>=2.9.0`); lock resolves 2.13.4. | Direct exact project/runtime pin. | Python model, field, `TypeAdapter`, validation-error, and JSON Schema API used by Rust through PyO3. The Pydantic Python layer remains Pydantic-owned; MIT. |
+| `pydantic-core` 2.46.4 | Transitive edge `pydantic -> pydantic-core`; FastAPI's Python source also imports Core symbols. | Direct exact project/runtime pin, independently declared because FastAPI-RS calls its runtime API. | Separate Python wheel containing Pydantic's Rust validation/serialization extension. Its implementation remains Pydantic-owned and is not a FastAPI-RS Cargo dependency or public API; MIT. |
+| `annotated-types` 0.7.0 | Transitive edge `pydantic -> annotated-types`. | Part of the Pydantic runtime closure and separately pinned in the target profile input. | Python `Annotated` constraint metadata consumed by Pydantic; MIT. FastAPI-RS passes `FieldInfo.metadata` to a Pydantic `TypeAdapter`, rather than implementing these constraint types. |
+| `typing-inspection` 0.4.2 | Transitive edge `pydantic -> typing-inspection`; FastAPI also declares it directly. | Part of the Pydantic runtime closure and pinned in the target profile input. | Python typing introspection used by Pydantic; MIT. FastAPI-RS calls Pydantic's pinned private `try_eval_type` helper for forward references; it does not directly import `typing_inspection`. |
+| `typing-extensions` 4.16.0 | FastAPI direct dependency and transitive through Pydantic; also reached by other oracle packages. | Shared target runtime closure, pinned in the target profile input; reached through Pydantic/Core and Starlette-RS Python runtime dependencies. | Python typing definitions; PSF-2.0. FastAPI-RS also queries `TypeAliasType` and `deprecated` through PyO3. |
+
+The implementation boundary is Rust orchestration around separately owned Python
+and native APIs. Rust constructs Pydantic `FieldInfo`/`TypeAdapter` objects and
+retains the resulting `Annotated` metadata in
+[`response_field.rs`](../fastapi-rs/src/response_field.rs#L76-L126); it calls
+`validate_python` and translates Pydantic validation errors in
+[`application_runtime.rs`](../fastapi-rs/src/application_runtime.rs#L1617-L1645),
+builds schemas from Pydantic `TypeAdapter.core_schema` and
+`GenerateJsonSchema` ([schema path](../fastapi-rs/src/application_runtime.rs#L10810-L10897)),
+and delegates model JSON conversion to `model_dump(mode="json")`
+([encoder](../fastapi-rs/src/encoding.rs#L162-L183)). Direct Core calls include
+`pydantic_core.PydanticUndefined`, `pydantic_core.Url`, and
+`pydantic_core.core_schema` helpers
+([parameter signatures](../fastapi-rs/src/parameter_signatures.rs#L187-L193),
+[upload-file schema](../fastapi-rs/src/datastructures.rs#L40-L51),
+[URL encoding](../fastapi-rs/src/encoding.rs#L398-L419)). Rust also
+uses `typing_extensions.TypeAliasType` and `deprecated` through PyO3
+([runtime](../fastapi-rs/src/application_runtime.rs#L9731-L9737),
+[parameter annotations](../fastapi-rs/src/parameter_classes.rs#L449-L477)).
+
+The PyO3 extension crate registers the Rust implementation; it does not embed
+Pydantic's implementation ([binding registration](../fastapi-rs-py/src/lib.rs#L381-L397),
+[crate manifests](../Cargo.toml#L12-L16) and
+[`Cargo.lock`](../Cargo.lock#L111-L127)). FastAPI-RS owns validation and
+serialization orchestration, while Pydantic owns its Python model API and the
+separate Core wheel owns its Rust engine. See the [target dependency inventory](RUST_TARGET_DEPENDENCIES.md#L16-L23),
+[Pydantic Core's separate Cargo inventory](PYDANTIC_CORE_DEPENDENCIES.md#L1-L22),
+the project's [identity and ownership policy](../metadata.yaml#L16-L30), and
+the exact-pin and notice record in
+[`THIRD_PARTY_NOTICES.md`](../fastapi-rs/THIRD_PARTY_NOTICES.md#L24-L37). The
+notices state that these wheels are separate distributions and are not bundled
+by the FastAPI-RS package.
 
 ## Core runtime graph
 

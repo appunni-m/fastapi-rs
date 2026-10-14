@@ -13111,7 +13111,7 @@
       "candidate_kinds": [
         "class_member"
       ],
-      "classification": "uncertain",
+      "classification": "private/internal",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": null,
@@ -13121,13 +13121,19 @@
             "line": 1017,
             "path": "fastapi/applications.py",
             "role": "fastapi-source-field"
+          },
+          {
+            "end_line": 1068,
+            "line": 1020,
+            "path": "fastapi/applications.py",
+            "role": "fastapi-implementation-use"
           }
         ],
         "evidence_basis": [
-          "member-exposure-unresolved",
+          "implementation-only",
           "source-declaration"
         ],
-        "reason": "FastAPI.__init__ assigns `middleware_stack` on app instances, but the pinned user documentation does not enumerate this exact field as a public FastAPI attribute. Constructor assignment is discovery evidence only, so its public contract remains uncertain.",
+        "reason": "FastAPI 0.141.1 initializes this ASGI middleware-stack field to `None` (applications.py:1017). Its `build_middleware_stack()` override constructs the framework middleware chain (applications.py:1020-1068); the source does not establish a separate consumer contract for direct access to this pipeline state. The constructor's `middleware` option is the user-facing registration input.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 1017,
@@ -14251,7 +14257,7 @@
       "candidate_kinds": [
         "class_member"
       ],
-      "classification": "uncertain",
+      "classification": "private/internal",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": null,
@@ -14261,13 +14267,18 @@
             "line": 1014,
             "path": "fastapi/applications.py",
             "role": "fastapi-source-field"
+          },
+          {
+            "line": 1035,
+            "path": "fastapi/applications.py",
+            "role": "fastapi-implementation-use"
           }
         ],
         "evidence_basis": [
-          "member-exposure-unresolved",
+          "implementation-only",
           "source-declaration"
         ],
-        "reason": "FastAPI.__init__ assigns `user_middleware` on app instances, but the pinned user documentation does not enumerate this exact field as a public FastAPI attribute. Constructor assignment is discovery evidence only, so its public contract remains uncertain.",
+        "reason": "FastAPI 0.141.1 copies the `middleware` input into `user_middleware` (applications.py:1014-1016), then reads the list to assemble the ASGI chain in `build_middleware_stack()` (applications.py:1033-1036). This is framework pipeline storage and use, not a separately established direct member contract; `middleware` remains the consumer-facing constructor input.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 1014,
@@ -52846,23 +52857,34 @@
       "candidate_kinds": [
         "class_member"
       ],
-      "classification": "uncertain",
+      "classification": "private/internal",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": null,
         "candidate_kind": "field",
         "evidence": [
           {
+            "end_line": 2401,
+            "line": 2397,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-source-declaration"
+          },
+          {
             "line": 2561,
             "path": "fastapi/routing.py",
             "role": "fastapi-source-field"
+          },
+          {
+            "line": 2708,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-implementation-use"
           }
         ],
         "evidence_basis": [
-          "member-exposure-unresolved",
+          "implementation-only",
           "source-declaration"
         ],
-        "reason": "FastAPI 0.141.1 assigns `dependency_overrides_provider` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "reason": "FastAPI 0.141.1 explicitly documents the `dependency_overrides_provider` option as used only internally and says consumers should not need it (routing.py:2397-2401). APIRouter stores it on the instance (2561) and passes it into framework route setup (2708), establishing internal provider state rather than a consumer-facing field contract.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 2561,
@@ -53150,7 +53172,7 @@
       "candidate_kinds": [
         "class_member"
       ],
-      "classification": "uncertain",
+      "classification": "private/internal",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": null,
@@ -53160,13 +53182,24 @@
             "line": 2530,
             "path": "fastapi/routing.py",
             "role": "fastapi-source-field"
+          },
+          {
+            "line": 2536,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-implementation-use"
+          },
+          {
+            "end_line": 3319,
+            "line": 3317,
+            "path": "fastapi/routing.py",
+            "role": "fastapi-implementation-use"
           }
         ],
         "evidence_basis": [
-          "member-exposure-unresolved",
+          "implementation-only",
           "source-declaration"
         ],
-        "reason": "FastAPI 0.141.1 assigns `lifespan_context` on APIRouter instances, but the pinned docs do not establish this exact instance field as a consumer-facing contract. Keep its exposure uncertain.",
+        "reason": "FastAPI 0.141.1 normalizes the `lifespan` input into an internal context, stores it as `lifespan_context`, and passes that context to Starlette (routing.py:2520-2536); router inclusion later merges the stored contexts (3317-3319). This derived framework field is distinct from the consumer-facing `lifespan` constructor option.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 2530,
@@ -76825,12 +76858,12 @@
       "candidate_count": 183,
       "candidate_ids_sha256": "0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd",
       "recommendation_counts": {
-        "private/internal": 123,
+        "private/internal": 127,
         "supported": 22,
-        "uncertain": 38
+        "uncertain": 34
       }
     },
-    "sha256": "99edbec7ec4dca5689fb912788474be13fab92da281ea858ba07dedc3bbfb82d",
+    "sha256": "5dbc76a7a9381c27be5e542fe2510654c6c96a8ae07c17264709c2e24a66dba0",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
@@ -77196,9 +77229,9 @@
     "alias_records": 69,
     "api_candidates": 1643,
     "api_classifications": {
-      "private/internal": 1106,
+      "private/internal": 1110,
       "supported": 480,
-      "uncertain": 57
+      "uncertain": 53
     },
     "documentation_pages": 155,
     "documentation_pages_candidate_links_pending_behavior_review": 0,
