@@ -3097,6 +3097,10 @@ TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault("tests/test_jsonable_encoder.py", {}
 # Keep the broad, source-reviewed core mapping wave separate from the generator
 # so it can be audited and extended without obscuring the classification logic.
 from atlas_core_review_mappings import CORE_TEST_REVIEW_MAPPINGS  # noqa: E402
+from atlas_starlette_ownership_review_mappings import (  # noqa: E402
+    STARLETTE_RS_OWNERSHIP_EXPECTED_FEATURE_COUNTS,
+    STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS,
+)
 
 merge_test_review_mappings(CORE_TEST_REVIEW_MAPPINGS)
 
@@ -9653,6 +9657,70 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             )
         return mappings
 
+    def apply_starlette_ownership_row_overlay(
+        coverage_item: dict[str, Any],
+        mappings: list[dict[str, Any]],
+        applied_overlays: set[tuple[str, str]],
+    ) -> list[dict[str, Any]]:
+        row_id = coverage_item.get("id")
+        row_overlay = STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS.get(row_id)
+        if row_overlay is None:
+            return mappings
+        if coverage_item.get("kind") != "upstream_test_module":
+            raise AtlasError("Starlette ownership overlays may target upstream test rows only: " + str(row_id))
+
+        mappings_by_feature = {mapping.get("feature_id"): mapping for mapping in mappings}
+        if len(mappings_by_feature) != len(mappings):
+            raise AtlasError("Starlette ownership mapping has duplicate feature IDs: " + str(row_id))
+        for feature_id, overlay in row_overlay.items():
+            mapping = mappings_by_feature.get(feature_id)
+            if mapping is None or mapping.get("ownership_boundary") != "owner review required":
+                raise AtlasError(
+                    "reviewed Starlette ownership overlay no longer matches its generated row: "
+                    + str(row_id)
+                    + "::"
+                    + feature_id
+                )
+            if set(overlay) != {"ownership_boundary", "scope_note", "operation_specs"}:
+                raise AtlasError("reviewed Starlette ownership overlay has unsupported fields: " + str(row_id))
+            ownership_boundary = overlay["ownership_boundary"]
+            scope_note = overlay["scope_note"]
+            operation_specs = overlay["operation_specs"]
+            if (
+                not isinstance(ownership_boundary, str)
+                or not ownership_boundary.strip()
+                or not isinstance(scope_note, str)
+                or not scope_note.strip()
+                or not isinstance(operation_specs, (list, tuple))
+            ):
+                raise AtlasError("reviewed Starlette ownership overlay is malformed: " + str(row_id))
+            operation_refs = []
+            for spec in operation_specs:
+                if (
+                    not isinstance(spec, (list, tuple))
+                    or len(spec) != 3
+                    or not isinstance(spec[0], str)
+                    or not isinstance(spec[1], str)
+                    or not isinstance(spec[2], (list, tuple))
+                    or any(not isinstance(requirement_id, str) for requirement_id in spec[2])
+                ):
+                    raise AtlasError("reviewed Starlette operation reference is malformed: " + str(row_id))
+                operation_refs.append(
+                    starlette_contract_operation_ref(
+                        spec[0], spec[1], spec[2], ownership_boundary
+                    )
+                )
+            mapping["ownership_boundary"] = ownership_boundary
+            mapping["status"] = (
+                "linked-to-current-contract-slice"
+                if operation_refs
+                else "out-of-current-contract-slice"
+            )
+            mapping["operation_refs"] = operation_refs
+            mapping["scope_note"] = scope_note
+            applied_overlays.add((row_id, feature_id))
+        return mappings
+
     starlette = inventory["delegated_scope"]["starlette"]
     starlette_edges = []
     for binding in inventory["import_bindings"]:
@@ -11374,9 +11442,32 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             + ", ".join(sorted(missing_selector_rules))
         )
 
+    expected_starlette_ownership_overlays = {
+        (row_id, feature_id)
+        for row_id, row_overlays in STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS.items()
+        for feature_id in row_overlays
+    }
+    observed_overlay_counts = Counter(
+        feature_id
+        for _, feature_id in expected_starlette_ownership_overlays
+    )
+    if dict(observed_overlay_counts) != STARLETTE_RS_OWNERSHIP_EXPECTED_FEATURE_COUNTS:
+        raise AtlasError(
+            "reviewed Starlette ownership mapping counts differ from the audit scope: "
+            + json.dumps(dict(observed_overlay_counts), sort_keys=True)
+        )
+    applied_starlette_ownership_overlays: set[tuple[str, str]] = set()
     for coverage_item in coverage_items:
-        coverage_item["starlette_rs_contract_mappings"] = starlette_contract_mappings_for(
-            coverage_item
+        mappings = starlette_contract_mappings_for(coverage_item)
+        coverage_item["starlette_rs_contract_mappings"] = apply_starlette_ownership_row_overlay(
+            coverage_item, mappings, applied_starlette_ownership_overlays
+        )
+    if applied_starlette_ownership_overlays != expected_starlette_ownership_overlays:
+        missing = sorted(expected_starlette_ownership_overlays - applied_starlette_ownership_overlays)
+        unexpected = sorted(applied_starlette_ownership_overlays - expected_starlette_ownership_overlays)
+        raise AtlasError(
+            "reviewed Starlette ownership overlay coverage mismatch: "
+            + json.dumps({"missing": missing, "unexpected": unexpected})
         )
 
     unresolved = [

@@ -517036,10 +517036,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -525811,10 +525835,77 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "form",
+              "relationship": "FastAPI cleanup plus generic Starlette multipart and upload behavior",
+              "requirement_ids": [
+                "starlette.request.form.multipart-form-data"
+              ],
+              "source_path": "starlette.requests.Request._get_form and Request.form",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native API does not expose Python Request.form or its FormData return type.",
+                  "status": "unimplemented"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "multidict-lookups",
+              "relationship": "FastAPI cleanup plus generic Starlette multipart and upload behavior",
+              "requirement_ids": [
+                "starlette.datastructures.FormData.close"
+              ],
+              "source_path": "starlette.datastructures.FormData.__init__, FormData.close, ImmutableMultiDict.getlist, keys, items, multi_items, and __getitem__",
+              "surface_id": "starlette.datastructures.FormData",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native public API does not expose the Python FormData multidict interface.",
+                  "status": "unimplemented"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "file-operations",
+              "relationship": "FastAPI cleanup plus generic Starlette multipart and upload behavior",
+              "requirement_ids": [
+                "starlette.datastructures.UploadFile.file-operations"
+              ],
+              "source_path": "starlette.datastructures.UploadFile.__init__, content_type, _in_memory, _will_roll, write, read, seek, close, and __repr__",
+              "surface_id": "starlette.datastructures.UploadFile",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native API does not expose the Python UploadFile class.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "FastAPI cleanup plus generic Starlette multipart and upload behavior",
+          "scope_note": "FastAPI schedules request-scoped cleanup; Starlette 1.6.0 parses multipart data and owns FormData.close and UploadFile operations. The exact generic references expose Python-only/native-unimplemented gaps; they do not cover FastAPI cleanup or claim parity.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -527046,10 +527137,33 @@
           "feature_id": "asgi-error-propagation",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "request-response",
+              "relationship": "FastAPI dependency cleanup plus generic Starlette TestClient exception policy",
+              "requirement_ids": [
+                "starlette.testclient.TestClient.request-response.exception-policy"
+              ],
+              "source_path": "starlette.testclient.TestClient",
+              "surface_id": "starlette.testclient.TestClient",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The additive Rust-native API does not expose the documented Python synchronous HTTPX TestClient interface.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "FastAPI dependency cleanup plus generic Starlette TestClient exception policy",
+          "scope_note": "FastAPI owns yield-dependency cleanup and the caught-error-to-HTTPException 418 transformation. The exact Starlette TestClient reference applies only to uncaught HTTP exception propagation/suppression cases in this module; it does not own FastAPI cleanup or the handled 418 response and does not imply parity.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -527810,8 +527924,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI dependency wiring; accepted-WebSocket app-error propagation unresolved",
+          "scope_note": "FastAPI owns dependency resolution and the request exit stack. The observed ValueError occurs after websocket.accept and is surfaced when the accepted session exits; the pinned Starlette-RS contract has no exact post-accept/context-exit reference. Keep this generic gap unresolved until that exact sequence is covered; no parity claim.",
           "status": "out-of-current-contract-slice"
         },
         {
@@ -531606,8 +531720,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned dependency override lookup and graph reconstruction",
+          "scope_note": "FastAPI looks up the original dependency, rebuilds a Dependant from the replacement callable, and recursively solves the replacement graph. The cases cover direct/nested overrides and validation, not repeated dependency cache semantics; no exact generic Starlette operation or parity claim applies.",
           "status": "out-of-current-contract-slice"
         },
         {
@@ -531677,8 +531791,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -534808,10 +534922,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -536161,8 +536299,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -538007,10 +538145,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -538947,10 +539109,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -539323,10 +539509,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -539779,8 +539989,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -540180,10 +540390,33 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "form",
+              "relationship": "FastAPI form binding with generic Starlette form parsing",
+              "requirement_ids": [
+                "starlette.request.form.urlencoded-fields"
+              ],
+              "source_path": "starlette.requests.Request._get_form and Request.form",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native API does not expose Python Request.form or its FormData return type.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "FastAPI form binding with generic Starlette form parsing",
+          "scope_note": "Starlette 1.6.0 parses URL-encoded fields into FormData; FastAPI binds Form() to the endpoint parameter and owns validation and OpenAPI projection. The parser reference retains its native-unimplemented status and is not a FastAPI-RS support claim.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -540241,10 +540474,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -541617,8 +541874,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned frontend dependency injection and overrides",
+          "scope_note": "FastAPI applies frontend app/router dependencies and the dependency_overrides solver; the observed 401 is a handled FastAPI HTTPException, not unhandled ASGI propagation. The tests do not measure dependency cache behavior; no exact generic Starlette operation or parity claim applies.",
           "status": "out-of-current-contract-slice"
         },
         {
@@ -541992,8 +542249,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "Mixed-owner status observations unresolved at module-row granularity",
+          "scope_note": "The source audit found distinct status owners inside this module row: FastAPI validation or frontend statuses plus a Starlette route miss/response, or a third-party Strawberry response beside FastAPI OpenAPI. No single exact owner or operation reference represents the row; retain it unresolved until narrower case mappings exist. This does not claim parity.",
           "status": "out-of-current-contract-slice"
         },
         {
@@ -543356,10 +543613,73 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "body-stream-json",
+              "relationship": "FastAPI body inference with generic Starlette JSON receipt",
+              "requirement_ids": [
+                "starlette.request.body-cache-reuse",
+                "starlette.request.body-chunk-concatenation",
+                "starlette.request.json-body-cache"
+              ],
+              "source_path": "starlette.requests.Request.body, Request.stream, and Request.json",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native public API does not expose a Python Request object, Python ASGI receive callback, or Python JSON value boundary.",
+                  "status": "unimplemented"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "request-dispatch",
+              "relationship": "FastAPI body inference with generic Starlette JSON receipt",
+              "requirement_ids": [
+                "starlette.request.json-chunked-body"
+              ],
+              "source_path": "starlette.applications.Starlette.__call__",
+              "surface_id": "starlette.applications.Starlette",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.routing.sync-endpoint-contextvar-propagation",
+                    "starlette.routing.sync-endpoint-worker-thread",
+                    "starlette.routing.sync-endpoint-single-invocation",
+                    "starlette.routing.sync-endpoint-worker-cancellation",
+                    "starlette.routing.sync-endpoint-callable-form",
+                    "starlette.routing.async-endpoint-callable-form",
+                    "starlette.routing.asgi-callable-instance-dispatch",
+                    "starlette.routing.asgi-callable-http-exception-before-start",
+                    "starlette.routing.asgi-callable-http-exception-after-start",
+                    "starlette.request.path-param-string",
+                    "starlette.request.path-param-float",
+                    "starlette.request.path-param-uuid",
+                    "starlette.request.path-param-path",
+                    "starlette.request.path-param-int-digit-limit",
+                    "starlette.request.cookies-dict-semantics"
+                  ],
+                  "reason": "The Rust-native profile cannot invoke arbitrary Python endpoint callables; synchronous and async Request endpoint boundaries and ASGI callable-instance dispatch observations are unsupported.",
+                  "status": "partial"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "FastAPI body inference with generic Starlette JSON receipt",
+          "scope_note": "FastAPI owns GET-body inference, field extraction, validation/error placement, and response integration. Starlette 1.6.0 owns generic body buffering/JSON decoding; its Request object is Python-package-only for this operation, while request-dispatch JSON coverage is bounded and partial. Ownership only; no parity claim.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -543417,10 +543737,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -545513,10 +545857,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -548461,10 +548829,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -556475,10 +556867,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -556883,10 +557299,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -557449,10 +557889,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -557975,10 +558439,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -560917,8 +561405,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "Mixed-owner status observations unresolved at module-row granularity",
+          "scope_note": "The source audit found distinct status owners inside this module row: FastAPI validation or frontend statuses plus a Starlette route miss/response, or a third-party Strawberry response beside FastAPI OpenAPI. No single exact owner or operation reference represents the row; retain it unresolved until narrower case mappings exist. This does not claim parity.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -561717,10 +562205,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -563403,8 +563915,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -563874,8 +564386,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -564625,10 +565137,33 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "form",
+              "relationship": "FastAPI Form validation with generic Starlette form parsing",
+              "requirement_ids": [
+                "starlette.request.form.urlencoded-fields"
+              ],
+              "source_path": "starlette.requests.Request._get_form and Request.form",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native API does not expose Python Request.form or its FormData return type.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "FastAPI Form validation with generic Starlette form parsing",
+          "scope_note": "Starlette 1.6.0 parses URL-encoded form values; FastAPI owns Form binding, deprecated regex metadata/warnings, request error placement, and schema projection, while Pydantic supplies the pattern validator. The form reference preserves the native-unimplemented gap and makes no parity claim.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -564687,8 +565222,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -565295,8 +565830,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -566362,10 +566897,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -566965,8 +567524,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned OpenAPI request-body projection",
+          "scope_note": "The mapped test observes Body(media_type), embed, and a combined OpenAPI request schema; it sends no HTTP body. No Starlette parser reference applies, and this association is not runtime request-body support evidence.",
           "status": "out-of-current-contract-slice"
         },
         {
@@ -567025,10 +567584,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -568157,8 +568740,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -568870,8 +569453,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -569552,8 +570135,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -570167,8 +570750,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -570973,10 +571556,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -571657,8 +572264,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -572264,8 +572871,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -572909,10 +573516,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -573483,10 +574114,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -574106,8 +574761,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -574702,8 +575357,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -575275,10 +575930,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -575849,10 +576528,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -576472,8 +577175,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -577046,8 +577749,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -577619,10 +578322,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -578193,10 +578920,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -578808,8 +579559,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -579603,10 +580354,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -580321,8 +581096,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -581051,10 +581826,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -581665,10 +582464,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -582482,8 +583305,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -583642,8 +584465,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -585712,10 +586535,33 @@
           "feature_id": "asgi-error-propagation",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "request-response",
+              "relationship": "FastAPI response validation plus generic Starlette TestClient exception policy",
+              "requirement_ids": [
+                "starlette.testclient.TestClient.request-response.exception-policy"
+              ],
+              "source_path": "starlette.testclient.TestClient",
+              "surface_id": "starlette.testclient.TestClient",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The additive Rust-native API does not expose the documented Python synchronous HTTPX TestClient interface.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "FastAPI response validation plus generic Starlette TestClient exception policy",
+          "scope_note": "FastAPI owns inferred response-model validation, ResponseValidationError, and invalid response-field construction. The exact TestClient reference covers only default HTTP exception re-raise behavior; the tests assert the FastAPI exception, not a generic Starlette 500 body. Ownership only; no parity claim.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -585898,10 +586744,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -588187,8 +589057,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -591257,10 +592127,73 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "body-stream-json",
+              "relationship": "Mixed FastAPI body-field composition and generic Starlette JSON receipt",
+              "requirement_ids": [
+                "starlette.request.body-cache-reuse",
+                "starlette.request.body-chunk-concatenation",
+                "starlette.request.json-body-cache"
+              ],
+              "source_path": "starlette.requests.Request.body, Request.stream, and Request.json",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native public API does not expose a Python Request object, Python ASGI receive callback, or Python JSON value boundary.",
+                  "status": "unimplemented"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "request-dispatch",
+              "relationship": "Mixed FastAPI body-field composition and generic Starlette JSON receipt",
+              "requirement_ids": [
+                "starlette.request.json-chunked-body"
+              ],
+              "source_path": "starlette.applications.Starlette.__call__",
+              "surface_id": "starlette.applications.Starlette",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.routing.sync-endpoint-contextvar-propagation",
+                    "starlette.routing.sync-endpoint-worker-thread",
+                    "starlette.routing.sync-endpoint-single-invocation",
+                    "starlette.routing.sync-endpoint-worker-cancellation",
+                    "starlette.routing.sync-endpoint-callable-form",
+                    "starlette.routing.async-endpoint-callable-form",
+                    "starlette.routing.asgi-callable-instance-dispatch",
+                    "starlette.routing.asgi-callable-http-exception-before-start",
+                    "starlette.routing.asgi-callable-http-exception-after-start",
+                    "starlette.request.path-param-string",
+                    "starlette.request.path-param-float",
+                    "starlette.request.path-param-uuid",
+                    "starlette.request.path-param-path",
+                    "starlette.request.path-param-int-digit-limit",
+                    "starlette.request.cookies-dict-semantics"
+                  ],
+                  "reason": "The Rust-native profile cannot invoke arbitrary Python endpoint callables; synchronous and async Request endpoint boundaries and ASGI callable-instance dispatch observations are unsupported.",
+                  "status": "partial"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Mixed FastAPI body-field composition and generic Starlette JSON receipt",
+          "scope_note": "Starlette 1.6.0 receives and decodes the JSON body; FastAPI owns app/router/include/route body-field merging, extraction, validation/error mapping, and OpenAPI projection. The native request-dispatch link is bounded; the Python Request operation is unimplemented in the Rust-native lane. These ownership links do not imply parity.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -591410,10 +592343,72 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "request-dispatch",
+              "relationship": "Starlette-owned router miss and response status emission",
+              "requirement_ids": [
+                "starlette.routing.items-route-miss-404"
+              ],
+              "source_path": "starlette.applications.Starlette.__call__",
+              "surface_id": "starlette.applications.Starlette",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.routing.sync-endpoint-contextvar-propagation",
+                    "starlette.routing.sync-endpoint-worker-thread",
+                    "starlette.routing.sync-endpoint-single-invocation",
+                    "starlette.routing.sync-endpoint-worker-cancellation",
+                    "starlette.routing.sync-endpoint-callable-form",
+                    "starlette.routing.async-endpoint-callable-form",
+                    "starlette.routing.asgi-callable-instance-dispatch",
+                    "starlette.routing.asgi-callable-http-exception-before-start",
+                    "starlette.routing.asgi-callable-http-exception-after-start",
+                    "starlette.request.path-param-string",
+                    "starlette.request.path-param-float",
+                    "starlette.request.path-param-uuid",
+                    "starlette.request.path-param-path",
+                    "starlette.request.path-param-int-digit-limit",
+                    "starlette.request.cookies-dict-semantics"
+                  ],
+                  "reason": "The Rust-native profile cannot invoke arbitrary Python endpoint callables; synchronous and async Request endpoint boundaries and ASGI callable-instance dispatch observations are unsupported.",
+                  "status": "partial"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned router miss and response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned router miss and response status emission",
+          "scope_note": "The module's custom included-route miss is a generic Starlette Router 404 and its matched route returns the default 200. The pinned request-dispatch miss requirement and Response ASGI operation link only these generic observations; FastAPI include-context behavior remains separate. Ownership only; no parity claim.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -591927,10 +592922,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -592257,10 +593276,71 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "route-dispatch",
+              "relationship": "Starlette-owned router redirect and response status selection",
+              "requirement_ids": [
+                "starlette.routing.Router.route-dispatch.redirect-slash-append-root-path-query",
+                "starlette.routing.Router.route-dispatch.redirect-disabled"
+              ],
+              "source_path": "starlette.routing.Router.app",
+              "surface_id": "starlette.routing.Router",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.routing.Router.route-dispatch.python-callable-endpoint",
+                    "starlette.routing.Router.route-dispatch.custom-converter-override",
+                    "starlette.routing.Router.route-dispatch.mount-child-router-live-route-add",
+                    "starlette.routing.Router.route-dispatch.mount-route-dispatch",
+                    "starlette.routing.Router.route-dispatch.mount-prefix-boundary-miss",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-asgi-class",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-async-handler",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-path-parameter",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-method-not-allowed",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-non-verb-helper-rejected",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-sync-handler",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-method-handler",
+                    "starlette.routing.Router.route-dispatch.http-endpoint-head-get-fallback",
+                    "starlette.routing.Router.route-dispatch.max-body-size"
+                  ],
+                  "reason": "The Rust target supports ordered built-in route selection, fixed response projection, live method mutation, and live route-list append. It does not invoke arbitrary Python endpoints, expose Python scope mutation or typed path_params, support Python-registered URL convertors, or dispatch Mount routes.",
+                  "status": "partial"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned router redirect and response status selection",
+              "requirement_ids": [
+                "starlette.responses.RedirectResponse.asgi-call.default-relative-location"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.RedirectResponse",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned router redirect and response status selection",
+          "scope_note": "Starlette 1.6.0 Router selects 307 for an enabled slash redirect and 404 when redirecting is disabled. The pinned Router and RedirectResponse references cover only these generic outcomes; ownership links do not claim FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -611347,8 +612427,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -611962,10 +613042,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -613262,8 +614366,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -614525,8 +615629,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned validation status selection",
+          "scope_note": "FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -614911,10 +616015,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -615215,10 +616343,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -615653,10 +616805,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -620777,8 +621953,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -621437,10 +622613,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -640507,10 +641707,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -648252,10 +649476,77 @@
           "feature_id": "asgi-error-propagation",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "__call__",
+              "relationship": "FastAPI swallowed-yield guard plus generic Starlette HTTP 500/TestClient policy",
+              "requirement_ids": [
+                "starlette.asgi.server-error.default-response"
+              ],
+              "source_path": "starlette.applications.Starlette.__call__",
+              "surface_id": "starlette.applications.Starlette",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [
+                    "starlette.compatibility.full-public-surface",
+                    "starlette.asgi.scope-mutation",
+                    "starlette.asgi.streaming",
+                    "starlette.asgi.boundary-cancellation"
+                  ],
+                  "reason": "The package implements the declared direct ASGI route, error, lifespan, and authentication integration workflows; remaining behavior is listed in missing requirements.",
+                  "status": "partial"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.compatibility.full-public-surface",
+                    "starlette.asgi.scope-mutation",
+                    "starlette.asgi.streaming",
+                    "starlette.asgi.python-callables",
+                    "starlette.asgi.http-exception.default-406-detail",
+                    "starlette.asgi.http-exception.no-content-204",
+                    "starlette.asgi.http-exception.not-modified-304",
+                    "starlette.asgi.http-exception.headers-200",
+                    "starlette.asgi.server-error.default-response",
+                    "starlette.asgi.server-error.status-500-handler",
+                    "starlette.asgi.server-error.exception-handler",
+                    "starlette.asgi.server-error.special-key-order",
+                    "starlette.asgi.server-error.debug-traceback",
+                    "starlette.asgi.server-error.response-started",
+                    "starlette.asgi.server-error.background-task-failure",
+                    "starlette.asgi.server-error.handled-http-exception-500"
+                  ],
+                  "reason": "The Rust-native API renders explicit exception details but does not expose the Python HTTPException constructor and its standard-library status-phrase defaults.",
+                  "status": "partial"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "request-response",
+              "relationship": "FastAPI swallowed-yield guard plus generic Starlette HTTP 500/TestClient policy",
+              "requirement_ids": [
+                "starlette.testclient.TestClient.request-response.exception-policy"
+              ],
+              "source_path": "starlette.testclient.TestClient",
+              "surface_id": "starlette.testclient.TestClient",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The additive Rust-native API does not expose the documented Python synchronous HTTPX TestClient interface.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "FastAPI swallowed-yield guard plus generic Starlette HTTP 500/TestClient policy",
+          "scope_note": "FastAPI owns the swallowed-yield-exception guard and FastAPIError. Starlette owns the outer default 500 response and TestClient raise_server_exceptions policy; handled FastAPI HTTPException behavior in the module remains separate. These exact links are ownership only and do not claim parity.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -655672,8 +656963,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned OpenAPI snapshot; runtime body behavior excluded",
+          "scope_note": "This excluded test rewrites and snapshots a generated OpenAPI document containing requestBody entries; it does not send an ASGI request or exercise body receipt, extraction, or validation. Keep its existing exclusion; the association is not runtime support evidence.",
           "status": "out-of-current-contract-slice"
         },
         {
@@ -655945,8 +657236,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "Mixed-owner status observations unresolved at module-row granularity",
+          "scope_note": "The source audit found distinct status owners inside this module row: FastAPI validation or frontend statuses plus a Starlette route miss/response, or a third-party Strawberry response beside FastAPI OpenAPI. No single exact owner or operation reference represents the row; retain it unresolved until narrower case mappings exist. This does not claim parity.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -669099,10 +670390,34 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "body-stream-json",
+              "relationship": "Generic Starlette raw-body access plus FastAPI OpenAPI projection",
+              "requirement_ids": [
+                "starlette.request.body-cache-reuse",
+                "starlette.request.body-chunk-concatenation"
+              ],
+              "source_path": "starlette.requests.Request.body, Request.stream, and Request.json",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native public API does not expose a Python Request object, Python ASGI receive callback, or Python JSON value boundary.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Generic Starlette raw-body access plus FastAPI OpenAPI projection",
+          "scope_note": "The endpoint reads generic Request.body() bytes and passes them to tutorial code; it declares no FastAPI body parameter or Pydantic request validation. The separate openapi_extra schema is FastAPI-owned. The Request reference is Python-package-only; no FastAPI-RS parity is claimed.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -669912,10 +671227,34 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "body-stream-json",
+              "relationship": "Generic Starlette raw-body access with application-defined parsing",
+              "requirement_ids": [
+                "starlette.request.body-cache-reuse",
+                "starlette.request.body-chunk-concatenation"
+              ],
+              "source_path": "starlette.requests.Request.body, Request.stream, and Request.json",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native public API does not expose a Python Request object, Python ASGI receive callback, or Python JSON value boundary.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Generic Starlette raw-body access with application-defined parsing",
+          "scope_note": "Only Request.body() byte collection is generic Starlette behavior. YAML decoding, explicit Item.model_validate, HTTPException conversion, and custom OpenAPI requestBody data are endpoint/FastAPI behavior. The Request reference is Python-package-only; this does not claim FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -670687,8 +672026,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -696277,8 +697616,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -702865,8 +704204,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -711961,8 +713300,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned settings dependency override",
+          "scope_note": "FastAPI replaces get_settings through dependency_overrides and passes the replacement Settings value to the route. The source does not assert cache hits or invalidation; no exact generic Starlette operation or parity claim applies.",
           "status": "out-of-current-contract-slice"
         },
         {
@@ -712089,10 +713428,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -712187,10 +713550,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -712412,10 +713799,73 @@
           "feature_id": "request-body",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "body-stream-json",
+              "relationship": "Excluded FastAPI body parameter with generic Starlette JSON receipt",
+              "requirement_ids": [
+                "starlette.request.body-cache-reuse",
+                "starlette.request.body-chunk-concatenation",
+                "starlette.request.json-body-cache"
+              ],
+              "source_path": "starlette.requests.Request.body, Request.stream, and Request.json",
+              "surface_id": "starlette.requests.Request",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native public API does not expose a Python Request object, Python ASGI receive callback, or Python JSON value boundary.",
+                  "status": "unimplemented"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "request-dispatch",
+              "relationship": "Excluded FastAPI body parameter with generic Starlette JSON receipt",
+              "requirement_ids": [
+                "starlette.request.json-chunked-body"
+              ],
+              "source_path": "starlette.applications.Starlette.__call__",
+              "surface_id": "starlette.applications.Starlette",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.routing.sync-endpoint-contextvar-propagation",
+                    "starlette.routing.sync-endpoint-worker-thread",
+                    "starlette.routing.sync-endpoint-single-invocation",
+                    "starlette.routing.sync-endpoint-worker-cancellation",
+                    "starlette.routing.sync-endpoint-callable-form",
+                    "starlette.routing.async-endpoint-callable-form",
+                    "starlette.routing.asgi-callable-instance-dispatch",
+                    "starlette.routing.asgi-callable-http-exception-before-start",
+                    "starlette.routing.asgi-callable-http-exception-after-start",
+                    "starlette.request.path-param-string",
+                    "starlette.request.path-param-float",
+                    "starlette.request.path-param-uuid",
+                    "starlette.request.path-param-path",
+                    "starlette.request.path-param-int-digit-limit",
+                    "starlette.request.cookies-dict-semantics"
+                  ],
+                  "reason": "The Rust-native profile cannot invoke arbitrary Python endpoint callables; synchronous and async Request endpoint boundaries and ASGI callable-instance dispatch observations are unsupported.",
+                  "status": "partial"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Excluded FastAPI body parameter with generic Starlette JSON receipt",
+          "scope_note": "The source includes FastAPI JSON parameter/OpenAPI behavior with generic JSON decoding, but the SQLModel/SQLAlchemy/SQLite tutorial remains excluded as a whole. The links classify ownership only and do not turn this row into independent request-body parity evidence.",
+          "status": "linked-to-current-contract-slice"
         },
         {
           "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
@@ -712474,8 +713924,8 @@
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
           "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
+          "ownership_boundary": "FastAPI-owned route or exception status selection",
+          "scope_note": "FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim.",
           "status": "out-of-current-contract-slice"
         }
       ],
@@ -715612,10 +717062,78 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned template and static response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "template-response",
+              "relationship": "Starlette-owned template and static response status emission",
+              "requirement_ids": [
+                "starlette.templating._TemplateResponse.template-context-metadata"
+              ],
+              "source_path": "starlette.templating.Jinja2Templates.__init__, _setup_env_defaults, get_template, TemplateResponse, and _TemplateResponse.__call__",
+              "surface_id": "starlette.templating.Jinja2Templates",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native consumer surface does not yet expose this Python templating operation.",
+                  "status": "unimplemented"
+                }
+              }
+            },
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned template and static response status emission",
+              "requirement_ids": [
+                "starlette.staticfiles.StaticFiles.asgi-call.rooted-file-get"
+              ],
+              "source_path": "starlette.staticfiles.StaticFiles.__call__",
+              "surface_id": "starlette.staticfiles.StaticFiles",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned template and static response status emission",
+          "scope_note": "This row observes 200 statuses from Starlette's template and static-file response paths. The exact pinned Jinja2Templates and StaticFiles references preserve their Python-only versus native target support states; they do not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
@@ -718748,10 +720266,34 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "asgi-call",
+              "relationship": "Starlette-owned default response status emission",
+              "requirement_ids": [
+                "starlette.responses.Response.asgi-call.empty-response",
+                "starlette.responses.Response.asgi-call.non-empty-response"
+              ],
+              "source_path": "starlette.responses.Response.__call__",
+              "surface_id": "starlette.responses.Response",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned default response status emission",
+          "scope_note": "The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
@@ -720180,10 +721722,33 @@
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-          "operation_refs": [],
-          "ownership_boundary": "owner review required",
-          "scope_note": "No exact sibling Starlette-RS operation has been selected for this FastAPI behavior family.",
-          "status": "out-of-current-contract-slice"
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+              "operation_id": "__call__",
+              "relationship": "Starlette-owned WSGI response status emission",
+              "requirement_ids": [
+                "starlette.middleware.wsgi.WSGIMiddleware.response-order"
+              ],
+              "source_path": "starlette.middleware.wsgi.WSGIMiddleware.__call__",
+              "surface_id": "starlette.middleware.wsgi.WSGIMiddleware",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [],
+                  "reason": "The Rust-native target does not expose the Python WSGI callable or ASGI middleware boundary.",
+                  "status": "unimplemented"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "Starlette-owned WSGI response status emission",
+          "scope_note": "This row observes the response produced by Starlette 1.6.0 WSGIMiddleware. The response-order requirement carries the Python-only/native-unimplemented support state; this is an ownership link, not FastAPI-RS parity.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": []
