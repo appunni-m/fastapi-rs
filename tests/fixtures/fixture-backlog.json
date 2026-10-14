@@ -316445,70 +316445,21 @@
                   "term": "include_router("
                 }
               ]
-            },
-            {
-              "feature_id": "openapi-docs",
-              "signals": [
-                {
-                  "line": 22,
-                  "source": "content",
-                  "term": "openapi"
-                }
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "line": 18,
-                  "source": "content",
-                  "term": "path("
-                }
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 20,
-                  "source": "content",
-                  "term": "status_code"
-                },
-                {
-                  "line": 20,
-                  "source": "content",
-                  "term": "status code"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "app-routing",
-            "openapi-docs",
-            "request-validation",
-            "status-codes"
+            "app-routing"
           ],
           "id": "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "docs.response.body.bytes",
-            "docs.response.headers",
-            "docs.response.status",
             "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "openapi.document",
-            "openapi.paths",
-            "openapi.request_schema",
-            "python.pydantic_model_result",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details"
+            "http.status"
           ],
           "reviewed_mapping": {
-            "rationale": "A route is added to an APIRouter after FastAPI has included that router. The public ASGI request checks that the new prefixed route dispatches and receives the include-level dependency; a focused OpenAPI projection checks that the include-level tag and response declaration apply to the late route.",
+            "contract_gate": "Partial: The pinned test also compares the OpenAPI `paths` key set with the four request paths. This workflow does not fetch OpenAPI. Its JSON-pointer observation schema selects values, not an object's key set; selecting the four path items would compare operation content beyond that assertion. The OpenAPI path-set assertion remains explicitly unobserved and is not claimed by this mapping.",
+            "rationale": "The workflow independently requests each of the four concrete paths and compares status and response bytes for every request, matching the loop's assertions in the pinned test.",
             "source_evidence": [
               {
                 "end_line": 307,
@@ -316558,50 +316509,23 @@
                 "role": "FastAPI.openapi refreshes the cached schema when the router route version changes",
                 "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
                 "start_line": 1070
+              },
+              {
+                "end_line": 307,
+                "path": "tests/test_router_include_context.py",
+                "role": "pinned FastAPI 0.141.1 test function test_repeated_deep_inclusions_handle_all_concrete_paths and its assertions",
+                "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109",
+                "start_line": 286
               }
-            ]
+            ],
+            "stimulus_notes": "The linked YAML recipes specify inputs and selected observations only; their independently authored workloads store no expected outputs."
           },
           "selector_evidence": [
             {
               "feature_id": "app-routing",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
                 "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "openapi-docs",
-              "selectors": [
-                "openapi.document",
-                "python.pydantic_model_result",
-                "docs.response.status",
-                "docs.response.headers",
-                "docs.response.body.bytes",
-                "http.body.bytes"
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.status"
               ]
             }
           ],
@@ -316609,12 +316533,9 @@
           "source_function": "test_repeated_deep_inclusions_handle_all_concrete_paths",
           "source_line": 286,
           "stimulus_design": [
-            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "The linked YAML recipes specify inputs and selected observations only; their independently authored workloads store no expected outputs."
         },
         {
           "feature_evidence": [
@@ -317806,25 +317727,6 @@
         {
           "feature_evidence": [
             {
-              "feature_id": "app-routing",
-              "signals": [
-                {
-                  "line": 2,
-                  "source": "content",
-                  "term": "apirouter"
-                },
-                {
-                  "source": "path",
-                  "term": "router"
-                },
-                {
-                  "line": 9,
-                  "source": "content",
-                  "term": "include_router("
-                }
-              ]
-            },
-            {
               "feature_id": "openapi-docs",
               "signals": [
                 {
@@ -317832,59 +317734,21 @@
                   "term": "openapi"
                 }
               ]
-            },
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "source": "path",
-                  "term": "path("
-                }
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 14,
-                  "source": "content",
-                  "term": "status_code"
-                },
-                {
-                  "line": 14,
-                  "source": "content",
-                  "term": "status code"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "app-routing",
-            "openapi-docs",
-            "request-validation",
-            "status-codes"
+            "openapi-docs"
           ],
           "id": "fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-reach-endpoint-and-openapi",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "docs.response.body.bytes",
-            "docs.response.headers",
-            "docs.response.status",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
             "openapi.document",
-            "openapi.paths",
-            "openapi.request_schema",
-            "python.pydantic_model_result",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details"
+            "openapi.paths"
           ],
           "reviewed_mapping": {
-            "rationale": "A route is added to an APIRouter after FastAPI has included that router. The public ASGI request checks that the new prefixed route dispatches and receives the include-level dependency; a focused OpenAPI projection checks that the include-level tag and response declaration apply to the late route.",
+            "contract_gate": "Partial: The pinned assertion treats the parameter names as an unordered set. The fixed JSON-pointer schema cannot express an unordered projection, so the recipe selects the three names at their pinned array positions and also compares their representation order. It does not claim parameter schemas, other operation fields, or the full OpenAPI document.",
+            "rationale": "The composed include prefix, router prefix, and operation path yield one OpenAPI path item. The workflow selects only the names of its three path parameters, matching the parameter-name assertion in the pinned test.",
             "source_evidence": [
               {
                 "end_line": 546,
@@ -317934,49 +317798,46 @@
                 "role": "FastAPI.openapi refreshes the cached schema when the router route version changes",
                 "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
                 "start_line": 1070
+              },
+              {
+                "end_line": 546,
+                "path": "tests/test_router_include_context.py",
+                "role": "pinned FastAPI 0.141.1 test function test_router_and_include_prefix_path_params_reach_endpoint_and_openapi and its assertions",
+                "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109",
+                "start_line": 523
+              },
+              {
+                "end_line": 1103,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI.openapi generates the document from the application route set",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1070
+              },
+              {
+                "end_line": 225,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI projects path parameter names and schemas into OpenAPI parameters",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 159
+              },
+              {
+                "end_line": 363,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI adds operation parameter projections under the effective OpenAPI path",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 325
               }
-            ]
+            ],
+            "stimulus_notes": "The linked YAML recipes specify inputs and selected observations only; their independently authored workloads store no expected outputs."
           },
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
                 "openapi.document",
-                "python.pydantic_model_result",
-                "docs.response.status",
-                "docs.response.headers",
-                "docs.response.body.bytes",
-                "http.body.bytes"
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
                 "openapi.paths"
               ]
             }
@@ -317985,12 +317846,9 @@
           "source_function": "test_router_and_include_prefix_path_params_reach_endpoint_and_openapi",
           "source_line": 523,
           "stimulus_design": [
-            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "The linked YAML recipes specify inputs and selected observations only; their independently authored workloads store no expected outputs."
         },
         {
           "feature_evidence": [
@@ -321599,12 +321457,14 @@
             "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths",
             "fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml",
           "workflow_id": "router-prefix-and-nested-composition-upstream"

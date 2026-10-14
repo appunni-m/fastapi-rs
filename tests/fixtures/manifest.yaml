@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@8
-    sha256: c2f949fe3f65e2e3dc94fb8497bd0057f5f29ba4c250f7ad08c78eee9fc3f464
+    sha256: df3be5bab3fd5fb4c0572c3f198d32d08d8d19620c55c59860182a011df11791
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 2c73ec964d3d90e35bbcef9a97f334cdd09cb228d1e5e9e813b2acf356494626
+    sha256: 25a1bdd05633bd820c658973860ae7ee8674691399c625227d1bcd6ebc3f96c6
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,7 +512,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: f54d87a074b371ef0798c1226aff8969b427890ffa1d8298f765e5f1ce924f40
+    sha256: 4d52638e08158237695989c51142e542646c45a8992187ebdd9bac180a36a792
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1136,7 +1136,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 147
     symbols_with_operation_fixture_refs: 241
-    operation_fixture_refs: 1728
+    operation_fixture_refs: 1737
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1188,6 +1188,32 @@ api_surface_contract:
       observation_selectors: &id002 []
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -9324,6 +9350,32 @@ api_surface_contract:
       observation_selectors:
       - openapi.document
       - openapi.paths
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -11502,6 +11554,32 @@ api_surface_contract:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+      observation_selectors:
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -14637,9 +14715,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
-      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
       recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
-      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
       workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
       case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
@@ -14647,11 +14725,13 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
-      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
       recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
-      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
       workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
       case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
@@ -46713,6 +46793,32 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -47467,6 +47573,32 @@ api_surface_contract:
       observation_selectors:
       - openapi.document
       - openapi.paths
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-prefix-and-nested-composition-upstream
+      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
+      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
+      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -47665,21 +47797,9 @@ api_surface_contract:
       - http.status
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
-      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
+      input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
       recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
-      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
-      workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
-      workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
-      case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
-      observation_selectors:
-      - http.body.bytes
-      - http.headers.ordered
-      - http.status
-    - workflow_id: router-prefix-and-nested-composition-upstream
-      input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
-      input_sha256: 3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e
-      recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
-      recipe_sha256: 77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2
+      recipe_sha256: efa6c2b4508421190dcf630fa6fdbf3c3658ec809439e205c19004a3de3b647c
       workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       workload_sha256: 876ed82051edffbaa46073f65607a99e719efbe8dc62b2af7796b2512eb26e97
       case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths

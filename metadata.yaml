@@ -1208,6 +1208,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py}
+        - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/metadata.md}
         - {path: docs_src/metadata/tutorial004_py310.py}
@@ -1679,9 +1681,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.additional-response-field-lifecycle.second-additional-hook-retry
           workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, asgi.send.message_types, asgi.application_error.exception, validation.error_details, error.public_attributes]
       supported_slice: >-
+        The router-prefix-and-nested-composition workflow calls `FastAPI()` with
+        no constructor arguments. It records only default construction needed
+        for those requests and adds no coverage for constructor options. Source
+        parameters `debug`, `routes`, `responses`, `callbacks`, and `**extra`,
+        which the current native constructor does not accept, remain
+        unsupported by that binding.
+
         Partial native constructor slice: the exception_handlers argument
         accepts a mapping keyed by exception class or HTTP status code, and
         registered custom HTTP handlers participate in response dispatch.
@@ -4221,6 +4236,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py}
+        - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
@@ -4333,6 +4350,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema
           workload_path: tests/fixtures/workloads/additional_response_openapi_wave.py
           observation_selectors: [openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
         - http.status
@@ -4346,6 +4369,11 @@ reviewed_api_contract_overlay:
         - validation.error_details
         - error.public_attributes
       supported_slice: >-
+        The router-prefix-and-nested-composition workflow dispatches HTTP GET
+        through the application for its concrete tenant path and four repeated-
+        inclusion paths. This records only those requests; other methods,
+        paths, and ASGI scopes are outside this workflow.
+
         Partial native slice: when a path operation declares response_model
         and returns a prebuilt Starlette Response, including JSONResponse,
         FastAPI passes the response through without response-model validation,
@@ -4460,6 +4488,12 @@ reviewed_api_contract_overlay:
         - {path: tests/test_response_model_as_return_annotation.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
@@ -4564,8 +4598,12 @@ reviewed_api_contract_overlay:
         - {path: tests/test_response_model_as_return_annotation.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
-        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice}
-        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths}
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
@@ -4595,6 +4633,12 @@ reviewed_api_contract_overlay:
       feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
+        The router-prefix-and-nested-composition workflow supplies only `router`
+        and `prefix` to app inclusion, adding `tags` on repeated inclusion.
+        Source `responses` and `callbacks` include parameters are absent from
+        the current native binding; this workflow does not establish them or
+        the other unused include options.
+
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
         relative-path router case observes inclusion with prefix `/v2`, dispatch
@@ -5193,6 +5237,12 @@ reviewed_api_contract_overlay:
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, public-api-errors, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception]
       supported_slice: >-
+        The router-prefix-and-nested-composition workflow supplies only `router`,
+        `prefix`, and `tags` to nested router inclusion. Source `responses` and
+        `callbacks` include parameters are absent from the current native
+        binding; this workflow does not establish them or the other unused
+        include options.
+
         Nested route sets can be included repeatedly with distinct prefixes and
         string tags. The reviewed inputs observe four concrete routes after two
         nested inclusions; the repeated-inclusion case compares effective
@@ -5221,8 +5271,9 @@ reviewed_api_contract_overlay:
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
       fixture_refs:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
-        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice}
-        - {recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths}
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
@@ -5285,6 +5336,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_strict_content_type_nested.py}
         - {path: docs/en/docs/advanced/strict-content-type.md}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for}
@@ -5312,9 +5364,21 @@ reviewed_api_contract_overlay:
         - *response_traversal_returned_response
         - *additional_field_two_contexts
         - *additional_field_retry
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
+        This workflow constructs default routers and one router with a `prefix`;
+        it passes no other APIRouter constructor options. Source parameters
+        `responses`, `callbacks`, `routes`, `redirect_slashes`, `default`,
+        `dependency_overrides_provider`, and `route_class` are omitted by the
+        current native constructor and are not established here.
+
         The native constructor accepts the default or a keyword-only prefix.
         A non-empty `/tenants/{tenant_id}` prefix combines with an app-level
         `/{version}` prefix and delivers all three path parameters to the
@@ -5446,6 +5510,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+        - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: fastapi/utils.py, symbol: deep_dict_update}
@@ -5473,9 +5538,19 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi-extra.deep-merge-and-router-inclusion
           workload_path: tests/fixtures/workloads/openapi_extra_deep_merge.py
           observation_selectors: [openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+          workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
+        The workflow registers the tenant GET path with decorator defaults and
+        the shared GET path with only `name="read_shared_items"`. It does not
+        exercise or establish the other GET decorator options.
+
         Registers a GET endpoint on a router for inclusion, including the
         sampled scalar query dependency, path parameters contributed by router
         and app prefixes, and route-level string tags combined with inherited

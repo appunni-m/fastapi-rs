@@ -32,6 +32,9 @@ SOURCE_IDENTITIES = {
 
 _ROUTING_UPSTREAM = "tests/fixtures/input-recipes/parity/routing-upstream.yaml"
 _ROUTING_SURFACE = "tests/fixtures/input-recipes/parity/routing-surface.yaml"
+_ROUTER_PREFIX_COMPOSITION = (
+    "tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml"
+)
 _ENUM_RECIPE = "tests/fixtures/input-recipes/parity/application-enum-status-code-upstream.yaml"
 _WS_ROUTE_SCOPE_RECIPE = "tests/fixtures/input-recipes/parity/route-scope-websocket-path.yaml"
 _HTTP_BODY_SELECTORS = ["http.status", "http.body.bytes"]
@@ -251,6 +254,86 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     owner="APIRoute subclass and custom route-class support",
                 ),
             },
+        },
+        "tests/test_router_include_context.py": {
+            "test_mappings": {
+                "test_router_and_include_prefix_path_params_reach_endpoint_and_openapi": _mapping(
+                    "tests/test_router_include_context.py",
+                    "test_router_and_include_prefix_path_params_reach_endpoint_and_openapi",
+                    workflows=[
+                        _workflow(
+                            _ROUTER_PREFIX_COMPOSITION,
+                            "fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice",
+                            ["tenant-item-openapi"],
+                            ["openapi.document", "openapi.paths"],
+                        )
+                    ],
+                    rationale=(
+                        "The composed include prefix, router prefix, and operation path yield one "
+                        "OpenAPI path item. The workflow selects only the names of its three path "
+                        "parameters, matching the parameter-name assertion in the pinned test."
+                    ),
+                    contract_gate=(
+                        "The pinned assertion treats the parameter names as an unordered set. "
+                        "The fixed JSON-pointer schema cannot express an unordered projection, so "
+                        "the recipe selects the three names at their pinned array positions and "
+                        "also compares their representation order. It does not claim parameter "
+                        "schemas, other operation fields, or the full OpenAPI document."
+                    ),
+                    feature_ids=["openapi-docs"],
+                    supporting_sources=(
+                        _source(
+                            "fastapi/applications.py",
+                            1070,
+                            1103,
+                            "FastAPI.openapi generates the document from the application route set",
+                        ),
+                        _source(
+                            "fastapi/openapi/utils.py",
+                            159,
+                            225,
+                            "FastAPI projects path parameter names and schemas into OpenAPI parameters",
+                        ),
+                        _source(
+                            "fastapi/openapi/utils.py",
+                            325,
+                            363,
+                            "FastAPI adds operation parameter projections under the effective OpenAPI path",
+                        ),
+                    ),
+                ),
+                "test_repeated_deep_inclusions_handle_all_concrete_paths": _mapping(
+                    "tests/test_router_include_context.py",
+                    "test_repeated_deep_inclusions_handle_all_concrete_paths",
+                    workflows=[
+                        _workflow(
+                            _ROUTER_PREFIX_COMPOSITION,
+                            "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths",
+                            [
+                                "repeated-v1-a",
+                                "repeated-v1-b",
+                                "repeated-v2-a",
+                                "repeated-v2-b",
+                            ],
+                            ["http.status", "http.body.bytes"],
+                        )
+                    ],
+                    rationale=(
+                        "The workflow independently requests each of the four concrete paths and "
+                        "compares status and response bytes for every request, matching the loop's "
+                        "assertions in the pinned test."
+                    ),
+                    contract_gate=(
+                        "The pinned test also compares the OpenAPI `paths` key set with the four "
+                        "request paths. This workflow does not fetch OpenAPI. Its JSON-pointer "
+                        "observation schema selects values, not an object's key set; selecting the "
+                        "four path items would compare operation content beyond that assertion. "
+                        "The OpenAPI path-set assertion remains explicitly unobserved and is not "
+                        "claimed by this mapping."
+                    ),
+                    feature_ids=["app-routing"],
+                ),
+            }
         },
         "tests/test_extra_routes.py": {
             "test_mappings": {
