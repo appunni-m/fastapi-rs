@@ -1447,7 +1447,7 @@ struct PyApiRoute {
     strict_content_type: Py<PyAny>,
     stream_item_type: Option<Py<PyAny>>,
     response_field: Option<ResponseField>,
-    direct_openapi_supported: bool,
+    openapi_snapshots: Vec<OpenApiRouteSnapshot>,
 }
 
 #[pyclass(name = "RouteContext", module = "fastapi.routing")]
@@ -1776,7 +1776,6 @@ struct ApiRouteViewConfig<'a> {
     callbacks: Option<&'a Py<PyAny>>,
     strict_content_type: &'a Py<PyAny>,
     stream_item_type: Option<&'a Py<PyAny>>,
-    direct_openapi_supported: bool,
 }
 
 fn new_api_route_view(
@@ -1832,7 +1831,7 @@ fn new_api_route_view(
             strict_content_type: config.strict_content_type.clone_ref(py),
             stream_item_type: config.stream_item_type.map(|value| value.clone_ref(py)),
             response_field: None,
-            direct_openapi_supported: config.direct_openapi_supported,
+            openapi_snapshots: Vec::new(),
         },
     )
     .map(Py::into_any)
@@ -1941,6 +1940,18 @@ fn set_api_route_response_field(
     Ok(())
 }
 
+fn set_api_route_openapi_snapshots(
+    py: Python<'_>,
+    route: &Py<PyAny>,
+    snapshots: Vec<OpenApiRouteSnapshot>,
+) -> PyResult<()> {
+    route
+        .bind(py)
+        .extract::<PyRefMut<'_, PyApiRoute>>()?
+        .openapi_snapshots = snapshots;
+    Ok(())
+}
+
 fn python_string_value(value: &Bound<'_, PyAny>) -> PyResult<String> {
     Ok(value.str()?.to_string_lossy().into_owned())
 }
@@ -1993,94 +2004,141 @@ fn openapi_warning_identity(
     Ok((endpoint_name, endpoint_file))
 }
 
-fn direct_route_openapi_operation(
-    route: &Bound<'_, PyAny>,
+struct DirectOpenApiRoute {
+    effective_route: Py<PyAny>,
+    owner: Option<Py<PyFastApi>>,
+    owner_route_index: Option<usize>,
+    include_in_schema: bool,
     is_webhook: bool,
-    response_schemas: &ResponseFieldSchemaBatch,
-    next_field_key: &mut usize,
-) -> PyResult<Vec<OpenApiOperation>> {
-    let route = route.extract::<PyRef<'_, PyApiRoute>>().map_err(|_| {
-        PyNotImplementedError::new_err("FastAPI-RS get_openapi supports native APIRoutes")
-    })?;
-    let py = route.py();
-    let methods = python_string_set_items(route.methods.bind(py))?;
-    if !route.direct_openapi_supported {
-        return Err(PyNotImplementedError::new_err(
-            "FastAPI-RS get_openapi supports only native simple APIRoutes",
-        ));
-    }
-    let tags = route.tags.bind(py).extract::<Vec<String>>()?;
-    let (endpoint_name, endpoint_file) = openapi_warning_identity(py, route.endpoint.bind(py))?;
-    let summary = match route.summary.as_deref() {
-        Some(summary) => summary.to_owned(),
-        None => PyString::new(py, &route.name)
-            .call_method1("replace", ("_", " "))?
-            .call_method0("title")?
-            .extract::<String>()?,
-    };
-    let description = endpoint_openapi_description(py, route.endpoint.bind(py))?;
-    let response_schema = match route.response_field.as_ref() {
-        Some(field) => {
-            let schema = response_schemas.schema(py, *next_field_key, field)?;
-            *next_field_key += 1;
-            Some(schema)
-        }
-        None => None,
-    };
-    methods
+}
+
+fn direct_openapi_route_index(
+    owner: &Py<PyFastApi>,
+    context: &Bound<'_, PyAny>,
+    effective_route: &Bound<'_, PyAny>,
+) -> Option<usize> {
+    let context_pointer = context.as_ptr() as usize;
+    let effective_pointer = effective_route.as_ptr() as usize;
+    owner
+        .bind(context.py())
+        .borrow()
+        .routes
         .iter()
-        .map(|method| {
-            Ok(OpenApiOperation {
-                path: route.path_format.clone(),
-                is_webhook,
-                method: method.to_ascii_lowercase(),
-                summary: summary.clone(),
-                description: description.clone(),
-                response_description: DEFAULT_RESPONSE_DESCRIPTION.to_owned(),
-                operation_id: route
-                    .unique_id
+        .position(|route| {
+            let public_pointer = route.public_route.as_ptr() as usize;
+            public_pointer == context_pointer
+                || public_pointer == effective_pointer
+                || route
+                    .effective_route_context
                     .as_ref()
-                    .map(|unique_id| unique_id.clone_ref(py))
-                    .unwrap_or_else(|| {
-                        PyString::new(py, &operation_id(&route.name, &route.path_format, method))
-                            .into_any()
-                            .unbind()
-                    }),
-                endpoint_name: endpoint_name.clone(),
-                endpoint_file: endpoint_file.clone(),
-                deprecated: None,
-                tags: (!tags.is_empty()).then(|| tags.clone()),
-                openapi_extra: route
-                    .openapi_extra
-                    .as_ref()
-                    .map(|value| value.clone_ref(py)),
-                status: None,
-                response_status_key: Some("200".to_owned()),
-                parameters: Vec::new(),
-                security_schemes: Vec::new(),
-                security_requirements: Vec::new(),
-                validation_parameters_present: false,
-                request_model_name: None,
-                request_schema: None,
-                request_example: None,
-                request_examples: None,
-                request_required: false,
-                request_body_present: false,
-                request_body_content_before_required: false,
-                request_media_type: "application/json".to_owned(),
-                response_model_name: None,
-                response_schema: response_schema.as_ref().map(|schema| schema.clone_ref(py)),
-                response_schema_title: response_schema.is_none().then(String::new),
-                response_media_type: Some("application/json".to_owned()),
-                response_class_is_json: true,
-                jsonl_stream: false,
-                sse_stream: false,
-                stream_item_model_name: None,
-                stream_item_schema: None,
-                additional_responses: Vec::new(),
-            })
+                    .is_some_and(|route_context| {
+                        let pointer = route_context.as_ptr() as usize;
+                        pointer == context_pointer || pointer == effective_pointer
+                    })
         })
-        .collect()
+}
+
+fn direct_openapi_contexts(
+    py: Python<'_>,
+    routes: &Bound<'_, PyAny>,
+    is_webhook: bool,
+) -> PyResult<Vec<DirectOpenApiRoute>> {
+    let iterator = py_iter_route_contexts(py, routes)?;
+    let iterator = iterator.bind(py).try_iter()?;
+    let mut contexts = Vec::new();
+    for context in iterator {
+        let context = context?;
+        let context = context.unbind();
+        let (original_route, effective_route) = {
+            let context_ref = context.bind(py).extract::<PyRef<'_, PyRouteContext>>()?;
+            (
+                context_ref.original_route.clone_ref(py),
+                context_ref.effective_route.clone_ref(py),
+            )
+        };
+        if !original_route.bind(py).is_instance_of::<PyApiRoute>()
+            || !effective_route.bind(py).is_instance_of::<PyApiRoute>()
+        {
+            continue;
+        }
+        let (include_in_schema, provider) = {
+            let route = effective_route
+                .bind(py)
+                .extract::<PyRef<'_, PyApiRoute>>()?;
+            (
+                route.include_in_schema,
+                route
+                    .dependency_overrides_provider
+                    .as_ref()
+                    .map(|provider| provider.clone_ref(py)),
+            )
+        };
+        let owner = provider
+            .as_ref()
+            .filter(|provider| provider.bind(py).is_instance_of::<PyFastApi>())
+            .map(|provider| provider.bind(py).extract::<Py<PyFastApi>>())
+            .transpose()?;
+        let owner_route_index = owner.as_ref().and_then(|owner| {
+            direct_openapi_route_index(owner, context.bind(py), effective_route.bind(py))
+        });
+        contexts.push(DirectOpenApiRoute {
+            effective_route,
+            owner,
+            owner_route_index,
+            include_in_schema,
+            is_webhook,
+        });
+    }
+    Ok(contexts)
+}
+
+fn apply_openapi_route_view(
+    py: Python<'_>,
+    snapshot: &mut OpenApiRouteSnapshot,
+    route: &PyApiRoute,
+    is_webhook: bool,
+) -> PyResult<()> {
+    snapshot.path_format.clone_from(&route.path_format);
+    snapshot.is_webhook = is_webhook;
+    snapshot.name.clone_from(&route.name);
+    snapshot.summary.clone_from(&route.summary);
+    snapshot
+        .response_description
+        .clone_from(&route.response_description);
+    snapshot.openapi_extra = route
+        .openapi_extra
+        .as_ref()
+        .map(|value| value.clone_ref(py));
+    snapshot.operation_id.clone_from(&route.operation_id);
+    snapshot.deprecated = route.deprecated;
+    let tags = route.tags.bind(py).extract::<Vec<String>>()?;
+    snapshot.tags = (!tags.is_empty()).then_some(tags);
+    if let Some(unique_id) = route.unique_id.as_ref() {
+        snapshot.unique_id_value = unique_id.clone_ref(py);
+        snapshot.unique_id = python_string_value(unique_id.bind(py))?;
+    }
+    let mut additional_fields = Vec::with_capacity(route.responses.bind(py).len());
+    for (status, response) in route.responses.bind(py).iter() {
+        let mut field = None;
+        for existing in &snapshot.additional_fields {
+            if existing.status.bind(py).eq(&status)? {
+                field = existing.field.as_ref().map(|field| field.clone_ref(py));
+                break;
+            }
+        }
+        let response = response
+            .cast::<PyDict>()
+            .map_err(|_| PyAssertionError::new_err("An additional response must be a dict"))?
+            .clone()
+            .unbind();
+        additional_fields.push(AdditionalResponseField {
+            status: status.unbind(),
+            response,
+            field,
+        });
+    }
+    snapshot.additional_fields = additional_fields;
+    Ok(())
 }
 
 pub(crate) fn direct_openapi_operations<'py>(
@@ -2089,51 +2147,83 @@ pub(crate) fn direct_openapi_operations<'py>(
     webhooks: Option<&Bound<'py, PyAny>>,
     separate_input_output_schemas: bool,
 ) -> PyResult<(Vec<OpenApiOperation>, Py<PyDict>)> {
-    let route_count = routes.len()?;
-    let webhook_count = webhooks.map(|items| items.len()).transpose()?.unwrap_or(0);
-    let mut direct_routes = Vec::with_capacity(route_count + webhook_count);
-    for index in 0..route_count {
-        direct_routes.push((routes.get_item(index)?, false));
-    }
+    let mut direct_routes = direct_openapi_contexts(py, routes, false)?;
     if let Some(webhooks) = webhooks {
-        for index in 0..webhook_count {
-            direct_routes.push((webhooks.get_item(index)?, true));
+        direct_routes.extend(direct_openapi_contexts(py, webhooks, true)?);
+    }
+
+    let mut owners = Vec::<(Py<PyFastApi>, HashSet<usize>)>::new();
+    let mut owner_positions = HashMap::<usize, usize>::new();
+    for route in &direct_routes {
+        let (Some(owner), Some(index)) = (route.owner.as_ref(), route.owner_route_index) else {
+            continue;
+        };
+        let pointer = owner.as_ptr() as usize;
+        let position = *owner_positions.entry(pointer).or_insert_with(|| {
+            owners.push((owner.clone_ref(py), HashSet::new()));
+            owners.len() - 1
+        });
+        owners[position].1.insert(index);
+    }
+    for (owner, indexes) in &owners {
+        materialize_included_response_fields(py, owner, None, Some(indexes))?;
+    }
+
+    let mut snapshots = Vec::new();
+    for input in direct_routes {
+        if !input.include_in_schema {
+            continue;
+        }
+        let methods = {
+            let route = input
+                .effective_route
+                .bind(py)
+                .extract::<PyRef<'_, PyApiRoute>>()?;
+            python_string_set_items(route.methods.bind(py))?
+        };
+        if let (Some(owner), Some(index)) = (input.owner.as_ref(), input.owner_route_index) {
+            let owner = owner.bind(py).borrow();
+            let route = owner
+                .routes
+                .get(index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected OpenAPI route was lost"))?;
+            for method in &methods {
+                let mut snapshot =
+                    OpenApiRouteSnapshot::from_route(py, route, method, input.is_webhook)?;
+                let route_view = input
+                    .effective_route
+                    .bind(py)
+                    .extract::<PyRef<'_, PyApiRoute>>()?;
+                apply_openapi_route_view(py, &mut snapshot, &route_view, input.is_webhook)?;
+                snapshots.push(snapshot);
+            }
+        } else {
+            let route = input
+                .effective_route
+                .bind(py)
+                .extract::<PyRef<'_, PyApiRoute>>()?;
+            let template = route.openapi_snapshots.first();
+            if template.is_none() && !methods.is_empty() {
+                return Err(PyNotImplementedError::new_err(
+                    "FastAPI-RS get_openapi could not resolve the APIRoute's operation state",
+                ));
+            }
+            for method in &methods {
+                let stored = route
+                    .openapi_snapshots
+                    .iter()
+                    .find(|stored| stored.method == *method)
+                    .or(template)
+                    .ok_or_else(|| PyRuntimeError::new_err("APIRoute OpenAPI snapshot was lost"))?;
+                let mut snapshot = stored.clone_ref(py);
+                snapshot.method.clone_from(method);
+                apply_openapi_route_view(py, &mut snapshot, &route, input.is_webhook)?;
+                snapshots.push(snapshot);
+            }
         }
     }
 
-    let route_refs = direct_routes
-        .iter()
-        .map(|(route, _)| {
-            route.extract::<PyRef<'py, PyApiRoute>>().map_err(|_| {
-                PyNotImplementedError::new_err("FastAPI-RS get_openapi supports native APIRoutes")
-            })
-        })
-        .collect::<PyResult<Vec<_>>>()?;
-    if route_refs
-        .iter()
-        .any(|route| !route.direct_openapi_supported)
-    {
-        return Err(PyNotImplementedError::new_err(
-            "FastAPI-RS get_openapi supports only native simple APIRoutes",
-        ));
-    }
-    let response_fields = route_refs
-        .iter()
-        .filter_map(|route| route.response_field.as_ref())
-        .collect::<Vec<_>>();
-    let response_schemas =
-        ResponseFieldSchemaBatch::new(py, &response_fields, &[], separate_input_output_schemas)?;
-    let mut next_field_key = 0;
-    let mut operations = Vec::with_capacity(route_count + webhook_count);
-    for (route, is_webhook) in direct_routes {
-        operations.extend(direct_route_openapi_operation(
-            &route,
-            is_webhook,
-            &response_schemas,
-            &mut next_field_key,
-        )?);
-    }
-    Ok((operations, response_schemas.definitions.clone_ref(py)))
+    openapi_operations_from_snapshots(py, &mut snapshots, separate_input_output_schemas)
 }
 
 fn endpoint_openapi_description(
@@ -2248,9 +2338,40 @@ impl IncludedFieldBranch {
         }
     }
 
+    fn collect_selected_visits(
+        &self,
+        selected_indexes: &HashSet<usize>,
+        path: &mut Vec<usize>,
+        visits: &mut Vec<(Vec<usize>, Vec<usize>)>,
+    ) {
+        if !self.ready {
+            let selected = self
+                .direct_indexes
+                .iter()
+                .copied()
+                .filter(|index| selected_indexes.contains(index))
+                .collect::<Vec<_>>();
+            if !selected.is_empty() {
+                visits.push((path.clone(), selected));
+            }
+        }
+        for (index, child) in self.children.iter().enumerate() {
+            path.push(index);
+            child.collect_selected_visits(selected_indexes, path, visits);
+            path.pop();
+        }
+    }
+
     fn descendant_mut(&mut self, path: &[usize]) -> Option<&mut Self> {
         match path.split_first() {
             Some((index, remaining)) => self.children.get_mut(*index)?.descendant_mut(remaining),
+            None => Some(self),
+        }
+    }
+
+    fn descendant(&self, path: &[usize]) -> Option<&Self> {
+        match path.split_first() {
+            Some((index, remaining)) => self.children.get(*index)?.descendant(remaining),
             None => Some(self),
         }
     }
@@ -2319,6 +2440,7 @@ fn materialize_included_response_fields(
     py: Python<'_>,
     app: &Py<PyFastApi>,
     full_match: Option<usize>,
+    selected_indexes: Option<&HashSet<usize>>,
 ) -> PyResult<()> {
     // Flat native indexes are retained for immutable route declarations. The
     // companion branch tree preserves source traversal and whole-branch fields.
@@ -2327,9 +2449,17 @@ fn materialize_included_response_fields(
     {
         let app = app.bind(py).borrow();
         for (index, include) in app.router_includes.iter().enumerate() {
-            include
-                .fields
-                .collect_visits(full_match, &mut vec![index], &mut visits);
+            if let Some(selected_indexes) = selected_indexes {
+                include.fields.collect_selected_visits(
+                    selected_indexes,
+                    &mut vec![index],
+                    &mut visits,
+                );
+            } else {
+                include
+                    .fields
+                    .collect_visits(full_match, &mut vec![index], &mut visits);
+            }
         }
     }
     for (branch_path, indexes) in visits {
@@ -2341,7 +2471,12 @@ fn materialize_included_response_fields(
                     let route = app.routes.get(*index).ok_or_else(|| {
                         PyRuntimeError::new_err("included route field input was lost")
                     })?;
-                    Ok(ResponseFieldInput {
+                    if selected_indexes.is_some()
+                        && matches!(&route.response_field, ResponseFieldState::Ready(_))
+                    {
+                        return Ok(None);
+                    }
+                    Ok(Some(ResponseFieldInput {
                         index: *index,
                         unique_id: route.unique_id.clone(),
                         model: route
@@ -2358,9 +2493,12 @@ fn materialize_included_response_fields(
                             .effective_route_context
                             .as_ref()
                             .map(|context| context.clone_ref(py)),
-                    })
+                    }))
                 })
                 .collect::<PyResult<Vec<_>>>()?
+                .into_iter()
+                .flatten()
+                .collect::<Vec<_>>()
         };
         // Schema hooks, truth testing and destruction on failure are outside
         // the app borrow. No successful partial branch is published on error.
@@ -2412,14 +2550,6 @@ fn materialize_included_response_fields(
             let (include_index, descendant) = branch_path
                 .split_first()
                 .ok_or_else(|| PyRuntimeError::new_err("included field branch was lost"))?;
-            if app
-                .router_includes
-                .get_mut(*include_index)
-                .and_then(|include| include.fields.descendant_mut(descendant))
-                .is_none()
-            {
-                return Err(PyRuntimeError::new_err("included field branch was lost"));
-            }
             let mut retired = Vec::with_capacity(prepared.len());
             for update in prepared {
                 let route = app.routes.get_mut(update.index).ok_or_else(|| {
@@ -2440,12 +2570,24 @@ fn materialize_included_response_fields(
                 };
                 retired.push((old_field, old_response_class));
             }
+            let branch_ready = app
+                .router_includes
+                .get(*include_index)
+                .and_then(|include| include.fields.descendant(descendant))
+                .ok_or_else(|| PyRuntimeError::new_err("included field branch was lost"))?
+                .direct_indexes
+                .iter()
+                .all(|index| {
+                    app.routes.get(*index).is_some_and(|route| {
+                        matches!(&route.response_field, ResponseFieldState::Ready(_))
+                    })
+                });
             if let Some(branch) = app
                 .router_includes
                 .get_mut(*include_index)
                 .and_then(|include| include.fields.descendant_mut(descendant))
             {
-                branch.ready = true;
+                branch.ready = branch_ready;
             }
             retired
         };
@@ -2659,6 +2801,44 @@ impl OpenApiRouteSnapshot {
             request_schema_key: None,
             plan: route.plan.clone_ref(py),
         })
+    }
+
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        Self {
+            path_format: self.path_format.clone(),
+            is_webhook: self.is_webhook,
+            method: self.method.clone(),
+            name: self.name.clone(),
+            endpoint: self.endpoint.clone_ref(py),
+            summary: self.summary.clone(),
+            response_description: self.response_description.clone(),
+            openapi_extra: self.openapi_extra.as_ref().map(|value| value.clone_ref(py)),
+            operation_id: self.operation_id.clone(),
+            unique_id: self.unique_id.clone(),
+            unique_id_value: self.unique_id_value.clone_ref(py),
+            deprecated: self.deprecated,
+            tags: self.tags.clone(),
+            status_code: self.status_code,
+            response_class: self.response_class.clone_ref(py),
+            sse_stream: self.sse_stream,
+            generator_kind: self.generator_kind,
+            stream_item_type: self
+                .stream_item_type
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            response_model: self
+                .response_model
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            primary_field: self.primary_field.as_ref().map(|field| field.clone_ref(py)),
+            additional_fields: self
+                .additional_fields
+                .iter()
+                .map(|field| field.clone_ref(py))
+                .collect(),
+            request_schema_key: self.request_schema_key,
+            plan: self.plan.clone_ref(py),
+        }
     }
 }
 
@@ -5120,6 +5300,64 @@ fn response_from_captured_messages(
         .map(Bound::unbind)
 }
 
+fn openapi_operations_from_snapshots(
+    py: Python<'_>,
+    routes: &mut [OpenApiRouteSnapshot],
+    separate_input_output_schemas: bool,
+) -> PyResult<(Vec<OpenApiOperation>, Py<PyDict>)> {
+    let response_field_count = routes
+        .iter()
+        .flat_map(|route| {
+            route.primary_field.iter().chain(
+                route
+                    .additional_fields
+                    .iter()
+                    .filter_map(|response| response.field.as_ref()),
+            )
+        })
+        .count();
+    let mut request_annotations = Vec::new();
+    for route in routes.iter_mut() {
+        if let Some(annotation) = openapi_request_schema_annotation(py, route)? {
+            route.request_schema_key = Some(response_field_count + request_annotations.len());
+            request_annotations.push(annotation);
+        }
+    }
+    let response_fields = routes
+        .iter()
+        .flat_map(|route| {
+            route.primary_field.iter().chain(
+                route
+                    .additional_fields
+                    .iter()
+                    .filter_map(|response| response.field.as_ref()),
+            )
+        })
+        .collect::<Vec<_>>();
+    // Source collects primary then extras before the shared two-pass JSON
+    // generator. Snapshots retain owners across callbacks and errors.
+    let response_schemas = ResponseFieldSchemaBatch::new(
+        py,
+        &response_fields,
+        &request_annotations,
+        separate_input_output_schemas,
+    )?;
+    let mut next_field_key = 0;
+    let operations = routes
+        .iter()
+        .map(|route| {
+            PyFastApi::openapi_operation(
+                py,
+                route,
+                &response_schemas,
+                separate_input_output_schemas,
+                &mut next_field_key,
+            )
+        })
+        .collect::<PyResult<Vec<_>>>()?;
+    Ok((operations, response_schemas.definitions.clone_ref(py)))
+}
+
 fn openapi_document_for_root_path(
     py: Python<'_>,
     schema: Py<PyAny>,
@@ -5245,7 +5483,7 @@ impl PyFastApi {
         py: Python<'_>,
         root_path: Option<&str>,
     ) -> PyResult<Py<PyAny>> {
-        materialize_included_response_fields(py, app, None)?;
+        materialize_included_response_fields(py, app, None, None)?;
         let webhook_app = {
             let app = app.bind(py).borrow();
             app.webhooks
@@ -5254,64 +5492,16 @@ impl PyFastApi {
                 .inner
                 .clone_ref(py)
         };
-        materialize_included_response_fields(py, &webhook_app, None)?;
+        materialize_included_response_fields(py, &webhook_app, None, None)?;
         let mut snapshot = {
             let app = app.bind(py).borrow();
             OpenApiAppSnapshot::from_app(py, &app)?
         };
-        let response_field_count = snapshot
-            .operations
-            .iter()
-            .flat_map(|route| {
-                route.primary_field.iter().chain(
-                    route
-                        .additional_fields
-                        .iter()
-                        .filter_map(|response| response.field.as_ref()),
-                )
-            })
-            .count();
-        let mut request_annotations = Vec::new();
-        for route in &mut snapshot.operations {
-            if let Some(annotation) = openapi_request_schema_annotation(py, route)? {
-                route.request_schema_key = Some(response_field_count + request_annotations.len());
-                request_annotations.push(annotation);
-            }
-        }
-        let response_fields = snapshot
-            .operations
-            .iter()
-            .flat_map(|route| {
-                route.primary_field.iter().chain(
-                    route
-                        .additional_fields
-                        .iter()
-                        .filter_map(|response| response.field.as_ref()),
-                )
-            })
-            .collect::<Vec<_>>();
-        // Source collects primary then extras before the shared two-pass JSON
-        // generator. The snapshot retains owners across callbacks and errors.
-        let response_schemas = ResponseFieldSchemaBatch::new(
+        let (operations, response_definitions) = openapi_operations_from_snapshots(
             py,
-            &response_fields,
-            &request_annotations,
+            &mut snapshot.operations,
             snapshot.separate_input_output_schemas,
         )?;
-        let mut next_field_key = 0;
-        let operations = snapshot
-            .operations
-            .iter()
-            .map(|route| {
-                Self::openapi_operation(
-                    py,
-                    route,
-                    &response_schemas,
-                    snapshot.separate_input_output_schemas,
-                    &mut next_field_key,
-                )
-            })
-            .collect::<PyResult<Vec<_>>>()?;
         openapi_document(
             py,
             OpenApiInfo {
@@ -5329,7 +5519,7 @@ impl PyFastApi {
             },
             &operations,
             root_path,
-            Some(&response_schemas.definitions),
+            Some(&response_definitions),
         )
     }
 
@@ -6542,7 +6732,6 @@ fn merge_router_routes(
                 callbacks: None,
                 strict_content_type: &strict_content_type,
                 stream_item_type: source_route.stream_item_type.as_ref(),
-                direct_openapi_supported: false,
             },
             source_route.endpoint.clone_ref(py),
         )?;
@@ -7200,38 +7389,6 @@ impl PyOperationDecorator {
             Some(response_model) => Some(response_model.clone_ref(py)),
             None => None,
         };
-        let (has_app_dependencies, has_default_response_class) = {
-            let app = self.app.bind(py).borrow();
-            (
-                !app.dependencies.is_empty(),
-                !app.default_response_class.is_default(),
-            )
-        };
-        let endpoint_has_docstring = endpoint.bind(py).getattr("__doc__")?.is_truthy()?;
-        let direct_openapi_supported = !self.callback_methods.is_empty()
-            && !scope_path.contains('{')
-            && self.name.is_none()
-            && self.summary.is_none()
-            && self.operation_id.is_none()
-            && self.generate_unique_id_function.is_default()
-            && self.deprecated.is_none()
-            && self.status_code.is_none()
-            && self.include_in_schema
-            && self.response_description == DEFAULT_RESPONSE_DESCRIPTION
-            && responses.bind(py).is_empty()
-            && self.response_class.is_default()
-            && !has_default_response_class
-            && self.response_model_include.is_none()
-            && self.response_model_exclude.is_none()
-            && self.response_model_by_alias
-            && !self.response_model_exclude_unset
-            && !self.response_model_exclude_defaults
-            && !self.response_model_exclude_none
-            && !has_app_dependencies
-            && self.dependencies.is_empty()
-            && plan.parameters.is_empty()
-            && !generator_kind.is_generator()
-            && !endpoint_has_docstring;
         let strict_content_type = self.app.bind(py).borrow().strict_content_type;
         let strict_content_type_value = strict_content_type_python_value(py, strict_content_type)?;
         let (public_route, unique_id) = api_route_view_and_unique_id(
@@ -7264,7 +7421,6 @@ impl PyOperationDecorator {
                 callbacks: None,
                 strict_content_type: &strict_content_type_value,
                 stream_item_type: None,
-                direct_openapi_supported,
             },
             endpoint.clone_ref(py),
             &self.generate_unique_id_function,
@@ -7300,7 +7456,7 @@ impl PyOperationDecorator {
                 .set_parameters(index, inputs)
                 .ok_or_else(|| PyRuntimeError::new_err("registered FastAPI operation was lost"))?;
         }
-        app.routes.push(FastApiRoute {
+        let route = FastApiRoute {
             path: self.path.clone(),
             path_format,
             url_path_format,
@@ -7350,7 +7506,14 @@ impl PyOperationDecorator {
             response_model_exclude_none: self.response_model_exclude_none,
             router_dependencies: route_dependencies,
             plan,
-        });
+        };
+        let openapi_snapshots = route
+            .methods
+            .iter()
+            .map(|method| OpenApiRouteSnapshot::from_route(py, &route, method, false))
+            .collect::<PyResult<Vec<_>>>()?;
+        set_api_route_openapi_snapshots(py, &route.public_route, openapi_snapshots)?;
+        app.routes.push(route);
         app.bump_routes_version();
         Ok(endpoint)
     }
@@ -12399,7 +12562,7 @@ impl FastApiCall {
         };
         // A partial match does not stop traversal. Misses/405 visit all branches;
         // a full match still builds every direct field of each visited branch.
-        materialize_included_response_fields(py, &self.app, full_match)?;
+        materialize_included_response_fields(py, &self.app, full_match, None)?;
         match match_result {
             FastApiOperationMatch::Matched {
                 operation_index,

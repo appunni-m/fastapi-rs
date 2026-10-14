@@ -4127,6 +4127,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.two-static-get-routes
           workload_path: tests/fixtures/workloads/openapi_get_openapi_multi_route.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml
+          case_id: fastapi.openapi.get-openapi.filtered-included-route-context
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_route_contexts.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml
+          case_id: fastapi.openapi.get-openapi.webhook-route-context
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_route_contexts.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml
+          case_id: fastapi.openapi.get-openapi-mutated-route-methods
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_route_contexts.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml
+          case_id: fastapi.openapi.get-openapi-mutated-route-responses
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_route_contexts.py
+          observation_selectors: [python.attribute_value]
       feature_ids: [openapi-docs]
       observation_selectors:
         - http.status
@@ -4143,22 +4159,23 @@ reviewed_api_contract_overlay:
         only lowercase ASCII letters, the default summary, operation ID, response class,
         and empty dependency/parameter plans produce their default operation
         documents. Static GET routes with a primary response model also emit
-        its shared or split response schema according to the flag. Other non-empty
-        route shapes remain unsupported. Route-level
-        tags are preserved for supported operations. The linked direct-call
-        fixture covers a non-empty `webhooks` input with one native simple
-        static GET APIRoute. Other methods and multi-method default operation
-        IDs remain outside this compared slice. Webhooks are emitted under a
-        separate top-level `webhooks` map while ordinary routes remain under
-        `paths`.
+        its shared or split response schema according to the flag. Route-level
+        tags are preserved for supported operations. The linked fixtures also
+        cover filtered RouteContext inputs from included routers, effective
+        paths and dependency security, webhook RouteContext inputs with request
+        schemas and security, and live method and response declarations read at
+        OpenAPI generation time. These direct-call fixtures do not establish
+        parity for all combinations of route options. Webhooks are emitted
+        under a separate top-level `webhooks` map while ordinary routes remain
+        under `paths`.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Route contexts and included route trees remain rejected; only native APIRoutes with the supported simple static configuration are traversed for direct calls.
-          - Request/body schemas, additional response schemas, security schemes, callbacks, custom route operation IDs, multi-method operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct calls.
+          - Generic Starlette routes are skipped as in FastAPI. Full traversal of arbitrary included route trees and custom route classes remains outside the direct-call fixtures; the compared included-router case passes prefiltered RouteContext values.
+          - Callbacks, custom route operation IDs, duplicate-ID warning parity, custom response metadata, and broad combinations of route options remain outside the direct-call fixtures.
           - Default summary generation for endpoint names containing characters outside lowercase ASCII letters can differ from FastAPI title casing, including underscores and digit transitions.
-          - The linked fixtures cover empty routes, metadata options, simple static GET routes, primary response-model schemas in both modes, and one simple static webhook registered for GET; webhook routes with other or multiple methods, invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
+          - The linked fixtures cover empty routes, metadata options, simple static GET routes, primary response-model schemas in both modes, RouteContext security and request schemas, a simple webhook registered for GET, and mutations to methods and additional responses; other method/webhook combinations, invalid arguments, metadata validation errors, and remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       supported_slice: >-
