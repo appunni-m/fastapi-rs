@@ -6358,6 +6358,57 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def documented_case_selectors(
+    case: dict[str, Any],
+    source_selectors: set[str],
+    *,
+    workflow_schema: str,
+    selector_support: dict[str, str],
+    action_ids: Sequence[str] | None = None,
+) -> set[str]:
+    """Project selectors from the exact materialized case and optional action scope."""
+    if str(PROJECT) not in sys.path:
+        sys.path.insert(0, str(PROJECT))
+    try:
+        from scripts.parity.materialized import _source_selectors_for_case
+    except ImportError as exc:
+        raise AtlasError("cannot import the materialized input selector projection") from exc
+
+    selected_case = case
+    if action_ids is not None:
+        if "probes" in case:
+            raise AtlasError("action_ids cannot scope a direct API probe case")
+        actions = case.get("actions")
+        if not isinstance(actions, list):
+            raise AtlasError("action_ids requires a materialized case with an actions list")
+        action_by_id = {
+            action.get("action_id"): action
+            for action in actions
+            if isinstance(action, dict) and isinstance(action.get("action_id"), str)
+        }
+        missing_actions = sorted(set(action_ids) - action_by_id.keys())
+        if missing_actions:
+            raise AtlasError("action_ids are absent from the linked case: " + str(missing_actions))
+        selected_case = dict(case)
+        selected_case["actions"] = [action_by_id[action_id] for action_id in action_ids]
+        if action_ids is not None:
+            # An explicit action scope does not include independent construction
+            # observations from the same case.
+            selected_case.pop("construction_observation", None)
+
+    selected = _source_selectors_for_case(
+        selected_case,
+        source_selectors,
+        workflow_schema=workflow_schema,
+        selector_support=selector_support,
+    )
+    return {
+        selector
+        for selector in selected
+        if selector_support.get(selector) in {"supported", "partial"}
+    }
+
+
 def read_first_asgi_workflow() -> dict[str, Any]:
     schema_path = PROJECT / ASGI_WORKFLOW_SCHEMA_PATH
     input_path = PROJECT / ASGI_WORKFLOW_INPUT_PATH
@@ -6582,7 +6633,10 @@ def selectors_with_exact_http_body(selectors: Sequence[str]) -> list[str]:
 
 
 def selector_evidence(
-    features: Sequence[str], selectors: Sequence[str] | None = None
+    features: Sequence[str],
+    selectors: Sequence[str] | None = None,
+    *,
+    include_exact_http_body: bool = True,
 ) -> list[dict[str, Any]]:
     by_id = {feature["id"]: feature for feature in FEATURES}
     if selectors is None:
@@ -6615,7 +6669,12 @@ def selector_evidence(
     assigned: dict[str, list[str]] = defaultdict(list)
     extension: dict[str, list[str]] = defaultdict(list)
     unassigned: list[str] = []
-    for selector in selectors_with_exact_http_body(selectors):
+    evidence_selectors = (
+        selectors_with_exact_http_body(selectors)
+        if include_exact_http_body
+        else list(dict.fromkeys(selectors))
+    )
+    for selector in evidence_selectors:
         exact_owners = [
             feature_id for feature_id in features if selector in by_id[feature_id]["observations"]
         ]
@@ -9276,6 +9335,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "FastAPI jsonable_encoder and Pydantic value conversion have no corresponding Starlette-RS operation in the current contract.",
                     [],
                 )
+            elif feature_id == "cli-process":
+                specs = (
+                    "FastAPI-owned console entrypoint and process behavior",
+                    "FastAPI 0.141.1 declares `fastapi = fastapi.cli:main` in `pyproject.toml:119-120`; `fastapi/cli.py:8` defines the entrypoint and `docs/en/docs/fastapi-cli.md` documents its command surface. Starlette-RS has no corresponding CLI operation. This records upstream ownership only and makes no FastAPI-RS support or parity claim.",
+                    [],
+                )
             else:
                 specs = (
                     "owner review required",
@@ -9392,7 +9457,19 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     if not materialized_index_path.is_file():
         raise AtlasError("materialized input index is required to review source-to-workflow links")
     materialized_index = json.loads(materialized_index_path.read_text(encoding="utf-8"))
+    selector_catalog = json.loads(
+        (PROJECT / "tests/fixtures/observation-selectors.json").read_text(encoding="utf-8")
+    )
+    selector_support = {
+        row["id"]: row["workflow_support"]
+        for row in selector_catalog["selectors"]
+        if "id" in row
+    }
+    selector_ids = set(selector_support)
     indexed_workflows = {row["id"]: row for row in materialized_index["workflows"]}
+    indexed_workflows_by_recipe: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for workflow in materialized_index["workflows"]:
+        indexed_workflows_by_recipe[workflow["recipe_path"]].append(workflow)
     indexed_workflow_mappings_by_source: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for mapping in materialized_index["mappings"]:
         workflow = indexed_workflows.get(mapping["workflow_id"])
@@ -9412,6 +9489,76 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         )
     for workflow_mappings in indexed_workflow_mappings_by_source.values():
         workflow_mappings.sort(key=lambda row: row["workflow_id"])
+
+    materialized_workflow_cache: dict[str, tuple[dict[str, Any], dict[str, dict[str, Any]]]] = {}
+
+    def materialized_workflow_for_recipe(
+        recipe_path: str,
+    ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+        cached = materialized_workflow_cache.get(recipe_path)
+        if cached is not None:
+            return cached
+        references = indexed_workflows_by_recipe.get(recipe_path, [])
+        if len(references) != 1:
+            raise AtlasError(
+                "documented-page recipe must resolve to exactly one materialized workflow: "
+                f"{recipe_path} (matches={len(references)})"
+            )
+        workflow_ref = references[0]
+        input_path = (PROJECT / workflow_ref["input_path"]).resolve()
+        try:
+            input_path.relative_to(PROJECT.resolve())
+        except ValueError as exc:
+            raise AtlasError(
+                "documented-page workflow input escapes the repository: "
+                + workflow_ref["input_path"]
+            ) from exc
+        try:
+            workflow = json.loads(input_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise AtlasError(
+                "cannot read documented-page workflow input "
+                f"{workflow_ref['input_path']}: {exc}"
+            ) from exc
+        recipe_file = (PROJECT / recipe_path).resolve()
+        try:
+            recipe_file.relative_to(PROJECT.resolve())
+        except ValueError as exc:
+            raise AtlasError(
+                "documented-page recipe escapes the repository: " + recipe_path
+            ) from exc
+        if str(PROJECT) not in sys.path:
+            sys.path.insert(0, str(PROJECT))
+        try:
+            from scripts.build_parity_inputs import read_recipe
+
+            recipe_workflow = read_recipe(recipe_file)
+        except (ImportError, OSError, ValueError) as exc:
+            raise AtlasError(
+                "cannot read documented-page input recipe " f"{recipe_path}: {exc}"
+            ) from exc
+        if recipe_workflow != workflow:
+            raise AtlasError(
+                "materialized input differs from its exact linked recipe: " + recipe_path
+            )
+        cases = workflow.get("cases")
+        if not isinstance(workflow.get("schema"), str) or not isinstance(cases, list):
+            raise AtlasError(
+                "documented-page workflow input has no schema or cases list: "
+                + workflow_ref["input_path"]
+            )
+        cases_by_id: dict[str, dict[str, Any]] = {}
+        for case in cases:
+            case_id = case.get("case_id") if isinstance(case, dict) else None
+            if not isinstance(case_id, str) or not case_id or case_id in cases_by_id:
+                raise AtlasError(
+                    "documented-page workflow case IDs must be non-empty and unique: "
+                    + workflow_ref["input_path"]
+                )
+            cases_by_id[case_id] = case
+        cached = (workflow, cases_by_id)
+        materialized_workflow_cache[recipe_path] = cached
+        return cached
 
     coverage_items = []
     fixture_backlog = []
@@ -9904,6 +10051,120 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         for page in pages:
             examples_by_page[page].append(record)
 
+    documented_page_validation_errors: list[str] = []
+
+    def reviewed_selector_claims(value: Any, label: str) -> set[str]:
+        if not isinstance(value, list) or any(
+            not isinstance(item, str) or not item for item in value
+        ):
+            documented_page_validation_errors.append(
+                f"{label} must declare observation_selectors as non-empty strings"
+            )
+            return set()
+        if len(value) != len(set(value)):
+            documented_page_validation_errors.append(
+                f"{label} declares duplicate observation selectors"
+            )
+        return set(value)
+
+    def reviewed_case_ids(row: dict[str, Any], label: str) -> list[str]:
+        if "case_ids" in row and "case_id" in row:
+            documented_page_validation_errors.append(
+                f"{label} must use either case_ids or case_id, not both"
+            )
+            return []
+        raw_case_ids = row.get("case_ids")
+        if raw_case_ids is None and "case_id" in row:
+            raw_case_ids = [row["case_id"]]
+        if (
+            not isinstance(raw_case_ids, list)
+            or not raw_case_ids
+            or any(not isinstance(case_id, str) or not case_id for case_id in raw_case_ids)
+        ):
+            documented_page_validation_errors.append(
+                f"{label} must declare one or more non-empty case IDs"
+            )
+            return []
+        if len(raw_case_ids) != len(set(raw_case_ids)):
+            documented_page_validation_errors.append(f"{label} declares duplicate case IDs")
+        return list(raw_case_ids)
+
+    def reviewed_action_ids(row: dict[str, Any], label: str) -> list[str] | None:
+        if "action_ids" not in row:
+            return None
+        action_ids = row["action_ids"]
+        if not isinstance(action_ids, list) or not action_ids or any(
+            not isinstance(action_id, str) or not action_id for action_id in action_ids
+        ):
+            documented_page_validation_errors.append(
+                f"{label} action_ids must be a non-empty list of non-empty strings"
+            )
+            return []
+        if len(action_ids) != len(set(action_ids)):
+            documented_page_validation_errors.append(f"{label} declares duplicate action IDs")
+        return list(action_ids)
+
+    def project_documented_page_case(
+        *,
+        page_rel: str,
+        page_source_path: str,
+        recipe_path: str,
+        case_id: str,
+        source_selectors: set[str],
+        action_ids: Sequence[str] | None = None,
+    ) -> set[str]:
+        link_label = f"docs/en/docs/{page_rel}: {recipe_path}::{case_id}"
+        try:
+            workflow, cases_by_id = materialized_workflow_for_recipe(recipe_path)
+        except AtlasError as exc:
+            documented_page_validation_errors.append(str(exc) + f" (linked from {link_label})")
+            return set()
+        case = cases_by_id.get(case_id)
+        if case is None:
+            documented_page_validation_errors.append(
+                f"{link_label} references a case absent from the materialized input"
+            )
+            return set()
+        source_evidence = [
+            evidence
+            for evidence in case.get("source_evidence", [])
+            if isinstance(evidence, dict)
+            and evidence.get("path") == page_source_path
+            and evidence.get("kind") == "upstream_documentation"
+        ]
+        if not source_evidence:
+            documented_page_validation_errors.append(
+                f"{link_label} lacks exact source evidence "
+                f"({page_source_path}, kind upstream_documentation)"
+            )
+            return set()
+        expected_digest = sha256(fastapi_root / page_source_path)
+        stale_evidence = [
+            evidence
+            for evidence in source_evidence
+            if evidence.get("sha256") is not None
+            and evidence.get("sha256") != expected_digest
+        ]
+        if stale_evidence:
+            documented_page_validation_errors.append(
+                f"{link_label} has stale source evidence for {page_source_path}; "
+                f"expected {expected_digest}"
+            )
+            return set()
+        try:
+            return documented_case_selectors(
+                case,
+                source_selectors,
+                workflow_schema=workflow.get("schema"),
+                selector_support=selector_support,
+                action_ids=action_ids,
+            )
+        except (AtlasError, KeyError, TypeError, ValueError) as exc:
+            documented_page_validation_errors.append(
+                f"{link_label} selector projection failed: {exc}"
+            )
+            return set()
+
     page_by_rel = {relative(path, docs_root): path for path in docs_root.rglob("*.md")}
     for rel, path in sorted(page_by_rel.items()):
         content = path.read_text(encoding="utf-8", errors="replace")
@@ -9997,6 +10258,170 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fixture_id = "fastapi.docs." + norm_id(rel.removesuffix(".md"))
         exclusion = docs_exclusion(rel)
         independent_workflow_mappings = indexed_workflow_mappings_by_source.get(page_id, [])
+        page_source_path = "docs/en/docs/" + rel
+        raw_reviewed_workflow_cases = reviewed_page_mapping.get("workflow_cases", [])
+        if not isinstance(raw_reviewed_workflow_cases, list):
+            documented_page_validation_errors.append(
+                f"{page_source_path} reviewed workflow_cases must be a list"
+            )
+            reviewed_workflow_cases: list[dict[str, Any]] = []
+        else:
+            reviewed_workflow_cases = [
+                row for row in raw_reviewed_workflow_cases if isinstance(row, dict)
+            ]
+            if len(reviewed_workflow_cases) != len(raw_reviewed_workflow_cases):
+                documented_page_validation_errors.append(
+                    f"{page_source_path} reviewed workflow_cases contains a non-object row"
+                )
+
+        feature_selector_candidates = set(selectors_for(features))
+        page_selector_candidates = set(feature_selector_candidates)
+        page_selector_claims = (
+            reviewed_selector_claims(
+                reviewed_page_mapping["observation_selectors"],
+                f"{page_source_path} page-level mapping",
+            )
+            if "observation_selectors" in reviewed_page_mapping
+            else set()
+        )
+        unknown_page_selectors = sorted(page_selector_claims - selector_ids)
+        if unknown_page_selectors:
+            documented_page_validation_errors.append(
+                f"{page_source_path} page-level mapping names unknown selectors: "
+                f"{unknown_page_selectors}"
+            )
+        reviewed_row_claims: dict[int, tuple[str, list[str], list[str] | None, set[str]]] = {}
+        page_selector_candidates.update(page_selector_claims)
+        for row_index, row in enumerate(reviewed_workflow_cases):
+            link_label = f"{page_source_path} workflow_cases[{row_index}]"
+            recipe_path = row.get("recipe_path")
+            if not isinstance(recipe_path, str) or not recipe_path:
+                documented_page_validation_errors.append(
+                    f"{link_label} must name an exact recipe_path"
+                )
+                recipe_path = ""
+            case_ids = reviewed_case_ids(row, link_label)
+            action_ids = reviewed_action_ids(row, link_label)
+            selectors = reviewed_selector_claims(
+                row.get("observation_selectors"), link_label
+            )
+            unknown_row_selectors = sorted(selectors - selector_ids)
+            if unknown_row_selectors:
+                documented_page_validation_errors.append(
+                    f"{link_label} names unknown selectors: {unknown_row_selectors}"
+                )
+            if not selectors:
+                documented_page_validation_errors.append(
+                    f"{link_label} must claim at least one selector"
+                )
+            page_selector_candidates.update(selectors)
+            reviewed_row_claims[row_index] = (recipe_path, case_ids, action_ids, selectors)
+        indexed_mapping_claims: dict[int, set[str]] = {}
+        for mapping in independent_workflow_mappings:
+            mapping_label = (
+                f"{page_source_path} indexed mapping {mapping.get('workflow_id', '<unknown>')}"
+            )
+            mapping_claims = reviewed_selector_claims(
+                mapping.get("observation_selectors"), mapping_label
+            )
+            unknown = sorted(mapping_claims - selector_ids)
+            if unknown:
+                documented_page_validation_errors.append(
+                    f"{mapping_label} names unknown selectors: {unknown}"
+                )
+            if not mapping_claims:
+                documented_page_validation_errors.append(
+                    f"{mapping_label} must claim at least one selector"
+                )
+            indexed_mapping_claims[id(mapping)] = mapping_claims
+            page_selector_candidates.update(mapping_claims)
+
+        exact_page_selectors: set[str] = set()
+        for mapping in independent_workflow_mappings:
+            recipe_path = mapping.get("recipe_path")
+            case_ids = mapping.get("case_ids")
+            mapping_label = (
+                f"{page_source_path} indexed mapping {mapping.get('workflow_id', '<unknown>')}"
+            )
+            if not isinstance(recipe_path, str) or not recipe_path:
+                documented_page_validation_errors.append(
+                    f"{mapping_label} has no exact recipe_path"
+                )
+                continue
+            if (
+                not isinstance(case_ids, list)
+                or not case_ids
+                or any(not isinstance(case_id, str) or not case_id for case_id in case_ids)
+            ):
+                documented_page_validation_errors.append(
+                    f"{mapping_label} has no valid exact case_ids"
+                )
+                continue
+            projected_by_case = {
+                case_id: project_documented_page_case(
+                    page_rel=rel,
+                    page_source_path=page_source_path,
+                    recipe_path=recipe_path,
+                    case_id=case_id,
+                    source_selectors=selector_ids,
+                )
+                for case_id in case_ids
+            }
+            observed_for_mapping = set().union(*projected_by_case.values())
+            mapping_claims = indexed_mapping_claims[id(mapping)]
+            missing = mapping_claims - observed_for_mapping
+            if missing:
+                per_case = "; ".join(
+                    f"{case_id}={sorted(projected_by_case[case_id])}"
+                    for case_id in case_ids
+                )
+                documented_page_validation_errors.append(
+                    f"{mapping_label} claims selectors absent from its exact linked cases "
+                    f"{case_ids}: {sorted(missing)}; projected selectors by case: {per_case}"
+                )
+            exact_page_selectors.update(observed_for_mapping)
+
+        for row_index, row in enumerate(reviewed_workflow_cases):
+            recipe_path, case_ids, action_ids, selectors = reviewed_row_claims[row_index]
+            link_label = f"{page_source_path} workflow_cases[{row_index}]"
+            if not recipe_path or not case_ids:
+                continue
+            projected_by_case = {
+                case_id: project_documented_page_case(
+                    page_rel=rel,
+                    page_source_path=page_source_path,
+                    recipe_path=recipe_path,
+                    case_id=case_id,
+                    source_selectors=selector_ids,
+                    action_ids=action_ids,
+                )
+                for case_id in case_ids
+            }
+            observed_for_link = set().union(*projected_by_case.values())
+            missing = selectors - observed_for_link
+            unsupported = sorted(
+                selector
+                for selector in selectors
+                if selector_support.get(selector) not in {"supported", "partial"}
+            )
+            if missing or unsupported:
+                action_scope = f" actions {action_ids}" if action_ids is not None else ""
+                per_case = "; ".join(
+                    f"{case_id}={sorted(projected_by_case[case_id])}"
+                    for case_id in case_ids
+                )
+                documented_page_validation_errors.append(
+                    f"{link_label} recipe {recipe_path} cases {case_ids}{action_scope} "
+                    f"claims selectors not established by those exact cases: "
+                    f"missing={sorted(missing)}, unsupported={unsupported}; "
+                    f"projected selectors by case: {per_case}"
+                )
+            exact_page_selectors.update(observed_for_link)
+
+        if independent_workflow_mappings and not exact_page_selectors:
+            documented_page_validation_errors.append(
+                f"{page_source_path} has indexed workflow links but no exact source selectors"
+            )
         if rel == "reference/fastapi.md" and reviewed_page_mapping.get("workflow_cases"):
             directive = re.search(r"(?ms)^::: fastapi\.FastAPI\b(.*?)(?=^:::|\Z)", content)
             if directive is None:
@@ -10017,38 +10442,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     f"unmapped={missing}, undocumented={extra}"
                 )
             declared_selectors: set[str] = set()
-            for row in member_rows:
-                recipe_path = row.get("recipe_path")
-                case_ids = set(row.get("case_ids", []))
-                selectors = set(row.get("observation_selectors", []))
+            for row_index, row in enumerate(member_rows):
+                _, _, _, selectors = reviewed_row_claims[row_index]
                 if not row.get("scope_note") or not row.get("member_names") or not selectors:
                     raise AtlasError(
                         "FastAPI class-reference member rows require members, selectors, and a scope note"
                     )
-                matching_workflows = [
-                    mapping
-                    for mapping in independent_workflow_mappings
-                    if mapping["recipe_path"] == recipe_path
-                    and case_ids <= set(mapping["case_ids"])
-                ]
-                if not matching_workflows:
-                    raise AtlasError(
-                        "FastAPI class-reference member case is not linked from its input recipe: "
-                        f"{recipe_path} {sorted(case_ids)}"
-                    )
-                observed = {
-                    selector
-                    for mapping in matching_workflows
-                    for selector in mapping["observation_selectors"]
-                }
-                if not selectors <= observed:
-                    raise AtlasError(
-                        "FastAPI class-reference member selects unobserved selectors: "
-                        f"{recipe_path} {sorted(selectors - observed)}"
-                    )
                 declared_selectors.update(selectors)
-            page_selectors = set(reviewed_page_mapping.get("observation_selectors", []))
-            if declared_selectors != page_selectors:
+            if declared_selectors != page_selector_claims:
                 raise AtlasError(
                     "FastAPI class-reference page selectors must equal the union of its member links"
                 )
@@ -10062,9 +10463,36 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             else "pending"
         )
         mapping_status = "excluded" if exclusion else "candidate" if features else "review_required"
-        page_selectors = selectors_with_exact_http_body(
-            reviewed_page_mapping.get("observation_selectors", selectors_for(features))
+        page_selectors = sorted(exact_page_selectors)
+        candidate_page_selectors = (
+            []
+            if exclusion
+            else sorted(page_selector_candidates - exact_page_selectors)
         )
+        candidate_selector_evidence = (
+            []
+            if exclusion
+            else selector_evidence(features, candidate_page_selectors)
+        )
+        unobserved_page_selector_claims = sorted(page_selector_claims - exact_page_selectors)
+        page_scope_notes = [
+            {
+                "recipe_path": row.get("recipe_path"),
+                **(
+                    {"case_ids": row["case_ids"]}
+                    if isinstance(row.get("case_ids"), list)
+                    else {"case_id": row.get("case_id")}
+                ),
+                **(
+                    {"action_ids": row["action_ids"]}
+                    if isinstance(row.get("action_ids"), list)
+                    else {}
+                ),
+                "scope_note": row["scope_note"],
+            }
+            for row in reviewed_workflow_cases
+            if isinstance(row.get("scope_note"), str) and row["scope_note"]
+        ]
         reviewed_page_record = None
         if reviewed_page_mapping:
             reviewed_page_record = {
@@ -10097,11 +10525,23 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "feature_ids": features,
                 "fixture_id": fixture_id if not exclusion and features else None,
                 "observation_selectors": [] if exclusion else page_selectors,
+                "candidate_observation_selectors": candidate_page_selectors,
+                "candidate_selector_evidence": candidate_selector_evidence,
+                "candidate_selector_scope": {
+                    **(
+                        {"contract_gate": reviewed_page_mapping["contract_gate"]}
+                        if "contract_gate" in reviewed_page_mapping
+                        else {}
+                    ),
+                    "unobserved_reviewed_selector_claims": unobserved_page_selector_claims,
+                    "workflow_scope_notes": page_scope_notes,
+                },
                 "selector_evidence": []
                 if exclusion
                 else selector_evidence(
                     features,
-                    page_selectors if "observation_selectors" in reviewed_page_mapping else None,
+                    page_selectors,
+                    include_exact_http_body=False,
                 ),
                 "starlette_rs_planning_areas": [] if exclusion else starlette_areas_for(features),
                 "exclusion_reason": exclusion,
@@ -10119,6 +10559,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "related_usage_sources": related_usage_evidence,
                     "reviewed_source_mapping": reviewed_page_record,
                     "independent_workflow_mappings": independent_workflow_mappings,
+                    "candidate_observation_selectors": candidate_page_selectors,
+                    "candidate_selector_evidence": candidate_selector_evidence,
                     "feature_evidence": feature_evidence,
                     "mapping_rule": "whole-token signals from page and explicitly included docs_src files; candidate only",
                 },
@@ -10135,11 +10577,21 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "input_only": True,
                     "stimulus_design": stimulus_for(features),
                     "observation_selectors": page_selectors,
+                    "candidate_observation_selectors": candidate_page_selectors,
+                    "candidate_selector_evidence": candidate_selector_evidence,
+                    "candidate_selector_scope": {
+                        **(
+                            {"contract_gate": reviewed_page_mapping["contract_gate"]}
+                            if "contract_gate" in reviewed_page_mapping
+                            else {}
+                        ),
+                        "unobserved_reviewed_selector_claims": unobserved_page_selector_claims,
+                        "workflow_scope_notes": page_scope_notes,
+                    },
                     "selector_evidence": selector_evidence(
                         features,
-                        page_selectors
-                        if "observation_selectors" in reviewed_page_mapping
-                        else None,
+                        page_selectors,
+                        include_exact_http_body=False,
                     ),
                     "feature_ids": features,
                     "starlette_rs_planning_areas": starlette_areas_for(features),
@@ -10148,8 +10600,20 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "independent_workflow_mappings": independent_workflow_mappings,
                     "related_usage_sources": related_usage_evidence,
                     "reviewed_source_mapping": reviewed_page_record,
+                    **(
+                        {"contract_gate": reviewed_page_mapping["contract_gate"]}
+                        if "contract_gate" in reviewed_page_mapping
+                        else {}
+                    ),
+                    "workflow_scope_notes": page_scope_notes,
                 }
             )
+
+    if documented_page_validation_errors:
+        details = "\n - ".join(documented_page_validation_errors)
+        raise AtlasError(
+            "documented-page selector/source validation failed:\n - " + details
+        )
 
     for path in sorted(examples_root.rglob("*.py")):
         rel = relative(path, fastapi_root)

@@ -151,7 +151,13 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                     "openapi.paths",
                 ],
                 "Successful and not-found HTTP responses plus selected OpenAPI response/schema pointers.",
-            )
+            ),
+            _workflow(
+                "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+                ["fastapi.additional-response-openapi-wave.media-content.test-openapi-schema"],
+                ["http.status", "openapi.document", "openapi.paths"],
+                "The documented custom media-type response schema selected from its OpenAPI operation.",
+            ),
         ],
         "Partial: selected response statuses and schema pointers do not cover every media type, response-class combination, default response, merge precedence, or arbitrary OpenAPI response object shown by the page. The cases do not establish schema generation parity by themselves.",
         [
@@ -503,30 +509,6 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 + ".",
             )
             for i in range(1, 8)
-        ]
-        + [
-            _workflow(
-                "tests/fixtures/input-recipes/parity/docs-openapi-schema.yaml",
-                [
-                    "fastapi.docs.documentation-wave.openapi-schema.path-operation-configuration",
-                    "fastapi.docs.documentation-wave.openapi-schema.advanced-operation-configuration",
-                ],
-                [
-                    "docs.response.status",
-                    "http.body.bytes",
-                    "http.headers.ordered",
-                    "http.status",
-                    "openapi.document",
-                    "openapi.paths",
-                ],
-                "Independent summary/tag/response-description and operationId/openapi_extra projections.",
-            ),
-            _workflow(
-                "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
-                ["fastapi.additional-response-openapi-wave.media-content.test-openapi-schema"],
-                ["openapi.document", "openapi.paths"],
-                "Additional response media-content schema projection linked by this page.",
-            ),
         ],
         "Partial: the selected cases cover operation IDs, `include_in_schema`, docstring truncation, `openapi_extra`, request schema, and selected additional-response metadata. They do not cover all route decorator parameters, all merge shapes, duplicate operation-ID warnings, or every custom content-type example.",
         [
@@ -578,7 +560,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     "advanced/strict-content-type.md": _review(
         ["request-validation", "public-api-errors"],
         ["http.body.bytes", "http.headers.ordered", "http.status"],
-        "FastAPI owns whether an untyped request body is interpreted as JSON and exposes the `strict_content_type` application/router/route option. Starlette owns raw request-body accumulation, with that generic behavior assigned to Starlette-RS.",
+        "FastAPI owns the documented default Content-Type policy for JSON request bodies and the application-level `strict_content_type=False` opt-out. Starlette owns raw request-body accumulation, with that generic behavior assigned to Starlette-RS.",
         [
             _workflow(
                 "tests/fixtures/input-recipes/parity/strict_content_type.yaml",
@@ -593,12 +575,6 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 ],
                 ["http.body.bytes", "http.status"],
                 "A second input confirms the default no-header branch on a separately authored route.",
-            ),
-            _workflow(
-                "tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml",
-                ["fastapi.request.strict-content-type.router-level-upstream"],
-                ["http.body.bytes", "http.status"],
-                "Router-level explicit configuration is exercised independently.",
             ),
         ],
         "Partial: these cases do not cover every valid/invalid media type, `+json` subtypes, malformed JSON, route-level override precedence, or the complete CSRF scenario. Documentation security rationale is not browser/CORS evidence.",
@@ -661,9 +637,6 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "tests/fixtures/input-recipes/parity/sub_applications.yaml",
                 ["fastapi.docs.sub-applications.built-in-routes-root-path"],
                 [
-                    "docs.response.body.bytes",
-                    "docs.response.headers",
-                    "docs.response.status",
                     "http.body.bytes",
                     "http.headers.ordered",
                     "http.status",
@@ -723,7 +696,6 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "tests/fixtures/input-recipes/parity/using_request_directly.yaml",
                 ["fastapi.docs.using-request-directly.client-host"],
                 [
-                    "docs.response.body.bytes",
                     "docs.response.headers",
                     "docs.response.status",
                     "http.body.bytes",

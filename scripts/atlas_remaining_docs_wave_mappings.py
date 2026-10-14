@@ -1821,15 +1821,13 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                     "http.status",
                     "openapi.document",
                     "openapi.paths",
-                    "openapi.request_schema",
                 ],
                 "coverage": "Selected cases observe "
                 "http.body.bytes, "
                 "http.headers.ordered, "
                 "http.status, "
                 "openapi.document, "
-                "openapi.paths, "
-                "openapi.request_schema.",
+                "openapi.paths.",
             }
         ],
         "contract_gate": "One nested model case and schema pointer are "
@@ -4037,15 +4035,13 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                     "http.status",
                     "openapi.document",
                     "openapi.paths",
-                    "openapi.request_schema",
                 ],
                 "coverage": "Selected cases observe "
                 "http.body.bytes, "
                 "http.headers.ordered, "
                 "http.status, "
                 "openapi.document, "
-                "openapi.paths, "
-                "openapi.request_schema.",
+                "openapi.paths.",
             }
         ],
         "contract_gate": "One form model and selected OpenAPI "

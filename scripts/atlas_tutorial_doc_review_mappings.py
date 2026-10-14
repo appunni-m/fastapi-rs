@@ -716,27 +716,100 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "observation_selectors": [
             "http.status",
             "http.headers.ordered",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema",
+            "http.body.bytes",
             "openapi.document",
-            "python.import_path",
+            "openapi.paths",
             "python.signature",
         ],
         "rationale": (
             "The page covers Pydantic Field metadata and FastAPI Body/Query/Path parameter "
-            "classes in request schemas. Its path-operation mentions are context, not routing "
-            "behavior; public Param imports/signatures are relevant, while generic exception "
-            "and warning selectors are not."
+            "classes in request schemas. Linked inputs compare HTTP status, ordered response "
+            "headers, exact response bytes, exact OpenAPI document/path projections, and the "
+            "Body factory signature. The response bytes retain the serialized validation body; "
+            "they are not a separate parsed-JSON or validation-error projection."
         ),
+        "stimulus_notes": (
+            "The page is linked to "
+            "docs-request-schema.yaml::fastapi.docs.request-schema.tutorial-body-fields.body-fields "
+            "for a valid model request and exact /envelopes requestBody/Envelope schema pointers; "
+            "body-fields-doc-tutorial001-review.yaml::fastapi.docs-example.body-fields.tutorial001.embedded-model-valid, "
+            "fastapi.docs-example.body-fields.tutorial001.embedded-model-invalid-amount, and "
+            "fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema for the pinned "
+            "embedded-body example's valid/invalid inputs and selected OpenAPI path; and "
+            "parameter-factory-signatures.yaml::fastapi.parameter-factory-signatures.body for "
+            "the public Body signature. Recipe cases contain only request/probe inputs and "
+            "source references."
+        ),
+        "contract_gate": (
+            "This remains a partial sample of the page. The linked cases cover the documented "
+            "Field/Body relationship, one valid and one invalid constrained body, selected "
+            "request-schema projections, and Body's signature; they do not claim every Pydantic "
+            "Field option, arbitrary body models, or Query/Path signatures from this page. "
+            "The default FastAPI RequestValidationError handler returns a 422 JSON response, "
+            "so request errors are observed as status and raw HTTP body bytes; the ASGI "
+            "application_error validation class/details selectors describe escaping dispatch "
+            "exceptions and do not expose this handled exception. The workflow schema emits "
+            "no parsed http.body.json selector, route.match projection, or Python import-path "
+            "assertion. OpenAPI requestBody/schema JSON Pointers are classified as "
+            "openapi.document/openapi.paths, not a separate openapi.request_schema selector."
+        ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                "case_ids": ["fastapi.docs.request-schema.tutorial-body-fields.body-fields"],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-fields-doc-tutorial001-review.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.body-fields.tutorial001.embedded-model-valid",
+                    "fastapi.docs-example.body-fields.tutorial001.embedded-model-invalid-amount",
+                    "fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema",
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "http.body.bytes",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml",
+                "case_ids": ["fastapi.parameter-factory-signatures.body"],
+                "observation_selectors": ["python.signature"],
+            },
+        ],
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/body-fields.md",
                 "start_line": 1,
                 "end_line": 40,
                 "role": "Body/Query/Path metadata and public Param class explanation",
-            }
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1000,
+                "end_line": 1006,
+                "role": "FastAPI 0.141.1 registers the default RequestValidationError handler",
+            },
+            {
+                "path": "fastapi/exception_handlers.py",
+                "start_line": 20,
+                "end_line": 26,
+                "role": "handled request validation returns a 422 JSON response containing errors()",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 2234,
+                "end_line": 2242,
+                "role": "FastAPI raises RequestValidationError when dependency solving finds request errors",
+            },
         ],
     },
     "tutorial/cookie-params.md": {
@@ -858,19 +931,67 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "observation_selectors": [
             "http.status",
             "http.headers.ordered",
-            "http.body.json",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema",
-            "python.import_path",
+            "http.body.bytes",
+            "openapi.document",
+            "openapi.paths",
             "python.signature",
         ],
         "rationale": (
-            "This is a real path/query validation and FastAPI Path/Query API page. The public "
-            "API selectors apply to those imports/signatures; no Python warnings or escaping "
-            "error-class observations are documented."
+            "This page documents Path/Query metadata and numeric bounds. Linked cases exercise "
+            "invalid and accepted numeric path/query boundaries, exact OpenAPI path-parameter "
+            "projections, and the public Path and Query signatures. HTTP errors are compared "
+            "through the status, ordered headers where selected, and exact response bytes."
         ),
+        "stimulus_notes": (
+            "docs-request-schema.yaml::fastapi.docs.request-schema.tutorial-path-params-numeric-validations.numeric-path-boundary "
+            "supplies an invalid lower path boundary and the /numbers parameter-schema pointer. "
+            "The same recipe's "
+            "fastapi.docs.request-schema.path-params-numeric-validations.tutorial005-annotated "
+            "and fastapi.docs.request-schema.path-params-numeric-validations.tutorial006-annotated "
+            "cases reuse the pinned annotated docs examples, including accepted/rejected path "
+            "bounds and numeric Query bounds; their OpenAPI actions select exact parameter "
+            "pointers. parameter-factory-signatures.yaml links the Path and Query signature "
+            "cases. The inputs remain partial examples, not a claim over every ordering or "
+            "Annotated/default-style combination on the page."
+        ),
+        "contract_gate": (
+            "This remains a partial sample of numeric validation. It covers the documented "
+            "exclusive/inclusive integer Path bounds and a float Query range through selected "
+            "source examples, plus exact OpenAPI parameter pointers. It does not claim every "
+            "parameter-ordering variant, all numeric types/constraints, or general route "
+            "matching. The default FastAPI RequestValidationError handler returns a 422 JSON "
+            "response, so validation is observed as status and raw body bytes; separate "
+            "validation.error_class/details selectors do not expose the handled exception. "
+            "The ASGI HTTP workflow has no route.match or parsed http.body.json observation, "
+            "and the OpenAPI path-parameter pointers map to openapi.document/openapi.paths "
+            "rather than a normalized openapi.request_schema selector. Python callable probes "
+            "assert signatures, not import-path resolution."
+        ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                "case_ids": [
+                    "fastapi.docs.request-schema.tutorial-path-params-numeric-validations.numeric-path-boundary",
+                    "fastapi.docs.request-schema.path-params-numeric-validations.tutorial005-annotated",
+                    "fastapi.docs.request-schema.path-params-numeric-validations.tutorial006-annotated",
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml",
+                "case_ids": [
+                    "fastapi.parameter-factory-signatures.path",
+                    "fastapi.parameter-factory-signatures.query",
+                ],
+                "observation_selectors": ["python.signature"],
+            },
+        ],
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/path-params-numeric-validations.md",
@@ -883,6 +1004,24 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "start_line": 94,
                 "end_line": 127,
                 "role": "numeric boundary validation and recap",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1000,
+                "end_line": 1006,
+                "role": "FastAPI 0.141.1 registers the default RequestValidationError handler",
+            },
+            {
+                "path": "fastapi/exception_handlers.py",
+                "start_line": 20,
+                "end_line": 26,
+                "role": "handled request validation returns a 422 JSON response containing errors()",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 2234,
+                "end_line": 2242,
+                "role": "FastAPI raises RequestValidationError when dependency solving finds request errors",
             },
         ],
     },
@@ -1416,25 +1555,122 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "observation_selectors": [
             "http.status",
             "http.headers.ordered",
-            "http.body.json",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema",
+            "http.body.bytes",
             "openapi.document",
+            "openapi.paths",
             "python.signature",
         ],
         "rationale": (
-            "The page is query parsing/validation, OpenAPI metadata, and the deprecated Query "
-            "parameter option. Dependency-security was selected only by a sentence recommending "
-            "dependencies for validations requiring external services; no dependency is declared here."
+            "The page documents query-string constraints and metadata, including minimum and "
+            "maximum lengths, regex patterns, deprecation, schema exclusion, and custom "
+            "validation. Linked recipes compare HTTP status/headers/raw bytes, exact OpenAPI "
+            "document/path projections, and the Query factory signature."
         ),
+        "stimulus_notes": (
+            "docs-request-schema.yaml::fastapi.docs.request-schema.tutorial-query-params-str-validations.query-boundary "
+            "links an invalid query request to its parameter-schema pointer. "
+            "query-params-str-validations-doc-examples.yaml links tutorial002 (maximum length), "
+            "tutorial003 (minimum length), and tutorial015 (custom validation); "
+            "query-params-str-validations-doc-pattern-examples.yaml links tutorial004 (regex) "
+            "and tutorial010 (deprecated Query metadata); and "
+            "query-params-str-validations-doc-exclude-schema-examples.yaml links tutorial014 "
+            "(include_in_schema=False). array-items-query-wire.yaml links the list/repeated "
+            "query examples. parameter-factory-signatures.yaml links Query's public signature."
+        ),
+        "contract_gate": (
+            "This remains a partial sample: it covers selected length/pattern failures, "
+            "deprecation and schema-exclusion metadata, one custom-validator case, repeated "
+            "query values, and the Query signature. It does not claim all aliases, defaults, "
+            "optional/required combinations, metadata fields, or query collection types. The "
+            "default FastAPI RequestValidationError handler returns a 422 JSON response, so "
+            "validation is observed as status and raw body bytes; separate "
+            "validation.error_class/details selectors do not expose this handled exception. "
+            "The workflow schema emits no parsed http.body.json or route.match observation. "
+            "OpenAPI parameter JSON Pointers map to openapi.document/openapi.paths, not a "
+            "separate openapi.request_schema selector; direct API probes observe a signature, "
+            "not an import-path assertion. Any generic ASGI send-message selector on the list "
+            "cases is transport evidence and is outside the query feature claim."
+        ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                "case_ids": ["fastapi.docs.request-schema.tutorial-query-params-str-validations.query-boundary"],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/array-items-query-wire.yaml",
+                "case_ids": [
+                    "fastapi.openapi-array-items-query-wire.required-list",
+                    "fastapi.openapi-array-items-query-wire.required-sequence",
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "openapi.document",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.query-params-str-validations.tutorial002",
+                    "fastapi.docs-example.query-params-str-validations.tutorial003",
+                    "fastapi.docs-example.query-params-str-validations.tutorial015",
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "http.body.bytes",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.query-params-str-validations.tutorial004",
+                    "fastapi.docs-example.query-params-str-validations.tutorial010",
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "http.body.bytes",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml",
+                "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial014"],
+                "observation_selectors": [
+                    "http.status",
+                    "http.body.bytes",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml",
+                "case_ids": ["fastapi.parameter-factory-signatures.query"],
+                "observation_selectors": ["python.signature"],
+            },
+        ],
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/query-params-str-validations.md",
                 "start_line": 64,
                 "end_line": 124,
                 "role": "query validation and generated OpenAPI behavior",
+            },
+            {
+                "path": "docs/en/docs/tutorial/query-params-str-validations.md",
+                "start_line": 163,
+                "end_line": 180,
+                "role": "minimum length and exact regular-expression validation behavior",
             },
             {
                 "path": "docs/en/docs/tutorial/query-params-str-validations.md",
@@ -1447,6 +1683,24 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "start_line": 393,
                 "end_line": 393,
                 "role": "incidental recommendation to use dependencies, not a dependency example",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1000,
+                "end_line": 1006,
+                "role": "FastAPI 0.141.1 registers the default RequestValidationError handler",
+            },
+            {
+                "path": "fastapi/exception_handlers.py",
+                "start_line": 20,
+                "end_line": 26,
+                "role": "handled request validation returns a 422 JSON response containing errors()",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 2234,
+                "end_line": 2242,
+                "role": "FastAPI raises RequestValidationError when dependency solving finds request errors",
             },
         ],
     },
@@ -1501,7 +1755,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml",
                 "case_id": "fastapi.request-files.openapi-documented-shapes",
                 "action_ids": ["inspect-documented-request-schemas"],
-                "observation_selectors": ["openapi.request_schema"],
+                "observation_selectors": ["openapi.document", "openapi.paths"],
             }
         ],
         "supporting_sources": [

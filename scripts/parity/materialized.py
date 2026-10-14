@@ -181,17 +181,30 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             elif observation["kind"] == "openapi":
                 pointers = observation["json_pointers"]
                 for pointer in pointers:
-                    if (
+                    is_security_pointer = (
                         pointer.startswith("/components/securitySchemes/")
                         or pointer.endswith("/security")
                         or "/security/" in pointer
-                    ):
+                    )
+                    if is_security_pointer:
                         selectors.add("openapi.security")
-                    elif pointer.startswith("/paths/"):
+
+                    if pointer == "/paths" or pointer.startswith("/paths/"):
                         selectors.add("openapi.document")
                         selectors.add("openapi.paths")
-                    else:
+                    elif not is_security_pointer:
                         selectors.add("openapi.document")
+
+                    pointer_segments = pointer.split("/")
+                    try:
+                        request_body_index = pointer_segments.index("requestBody")
+                    except ValueError:
+                        request_body_index = -1
+                    if (
+                        request_body_index >= 0
+                        and "schema" in pointer_segments[request_body_index + 1 :]
+                    ):
+                        selectors.add("openapi.request_schema")
             elif observation["kind"] == "application_error":
                 if observation["selector"] == "validation_error_class":
                     selectors.add("validation.error_class")
