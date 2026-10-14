@@ -31,6 +31,8 @@ cases:
     receive_events:
     - {type: http.request, body: '', more_body: false}
     observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
     - {kind: application_error, selector: validation_error_class, comparison: exact}
     - {kind: application_error, selector: exception, comparison: exact}
     - {kind: application_error, selector: validation_error_details, comparison: exact}
