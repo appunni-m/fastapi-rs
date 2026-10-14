@@ -4494,6 +4494,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
+          workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
@@ -4515,7 +4518,10 @@ reviewed_api_contract_overlay:
         decorators, nested inclusion with repeated prefixes, and ordered string
         tag inheritance, deprecation, and schema inclusion policy are covered
         by the router-composition, router-prefix-and-nested-composition,
-        router-tag-inheritance, and router-schema-policy workflows. Synchronous
+        router-tag-inheritance, and router-schema-policy workflows. The isolated
+        router-repeated-inclusion-openapi-path-set fixture compares the complete
+        `/paths` value, stricter than the source test's path-name set assertion.
+        Synchronous
         scalar-query dependencies supplied to APIRouter or include_router are
         validated, run in include-then-router order, and appear in OpenAPI in
         router-dependencies-isolated. Route-level `responses` maps with one
@@ -4604,6 +4610,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
+          workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
@@ -4650,6 +4659,8 @@ reviewed_api_contract_overlay:
         `include_in_schema=False` omits routes without affecting dispatch.
         The repeated-inclusion fixture observes each effective context's path,
         inherited tags, and generated unique ID for all four concrete prefixes.
+        Its isolated OpenAPI fixture compares the complete `/paths` value,
+        stricter than the source test's path-name set assertion.
         Scalar-query dependencies supplied to `include_router` execute before
         the target router's dependencies and are included in its OpenAPI input
         parameters by router-dependencies-isolated.
@@ -5247,6 +5258,8 @@ reviewed_api_contract_overlay:
         string tags. The reviewed inputs observe four concrete routes after two
         nested inclusions; the repeated-inclusion case compares effective
         context paths, inherited tags, and generated unique IDs for each branch.
+        Its isolated OpenAPI fixture compares the complete `/paths` value,
+        stricter than the source test's path-name set assertion.
         Ordered tags across five composition levels are also covered.
         `deprecated` and `include_in_schema` inheritance are also covered by
         router-schema-policy-upstream. Synchronous scalar-query dependencies
@@ -5274,6 +5287,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
+          case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
+          workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}

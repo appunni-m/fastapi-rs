@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@8
-    sha256: df3be5bab3fd5fb4c0572c3f198d32d08d8d19620c55c59860182a011df11791
+    sha256: a854ce7e7559785317583c9e46960b084fd95b7e917878f993e01ceec52b938d
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 25a1bdd05633bd820c658973860ae7ee8674691399c625227d1bcd6ebc3f96c6
+    sha256: e95f59959c267c292eebe0d3a868ea7f9c03399d3b46f40a602ebb34754aa798
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: 1cc22a46e37fcf8749039b32a989fb614efb0cdd0bcfd20b15bad15533210f69
+    sha256: 81e95f0fb2084fdd6e489b28e2808177670ff26a134242cef9c020e3e132981c
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 584
-      cases: 2442
-      partial_source_mappings: 1682
+      workflows: 585
+      cases: 2443
+      partial_source_mappings: 1683
 
 contract_metadata:
   aliases:
@@ -1136,7 +1136,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 147
     symbols_with_operation_fixture_refs: 241
-    operation_fixture_refs: 1737
+    operation_fixture_refs: 1740
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1214,6 +1214,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: router-repeated-inclusion-openapi-path-set
+      input_path: tests/fixtures/inputs/parity/router-repeated-inclusion-openapi-path-set.json
+      input_sha256: edae2068335aaae420968db41eafad96c347421e8872fcb30a031f78155de376
+      recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
+      recipe_sha256: 9b80dd59c193ade878a09e549dff9a783cdd85b88cadbbbd2f18b6d929a9341e
+      workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
+      workload_sha256: d3d16a1b18f136dd88058e95bb5931bab75ac36da394422d6c250103fcd6971a
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -14764,6 +14775,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: router-repeated-inclusion-openapi-path-set
+      input_path: tests/fixtures/inputs/parity/router-repeated-inclusion-openapi-path-set.json
+      input_sha256: edae2068335aaae420968db41eafad96c347421e8872fcb30a031f78155de376
+      recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
+      recipe_sha256: 9b80dd59c193ade878a09e549dff9a783cdd85b88cadbbbd2f18b6d929a9341e
+      workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
+      workload_sha256: d3d16a1b18f136dd88058e95bb5931bab75ac36da394422d6c250103fcd6971a
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
       input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
@@ -47832,6 +47854,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: router-repeated-inclusion-openapi-path-set
+      input_path: tests/fixtures/inputs/parity/router-repeated-inclusion-openapi-path-set.json
+      input_sha256: edae2068335aaae420968db41eafad96c347421e8872fcb30a031f78155de376
+      recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
+      recipe_sha256: 9b80dd59c193ade878a09e549dff9a783cdd85b88cadbbbd2f18b6d929a9341e
+      workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
+      workload_sha256: d3d16a1b18f136dd88058e95bb5931bab75ac36da394422d6c250103fcd6971a
+      case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
     - workflow_id: router-tag-inheritance-upstream
       input_path: tests/fixtures/inputs/parity/router-tag-inheritance-upstream.json
       input_sha256: 18be957b2e0cfd1a6785ae8f31386b6b5977e9907d06fa6a282c77e131d94435

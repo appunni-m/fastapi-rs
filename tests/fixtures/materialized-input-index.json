@@ -25669,6 +25669,27 @@
       ]
     },
     {
+      "id": "router-repeated-inclusion-openapi-path-set",
+      "input_path": "tests/fixtures/inputs/parity/router-repeated-inclusion-openapi-path-set.json",
+      "input_sha256": "edae2068335aaae420968db41eafad96c347421e8872fcb30a031f78155de376",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml",
+      "recipe_sha256": "9b80dd59c193ade878a09e549dff9a783cdd85b88cadbbbd2f18b6d929a9341e",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set"
+      ],
+      "workload_path": "tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py",
+      "workload_sha256": "d3d16a1b18f136dd88058e95bb5931bab75ac36da394422d6c250103fcd6971a",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "router-schema-policy-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-schema-policy-upstream.json",
       "input_sha256": "7d21a3af12fb47c79318df1ccc865c74273aafb45a451bf108a7ba40f6ef7718",
@@ -55585,6 +55606,20 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-repeated-inclusion-openapi-path-set",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set"
+      ],
+      "observation_selectors": [
         "openapi.document",
         "openapi.paths"
       ]
