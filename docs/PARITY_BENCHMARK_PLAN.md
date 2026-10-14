@@ -52,7 +52,7 @@ consumer-surface benchmark results.
 
 ## Parity suite
 
-The first twelve-case HTTP request/response slice now has a Rust-owned target,
+The first thirteen-case HTTP request/response slice now has a Rust-owned target,
 pass-through `fastapi` facade, isolated workers, and an exact comparator. The
 `make parity-first-slice` command runs both pinned products and stores the
 comparison in ignored `parity-results/`; CI runs this gate. This only validates
@@ -146,7 +146,7 @@ These include the slower workloads and apply only to the measured revision.
 
 `benchmarks/workloads/first-slice-valid-asgi.yaml` defines the first runnable
 measurement. `make benchmark-first-slice` rebuilds the pinned target extension
-with Cargo's release profile, runs the complete twelve-case identity-checked
+with Cargo's release profile, runs the complete thirteen-case identity-checked
 parity gate, then measures the valid item request in three
 isolated processes: FastAPI 0.141.1 with Starlette 1.6.0, the FastAPI-RS release
 extension with the pinned Starlette-RS source, and a plain Starlette 1.6.0

@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 58d4b2070e61b7c74ba300517be4f600d715550b3403e7a55a20d0987e09f75a
+    sha256: 481dc791f30ef4feba2438bc718abad57a21eb1f70fd18c5a669e8397f2798a9
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: a0dee3c582c46fdd29ef6c04c39931f9d5508059e31492c6634e6eb3742d8e3e
+    sha256: 90847f6f8a0e511d3c9dc77f742cf31fb047641bb7c3e039078fffd66d0a8b0b
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 0bf47d389d776bd25a4fa3f941d6c2f33b1f59472efd1ac310d1e9f8a1a8d1d9
+    sha256: 0df83d33d9a564992b1ebae62afc7c44172c029df2e8d5b66fbea7765d7c092f
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 578
-      cases: 2425
-      partial_source_mappings: 1675
+      cases: 2426
+      partial_source_mappings: 1676
 
 contract_metadata:
   aliases:
@@ -573,7 +573,7 @@ unresolved:
   oracle_behavior_parity:
     state: first-slice-scope-defined; broader-public-API-parity-pending
     evidence_ref: python_asgi_workflow
-    question: The first request-to-response slice has twelve input cases; broader public API parity remains unverified.
+    question: The first request-to-response slice has thirteen input cases; broader public API parity remains unverified.
   starlette_rs_crosswalk:
     state: source-mapped; public-surface review unresolved
     source_artifact: compatibility_atlas
@@ -604,16 +604,17 @@ unresolved:
     comparison_schema_id: fastapi-rs/python-asgi-comparison@2
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v2.schema.json
     comparison_schema_sha256: 3e9cb95f0786f370f795e65316e8c69c7b23c9f0ce613e40c40ae8fe987d84c3
-    input_state: HTTP and WebSocket workflow schemas define stimuli; the first HTTP slice has twelve input-only cases
+    input_state: HTTP and WebSocket workflow schemas define stimuli; the first HTTP slice has thirteen input-only cases
     oracle_environment: isolated environment from the FastAPI 0.141.1 lock with local Starlette 1.6.0 override
     recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-    recipe_sha256: 4956968f44c9d7dded0fc126034bd58d2422592bd612dc7fdd06242c1cf76368
+    recipe_sha256: 68b7dc21604bacd48d7ea707853e941322f0be7c0d33bd13d4388df0efa5e345
     first_slice_workload:
       path: tests/fixtures/workloads/first_slice.py
       sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
     case_ids:
       - fastapi.first-slice.create-item-valid
       - fastapi.first-slice.create-item-optional-query-default
+      - fastapi.first-slice.create-item-invalid-path-conversion
       - fastapi.first-slice.path-not-found
       - fastapi.first-slice.create-item-chunked-body
       - fastapi.first-slice.create-item-missing-header
@@ -633,8 +634,9 @@ unresolved:
     pointer: /unresolved_compatibility_points
     item_id: fixture-recipe-execution-contract
     atlas_question_narrowing: >-
-      Twelve input-only cases cover valid and invalid requests, chunked ASGI
-      bodies, omitted optional query input, route misses, required inputs,
+      Thirteen input-only cases cover valid and invalid requests, chunked ASGI
+      bodies, omitted optional query input, route misses, path-parameter
+      conversion failures, required inputs,
       malformed JSON, aggregated validation, JSON media-type suffix handling,
       and OpenAPI. They define a first vertical slice; run outcomes belong in
       ignored parity-results artifacts and the broader public API remains

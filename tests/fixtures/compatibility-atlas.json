@@ -77094,7 +77094,7 @@
     "documentation_python_source_files": 461,
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
-    "first_slice_input_cases": 12,
+    "first_slice_input_cases": 13,
     "fixture_backlog_items": 891,
     "inherited_api_classifications": {
       "private/internal": 1,
@@ -462050,6 +462050,21 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.first-slice.create-item-invalid-path-conversion"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.send.message_types",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
+            "workflow_id": "first-asgi-request"
+          },
+          {
+            "case_ids": [
               "fastapi.request-parameters.path.invalid-integer",
               "fastapi.request-parameters.path.valid-integer"
             ],
@@ -546061,11 +546076,12 @@
           {
             "case_ids": [
               "fastapi.first-slice.create-item-aggregated-errors",
+              "fastapi.first-slice.create-item-invalid-path-conversion",
               "fastapi.first-slice.create-item-missing-header",
               "fastapi.first-slice.create-item-valid",
               "fastapi.first-slice.openapi"
             ],
-            "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.request_schema. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.request_schema. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "asgi.send.message_types",
@@ -546125,7 +546141,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.create-item-valid (actions: post-item; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.create-item-missing-header (actions: post-item; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.create-item-aggregated-errors (actions: post-item; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.openapi (actions: get-openapi; selectors: docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.create-item-valid (actions: post-item; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.create-item-invalid-path-conversion (actions: post-item-invalid-path; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.create-item-missing-header (actions: post-item; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.create-item-aggregated-errors (actions: post-item; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/first-asgi-request.yaml::fastapi.first-slice.openapi (actions: get-openapi; selectors: docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 347,
@@ -546322,6 +546338,17 @@
             {
               "case_ids": [
                 "fastapi.first-slice.create-item-valid"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.first-slice.create-item-invalid-path-conversion"
               ],
               "observation_selectors": [
                 "http.body.bytes",
@@ -717886,6 +717913,7 @@
     "case_ids": [
       "fastapi.first-slice.create-item-valid",
       "fastapi.first-slice.create-item-optional-query-default",
+      "fastapi.first-slice.create-item-invalid-path-conversion",
       "fastapi.first-slice.path-not-found",
       "fastapi.first-slice.create-item-chunked-body",
       "fastapi.first-slice.create-item-missing-header",
@@ -717899,12 +717927,12 @@
     ],
     "expected_outputs": "absent",
     "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
-    "input_sha256": "a8d586bfdef6e55a44ba2b518c87cba0909da950efecc476a4dba991b5837e18",
+    "input_sha256": "f937e7552eb473629234576db598707748fe0a6570e5b3982022af21d4d86fbe",
     "schema": "fastapi-rs/python-asgi-workflow@2",
     "schema_id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/2",
     "schema_path": "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json",
     "schema_sha256": "5210588438681aaec99b494006e02167b83151243b954a3406698cebcf2f0f7c",
-    "state": "input-only 12-case recipe and workload, public pass-through facade, Rust first-slice implementation, identity-checked source/target runners, and exact comparator are present; broader operation-level coverage remains pending",
+    "state": "input-only 13-case recipe and workload, public pass-through facade, Rust first-slice implementation, identity-checked source/target runners, and exact comparator are present; broader operation-level coverage remains pending",
     "workload": {
       "factory": "create_app",
       "path": "tests/fixtures/workloads/first_slice.py",
@@ -717976,6 +718004,7 @@
       "fixture_ids": [
         "fastapi.first-slice.create-item-valid",
         "fastapi.first-slice.create-item-optional-query-default",
+        "fastapi.first-slice.create-item-invalid-path-conversion",
         "fastapi.first-slice.path-not-found",
         "fastapi.first-slice.create-item-chunked-body",
         "fastapi.first-slice.create-item-missing-header",
