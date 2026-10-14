@@ -64,3 +64,38 @@ cases:
   - path: docs/en/docs/advanced/openapi-webhooks.md
     kind: upstream_documentation
     sha256: 5ac99c21eaad3bc474811457e6f1f03d553f7da217a22f20d4b743f6d637d23e
+- case_id: fastapi.routing.apiroute.constructor-defaults
+  probes:
+  - probe_id: apiroute-default-construction
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRoute
+    argument_bundle: standalone-route
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/routing.py
+    kind: upstream_api_definition
+    sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55
+    symbol_id: fastapi.routing.APIRoute
+- case_id: fastapi.openapi.get-openapi.standalone-apiroute
+  probes:
+  - probe_id: get-openapi-from-direct-apiroute
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: get_openapi
+    argument_bundle: standalone-apiroute
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.get_openapi
+  - path: docs/en/docs/how-to/extending-openapi.md
+    kind: upstream_documentation
+    sha256: 5c685bf0627b38937f38dce0a8365f1070559465868c1fa7ca8f7c27c037e798

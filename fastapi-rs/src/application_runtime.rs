@@ -1465,6 +1465,147 @@ struct PyRouteContextIterator {
 
 #[pymethods]
 impl PyApiRoute {
+    #[new]
+    #[pyo3(signature = (path, endpoint, *, response_model = omitted_response_model(), status_code = None, tags = None, dependencies = None, summary = None, description = None, response_description = "Successful Response", responses = None, deprecated = None, name = None, methods = None, operation_id = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true, response_class = ResponseClassArgument::Omitted, dependency_overrides_provider = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    // lint-exception: PyO3 needs one Rust argument per APIRoute-compatible keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the pinned APIRoute constructor keywords"
+    )]
+    fn new(
+        py: Python<'_>,
+        path: &str,
+        endpoint: Py<PyAny>,
+        response_model: Py<PyAny>,
+        status_code: Option<u16>,
+        tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
+        summary: Option<String>,
+        description: Option<String>,
+        response_description: &str,
+        responses: Option<Py<PyAny>>,
+        deprecated: Option<bool>,
+        name: Option<String>,
+        methods: Option<Py<PyAny>>,
+        operation_id: Option<String>,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
+        include_in_schema: bool,
+        response_class: ResponseClassArgument,
+        dependency_overrides_provider: Option<Py<PyAny>>,
+        callbacks: Option<Py<PyAny>>,
+        openapi_extra: Option<Py<PyAny>>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
+        strict_content_type: Option<bool>,
+    ) -> PyResult<Self> {
+        let omitted_model = omitted_response_model();
+        let unsupported_options = [
+            (
+                !response_model.bind(py).is(omitted_model.bind(py)),
+                "response_model",
+            ),
+            (status_code.is_some(), "status_code"),
+            (tags.is_some(), "tags"),
+            (dependencies.is_some(), "dependencies"),
+            (summary.is_some(), "summary"),
+            (description.is_some(), "description"),
+            (
+                response_description != "Successful Response",
+                "response_description",
+            ),
+            (responses.is_some(), "responses"),
+            (deprecated.is_some(), "deprecated"),
+            (name.is_some(), "name"),
+            (methods.is_some(), "methods"),
+            (operation_id.is_some(), "operation_id"),
+            (response_model_include.is_some(), "response_model_include"),
+            (response_model_exclude.is_some(), "response_model_exclude"),
+            (!response_model_by_alias, "response_model_by_alias"),
+            (response_model_exclude_unset, "response_model_exclude_unset"),
+            (
+                response_model_exclude_defaults,
+                "response_model_exclude_defaults",
+            ),
+            (response_model_exclude_none, "response_model_exclude_none"),
+            (!include_in_schema, "include_in_schema"),
+            (
+                matches!(&response_class, ResponseClassArgument::Provided(_)),
+                "response_class",
+            ),
+            (
+                dependency_overrides_provider.is_some(),
+                "dependency_overrides_provider",
+            ),
+            (callbacks.is_some(), "callbacks"),
+            (openapi_extra.is_some(), "openapi_extra"),
+            (
+                matches!(
+                    &generate_unique_id_function,
+                    GenerateUniqueIdArgument::Provided(_)
+                ),
+                "generate_unique_id_function",
+            ),
+            (strict_content_type.is_some(), "strict_content_type"),
+        ];
+        if let Some((_, option)) = unsupported_options
+            .iter()
+            .find(|(unsupported, _)| *unsupported)
+        {
+            return Err(PyNotImplementedError::new_err(format!(
+                "FastAPI-RS APIRoute construction does not yet implement the {option} option"
+            )));
+        }
+
+        // Build through the Rust-owned route pipeline so OpenAPI receives a
+        // complete operation snapshot. The scratch router is not retained.
+        let scratch_router = Py::new(
+            py,
+            PyApiRouter::new(
+                py,
+                "",
+                None,
+                None,
+                ResponseClassArgument::Omitted,
+                None,
+                None,
+                None,
+                None,
+                true,
+                GenerateUniqueIdArgument::Omitted,
+                None,
+            )?,
+        )?;
+        PyApiRouter::add_api_route(
+            scratch_router.clone_ref(py),
+            py,
+            path,
+            endpoint,
+            None,
+            None,
+            true,
+            None,
+            None,
+            GenerateUniqueIdArgument::Omitted,
+            None,
+            None,
+        )?;
+        let inner = scratch_router.bind(py).borrow().inner.clone_ref(py);
+        let route = {
+            let app = inner.bind(py).borrow();
+            app.routes
+                .first()
+                .map(|route| route.public_route.clone_ref(py))
+                .ok_or_else(|| PyRuntimeError::new_err("APIRoute construction produced no route"))?
+        };
+        let mut route = clone_api_route(py, &route)?;
+        route.callbacks = py.None();
+        Ok(route)
+    }
+
     #[getter]
     fn path(&self) -> &str {
         &self.path
@@ -1644,6 +1785,68 @@ impl PyApiRoute {
             .map(|value| value.clone_ref(py))
             .unwrap_or_else(|| py.None())
     }
+}
+
+fn clone_api_route(py: Python<'_>, route: &Py<PyAny>) -> PyResult<PyApiRoute> {
+    let route = route.bind(py).extract::<PyRef<'_, PyApiRoute>>()?;
+    Ok(PyApiRoute {
+        path: route.path.clone(),
+        path_format: route.path_format.clone(),
+        path_regex: route.path_regex.clone_ref(py),
+        param_convertors: route.param_convertors.clone_ref(py),
+        name: route.name.clone(),
+        methods: route.methods.clone_ref(py),
+        tags: route.tags.clone_ref(py),
+        summary: route.summary.clone(),
+        response_description: route.response_description.clone(),
+        responses: route.responses.clone_ref(py),
+        deprecated: route.deprecated,
+        include_in_schema: route.include_in_schema,
+        operation_id: route.operation_id.clone(),
+        openapi_extra: route
+            .openapi_extra
+            .as_ref()
+            .map(|value| value.clone_ref(py)),
+        endpoint: route.endpoint.clone_ref(py),
+        unique_id: route.unique_id.as_ref().map(|value| value.clone_ref(py)),
+        generate_unique_id_function: route.generate_unique_id_function.clone_ref(py),
+        response_model_include: route
+            .response_model_include
+            .as_ref()
+            .map(|value| value.clone_ref(py)),
+        response_model_exclude: route
+            .response_model_exclude
+            .as_ref()
+            .map(|value| value.clone_ref(py)),
+        response_model_by_alias: route.response_model_by_alias,
+        response_model_exclude_unset: route.response_model_exclude_unset,
+        response_model_exclude_defaults: route.response_model_exclude_defaults,
+        response_model_exclude_none: route.response_model_exclude_none,
+        response_class: route.response_class.clone_ref(py),
+        response_class_resolution: route
+            .response_class_resolution
+            .as_ref()
+            .map(ResponseClassResolution::clone_ref),
+        dependency_overrides_provider: route
+            .dependency_overrides_provider
+            .as_ref()
+            .map(|value| value.clone_ref(py)),
+        callbacks: route.callbacks.clone_ref(py),
+        strict_content_type: route.strict_content_type.clone_ref(py),
+        stream_item_type: route
+            .stream_item_type
+            .as_ref()
+            .map(|value| value.clone_ref(py)),
+        response_field: route
+            .response_field
+            .as_ref()
+            .map(|field| field.clone_ref(py)),
+        openapi_snapshots: route
+            .openapi_snapshots
+            .iter()
+            .map(|snapshot| snapshot.clone_ref(py))
+            .collect(),
+    })
 }
 
 #[pymethods]
@@ -3243,6 +3446,8 @@ fn install_route_operation_descriptors(
     let signature = signatures.build_signature(py, "operation")?;
     let fast_api_type = py.get_type::<PyFastApi>();
     let api_router_type = py.get_type::<PyApiRouter>();
+    py.get_type::<PyApiRoute>()
+        .setattr("__signature__", signatures.build_signature(py, "APIRoute")?)?;
     for name in [
         "get", "put", "post", "delete", "options", "head", "patch", "trace",
     ] {

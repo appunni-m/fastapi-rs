@@ -229,3 +229,19 @@ cases:
   - path: docs/en/docs/reference/fastapi.md
     kind: upstream_documentation
     sha256: 24ae7edeabea12e47165c6026470a201b261c67ea108f762ef4faff756b72504
+- case_id: fastapi.routing.apiroute.constructor-signature
+  probes:
+  - probe_id: apiroute-constructor-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRoute
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/routing.py
+    kind: upstream_api_definition
+    sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55
+    symbol_id: fastapi.routing.APIRoute

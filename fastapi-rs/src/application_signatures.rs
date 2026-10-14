@@ -339,6 +339,7 @@ impl ApplicationSignatureBuilder {
         if let Some(source_name) = qualified_name.strip_prefix(&source_prefix) {
             return match source_name {
                 "applications.FastAPI" => module.getattr("FastAPI"),
+                "datastructures.DefaultPlaceholder" => module.getattr("DefaultPlaceholder"),
                 "params.Depends" => module.getattr("ParamsDepends"),
                 "routing.APIRoute" => module.getattr("APIRoute"),
                 "routing.APIRouter" => module.getattr("APIRouter"),

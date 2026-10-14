@@ -3,6 +3,11 @@
 from __future__ import annotations
 
 from fastapi import APIRouter
+from fastapi.routing import APIRoute
+
+
+def standalone_items():
+    return {"items": []}
 
 
 def create_argument_bundles() -> dict[str, dict[str, object]]:
@@ -48,6 +53,18 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "version": "1.0.0",
                 "routes": router.routes,
                 "webhooks": webhook_router.routes,
+            },
+        },
+        "standalone-route": {
+            "args": ["/direct-items", standalone_items],
+            "kwargs": {},
+        },
+        "standalone-apiroute": {
+            "args": [],
+            "kwargs": {
+                "title": "Standalone APIRoute OpenAPI Probe",
+                "version": "1.0.0",
+                "routes": [APIRoute("/direct-items", standalone_items)],
             },
         },
     }

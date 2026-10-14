@@ -3516,6 +3516,12 @@ reviewed_api_contract_overlay:
           end_line: 1281
         - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.routing.apiroute.constructor-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+          case_id: fastapi.routing.apiroute.constructor-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
@@ -3527,7 +3533,7 @@ reviewed_api_contract_overlay:
         - *generate_unique_id_included_callback_methods_remove
         - *generate_unique_id_included_callback_methods_empty
       feature_ids: [app-routing]
-      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      observation_selectors: [python.signature, python.call_outcome, python.attribute_value, http.status, http.body.bytes, asgi.application_error.exception]
       supported_slice: >-
         The input inspects FastAPI-registered APIRoute instances for one direct
         GET path operation and one GET operation included through nested
@@ -3536,11 +3542,20 @@ reviewed_api_contract_overlay:
         is absent on the direct route or present on the included route. Separate
         inputs map callback-time method addition, removal, and clearing on direct
         routes and included-route contexts through route inspection, request
-        dispatch, and OpenAPI. Live parity for those cases remains unverified. This
-        does not establish direct APIRoute
-        construction, custom route-class subclassing, or other constructor
-        arguments or APIRoute state such as response models, dependencies,
-        response fields, callbacks, or handler customization.
+        dispatch, and OpenAPI. The pinned constructor signature is compared
+        exactly; construction and direct get_openapi behavior are mapped for one
+        static GET endpoint with no parameters, return annotation, or docstring.
+        Other constructor options, ASGI dispatch from a standalone route, custom
+        route-class subclassing, and other APIRoute state remain outside this
+        supported slice. The reviewed source classification keeps direct
+        constructor stability uncertain because upstream documents the route
+        customization hook as experimental.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Non-default constructor options are declared in the pinned signature but raise NotImplementedError until mapped to parity inputs and implemented.
+          - Standalone APIRoute supports the mapped get_openapi path only; ASGI dispatch, app, and handler hooks are not implemented.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
       source_evidence:
@@ -4121,6 +4136,10 @@ reviewed_api_contract_overlay:
           observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
           case_id: fastapi.openapi.get-openapi.webhook-route
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
           observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-multi-route.yaml

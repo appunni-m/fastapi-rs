@@ -12467,16 +12467,18 @@
     {
       "id": "openapi-get-openapi-single-route",
       "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json",
-      "input_sha256": "f06159433b0a31088ebef7f11a9f886656659f9997ef88e731cb8941436bfba5",
+      "input_sha256": "f4d5f11e7e5782c61af2fb0b525a4286691780c86fc87f1ed179d2d708acf36b",
       "recipe_path": "tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml",
-      "recipe_sha256": "37b37d329170eb1bc27f3b9fb3aaad1a18bd638b01ecacfeb5784f5c66fa737d",
+      "recipe_sha256": "09ec81db662b6ade5e590f4444cebe0e3ce176fedb5078b095c1625b551e3f3a",
       "case_ids": [
         "fastapi.openapi.get-openapi.single-route",
         "fastapi.openapi.get-openapi.single-route-tags-version",
-        "fastapi.openapi.get-openapi.webhook-route"
+        "fastapi.openapi.get-openapi.webhook-route",
+        "fastapi.routing.apiroute.constructor-defaults",
+        "fastapi.openapi.get-openapi.standalone-apiroute"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_get_openapi_single_route.py",
-      "workload_sha256": "fea62a9bbbb92aa5117cb334aae3997195590e53bf1dd68f707e9d20846e1958",
+      "workload_sha256": "61d91847804ab34677284a2e5236d50cfe4c46682274fcfec97b2f1d33927ddb",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.get-openapi.single-route",
@@ -12491,10 +12493,22 @@
           "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
         },
         {
+          "case_id": "fastapi.openapi.get-openapi.standalone-apiroute",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
           "case_id": "fastapi.openapi.get-openapi.webhook-route",
           "symbol_id": "fastapi.openapi.utils.get_openapi",
           "path": "fastapi/openapi/utils.py",
           "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-defaults",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
         }
       ],
       "api_probes": [
@@ -12517,12 +12531,30 @@
           ]
         },
         {
+          "case_id": "fastapi.openapi.get-openapi.standalone-apiroute",
+          "probe_id": "get-openapi-from-direct-apiroute",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
           "case_id": "fastapi.openapi.get-openapi.webhook-route",
           "probe_id": "separate-webhook-route",
           "symbol_id": "fastapi.openapi.utils.get_openapi",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-defaults",
+          "probe_id": "apiroute-default-construction",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
           ]
         }
       ],
@@ -12543,6 +12575,20 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi.webhook-route",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.get_openapi"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.standalone-apiroute",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.openapi.utils.get_openapi"
@@ -14072,15 +14118,33 @@
     {
       "id": "operation-signatures-upstream",
       "input_path": "tests/fixtures/inputs/parity/operation-signatures-upstream.json",
-      "input_sha256": "4ca2bee07cbba6d97754038204ac182b2cc305fe0d9a2cbf14659ed4ff0888b6",
+      "input_sha256": "bd5667909aee83b60f9f20cf7b52b499cd2becda3d2352e36aa5b9bacbf8f6ba",
       "recipe_path": "tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml",
-      "recipe_sha256": "d952b0b792eb4cea2c03fadeed2541046a40027aa803753856f061039f53374f",
+      "recipe_sha256": "a08bbe71618efddf3a689d027ecefcea84fe5e23170100fc9425b81e299dbd9e",
       "case_ids": [
-        "fastapi.test.test-operations-signatures.test-signatures-consistency"
+        "fastapi.test.test-operations-signatures.test-signatures-consistency",
+        "fastapi.routing.apiroute.constructor-signature"
       ],
       "workload_path": "tests/fixtures/workloads/operation_signatures_upstream.py",
       "workload_sha256": "8de486419aca3d08631bdc68dbfbd0195dfb58cf9db3f3b68c6b54d7eca31306",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-signature",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        }
+      ],
       "api_probes": [
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-signature",
+          "probe_id": "apiroute-constructor-signature",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
         {
           "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
           "probe_id": "apirouter-delete-signature",
@@ -14329,6 +14393,13 @@
             "api:fastapi.routing.APIRouter.trace",
             "source:documented-page:reference/fastapi.md",
             "source:upstream-test:tests/test_operations_signatures.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute"
           ]
         }
       ]
