@@ -241,13 +241,58 @@ server. Internal Rust timing attribution may be added as a measurement of this
 same implementation; it is not a separate target. Do not infer component costs
 by subtracting the Starlette control or from the end-to-end target time.
 
-#### Current completed seven-workload run (2026-10-14; commit faa8fa9)
+#### Current completed seven-workload run (2026-10-14; commit 4ae3a35)
+
+The suite completed at `2026-10-14T19:44:20Z` with suite ID
+`5897d445-2b20-4c47-af92-7e33e2a90a93` and receipt
+`benchmark-results/suite-20261014T194420Z-5897d445-2b20-4c47-af92-7e33e2a90a93.json`
+(SHA-256 `42a680377778332505dbd0704effa035816db3d09246dad204a95fd5bf7f576b`).
+Every parity comparison references the current manifest SHA-256
+`ca8bce7b28f9ae38d134544762de8954154d9f7fbec465618cc5578290a64247`. The
+suite binds FastAPI-RS commit `4ae3a354291e44a27c2a9384edf26ae0a4a15aa5`,
+FastAPI `0.141.1` at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette
+`1.6.0` at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
+`b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. It used CPython 3.12.13,
+Pydantic 2.13.4 / pydantic-core 2.46.4, macOS 15.7.7 arm64 (12 logical
+CPUs), Cargo 1.98.1, rustc 1.98.1, and the optimized release profile with
+`pyo3/extension-module`. All seven identity-checked parity gates passed 45/45
+selected observations with zero failures or not-run cases. Each subject used
+50 warmups and 1,000 measured calls in five rounds. The target extension
+SHA-256 was `c108faea55f740fac202d2243d9a34042e090025e168557eee2705d43fea0da9`;
+the target binary SHA-256 was
+`a6a8017d5567b8d6fcd2ad8adef7bba441c9cf0e3c7d182ab40884aa04dfe8d4`.
+
+The table reports median and p95 direct-ASGI latency in microseconds. Ratios
+are FastAPI-RS divided by FastAPI; values above `1.0x` mean FastAPI-RS took
+longer on this host. Each raw receipt is referenced below; the suite receipt
+binds every workload receipt by SHA-256.
+
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio | Parity | Raw receipt |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Async nested dependencies, distinct query aliases | 485.5 / 497.3 µs | 653.4 / 694.2 µs | 1.346x / 1.396x | 2/2 | `benchmark-results/20261014T193601Z-72b30e90-d53c-434e-b268-c0681db3465f.json` |
+| Async nested dependencies, two query parameters | 404.8 / 414.8 µs | 626.0 / 650.1 µs | 1.546x / 1.567x | 2/2 | `benchmark-results/20261014T193724Z-9c5245d0-b9c1-4e12-bb7b-a164ecbe360d.json` |
+| Chunked request body | 124.3 / 133.9 µs | 132.8 / 148.7 µs | 1.068x / 1.110x | 13/13 | `benchmark-results/20261014T193847Z-0622ebe2-7242-43b2-9f4a-fa05ccacfbc9.json` |
+| Invalid request | 141.2 / 208.0 µs | 301.5 / 328.3 µs | 2.135x / 1.578x | 13/13 | `benchmark-results/20261014T194009Z-82112777-b2bd-4416-982b-88360be068b6.json` |
+| Valid request | 131.0 / 144.6 µs | 131.0 / 149.7 µs | 1.000x / 1.035x | 13/13 | `benchmark-results/20261014T194132Z-ad76a649-04c7-42cc-956f-c6a09a160c59.json` |
+| Large response model | 358.3 / 383.7 µs | 384.0 / 425.0 µs | 1.072x / 1.108x | 1/1 | `benchmark-results/20261014T194257Z-38b51d8e-5f6c-4d52-9231-e91fc9abcb75.json` |
+| Repeated sequence query | 98.1 / 113.0 µs | 107.1 / 125.9 µs | 1.092x / 1.114x | 1/1 | `benchmark-results/20261014T194420Z-66ef3599-f07a-4d51-b2fa-16d4be94d88e.json` |
+
+FastAPI-RS had higher median latency on six workloads and higher p95 latency
+on all seven. Invalid requests had the largest median and p95 ratios; the
+valid-request median was effectively equal. This is a single-host
+direct-ASGI result, not a global performance claim. It does not measure
+network/server latency or separate facade, PyO3, Rust, Pydantic, or
+Starlette-RS costs; no Starlette control is subtracted. Two incomplete suite
+attempts caused by oracle-path and sandboxed-sccache setup failures remain
+archived under `benchmark-results/stale/`; neither is parity evidence.
+
+#### Previous completed seven-workload run (2026-10-14; commit faa8fa9; archived stale manifest)
 
 The suite completed at `2026-10-14T18:40:27Z` with suite ID
 `f5bf4476-767c-4af5-9dd0-0f8ddc656ccb` and receipt
-`benchmark-results/suite-20261014T184027Z-f5bf4476-767c-4af5-9dd0-0f8ddc656ccb.json`
+`benchmark-results/stale/suite-20261014T184027Z-f5bf4476-767c-4af5-9dd0-0f8ddc656ccb.json`
 (SHA-256 `e0175bd7c4c3e924c705fced77a9c10d7cce5c9234d981095c95d57909bd5db1`).
-Every workload comparison binds the current manifest SHA-256
+Every workload comparison binds that run's manifest SHA-256
 `dcd93ae080080c1bd84bcc33d3b01259aedcacec550c74d29599cbc871e4a8b9`. The
 suite binds FastAPI-RS commit `faa8fa9784ab760a70782906c403a45c29469b85`,
 FastAPI `0.141.1` at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette
