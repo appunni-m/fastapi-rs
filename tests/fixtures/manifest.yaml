@@ -439,7 +439,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 992cad22ca3ae752c3f1077e4674821f76a66087018a286eccdef82795a0e346
+    sha256: 5b380549b66ff42452c5581a21d0e58b70e28eab3b0b9aaf13523fa937568b6b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +475,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: ee278a51fe1129e39f66c1cc51ca034d3fbb9332438e92f9b2b853ebe4493b7c
+    sha256: c6f106ccdaad80a53afe3099e6b05a09532dd79b0eddfcab78c640b07d073477
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -512,14 +512,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@8
-    sha256: 19e00a896ba2f901638707156287dea9cca89023e15f8436768fb80746e654ab
+    sha256: 17cbbad79d4b40982d8ebb8db8376b6a31e8ecdea90ccb91d2f9ae64e3bc622d
     schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
     schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 605
-      cases: 2490
-      partial_source_mappings: 1751
+      workflows: 609
+      cases: 2500
+      partial_source_mappings: 1762
 
 contract_metadata:
   aliases:
@@ -1154,7 +1154,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 244
-    operation_fixture_refs: 1844
+    operation_fixture_refs: 1845
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5740,6 +5740,18 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: handling-errors-import-http-exception
+      input_path: tests/fixtures/inputs/parity/handling-errors-import-http-exception.json
+      input_sha256: 22927bebe21d8b05251a76ab5d8d1f63271c0f4a50e0567e661f47eb37deac02
+      recipe_path: tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml
+      recipe_sha256: c451314161c37eaefd2c8e470cc9c62a0492535c1e2e689195fcd4372671d7bc
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.docs.handling-errors.import-http-exception
+      probe_id: fastapi-root-http-exception
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: direct-api-reference-wave
       input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
@@ -5749,6 +5761,16 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.direct-api-reference-wave.http-exception-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: handling-errors-import-http-exception
+      input_path: tests/fixtures/inputs/parity/handling-errors-import-http-exception.json
+      input_sha256: 22927bebe21d8b05251a76ab5d8d1f63271c0f4a50e0567e661f47eb37deac02
+      recipe_path: tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml
+      recipe_sha256: c451314161c37eaefd2c8e470cc9c62a0492535c1e2e689195fcd4372671d7bc
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.docs.handling-errors.import-http-exception
       observation_selectors:
       - python.signature
     identity_workflow_refs:
@@ -20908,6 +20930,7 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+      - python.signature
     input_workflow_refs: []
     operation_fixture_refs:
     - workflow_id: handling-errors-doc-tutorial006-review
@@ -20932,6 +20955,7 @@ api_surface_contract:
     - http.body.json
     - http.headers.ordered
     - http.status
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.exception_handlers.http_exception_handler/supported_slice
@@ -21144,6 +21168,7 @@ api_surface_contract:
       - openapi.document
       - openapi.paths
       - openapi.request_schema
+      - python.signature
       - python.warnings
       - warnings.category_message
       - websocket.close_code

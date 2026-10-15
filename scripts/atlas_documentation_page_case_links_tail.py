@@ -620,6 +620,15 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
             "and the selected OpenAPI response.",
         },
         {
+            "workflow_id": "handling-errors-import-http-exception",
+            "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+            "case_ids": ["fastapi.docs.handling-errors.import-http-exception"],
+            "observation_selectors": ["python.signature"],
+            "scope_note": "This direct API case resolves the documented `fastapi.HTTPException` "
+            "root import and compares its public signature. Constructor and HTTP behavior are "
+            "covered by separate workflow inputs.",
+        },
+        {
             "workflow_id": "inherited-exception-handler-registration",
             "recipe_path": "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml",
             "case_ids": [

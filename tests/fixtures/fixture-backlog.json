@@ -1935,6 +1935,19 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.docs.bigger-applications.main-router-composition"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+          "workflow_id": "bigger-applications-sections-20261015"
+        },
+        {
+          "case_ids": [
             "fastapi.documentation-example.wave-h.bigger-applications.admin-router",
             "fastapi.documentation-example.wave-h.bigger-applications.items-router"
           ],
@@ -2016,7 +2029,7 @@
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
         "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
       ],
-      "stimulus_design_notes": "These functions read query/header tokens. Independent item/admin requests supply valid values and sample extraction/invocation; rejection details are not claimed."
+      "stimulus_design_notes": "These functions read query/header tokens. Independent item/admin requests supply valid values and sample extraction/invocation; rejection details are not claimed. The independent Bigger Applications section recipe also distinguishes missing and rejected app-wide query tokens and router-level header rejection."
     },
     {
       "feature_ids": [
@@ -2026,6 +2039,20 @@
       ],
       "id": "fastapi.docs-example.bigger-applications-app-an-py310-internal-admin",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.bigger-applications.main-router-composition"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+          "workflow_id": "bigger-applications-sections-20261015"
+        },
         {
           "case_ids": [
             "fastapi.documentation-example.wave-h.bigger-applications.admin-router",
@@ -2094,7 +2121,7 @@
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
       ],
-      "stimulus_design_notes": "The example registers an admin POST route on an APIRouter. The independent request samples dispatch/status/body; OpenAPI selects its operation path. The tutorial response literal is not claimed."
+      "stimulus_design_notes": "The example registers an admin POST route on an APIRouter. The independent request samples dispatch/status/body; OpenAPI selects its operation path. The tutorial response literal is not claimed. The independent Bigger Applications section recipe samples this route and its operation metadata."
     },
     {
       "feature_ids": [
@@ -2105,6 +2132,20 @@
       ],
       "id": "fastapi.docs-example.bigger-applications-app-an-py310-main",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.bigger-applications.main-router-composition"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+          "workflow_id": "bigger-applications-sections-20261015"
+        },
         {
           "case_ids": [
             "fastapi.documentation-example.wave-h.bigger-applications.admin-router",
@@ -2184,7 +2225,7 @@
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
-      "stimulus_design_notes": "The app includes routers with application/router dependencies and metadata. Independent requests sample router dispatch and OpenAPI operation metadata; other routes and response literals are not claimed."
+      "stimulus_design_notes": "The app includes routers with application/router dependencies and metadata. Independent requests sample router dispatch and OpenAPI operation metadata; other routes and response literals are not claimed. The independent Bigger Applications section recipe samples its route and selected router metadata."
     },
     {
       "feature_ids": [
@@ -2197,6 +2238,20 @@
       ],
       "id": "fastapi.docs-example.bigger-applications-app-an-py310-routers-items",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.bigger-applications.main-router-composition"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+          "workflow_id": "bigger-applications-sections-20261015"
+        },
         {
           "case_ids": [
             "fastapi.documentation-example.wave-h.bigger-applications.items-router",
@@ -2284,7 +2339,7 @@
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
         "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
       ],
-      "stimulus_design_notes": "The router declares a prefix, dependency, tags, response metadata, and GET routes. The independent item request samples valid dispatch and OpenAPI response metadata; update-item branches are not claimed."
+      "stimulus_design_notes": "The router declares a prefix, dependency, tags, response metadata, and GET routes. The independent item request samples valid dispatch and OpenAPI response metadata; update-item branches are not claimed. The independent Bigger Applications section recipe samples its own operation-level tag/response declaration."
     },
     {
       "feature_ids": [
@@ -2294,6 +2349,20 @@
       ],
       "id": "fastapi.docs-example.bigger-applications-app-an-py310-routers-users",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.bigger-applications.main-router-composition"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+          "workflow_id": "bigger-applications-sections-20261015"
+        },
         {
           "case_ids": [
             "fastapi.documentation-example.wave-h.bigger-applications.openapi-projection",
@@ -2362,7 +2431,7 @@
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
       ],
-      "stimulus_design_notes": "The router registers user-list, current-user, and username routes. The independent request samples current-user dispatch and its OpenAPI tag; other route outputs are not claimed."
+      "stimulus_design_notes": "The router registers user-list, current-user, and username routes. The independent request samples current-user dispatch and its OpenAPI tag; other route outputs are not claimed. The independent Bigger Applications section recipe also samples current-user dispatch and its operation path."
     },
     {
       "feature_ids": [
@@ -10951,6 +11020,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
           "workflow_id": "first-steps-application-testing-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.first-steps-page.async-route"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+          "workflow_id": "first-steps-page-review-20261015"
         }
       ],
       "input_only": true,
@@ -11011,7 +11093,7 @@
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
         "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ],
-      "stimulus_design_notes": "The FastAPI 0.141.1 example registers an async root route and returns a JSON object. An independent app exposes `/welcome` and returns different data, then the workflow requests that route and compares status and body bytes; it does not reuse the example's route or response literals."
+      "stimulus_design_notes": "The FastAPI 0.141.1 example registers an async root route and returns a JSON object. The application-testing recipe samples an independently authored `/welcome` route with different data. The First Steps section recipe uses a separate app and different response data at `/`; it compares status, headers, and body bytes without copying the tutorial response literal."
     },
     {
       "feature_ids": [
@@ -11034,6 +11116,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
           "workflow_id": "first-steps-application-testing-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.first-steps-page.sync-route"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+          "workflow_id": "first-steps-page-review-20261015"
         }
       ],
       "input_only": true,
@@ -11094,7 +11189,7 @@
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
         "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ],
-      "stimulus_design_notes": "The FastAPI 0.141.1 example registers a synchronous root route with a JSON return value. An independent app exposes `/portal` and returns different data, then the workflow requests that route and compares status and body bytes; it does not reuse the example's route or response literals."
+      "stimulus_design_notes": "The FastAPI 0.141.1 example registers a synchronous root route with a JSON return value. The application-testing recipe samples an independently authored `/portal` route with different data. The First Steps section recipe uses a separate app and different response data at `/`; it compares status, headers, and body bytes without copying the tutorial response literal."
     },
     {
       "feature_ids": [
@@ -52619,7 +52714,7 @@
       "documented_sections": [
         {
           "end_line": 326,
-          "exclusion_reason": null,
+          "exclusion_reason": "The page introduces operating-system configuration, Pydantic Settings, and a FastAPI dependency example. It defines no additional independent request beyond the specifically mapped settings response and dependency-override sections.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -52738,8 +52833,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The operating-system environment contract and Pydantic Settings behavior are outside FastAPI's contract. The global settings response is sampled under `use-the-settings`; FastAPI dependency injection and replacement are sampled under `the-main-app-file` and `settings-and-testing`.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -52810,7 +52905,7 @@
         },
         {
           "end_line": 24,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section describes operating-system environment values as strings and application-side conversion and validation. FastAPI does not read or convert environment variables for a user-defined settings object.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -52836,8 +52931,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned text assigns conversion and validation to code using Pydantic Settings. Those semantics belong to the optional `pydantic-settings` package and Pydantic validation; the independent workflow avoids both and samples no environment source.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -52856,7 +52951,7 @@
         },
         {
           "end_line": 124,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section groups Pydantic Settings installation, declaration, environment parsing, and use. Those behaviors are not implemented by FastAPI; its FastAPI-specific child material is limited to the server command and is not a settings API workflow.",
           "feature_evidence": [
             {
               "feature_id": "cli-process",
@@ -52911,8 +53006,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page directs readers to Pydantic Settings. FastAPI 0.141.1 lists `pydantic-settings` as an optional extra dependency in `../fastapi/pyproject.toml:59-114`, rather than making it part of the core runtime. Its FastAPI-specific `run-the-server` child is linked separately to the CLI process workflow in `scripts/atlas_remaining_docs_wave_mappings.py:56-80`, including `fastapi.cli.process.run-leaves-environment-unchanged`, `fastapi.cli.process.run-auto-discovery-no-path`, and `fastapi.cli.process.run-explicit-entrypoint`. Those cases cover CLI startup and request lifecycle; Pydantic environment loading remains outside this settings mapping.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -52951,7 +53046,7 @@
         },
         {
           "end_line": 52,
-          "exclusion_reason": null,
+          "exclusion_reason": "The commands install an optional third-party package through uv and describe the `all` extra. Package resolution is not a FastAPI request or API behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -52990,8 +53085,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 declares `pydantic-settings` in optional extras at `../fastapi/pyproject.toml:59-114`. The ordinary oracle workflow does not assume that optional package is importable, and this page mapping adds no such runtime dependency.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -53022,7 +53117,7 @@
         },
         {
           "end_line": 72,
-          "exclusion_reason": null,
+          "exclusion_reason": "The example defines a `pydantic_settings.BaseSettings` subclass and describes environment-source lookup, type conversion, and validation. It does not call a FastAPI API.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -53067,8 +53162,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The page's behavior is supplied by optional `pydantic-settings` and Pydantic, not by FastAPI. The selected recipe uses an ordinary dataclass so the same process can exercise the separate FastAPI route and dependency contract without assuming optional settings-package availability.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -53115,7 +53210,24 @@
             "middleware-integrations"
           ],
           "heading": "Use the `settings` { #use-the-settings }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "read-global-settings"
+              ],
+              "case_ids": [
+                "fastapi.docs.settings.global-settings-projection-20261015"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/settings-doc-review-20261015.yaml",
+              "scope_note": "The selected action sends one GET request to a route that reads a fixed, user-created settings value and returns its fields. It observes response status and exact body bytes only; it does not exercise `BaseSettings`, environment loading, or field validation.",
+              "workflow_id": "settings-doc-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -53125,8 +53237,8 @@
             "process.stderr",
             "process.stdout"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned tutorial's `tutorial001_py310.py:18-20` reads fields from its application-level `settings` object in a FastAPI path operation. The independent case substitutes a fixed dataclass value to sample the FastAPI route response without importing optional `pydantic-settings`. FastAPI owns path-operation integration and response projection: `serialize_response` applies `jsonable_encoder` at `../fastapi/fastapi/routing.py:301-341`, and the request handler selects and constructs the default JSON response at `../fastapi/fastapi/routing.py:379-400,741-748`. Generic route dispatch and response start/body sending follow Starlette 1.6.0 (`../starlette/starlette/routing.py:672-700` and `../starlette/starlette/responses.py:163-167`). Starlette-RS's selected planning checkout provides the target boundary for those generic operations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "middleware-integrations",
@@ -53145,7 +53257,7 @@
         },
         {
           "end_line": 124,
-          "exclusion_reason": null,
+          "exclusion_reason": "The Bash and PowerShell snippets configure process environment variables and start a server process. Their shell assignment, CLI startup, and Uvicorn log behavior are not an ASGI request contract for settings.",
           "feature_evidence": [
             {
               "feature_id": "cli-process",
@@ -53168,8 +53280,8 @@
             "process.stderr",
             "process.stdout"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The displayed setting values depend on process environment lookup and the Pydantic Settings example; Pydantic environment loading is excluded here. The `uv run fastapi run main.py` process invocation is linked under `scripts/atlas_remaining_docs_wave_mappings.py:56-80` to `tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml` cases `fastapi.cli.process.run-leaves-environment-unchanged`, `fastapi.cli.process.run-auto-discovery-no-path`, and `fastapi.cli.process.run-explicit-entrypoint`. That workflow covers CLI startup and request lifecycle, not the loading of `ADMIN_EMAIL` or `APP_NAME` by Pydantic Settings. This page mapping remains limited to independently observable FastAPI request behavior.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -53184,7 +53296,7 @@
         },
         {
           "end_line": 142,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section demonstrates Python package files, imports, and a module-level settings instance. The settings construction and module import behavior are user-code and Pydantic concerns; no distinct FastAPI behavior is added.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -53224,8 +53336,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The example uses the optional `pydantic-settings` class and a module-level object. Its route simply reads those values. A response for that global-object pattern is sampled separately under `use-the-settings`; this section's module layout and imports are not claimed.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -53256,7 +53368,7 @@
         },
         {
           "end_line": 184,
-          "exclusion_reason": null,
+          "exclusion_reason": "This parent section groups settings construction, dependency injection, and dependency overrides. Its Pydantic config child is excluded and its two FastAPI composition children are mapped separately.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -53348,8 +53460,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned headings `the-config-file`, `the-main-app-file`, and `settings-and-testing` identify distinct contracts. Mapping their union here would obscure that only the FastAPI `Depends` and override path is sampled by the new input.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -53412,7 +53524,7 @@
         },
         {
           "end_line": 156,
-          "exclusion_reason": null,
+          "exclusion_reason": "The code defines a `pydantic_settings.BaseSettings` subclass and explains that it is not instantiated at module import. Settings construction is external to FastAPI.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -53452,8 +53564,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The config class and its `BaseSettings` behavior require optional `pydantic-settings`; the FastAPI dependency source begins in the following main-app section. No claim is made about Pydantic settings construction or environment values.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -53543,7 +53655,24 @@
             "middleware-integrations"
           ],
           "heading": "The main app file { #the-main-app-file }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "read-dependency-override"
+              ],
+              "case_ids": [
+                "fastapi.docs.settings.dependency-override-20261015"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/settings-doc-review-20261015.yaml",
+              "scope_note": "The selected GET action enters the documented `/info` path operation with `Depends(get_settings)` after the app registers its test override. Status and exact body bytes expose the replacement object received by the endpoint. The sample omits Pydantic construction, `lru_cache`, and unoverridden factory calls.",
+              "workflow_id": "settings-doc-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -53561,8 +53690,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 builds and solves the dependency graph in `../fastapi/fastapi/dependencies/utils.py:586-680`; the solver looks up the original callable in `dependency_overrides` and builds the replacement dependant at lines 620-646. The pinned app example declares `Depends(get_settings)` at `../fastapi/docs_src/settings/app02_an_py310/main.py:16-22`. The input uses a dataclass to isolate that FastAPI composition from optional `pydantic-settings`. FastAPI's response projection applies `jsonable_encoder` at `../fastapi/fastapi/routing.py:301-341` and selects/constructs its default JSON response at `../fastapi/fastapi/routing.py:379-400,741-748`. Generic route dispatch and response start/body sending follow Starlette 1.6.0 (`../starlette/starlette/routing.py:672-700` and `../starlette/starlette/responses.py:163-167`); Starlette-RS's selected planning checkout provides the target boundary for those generic operations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -53658,7 +53787,24 @@
             "middleware-integrations"
           ],
           "heading": "Settings and testing { #settings-and-testing }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "read-dependency-override"
+              ],
+              "case_ids": [
+                "fastapi.docs.settings.dependency-override-20261015"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/settings-doc-review-20261015.yaml",
+              "scope_note": "The action sends one GET to the documented route after mapping its original dependency callable to an independently authored replacement. It observes only HTTP status and exact response body bytes; it does not exercise TestClient, Pydantic Settings validation, or client-side JSON parsing.",
+              "workflow_id": "settings-doc-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -53671,8 +53817,8 @@
             "process.stderr",
             "process.stdout"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned example assigns `app.dependency_overrides[get_settings]` and requests `/info` in `../fastapi/docs_src/settings/app02_an_py310/test_main.py:9-23`. FastAPI stores the override mapping in `../fastapi/fastapi/applications.py:967-984` and `solve_dependencies` invokes the selected callable at `../fastapi/fastapi/dependencies/utils.py:620-646,662-680`. The new direct-ASGI action isolates this FastAPI replacement contract. FastAPI response projection applies `jsonable_encoder` at `../fastapi/fastapi/routing.py:301-341` and selects/constructs the default JSON response at `../fastapi/fastapi/routing.py:379-400,741-748`. Starlette 1.6.0 owns generic route dispatch (`../starlette/starlette/routing.py:672-700`) and response start/body sending (`../starlette/starlette/responses.py:163-167`); Starlette-RS's selected planning checkout provides the target boundary for those generic operations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -53713,7 +53859,7 @@
         },
         {
           "end_line": 319,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section describes dotenv files, their parsing, Pydantic `env_file` configuration, and caching of constructed settings. FastAPI itself does not read dotenv files or cache user settings.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -53782,8 +53928,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Dotenv loading is provided by optional Pydantic Settings and `python-dotenv`; the documented cache is Python's `functools.lru_cache`. Neither behavior is part of FastAPI's implementation. The FastAPI dependency override composition is separately mapped under `settings-and-testing`.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -53826,7 +53972,7 @@
         },
         {
           "end_line": 215,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section supplies user-authored dotenv key/value text. File syntax and reading are external configuration behavior, not FastAPI behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -53852,8 +53998,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The following section configures Pydantic Settings to read this file with an external `python-dotenv` package. This input does not parse or observe those values.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -53872,7 +54018,7 @@
         },
         {
           "end_line": 229,
-          "exclusion_reason": null,
+          "exclusion_reason": "The example sets Pydantic `model_config.env_file` and describes reading values from a dotenv file. This is Pydantic Settings configuration, not a FastAPI request or API operation.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -53922,8 +54068,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page labels the configuration as Pydantic-owned, and the feature requires optional `pydantic-settings` plus `python-dotenv`. The recipe remains usable when those packages are absent and does not claim their parsing behavior.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -53954,7 +54100,7 @@
         },
         {
           "end_line": 319,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section's once-only construction claim is implemented by Python's `functools.lru_cache`; the cached value is a Pydantic Settings instance. FastAPI's dependency system consumes the callable but does not implement its cache semantics.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -54013,8 +54159,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The active dependency-override mapping covers FastAPI's replacement behavior. This recipe makes no repeated-request, cache hit, invalidation, file access, or object-identity observation, and the optional Pydantic Settings dependency is not required.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -54057,7 +54203,7 @@
         },
         {
           "end_line": 319,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section explains Python standard-library `functools.lru_cache` key and reuse behavior. It defines no FastAPI-owned operation.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -54098,8 +54244,8 @@
             "process.stderr",
             "process.stdout"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned text attributes the decorator to Python's standard library. Dependency invocation is a separate FastAPI contract, but this input does not claim cache behavior or any cached settings object.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -54130,7 +54276,7 @@
         },
         {
           "end_line": 326,
-          "exclusion_reason": null,
+          "exclusion_reason": "The recap repeats Pydantic Settings, dependency override, dotenv, and `lru_cache` points already classified in their own sections; it adds no independent request or behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -54190,8 +54336,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The settings response and FastAPI dependency override are mapped in their specific sections, while environment parsing, dotenv loading, and caching are excluded by ownership. A recap-level mapping would combine those distinct contracts.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -54266,6 +54412,20 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml",
           "workflow_id": "middleware-proxy-static-settings-source-review"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.settings.dependency-override-20261015",
+            "fastapi.docs.settings.global-settings-projection-20261015"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/settings-doc-review-20261015.yaml",
+          "workflow_id": "settings-doc-review-20261015"
         }
       ],
       "input_only": true,
@@ -71711,7 +71871,21 @@
             "public-api-errors"
           ],
           "heading": "Exceptions - `HTTPException` and `WebSocketException`",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.direct-api-reference-wave.http-exception-signature",
+                "fastapi.direct-api-reference-wave.websocket-exception-signature"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "python.signature"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml",
+              "scope_note": "These probes resolve the two documented root exports and compare their public signatures. They do not claim HTTP exception responses or WebSocket close behavior, which have separate input mappings.",
+              "workflow_id": "direct-api-reference-wave"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "error.public_attributes",
@@ -71721,8 +71895,8 @@
             "python.signature",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The unanchored reference heading is keyed by its pinned line 1. Both linked cases cite this exact reference page and invoke the FastAPI root bindings documented there; the behavior statements are not inferred from signature observations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "public-api-errors",
@@ -80181,7 +80355,7 @@
       "documented_sections": [
         {
           "end_line": 547,
-          "exclusion_reason": null,
+          "exclusion_reason": "The H1 introduces a broad multi-file organization topic and combines package layout, router declarations, dependencies, router inclusion, CLI setup, and OpenAPI. Those distinct behaviors are reviewed at their narrower headings; the overview is not one independently observable operation.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -80315,8 +80489,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "A page-wide workflow would join unrelated Python packaging, FastAPI routing, FastAPI dependency/OpenAPI, and CLI behavior. Narrow section mappings keep each claim tied to its own request or schema observation.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -80376,7 +80550,7 @@
         },
         {
           "end_line": 73,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section explains directories, __init__.py files, modules, subpackages, and Python import notation. These are Python packaging and import semantics and introduce no FastAPI or ASGI input.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -80416,8 +80590,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Filesystem layout and Python module resolution are outside the FastAPI runtime contract. The later router sections map the FastAPI behavior declared by the example modules.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -80496,7 +80670,24 @@
             "dependency-security"
           ],
           "heading": "`APIRouter` { #apirouter }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "users-me-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The selected request reaches one GET operation declared on an APIRouter and included in FastAPI. It samples this route only; the prose's claim that router options generally match FastAPI is not exhaustive.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -80511,8 +80702,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -80553,7 +80744,7 @@
         },
         {
           "end_line": 89,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section shows importing APIRouter and constructing a router variable. It does not define a path operation or an independently observable request.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -80577,8 +80768,8 @@
             "openapi.paths",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The constructor's route-composition behavior is observable only after a route is declared and included, which is sampled in the following path-operation section.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -80637,7 +80828,24 @@
             "dependency-security"
           ],
           "heading": "*Path operations* with `APIRouter` { #path-operations-with-apirouter }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "users-me-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The request targets the documented users router's `/users/me` path after inclusion and observes its HTTP status and body. The selected route is one example, not a claim about every APIRouter option.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -80652,8 +80860,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -80731,7 +80939,26 @@
             "dependency-security"
           ],
           "heading": "Dependencies { #dependencies }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "items-read-route",
+                "items-missing-header",
+                "items-rejected-header"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The actions send an accepted router header, omit the required header, and send a value rejected by the dependency. They observe only status and response bytes; they do not claim a full validation-error structure or dependency call order.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -80744,8 +80971,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 builds and resolves the Depends graph for router-level dependencies (fastapi/dependencies/utils.py:271-349, 619-714). FastAPI extracts declared query and header parameters and delegates their value validation to Pydantic; the accept/reject branches and exception details are authored workload behavior. Starlette 1.6.0 owns generic ASGI dispatch and response emission.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -80865,7 +81092,27 @@
             "openapi-docs"
           ],
           "heading": "Another module with `APIRouter` { #another-module-with-apirouter }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "items-read-route",
+                "items-openapi-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The selected item request and two OpenAPI pointers sample one router prefix, router tag, and additional 404 response declaration with a router-level dependency. The example's item database and lookup response remain user code.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -80885,8 +81132,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees. FastAPI's OpenAPI generator projects router metadata into the operation schema (fastapi/openapi/utils.py:287-308, fastapi/openapi/utils.py:311-400, fastapi/openapi/utils.py:473-516).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -80938,7 +81185,7 @@
         },
         {
           "end_line": 275,
-          "exclusion_reason": null,
+          "exclusion_reason": "This subsection shows a relative Python import from a sibling module. It adds no separate FastAPI request or router behavior beyond the dependency and router configuration mapped on this page.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -80988,8 +81235,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Relative module resolution is Python behavior. The dependency callable's FastAPI-facing parameter extraction and resolution are sampled in the Dependencies and router-configuration mappings.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -81020,7 +81267,7 @@
         },
         {
           "end_line": 275,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section explains Python's one-dot, two-dot, and three-dot relative import rules with filesystem examples; it declares no FastAPI or ASGI behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -81066,8 +81313,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Python package resolution is outside the FastAPI contract and has no input or observation in the ASGI recipe.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -81146,7 +81393,27 @@
             "dependency-security"
           ],
           "heading": "Add some custom `tags`, `responses`, and `dependencies` { #add-some-custom-tags-responses-and-dependencies }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "items-custom-put-route",
+                "items-custom-openapi-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The PUT request supplies the router dependency inputs; its 403 response body is workload-authored behavior. OpenAPI pointers sample the operation's `custom` tag and declared 403 response alongside the inherited 404 response. The mapping does not claim general response-merge precedence or dependency combinations.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -81161,8 +81428,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees. FastAPI emits operation tags and merges additional response declarations in OpenAPI (fastapi/openapi/utils.py:287-308, fastapi/openapi/utils.py:473-516).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81203,7 +81470,7 @@
         },
         {
           "end_line": 467,
-          "exclusion_reason": null,
+          "exclusion_reason": "This heading groups imports and module wiring with app-wide dependency setup, router inclusion/metadata, and a directly declared operation. The independently observable dependency, route, and schema behaviors are mapped in narrower child sections.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -81308,8 +81575,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The parent combines Python module wiring and multiple FastAPI behaviors. The app-wide dependency is sampled by the import-FastAPI section's missing and rejected-token requests; routes and metadata are mapped under their operation sections. Python import wiring itself is not an ASGI observation.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81389,7 +81656,25 @@
             "dependency-security"
           ],
           "heading": "Import `FastAPI` { #import-fastapi }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "global-dependency-missing-token",
+                "global-dependency-rejected-token"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "Requests to `/users/me` omit the app-wide query token or provide a rejected token. The users router has no router-level header dependency, so these actions observe the app-wide dependency's required and reject outcomes; the rejection body is workload-authored.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -81401,8 +81686,8 @@
             "openapi.security",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 accepts application-wide dependencies and passes them to its root APIRouter (fastapi/applications.py:331-349, 984-999); router registration and inclusion carry dependency declarations to path operations (fastapi/routing.py:2889-2971, 3133-3320). FastAPI builds and solves the dependency graph and extracts query fields (fastapi/dependencies/utils.py:271-349, 619-697). The reject branch is workload-authored; Starlette 1.6.0 owns generic ASGI dispatch and response emission.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81431,7 +81716,7 @@
         },
         {
           "end_line": 317,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section demonstrates importing local router modules and binding their objects to names. The imports themselves are Python module behavior.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -81455,8 +81740,8 @@
             "openapi.paths",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The FastAPI composition performed with those router objects is sampled under the include-router section; local import binding is not an ASGI contract.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81473,7 +81758,7 @@
         },
         {
           "end_line": 359,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section explains Python package names, relative imports, and module execution. Those language and packaging details do not specify FastAPI behavior.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -81518,8 +81803,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The ASGI workload cannot independently observe Python import resolution; route composition from the imported modules is reviewed separately.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81548,7 +81833,7 @@
         },
         {
           "end_line": 378,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section shows aliasing Python imports to avoid local name collisions. It does not describe a FastAPI API option or request behavior.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -81588,8 +81873,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Import aliases are evaluated by Python before the ASGI application is built and are outside the pinned FastAPI runtime contract.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81655,7 +81940,28 @@
             "request-validation"
           ],
           "heading": "Include the `APIRouter`s for `users` and `items` { #include-the-apirouters-for-users-and-items }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "users-me-route",
+                "items-read-route",
+                "items-openapi-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "Selected requests reach the included users and items routes; the OpenAPI observation samples the items path/tag projection. It does not claim complete router-merge precedence or all routes in either module.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -81667,8 +81973,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees. OpenAPI path and tag projection is produced by FastAPI (fastapi/openapi/utils.py:287-308, 311-400).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81759,7 +82065,27 @@
             "dependency-security"
           ],
           "heading": "Include an `APIRouter` with a custom `prefix`, `tags`, `responses`, and `dependencies` { #include-an-apirouter-with-a-custom-prefix-tags-responses-and-dependencies }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "admin-post-route",
+                "admin-openapi-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The selected POST samples the included admin path and router dependency; the OpenAPI pointers sample the prefix-derived operation path, inherited tag, and 418 response declaration. The response body is user-code output.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -81774,8 +82100,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees. FastAPI also projects included response declarations and tags into OpenAPI (fastapi/openapi/utils.py:287-308, fastapi/openapi/utils.py:311-400, fastapi/openapi/utils.py:473-516).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81883,7 +82209,27 @@
             "openapi-docs"
           ],
           "heading": "Include a *path operation* { #include-a-path-operation }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "root-route",
+                "root-openapi-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The GET request reaches one operation declared directly on the FastAPI instance; the OpenAPI pointer samples the root path's required query parameter. It does not claim other direct-operation options.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -81903,8 +82249,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees. FastAPI generates the operation parameter schema (fastapi/openapi/utils.py:311-400).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -81956,7 +82302,7 @@
         },
         {
           "end_line": 498,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section specifies the FastAPI CLI's project entrypoint setting and command line invocation. It has no ASGI request input; process startup, project-file discovery, and CLI behavior require the separately scoped FastAPI CLI process contract.",
           "feature_evidence": [
             {
               "feature_id": "cli-process",
@@ -82007,8 +82353,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The CLI package and process invocation are a separate public surface from the FastAPI APIRouter/FastAPI application runtime. The page's CLI commands are not represented by a router or OpenAPI selector.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -82052,14 +82398,33 @@
             "cli-process"
           ],
           "heading": "Check the automatic API docs { #check-the-automatic-api-docs }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "all-routes-openapi-docs"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.main-router-composition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The direct `/openapi.json` action samples successful schema retrieval and selected paths, tags, and root parameters from the composed application. The screenshot, CLI launch, and rendered `/docs` UI are outside this mapping.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "process.exit_code",
             "process.stderr",
             "process.stdout"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI builds the OpenAPI operations from the included routers and direct route (fastapi/openapi/utils.py:287-308, fastapi/openapi/utils.py:311-400, fastapi/openapi/utils.py:473-516); its application setup registers the `/openapi.json` route (fastapi/applications.py:1105-1120). Starlette 1.6.0 owns generic HTTP dispatch/response behavior, and the interactive docs page is not observed here.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -82095,7 +82460,25 @@
             "app-routing"
           ],
           "heading": "Include the same router multiple times with different `prefix` { #include-the-same-router-multiple-times-with-different-prefix }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "first-prefix-route",
+                "second-prefix-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.repeated-router-prefixes"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "Two requests target the same APIRouter operation under `/api/v1` and `/api/latest`. This samples those two prefix inclusions and does not claim conflict, ordering, or every prefix combination.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.headers.ordered",
@@ -82103,8 +82486,8 @@
             "openapi.paths",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 APIRouter registration and include_router route composition are the feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; fastapi/applications.py:1441-1545). Starlette 1.6.0 owns generic ASGI dispatch and response emission. The workload's handler values are user-code stimuli, not FastAPI guarantees.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -82179,7 +82562,28 @@
             "openapi-docs"
           ],
           "heading": "Include an `APIRouter` in another { #include-an-apirouter-in-another }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "nested-original-route",
+                "nested-late-route",
+                "nested-openapi-routes"
+              ],
+              "case_ids": [
+                "fastapi.docs.bigger-applications.nested-router-live-addition"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+              "scope_note": "The actions sample a router nested before app inclusion, a new child operation declared after the nested router was included in the app, and the two resulting OpenAPI paths. They do not cover direct mutation of router.routes or every inclusion order.",
+              "workflow_id": "bigger-applications-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -82196,8 +82600,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 builds effective included-router candidates (fastapi/routing.py:1590-1655), matches and dispatches the selected route (fastapi/routing.py:1728-1802), and consults router versions during iteration (fastapi/routing.py:2570-2601, 3133-3320). Starlette 1.6.0 owns generic ASGI dispatch/response behavior; the endpoint bodies are user code.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -82261,6 +82665,27 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml",
           "workflow_id": "additional-response-field-lifecycle"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.bigger-applications.main-router-composition",
+            "fastapi.docs.bigger-applications.nested-router-live-addition",
+            "fastapi.docs.bigger-applications.repeated-router-prefixes"
+          ],
+          "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "docs.response.status",
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
+          "workflow_id": "bigger-applications-sections-20261015"
         },
         {
           "case_ids": [
@@ -99510,7 +99935,7 @@
       "documented_sections": [
         {
           "end_line": 427,
-          "exclusion_reason": null,
+          "exclusion_reason": "This page-level heading combines independently reviewable route, OpenAPI, documentation-HTML, CLI, and deployment sections; it defines no single additional input or observable behavior.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -99641,8 +100066,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI owns route registration and OpenAPI generation, while Starlette 1.6.0 owns generic ASGI routing and HTTP transport. The CLI invokes optional fastapi-cli and user code, and deployment invokes FastAPI Cloud; concrete ASGI cases are mapped on their child sections.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -99719,7 +100144,25 @@
             "openapi-docs"
           ],
           "heading": "Interactive API docs { #interactive-api-docs }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-ui"
+              ],
+              "case_ids": [
+                "fastapi.docs.first-steps-page.documentation-routes"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+              "scope_note": "GET /docs maps the generated response status, ordered headers, and HTML body bytes from a default FastAPI app. The input does not run a browser or load Swagger UI's external JavaScript and CSS.",
+              "workflow_id": "first-steps-page-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -99728,8 +100171,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 registers the Swagger UI HTML endpoint and embeds the OpenAPI URL; Starlette 1.6.0 owns route dispatch and HTTP transport. Swagger UI browser rendering is third-party client behavior and is outside this ASGI input.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -99764,7 +100207,25 @@
             "openapi-docs"
           ],
           "heading": "Alternative API docs { #alternative-api-docs }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "redoc-ui"
+              ],
+              "case_ids": [
+                "fastapi.docs.first-steps-page.documentation-routes"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+              "scope_note": "GET /redoc maps the generated response status, ordered headers, and HTML body bytes from a default FastAPI app. The input does not run a browser or load ReDoc's external JavaScript and CSS.",
+              "workflow_id": "first-steps-page-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -99773,8 +100234,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 registers the ReDoc HTML endpoint and embeds the OpenAPI URL; Starlette 1.6.0 owns route dispatch and HTTP transport. ReDoc browser rendering is third-party client behavior and is outside this ASGI input.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -99792,7 +100253,7 @@
         },
         {
           "end_line": 151,
-          "exclusion_reason": null,
+          "exclusion_reason": "This parent section groups standards terminology, the concrete /openapi.json endpoint, and downstream code-generation uses. The endpoint is mapped under its child section; the remaining material adds no separate FastAPI input.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -99832,8 +100293,8 @@
             "python.pydantic_model_result",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI generates an application's OpenAPI document, while OpenAPI and JSON Schema define external standards. The endpoint is sampled under Check the openapi.json; generated-client behavior belongs to downstream consumers.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -99861,7 +100322,7 @@
         },
         {
           "end_line": 104,
-          "exclusion_reason": null,
+          "exclusion_reason": "This subsection defines the word schema and lists information an API description can contain; it does not configure or exercise a FastAPI operation.",
           "feature_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -99887,8 +100348,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The text is standards vocabulary. FastAPI's generated-document behavior is separately scoped to /openapi.json, while generic HTTP handling belongs to Starlette 1.6.0.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -99906,7 +100367,7 @@
         },
         {
           "end_line": 114,
-          "exclusion_reason": null,
+          "exclusion_reason": "This subsection explains how OpenAPI and JSON Schema relate as standards; it introduces no application input, schema option, or model.",
           "feature_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -99931,8 +100392,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI composes an OpenAPI document and Pydantic supplies JSON Schema for declared models, but this conceptual paragraph selects neither behavior. The page-specific endpoint input is mapped in its child section.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -99966,7 +100427,28 @@
             "openapi-docs"
           ],
           "heading": "Check the `openapi.json` { #check-the-openapi-json }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-json"
+              ],
+              "case_ids": [
+                "fastapi.docs.first-steps-page.openapi-document"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.body.bytes",
+                "docs.response.status",
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+              "scope_note": "GET /openapi.json projects the documented response status, body bytes, generated document, and selected path pointers for the independently authored app. It does not claim the illustrative /items/ document or every OpenAPI field.",
+              "workflow_id": "first-steps-page-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -99975,8 +100457,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 constructs and serves the OpenAPI document from registered routes. Starlette 1.6.0 owns generic HTTP transport. This workload has no Pydantic model, so model JSON Schema generation is not claimed.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -99994,7 +100476,7 @@
         },
         {
           "end_line": 151,
-          "exclusion_reason": null,
+          "exclusion_reason": "This subsection lists downstream uses of an OpenAPI document, including other documentation systems and generated clients; it specifies no additional FastAPI request or schema option.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -100034,8 +100516,8 @@
             "python.pydantic_model_result",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI owns the document producer, but browser tools and generated-client behavior belong to downstream consumers. The producer response is sampled by the adjacent /openapi.json case.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -100063,7 +100545,7 @@
         },
         {
           "end_line": 188,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section configures app discovery for the fastapi console command and demonstrates importing a user module. That optional CLI process is not an ASGI request to an already constructed FastAPI application.",
           "feature_evidence": [
             {
               "feature_id": "cli-process",
@@ -100104,8 +100586,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Entrypoint parsing and user-module loading belong to optional fastapi-cli and the user's project layout. The mapped library inputs exercise an already constructed app, so this section does not attribute CLI, Uvicorn, or user-import behavior to FastAPI route handling.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -100132,7 +100614,7 @@
         },
         {
           "end_line": 206,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section documents two fastapi dev invocation forms and recommends a project-level entrypoint; its operation is CLI app discovery and startup, not an ASGI action on a constructed app.",
           "feature_evidence": [
             {
               "feature_id": "cli-process",
@@ -100181,8 +100663,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The command delegates app discovery and development-server startup to optional fastapi-cli and Uvicorn, then imports user code. Those process, server, and project-layout behaviors are outside this FastAPI library workflow slice.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -100209,7 +100691,7 @@
         },
         {
           "end_line": 419,
-          "exclusion_reason": null,
+          "exclusion_reason": "This parent heading repeats route concepts and includes deployment guidance; concrete route and OpenAPI claims are scoped in child sections and it defines no additional input.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -100299,8 +100781,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Route child mappings cover FastAPI registration and response generation; Starlette 1.6.0 owns generic dispatch and transport. The final deploy step delegates to FastAPI Cloud and is outside the library contract.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -100352,7 +100834,7 @@
         },
         {
           "end_line": 361,
-          "exclusion_reason": null,
+          "exclusion_reason": "This parent heading groups URL and HTTP-method terminology with the concrete GET decorator example. The example is mapped under Define a path operation decorator; the parent adds no distinct request.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -100434,8 +100916,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI owns registration of the documented GET operation. URL and method vocabulary is HTTP/Starlette contract, and the concrete action is scoped once under its child heading.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -100487,7 +100969,7 @@
         },
         {
           "end_line": 278,
-          "exclusion_reason": null,
+          "exclusion_reason": "This child defines URL path terminology and gives an example URL; it does not declare or call a FastAPI route.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -100513,8 +100995,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "URL syntax and generic route matching are HTTP and Starlette 1.6.0 behavior. The FastAPI route-registration sample is mapped under the decorator child.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -100533,7 +101015,7 @@
         },
         {
           "end_line": 313,
-          "exclusion_reason": null,
+          "exclusion_reason": "This child lists HTTP methods and conventional create/read/update/delete meanings, then explicitly says those meanings are guidelines rather than requirements; it specifies no FastAPI method semantics.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -100576,8 +101058,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "HTTP method vocabulary and route matching belong to the HTTP and Starlette 1.6.0 contracts. User code chooses an operation's business meaning; FastAPI does not enforce the conventional mapping described here.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -100658,7 +101140,25 @@
             "middleware-integrations"
           ],
           "heading": "Define a *path operation decorator* { #define-a-path-operation-decorator }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "get-root"
+              ],
+              "case_ids": [
+                "fastapi.docs.first-steps-page.async-route"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+              "scope_note": "GET / invokes the async root operation in the independent workload. It samples one GET registration and does not claim the listed POST, PUT, DELETE, OPTIONS, HEAD, PATCH, or TRACE routes.",
+              "workflow_id": "first-steps-page-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -100673,8 +101173,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 registers the endpoint and invokes its user function. Starlette 1.6.0 owns generic route matching and HTTP transport; the returned dictionary is user code and response wire behavior follows the shared Starlette contract.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -100750,7 +101250,26 @@
             "request-validation"
           ],
           "heading": "Step 4: define the **path operation function** { #step-4-define-the-path-operation-function }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "get-root"
+              ],
+              "case_ids": [
+                "fastapi.docs.first-steps-page.async-route",
+                "fastapi.docs.first-steps-page.sync-route"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+              "scope_note": "The selected GET actions invoke an async root handler and an independently authored sync handler. They sample invocation and returned responses, not application business logic or every sync/async callable edge case.",
+              "workflow_id": "first-steps-page-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -100762,8 +101281,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 dispatches the endpoint according to whether user code is async or sync; Starlette 1.6.0 supplies generic thread-pool and HTTP/ASGI transport behavior. Both returned dictionaries are authored by the workload.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -100809,7 +101328,26 @@
             "request-validation"
           ],
           "heading": "Step 5: return the content { #step-5-return-the-content }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "get-root"
+              ],
+              "case_ids": [
+                "fastapi.docs.first-steps-page.async-route",
+                "fastapi.docs.first-steps-page.sync-route"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+              "scope_note": "The selected async and sync actions return independently authored dictionaries and observe status, ordered headers, and body bytes. This does not claim list/scalar conversion, Pydantic models, ORM integration, or custom serialization.",
+              "workflow_id": "first-steps-page-review-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -100819,8 +101357,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI applies its response path to user-returned values, and Starlette 1.6.0 owns JSONResponse wire behavior. Pydantic owns model validation and JSON Schema when models are used, but this input uses plain dictionaries and no Pydantic model.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -100839,7 +101377,7 @@
         },
         {
           "end_line": 427,
-          "exclusion_reason": null,
+          "exclusion_reason": "This closing checklist summarizes already mapped route concepts and adds CLI development/deployment commands; it defines no new ASGI request or response.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -100903,8 +101441,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The route items are covered by the focused child mapping. fastapi dev delegates to optional fastapi-cli/Uvicorn, while fastapi deploy invokes FastAPI Cloud; neither is FastAPI library behavior in this workflow.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -100970,6 +101508,27 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
           "workflow_id": "first-asgi-request"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.first-steps-page.async-route",
+            "fastapi.docs.first-steps-page.documentation-routes",
+            "fastapi.docs.first-steps-page.openapi-document",
+            "fastapi.docs.first-steps-page.sync-route"
+          ],
+          "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.body.bytes, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.body.bytes",
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+          "workflow_id": "first-steps-page-review-20261015"
         },
         {
           "case_ids": [
@@ -102767,7 +103326,6 @@
         "python.attribute_value",
         "python.import_path",
         "python.object_identity",
-        "python.signature",
         "response.background_effects",
         "route.match",
         "validation.error_class",
@@ -102788,15 +103346,13 @@
             "error.public_attributes",
             "python.attribute_value",
             "python.import_path",
-            "python.object_identity",
-            "python.signature"
+            "python.object_identity"
           ]
         },
         {
           "feature_id": "python-data-encoding",
           "selectors": [
-            "python.attribute_value",
-            "python.signature"
+            "python.attribute_value"
           ]
         },
         {
@@ -102827,7 +103383,6 @@
           "python.attribute_value",
           "python.import_path",
           "python.object_identity",
-          "python.signature",
           "route.match",
           "validation.error_class",
           "validation.error_details"
@@ -102897,6 +103452,13 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors.yaml",
             "scope_note": "The page’s examples use HTTPException and validation errors; these cases sample custom/status/detail errors, success, validation, and the selected OpenAPI response."
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.handling-errors.import-http-exception"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+            "scope_note": "This direct API case resolves the documented `fastapi.HTTPException` root import and compares its public signature. Constructor and HTTP behavior are covered by separate workflow inputs."
           },
           {
             "case_ids": [
@@ -103376,7 +103938,20 @@
             "public-api-errors"
           ],
           "heading": "Import `HTTPException` { #import-httpexception }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.docs.handling-errors.import-http-exception"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "python.signature"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+              "scope_note": "The direct callable probe resolves the documented `fastapi.HTTPException` root binding and compares its signature. It does not claim exception construction or HTTP handling.",
+              "workflow_id": "handling-errors-import-http-exception"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "error.public_attributes",
@@ -103386,8 +103961,8 @@
             "python.signature",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned section links a source example whose first line imports HTTPException from `fastapi`; the input resolves that public callable in each isolated process.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "public-api-errors",
@@ -104562,6 +105137,18 @@
         },
         {
           "case_ids": [
+            "fastapi.docs.handling-errors.import-http-exception"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "python.signature"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+          "workflow_id": "handling-errors-import-http-exception"
+        },
+        {
+          "case_ids": [
             "fastapi.applications.add-exception-handler.custom-exception",
             "fastapi.applications.add-exception-handler.status-code",
             "fastapi.applications.exception-handler.decorator"
@@ -104749,6 +105336,7 @@
         "openapi.document",
         "openapi.paths",
         "openapi.request_schema",
+        "python.signature",
         "python.warnings",
         "warnings.category_message",
         "websocket.close_code",
@@ -104955,6 +105543,17 @@
           },
           {
             "case_ids": [
+              "fastapi.docs.handling-errors.import-http-exception"
+            ],
+            "observation_selectors": [
+              "python.signature"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+            "scope_note": "This direct API case resolves the documented `fastapi.HTTPException` root import and compares its public signature. Constructor and HTTP behavior are covered by separate workflow inputs.",
+            "workflow_id": "handling-errors-import-http-exception"
+          },
+          {
+            "case_ids": [
               "fastapi.applications.add-exception-handler.custom-exception",
               "fastapi.applications.add-exception-handler.status-code",
               "fastapi.applications.exception-handler.decorator"
@@ -105130,8 +105729,15 @@
             "python.warnings"
           ],
           "selectors": [
+            "python.signature",
             "python.warnings",
             "warnings.category_message"
+          ]
+        },
+        {
+          "feature_id": "python-data-encoding",
+          "selectors": [
+            "python.signature"
           ]
         },
         {
@@ -105360,6 +105966,13 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors.yaml",
           "scope_note": "The page’s examples use HTTPException and validation errors; these cases sample custom/status/detail errors, success, validation, and the selected OpenAPI response."
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.handling-errors.import-http-exception"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+          "scope_note": "This direct API case resolves the documented `fastapi.HTTPException` root import and compares its public signature. Constructor and HTTP behavior are covered by separate workflow inputs."
         },
         {
           "case_ids": [

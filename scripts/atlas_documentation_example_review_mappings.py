@@ -190,9 +190,10 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     "docs_src/first_steps/tutorial001_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example registers an async root route and returns a JSON "
-            "object. An independent app exposes `/welcome` and returns different data, then the "
-            "workflow requests that route and compares status and body bytes; it does not reuse "
-            "the example's route or response literals."
+            "object. The application-testing recipe samples an independently authored "
+            "`/welcome` route with different data. The First Steps section recipe uses a "
+            "separate app and different response data at `/`; it compares status, headers, and "
+            "body bytes without copying the tutorial response literal."
         ),
         "supporting_sources": [
             {
@@ -207,15 +208,21 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
                 "case_ids": ["fastapi.first-steps.async-independent-route"],
                 "observation_selectors": ["http.body.bytes", "http.status"],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+                "case_ids": ["fastapi.docs.first-steps-page.async-route"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
             }
         ],
     },
     "docs_src/first_steps/tutorial003_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example registers a synchronous root route with a JSON return "
-            "value. An independent app exposes `/portal` and returns different data, then the "
-            "workflow requests that route and compares status and body bytes; it does not reuse "
-            "the example's route or response literals."
+            "value. The application-testing recipe samples an independently authored "
+            "`/portal` route with different data. The First Steps section recipe uses a "
+            "separate app and different response data at `/`; it compares status, headers, and "
+            "body bytes without copying the tutorial response literal."
         ),
         "supporting_sources": [
             {
@@ -229,6 +236,11 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
                 "case_ids": ["fastapi.first-steps.sync-independent-route"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
+                "case_ids": ["fastapi.docs.first-steps-page.sync-route"],
                 "observation_selectors": ["http.body.bytes", "http.status"],
             }
         ],

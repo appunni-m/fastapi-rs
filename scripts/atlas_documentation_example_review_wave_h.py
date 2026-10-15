@@ -31,6 +31,7 @@ def _review(
 
 HTTP = ["http.body.bytes", "http.status"]
 OPENAPI_PATHS = ["http.status", "openapi.paths"]
+HTTP_AND_OPENAPI = ["http.body.bytes", "http.status", "openapi.paths"]
 
 
 DOC_EXAMPLE_CITATION_WAVE_H = {
@@ -60,7 +61,9 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
         _text(
             "These functions read query/header tokens.",
             "Independent item/admin requests supply valid values and sample extraction/invocation;",
-            "rejection details are not claimed.",
+            "rejection details are not claimed. The independent Bigger Applications section",
+            "recipe also distinguishes missing and rejected app-wide query tokens and",
+            "router-level header rejection.",
         ),
         [
             _span(
@@ -76,7 +79,12 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "fastapi.documentation-example.wave-h.bigger-applications.items-router",
                 "fastapi.documentation-example.wave-h.bigger-applications.admin-router",
                 selectors=HTTP,
-            )
+            ),
+            _case(
+                "bigger-applications-sections-20261015.yaml",
+                "fastapi.docs.bigger-applications.main-router-composition",
+                selectors=HTTP,
+            ),
         ],
     ),
     "docs_src/bigger_applications/app_an_py310/internal/admin.py": _review(
@@ -84,7 +92,8 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
             "The example registers an admin POST route on an APIRouter.",
             "The independent request samples dispatch/status/body; OpenAPI selects",
             "its operation path.",
-            "The tutorial response literal is not claimed.",
+            "The tutorial response literal is not claimed. The independent Bigger",
+            "Applications section recipe samples this route and its operation metadata.",
         ),
         [
             _span(
@@ -105,13 +114,19 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "fastapi.documentation-example.wave-h.bigger-applications.openapi-projection",
                 selectors=OPENAPI_PATHS,
             ),
+            _case(
+                "bigger-applications-sections-20261015.yaml",
+                "fastapi.docs.bigger-applications.main-router-composition",
+                selectors=HTTP_AND_OPENAPI,
+            ),
         ],
     ),
     "docs_src/bigger_applications/app_an_py310/main.py": _review(
         _text(
             "The app includes routers with application/router dependencies and metadata.",
             "Independent requests sample router dispatch and OpenAPI operation metadata;",
-            "other routes and response literals are not claimed.",
+            "other routes and response literals are not claimed. The independent Bigger",
+            "Applications section recipe samples its route and selected router metadata.",
         ),
         [
             _span(
@@ -134,13 +149,19 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "fastapi.documentation-example.wave-h.bigger-applications.openapi-projection",
                 selectors=OPENAPI_PATHS,
             ),
+            _case(
+                "bigger-applications-sections-20261015.yaml",
+                "fastapi.docs.bigger-applications.main-router-composition",
+                selectors=HTTP_AND_OPENAPI,
+            ),
         ],
     ),
     "docs_src/bigger_applications/app_an_py310/routers/items.py": _review(
         _text(
             "The router declares a prefix, dependency, tags, response metadata, and GET routes.",
             "The independent item request samples valid dispatch and OpenAPI response metadata;",
-            "update-item branches are not claimed.",
+            "update-item branches are not claimed. The independent Bigger Applications",
+            "section recipe samples its own operation-level tag/response declaration.",
         ),
         [
             _span(
@@ -161,13 +182,19 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "fastapi.documentation-example.wave-h.bigger-applications.openapi-projection",
                 selectors=OPENAPI_PATHS,
             ),
+            _case(
+                "bigger-applications-sections-20261015.yaml",
+                "fastapi.docs.bigger-applications.main-router-composition",
+                selectors=HTTP_AND_OPENAPI,
+            ),
         ],
     ),
     "docs_src/bigger_applications/app_an_py310/routers/users.py": _review(
         _text(
             "The router registers user-list, current-user, and username routes.",
             "The independent request samples current-user dispatch and its OpenAPI tag;",
-            "other route outputs are not claimed.",
+            "other route outputs are not claimed. The independent Bigger Applications",
+            "section recipe also samples current-user dispatch and its operation path.",
         ),
         [
             _span(
@@ -187,6 +214,11 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "documentation-example-review-wave-h.yaml",
                 "fastapi.documentation-example.wave-h.bigger-applications.openapi-projection",
                 selectors=OPENAPI_PATHS,
+            ),
+            _case(
+                "bigger-applications-sections-20261015.yaml",
+                "fastapi.docs.bigger-applications.main-router-composition",
+                selectors=HTTP_AND_OPENAPI,
             ),
         ],
     ),

@@ -6350,8 +6350,14 @@ from atlas_documentation_section_case_mappings_advanced_dependencies_20261015 im
 from atlas_documentation_section_case_mappings_advanced_middleware_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
 )
+from atlas_documentation_section_case_mappings_bigger_applications_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015,
+)
 from atlas_documentation_section_case_mappings_custom_response_wave_m import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M,
+)
+from atlas_documentation_section_case_mappings_first_steps_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
 )
 from atlas_documentation_section_case_mappings_fastapi_wave_l import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_WAVE_L,
@@ -6376,6 +6382,9 @@ from atlas_documentation_section_case_mappings_response_model_remaining_20261015
 )
 from atlas_documentation_section_case_mappings_security_scopes_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
+)
+from atlas_documentation_section_case_mappings_settings_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
 )
 
 for _doc_path, _rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():
@@ -6415,6 +6424,8 @@ DOC_SECTION_CASE_MAPPINGS.update(DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_
 for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
+    DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
     DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015,
@@ -6422,6 +6433,7 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
+    DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
 ):
     _section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(_new_section_mappings)
     if _section_mapping_overlaps:
@@ -6569,21 +6581,26 @@ def documented_case_selectors(
 
 def reviewed_section_action_ids(
     page_rel: str, recipe_path: str, case_ids: Sequence[str]
-) -> list[str] | None:
-    """Return the union of exact reviewed action scopes for a page workflow mapping."""
-    selected: set[str] = set()
-    expected_cases = list(case_ids)
+) -> dict[str, list[str]] | None:
+    """Return exact reviewed action scopes per case for a page workflow mapping."""
+    expected_cases = set(case_ids)
+    selected: dict[str, set[str]] = {case_id: set() for case_id in case_ids}
     for (section_page, _anchor), mapping in DOC_SECTION_CASE_MAPPINGS.items():
+        mapped_cases = mapping.get("case_ids") if isinstance(mapping, dict) else None
         if (
             section_page == page_rel
             and isinstance(mapping, dict)
             and mapping.get("status", "workflow") == "workflow"
             and mapping.get("recipe_path") == recipe_path
-            and mapping.get("case_ids") == expected_cases
             and isinstance(mapping.get("action_ids"), list)
+            and isinstance(mapped_cases, list)
+            and set(mapped_cases).issubset(expected_cases)
         ):
-            selected.update(mapping["action_ids"])
-    return sorted(selected) if selected else None
+            for case_id in mapped_cases:
+                selected[case_id].update(mapping["action_ids"])
+    if not all(selected.values()):
+        return None
+    return {case_id: sorted(actions) for case_id, actions in selected.items()}
 
 
 def read_first_asgi_workflow() -> dict[str, Any]:
@@ -10775,7 +10792,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             section_text = "\n".join(lines[heading["line"] : end_line])
             section_evidence = feature_match_evidence(heading["text"], section_text)
             anchor_match = re.search(r"\{\s*#([A-Za-z0-9_-]+)\s*\}\s*$", heading["text"])
-            section_mapping_key = (rel, anchor_match.group(1)) if anchor_match else None
+            # Most tutorial headings carry explicit MkDocs anchors. Generated
+            # reference pages do not; give those headings a line-key namespace
+            # so their source-backed sections can still be reviewed precisely.
+            section_anchor = (
+                anchor_match.group(1) if anchor_match else f"@line:{heading['line']}"
+            )
+            section_mapping_key = (rel, section_anchor)
             if not section_evidence:
                 reviewed_section_mapping = (
                     DOC_SECTION_CASE_MAPPINGS.get(section_mapping_key)
@@ -11117,7 +11140,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 )
                 continue
             mapping_claims = indexed_mapping_claims[id(mapping)]
-            action_ids = reviewed_section_action_ids(rel, recipe_path, case_ids)
+            reviewed_actions_by_case = reviewed_section_action_ids(
+                rel, recipe_path, case_ids
+            )
             projected_by_case = {
                 case_id: project_documented_page_case(
                     page_rel=rel,
@@ -11125,15 +11150,18 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     recipe_path=recipe_path,
                     case_id=case_id,
                     source_selectors=selector_ids,
-                    action_ids=action_ids,
+                    action_ids=(
+                        reviewed_actions_by_case.get(case_id)
+                        if reviewed_actions_by_case is not None
+                        else None
+                    ),
                 )
                 for case_id in case_ids
             }
             observed_for_mapping = set().union(*projected_by_case.values())
-            if action_ids is not None and observed_for_mapping != mapping_claims:
+            if reviewed_actions_by_case is not None and observed_for_mapping != mapping_claims:
                 # Source-index mappings are case-scoped unless one exact reviewed
                 # section scope explains their selector set without overclaiming.
-                action_ids = None
                 projected_by_case = {
                     case_id: project_documented_page_case(
                         page_rel=rel,
@@ -11391,7 +11419,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     if unmapped_section_keys:
         documented_page_validation_errors.extend(
             "reviewed section mapping does not match a feature-evidence heading: "
-            f"docs/en/docs/{section_path}#{anchor}"
+            f"docs/en/docs/{section_path} section key {anchor!r}"
             for section_path, anchor in sorted(unmapped_section_keys)
         )
     if documented_page_validation_errors:

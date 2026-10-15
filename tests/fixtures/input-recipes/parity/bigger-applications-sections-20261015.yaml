@@ -1,0 +1,425 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/bigger_applications_sections_20261015.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.docs.bigger-applications.main-router-composition
+    factory_input: {scenario: main}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: users-me-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /users/me
+          query_string: token=permit
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: global-dependency-missing-token
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /users/me
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: global-dependency-rejected-token
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /users/me
+          query_string: token=reject
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: items-read-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/sample
+          query_string: token=permit
+          root_path: ''
+          headers: [[host, testserver], [x-token, allow-router-workload]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: items-missing-header
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/sample
+          query_string: token=permit
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: items-rejected-header
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/sample
+          query_string: token=permit
+          root_path: ''
+          headers: [[host, testserver], [x-token, reject-router-workload]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: items-openapi-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: openapi
+            json_pointers:
+              - /paths/~1items~1{record_id}/get/tags
+              - /paths/~1items~1{record_id}/get/responses/404
+            comparison: exact
+      - action_id: items-custom-put-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: PUT
+          scheme: http
+          path: /items/not-sample
+          query_string: token=permit
+          root_path: ''
+          headers: [[host, testserver], [x-token, allow-router-workload]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: items-custom-openapi-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: openapi
+            json_pointers:
+              - /paths/~1items~1{record_id}/put/tags
+              - /paths/~1items~1{record_id}/put/responses/403
+              - /paths/~1items~1{record_id}/put/responses/404
+            comparison: exact
+      - action_id: admin-post-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /admin/
+          query_string: token=permit
+          root_path: ''
+          headers: [[host, testserver], [x-token, allow-router-workload]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: admin-openapi-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: openapi
+            json_pointers:
+              - /paths/~1admin~1/post/tags
+              - /paths/~1admin~1/post/responses/418
+            comparison: exact
+      - action_id: root-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /
+          query_string: token=permit
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: root-openapi-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: openapi
+            json_pointers: [/paths/~1/get/parameters]
+            comparison: exact
+      - action_id: all-routes-openapi-docs
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status]
+            comparison: exact
+          - kind: openapi
+            json_pointers:
+              - /paths/~1users~1me/get/tags
+              - /paths/~1items~1{record_id}/get/tags
+              - /paths/~1items~1{record_id}/put/tags
+              - /paths/~1items~1{record_id}/put/responses/403
+              - /paths/~1admin~1/post/tags
+              - /paths/~1/get/parameters
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/tutorial/bigger-applications.md
+        kind: upstream_documentation
+      - path: docs_src/bigger_applications/app_an_py310/main.py
+        kind: upstream_documentation_example
+      - path: docs_src/bigger_applications/app_an_py310/dependencies.py
+        kind: upstream_documentation_example
+      - path: docs_src/bigger_applications/app_an_py310/routers/users.py
+        kind: upstream_documentation_example
+      - path: docs_src/bigger_applications/app_an_py310/routers/items.py
+        kind: upstream_documentation_example
+      - path: docs_src/bigger_applications/app_an_py310/internal/admin.py
+        kind: upstream_documentation_example
+  - case_id: fastapi.docs.bigger-applications.repeated-router-prefixes
+    factory_input: {scenario: repeat}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: first-prefix-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /api/v1/records
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: second-prefix-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /api/latest/records
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/tutorial/bigger-applications.md
+        kind: upstream_documentation
+  - case_id: fastapi.docs.bigger-applications.nested-router-live-addition
+    factory_input: {scenario: nested}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: nested-original-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /internal/records/before
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: nested-late-route
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /internal/records/after
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: nested-openapi-routes
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: openapi
+            json_pointers:
+              - /paths/~1internal~1records~1before/get
+              - /paths/~1internal~1records~1after/get
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/tutorial/bigger-applications.md
+        kind: upstream_documentation

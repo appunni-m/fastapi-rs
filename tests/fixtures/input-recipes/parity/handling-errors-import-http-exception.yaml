@@ -1,0 +1,26 @@
+schema: fastapi-rs/python-api-workflow@5
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.handling-errors.import-http-exception
+  probes:
+  - probe_id: fastapi-root-http-exception
+    public_callable:
+      module: fastapi
+      attribute: HTTPException
+    argument_bundle: unused
+    observations:
+    - {kind: python_signature, selector: signature, comparison: exact}
+  source_evidence:
+  - path: fastapi/exceptions.py
+    kind: upstream_api_definition
+    sha256: 7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652
+    symbol_id: fastapi.HTTPException
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+    sha256: c0cb7aeafe8ed3802396f2421755cf1e740000347305c515a2c828c0c41f4b1a
+  - path: docs_src/handling_errors/tutorial001_py310.py
+    kind: upstream_documentation
+    sha256: ae11c344b30574d3ef126de0d05a96b6c9d2466fc7c566e4e8bf989704807b5c

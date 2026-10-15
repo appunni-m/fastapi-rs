@@ -3314,6 +3314,7 @@ reviewed_api_contract_overlay:
             - http.status
             - http.headers.ordered
             - http.body.bytes
+            - python.signature
       error_contract_ids:
         - fastapi.exceptions.HTTPException
         - fastapi.exceptions.StarletteHTTPException
@@ -3334,12 +3335,15 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
           case_id: fastapi.direct-api-reference-wave.http-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml
+          case_id: fastapi.docs.handling-errors.import-http-exception
       feature_ids: [public-api-errors]
       observation_selectors: [python.import_path, python.object_identity, python.signature]
       supported_slice: >-
         FastAPI 0.141.1 documents `HTTPException` as a top-level `fastapi` import.
-        The linked direct API case captures its class signature, while the
-        identity workflow records the root-to-public-module relation. This
+        The linked direct API cases capture its class signature in the API
+        reference and error-handling tutorial, while the identity workflow
+        records the root-to-public-module relation. This
         source and fixture scope covers only the documented import, signature,
         and identity relation; it does not establish constructor-call,
         Starlette-subclass, exception-dispatch, or HTTP response parity.

@@ -593,6 +593,44 @@ DOC_SECTION_CASE_MAPPINGS = {
             "public HTTP response produced by FastAPI HTTPException routes."
         ),
     },
+    ("tutorial/handling-errors.md", "import-httpexception"): {
+        "heading": "Import `HTTPException` { #import-httpexception }",
+        "start_line": 26,
+        "end_line": 29,
+        "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+        "case_ids": ["fastapi.docs.handling-errors.import-http-exception"],
+        "observation_selectors": ["python.signature"],
+        "scope_note": (
+            "The direct callable probe resolves the documented `fastapi.HTTPException` root "
+            "binding and compares its signature. It does not claim exception construction or "
+            "HTTP handling."
+        ),
+        "rationale": (
+            "The pinned section links a source example whose first line imports HTTPException "
+            "from `fastapi`; the input resolves that public callable in each isolated process."
+        ),
+    },
+    ("reference/exceptions.md", "@line:1"): {
+        "heading": "Exceptions - `HTTPException` and `WebSocketException`",
+        "start_line": 1,
+        "end_line": 20,
+        "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml",
+        "case_ids": [
+            "fastapi.direct-api-reference-wave.http-exception-signature",
+            "fastapi.direct-api-reference-wave.websocket-exception-signature",
+        ],
+        "observation_selectors": ["python.signature"],
+        "scope_note": (
+            "These probes resolve the two documented root exports and compare their public "
+            "signatures. They do not claim HTTP exception responses or WebSocket close "
+            "behavior, which have separate input mappings."
+        ),
+        "rationale": (
+            "The unanchored reference heading is keyed by its pinned line 1. Both linked cases "
+            "cite this exact reference page and invoke the FastAPI root bindings documented "
+            "there; the behavior statements are not inferred from signature observations."
+        ),
+    },
     ("tutorial/handling-errors.md", "raise-an-httpexception-in-your-code"): {
         "heading": "Raise an `HTTPException` in your code { #raise-an-httpexception-in-your-code }",
         "start_line": 30,

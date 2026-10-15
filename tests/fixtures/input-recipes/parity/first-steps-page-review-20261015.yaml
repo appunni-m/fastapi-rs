@@ -1,0 +1,128 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/first_steps_page_review_20261015.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.first-steps-page.async-route
+  factory_input: {handler_kind: async}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: get-root
+    kind: http_request
+    scope: &scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: &response
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
+  - path: docs_src/first_steps/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.first-steps-page.sync-route
+  factory_input: {handler_kind: sync}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: get-root
+    kind: http_request
+    scope: *scope
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: *response
+  source_evidence:
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
+  - path: docs_src/first_steps/tutorial003_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.first-steps-page.documentation-routes
+  factory_input: {handler_kind: async}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: swagger-ui
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /docs
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: *response
+  - action_id: redoc-ui
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /redoc
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: *response
+  source_evidence:
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.first-steps-page.openapi-document
+  factory_input: {handler_kind: async}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: openapi-json
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+    - kind: openapi
+      json_pointers: [/openapi, /info, /paths]
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
