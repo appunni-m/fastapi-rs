@@ -280,6 +280,81 @@
       ]
     },
     {
+      "id": "advanced-dependencies-except-review-20261015",
+      "input_path": "tests/fixtures/inputs/parity/advanced_dependencies_except_review_20261015.json",
+      "input_sha256": "a6ed7520a6308d27a76db28cde84812a8b225d8019103cb396471de9efe5143b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/advanced_dependencies_except_review_20261015.yaml",
+      "recipe_sha256": "a2eca1590c20977bab2da6a9207612244f540c3afb0b882ad4fbc8d30079b723",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.suppressed-yield-exception"
+      ],
+      "workload_path": "tests/fixtures/workloads/dependency_yield_error_tutorials_upstream.py",
+      "workload_sha256": "77c9ad558df78a8af94f678fb7c01bf97e6eef9c0c0575464415840029c0a106",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.docs.advanced-dependencies.suppressed-yield-exception",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/advanced-dependencies.md",
+            "source:upstream-test:tests/test_tutorial/test_dependencies/test_tutorial008c.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "advanced-dependencies-lifecycle-review-20261015",
+      "input_path": "tests/fixtures/inputs/parity/advanced_dependencies_lifecycle_review_20261015.json",
+      "input_sha256": "7bca370ea3ca09b7ac2ea239e01ca0f96ecbf4a6b7d3573511d536d03b8a8d5c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/advanced_dependencies_lifecycle_review_20261015.yaml",
+      "recipe_sha256": "b43335771763bb11e7b3765b20619fbd206e0aad014075de50b7067a213c42af",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.streaming-resource-lifetime",
+        "fastapi.docs.advanced-dependencies.yield-background-cleanup-order"
+      ],
+      "workload_path": "tests/fixtures/workloads/dependency_wave_lifecycle.py",
+      "workload_sha256": "6155beded414ca964078bc9c6ed1ba1c7e7f30d01ecdb311fd50b176c1106a2f",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.docs.advanced-dependencies.streaming-resource-lifetime",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/advanced-dependencies.md",
+            "source:upstream-test:tests/test_dependency_after_yield_streaming.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.advanced-dependencies.yield-background-cleanup-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/advanced-dependencies.md",
+            "source:upstream-test:tests/test_dependency_contextmanager.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "advanced-dependencies-scope-review-20261015",
+      "input_path": "tests/fixtures/inputs/parity/advanced_dependencies_scope_review_20261015.json",
+      "input_sha256": "5eb4688439856deb424c8c034331a51f32887d6c7accd60b2ca3cc780b62d637",
+      "recipe_path": "tests/fixtures/input-recipes/parity/advanced_dependencies_scope_review_20261015.yaml",
+      "recipe_sha256": "d88acd45cc5675050d97030c69c9d451dcf2601fb2e4e11614b9b4461214ef8a",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.scope-timing"
+      ],
+      "workload_path": "tests/fixtures/workloads/dependency_lifecycle_security_review.py",
+      "workload_sha256": "160a4d6f22b237323e86d55d9356a86a1fdac7f3061ac1cec84395b5241910bc",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.docs.advanced-dependencies.scope-timing",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/advanced-dependencies.md",
+            "source:upstream-test:tests/test_dependency_yield_scope.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "ambiguous-query-annotations-wave",
       "input_path": "tests/fixtures/inputs/parity/ambiguous-query-annotations-wave.json",
       "input_sha256": "07849e289a7194773fcdd91bf461a7a1031ae9729b28d5b613cf53c035c3658b",
@@ -21787,6 +21862,38 @@
       ]
     },
     {
+      "id": "request-files-metadata-openapi-source-review-20261015",
+      "input_path": "tests/fixtures/inputs/parity/request-files-metadata-openapi-source-review-20261015.json",
+      "input_sha256": "5bc2ce137655f94e6d7a343479e9f306b252c5c318165c92ac2c1eebd8936434",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-files-metadata-openapi-source-review-20261015.yaml",
+      "recipe_sha256": "ce01768dba446c2d58d4c3360bd7da2ec81deb32b7d88bb825100b2fe204fd67",
+      "case_ids": [
+        "fastapi.request-files.metadata-openapi.single-file",
+        "fastapi.request-files.metadata-openapi.multiple-files"
+      ],
+      "workload_path": "tests/fixtures/workloads/request_files_metadata_openapi_source_review_20261015.py",
+      "workload_sha256": "cb773cf26cf22e734c7fe6780ee5c3b1c3611750919f04eb990f02fed4a6f7a4",
+      "oracle_profile_extension": "standard-multipart",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.request-files.metadata-openapi.single-file",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001_03.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-files.metadata-openapi.multiple-files",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial003.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "request-files-openapi-documented-shapes",
       "input_path": "tests/fixtures/inputs/parity/request-files-openapi-documented-shapes.json",
       "input_sha256": "53ec41a31d9d459a69185bb81162bb0be778a131b05747dae5936b26d76a1658",
@@ -24743,9 +24850,9 @@
     {
       "id": "response-model-return-annotation-focused-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-return-annotation-focused-upstream.json",
-      "input_sha256": "2697a146aded1173ea51dd6c2c150650e0a57e7adaec88331de72ebba79a1ffd",
+      "input_sha256": "fc09eafe5f5553258dc62172d22c49706426bcfda4a98f77269d566f539dd893",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml",
-      "recipe_sha256": "34bf75b1a353ae1431fb968f5e3e2b31999fcf519eb8c20f4aa34e9360a38546",
+      "recipe_sha256": "4c007513bcd301979e7c7e30e2e9651c76556855aae9ba8640071fd511c25408",
       "case_ids": [
         "fastapi.response-model-return-annotation.decorator-precedence",
         "fastapi.response-model-return-annotation.explicit-none-override",
@@ -24762,6 +24869,7 @@
           "case_id": "fastapi.response-model-return-annotation.decorator-precedence",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_response_model_as_return_annotation.py"
           ]
         },
@@ -24958,9 +25066,9 @@
     {
       "id": "response-model-tutorial-review",
       "input_path": "tests/fixtures/inputs/parity/response-model-tutorial-review.json",
-      "input_sha256": "508f010acd67dc78b729c0d7bac11f5ede8f3ddffec34d87f8319d855af2e57c",
+      "input_sha256": "cbfc26c4c3f7b106356bf3926c7aa00d8776cb28b0d37058e923bc210d0457a1",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorial-review.yaml",
-      "recipe_sha256": "4f212fb2427395fe1f81c28862b18a6df22204c8b489703a2d2728e50e1cb920",
+      "recipe_sha256": "ac091201cfc069451488c48516fa4883ee439f2ef02d90e5bd9ca225f9ada8b0",
       "case_ids": [
         "fastapi.response-model-review.tutorial001-explicit-and-inferred",
         "fastapi.response-model-review.tutorial004-explicit-null-defaults",
@@ -24981,6 +25089,7 @@
           "case_id": "fastapi.response-model-review.tutorial004-explicit-null-defaults",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial004.py"
           ]
         },
@@ -24995,6 +25104,7 @@
           "case_id": "fastapi.response-model-review.tutorial006-list-based-filters",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial006.py"
           ]
         }
@@ -25003,9 +25113,9 @@
     {
       "id": "response-model-tutorials-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-tutorials-upstream.json",
-      "input_sha256": "44900010a86d81c80274a4498c98b54e82bf217c72751695a7f8fd95e629b1d7",
+      "input_sha256": "58f82150d5e7e30a33fd80f9efe7f70dc3f3d91a18a946c8a09eab68836e41a3",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
-      "recipe_sha256": "04cd57eb0e668b07b9b94fc0f457f4d46bf4cce913b7540f98bdf81cd18b01aa",
+      "recipe_sha256": "cbff224673332ef682715c0bc676ffdabeca7f8f8626a2f6cc8bc214bf5c5d08",
       "case_ids": [
         "fastapi.response-model.tutorial001-defaults-and-list-output",
         "fastapi.response-model.tutorial002-same-model-retains-sensitive-field",
@@ -25025,6 +25135,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial001_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial001_tutorial001_01.py"
           ]
         },
@@ -32031,9 +32142,9 @@
     {
       "id": "tutorial-response-model003-04-construction-review",
       "input_path": "tests/fixtures/inputs/parity/tutorial-response-model003_04-construction-review.json",
-      "input_sha256": "a39a97f072a05a1eb56aa355f41931b22e485699e293855d54ac8aa1cd7a3263",
+      "input_sha256": "f7f26335ca8a534644ff5c5af33232eaa85d2390ab80c1e28178c9b3d1732ba8",
       "recipe_path": "tests/fixtures/input-recipes/parity/tutorial-response-model003_04-construction-review.yaml",
-      "recipe_sha256": "399010ba87a199f2b26cbba1d6d576a44cf53c49ebf4e15668bc5c77257fe19f",
+      "recipe_sha256": "1dbcb66546a582a0e9f310f491983a2287a5ab9fbf5c54347c0b26fbcb53f03d",
       "case_ids": [
         "fastapi.tutorial-response-model003-04.invalid-union-return-annotation"
       ],
@@ -32044,6 +32155,7 @@
           "case_id": "fastapi.tutorial-response-model003-04.invalid-union-return-annotation",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial003_04.py"
           ]
         }
@@ -33745,6 +33857,106 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/advanced-dependencies.md",
+      "fixture_id": "fastapi.docs.advanced-advanced-dependencies",
+      "workflow_id": "advanced-dependencies-except-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.suppressed-yield-exception"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_dependencies/test_tutorial008c.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-dependencies-test-tutorial008c",
+      "workflow_id": "advanced-dependencies-except-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.suppressed-yield-exception"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/advanced-dependencies.md",
+      "fixture_id": "fastapi.docs.advanced-advanced-dependencies",
+      "workflow_id": "advanced-dependencies-lifecycle-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.streaming-resource-lifetime",
+        "fastapi.docs.advanced-dependencies.yield-background-cleanup-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_after_yield_streaming.py",
+      "fixture_id": "fastapi.test.test-dependency-after-yield-streaming",
+      "workflow_id": "advanced-dependencies-lifecycle-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.streaming-resource-lifetime"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
+      "fixture_id": "fastapi.test.test-dependency-contextmanager",
+      "workflow_id": "advanced-dependencies-lifecycle-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.yield-background-cleanup-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/advanced-dependencies.md",
+      "fixture_id": "fastapi.docs.advanced-advanced-dependencies",
+      "workflow_id": "advanced-dependencies-scope-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.scope-timing"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_yield_scope.py",
+      "fixture_id": "fastapi.test.test-dependency-yield-scope",
+      "workflow_id": "advanced-dependencies-scope-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.advanced-dependencies.scope-timing"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },
@@ -51831,6 +52043,48 @@
     {
       "source_item_id": "documented-page:tutorial/request-files.md",
       "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "request-files-metadata-openapi-source-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-files.metadata-openapi.multiple-files",
+        "fastapi.request-files.metadata-openapi.single-file"
+      ],
+      "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_request_files/test_tutorial001_03.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial001-03",
+      "workflow_id": "request-files-metadata-openapi-source-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-files.metadata-openapi.single-file"
+      ],
+      "observation_selectors": [
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_request_files/test_tutorial003.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial003",
+      "workflow_id": "request-files-metadata-openapi-source-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-files.metadata-openapi.multiple-files"
+      ],
+      "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
       "workflow_id": "request-files-openapi-documented-shapes",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -54809,6 +55063,23 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-model-return-annotation-focused-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model-return-annotation.decorator-precedence"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_response_model_as_return_annotation.py",
       "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
       "workflow_id": "response-model-return-annotation-focused-upstream",
@@ -54953,6 +55224,23 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-model-tutorial-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model-review.tutorial004-explicit-null-defaults",
+        "fastapi.response-model-review.tutorial006-list-based-filters"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {
@@ -55203,8 +55491,9 @@
       "fixture_id": "fastapi.docs.tutorial-response-model",
       "workflow_id": "response-model-tutorials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.response-model.tutorial001-defaults-and-list-output",
         "fastapi.response-model.tutorial002-same-model-retains-sensitive-field",
         "fastapi.response-model.tutorial003-01-return-annotation-filters-derived-input",
         "fastapi.response-model.tutorial003-02-response-annotation-allows-response-values",
@@ -61432,6 +61721,21 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "tutorial-response-model003-04-construction-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.tutorial-response-model003-04.invalid-union-return-annotation"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
       ]
     },
     {

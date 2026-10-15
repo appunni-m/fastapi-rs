@@ -6344,6 +6344,12 @@ from atlas_documentation_page_case_links_fastapi_wave_l import (  # noqa: E402
 from atlas_documentation_section_case_mappings import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS,
 )
+from atlas_documentation_section_case_mappings_advanced_dependencies_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
+)
+from atlas_documentation_section_case_mappings_advanced_middleware_1016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
+)
 from atlas_documentation_section_case_mappings_custom_response_wave_m import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M,
 )
@@ -6356,11 +6362,17 @@ from atlas_documentation_section_case_mappings_path_params_1016 import (  # noqa
 from atlas_documentation_section_case_mappings_query_params_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
 )
+from atlas_documentation_section_case_mappings_request_files_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015,
+)
 from atlas_documentation_section_case_mappings_response_directly_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
 )
 from atlas_documentation_section_case_mappings_response_headers_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
+)
+from atlas_documentation_section_case_mappings_response_model_remaining_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
 )
 from atlas_documentation_section_case_mappings_security_scopes_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
@@ -6401,10 +6413,14 @@ if _section_mapping_overlaps:
 DOC_SECTION_CASE_MAPPINGS.update(DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M)
 
 for _new_section_mappings in (
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
 ):
     _section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(_new_section_mappings)
