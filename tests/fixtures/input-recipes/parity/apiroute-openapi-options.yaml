@@ -20,6 +20,70 @@ cases:
     kind: upstream_api_definition
     sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55
     symbol_id: fastapi.routing.APIRoute
+- case_id: fastapi.routing.apiroute.constructor-custom-response-class
+  probes:
+  - probe_id: plain-text-apiroute-construction
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRoute
+    argument_bundle: plain-text-route
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/routing.py
+    kind: upstream_api_definition
+    sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55
+    symbol_id: fastapi.routing.APIRoute
+- case_id: fastapi.openapi.get-openapi.standalone-apiroute-custom-response-class
+  probes:
+  - probe_id: plain-text-apiroute-openapi
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: get_openapi
+    argument_bundle: plain-text-openapi
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.get_openapi
+- case_id: fastapi.routing.apiroute.constructor-response-model-filters
+  probes:
+  - probe_id: filtered-apiroute-construction
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRoute
+    argument_bundle: filtered-route
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/routing.py
+    kind: upstream_api_definition
+    sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55
+    symbol_id: fastapi.routing.APIRoute
+- case_id: fastapi.openapi.get-openapi.standalone-apiroute-response-model-filters
+  probes:
+  - probe_id: filtered-apiroute-openapi
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: get_openapi
+    argument_bundle: filtered-openapi
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.get_openapi
 - case_id: fastapi.openapi.get-openapi.standalone-apiroute-common-options
   probes:
   - probe_id: configured-apiroute-openapi

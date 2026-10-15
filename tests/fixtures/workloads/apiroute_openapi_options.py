@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from fastapi.responses import PlainTextResponse
 from fastapi.routing import APIRoute
 from pydantic import BaseModel
 
@@ -17,6 +18,10 @@ def configured_item() -> Item:
 
 def annotated_item() -> Item:
     return Item(item_id=8, label="eight")
+
+
+def plain_text_item() -> str:
+    return "seven"
 
 
 def custom_unique_id(route: APIRoute) -> str:
@@ -55,6 +60,22 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         configured_item,
         name="callback_item",
         generate_unique_id_function=custom_unique_id,
+    )
+    plain_text_route = APIRoute(
+        "/direct-text",
+        plain_text_item,
+        response_class=PlainTextResponse,
+    )
+    filtered_route = APIRoute(
+        "/filtered-items",
+        configured_item,
+        response_model=Item,
+        response_model_include={"item_id"},
+        response_model_exclude={"label"},
+        response_model_by_alias=False,
+        response_model_exclude_unset=True,
+        response_model_exclude_defaults=True,
+        response_model_exclude_none=True,
     )
     return {
         "configured-route": {
@@ -118,6 +139,38 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "title": "Callback APIRoute OpenAPI Probe",
                 "version": "1.0.0",
                 "routes": [callback_id_route],
+            },
+        },
+        "plain-text-route": {
+            "args": ["/direct-text", plain_text_item],
+            "kwargs": {"response_class": PlainTextResponse},
+        },
+        "plain-text-openapi": {
+            "args": [],
+            "kwargs": {
+                "title": "Plain Text APIRoute OpenAPI Probe",
+                "version": "1.0.0",
+                "routes": [plain_text_route],
+            },
+        },
+        "filtered-route": {
+            "args": ["/filtered-items", configured_item],
+            "kwargs": {
+                "response_model": Item,
+                "response_model_include": {"item_id"},
+                "response_model_exclude": {"label"},
+                "response_model_by_alias": False,
+                "response_model_exclude_unset": True,
+                "response_model_exclude_defaults": True,
+                "response_model_exclude_none": True,
+            },
+        },
+        "filtered-openapi": {
+            "args": [],
+            "kwargs": {
+                "title": "Filtered APIRoute OpenAPI Probe",
+                "version": "1.0.0",
+                "routes": [filtered_route],
             },
         },
     }

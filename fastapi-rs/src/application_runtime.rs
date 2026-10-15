@@ -1754,19 +1754,6 @@ impl PyApiRoute {
         let unsupported_options = [
             (dependencies.is_some(), "dependencies"),
             (description.is_some(), "description"),
-            (response_model_include.is_some(), "response_model_include"),
-            (response_model_exclude.is_some(), "response_model_exclude"),
-            (!response_model_by_alias, "response_model_by_alias"),
-            (response_model_exclude_unset, "response_model_exclude_unset"),
-            (
-                response_model_exclude_defaults,
-                "response_model_exclude_defaults",
-            ),
-            (response_model_exclude_none, "response_model_exclude_none"),
-            (
-                matches!(&response_class, ResponseClassArgument::Provided(_)),
-                "response_class",
-            ),
             (
                 dependency_overrides_provider.is_some(),
                 "dependency_overrides_provider",
@@ -1782,6 +1769,7 @@ impl PyApiRoute {
                 "FastAPI-RS APIRoute construction does not yet implement the {option} option"
             )));
         }
+        let response_class = response_class.into_choice(py)?;
 
         // Build through the Rust-owned route pipeline so OpenAPI receives a
         // complete operation snapshot. The scratch router is not retained.
@@ -1833,7 +1821,7 @@ impl PyApiRoute {
                 deprecated,
                 tags,
                 dependencies: dependencies.unwrap_or_default(),
-                response_class: ResponseClassChoice::from_python(py, default_response_class(py)?),
+                response_class,
                 name,
             },
         )?;
