@@ -165,6 +165,24 @@ contents, including license-file metadata and notices, against the versions
 and native components actually shipped.
 Upstream tests, docs, examples, and branding must be reviewed separately.
 
+### Latest validated local wheel (2026-10-15)
+
+Built an arm64 CPython 3.12 abi3 wheel from FastAPI-RS commit
+`d23bc7eec67b2f447e2c29f2496dcf73e953030c` against the clean pinned
+Starlette-RS commit `b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. The ignored
+validation artifact is
+`target/release-wheel-validation-20261015/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
+(SHA-256 `bbd678e2dfb5b6eb46f91c943800a45760eedd777f913bcca34f904529123b7c`).
+The release-wheel validator confirmed the configured `fastapi` packages,
+`fastapi_rs._core` native extension, declared license metadata, and exact
+`LICENSE.md` / `THIRD_PARTY_NOTICES.md` bytes. The release-notice checker also
+passed against this wheel and the pinned FastAPI/Starlette-RS sources. `otool
+-L` on the wheel's extracted extension showed `/usr/lib/libz.1.dylib` 1.2.12,
+`/usr/lib/libiconv.2.dylib`, and `/usr/lib/libSystem.B.dylib` for this artifact.
+This validates one local wheel only; no sdist or Cargo archives were produced
+or checked in this run, and it does not establish contributor licensing
+authority or readiness for publication.
+
 The inspected arm64 wheel
 `target/wheels-x0mz-20261012/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
 (SHA-256 `a29839e2c0679ac6fcff483c847e08022037688e07dcd49044662eac2c80bc5b`)
