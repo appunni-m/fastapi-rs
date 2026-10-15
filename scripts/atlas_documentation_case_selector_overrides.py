@@ -271,7 +271,8 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "http.status",
         ],
         "scope_note": (
-            "This link covers one frontend mount with a FastAPI dependency override through HTTP. The "
+            "This link covers one frontend mount with a FastAPI dependency "
+            "override through HTTP. The "
             "linked case also records construction outcomes."
         ),
     },
@@ -312,7 +313,8 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "openapi.document",
         ],
         "scope_note": (
-            "This link mutates the FastAPI instance OpenAPI version and observes the resulting schema. "
+            "This link mutates the FastAPI instance OpenAPI version and "
+            "observes the resulting schema. "
             "The linked case also records construction outcomes."
         ),
     },
@@ -354,8 +356,10 @@ DOC_PAGE_CASE_SELECTOR_OVERRIDES = {
             "warnings.category_message",
         ],
         "scope_note": (
-            "This link covers legacy startup and shutdown callbacks, their FastAPI lifecycle and request "
-            "effects, and deprecation warnings. The case also records construction outcomes; modern "
+            "This link covers legacy startup and shutdown callbacks, their "
+            "FastAPI lifecycle and request "
+            "effects, and deprecation warnings. The case also records "
+            "construction outcomes; modern "
             "lifespan configuration is outside this link."
         ),
     },

@@ -69,7 +69,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
     "tutorial/cookie-params.md": [
         {
             "workflow_id": "cookie-parameter-surface-review",
-            "recipe_path": "tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml"
+            ),
             "case_ids": [
                 "fastapi.request-parameters.cookie.review-slice.alias-name-missing",
                 "fastapi.request-parameters.cookie.review-slice.alias-valid",
@@ -141,7 +143,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
     "tutorial/dependencies/sub-dependencies.md": [
         {
             "workflow_id": "dependency-callable-classification",
-            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml"
+            ),
             "case_ids": [
                 "fastapi.dependencies.callable-classification.partial-coroutine-instance",
                 "fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested",
@@ -170,7 +174,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "dependency-dynamic-cache-policy",
-            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml"
+            ),
             "case_ids": [
                 "fastapi.dependencies.dynamic-cache-policy.failed-edge-later-sibling",
                 "fastapi.dependencies.dynamic-cache-policy.flat-async-cache-hit-validation",
@@ -211,7 +217,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "dependency-override-cache-policy-mutation",
-            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml"
+            ),
             "case_ids": [
                 "fastapi.dependencies.override-policy-mutation.awaited-provider-removal",
                 "fastapi.dependencies.override-policy-mutation.awaited-provider-replacement",
@@ -245,7 +253,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "dependency-record-public-protocol",
-            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml"
+            ),
             "case_ids": ["fastapi.dependency-records.public-protocol.cache-use-cache"],
             "observation_selectors": [
                 "construction.exception_class",
@@ -262,7 +272,10 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "dependency-tutorial005-query-cookie-fallback",
-            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial005-query-cookie-fallback.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/"
+                "dependency-tutorial005-query-cookie-fallback.yaml"
+            ),
             "case_ids": [
                 "fastapi.dependencies.tutorial005.query-cookie.fallback",
                 "fastapi.dependencies.tutorial005.query-cookie.no-query-or-cookie",
@@ -333,7 +346,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "pydantic-core-encoder-compatibility",
-            "recipe_path": "tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml"
+            ),
             "case_ids": ["fastapi.jsonable-encoder.pydantic-core-urls"],
             "observation_selectors": ["python.attribute_value"],
             "scope_note": "The page presents jsonable_encoder for JSON-compatible "
@@ -399,7 +414,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "starlette-url-converters-upstream",
-            "recipe_path": "tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml"
+            ),
             "case_ids": [
                 "fastapi.applications.url-path-for.explicit-route-name",
                 "fastapi.test.test-starlette-urlconvertors.test-route-converters-float-url-path-for",
@@ -447,7 +464,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "frontend-fallback-routing-source-review",
-            "recipe_path": "tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml"
+            ),
             "case_ids": [
                 "fastapi.frontend.configuration.auto-check-directory-production",
                 "fastapi.frontend.configuration.check-dir-false-defers-check",
@@ -470,7 +489,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
     "tutorial/handling-errors.md": [
         {
             "workflow_id": "additional-response-field-lifecycle",
-            "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml"
+            ),
             "case_ids": [
                 "fastapi.additional-response-field-lifecycle.second-additional-hook-retry"
             ],
@@ -491,7 +512,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "custom-middleware-upload-limit",
-            "recipe_path": "tests/fixtures/input-recipes/parity/custom-middleware-upload-limit.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/custom-middleware-upload-limit.yaml"
+            ),
             "case_ids": [
                 "fastapi.middleware.custom-upload-budget-accepted",
                 "fastapi.middleware.custom-upload-budget-exceeded",
@@ -504,7 +527,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "dependency-callable-classification",
-            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml"
+            ),
             "case_ids": [
                 "fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery",
                 "fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery",
@@ -525,7 +550,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "exception-handler-after-stack-cache",
-            "recipe_path": "tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml"
+            ),
             "case_ids": ["fastapi.applications.exception-handler.after-stack-cache"],
             "observation_selectors": [
                 "asgi.application_error.exception",
@@ -621,7 +648,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "handling-errors-import-http-exception",
-            "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml"
+            ),
             "case_ids": ["fastapi.docs.handling-errors.import-http-exception"],
             "observation_selectors": ["python.signature"],
             "scope_note": "This direct API case resolves the documented `fastapi.HTTPException` "
@@ -630,7 +659,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "inherited-exception-handler-registration",
-            "recipe_path": "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml"
+            ),
             "case_ids": [
                 "fastapi.applications.add-exception-handler.custom-exception",
                 "fastapi.applications.add-exception-handler.status-code",
@@ -711,7 +742,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "public-errors-http-websocket-wave",
-            "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml"
+            ),
             "case_ids": [
                 "fastapi.public-errors.http.bodyless-status-with-detail",
                 "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -755,7 +788,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "security-api-key-exception-boundary",
-            "recipe_path": "tests/fixtures/input-recipes/parity/security-api-key-exception-boundary.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/security-api-key-exception-boundary.yaml"
+            ),
             "case_ids": ["fastapi.security.api-key-header.fastapi-http-exception-handler-boundary"],
             "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
             "scope_note": "The page discusses HTTP exception handling; this "
@@ -784,7 +819,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "websocket-validation-handler-wave",
-            "recipe_path": "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml"
+            ),
             "case_ids": ["fastapi.websocket-validation.custom-handler-close"],
             "observation_selectors": [
                 "construction.exception_class",
@@ -909,7 +946,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "middleware-execution-order-wave",
-            "recipe_path": "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml"
+            ),
             "case_ids": ["fastapi.docs.middleware.request-and-response-order"],
             "observation_selectors": [
                 "asgi.send.message_types",
@@ -923,7 +962,10 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "middleware-proxy-static-settings-source-review",
-            "recipe_path": "tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/"
+                "middleware-proxy-static-settings-source-review.yaml"
+            ),
             "case_ids": ["fastapi.middleware-proxy.decorator-middleware"],
             "observation_selectors": [
                 "construction.exception_class",
@@ -965,7 +1007,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "path-operation-other-verbs-deprecated",
-            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-other-verbs-deprecated.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/path-operation-other-verbs-deprecated.yaml"
+            ),
             "case_ids": ["fastapi.path-operation.other-verbs-deprecated"],
             "observation_selectors": [
                 "docs.response.status",
@@ -980,7 +1024,10 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "path-operation-other-verbs-response-descriptions",
-            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-other-verbs-response-descriptions.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/"
+                "path-operation-other-verbs-response-descriptions.yaml"
+            ),
             "case_ids": ["fastapi.path-operation.other-verbs-response-descriptions"],
             "observation_selectors": ["openapi.document", "openapi.paths"],
             "scope_note": "The page documents path-operation "
@@ -991,7 +1038,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "path-operation-post-deprecated-isolated",
-            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-deprecated-isolated.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/path-operation-post-deprecated-isolated.yaml"
+            ),
             "case_ids": ["fastapi.path-operation.post-deprecated-isolated"],
             "observation_selectors": ["openapi.document", "openapi.paths"],
             "scope_note": "The page covers path-operation "
@@ -1001,7 +1050,10 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "path-operation-post-response-description-isolated",
-            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-response-description-isolated.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/"
+                "path-operation-post-response-description-isolated.yaml"
+            ),
             "case_ids": ["fastapi.path-operation.post-response-description-isolated"],
             "observation_selectors": ["openapi.document", "openapi.paths"],
             "scope_note": "The page covers response metadata on "
@@ -1011,7 +1063,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "path-operation-post-status-code-isolated",
-            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-status-code-isolated.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/path-operation-post-status-code-isolated.yaml"
+            ),
             "case_ids": ["fastapi.path-operation.post-status-code-isolated"],
             "observation_selectors": ["http.status", "openapi.document", "openapi.paths"],
             "scope_note": "The page says status_code is "
@@ -1022,7 +1076,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "path-operation-status-code-none-isolated",
-            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-status-code-none-isolated.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/path-operation-status-code-none-isolated.yaml"
+            ),
             "case_ids": ["fastapi.path-operation.status-code-none"],
             "observation_selectors": ["http.status", "openapi.document", "openapi.paths"],
             "scope_note": "The page documents decorator-level "
@@ -1097,7 +1153,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
     "tutorial/security/oauth2-jwt.md": [
         {
             "workflow_id": "security-tutorial004-auth-input-gap-wave",
-            "recipe_path": "tests/fixtures/input-recipes/parity/security-tutorial004-auth-input-gap-wave.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/security-tutorial004-auth-input-gap-wave.yaml"
+            ),
             "case_ids": [
                 "fastapi.security-tutorial004.test-no-token",
                 "fastapi.security-tutorial004.test-openapi-schema",
@@ -1129,7 +1187,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "server-sent-events-tutorial001-upstream",
-            "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial001-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/server-sent-events-tutorial001-upstream.yaml"
+            ),
             "case_ids": ["fastapi.tutorial.server-sent-events.tutorial001.stream-routes"],
             "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
             "scope_note": "The page documents streaming SSE routes; this "
@@ -1138,7 +1198,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "server-sent-events-tutorial002-upstream",
-            "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial002-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/server-sent-events-tutorial002-upstream.yaml"
+            ),
             "case_ids": ["fastapi.tutorial.server-sent-events.tutorial002.event-fields"],
             "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
             "scope_note": "The page describes SSE event fields; this case "
@@ -1147,7 +1209,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "server-sent-events-tutorial003-upstream",
-            "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial003-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/server-sent-events-tutorial003-upstream.yaml"
+            ),
             "case_ids": ["fastapi.tutorial.server-sent-events.tutorial003.raw-log-data"],
             "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
             "scope_note": "The page shows raw data in an SSE event; this "
@@ -1156,7 +1220,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "server-sent-events-tutorial004-upstream",
-            "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial004-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/server-sent-events-tutorial004-upstream.yaml"
+            ),
             "case_ids": ["fastapi.tutorial.server-sent-events.tutorial004.resume-stream"],
             "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
             "scope_note": "The page documents resuming an SSE stream; "
@@ -1165,7 +1231,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "server-sent-events-tutorial005-upstream",
-            "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial005-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/server-sent-events-tutorial005-upstream.yaml"
+            ),
             "case_ids": ["fastapi.tutorial.server-sent-events.tutorial005.post-chat-stream"],
             "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
             "scope_note": "The page documents posting chat input and "
@@ -1176,7 +1244,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
     "tutorial/sql-databases.md": [
         {
             "workflow_id": "docs-sql-databases-fake-dependency",
-            "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml"
+            ),
             "case_ids": [
                 "fastapi.docs.sql-databases.fake-yield.create-and-cleanup",
                 "fastapi.docs.sql-databases.fake-yield.invalid-request",
@@ -1202,7 +1272,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
     "tutorial/static-files.md": [
         {
             "workflow_id": "docs-static-files-mount-boundary",
-            "recipe_path": "tests/fixtures/input-recipes/parity/docs-static-files-mount-boundary.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/docs-static-files-mount-boundary.yaml"
+            ),
             "case_ids": ["fastapi.docs.static-files.mount-parent-openapi-docs-boundary"],
             "observation_selectors": [
                 "docs.response.body.bytes",
@@ -1221,7 +1293,10 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_TAIL: dict[str, list[dict[str, Any]]] = {
         },
         {
             "workflow_id": "middleware-proxy-static-settings-source-review",
-            "recipe_path": "tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/"
+                "middleware-proxy-static-settings-source-review.yaml"
+            ),
             "case_ids": ["fastapi.middleware-proxy.static-files"],
             "observation_selectors": [
                 "construction.exception_class",

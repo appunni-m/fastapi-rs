@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS: dict[str, dict[str, dict[str, Any]]] = {}
 STARLETTE_RS_OWNERSHIP_EXPECTED_FEATURE_COUNTS = {
     "status-codes": 74,
@@ -31,7 +30,9 @@ def _review_rows(
         row_id = "upstream-test:" + source_path
         row = STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS.setdefault(row_id, {})
         if feature_id in row:
-            raise ValueError(f"duplicate reviewed Starlette ownership mapping: {row_id}::{feature_id}")
+            raise ValueError(
+                f"duplicate reviewed Starlette ownership mapping: {row_id}::{feature_id}"
+            )
         row[feature_id] = {
             "ownership_boundary": ownership_boundary,
             "scope_note": scope_note,

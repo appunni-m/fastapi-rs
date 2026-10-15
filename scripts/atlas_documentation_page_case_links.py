@@ -27,7 +27,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
     ],
     "advanced/custom-response.md": [
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-default-response-class.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/apirouter-default-response-class.yaml"
+            ),
             "case_ids": [
                 "fastapi.routing.apirouter.default-response-class.direct-read-write",
             ],
@@ -132,7 +134,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/response-204-bodyless-isolated-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/response-204-bodyless-isolated-upstream.yaml"
+            ),
             "case_ids": [
                 "fastapi.response.bodyless-204-isolated",
             ],
@@ -185,7 +189,10 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/"
+                "response-model-return-annotation-focused-upstream.yaml"
+            ),
             "case_ids": [
                 "fastapi.response-model-return-annotation.explicit-response-model-bypass",
             ],
@@ -296,7 +303,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
     ],
     "advanced/events.md": [
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml"
+            ),
             "case_ids": [
                 "fastapi.lifecycle.add-event-handler-invalid-string",
                 "fastapi.lifecycle.app-lifespan-state",
@@ -380,7 +389,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/route-dependency-response-status.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/route-dependency-response-status.yaml"
+            ),
             "case_ids": [
                 "fastapi.route-dependency.response-status",
             ],
@@ -418,7 +429,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
     ],
     "advanced/response-directly.md": [
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/response-directly-tutorial001-wave.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/response-directly-tutorial001-wave.yaml"
+            ),
             "case_ids": [
                 "fastapi.response-directly.tutorial001.openapi-document",
                 "fastapi.response-directly.tutorial001.path-response",
@@ -600,7 +613,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/stream-data-tutorials-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/stream-data-tutorials-upstream.yaml"
+            ),
             "case_ids": [
                 "fastapi.tutorial.stream-data.tutorial001.generator-forms",
                 "fastapi.tutorial.stream-data.tutorial002.binary-generator-forms",
@@ -619,7 +634,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
     ],
     "advanced/testing-events.md": [
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml"
+            ),
             "case_ids": [
                 "fastapi.application-testing.lifespan-items",
             ],
@@ -645,7 +662,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml"
+            ),
             "case_ids": [
                 "fastapi.lifecycle.app-lifespan-state",
                 "fastapi.lifecycle.async-generator-lifespan",
@@ -703,7 +722,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
     ],
     "advanced/websockets.md": [
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml"
+            ),
             "case_ids": [
                 "fastapi.public-errors.websocket.pre-accept-code-and-reason",
             ],
@@ -831,7 +852,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml"
+            ),
             "case_ids": [
                 "fastapi.public-errors.websocket.pre-accept-code-and-reason",
             ],
@@ -890,7 +913,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml"
+            ),
             "case_ids": [
                 "fastapi.http-connection-injection.http-app-state",
             ],

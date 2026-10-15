@@ -213,7 +213,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
                 "case_ids": ["fastapi.docs.first-steps-page.async-route"],
                 "observation_selectors": ["http.body.bytes", "http.status"],
-            }
+            },
         ],
     },
     "docs_src/first_steps/tutorial003_py310.py": {
@@ -242,7 +242,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
                 "case_ids": ["fastapi.docs.first-steps-page.sync-route"],
                 "observation_selectors": ["http.body.bytes", "http.status"],
-            }
+            },
         ],
     },
     "docs_src/additional_status_codes/tutorial001_py310.py": {
