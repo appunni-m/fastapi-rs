@@ -7,10 +7,28 @@ page.
 """
 
 if __package__:
+    from scripts.atlas_documentation_example_workflow_case_extensions_path_1016 import (
+        DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_PATH_1016,
+    )
+    from scripts.atlas_documentation_example_workflow_case_extensions_query_1016 import (
+        DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_QUERY_1016,
+    )
+    from scripts.atlas_documentation_example_workflow_case_extensions_security_response_1016 import (
+        DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_SECURITY_RESPONSE_1016,
+    )
     from scripts.atlas_strict_content_type_documentation_example_review_mappings import (
         STRICT_CONTENT_TYPE_DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
     )
 else:
+    from atlas_documentation_example_workflow_case_extensions_path_1016 import (
+        DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_PATH_1016,
+    )
+    from atlas_documentation_example_workflow_case_extensions_query_1016 import (
+        DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_QUERY_1016,
+    )
+    from atlas_documentation_example_workflow_case_extensions_security_response_1016 import (
+        DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_SECURITY_RESPONSE_1016,
+    )
     from atlas_strict_content_type_documentation_example_review_mappings import (
         STRICT_CONTENT_TYPE_DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
     )
@@ -2849,6 +2867,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     }
 )
 
+
 if __package__:
     from scripts.atlas_documentation_example_review_wave_e import (
         DOC_EXAMPLE_CITATION_WAVE_E,
@@ -5285,3 +5304,53 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
     }
 )
+
+
+def _extend_documentation_example_workflow_case(
+    source_path: str, extension: dict[str, object]
+) -> None:
+    review = DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.get(source_path)
+    if review is None:
+        raise ValueError(f"documentation example has no reviewed source mapping: {source_path}")
+    case_ids = extension.get("case_ids")
+    if case_ids is None:
+        case_id = extension.get("case_id")
+        if not isinstance(case_id, str):
+            raise ValueError(
+                f"documentation example workflow extension has no case ID: {source_path}"
+            )
+        case_ids = [case_id]
+    if not isinstance(case_ids, list) or not all(isinstance(case_id, str) for case_id in case_ids):
+        raise ValueError(
+            f"documentation example workflow extension has invalid case IDs: {source_path}"
+        )
+    recipe_path = extension.get("recipe_path")
+    selectors = extension.get("observation_selectors")
+    if not isinstance(recipe_path, str) or not isinstance(selectors, list):
+        raise ValueError(f"documentation example workflow extension is malformed: {source_path}")
+    for workflow_case in review["workflow_cases"]:
+        if workflow_case["recipe_path"] == recipe_path and set(workflow_case["case_ids"]) & set(
+            case_ids
+        ):
+            raise ValueError(
+                f"duplicate documentation example workflow case for {source_path}: {recipe_path}"
+            )
+    review["workflow_cases"].append(
+        {
+            "recipe_path": recipe_path,
+            "case_ids": case_ids,
+            "observation_selectors": selectors,
+        }
+    )
+
+
+for _source_path, _extensions in DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_PATH_1016.items():
+    for _extension in _extensions:
+        _extend_documentation_example_workflow_case(_source_path, _extension)
+
+for _source_path, _extensions in DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_QUERY_1016.items():
+    for _extension in _extensions:
+        _extend_documentation_example_workflow_case(_source_path, _extension)
+
+for _extension in DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_SECURITY_RESPONSE_1016:
+    _extend_documentation_example_workflow_case(_extension["source_path"], _extension)

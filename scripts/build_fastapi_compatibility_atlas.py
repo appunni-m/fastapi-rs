@@ -6344,8 +6344,26 @@ from atlas_documentation_page_case_links_fastapi_wave_l import (  # noqa: E402
 from atlas_documentation_section_case_mappings import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS,
 )
+from atlas_documentation_section_case_mappings_custom_response_wave_m import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M,
+)
 from atlas_documentation_section_case_mappings_fastapi_wave_l import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_WAVE_L,
+)
+from atlas_documentation_section_case_mappings_path_params_1016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
+)
+from atlas_documentation_section_case_mappings_query_params_1016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
+)
+from atlas_documentation_section_case_mappings_response_directly_1016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
+)
+from atlas_documentation_section_case_mappings_response_headers_1016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
+)
+from atlas_documentation_section_case_mappings_security_scopes_1016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
 )
 
 for _doc_path, _rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():
@@ -6371,6 +6389,31 @@ if _section_mapping_overlaps:
         + str(sorted(_section_mapping_overlaps))
     )
 DOC_SECTION_CASE_MAPPINGS.update(DOC_SECTION_CASE_MAPPINGS_WAVE_L)
+
+_section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(
+    DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M
+)
+if _section_mapping_overlaps:
+    raise AtlasError(
+        "duplicate reviewed documentation-section mapping keys: "
+        + str(sorted(_section_mapping_overlaps))
+    )
+DOC_SECTION_CASE_MAPPINGS.update(DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M)
+
+for _new_section_mappings in (
+    DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
+    DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
+):
+    _section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(_new_section_mappings)
+    if _section_mapping_overlaps:
+        raise AtlasError(
+            "duplicate reviewed documentation-section mapping keys: "
+            + str(sorted(_section_mapping_overlaps))
+        )
+    DOC_SECTION_CASE_MAPPINGS.update(_new_section_mappings)
 
 for _doc_page_path, _doc_page_rows in DOC_PAGE_CASE_LINK_COMPLETIONS.items():
     _doc_page_mapping = DOC_PAGE_REVIEW_MAPPINGS.get(_doc_page_path)

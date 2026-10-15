@@ -1,0 +1,46 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/docs_response_headers_1016.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.response-headers-1016.direct-response
+  actions:
+  - action_id: header-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/response-headers.md
+    kind: upstream_documentation
+  - path: docs_src/response_headers/tutorial001_py310.py
+    kind: upstream_documentation_example
