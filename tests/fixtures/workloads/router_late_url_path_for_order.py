@@ -23,4 +23,10 @@ def create_app() -> FastAPI:
     def probe_route_order_url() -> PlainTextResponse:
         return PlainTextResponse(resolved_path)
 
+    @app.get("/_probe/sync-url")
+    def probe_sync_url_path() -> PlainTextResponse:
+        return PlainTextResponse(
+            str(app.url_path_for("duplicate-lookup", item_id="record-1"))
+        )
+
     return app

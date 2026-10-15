@@ -3565,7 +3565,7 @@ struct PyRawWebSocketDecorator {
     name: Option<String>,
 }
 
-#[pyclass(name = "APIRouter", module = "fastapi.routing", unsendable)]
+#[pyclass(name = "APIRouter", module = "fastapi.routing")]
 pub(crate) struct PyApiRouter {
     inner: Py<PyFastApi>,
     prefix: String,
