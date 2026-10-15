@@ -24728,9 +24728,9 @@
     {
       "id": "response-model-tutorials-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-tutorials-upstream.json",
-      "input_sha256": "ef3aeeba34b0b99858770c72de90d56e54edb5339a1c3607bf7648c4265aec0a",
+      "input_sha256": "71995a70f497777ff5461b11f51b998a0b48b78f5c36c4ba8bc18b1ef6baeace",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
-      "recipe_sha256": "050d61986516e7d548be5a986bca1c0bd87aad919886f4a2d8a5772c8470bd65",
+      "recipe_sha256": "2d27a7ca57b37647f48affbf210a192d7d2f7d64b2dee53cbd8513029c17b423",
       "case_ids": [
         "fastapi.response-model.tutorial001-defaults-and-list-output",
         "fastapi.response-model.tutorial002-same-model-retains-sensitive-field",
@@ -24758,6 +24758,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial002_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial002.py"
           ]
         },
@@ -24766,6 +24767,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial003_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial003.py"
           ]
         },
@@ -24775,6 +24777,7 @@
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial001_01_py310.py",
             "source:documented-example:docs_src/response_model/tutorial003_01_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial003_01.py"
           ]
         },
@@ -24783,6 +24786,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial003_02_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial003_02.py"
           ]
         },
@@ -24791,6 +24795,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial003_03_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial003_03.py"
           ]
         },
@@ -24799,6 +24804,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial003_05_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial003_05.py"
           ]
         },
@@ -54353,6 +54359,28 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-model-tutorials-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.tutorial002-same-model-retains-sensitive-field",
+        "fastapi.response-model.tutorial003-01-return-annotation-filters-derived-input",
+        "fastapi.response-model.tutorial003-02-response-annotation-allows-response-values",
+        "fastapi.response-model.tutorial003-03-redirect-response-return-annotation",
+        "fastapi.response-model.tutorial003-05-explicitly-disabled-response-model",
+        "fastapi.response-model.tutorial003-explicit-output-model-filters-input"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
         "openapi.paths"
       ]
     },

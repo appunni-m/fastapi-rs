@@ -77248,8 +77248,8 @@
     "documentation_python_source_files": 461,
     "documentation_section_candidates": 1557,
     "documentation_sections_excluded": 822,
-    "documentation_sections_pending_behavior_review": 693,
-    "documentation_sections_with_reviewed_partial_mapping": 42,
+    "documentation_sections_pending_behavior_review": 687,
+    "documentation_sections_with_reviewed_partial_mapping": 48,
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 13,
@@ -487582,7 +487582,27 @@
               "response-serialization"
             ],
             "heading": "Return the same input data { #return-the-same-input-data }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "create-user-with-shared-input-output-model",
+                  "shared-model-openapi-shape"
+                ],
+                "case_ids": [
+                  "fastapi.response-model.tutorial002-same-model-retains-sensitive-field"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "scope_note": "The POST response demonstrates the documented shared input/output model, and the selected OpenAPI pointers show its request and response schemas. The example uses synthetic credentials and does not endorse returning secrets.",
+                "workflow_id": "response-model-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -487596,8 +487616,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI selects the declared response model for response serialization and OpenAPI; Pydantic supplies model validation and schema generation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -487697,7 +487717,27 @@
               "response-serialization"
             ],
             "heading": "Add an output model { #add-an-output-model }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "create-user-with-distinct-output-model",
+                  "input-and-output-model-openapi-shape"
+                ],
+                "case_ids": [
+                  "fastapi.response-model.tutorial003-explicit-output-model-filters-input"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "scope_note": "The POST action returns input containing a password while the output model omits it; the selected OpenAPI pointers show the distinct request and response models.",
+                "workflow_id": "response-model-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -487711,8 +487751,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI applies the declared response model to returned values and route schema; Pydantic owns model validation and schema generation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -487861,7 +487901,27 @@
               "response-serialization"
             ],
             "heading": "Return Type and Data Filtering { #return-type-and-data-filtering }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "create-user-using-output-return-annotation",
+                  "return-annotation-openapi-shape"
+                ],
+                "case_ids": [
+                  "fastapi.response-model.tutorial003-01-return-annotation-filters-derived-input"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "scope_note": "The POST action returns a derived input model under a base return annotation, and the OpenAPI action selects that route's request and response shapes.",
+                "workflow_id": "response-model-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -487873,8 +487933,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI derives response filtering and route schema from the return annotation; Pydantic supplies the model serialization and schema behavior.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -488118,7 +488178,26 @@
               "response-serialization"
             ],
             "heading": "Return a Response Directly { #return-a-response-directly }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "portal-json-response",
+                  "portal-redirect-response"
+                ],
+                "case_ids": [
+                  "fastapi.response-model.tutorial003-02-response-annotation-allows-response-values"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "scope_note": "The two endpoint inputs select the documented JSON and redirect Response values; the OpenAPI-only action is excluded from this section's claim.",
+                "workflow_id": "response-model-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -488128,8 +488207,8 @@
               "response.background_effects",
               "validation.error_class"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI recognizes a Response return annotation and avoids constructing a Pydantic response field for the response values; Starlette owns response wire behavior.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "response-serialization",
@@ -488170,7 +488249,25 @@
               "response-serialization"
             ],
             "heading": "Annotate a Response Subclass { #annotate-a-response-subclass }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "annotated-redirect-endpoint"
+                ],
+                "case_ids": [
+                  "fastapi.response-model.tutorial003-03-redirect-response-return-annotation"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "scope_note": "The selected request exercises the documented endpoint annotated with a concrete Response subclass and returning a redirect response.",
+                "workflow_id": "response-model-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -488180,8 +488277,8 @@
               "response.background_effects",
               "validation.error_class"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI treats a Response subclass annotation as a direct response type; Starlette owns redirect headers and HTTP response serialization.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "response-serialization",
@@ -488308,7 +488405,29 @@
               "response-serialization"
             ],
             "heading": "Disable Response Model { #disable-response-model }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "union-return-json-response",
+                  "union-return-redirect-response",
+                  "disabled-response-model-openapi-shape"
+                ],
+                "case_ids": [
+                  "fastapi.response-model.tutorial003-05-explicitly-disabled-response-model"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "scope_note": "The endpoint inputs exercise JSON and redirect values under response_model=None; the OpenAPI action observes the selected operation shape.",
+                "workflow_id": "response-model-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -488320,8 +488439,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI skips response-model construction when the route sets response_model=None; Starlette owns returned Response transport.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -490619,6 +490738,27 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
             "workflow_id": "response-model-serialization"
+          },
+          {
+            "case_ids": [
+              "fastapi.response-model.tutorial002-same-model-retains-sensitive-field",
+              "fastapi.response-model.tutorial003-01-return-annotation-filters-derived-input",
+              "fastapi.response-model.tutorial003-02-response-annotation-allows-response-values",
+              "fastapi.response-model.tutorial003-03-redirect-response-return-annotation",
+              "fastapi.response-model.tutorial003-05-explicitly-disabled-response-model",
+              "fastapi.response-model.tutorial003-explicit-output-model-filters-input"
+            ],
+            "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+            "workflow_id": "response-model-tutorials-upstream"
           },
           {
             "case_ids": [
