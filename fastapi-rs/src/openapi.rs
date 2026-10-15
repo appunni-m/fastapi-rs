@@ -462,7 +462,11 @@ pub(crate) fn openapi_document(
                                 reference_schema(py, model_name)?.into_any()
                             }
                             (None, Some(schema)) => {
-                                let schema = normalize_schema(py, schema.bind(py), true)?;
+                                let schema = normalize_schema_preserving_input_order(
+                                    py,
+                                    schema.bind(py),
+                                    true,
+                                )?;
                                 if let Ok(schema_dict) = schema.cast::<PyDict>() {
                                     if let Some(title) = operation.response_schema_title.as_deref()
                                     {
@@ -1013,10 +1017,36 @@ fn normalize_parameter_schema_value<'py>(
     Ok(value.clone())
 }
 
+#[derive(Clone, Copy)]
+enum SchemaKeyOrder {
+    // FastAPI keeps unnamed response schemas as raw dictionaries under paths.
+    SourceInput,
+    // FastAPI serializes typed component Schema models in declared field order.
+    OpenApiModel,
+}
+
 fn normalize_schema<'py>(
     py: Python<'py>,
     value: &Bound<'py, PyAny>,
     preserve_defaults: bool,
+) -> PyResult<Bound<'py, PyAny>> {
+    normalize_schema_with_order(py, value, preserve_defaults, SchemaKeyOrder::OpenApiModel)
+}
+
+fn normalize_schema_preserving_input_order<'py>(
+    py: Python<'py>,
+    value: &Bound<'py, PyAny>,
+    preserve_defaults: bool,
+) -> PyResult<Bound<'py, PyAny>> {
+    // Raw operation responses bypass nested Schema-model ordering in FastAPI.
+    normalize_schema_with_order(py, value, preserve_defaults, SchemaKeyOrder::SourceInput)
+}
+
+fn normalize_schema_with_order<'py>(
+    py: Python<'py>,
+    value: &Bound<'py, PyAny>,
+    preserve_defaults: bool,
+    key_order: SchemaKeyOrder,
 ) -> PyResult<Bound<'py, PyAny>> {
     if let Ok(source) = value.cast::<PyDict>() {
         let schema_type = source
@@ -1039,7 +1069,9 @@ fn normalize_schema<'py>(
             }
             entries.push((key, item));
         }
-        entries.sort_by_key(|(key, _)| schema_key_rank(key));
+        if matches!(key_order, SchemaKeyOrder::OpenApiModel) {
+            entries.sort_by_key(|(key, _)| schema_key_rank(key));
+        }
 
         let result = PyDict::new(py);
         for (key, item) in entries {
@@ -1056,7 +1088,7 @@ fn normalize_schema<'py>(
                     continue;
                 }
             }
-            let item = normalize_schema_value(py, &key, &item, preserve_defaults)?;
+            let item = normalize_schema_value(py, &key, &item, preserve_defaults, key_order)?;
             result.set_item(&key, item)?;
             if key == "type" && fastapi_binary_bytes_schema {
                 result.set_item("contentMediaType", "application/octet-stream")?;
@@ -1073,12 +1105,16 @@ fn normalize_schema_value<'py>(
     key: &str,
     value: &Bound<'py, PyAny>,
     preserve_defaults: bool,
+    key_order: SchemaKeyOrder,
 ) -> PyResult<Bound<'py, PyAny>> {
     if matches!(key, "properties" | "patternProperties" | "dependentSchemas") {
         if let Ok(source) = value.cast::<PyDict>() {
             let result = PyDict::new(py);
             for (name, schema) in source.iter() {
-                result.set_item(name, normalize_schema(py, &schema, preserve_defaults)?)?;
+                result.set_item(
+                    name,
+                    normalize_schema_with_order(py, &schema, preserve_defaults, key_order)?,
+                )?;
             }
             return Ok(result.into_any());
         }
@@ -1088,7 +1124,12 @@ fn normalize_schema_value<'py>(
         if let Ok(source) = value.cast::<PyList>() {
             let result = PyList::empty(py);
             for schema in source.iter() {
-                result.append(normalize_schema(py, &schema, preserve_defaults)?)?;
+                result.append(normalize_schema_with_order(
+                    py,
+                    &schema,
+                    preserve_defaults,
+                    key_order,
+                )?)?;
             }
             return Ok(result.into_any());
         }
@@ -1108,13 +1149,18 @@ fn normalize_schema_value<'py>(
             | "contentSchema"
     ) {
         if value.cast::<PyDict>().is_ok() {
-            return normalize_schema(py, value, preserve_defaults);
+            return normalize_schema_with_order(py, value, preserve_defaults, key_order);
         }
         if key == "items" {
             if let Ok(source) = value.cast::<PyList>() {
                 let result = PyList::empty(py);
                 for schema in source.iter() {
-                    result.append(normalize_schema(py, &schema, preserve_defaults)?)?;
+                    result.append(normalize_schema_with_order(
+                        py,
+                        &schema,
+                        preserve_defaults,
+                        key_order,
+                    )?)?;
                 }
                 return Ok(result.into_any());
             }
@@ -1124,6 +1170,7 @@ fn normalize_schema_value<'py>(
     Ok(value.clone())
 }
 
+// FastAPI's typed Components.schemas values use the Schema model's field order.
 const SCHEMA_WIRE_FIELD_ORDER: &[&str] = &[
     "$schema",
     "$vocabulary",
@@ -1189,7 +1236,6 @@ const SCHEMA_WIRE_FIELD_ORDER: &[&str] = &[
 ];
 
 fn schema_key_rank(key: &str) -> (usize, usize) {
-    // FastAPI 0.141.1 serializes every Schema through its declared field order.
     // Unknown extension keys retain their input order after the known fields.
     SCHEMA_WIRE_FIELD_ORDER
         .iter()
