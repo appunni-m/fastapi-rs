@@ -125,6 +125,7 @@ pub struct FastApiRequestMatch {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct FastApiOperationRouter {
     route_table: RouteTable,
+    route_order: Vec<usize>,
     operations: Vec<FastApiOperation>,
 }
 
@@ -134,6 +135,7 @@ impl FastApiOperationRouter {
     pub const fn new() -> Self {
         Self {
             route_table: RouteTable::new(),
+            route_order: Vec::new(),
             operations: Vec::new(),
         }
     }
@@ -184,14 +186,58 @@ impl FastApiOperationRouter {
             .iter()
             .map(|method| route_method_token(method))
             .collect::<Vec<_>>();
-        let operation_index = self.route_table.add_route(path.clone(), route_methods)?;
+        self.route_table.add_route(path.clone(), route_methods)?;
+        let operation_index = self.operations.len();
         self.operations.push(FastApiOperation {
             path,
             methods,
             status_code,
             parameters: Vec::new(),
         });
+        self.route_order.push(operation_index);
         Ok(operation_index)
+    }
+
+    /// Rebuilds route matching in an effective order while retaining stable
+    /// operation indexes for callers that already hold route metadata.
+    pub(crate) fn set_route_order(&mut self, route_order: &[usize]) -> bool {
+        if route_order.len() != self.operations.len() {
+            return false;
+        }
+
+        let mut seen = vec![false; self.operations.len()];
+        for &operation_index in route_order {
+            let Some(seen) = seen.get_mut(operation_index) else {
+                return false;
+            };
+            if *seen {
+                return false;
+            }
+            *seen = true;
+        }
+
+        if self.route_order == route_order {
+            return true;
+        }
+
+        let mut route_table = RouteTable::new();
+        for &operation_index in route_order {
+            let operation = &self.operations[operation_index];
+            let route_methods = operation
+                .methods
+                .iter()
+                .map(|method| route_method_token(method))
+                .collect::<Vec<_>>();
+            if route_table
+                .add_route(operation.path.clone(), route_methods)
+                .is_err()
+            {
+                return false;
+            }
+        }
+        self.route_table = route_table;
+        self.route_order = route_order.to_vec();
+        true
     }
 
     /// Replaces the endpoint input plan for one registered operation.
@@ -288,23 +334,29 @@ impl FastApiOperationRouter {
             DetailedRouteMatch::Matched {
                 route_index,
                 path_params,
-            } => FastApiOperationMatch::Matched {
-                operation_index: route_index,
-                path_params,
-            },
+            } => self.route_order.get(route_index).copied().map_or(
+                FastApiOperationMatch::NotFound,
+                |operation_index| FastApiOperationMatch::Matched {
+                    operation_index,
+                    path_params,
+                },
+            ),
             DetailedRouteMatch::MethodNotAllowed {
                 route_index,
                 allowed_methods: _,
                 path_params,
-            } => FastApiOperationMatch::MethodNotAllowed {
-                operation_index: route_index,
-                allowed_methods: self
-                    .operations
-                    .get(route_index)
-                    .map(|operation| operation.methods.clone())
-                    .unwrap_or_default(),
-                path_params,
-            },
+            } => self.route_order.get(route_index).copied().map_or(
+                FastApiOperationMatch::NotFound,
+                |operation_index| FastApiOperationMatch::MethodNotAllowed {
+                    operation_index,
+                    allowed_methods: self
+                        .operations
+                        .get(operation_index)
+                        .map(|operation| operation.methods.clone())
+                        .unwrap_or_default(),
+                    path_params,
+                },
+            ),
             DetailedRouteMatch::NotFound => FastApiOperationMatch::NotFound,
         }
     }

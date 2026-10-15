@@ -1,0 +1,188 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/router_late_route_order_parity.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.router-late-route-order.static-before-catch-all
+  factory_input: {scenario: late-static-before-catch-all}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-catalog-feature
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/featured
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.later-full-after-partial
+  factory_input: {scenario: later-full-after-partial}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: post-to-later-full-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /api/items
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.partial-only-405
+  factory_input: {scenario: partial-only-405}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: post-to-get-only-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /api/items
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.direct-before-late-duplicate
+  factory_input: {scenario: direct-and-late-duplicate}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-duplicate-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /registry/record
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: project-duplicate-openapi-operation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1registry~1record/get/summary
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.nested-late-response-model
+  factory_input: {scenario: nested-late-response-model}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-nested-directory-entry
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /workspace/members/directory/42
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: project-nested-directory-response-model
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1workspace~1members~1directory~1{member_id}/get/responses/200/content/application~1json/schema/$ref
+      - /components/schemas/DirectoryEnvelope/properties/entry/$ref
+      - /components/schemas/DirectoryEntry/properties/contact/$ref
+      - /components/schemas/ContactCard/properties/display_name/type
+      - /components/schemas/ContactCard/properties/region/type
+      - /components/schemas/DirectoryEntry/properties/labels/items/type
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}

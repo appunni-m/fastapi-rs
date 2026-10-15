@@ -4807,6 +4807,7 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_with_no_token}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_foo_token_jessica}
@@ -4865,6 +4866,21 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
           case_id: fastapi.router.include-context.nested-late-api-websocket
           workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.static-before-catch-all
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.direct-before-late-duplicate
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-late-response-model
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.later-full-after-partial
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.partial-only-405
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
         - *generate_unique_id_callback_precedence
@@ -5509,6 +5525,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/_compat/v2.py, symbol: ModelField}
         - {path: tests/test_response_model_data_filter.py, symbol: test_filter_top_level_model}
+        - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, public-api-errors, response-serialization]
@@ -5548,10 +5566,20 @@ reviewed_api_contract_overlay:
 
         For nested inclusion, the router callback takes precedence over the include callback; a route callback overrides both, and the selected callback sees the effective prefixed route, sampled by `generate-unique-id-function-precedence`. Callback errors and non-string results remain unproven.
 
+        The late-route-order workflow compares include-slot order for a route
+        registered after inclusion against an app catch-all, a direct/included
+        duplicate path, and a three-level nested route. It observes runtime
+        selection, the winning OpenAPI operation, response-model schema, and
+        nested prefix composition. Separate cases compare a later full match
+        after an included partial match and the 405 fallback when no later full
+        match exists. Other route classes and mutation histories remain outside
+        this slice.
+
         The nested-late-api-websocket case registers a child WebSocket route
         after the child router is included in this router and after this router
         is included in the app. It compares the composed prefixes and emitted
-        WebSocket events; late-route collision ordering remains unverified.
+        WebSocket events. WebSocket collision ordering remains outside this
+        late-route-order workflow.
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
       fixture_refs:
@@ -5571,6 +5599,21 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
           case_id: fastapi.test.test-router-include-context.included-nested-router-model-openapi
           workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.static-before-catch-all
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.direct-before-late-duplicate
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-late-response-model
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.later-full-after-partial
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.partial-only-405
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
@@ -5830,6 +5873,8 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
+        - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: fastapi/utils.py, symbol: deep_dict_update}
@@ -5863,6 +5908,21 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.static-before-catch-all
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.direct-before-late-duplicate
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-late-response-model
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.later-full-after-partial
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.partial-only-405
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -5935,6 +5995,7 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_router_include_context.py}
+        - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
@@ -5947,6 +6008,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-included-request-response-models.yaml
           case_id: fastapi.test.test-router-include-context.included-nested-router-model-openapi
           workload_path: tests/fixtures/workloads/router_included_request_response_models.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.later-full-after-partial
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -6216,6 +6280,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py}
+        - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
@@ -6235,6 +6301,15 @@ reviewed_api_contract_overlay:
         - *generate_unique_id_callback_methods_empty
         - *generate_unique_id_included_callback_methods
         - *generate_unique_id_callback_state
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.static-before-catch-all
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.direct-before-late-duplicate
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-late-response-model
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py

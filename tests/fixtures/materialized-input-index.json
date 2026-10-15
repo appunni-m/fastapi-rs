@@ -27074,6 +27074,59 @@
       ]
     },
     {
+      "id": "router-late-route-order-parity",
+      "input_path": "tests/fixtures/inputs/parity/router-late-route-order-parity.json",
+      "input_sha256": "5f1f2732517b8eb83b87214d8dc2a83b0aef6a1a9cb0211fa4bbb3a99206296a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml",
+      "recipe_sha256": "f0acca8228e2ee6307286cd31cea44af3d1037c9ab413cbf3c7add75819a378a",
+      "case_ids": [
+        "fastapi.router-late-route-order.static-before-catch-all",
+        "fastapi.router-late-route-order.later-full-after-partial",
+        "fastapi.router-late-route-order.partial-only-405",
+        "fastapi.router-late-route-order.direct-before-late-duplicate",
+        "fastapi.router-late-route-order.nested-late-response-model"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_late_route_order_parity.py",
+      "workload_sha256": "45918420eb15b329c2cec79eb014189fc49ee2c41c12deca9e4687a6d93c2c4d",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.router-late-route-order.static-before-catch-all",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.later-full-after-partial",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.partial-only-405",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.direct-before-late-duplicate",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.nested-late-response-model",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "router-late-websocket-frontend-source-review",
       "input_path": "tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json",
       "input_sha256": "30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a",
@@ -27086,7 +27139,7 @@
         "fastapi.router.include-context.nested-late-api-websocket"
       ],
       "workload_path": "tests/fixtures/workloads/router_late_websocket_frontend_source_review.py",
-      "workload_sha256": "0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63",
+      "workload_sha256": "25da0d42fcf7742b16be5c3501a5cac81ed3ac0f5bbd322e2e9f14175974df35",
       "case_contracts": [
         {
           "case_id": "fastapi.router.include-context.late-api-websocket",
@@ -59689,6 +59742,27 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-late-route-order-parity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router-late-route-order.direct-before-late-duplicate",
+        "fastapi.router-late-route-order.later-full-after-partial",
+        "fastapi.router-late-route-order.nested-late-response-model",
+        "fastapi.router-late-route-order.partial-only-405",
+        "fastapi.router-late-route-order.static-before-catch-all"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {
