@@ -9400,9 +9400,9 @@
     {
       "id": "handling-errors-doc-tutorial002-review",
       "input_path": "tests/fixtures/inputs/parity/handling-errors-doc-tutorial002-review.json",
-      "input_sha256": "73f6fe897763c93a7045d73495f68cf649079c7532b4c69af031a8ca02b5dd0e",
+      "input_sha256": "eeb0dc84e55d505575f7c992a2813a2d686eea7ef69706a79624363a291bbad5",
       "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial002-review.yaml",
-      "recipe_sha256": "a19e65d79db425ad6d093b2b6eab94d69e2bcb94238aeb972e5da013378d5d52",
+      "recipe_sha256": "96bc9af68446ce01dab11d23bee42d3cd0950198e85b53548278bdc2f1a0e71b",
       "case_ids": [
         "fastapi.docs-example.handling-errors.tutorial002.forwarded-header"
       ],
@@ -9413,7 +9413,8 @@
           "case_id": "fastapi.docs-example.handling-errors.tutorial002.forwarded-header",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/handling_errors/tutorial002_py310.py"
+            "source:documented-example:docs_src/handling_errors/tutorial002_py310.py",
+            "source:documented-page:tutorial/handling-errors.md"
           ]
         }
       ]
@@ -9421,9 +9422,9 @@
     {
       "id": "handling-errors-doc-tutorial003-review",
       "input_path": "tests/fixtures/inputs/parity/handling-errors-doc-tutorial003-review.json",
-      "input_sha256": "b00d55ec38a8d944e208b5f1f932b15b40dfcab1c4cbaaba1ab2f594618b039c",
+      "input_sha256": "6697489ee199eb48598c88f0a6555def11bc06dd4b7f9837ff3fd77d8dd79aa9",
       "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial003-review.yaml",
-      "recipe_sha256": "6830e3cf8ce0ed84c4b2678fc2687270a7356b303d8577dd909a8ba34383c838",
+      "recipe_sha256": "bb281b149abdf102d3ee5c3653a3dceae36be64d7baf5edea0909ee2a801d795",
       "case_ids": [
         "fastapi.docs-example.handling-errors.tutorial003.custom-exception"
       ],
@@ -9434,7 +9435,8 @@
           "case_id": "fastapi.docs-example.handling-errors.tutorial003.custom-exception",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/handling_errors/tutorial003_py310.py"
+            "source:documented-example:docs_src/handling_errors/tutorial003_py310.py",
+            "source:documented-page:tutorial/handling-errors.md"
           ]
         }
       ]
@@ -42919,8 +42921,37 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "handling-errors-doc-tutorial002-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs-example.handling-errors.tutorial002.forwarded-header"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-example:docs_src/handling_errors/tutorial003_py310.py",
       "fixture_id": "fastapi.docs-example.handling-errors-tutorial003-py310",
+      "workflow_id": "handling-errors-doc-tutorial003-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs-example.handling-errors.tutorial003.custom-exception"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
       "workflow_id": "handling-errors-doc-tutorial003-review",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",

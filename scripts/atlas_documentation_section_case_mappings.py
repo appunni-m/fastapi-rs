@@ -411,4 +411,279 @@ DOC_SECTION_CASE_MAPPINGS = {
             "claims and defines no new request, response, or OpenAPI behavior."
         ),
     },
+    ("tutorial/handling-errors.md", "handling-errors"): {
+        "status": "excluded",
+        "heading": "Handling Errors { #handling-errors }",
+        "start_line": 1,
+        "end_line": 244,
+        "exclusion_reason": (
+            "This page-level heading is an umbrella for the independently reviewed child "
+            "sections and adds no distinct FastAPI behavior."
+        ),
+        "rationale": (
+            "The pinned heading spans the whole tutorial; its child sections and the page-level "
+            "partial workflows carry the concrete exception contracts."
+        ),
+    },
+    ("tutorial/handling-errors.md", "use-httpexception"): {
+        "heading": "Use `HTTPException` { #use-httpexception }",
+        "start_line": 22,
+        "end_line": 71,
+        "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors.yaml",
+        "case_ids": [
+            "fastapi.docs.handling-errors.http-exception-detail",
+            "fastapi.docs.handling-errors.http-exception-status",
+        ],
+        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "scope_note": (
+            "These actions sample one not-found response and one custom status response. They "
+            "do not establish every HTTPException detail type or status code."
+        ),
+        "rationale": (
+            "The exact pinned tutorial page is cited by both input cases, which observe the "
+            "public HTTP response produced by FastAPI HTTPException routes."
+        ),
+    },
+    ("tutorial/handling-errors.md", "raise-an-httpexception-in-your-code"): {
+        "heading": "Raise an `HTTPException` in your code { #raise-an-httpexception-in-your-code }",
+        "start_line": 30,
+        "end_line": 43,
+        "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors.yaml",
+        "case_ids": ["fastapi.docs.handling-errors.http-exception-detail"],
+        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "scope_note": (
+            "The input samples a route that raises HTTPException for an absent item; it does "
+            "not observe arbitrary utility-function control flow."
+        ),
+        "rationale": (
+            "The linked source page and documentation example describe the same public "
+            "not-found response action."
+        ),
+    },
+    ("tutorial/handling-errors.md", "the-resulting-response"): {
+        "heading": "The resulting response { #the-resulting-response }",
+        "start_line": 44,
+        "end_line": 71,
+        "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors.yaml",
+        "case_ids": [
+            "fastapi.docs.handling-errors.success",
+            "fastapi.docs.handling-errors.http-exception-detail",
+            "fastapi.docs.handling-errors.http-exception-status",
+        ],
+        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "scope_note": (
+            "These inputs compare one successful response and two HTTPException responses, "
+            "including the selected status, headers, and body."
+        ),
+        "rationale": (
+            "The pinned documentation page is directly cited by each case; structured detail "
+            "and custom-header behavior remain separately scoped."
+        ),
+    },
+    ("tutorial/handling-errors.md", "add-custom-headers"): {
+        "heading": "Add custom headers { #add-custom-headers }",
+        "start_line": 72,
+        "end_line": 81,
+        "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial002-review.yaml",
+        "case_ids": ["fastapi.docs-example.handling-errors.tutorial002.forwarded-header"],
+        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "scope_note": (
+            "The action samples one custom header on an HTTPException response; it does not "
+            "cover all security-header policies."
+        ),
+        "rationale": (
+            "The input cites this pinned page and the included tutorial 002 example, and "
+            "observes the full selected HTTP response."
+        ),
+    },
+    ("tutorial/handling-errors.md", "install-custom-exception-handlers"): {
+        "heading": "Install custom exception handlers { #install-custom-exception-handlers }",
+        "start_line": 82,
+        "end_line": 111,
+        "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial003-review.yaml",
+        "case_ids": ["fastapi.docs-example.handling-errors.tutorial003.custom-exception"],
+        "observation_selectors": ["http.body.bytes", "http.status"],
+        "scope_note": (
+            "This action samples one custom exception handler registration and its JSON body; "
+            "generic Request and response rendering remain Starlette-owned."
+        ),
+        "rationale": (
+            "The pinned tutorial page and example are cited by the input, and the action "
+            "observes the custom handler's public HTTP response."
+        ),
+    },
+    ("tutorial/handling-errors.md", "override-the-default-exception-handlers"): {
+        "heading": "Override the default exception handlers { #override-the-default-exception-handlers }",
+        "start_line": 112,
+        "end_line": 244,
+        "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
+        "case_ids": [
+            "fastapi.docs.handling-errors.overridden-validation-error",
+            "fastapi.docs.handling-errors.overridden-http-error",
+            "fastapi.docs.handling-errors.overrides-openapi",
+            "fastapi.docs.handling-errors.override-success",
+        ],
+        "observation_selectors": [
+            "docs.response.headers",
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ],
+        "scope_note": (
+            "These inputs cover selected custom HTTP and validation handlers, an unaffected "
+            "route, and two OpenAPI pointers; the RequestValidationError body example is "
+            "linked separately."
+        ),
+        "rationale": (
+            "Each case cites this pinned tutorial page and observes its declared route or "
+            "OpenAPI projection without claiming complete coverage of every child example."
+        ),
+    },
+    ("tutorial/handling-errors.md", "override-request-validation-exceptions"): {
+        "heading": "Override request validation exceptions { #override-request-validation-exceptions }",
+        "start_line": 120,
+        "end_line": 155,
+        "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
+        "case_ids": ["fastapi.docs.handling-errors.overridden-validation-error"],
+        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "scope_note": (
+            "This case covers a custom replacement response for one invalid integer path "
+            "parameter, not every validation error shape."
+        ),
+        "rationale": (
+            "The pinned page, tutorial 004 example, and upstream test are cited by the "
+            "input; the selected action observes status, headers, and body."
+        ),
+    },
+    ("tutorial/handling-errors.md", "override-the-httpexception-error-handler"): {
+        "heading": "Override the `HTTPException` error handler { #override-the-httpexception-error-handler }",
+        "start_line": 156,
+        "end_line": 179,
+        "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
+        "case_ids": ["fastapi.docs.handling-errors.overridden-http-error"],
+        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "scope_note": (
+            "This case registers a Starlette HTTPException-base handler and raises one FastAPI "
+            "HTTPException; generic dispatch remains Starlette-owned."
+        ),
+        "rationale": (
+            "The case cites the exact pinned tutorial page and example and compares the "
+            "resulting public HTTP response."
+        ),
+    },
+    ("tutorial/handling-errors.md", "use-the-requestvalidationerror-body"): {
+        "heading": "Use the `RequestValidationError` body { #use-the-requestvalidationerror-body }",
+        "start_line": 180,
+        "end_line": 237,
+        "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-body.yaml",
+        "case_ids": ["fastapi.docs.handling-errors.body-echo.invalid-input"],
+        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "scope_note": (
+            "This action samples one invalid JSON body echoed by a custom handler; its response "
+            "keys differ from the exact tutorial example and it does not isolate jsonable_encoder."
+        ),
+        "rationale": (
+            "The input cites this pinned page and tutorial 005 sources, and the selected body "
+            "request yields a completed pinned Oracle observation."
+        ),
+    },
+    ("tutorial/handling-errors.md", "fastapis-httpexception-vs-starlettes-httpexception"): {
+        "heading": "FastAPI's `HTTPException` vs Starlette's `HTTPException` { #fastapis-httpexception-vs-starlettes-httpexception }",
+        "start_line": 218,
+        "end_line": 237,
+        "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
+        "case_ids": [
+            "fastapi.public-errors.http.fastapi-json-detail-and-header",
+            "fastapi.public-errors.http.starlette-base-detail-and-header",
+        ],
+        "observation_selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+        ],
+        "scope_note": (
+            "The cases compare construction and route-level FastAPI versus Starlette exception "
+            "handling for JSON detail/header samples; they do not assert Python MRO."
+        ),
+        "rationale": (
+            "Both input cases cite the exact pinned page and their completed Oracle evidence "
+            "observes exception construction plus the public HTTP response."
+        ),
+    },
+    ("tutorial/dependencies/index.md", "dependencies"): {
+        "status": "excluded",
+        "heading": "Dependencies { #dependencies }",
+        "start_line": 1,
+        "end_line": 250,
+        "exclusion_reason": (
+            "This page-level heading is an umbrella for independently reviewable dependency "
+            "sections and introduces no separate FastAPI behavior."
+        ),
+        "rationale": (
+            "The pinned title spans the full tutorial; the concrete dependency and OpenAPI "
+            "claims are handled by its anchored child sections and the page-level partial map."
+        ),
+    },
+    ("tutorial/dependencies/index.md", "what-is-dependency-injection"): {
+        "status": "excluded",
+        "heading": "What is \"Dependency Injection\" { #what-is-dependency-injection }",
+        "start_line": 7,
+        "end_line": 21,
+        "exclusion_reason": (
+            "This section provides a general dependency-injection definition and benefit list "
+            "without a FastAPI operation or observable behavior."
+        ),
+        "rationale": (
+            "The pinned span is introductory conceptual prose; dependency declaration and "
+            "resolution claims are handled by the following runnable sections."
+        ),
+    },
+    ("tutorial/dependencies/index.md", "first-steps"): {
+        "status": "excluded",
+        "heading": "First Steps { #first-steps }",
+        "start_line": 22,
+        "end_line": 116,
+        "exclusion_reason": (
+            "This parent heading groups the independently reviewed dependency setup and "
+            "declaration sections and has no separate contract."
+        ),
+        "rationale": (
+            "The pinned span's runnable claims belong to its anchored child sections; the "
+            "page-level mapping remains partial and does not claim this parent is covered."
+        ),
+    },
+    ("tutorial/dependencies/index.md", "fastapi-plug-ins"): {
+        "status": "excluded",
+        "heading": "**FastAPI** plug-ins { #fastapi-plug-ins }",
+        "start_line": 185,
+        "end_line": 192,
+        "exclusion_reason": (
+            "This section is ecosystem extensibility prose without a concrete FastAPI runtime "
+            "operation or documented API claim."
+        ),
+        "rationale": (
+            "The pinned text lists generic integration possibilities and provides no route, "
+            "dependency, output, error, or schema observation to map."
+        ),
+    },
+    ("tutorial/dependencies/index.md", "fastapi-compatibility"): {
+        "status": "excluded",
+        "heading": "**FastAPI** compatibility { #fastapi-compatibility }",
+        "start_line": 193,
+        "end_line": 205,
+        "exclusion_reason": (
+            "This section lists ecosystem integration categories without specifying a distinct "
+            "FastAPI contract."
+        ),
+        "rationale": (
+            "The pinned span is high-level compatibility prose; concrete dependency and "
+            "security behavior is mapped independently."
+        ),
+    },
 }
