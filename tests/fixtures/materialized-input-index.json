@@ -1051,9 +1051,9 @@
     {
       "id": "atlas-pending-tutorials-source-wave",
       "input_path": "tests/fixtures/inputs/parity/atlas-pending-tutorials-source-wave.json",
-      "input_sha256": "e5b4bf0609d31f6640d325afb4e263034c8be620807bf14c3cfd39f58515008e",
+      "input_sha256": "7e38f379bed22806c451ef2fc19f4dbca3c293ea02dc82b26b9e82da1fd6513d",
       "recipe_path": "tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml",
-      "recipe_sha256": "219407182a8d2fd7dbfd7b345edc71a90e3aa804c9327288c4470cd9fc372d10",
+      "recipe_sha256": "222929f9faa45ffd52b163e6f00b2fc8531501fcfcfd442ae37cff7e5c914a75",
       "case_ids": [
         "fastapi.pending.tutorials-source-wave.cookie-parameter-cases",
         "fastapi.pending.tutorials-source-wave.cookie-openapi",
@@ -1073,6 +1073,7 @@
           "requirement_refs": [
             "source:documented-example:docs_src/cookie_params/tutorial001_an_py310.py",
             "source:documented-example:docs_src/cookie_params/tutorial001_py310.py",
+            "source:documented-page:tutorial/cookie-params.md",
             "source:upstream-test:tests/test_tutorial/test_cookie_params/test_tutorial001.py"
           ]
         },
@@ -6705,9 +6706,9 @@
     {
       "id": "docs-example-wave-f-form-file-inputs",
       "input_path": "tests/fixtures/inputs/parity/docs-example-wave-f-form-file-inputs.json",
-      "input_sha256": "44af1006d3c7902b1a261fb348f4b6566e7172981588221717fc3e7d73f0d49e",
+      "input_sha256": "a649ed922acf5b6003e232d68c6b4619630ca76dbe9e1c12a8c91a2aaf3a31f1",
       "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml",
-      "recipe_sha256": "83dd9a57fccad5af46cbf8a273375d1d2081e394378e12cb7e1e6f045b3e2662",
+      "recipe_sha256": "e9b1738e4f7219537ab7129251e65d8013efb0632b3a32978688bbd560f2e315",
       "case_ids": [
         "fastapi.docs-example-wave-f.request-files.required-annotated-files",
         "fastapi.docs-example-wave-f.request-files.optional-presence",
@@ -6773,7 +6774,8 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/request_form_models/tutorial002_an_py310.py",
-            "source:documented-example:docs_src/request_form_models/tutorial002_py310.py"
+            "source:documented-example:docs_src/request_form_models/tutorial002_py310.py",
+            "source:documented-page:tutorial/request-form-models.md"
           ]
         },
         {
@@ -6781,7 +6783,8 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/request_forms/tutorial001_an_py310.py",
-            "source:documented-example:docs_src/request_forms/tutorial001_py310.py"
+            "source:documented-example:docs_src/request_forms/tutorial001_py310.py",
+            "source:documented-page:tutorial/request-forms.md"
           ]
         },
         {
@@ -25703,9 +25706,9 @@
     {
       "id": "response-model-tutorials-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-tutorials-upstream.json",
-      "input_sha256": "58f82150d5e7e30a33fd80f9efe7f70dc3f3d91a18a946c8a09eab68836e41a3",
+      "input_sha256": "2ba0e3d19d06637669e0ff4a897a829b68f5adc826712df9253aeb32ed8761d4",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
-      "recipe_sha256": "cbff224673332ef682715c0bc676ffdabeca7f8f8626a2f6cc8bc214bf5c5d08",
+      "recipe_sha256": "07cc78acd936ee7b1837545a2b5865d284e587112c14c62cc5fd237738b0e388",
       "case_ids": [
         "fastapi.response-model.tutorial001-defaults-and-list-output",
         "fastapi.response-model.tutorial002-same-model-retains-sensitive-field",
@@ -25791,6 +25794,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/response_model/tutorial004_py310.py",
+            "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_tutorial/test_response_model/test_tutorial004.py"
           ]
         },
@@ -35447,6 +35451,20 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/cookie-params.md",
+      "fixture_id": "fastapi.docs.tutorial-cookie-params",
+      "workflow_id": "atlas-pending-tutorials-source-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.pending.tutorials-source-wave.cookie-parameter-cases"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_cookie_params/test_tutorial001.py",
       "fixture_id": "fastapi.test.test-tutorial-test-cookie-params-test-tutorial001",
       "workflow_id": "atlas-pending-tutorials-source-wave",
@@ -41282,6 +41300,34 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-form-models.md",
+      "fixture_id": "fastapi.docs.tutorial-request-form-models",
+      "workflow_id": "docs-example-wave-f-form-file-inputs",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs-example-wave-f.request-form-models.extra-forbidden"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-forms.md",
+      "fixture_id": "fastapi.docs.tutorial-request-forms",
+      "workflow_id": "docs-example-wave-f-form-file-inputs",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs-example-wave-f.request-forms.required-fields"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {
@@ -57463,7 +57509,7 @@
       "fixture_id": "fastapi.docs.tutorial-response-model",
       "workflow_id": "response-model-tutorials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model.tutorial001-defaults-and-list-output",
         "fastapi.response-model.tutorial002-same-model-retains-sensitive-field",
@@ -57471,7 +57517,8 @@
         "fastapi.response-model.tutorial003-02-response-annotation-allows-response-values",
         "fastapi.response-model.tutorial003-03-redirect-response-return-annotation",
         "fastapi.response-model.tutorial003-05-explicitly-disabled-response-model",
-        "fastapi.response-model.tutorial003-explicit-output-model-filters-input"
+        "fastapi.response-model.tutorial003-explicit-output-model-filters-input",
+        "fastapi.response-model.tutorial004-exclude-unset-preserves-explicit-fields"
       ],
       "observation_selectors": [
         "http.body.bytes",

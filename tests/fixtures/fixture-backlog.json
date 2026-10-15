@@ -28554,7 +28554,26 @@
             "openapi-docs"
           ],
           "heading": "Additional Response with `model` { #additional-response-with-model }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "inspect-additional-response-schema"
+              ],
+              "case_ids": [
+                "fastapi.openapi.additional-response-model"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-model-openapi.yaml",
+              "scope_note": "The selected action reads `/openapi.json`, observes its exact HTTP status, and compares only the `/paths/~1tea/get/responses/418` and `/components/schemas/TeaError` JSON pointers. This samples one generated 418 response declaration and its model schema; it does not observe a returned 418 response, runtime response validation or serialization, other status codes or media types, or all response models.",
+              "workflow_id": "additional-response-model-openapi"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -28573,8 +28592,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 walks each route's additional `responses` entry, removes its Python-only `model` key, retrieves the route's prepared response field, and merges that field's generated schema into the declared response content (fastapi/openapi/utils.py:473-505). `get_schema_from_model_field` reads the schema prepared for the field and applies its alias/title projection (fastapi/_compat/v2.py:254-282). The selected OpenAPI action compares the 418 response and TeaError component pointers; Pydantic supplies the field schema, and Starlette 1.6.0 owns generic HTTP transport.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -47616,7 +47635,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
-              "scope_note": "These inputs sample dependency-set status and endpoint status overwrite through the injected temporary Response. The Response class and wire semantics belong to Starlette.",
+              "scope_note": "The first input samples one dependency setting the injected temporary Response status to 201; the second samples an endpoint setting status 400 over its declared 204. Both select exact status, ordered headers, and body bytes. The cases do not exercise temporary-response headers or cookies, response-model filtering, or multiple status-setting dependencies. Generic Response behavior belongs to Starlette.",
               "workflow_id": "response-policy-matrix"
             }
           ],
@@ -47636,7 +47655,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI injects the temporary response and merges its status and headers into the returned response; Starlette owns the Response implementation.",
+          "review_rationale": "FastAPI 0.141.1 creates and injects the temporary Response in fastapi/dependencies/utils.py:611-614,719-729, chooses its status when building the final response in fastapi/routing.py:357-372, and carries its raw headers to the response built from returned values in fastapi/routing.py:747-750. The two linked cases cite docs/en/docs/advanced/response-change-status-code.md and each contains one selected HTTP action. Starlette 1.6.0 owns generic Response construction and ASGI emission.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -57536,7 +57555,24 @@
             "request-validation"
           ],
           "heading": "Allowing Requests Without Content-Type { #allowing-requests-without-content-type }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "legacy-route-parses-untyped-json"
+              ],
+              "case_ids": [
+                "fastapi.docs.strict-content-type.independent-legacy-no-content-type"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/strict-content-type-documentation-example-independent.yaml",
+              "scope_note": "Partial: one successful POST omits Content-Type and sends a JSON-shaped body to an independently authored /legacy/items/ route; the selected observations are only HTTP status and response body bytes. This does not establish the tutorial route's literal output, rejection behavior, malformed or empty-body behavior, form parsing, or the documented CSRF/CORS scenario.",
+              "workflow_id": "strict-content-type-documentation-example-independent"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -57546,8 +57582,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned FastAPI 0.141.1 section at docs/en/docs/advanced/strict-content-type.md:76-88 documents setting strict_content_type=False, the no-Content-Type JSON behavior, and the 0.132.0 version boundary. Its source_evidence entry in the input recipe cites this exact page as upstream_documentation. The adjacent example, docs_src/strict_content_type/tutorial001_py310.py:1-14, configures that option and declares POST /items/ with an Item body. The independent workload instead uses /legacy/items/, a different model, and different values. FastAPI 0.141.1 declares strict_content_type with default True and documents its JSON handling in fastapi/applications.py:840-862, then forwards the configured value to the router in fastapi/applications.py:998. The selected case exercises only the successful no-header request branch and observes HTTP status and body bytes.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -57636,6 +57672,20 @@
             "role": "FastAPI opt-out configuration and version boundary.",
             "sha256": "c46698c00f096129b39817750c56134cac627bf74b9e9e0e2c748ae26fd98ac3",
             "start_line": 76
+          },
+          {
+            "end_line": 862,
+            "path": "fastapi/applications.py",
+            "role": "FastAPI.__init__ declares strict_content_type with default True and documents the no-Content-Type JSON behavior for the default and opt-out settings.",
+            "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+            "start_line": 840
+          },
+          {
+            "end_line": 998,
+            "path": "fastapi/applications.py",
+            "role": "FastAPI.__init__ forwards the configured strict_content_type value into APIRouter.",
+            "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+            "start_line": 998
           },
           {
             "end_line": 450,
@@ -57746,6 +57796,20 @@
           "role": "FastAPI opt-out configuration and version boundary.",
           "sha256": "c46698c00f096129b39817750c56134cac627bf74b9e9e0e2c748ae26fd98ac3",
           "start_line": 76
+        },
+        {
+          "end_line": 862,
+          "path": "fastapi/applications.py",
+          "role": "FastAPI.__init__ declares strict_content_type with default True and documents the no-Content-Type JSON behavior for the default and opt-out settings.",
+          "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+          "start_line": 840
+        },
+        {
+          "end_line": 998,
+          "path": "fastapi/applications.py",
+          "role": "FastAPI.__init__ forwards the configured strict_content_type value into APIRouter.",
+          "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+          "start_line": 998
         },
         {
           "end_line": 450,
@@ -59360,7 +59424,25 @@
             "dependency-overrides"
           ],
           "heading": "Use the `app.dependency_overrides` attribute { #use-the-app-dependency-overrides-attribute }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "replacement-parameter",
+                "original-parameter-absent"
+              ],
+              "case_ids": [
+                "fastapi.dependencies.override-resolution"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
+              "scope_note": "Two GET actions exercise one path-operation dependency that `create_app` has already overridden. `replacement-parameter` supplies `region=west`; `original-parameter-absent` supplies the original callable's `q=west` and omits the replacement's required `region`. The selected HTTP status and body-byte observations cover replacement-parameter resolution and its response. They do not sample clearing the dictionary, setting or resetting overrides inside test functions, decorator or included-router dependencies, replacement sub-dependencies, or other callable and parameter shapes.",
+              "workflow_id": "dependency-lifecycle"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -59375,8 +59457,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned section describes using the original dependency callable as the dictionary key and an override callable as its value (`../fastapi/docs/en/docs/advanced/testing-dependencies.md:25-30`); its example assigns that mapping directly (`../fastapi/docs_src/dependency_testing/tutorial001_an_py310.py:26-31`). FastAPI 0.141.1 initializes `dependency_overrides` as a dictionary (`../fastapi/fastapi/applications.py:967-983`). During request resolution, `solve_dependencies` looks up the original callable and builds a dependant from the selected override callable (`../fastapi/fastapi/dependencies/utils.py:619-638`), then invokes that callable with its resolved values (`../fastapi/fastapi/dependencies/utils.py:673-680`). The workload uses an original `q` parameter and a replacement `region` parameter, installs that mapping, and attaches the original callable to a path operation (`tests/fixtures/workloads/dependency_lifecycle.py:36-48`). The recipe actions at `tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml:149-214` supply the corresponding query inputs and observe HTTP status and body bytes. The identity-checked oracle artifact `parity-results/oracle/bd14cdf1-f552-4eec-8b0f-44add4a0b1f1.json` records both actions as completed under FastAPI 0.141.1 and Starlette 1.6.0. This maps the path-operation override resolution shown by those inputs, not every override location or the section's reset and test setup guidance.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -60632,7 +60714,30 @@
             "openapi-docs"
           ],
           "heading": "Use the `Request` object directly { #use-the-request-object-directly }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "read-client-host",
+                "request-openapi"
+              ],
+              "case_ids": [
+                "fastapi.docs.using-request-directly.client-host"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.headers",
+                "docs.response.status",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/using_request_directly.yaml",
+              "scope_note": "The HTTP action supplies client=(127.0.0.1, 123) to GET /items/chair and the independent endpoint returns request.client.host with the successful string path value. The OpenAPI action selects the path operation's parameter projection. This covers one present client and one successful string path value; it does not sample a missing client, invalid path input or validation errors, direct body reads, other Request properties, or FastAPI/Starlette Request identity.",
+              "workflow_id": "using-request-directly"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -60649,8 +60754,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Pinned FastAPI 0.141.1 docs/en/docs/advanced/using-request-directly.md:26-44 describes reading the client host through a Request-typed path-operation parameter and retaining a separately declared path parameter; its included docs_src/using_request_directly/tutorial001_py310.py:1,6-9 shows that route. The independently authored workload accepts Request and returns its client host and item_id; its recipe sends the explicit ASGI client tuple and selects HTTP status, headers, and body bytes, then selects the /items/{item_id} GET parameter projection from OpenAPI. FastAPI 0.141.1 fastapi/dependencies/utils.py:350-355 classifies a Request-typed endpoint parameter, :711-712 places the current Request in dependency values, and fastapi/routing.py:706-710 invokes the endpoint with those values. Starlette 1.6.0 starlette/requests.py:161-167 derives Request.client from the ASGI scope client tuple. The selected OpenAPI projection establishes the documented string path parameter shape only; this successful request does not establish invalid-input validation behavior.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -64457,7 +64562,22 @@
             "request-validation"
           ],
           "heading": "Configure the app `entrypoint` in `pyproject.toml` { #configure-the-app-entrypoint-in-pyproject-toml }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.cli.process.dev-pyproject-entrypoint"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "process.exit_code"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml",
+              "scope_note": "One isolated `fastapi dev` case reads `[tool.fastapi] entrypoint = \"backend.main:app\"`, imports that app, and serves one GET `/probe` request. The selectors cover process completion and that HTTP response. The nested command-option section, invalid configuration, explicit-entrypoint precedence, auto-discovery, terminal output, and reload behavior are outside this mapping.",
+              "workflow_id": "fastapi-cli-documented-process-v2"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -64470,8 +64590,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1's optional `standard` extra requires `fastapi-cli[standard] >=0.0.32` (../fastapi/pyproject.toml:59-61), and its console script is `fastapi = fastapi.cli:main` (../fastapi/pyproject.toml:119-120). The standard oracle pins fastapi-cli 0.0.32 (metadata.yaml:100-104). The separately packaged fastapi-cli implements project entrypoint discovery, so this is the pinned FastAPI optional CLI surface rather than core ASGI behavior. Starlette 1.6.0 owns generic ASGI and HTTP transport behavior for the selected probe.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -93090,7 +93210,25 @@
             "public-api-errors"
           ],
           "heading": "Declare `Cookie` parameters { #declare-cookie-parameters }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "cookie-annotated-absent",
+                "cookie-annotated-present"
+              ],
+              "case_ids": [
+                "fastapi.pending.tutorials-source-wave.cookie-parameter-cases"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml",
+              "scope_note": "The selected actions sample only the annotated optional scalar declaration: cookie-annotated-absent omits the Cookie header, while cookie-annotated-present sends ads_id=ad-value in that header. Both select response status and body bytes. They cover the declared None default and one present cookie value. They do not exercise required cookies, aliases, extra validation or annotation attributes, OpenAPI output, import/signature identity, the unannotated form, extra-cookie behavior, or the browser docs UI note.",
+              "workflow_id": "atlas-pending-tutorials-source-wave"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "error.public_attributes",
@@ -93107,8 +93245,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/cookie-params.md:11-17 explains declaring Cookie parameters and highlights the annotated example at docs_src/cookie_params/tutorial001_an_py310.py:8-10; lines 27-31 state that Cookie is needed to declare a cookie instead of an inferred query parameter. The existing independently authored workload mirrors that example's optional annotated declaration (tests/fixtures/workloads/atlas_pending_tutorials_wave.py:70-73). Its input-only recipe case fastapi.pending.tutorials-source-wave.cookie-parameter-cases selects only cookie-annotated-absent and cookie-annotated-present, each observing exact HTTP status and body. FastAPI 0.141.1 marks Cookie as ParamTypes.cookie (fastapi/params.py:387-389), assigns cookie fields to the cookie collection (fastapi/dependencies/utils.py:550-563), and resolves them from request.cookies (fastapi/dependencies/utils.py:681-696); its absent-value path returns the declared field default (fastapi/dependencies/utils.py:749-777). Starlette 1.6.0 owns parsing the Cookie header into Request.cookies (starlette/requests.py:150-159).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -93202,6 +93340,19 @@
       ],
       "id": "fastapi.docs.tutorial-cookie-params",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.pending.tutorials-source-wave.cookie-parameter-cases"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml",
+          "workflow_id": "atlas-pending-tutorials-source-wave"
+        },
         {
           "case_ids": [
             "fastapi.request-parameters.cookie.review-slice.alias-name-missing",
@@ -98743,7 +98894,29 @@
             "dependency-security"
           ],
           "heading": "Global Dependencies { #global-dependencies }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch",
+                "openapi"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.global-dependencies"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "The selected dispatch requests one `/reports` operation with the valid tenant key and observes its status, ordered headers, and body bytes. The OpenAPI action inspects that operation's parameter pointer. This samples one app-level dependency and one operation; it does not exercise missing or rejected keys, another operation, multiple global dependencies, dependency overrides/cache or scope interactions, or the nested grouped-router section.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -98758,8 +98931,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned example configures `FastAPI(dependencies=...)` and declares two operations (`../fastapi/docs_src/dependencies/tutorial012_an_py310.py:15-25`). FastAPI 0.141.1 forwards the constructor's dependency list to its root `APIRouter` (`../fastapi/fastapi/applications.py:984-999`); `add_api_route` copies router dependencies into each `APIRoute` (`../fastapi/fastapi/routing.py:2927-2945`), whose dependency graph is built and solved by FastAPI (`../fastapi/fastapi/dependencies/utils.py:271-347,619-680`). The selected input observes one successful operation and its required header parameter in OpenAPI, not the example's second global dependency or every operation's request path.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -102810,7 +102983,21 @@
             "public-api-errors"
           ],
           "heading": "Using the `jsonable_encoder` { #using-the-jsonable-encoder }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.jsonable-encoder.tutorial.datetime-model"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "python.attribute_value",
+                "python.signature"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/encoding.yaml",
+              "scope_note": "The direct `jsonable_encoder` call uses a Pydantic Item with the tutorial's title, datetime timestamp, and optional description fields. Its independent values include an explicit description, and only the converted return value and callable signature are observed. This does not cover database writes, HTTP/ASGI dispatch, the section's note about FastAPI's internal use, other input types, or encoder option behavior.",
+              "workflow_id": "encoding"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "error.public_attributes",
@@ -102827,8 +103014,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1's pinned docs/en/docs/tutorial/encoder.md:11-29 describe converting the tutorial's Pydantic model and datetime to JSON-compatible Python data, and docs_src/encoder/tutorial001_py310.py:10-13,19-22 define and call the example. The active case uses the same Item field types and direct call with independent values. FastAPI's fastapi/encoders.py:129-230 defines the callable and its stated conversion purpose; fastapi/encoders.py:243-258 calls model_dump in JSON mode for BaseModel inputs and recursively encodes the result. Pydantic supplies model JSON-mode serialization. The recipe emits python.attribute_value for the exact return value and python.signature for the callable signature.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -116751,6 +116938,19 @@
           "start_line": 15
         },
         {
+          "end_line": 44,
+          "exclusion_reason": "This explanatory conversion section reuses the same typed integer path input and response already mapped under the preceding path-parameters-with-types section; it adds no distinct request or observation.",
+          "feature_evidence": [],
+          "feature_ids": [],
+          "heading": "Data <dfn title=\"also known as: serialization, parsing, marshalling\">conversion</dfn> { #data-conversion }",
+          "independent_workflow_mappings": [],
+          "observation_selectors": [],
+          "review_rationale": "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/path-params.md:29-44 explains the integer conversion from the same tutorial002 typed route whose independent integer-path-value action is linked to #path-parameters-with-types. That linked action already supplies the path value and observes the numeric JSON response. This follow-on section adds explanatory detail but no independent FastAPI input or result selector, so it is excluded as a separate fixture mapping.",
+          "review_status": "excluded",
+          "selector_evidence": [],
+          "start_line": 29
+        },
+        {
           "end_line": 78,
           "exclusion_reason": null,
           "feature_evidence": [
@@ -125500,7 +125700,24 @@
             "request-validation"
           ],
           "heading": "Forbid Extra Form Fields { #forbid-extra-form-fields }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "strict-form-model-annotated"
+              ],
+              "case_ids": [
+                "fastapi.docs-example-wave-f.request-form-models.extra-forbidden"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml",
+              "scope_note": "The selected action posts URL-encoded username and password fields plus one undeclared scalar field to the independently authored Annotated Form-model route. Its observations select response status and body bytes, so they capture the validation-error response for this extra field. It directly samples the documented `extra=forbid` failure path, but does not establish that the error body matches the documentation's literal field name or values, the plain parameter declaration, other extra-field shapes, missing-field behavior, multipart parsing, or OpenAPI output.",
+              "workflow_id": "docs-example-wave-f-form-file-inputs"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -125510,8 +125727,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned FastAPI 0.141.1 section at docs/en/docs/tutorial/request-form-models.md:39-74 explains forbidding undeclared form fields and shows the extra-field error; its included snippet is docs_src/request_form_models/tutorial002_an_py310.py:9-16, whose model sets `extra` to `forbid` and whose route uses `Annotated[FormData, Form()]`. The existing input-only case fastapi.docs-example-wave-f.request-form-models.extra-forbidden selects strict-form-model-annotated, which sends declared username/password fields and an independent `unexpected` field to the workload's matching StrictLoginForm configuration and Annotated route (tests/fixtures/workloads/request_form_upload_source_review_independent.py:17-20,217-221). That action observes recipe selectors `status` and `body`, projected here to `http.status` and `http.body.bytes`; the recipe contains no expected output. FastAPI 0.141.1 calls `request.form()` for Form bodies (fastapi/routing.py:425-432), collects model fields and preserves remaining form keys before model validation (fastapi/dependencies/utils.py:912-948,965-979); Pydantic owns rejection under the model's `extra=forbid` configuration. Starlette 1.6.0 is the sole generic form-parsing oracle: `Request._get_form` selects `FormParser` for URL-encoded input (starlette/requests.py:296-310), and the parser returns the received name/value pairs as `FormData` (starlette/formparsers.py:105-143). The repository pins FastAPI 0.141.1 and Starlette 1.6.0 in metadata.yaml:9-12,41-46; the checked source checkout commits are 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f and 4f250d6b814587e20c5365f0a5f0c4d42bcb929f, respectively.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -125588,6 +125805,19 @@
       ],
       "id": "fastapi.docs.tutorial-request-form-models",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs-example-wave-f.request-form-models.extra-forbidden"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml",
+          "workflow_id": "docs-example-wave-f-form-file-inputs"
+        },
         {
           "case_ids": [
             "fastapi.docs.request-schema.tutorial-request-form-models.form-model"
@@ -126179,7 +126409,24 @@
             "dependency-security"
           ],
           "heading": "Define `Form` parameters { #define-form-parameters }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "form-fields-annotated"
+              ],
+              "case_ids": [
+                "fastapi.docs-example-wave-f.request-forms.required-fields"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml",
+              "scope_note": "The selected action sends two required `Annotated[str, Form()]` fields as `application/x-www-form-urlencoded` and observes the response status and body bytes; the independent handler returns the submitted username. The recipe uses the `standard-multipart` profile to provide form-parser dependencies but does not sample a missing-parser case. It covers this two-field annotated declaration only, not `Form` inheritance, aliases, validation, examples, alternate declarations, or a JSON comparison.",
+              "workflow_id": "docs-example-wave-f-form-file-inputs"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -126192,8 +126439,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned FastAPI 0.141.1 heading spans docs/en/docs/tutorial/request-forms.md#L23-L46; its referenced source example declares `username` and `password` with `Annotated[str, Form()]` and returns the username (docs_src/request_forms/tutorial001_an_py310.py#L8-L10). The input-only recipe selects the matching annotated action and cites both pinned request-form documentation examples; its independently authored workload has the same two required fields and returns only the username. FastAPI 0.141.1 defines `Form` as a `Body` subclass with the URL-encoded media type (fastapi/params.py#L581-L589), identifies a Form body and asks the request for form data (fastapi/routing.py#L395, #L425-L431), then extracts and validates the declared fields (fastapi/dependencies/utils.py#L972-L998). Starlette 1.6.0 owns generic URL-encoded form decoding: `Request._get_form` selects `FormParser` from the content type (starlette/requests.py#L268-L311), and `FormParser` builds the `FormData` items (starlette/formparsers.py#L105-L141). The recipe records inputs and selected observations, not expected outputs or a parity result.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -126361,6 +126608,19 @@
       ],
       "id": "fastapi.docs.tutorial-request-forms",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs-example-wave-f.request-forms.required-fields"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml",
+          "workflow_id": "docs-example-wave-f-form-file-inputs"
+        },
         {
           "case_ids": [
             "fastapi.request-form-default.blank-optional-integer"
@@ -127410,6 +127670,11 @@
                 {
                   "source": "path",
                   "term": "response model"
+                },
+                {
+                  "line": 264,
+                  "source": "content",
+                  "term": "fields with defaults"
                 },
                 {
                   "line": 190,
@@ -128804,6 +129069,11 @@
                 {
                   "source": "path",
                   "term": "response model"
+                },
+                {
+                  "line": 42,
+                  "source": "content",
+                  "term": "fields with defaults"
                 }
               ]
             },
@@ -128944,6 +129214,11 @@
                 {
                   "source": "path",
                   "term": "response model"
+                },
+                {
+                  "line": 28,
+                  "source": "content",
+                  "term": "fields with defaults"
                 }
               ]
             }
@@ -128956,6 +129231,9 @@
           "heading": "Use the `response_model_exclude_unset` parameter { #use-the-response-model-exclude-unset-parameter }",
           "independent_workflow_mappings": [
             {
+              "action_ids": [
+                "preserve-explicit-null-and-alias"
+              ],
               "case_ids": [
                 "fastapi.response-model.post-policy.exclude-unset"
               ],
@@ -128965,7 +129243,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-model-post-policy-options-review.yaml",
-              "scope_note": "This POST input samples response_model_exclude_unset=True with an explicitly set nullable field and alias. It does not claim every exclude policy or model serialization behavior.",
+              "scope_note": "Only POST /exclude-unset action preserve-explicit-null-and-alias is selected, with http.status and http.body.bytes. The identity-checked FastAPI 0.141.1 observation is HTTP 200 with body {\"label\":\"unset-card\",\"note\":null,\"displayName\":\"Unset Alias\"}: this samples omission of defaulted state and retries while retaining the explicitly supplied nullable note and aliased displayName. It does not claim the tutorial GET example's response bytes, other exclude options, OpenAPI effects, or general Pydantic serialization.",
               "workflow_id": "response-model-post-policy-options-review"
             }
           ],
@@ -128982,7 +129260,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI routes the decorator's exclude_unset option into response-model serialization; Pydantic performs the value serialization.",
+          "review_rationale": "FastAPI 0.141.1 passes response_model_exclude_unset to response serialization (fastapi/routing.py:725-735). Its tutorial sets the option and says unset defaults are omitted (docs/en/docs/tutorial/response-model.md:237-252; docs_src/response_model/tutorial004_py310.py:15-24). The pinned test also asserts that an explicitly supplied null remains present (tests/test_skip_defaults.py:38-42,93-95). Pydantic performs value serialization; Starlette 1.6.0 owns generic response transport.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -129021,6 +129299,69 @@
             }
           ],
           "start_line": 237
+        },
+        {
+          "end_line": 279,
+          "exclusion_reason": null,
+          "feature_evidence": [
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "source": "path",
+                  "term": "fields with defaults"
+                }
+              ]
+            }
+          ],
+          "feature_ids": [
+            "response-serialization"
+          ],
+          "heading": "Data with values for fields with defaults { #data-with-values-for-fields-with-defaults }",
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "item-with-explicit-default-like-values"
+              ],
+              "case_ids": [
+                "fastapi.response-model.tutorial004-exclude-unset-preserves-explicit-fields"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+              "scope_note": "The selected GET returns the item whose description and tax values are explicitly supplied even though those fields have model defaults. Only its HTTP response is mapped; the case's separate OpenAPI action is excluded. The adjacent response_model_exclude_defaults and response_model_exclude_none options are mentioned in the preceding note but are not exercised or claimed here.",
+              "workflow_id": "response-model-tutorials-upstream"
+            }
+          ],
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.cookies",
+            "http.headers.ordered",
+            "http.status",
+            "response.background_effects",
+            "validation.error_class"
+          ],
+          "review_rationale": "FastAPI 0.141.1 forwards response_model_exclude_unset to response serialization as a distinct option from response_model_exclude_defaults and response_model_exclude_none (fastapi/routing.py:510-514). The selected response covers explicitly supplied values for fields that also have defaults.",
+          "review_status": "reviewed_partial",
+          "selector_evidence": [
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.cookies",
+                "http.body.bytes",
+                "http.body.json",
+                "response.background_effects",
+                "validation.error_class"
+              ]
+            }
+          ],
+          "start_line": 265
         },
         {
           "end_line": 305,
@@ -129164,7 +129505,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
-              "scope_note": "The two GET inputs sample nested include and exclude field selection. They do not claim changes to the complete Pydantic model schema in OpenAPI.",
+              "scope_note": "The two linked single-action cases sample one nested include and one nested exclude selection, with exact HTTP body bytes, ordered headers, and status. The linked tutorial sample uses top-level selections; this row is scoped to the nested projections in these fixture actions. The list/tuple conversion subsection, OpenAPI schema effects, and `response_model_by_alias` remain outside this row.",
               "workflow_id": "response-model-serialization"
             }
           ],
@@ -129186,7 +129527,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI passes the decorator's include and exclude selections to response serialization; Pydantic performs the value serialization.",
+          "review_rationale": "FastAPI 0.141.1 carries the route's `response_model_include` and `response_model_exclude` values into `serialize_response` (`../fastapi/fastapi/routing.py:727-739`), where the response-field serializer receives them as `include` and `exclude` (`../fastapi/fastapi/routing.py:329-338`). Pydantic performs the resulting value projection.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -129641,9 +129982,10 @@
             "fastapi.response-model.tutorial003-02-response-annotation-allows-response-values",
             "fastapi.response-model.tutorial003-03-redirect-response-return-annotation",
             "fastapi.response-model.tutorial003-05-explicitly-disabled-response-model",
-            "fastapi.response-model.tutorial003-explicit-output-model-filters-input"
+            "fastapi.response-model.tutorial003-explicit-output-model-filters-input",
+            "fastapi.response-model.tutorial004-exclude-unset-preserves-explicit-fields"
           ],
-          "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "http.body.bytes",

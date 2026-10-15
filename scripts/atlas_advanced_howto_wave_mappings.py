@@ -592,6 +592,18 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "FastAPI opt-out configuration and version boundary.",
             ),
             _source(
+                "fastapi/applications.py",
+                840,
+                862,
+                "FastAPI.__init__ declares strict_content_type with default True and documents the no-Content-Type JSON behavior for the default and opt-out settings.",
+            ),
+            _source(
+                "fastapi/applications.py",
+                998,
+                998,
+                "FastAPI.__init__ forwards the configured strict_content_type value into APIRouter.",
+            ),
+            _source(
                 "fastapi/routing.py",
                 375,
                 450,

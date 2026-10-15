@@ -213,15 +213,25 @@ DOC_SECTION_CASE_MAPPINGS = {
             "tests/fixtures/input-recipes/parity/response-model-post-policy-options-review.yaml"
         ),
         "case_ids": ["fastapi.response-model.post-policy.exclude-unset"],
+        "action_ids": ["preserve-explicit-null-and-alias"],
         "observation_selectors": ["http.body.bytes", "http.status"],
         "scope_note": (
-            "This POST input samples response_model_exclude_unset=True with an explicitly "
-            "set nullable field and alias. It does not claim every exclude policy or model "
-            "serialization behavior."
+            "Only POST /exclude-unset action preserve-explicit-null-and-alias is selected, "
+            "with http.status and http.body.bytes. The identity-checked FastAPI 0.141.1 "
+            "observation is HTTP 200 with body {\"label\":\"unset-card\",\"note\":null,"
+            "\"displayName\":\"Unset Alias\"}: this samples omission of defaulted state "
+            "and retries while retaining the explicitly supplied nullable note and aliased "
+            "displayName. It does not claim the tutorial GET example's response bytes, other "
+            "exclude options, OpenAPI effects, or general Pydantic serialization."
         ),
         "rationale": (
-            "FastAPI routes the decorator's exclude_unset option into response-model "
-            "serialization; Pydantic performs the value serialization."
+            "FastAPI 0.141.1 passes response_model_exclude_unset to response serialization "
+            "(fastapi/routing.py:725-735). Its tutorial sets the option and says unset "
+            "defaults are omitted (docs/en/docs/tutorial/response-model.md:237-252; "
+            "docs_src/response_model/tutorial004_py310.py:15-24). The pinned test also "
+            "asserts that an explicitly supplied null remains present "
+            "(tests/test_skip_defaults.py:38-42,93-95). Pydantic performs value "
+            "serialization; Starlette 1.6.0 owns generic response transport."
         ),
     },
     (
@@ -245,12 +255,19 @@ DOC_SECTION_CASE_MAPPINGS = {
             "http.status",
         ],
         "scope_note": (
-            "The two GET inputs sample nested include and exclude field selection. They do "
-            "not claim changes to the complete Pydantic model schema in OpenAPI."
+            "The two linked single-action cases sample one nested include and one nested "
+            "exclude selection, "
+            "with exact HTTP body bytes, ordered headers, and status. The linked tutorial "
+            "sample uses top-level selections; this row is scoped to the nested projections "
+            "in these fixture actions. The list/tuple conversion subsection, OpenAPI schema "
+            "effects, and `response_model_by_alias` remain outside this row."
         ),
         "rationale": (
-            "FastAPI passes the decorator's include and exclude selections to response "
-            "serialization; Pydantic performs the value serialization."
+            "FastAPI 0.141.1 carries the route's `response_model_include` and "
+            "`response_model_exclude` values into `serialize_response` "
+            "(`../fastapi/fastapi/routing.py:727-739`), where the response-field serializer "
+            "receives them as `include` and `exclude` (`../fastapi/fastapi/routing.py:329-338`). "
+            "Pydantic performs the resulting value projection."
         ),
     },
     ("advanced/response-change-status-code.md", "use-a-response-parameter"): {
@@ -268,13 +285,21 @@ DOC_SECTION_CASE_MAPPINGS = {
             "http.status",
         ],
         "scope_note": (
-            "These inputs sample dependency-set status and endpoint status overwrite through "
-            "the injected temporary Response. The Response class and wire semantics belong "
-            "to Starlette."
+            "The first input samples one dependency setting the injected temporary Response "
+            "status to 201; the second samples an endpoint setting status 400 over its declared "
+            "204. Both select exact status, ordered headers, and body bytes. The cases do not "
+            "exercise temporary-response headers or cookies, response-model filtering, or "
+            "multiple status-setting dependencies. Generic Response behavior belongs to "
+            "Starlette."
         ),
         "rationale": (
-            "FastAPI injects the temporary response and merges its status and headers into "
-            "the returned response; Starlette owns the Response implementation."
+            "FastAPI 0.141.1 creates and injects the temporary Response in "
+            "fastapi/dependencies/utils.py:611-614,719-729, chooses its status when building "
+            "the final response in fastapi/routing.py:357-372, and carries its raw headers to "
+            "the response built from returned values in fastapi/routing.py:747-750. The two "
+            "linked cases cite docs/en/docs/advanced/response-change-status-code.md and each "
+            "contains one selected HTTP action. Starlette 1.6.0 owns generic Response "
+            "construction and ASGI emission."
         ),
     },
     ("tutorial/schema-extra-example.md", "using-the-openapi-examples-parameter"): {
