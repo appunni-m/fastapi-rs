@@ -176,12 +176,23 @@ validation artifact is
 The release-wheel validator confirmed the configured `fastapi` packages,
 `fastapi_rs._core` native extension, declared license metadata, and exact
 `LICENSE.md` / `THIRD_PARTY_NOTICES.md` bytes. The release-notice checker also
-passed against this wheel and the pinned FastAPI/Starlette-RS sources. `otool
--L` on the wheel's extracted extension showed `/usr/lib/libz.1.dylib` 1.2.12,
+passed against this wheel and the pinned FastAPI/Starlette-RS sources.
+`otool -L` on the wheel's extracted extension showed `/usr/lib/libz.1.dylib` 1.2.12,
 `/usr/lib/libiconv.2.dylib`, and `/usr/lib/libSystem.B.dylib` for this artifact.
-This validates one local wheel only; no sdist or Cargo archives were produced
-or checked in this run, and it does not establish contributor licensing
-authority or readiness for publication.
+This validates one local wheel only; it does not establish contributor
+licensing authority or readiness for publication.
+
+An exploratory Maturin source archive was emitted at
+`target/release-sdist-validation-20261015/fastapi_rs-0.1.0.tar.gz` (SHA-256
+`12c95929a249bd786cd3d049ee87a372d0327fa6a7e360529f88f1229941d1fb`). It is
+not usable for publication: the archive contains `Users/lazytrot/...` and
+`private/tmp/...` machine-local path trees plus two `.profraw` files, and a
+wheel build from the archive failed because `metadata.yaml`, which
+`fastapi-rs/build.rs` reads, was omitted. `cargo package --list --locked
+--offline` enumerated the FastAPI-RS crate sources in the pinned-source overlay,
+but no Cargo archives were built or verified. Resolve source-archive contents,
+the build-time Starlette-RS source identity contract, and Cargo package
+verification before claiming source-distribution readiness.
 
 The inspected arm64 wheel
 `target/wheels-x0mz-20261012/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
