@@ -10544,6 +10544,43 @@
       ]
     },
     {
+      "id": "http-body-json-projection",
+      "input_path": "tests/fixtures/inputs/parity/http-body-json-projection.json",
+      "input_sha256": "c09a69c6c4b6715be599c3589e665ba91de03cce10fbbb96eb1852250659a921",
+      "recipe_path": "tests/fixtures/input-recipes/parity/http-body-json-projection.yaml",
+      "recipe_sha256": "40b52e0647f1f80fe62d867f9a2f3204be6ed25fcf78c37907e6c976db1b5618",
+      "case_ids": [
+        "fastapi.response-json.parsed-object",
+        "fastapi.response-json.duplicate-key-fallback",
+        "fastapi.response-json.invalid-utf8-fallback"
+      ],
+      "workload_path": "tests/fixtures/workloads/http_body_json_projection.py",
+      "workload_sha256": "8439bcfe88b6645e3904e48099a895611bf7be28ff59a0d54616e8f770f9a92d",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.response-json.parsed-object",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_serialize_response_dataclass.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-json.duplicate-key-fallback",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_serialize_response_dataclass.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-json.invalid-utf8-fallback",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_serialize_response_dataclass.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "http-connection-injection-websocket",
       "input_path": "tests/fixtures/inputs/parity/http-connection-injection-websocket.json",
       "input_sha256": "a7e6978fe4c9d9d0171b26512d2ddc161244ca13e96a21105622fd28f4725584",
@@ -46444,6 +46481,23 @@
         "http.status",
         "openapi.document",
         "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_serialize_response_dataclass.py",
+      "fixture_id": "fastapi.test.test-serialize-response-dataclass",
+      "workflow_id": "http-body-json-projection",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-json.duplicate-key-fallback",
+        "fastapi.response-json.invalid-utf8-fallback",
+        "fastapi.response-json.parsed-object"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.body.json",
+        "http.status"
       ]
     },
     {

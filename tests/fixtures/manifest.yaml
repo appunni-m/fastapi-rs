@@ -466,7 +466,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 16bd362932b7f4ee4cca70d4495ac594ca07c2b5dfd9d42e0648a2b815b09732
+    sha256: e8ec21e1164b90cc0320658dfeadb6fecd652f42e679542cfd567380710f89ea
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -502,7 +502,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 3d44e1dcdf5e7e17817b4be65273ff35dd6f18af4c50a38c23040406978e90ff
+    sha256: 08030ed3d3fadd8162d523abd1b1b6bb7a5ad7f535a4604d09e6734bae0f7f49
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -511,7 +511,7 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: b19bbc8511ee54b52bfb28e85300e1ef8b50174154f0393c4b24acca6b33a0dc
+    sha256: 1030006d045844baea92b0c953c1f931dae9e72f60a6cbf632343fa98d5dce95
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
       selectors: 53
@@ -539,14 +539,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 03858cf89386e1b2f6b6eebed82c0a9d37de3af5b58b95b500be7aec733914ed
+    sha256: 4cd0545a4fd26cde90546287910881772ecafd3d712d5b387e5111dad9704f33
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 628
-      cases: 2562
-      partial_source_mappings: 1856
+      workflows: 629
+      cases: 2565
+      partial_source_mappings: 1857
 
 contract_metadata:
   aliases:
@@ -818,6 +818,20 @@ unresolved:
     coverage: >-
       Adds a pinned, paired TestClient HTTPX profile and input-driven client
       request with context-managed HTTP and lifespan observations.
+  python_asgi_workflow_v13:
+    state: strict-json-response-observation; v1-v12-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@13
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v13.schema.json
+    schema_sha256: 194b2391a2b7e22a0e91db404cf791a1956b6d3dbe8ffff2c62fa6e9a2d0bc4b
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@13
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v13.schema.json
+    result_schema_sha256: c6f5f7865b84d2b6f47a3b1d50b9a9ba0f88805990ede3d9ec4e356cf9a8d892
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@14
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v14.schema.json
+    comparison_schema_sha256: ebac938805b534c2349bde200ffe6794ab9ff7ea4784000ac84a1ba6aab51758
+    coverage: >-
+      Adds a strict parsed JSON response-body projection with a tagged exact
+      base64 representation for response bodies that are not strict JSON.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1

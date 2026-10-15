@@ -1,0 +1,129 @@
+schema: fastapi-rs/python-asgi-workflow@13
+workload:
+  file: tests/fixtures/workloads/http_body_json_projection.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.response-json.parsed-object
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: get-json
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /json
+          query_string: ''
+          root_path: ''
+          headers:
+            - - host
+              - testserver
+          client:
+            - 127.0.0.1
+            - 123
+          server:
+            - testserver
+            - 80
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, body, body_json]
+            comparison: exact
+    source_evidence:
+      - path: tests/test_serialize_response_dataclass.py
+        kind: upstream_test
+    verification: parity
+  - case_id: fastapi.response-json.duplicate-key-fallback
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: get-duplicate-keys
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /duplicate-keys
+          query_string: ''
+          root_path: ''
+          headers:
+            - - host
+              - testserver
+          client:
+            - 127.0.0.1
+            - 123
+          server:
+            - testserver
+            - 80
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, body, body_json]
+            comparison: exact
+    source_evidence:
+      - path: tests/test_serialize_response_dataclass.py
+        kind: upstream_test
+    verification: parity
+  - case_id: fastapi.response-json.invalid-utf8-fallback
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: get-invalid-utf8
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /invalid-utf8
+          query_string: ''
+          root_path: ''
+          headers:
+            - - host
+              - testserver
+          client:
+            - 127.0.0.1
+            - 123
+          server:
+            - testserver
+            - 80
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, body, body_json]
+            comparison: exact
+    source_evidence:
+      - path: tests/test_serialize_response_dataclass.py
+        kind: upstream_test
+    verification: parity

@@ -29,6 +29,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V11_ID,
     WORKFLOW_SCHEMA_V12_ID,
+    WORKFLOW_SCHEMA_V13_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -134,6 +135,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
+        WORKFLOW_SCHEMA_V13_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -150,6 +152,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V10_ID,
             WORKFLOW_SCHEMA_V11_ID,
             WORKFLOW_SCHEMA_V12_ID,
+            WORKFLOW_SCHEMA_V13_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -167,6 +170,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
+                WORKFLOW_SCHEMA_V13_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -206,6 +210,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("http.body.bytes")
                     if openapi_endpoint:
                         selectors.add("docs.response.body.bytes")
+                if "body_json" in observation["selectors"]:
+                    selectors.add("http.body.json")
             elif observation["kind"] == "openapi":
                 pointers = observation["json_pointers"]
                 for pointer in pointers:
@@ -488,6 +494,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
+                WORKFLOW_SCHEMA_V13_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)

@@ -13,6 +13,7 @@ import importlib.metadata
 import importlib.util
 import inspect
 import json
+import math
 import platform
 import re
 import subprocess
@@ -37,6 +38,7 @@ WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
 WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow@10"
 WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow@11"
 WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow@12"
+WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow@13"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -48,6 +50,7 @@ RESULT_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow-result@9"
 RESULT_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow-result@10"
 RESULT_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow-result@11"
 RESULT_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow-result@12"
+RESULT_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow-result@13"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -364,6 +367,71 @@ def _encoded_bytes(value: bytes) -> dict[str, str]:
     return {"encoding": "base64", "data": base64.b64encode(value).decode("ascii")}
 
 
+def _strict_json_value(body: bytes) -> dict[str, Any]:
+    """Return a strict UTF-8 JSON value or a deterministic raw-byte fallback."""
+
+    def reject_constant(value: str) -> None:
+        raise ValueError(f"non-standard JSON number: {value}")
+
+    def finite_float(value: str) -> float:
+        parsed = float(value)
+        if not math.isfinite(parsed):
+            raise ValueError("JSON number is outside the finite float range")
+        return parsed
+
+    def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"duplicate JSON object key: {key!r}")
+            result[key] = value
+        return result
+
+    def normalize(value: Any) -> Any:
+        if isinstance(value, str):
+            characters: list[str] = []
+            index = 0
+            while index < len(value):
+                character = ord(value[index])
+                if 0xD800 <= character <= 0xDBFF:
+                    if index + 1 >= len(value):
+                        raise ValueError("JSON string contains an unpaired surrogate")
+                    following = ord(value[index + 1])
+                    if not 0xDC00 <= following <= 0xDFFF:
+                        raise ValueError("JSON string contains an unpaired surrogate")
+                    scalar = 0x10000 + ((character - 0xD800) << 10) + following - 0xDC00
+                    characters.append(chr(scalar))
+                    index += 2
+                    continue
+                if 0xDC00 <= character <= 0xDFFF:
+                    raise ValueError("JSON string contains an unpaired surrogate")
+                characters.append(value[index])
+                index += 1
+            return "".join(characters)
+        if isinstance(value, list):
+            return [normalize(item) for item in value]
+        if isinstance(value, dict):
+            result: dict[str, Any] = {}
+            for key, item in value.items():
+                normalized_key = normalize(key)
+                if normalized_key in result:
+                    raise ValueError(f"duplicate normalized JSON object key: {normalized_key!r}")
+                result[normalized_key] = normalize(item)
+            return result
+        return value
+
+    try:
+        parsed = json.loads(
+            body.decode("utf-8"),
+            object_pairs_hook=unique_object,
+            parse_constant=reject_constant,
+            parse_float=finite_float,
+        )
+        return {"kind": "json", "value": normalize(parsed)}
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError):
+        return {"kind": "non-json", "body": _encoded_bytes(body)}
+
+
 def _json_safe(value: Any) -> Any:
     """Project exception data into deterministic JSON values."""
     if value is None or isinstance(value, (bool, int, str)):
@@ -471,6 +539,8 @@ def _observe(
                 )
             if "body" in selectors:
                 values["body"] = _encoded_bytes(body)
+            if "body_json" in selectors:
+                values["body_json"] = _strict_json_value(body)
             result.append({"index": index, "kind": kind, "values": values})
         elif kind == "openapi":
             try:
@@ -1003,7 +1073,7 @@ def _run_testclient_request_v1(
     capture_warnings = action.get("capture_warnings", False)
     try:
         testclient_module = importlib.import_module("fastapi.testclient")
-        test_client = getattr(testclient_module, "TestClient")
+        test_client = testclient_module.TestClient
         request = action["request"]
         content = base64.b64decode(request["content_base64"], validate=True)
 
@@ -1073,9 +1143,7 @@ async def _run_action_v3(
     warning_package_roots: list[tuple[str, Path]],
 ) -> dict[str, Any]:
     if action["kind"] == "testclient_request":
-        return _run_testclient_request_v1(
-            action, app, workload_trace, warning_package_roots
-        )
+        return _run_testclient_request_v1(action, app, workload_trace, warning_package_roots)
     if action["kind"] == "websocket_conversation":
         return await _run_websocket_conversation_v6(
             action, app, lifespan_state, warning_package_roots
@@ -1569,6 +1637,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
+        WORKFLOW_SCHEMA_V13_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1589,6 +1658,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
+        WORKFLOW_SCHEMA_V13_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1603,6 +1673,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
+        WORKFLOW_SCHEMA_V13_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1617,6 +1688,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
+                WORKFLOW_SCHEMA_V13_ID,
             }
             else []
         )
@@ -1630,11 +1702,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
+                WORKFLOW_SCHEMA_V13_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V12_ID
+            RESULT_SCHEMA_V13_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V13_ID
+            else RESULT_SCHEMA_V12_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V12_ID
             else RESULT_SCHEMA_V11_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V11_ID
