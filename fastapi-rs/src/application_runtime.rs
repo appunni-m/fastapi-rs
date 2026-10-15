@@ -2716,6 +2716,15 @@ struct FastApiRouterInclude {
     route_position: usize,
     router: Py<PyAny>,
     prefix: String,
+    merge_prefix: String,
+    response_class: ResponseClassChoice,
+    generate_unique_id_function: GenerateUniqueIdChoice,
+    tags: Vec<String>,
+    dependencies: Vec<Py<PyAny>>,
+    deprecated: Option<bool>,
+    include_in_schema: bool,
+    strict_content_type: Option<bool>,
+    source_route_indexes: Vec<usize>,
     fields: IncludedFieldBranch,
 }
 
@@ -2729,44 +2738,90 @@ struct IncludedFieldBranch {
 }
 
 impl IncludedFieldBranch {
-    fn from_router(source: &PyFastApi, offset: usize) -> Self {
+    fn from_router_indexes(source: &PyFastApi, route_indexes: &[usize]) -> Self {
         let direct_indexes = (0..source.routes.len())
             .filter(|index| {
                 !source
                     .router_includes
                     .iter()
-                    .any(|include| include.fields.start <= *index && *index < include.fields.end)
+                    .any(|include| include.fields.contains_route_index(*index))
             })
-            .map(|index| offset + index)
+            .filter_map(|index| route_indexes.get(index).copied())
             .collect();
-        Self {
-            start: offset,
-            end: offset + source.routes.len(),
+        let mut branch = Self {
+            start: 0,
+            end: 0,
             direct_indexes,
             children: source
                 .router_includes
                 .iter()
-                .map(|include| include.fields.for_new_context(offset))
+                .map(|include| include.fields.remap_routes(route_indexes))
                 .collect(),
             ready: false,
-        }
+        };
+        branch.update_bounds();
+        branch
     }
 
-    fn for_new_context(&self, offset: usize) -> Self {
-        Self {
-            start: offset + self.start,
-            end: offset + self.end,
+    fn remap_routes(&self, route_indexes: &[usize]) -> Self {
+        let mut branch = Self {
+            start: 0,
+            end: 0,
             direct_indexes: self
                 .direct_indexes
                 .iter()
-                .map(|index| offset + index)
+                .filter_map(|index| route_indexes.get(*index).copied())
                 .collect(),
             children: self
                 .children
                 .iter()
-                .map(|child| child.for_new_context(offset))
+                .map(|child| child.remap_routes(route_indexes))
                 .collect(),
             ready: false,
+        };
+        branch.update_bounds();
+        branch
+    }
+
+    fn contains_route_index(&self, index: usize) -> bool {
+        self.direct_indexes.contains(&index)
+            || self
+                .children
+                .iter()
+                .any(|child| child.contains_route_index(index))
+    }
+
+    fn update_bounds(&mut self) {
+        let first = self
+            .direct_indexes
+            .iter()
+            .copied()
+            .chain(
+                self.children
+                    .iter()
+                    .filter(|child| child.start < child.end)
+                    .map(|child| child.start),
+            )
+            .min();
+        let last = self
+            .direct_indexes
+            .iter()
+            .copied()
+            .chain(
+                self.children
+                    .iter()
+                    .filter(|child| child.start < child.end)
+                    .map(|child| child.end - 1),
+            )
+            .max();
+        self.start = first.unwrap_or_default();
+        self.end = last.map_or(self.start, |index| index + 1);
+    }
+
+    fn preserve_ready_state(&mut self, previous: &Self) {
+        self.ready = self.direct_indexes == previous.direct_indexes && previous.ready;
+        for (current, previous) in self.children.iter_mut().zip(&previous.children) {
+            current.preserve_ready_state(previous);
         }
     }
 
@@ -2922,9 +2977,7 @@ fn materialize_included_response_fields(
                     let route = app.routes.get(*index).ok_or_else(|| {
                         PyRuntimeError::new_err("included route field input was lost")
                     })?;
-                    if selected_indexes.is_some()
-                        && matches!(&route.response_field, ResponseFieldState::Ready(_))
-                    {
+                    if matches!(&route.response_field, ResponseFieldState::Ready(_)) {
                         return Ok(None);
                     }
                     Ok(Some(ResponseFieldInput {
@@ -3514,6 +3567,13 @@ struct RouterIncludePolicy<'policy> {
     deprecated: Option<bool>,
     include_in_schema: bool,
     strict_content_type: Option<bool>,
+}
+
+#[derive(Clone, Copy)]
+struct RouterMergeStarts {
+    routes: usize,
+    websocket_routes: usize,
+    frontend_routes: usize,
 }
 
 #[pyclass(name = "DefaultPlaceholder", module = "fastapi.datastructures")]
@@ -4985,6 +5045,9 @@ impl PyFastApi {
         inherited_dependencies.extend(dependencies.unwrap_or_default());
         let source = router.inner.bind(py).borrow();
         let route_position = destination.routes.len();
+        let source_route_indexes =
+            (route_position..route_position + source.routes.len()).collect::<Vec<_>>();
+        let strict_content_type = destination.strict_content_type;
         let dependency_overrides_provider = slf.clone_ref(py).into_any();
         merge_router_routes(
             py,
@@ -5000,14 +5063,26 @@ impl PyFastApi {
                 dependencies: &inherited_dependencies,
                 deprecated,
                 include_in_schema,
-                strict_content_type: destination.strict_content_type,
+                strict_content_type,
             },
         )?;
         destination.router_includes.push(FastApiRouterInclude {
             route_position,
             router: router_object,
             prefix: include_prefix,
-            fields: IncludedFieldBranch::from_router(&source, route_position),
+            merge_prefix: prefix,
+            response_class: inherited_response_class.clone_ref(py),
+            generate_unique_id_function: inherited_generate_unique_id_function.clone_ref(py),
+            tags: tags.clone(),
+            dependencies: inherited_dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py))
+                .collect(),
+            deprecated,
+            include_in_schema,
+            strict_content_type,
+            source_route_indexes: source_route_indexes.clone(),
+            fields: IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes),
         });
         destination.lifespan.include_router(py, &source.lifespan)?;
         destination.bump_routes_version();
@@ -5015,6 +5090,7 @@ impl PyFastApi {
     }
 
     fn openapi(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        refresh_included_router_routes(py, &slf)?;
         let (routes_version, cached_schema, cached_routes_version) = {
             let app = slf.bind(py).borrow();
             let cache = app
@@ -6581,6 +6657,8 @@ impl PyApiRouter {
         }
         let inherited_strict_content_type = destination.strict_content_type;
         let route_position = destination.routes.len();
+        let source_route_indexes =
+            (route_position..route_position + source.routes.len()).collect::<Vec<_>>();
         let dependency_overrides_provider = inner.clone_ref(py).into_any();
         merge_router_routes(
             py,
@@ -6603,7 +6681,19 @@ impl PyApiRouter {
             route_position,
             router: router_object,
             prefix: include_prefix,
-            fields: IncludedFieldBranch::from_router(&source, route_position),
+            merge_prefix: prefix,
+            response_class: inherited_response_class.clone_ref(py),
+            generate_unique_id_function: inherited_generate_unique_id_function.clone_ref(py),
+            tags: inherited_tags.clone(),
+            dependencies: inherited_dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py))
+                .collect(),
+            deprecated,
+            include_in_schema,
+            strict_content_type: inherited_strict_content_type,
+            source_route_indexes: source_route_indexes.clone(),
+            fields: IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes),
         });
         destination.lifespan.include_router(py, &source.lifespan)
     }
@@ -7077,6 +7167,30 @@ fn merge_router_routes(
     dependency_overrides_provider: &Py<PyAny>,
     policy: RouterIncludePolicy<'_>,
 ) -> PyResult<()> {
+    merge_router_routes_from(
+        py,
+        app,
+        source_router,
+        source,
+        dependency_overrides_provider,
+        policy,
+        RouterMergeStarts {
+            routes: 0,
+            websocket_routes: 0,
+            frontend_routes: 0,
+        },
+    )
+}
+
+fn merge_router_routes_from(
+    py: Python<'_>,
+    app: &mut PyFastApi,
+    source_router: &Py<PyFastApi>,
+    source: &PyFastApi,
+    dependency_overrides_provider: &Py<PyAny>,
+    policy: RouterIncludePolicy<'_>,
+    starts: RouterMergeStarts,
+) -> PyResult<()> {
     let RouterIncludePolicy {
         prefix,
         response_class: inherited_response_class,
@@ -7092,7 +7206,7 @@ fn merge_router_routes(
         Arc<ResponseClassResolutionGroup>,
         Arc<ResponseClassResolutionGroup>,
     )> = Vec::new();
-    for source_route in &source.routes {
+    for source_route in source.routes.iter().skip(starts.routes) {
         let path = format!("{prefix}{}", source_route.path);
         let mut route_dependencies = inherited_dependencies
             .iter()
@@ -7293,7 +7407,7 @@ fn merge_router_routes(
         });
         app.bump_routes_version();
     }
-    for source_route in &source.websocket_routes {
+    for source_route in source.websocket_routes.iter().skip(starts.websocket_routes) {
         let path = format!("{prefix}{}", source_route.path);
         if source_route.raw {
             let route_scope = websocket_route_scope(
@@ -7361,7 +7475,7 @@ fn merge_router_routes(
         });
         app.bump_routes_version();
     }
-    for source_frontend in &source.frontend_routes {
+    for source_frontend in source.frontend_routes.iter().skip(starts.frontend_routes) {
         let mut dependency_plan = source_frontend.dependency_plan.clone_ref(py);
         dependency_plan.prepend_dependencies(py, inherited_dependencies)?;
         app.frontend_routes.push(FastApiFrontendRoute {
@@ -7371,6 +7485,118 @@ fn merge_router_routes(
             dependency_plan,
         });
         app.bump_routes_version();
+    }
+    Ok(())
+}
+
+struct IncludedRouterRefresh {
+    index: usize,
+    router: Py<PyAny>,
+    merge_prefix: String,
+    response_class: ResponseClassChoice,
+    generate_unique_id_function: GenerateUniqueIdChoice,
+    tags: Vec<String>,
+    dependencies: Vec<Py<PyAny>>,
+    deprecated: Option<bool>,
+    include_in_schema: bool,
+    strict_content_type: Option<bool>,
+    source_route_indexes: Vec<usize>,
+}
+
+fn refresh_included_router_routes(py: Python<'_>, app: &Py<PyFastApi>) -> PyResult<()> {
+    refresh_included_router_routes_inner(py, app, &mut HashSet::new())
+}
+
+fn refresh_included_router_routes_inner(
+    py: Python<'_>,
+    app: &Py<PyFastApi>,
+    visited: &mut HashSet<usize>,
+) -> PyResult<()> {
+    if !visited.insert(app.as_ptr() as usize) {
+        return Ok(());
+    }
+
+    let includes = {
+        let app = app.bind(py).borrow();
+        app.router_includes
+            .iter()
+            .enumerate()
+            .map(|(index, include)| IncludedRouterRefresh {
+                index,
+                router: include.router.clone_ref(py),
+                merge_prefix: include.merge_prefix.clone(),
+                response_class: include.response_class.clone_ref(py),
+                generate_unique_id_function: include.generate_unique_id_function.clone_ref(py),
+                tags: include.tags.clone(),
+                dependencies: include
+                    .dependencies
+                    .iter()
+                    .map(|dependency| dependency.clone_ref(py))
+                    .collect(),
+                deprecated: include.deprecated,
+                include_in_schema: include.include_in_schema,
+                strict_content_type: include.strict_content_type,
+                source_route_indexes: include.source_route_indexes.clone(),
+            })
+            .collect::<Vec<_>>()
+    };
+
+    for include in includes {
+        let source_router = include
+            .router
+            .bind(py)
+            .extract::<PyRef<'_, PyApiRouter>>()?
+            .inner
+            .clone_ref(py);
+        refresh_included_router_routes_inner(py, &source_router, visited)?;
+
+        let source = source_router.bind(py).borrow();
+        let route_start = include.source_route_indexes.len();
+        if source.routes.len() <= route_start {
+            continue;
+        }
+
+        let (destination_route_start, mut destination) = {
+            let destination = app.bind(py).borrow_mut();
+            let route_start = destination.routes.len();
+            (route_start, destination)
+        };
+        let dependency_overrides_provider = app.clone_ref(py).into_any();
+        // The operation router is append-only, so late routes retain the
+        // include policy but follow routes already registered in this app.
+        merge_router_routes_from(
+            py,
+            &mut destination,
+            &source_router,
+            &source,
+            &dependency_overrides_provider,
+            RouterIncludePolicy {
+                prefix: &include.merge_prefix,
+                response_class: &include.response_class,
+                generate_unique_id_function: &include.generate_unique_id_function,
+                tags: &include.tags,
+                dependencies: &include.dependencies,
+                deprecated: include.deprecated,
+                include_in_schema: include.include_in_schema,
+                strict_content_type: include.strict_content_type,
+            },
+            RouterMergeStarts {
+                routes: route_start,
+                websocket_routes: source.websocket_routes.len(),
+                frontend_routes: source.frontend_routes.len(),
+            },
+        )?;
+
+        let mut source_route_indexes = include.source_route_indexes;
+        source_route_indexes.extend(destination_route_start..destination.routes.len());
+        let mut fields = IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes);
+        let router_include = destination
+            .router_includes
+            .get_mut(include.index)
+            .ok_or_else(|| PyRuntimeError::new_err("included router state was lost"))?;
+        fields.preserve_ready_state(&router_include.fields);
+        router_include.source_route_indexes = source_route_indexes;
+        router_include.fields = fields;
     }
     Ok(())
 }
@@ -12931,6 +13157,7 @@ impl FastApiCall {
                 "FastAPI-RS currently supports HTTP and lifespan ASGI scopes, not {scope_type:?}"
             )));
         }
+        refresh_included_router_routes(py, &self.app)?;
         let path = parse_scope_string(scope, "path", "/")?;
         let method = parse_scope_string(scope, "method", "GET")?;
         let route_path = py
