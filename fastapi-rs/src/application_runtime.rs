@@ -1754,13 +1754,6 @@ impl PyApiRoute {
         let unsupported_options = [
             (dependencies.is_some(), "dependencies"),
             (description.is_some(), "description"),
-            (
-                response_description != "Successful Response",
-                "response_description",
-            ),
-            (responses.is_some(), "responses"),
-            (deprecated.is_some(), "deprecated"),
-            (operation_id.is_some(), "operation_id"),
             (response_model_include.is_some(), "response_model_include"),
             (response_model_exclude.is_some(), "response_model_exclude"),
             (!response_model_by_alias, "response_model_by_alias"),
@@ -1770,7 +1763,6 @@ impl PyApiRoute {
                 "response_model_exclude_defaults",
             ),
             (response_model_exclude_none, "response_model_exclude_none"),
-            (!include_in_schema, "include_in_schema"),
             (
                 matches!(&response_class, ResponseClassArgument::Provided(_)),
                 "response_class",
@@ -1780,14 +1772,6 @@ impl PyApiRoute {
                 "dependency_overrides_provider",
             ),
             (callbacks.is_some(), "callbacks"),
-            (openapi_extra.is_some(), "openapi_extra"),
-            (
-                matches!(
-                    &generate_unique_id_function,
-                    GenerateUniqueIdArgument::Provided(_)
-                ),
-                "generate_unique_id_function",
-            ),
             (strict_content_type.is_some(), "strict_content_type"),
         ];
         if let Some((_, option)) = unsupported_options

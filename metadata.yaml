@@ -3590,6 +3590,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.constructor-common-options
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-explicit-none-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.routing.apiroute.constructor-openapi-options
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.routing.apiroute.constructor-hidden-from-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.routing.apiroute.constructor-custom-unique-id
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
           case_id: fastapi.routing.apiroute.constructor-defaults
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
@@ -3607,6 +3613,13 @@ reviewed_api_contract_overlay:
       feature_ids: [app-routing]
       observation_selectors: [python.signature, python.call_outcome, python.attribute_value, http.status, http.body.bytes, asgi.application_error.exception]
       supported_slice: >-
+        The standalone APIRoute workflow also compares configured response
+        descriptions, additional responses, deprecation, explicit operation IDs,
+        OpenAPI extensions, schema exclusion, and custom unique-ID callbacks
+        through exact generated documents. It covers only these selected
+        constructor options; dependency injection, custom response classes,
+        description fields, response-model filters, and full standalone ASGI
+        behavior remain outside this direct constructor slice.
         The input inspects FastAPI-registered APIRoute instances for one direct
         GET path operation and one GET operation included through nested
         APIRouter instances. It compares only path, path_format, name, methods,
@@ -3617,18 +3630,21 @@ reviewed_api_contract_overlay:
         dispatch, and OpenAPI. The pinned constructor signature is compared
         exactly; default construction and direct get_openapi behavior are mapped
         for one static GET endpoint. A separate standalone-route workflow maps
-        methods, name, tags, summary, status_code, an explicit response model,
-        and explicit response_model=None, comparing generated OpenAPI documents.
-        Other constructor options, ASGI dispatch from a standalone route, custom
-        route-class subclassing, and other APIRoute state remain outside this
-        supported slice. The reviewed source classification keeps direct
+        methods, name, tags, summary, status_code, explicit response models,
+        response descriptions, additional responses, deprecation, operation IDs,
+        OpenAPI extensions, schema exclusion, and custom unique-ID callbacks,
+        comparing generated OpenAPI documents. Dependency injection, custom
+        response classes, description, response-model filtering options, ASGI
+        dispatch from a standalone route, custom route-class subclassing, and
+        other APIRoute state remain outside this supported slice. The reviewed
+        source classification keeps direct
         constructor stability uncertain because upstream documents the route
         customization hook as experimental.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Only methods, name, tags, summary, status_code, and response_model (including explicit None) are currently implemented for standalone construction; other non-default options raise NotImplementedError.
+          - Standalone construction supports the mapped common and selected OpenAPI-facing options; dependency injection, custom response classes, description, response-model filters, strict content type, and callbacks remain unsupported.
           - Standalone APIRoute supports the mapped get_openapi path only; ASGI dispatch, app, and handler hooks are not implemented.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
@@ -4222,6 +4238,18 @@ reviewed_api_contract_overlay:
           observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.openapi.get-openapi.standalone-apiroute-explicit-none-response-model
+          workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-openapi-options
+          workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-hidden-from-schema
+          workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-custom-unique-id
           workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
           observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-multi-route.yaml

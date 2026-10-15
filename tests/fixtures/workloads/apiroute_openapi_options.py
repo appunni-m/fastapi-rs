@@ -19,6 +19,10 @@ def annotated_item() -> Item:
     return Item(item_id=8, label="eight")
 
 
+def custom_unique_id(route: APIRoute) -> str:
+    return f"custom-{route.name}"
+
+
 def create_argument_bundles() -> dict[str, dict[str, object]]:
     """Build fresh route objects from public constructor arguments."""
     configured_route = APIRoute(
@@ -26,6 +30,11 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         configured_item,
         response_model=Item,
         status_code=201,
+        response_description="The item was created",
+        responses={409: {"description": "The item already exists"}},
+        deprecated=True,
+        operation_id="create_configured_item",
+        openapi_extra={"x-fastapi-rs-probe": {"route": "configured"}},
         tags=["catalog"],
         summary="Create an item",
         name="create_item",
@@ -36,12 +45,28 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         annotated_item,
         response_model=None,
     )
+    hidden_route = APIRoute(
+        "/hidden-items",
+        annotated_item,
+        include_in_schema=False,
+    )
+    callback_id_route = APIRoute(
+        "/callback-items",
+        configured_item,
+        name="callback_item",
+        generate_unique_id_function=custom_unique_id,
+    )
     return {
         "configured-route": {
             "args": ["/direct-items", configured_item],
             "kwargs": {
                 "response_model": Item,
                 "status_code": 201,
+                "response_description": "The item was created",
+                "responses": {409: {"description": "The item already exists"}},
+                "deprecated": True,
+                "operation_id": "create_configured_item",
+                "openapi_extra": {"x-fastapi-rs-probe": {"route": "configured"}},
                 "tags": ["catalog"],
                 "summary": "Create an item",
                 "name": "create_item",
@@ -66,6 +91,33 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "title": "Disabled Response Model OpenAPI Probe",
                 "version": "1.0.0",
                 "routes": [disabled_model_route],
+            },
+        },
+        "hidden-route": {
+            "args": ["/hidden-items", annotated_item],
+            "kwargs": {"include_in_schema": False},
+        },
+        "hidden-openapi": {
+            "args": [],
+            "kwargs": {
+                "title": "Hidden APIRoute OpenAPI Probe",
+                "version": "1.0.0",
+                "routes": [hidden_route],
+            },
+        },
+        "callback-id-route": {
+            "args": ["/callback-items", configured_item],
+            "kwargs": {
+                "name": "callback_item",
+                "generate_unique_id_function": custom_unique_id,
+            },
+        },
+        "callback-id-openapi": {
+            "args": [],
+            "kwargs": {
+                "title": "Callback APIRoute OpenAPI Probe",
+                "version": "1.0.0",
+                "routes": [callback_id_route],
             },
         },
     }
