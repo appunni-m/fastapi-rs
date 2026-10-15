@@ -1,0 +1,125 @@
+schema: fastapi-rs/python-asgi-workflow@11
+workload:
+  file: tests/fixtures/workloads/frontend_documentation_sections_20261015.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.frontend-section.static-app-asset
+  verification: parity
+  factory_input:
+    scenario: static-app-asset
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: serve-built-asset
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /assets/app.js
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/frontend.md, kind: upstream_documentation}
+- case_id: fastapi.docs.frontend-section.explicit-custom-404
+  verification: parity
+  factory_input:
+    scenario: explicit-custom-404
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: missing-asset-uses-explicit-404-file
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /assets/missing.js
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/frontend.md, kind: upstream_documentation}
+  - {path: tests/test_frontend.py, kind: upstream_test}
+- case_id: fastapi.docs.frontend-section.auto-directory-production-error
+  verification: parity
+  factory_input:
+    scenario: auto-directory-production-error
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - {path: docs/en/docs/tutorial/frontend.md, kind: upstream_documentation}
+- case_id: fastapi.docs.frontend-section.auto-directory-development-warning
+  verification: parity
+  factory_input:
+    scenario: auto-directory-development-warning
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    capture_warnings: true
+    comparison: exact
+  actions: []
+  source_evidence:
+  - {path: docs/en/docs/tutorial/frontend.md, kind: upstream_documentation}
+- case_id: fastapi.docs.frontend-section.explicit-check-dir-true
+  verification: parity
+  factory_input:
+    scenario: explicit-check-dir-true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - {path: docs/en/docs/tutorial/frontend.md, kind: upstream_documentation}
+- case_id: fastapi.docs.frontend-section.check-dir-false-defers-error
+  verification: parity
+  factory_input:
+    scenario: check-dir-false-defers-error
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-after-deferred-directory-check
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /asset.txt
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/frontend.md, kind: upstream_documentation}

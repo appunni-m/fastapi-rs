@@ -16,14 +16,50 @@ from scripts.atlas_documentation_example_review_mappings import (
 from scripts.atlas_documentation_page_case_links_fastapi_wave_l import (
     DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L,
 )
+from scripts.atlas_documentation_section_case_mappings_async_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_background_tasks_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_body_wave_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_custom_request_route_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_frontend_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_openapi_callbacks_webhooks_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_OPENAPI_CALLBACKS_WEBHOOKS_20261015,
+)
 from scripts.atlas_documentation_section_case_mappings_operation_config_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_query_header_parameters_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_response_cookies_status_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_COOKIES_STATUS_20261015,
 )
 from scripts.atlas_documentation_section_case_mappings_security_intro_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
 )
+from scripts.atlas_documentation_section_case_mappings_security_reference_sections_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_REFERENCE_SECTIONS_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_streaming_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_STREAMING_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_sub_applications_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_SUB_APPLICATIONS_20261015,
+)
 from scripts.atlas_documentation_section_case_mappings_ui_clients_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
+)
+from scripts.atlas_events_documentation_section_review_mappings_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
 )
 from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
@@ -48,15 +84,25 @@ INDEX_SCHEMA = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v9.schema.json"
 
 _REVIEWED_PAGE_SECTION_MAPPINGS = (
+    DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
+    DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015,
+    DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
+    DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015,
+    DOC_SECTION_CASE_MAPPINGS_OPENAPI_CALLBACKS_WEBHOOKS_20261015,
     DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015,
+    DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_COOKIES_STATUS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_REFERENCE_SECTIONS_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
+    DOC_SECTION_CASE_MAPPINGS_STREAMING_20261015,
+    DOC_SECTION_CASE_MAPPINGS_SUB_APPLICATIONS_20261015,
     DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
 )
 
 
-def _reviewed_page_case_selectors(
-    source_path: str, recipe_path: str, case_id: str
-) -> set[str]:
+def _reviewed_page_case_selectors(source_path: str, recipe_path: str, case_id: str) -> set[str]:
     """Return selectors explicitly reviewed for this docs page and fixture case."""
     page_rel = source_path.removeprefix("docs/en/docs/")
     selectors: set[str] = set()
@@ -64,9 +110,7 @@ def _reviewed_page_case_selectors(
         for (mapped_page, _), mapping in mappings.items():
             if mapped_page != page_rel or mapping.get("status") == "excluded":
                 continue
-            if mapping.get("recipe_path") == recipe_path and case_id in mapping.get(
-                "case_ids", []
-            ):
+            if mapping.get("recipe_path") == recipe_path and case_id in mapping.get("case_ids", []):
                 selectors.update(mapping["observation_selectors"])
     return selectors
 

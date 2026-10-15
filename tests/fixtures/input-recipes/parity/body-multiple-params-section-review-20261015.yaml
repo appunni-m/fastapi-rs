@@ -1,0 +1,192 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_body_tutorial_source_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.body-multiple-params-section-review.two-models
+  actions:
+  - action_id: submit-two-model-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /source-review/multi/tutorial002/items/241
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"item":{"name":"Ash notebook","price":12.4,"description":"Linen cover","tags":["blue","lined"]},"user":{"username":"river-owl","display_name":"River"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: inspect-two-model-request-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1source-review~1multi~1tutorial002~1items~1{item_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/Item
+      - /components/schemas/User
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.body-multiple-params-section-review.embedded-model
+  actions:
+  - action_id: submit-embedded-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /source-review/multi/tutorial005/annotated/items/242
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"item":{"name":"Pine ruler","price":4.25,"tags":["metric","wood"]}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: inspect-embedded-model-request-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1source-review~1multi~1tutorial005~1annotated~1items~1{item_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/Item
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.body-multiple-params-section-review.body-and-query
+  actions:
+  - action_id: submit-body-with-query
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /source-review/multi/tutorial004/annotated/items/243
+      query_string: q=independent
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"importance":5,"item":{"name":"Birch gauge","price":18.5},"user":{"username":"north-star"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: inspect-body-with-query-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1source-review~1multi~1tutorial004~1annotated~1items~1{item_id}/put/requestBody/content/application~1json/schema
+      - /paths/~1source-review~1multi~1tutorial004~1annotated~1items~1{item_id}/put/parameters
+      - /components/schemas/Item
+      - /components/schemas/User
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation

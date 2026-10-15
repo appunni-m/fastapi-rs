@@ -391,8 +391,9 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
     "docs_src/custom_request_and_route/tutorial003_py310.py": _review(
         _text(
             "TimedRoute wraps a router handler and adds a response header after dispatch.",
-            "The independent route samples wrapped dispatch/status/body; duration, prints,",
-            "and header value are not claimed.",
+            "Independent routes sample wrapped dispatch/status/body; a stable marker header",
+            "makes the second wrapper observable. Duration, prints, and dynamic timing values",
+            "are not claimed.",
         ),
         [
             _span(
@@ -407,7 +408,12 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "documentation-example-review-wave-h.yaml",
                 "fastapi.documentation-example.wave-h.custom-route.timed-dispatch",
                 selectors=HTTP,
-            )
+            ),
+            _case(
+                "custom-request-route-sections-review-20261015.yaml",
+                "fastapi.docs.custom-request-route.router-class-hook-20261015",
+                selectors=HTTP,
+            ),
         ],
     ),
     "docs_src/websockets_/tutorial001_py310.py": _review(
