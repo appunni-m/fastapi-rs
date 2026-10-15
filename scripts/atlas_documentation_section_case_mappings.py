@@ -686,4 +686,32 @@ DOC_SECTION_CASE_MAPPINGS = {
             "security behavior is mapped independently."
         ),
     },
+    ("tutorial/body-nested-models.md", "editor-support-everywhere"): {
+        "status": "excluded",
+        "heading": "Editor support everywhere { #editor-support-everywhere }",
+        "start_line": 169,
+        "end_line": 180,
+        "exclusion_reason": (
+            "This section concerns editor and IDE assistance rather than server-visible "
+            "FastAPI runtime behavior."
+        ),
+        "rationale": (
+            "The pinned claim is about editor completion and diagnostics; neighboring body "
+            "binding, Pydantic validation, and JSON serialization claims remain separate."
+        ),
+    },
+    ("tutorial/body-nested-models.md", "recap"): {
+        "status": "excluded",
+        "heading": "Recap { #recap }",
+        "start_line": 211,
+        "end_line": 221,
+        "exclusion_reason": (
+            "This section summarizes the preceding nested-body claims without introducing a "
+            "new request, response, or API behavior."
+        ),
+        "rationale": (
+            "The pinned span is a recap of model declaration, conversion, validation, and "
+            "documentation topics already scoped to their individual sections."
+        ),
+    },
 }

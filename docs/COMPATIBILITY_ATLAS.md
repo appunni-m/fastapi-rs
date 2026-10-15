@@ -45,10 +45,10 @@ The single `tests/fixtures/manifest.yaml` indexes 480 source-supported symbols a
 | Upstream `test_*.py` modules | 492 | 452 | 452 | 0 | 40 |
 | User-facing documentation pages | 155 | 105 | 105 | 0 | 50 |
 | Documentation Python files (examples + support initializers) | 461 | 333 | 333 | 0 | 128 |
-| Documentation section candidates (feature signals) | 1556 | 24 | 24 | 722 | 810 |
+| Documentation section candidates (feature signals) | 1556 | 24 | 24 | 720 | 812 |
 | Documentation headings without feature signal | 542 | — | — | — | — |
 
-Section candidates are a finer-grained discovery view, not a replacement for the page denominator. Of 1556 feature-signal sections, 24 have reviewed independent case links, 722 remain pending review, and 810 inherit an explicit excluded-page rationale. Another 542 Markdown headings produced no feature signal and are not silently counted as features.
+Section candidates are a finer-grained discovery view, not a replacement for the page denominator. Of 1556 feature-signal sections, 24 have reviewed independent case links, 720 remain pending review, and 812 inherit an explicit excluded-page rationale. Another 542 Markdown headings produced no feature signal and are not silently counted as features.
 
 Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 333 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
