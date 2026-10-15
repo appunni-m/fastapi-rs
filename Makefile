@@ -72,7 +72,7 @@ help: ## Show common development commands
 	  '  make format         Apply Rust formatting' \
 	  '  make clippy         Run strict workspace Clippy' \
 	  '  make build          Build the Rust crates and Python wheel' \
-	  '  make build-rust     Build all Rust workspace crates' \
+	  '  make build-rust     Build Rust crates with the pinned Starlette-RS source overlay' \
 	  '  make build-python   Build the Python wheel under target/wheels' \
 	  '  make build-tools-prepare Prepare hash-locked CPython 3.12.13 Maturin environment' \
 	  '  make developer-tools-prepare Install the hash-locked Ruff/uv/schema/YAML tool profile' \
@@ -153,8 +153,8 @@ format: developer-tools-prepare ## Apply Rust formatting
 clippy: rust-policy-check ## Run strict workspace Clippy
 	$(PYTHON) scripts/build_target_extension.py --clippy --cargo "$(CARGO)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
-build-rust: ## Build all Rust workspace crates
-	$(CARGO) build --workspace --all-features --locked
+build-rust: ## Build all Rust workspace crates against the selected Starlette-RS source
+	$(PYTHON) scripts/build_target_extension.py --build-rust --cargo "$(CARGO)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 build-tools-prepare: ## Prepare isolated hash-locked CPython 3.12.13 build tools
 	test -x "$(BUILD_TOOLS_PYTHON)" || $(UV) venv --python 3.12.13 "$(BUILD_TOOLS_ENV)"

@@ -480,6 +480,11 @@ def main() -> int:
         "--clippy", action="store_true", help="run strict workspace Clippy without installing"
     )
     parser.add_argument(
+        "--build-rust",
+        action="store_true",
+        help="build the Rust workspace without installing the Python extension",
+    )
+    parser.add_argument(
         "--fault-injection",
         action="store_true",
         help="build into target/fault-injection without replacing the normal extension",
@@ -497,10 +502,8 @@ def main() -> int:
         "--starlette-rs-source", required=True, type=Path, help="selected Starlette-RS checkout"
     )
     args = parser.parse_args()
-    if args.clippy and args.fault_injection:
-        parser.error("--fault-injection cannot be combined with --clippy")
-    if args.release_wheel and (args.clippy or args.fault_injection):
-        parser.error("--release-wheel cannot be combined with --clippy or --fault-injection")
+    if sum((args.clippy, args.build_rust, args.release_wheel, args.fault_injection)) > 1:
+        parser.error("--clippy, --build-rust, --release-wheel, and --fault-injection are exclusive")
     if args.fault_injection and args.python is None:
         parser.error("--fault-injection requires --python inside target/fault-injection/")
     starlette_rs_source = args.starlette_rs_source.resolve()
@@ -524,7 +527,7 @@ def main() -> int:
     target_python = None
     fault_site_packages = None
     python_source = ROOT / "fastapi-rs-py/python"
-    if not args.clippy:
+    if not args.clippy and not args.build_rust:
         if args.python is None:
             raise SystemExit("--python is required unless --clippy is selected")
         target_python = args.python.absolute()
@@ -548,7 +551,7 @@ def main() -> int:
             overlay_root,
             starlette_rs_source,
             cargo_command,
-            all_features=args.clippy,
+            all_features=args.clippy or args.build_rust,
             fault_injection=args.fault_injection,
         )
         environment = os.environ.copy()
@@ -567,6 +570,21 @@ def main() -> int:
                 "--",
                 "-D",
                 "warnings",
+            ]
+            return subprocess.run(
+                command, cwd=overlay_root, env=environment, check=False
+            ).returncode
+
+        if args.build_rust:
+            command = [
+                *cargo_command,
+                "build",
+                "--manifest-path",
+                str(overlay_root / "Cargo.toml"),
+                "--locked",
+                "--offline",
+                "--workspace",
+                "--all-features",
             ]
             return subprocess.run(
                 command, cwd=overlay_root, env=environment, check=False
