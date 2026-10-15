@@ -19,6 +19,9 @@ from scripts.atlas_documentation_page_case_links_fastapi_wave_l import (
 from scripts.atlas_documentation_section_case_mappings_async_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
 )
+from scripts.atlas_documentation_section_case_mappings_advanced_testing_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015,
+)
 from scripts.atlas_documentation_section_case_mappings_additional_response_model_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_ADDITIONAL_RESPONSE_MODEL_20261015,
 )
@@ -28,11 +31,17 @@ from scripts.atlas_documentation_section_case_mappings_background_tasks_20261015
 from scripts.atlas_documentation_section_case_mappings_body_wave_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015,
 )
+from scripts.atlas_documentation_section_case_mappings_authentication_error_status_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_AUTHENTICATION_ERROR_STATUS_20261015,
+)
 from scripts.atlas_documentation_section_case_mappings_custom_request_route_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
 )
 from scripts.atlas_documentation_section_case_mappings_cookie_params_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_COOKIE_PARAMS_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_cookie_encoder_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015,
 )
 from scripts.atlas_documentation_section_case_mappings_data_conversion_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_DATA_CONVERSION_20261015,
@@ -45,6 +54,9 @@ from scripts.atlas_documentation_section_case_mappings_frontend_20261015 import 
 )
 from scripts.atlas_documentation_section_case_mappings_form_parameters_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_FORM_PARAMETERS_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_request_forms_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015,
 )
 from scripts.atlas_documentation_section_case_mappings_global_dependencies_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_GLOBAL_DEPENDENCIES_20261015,
@@ -70,6 +82,18 @@ from scripts.atlas_documentation_section_case_mappings_response_model_defaults_2
 from scripts.atlas_documentation_section_case_mappings_request_object_directly_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_REQUEST_OBJECT_DIRECTLY_20261015,
 )
+from scripts.atlas_documentation_section_case_mappings_response_reference_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_request_middleware_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_reference_dependencies_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_REFERENCE_DEPENDENCIES_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_reference_api_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015,
+)
 from scripts.atlas_documentation_section_case_mappings_security_intro_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
 )
@@ -81,6 +105,9 @@ from scripts.atlas_documentation_section_case_mappings_streaming_20261015 import
 )
 from scripts.atlas_documentation_section_case_mappings_strict_content_type_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_STRICT_CONTENT_TYPE_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_strict_cli_background_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015,
 )
 from scripts.atlas_documentation_section_case_mappings_sub_applications_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_SUB_APPLICATIONS_20261015,
@@ -121,11 +148,14 @@ INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v9.s
 
 _REVIEWED_PAGE_SECTION_MAPPINGS = (
     DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015,
     DOC_SECTION_CASE_MAPPINGS_ADDITIONAL_RESPONSE_MODEL_20261015,
+    DOC_SECTION_CASE_MAPPINGS_AUTHENTICATION_ERROR_STATUS_20261015,
     DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015,
     DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015,
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
     DOC_SECTION_CASE_MAPPINGS_COOKIE_PARAMS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015,
     DOC_SECTION_CASE_MAPPINGS_DATA_CONVERSION_20261015,
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_OVERRIDES_20261015,
     DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015,
@@ -138,10 +168,16 @@ _REVIEWED_PAGE_SECTION_MAPPINGS = (
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_COOKIES_STATUS_20261015,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_DEFAULTS_20261015,
     DOC_SECTION_CASE_MAPPINGS_REQUEST_OBJECT_DIRECTLY_20261015,
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015,
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015,
+    DOC_SECTION_CASE_MAPPINGS_REFERENCE_DEPENDENCIES_20261015,
+    DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_REFERENCE_SECTIONS_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
     DOC_SECTION_CASE_MAPPINGS_STREAMING_20261015,
     DOC_SECTION_CASE_MAPPINGS_STRICT_CONTENT_TYPE_20261015,
+    DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015,
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015,
     DOC_SECTION_CASE_MAPPINGS_SUB_APPLICATIONS_20261015,
     DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
     DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
