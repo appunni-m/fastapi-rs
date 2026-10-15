@@ -181,6 +181,23 @@ under ignored `benchmark-results/`.
 This is a first-slice baseline only. It does not replace the upstream TestClient
 benchmark suite or establish performance parity beyond the measured request.
 
+### TestClient request lane
+
+`benchmarks/workloads/testclient/testclient-sync-validated.yaml` follows the
+pinned upstream `test_sync_receiving_validated_pydantic_model` scenario:
+POST a JSON Pydantic model through a synchronous endpoint with a nested
+dependency and response model. `make benchmark-testclient` gates the selected
+schema-v12 TestClient parity case with fresh identity-checked oracle and target
+runs, then measures the same `client.post(..., json=payload)` call and extracts
+status/body using one reused TestClient context per subject. App construction,
+TestClient construction, and lifespan startup/teardown are outside the latency
+timer; HTTPX serialization, TestClient, in-process ASGI, FastAPI validation,
+dependency execution, response serialization, and status/body extraction are
+inside it. The TestClient profile pins HTTPX 0.28.1. This lane has a separate
+workload/result contract and stays outside the fixed direct-ASGI suite. A plain
+Starlette route cannot execute the FastAPI validation and dependency work in
+this scenario, so results compare FastAPI 0.141.1 with FastAPI-RS only.
+
 The repeated-sequence-query lane is also executable after its three-action
 identity-checked workflow passes. Run
 `make benchmark-first-slice BENCHMARK_WORKLOAD=benchmarks/workloads/repeated-sequence-query-asgi.yaml`

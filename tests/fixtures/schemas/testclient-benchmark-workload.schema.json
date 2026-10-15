@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastapi-rs/testclient-benchmark-workload@1",
+  "title": "FastAPI-RS TestClient benchmark workload",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "title",
+    "upstream_source",
+    "input",
+    "profiles",
+    "python_identity",
+    "subjects",
+    "correctness_gate",
+    "timing",
+    "reporting"
+  ],
+  "properties": {
+    "schema": {"const": "fastapi-rs/testclient-benchmark-workload@1"},
+    "id": {"const": "fastapi.testclient.sync-validated-post"},
+    "title": {"type": "string", "minLength": 1},
+    "upstream_source": {
+      "type": "object",
+      "required": ["path", "function", "line_start", "line_end"],
+      "properties": {
+        "path": {"const": "tests/benchmarks/test_general_performance.py"},
+        "function": {"const": "test_sync_receiving_validated_pydantic_model"},
+        "line_start": {"const": 214},
+        "line_end": {"const": 222}
+      },
+      "additionalProperties": false
+    },
+    "input": {
+      "type": "object",
+      "required": ["path", "case_id", "action_id"],
+      "properties": {
+        "path": {
+          "const": "tests/fixtures/inputs/parity/testclient-sync-validated-benchmark.json"
+        },
+        "case_id": {"const": "fastapi.benchmarks.sync-validated.testclient-request"},
+        "action_id": {"const": "sync-validated-post"}
+      },
+      "additionalProperties": false
+    },
+    "profiles": {
+      "type": "object",
+      "required": ["oracle", "target"],
+      "properties": {
+        "oracle": {"const": "testclient"},
+        "target": {"const": "testclient"}
+      },
+      "additionalProperties": false
+    },
+    "python_identity": {
+      "type": "object",
+      "required": ["implementation", "version"],
+      "properties": {
+        "implementation": {"const": "CPython"},
+        "version": {"const": "3.12.13"}
+      },
+      "additionalProperties": false
+    },
+    "subjects": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/subject"}
+    },
+    "correctness_gate": {
+      "type": "object",
+      "required": ["required_comparison", "require_equal_untimed_observation"],
+      "properties": {
+        "required_comparison": {"const": "all-selected-cases-pass"},
+        "require_equal_untimed_observation": {
+          "type": "array",
+          "items": {"enum": ["status", "body"]},
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "timing": {
+      "type": "object",
+      "required": [
+        "boundary",
+        "includes",
+        "excludes",
+        "warmups",
+        "rounds",
+        "samples_per_round",
+        "concurrency",
+        "metrics",
+        "raw_samples"
+      ],
+      "properties": {
+        "boundary": {"type": "string", "minLength": 1},
+        "includes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "excludes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "warmups": {"type": "integer", "minimum": 1},
+        "rounds": {"type": "integer", "minimum": 1},
+        "samples_per_round": {"type": "integer", "minimum": 1},
+        "concurrency": {"const": 1},
+        "metrics": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "per-request latency nanoseconds: min, median, p95, p99, max, mean",
+              "sequential request-loop throughput including per-call setup and response extraction"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "raw_samples": {"const": "retain all per-request latency samples"}
+      },
+      "additionalProperties": false
+    },
+    "reporting": {
+      "type": "object",
+      "required": ["fastapi_rs_over_fastapi"],
+      "properties": {
+        "fastapi_rs_over_fastapi": {"const": "report median and p95 ratios only"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "subject": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["id", "kind", "environment"],
+          "properties": {
+            "id": {"const": "fastapi-0.141.1"},
+            "kind": {"const": "fastapi"},
+            "environment": {"const": "oracle"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["id", "kind", "environment"],
+          "properties": {
+            "id": {"const": "fastapi-rs-release"},
+            "kind": {"const": "fastapi-rs"},
+            "environment": {"const": "target"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

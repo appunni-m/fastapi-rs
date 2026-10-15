@@ -1,0 +1,52 @@
+schema: fastapi-rs/testclient-benchmark-workload@1
+id: fastapi.testclient.sync-validated-post
+title: Validated synchronous Pydantic request through a reused TestClient
+upstream_source:
+  path: tests/benchmarks/test_general_performance.py
+  function: test_sync_receiving_validated_pydantic_model
+  line_start: 214
+  line_end: 222
+input:
+  path: tests/fixtures/inputs/parity/testclient-sync-validated-benchmark.json
+  case_id: fastapi.benchmarks.sync-validated.testclient-request
+  action_id: sync-validated-post
+profiles:
+  oracle: testclient
+  target: testclient
+python_identity:
+  implementation: CPython
+  version: 3.12.13
+subjects:
+  - id: fastapi-0.141.1
+    kind: fastapi
+    environment: oracle
+  - id: fastapi-rs-release
+    kind: fastapi-rs
+    environment: target
+correctness_gate:
+  required_comparison: all-selected-cases-pass
+  require_equal_untimed_observation: [status, body]
+timing:
+  boundary: >-
+    Reuse one TestClient context per subject; measure client.post with the JSON
+    payload and extraction of response.status_code and response.content.
+  includes:
+    - HTTPX JSON serialization and in-process request transport
+    - TestClient and ASGI dispatch
+    - FastAPI request validation, dependency execution, and response serialization
+    - response status and body extraction
+  excludes:
+    - interpreter and module startup
+    - app construction and route registration
+    - TestClient construction and lifespan startup or teardown
+    - network and external server startup or processing
+  warmups: 50
+  rounds: 5
+  samples_per_round: 200
+  concurrency: 1
+  metrics:
+    - "per-request latency nanoseconds: min, median, p95, p99, max, mean"
+    - sequential request-loop throughput including per-call setup and response extraction
+  raw_samples: retain all per-request latency samples
+reporting:
+  fastapi_rs_over_fastapi: report median and p95 ratios only

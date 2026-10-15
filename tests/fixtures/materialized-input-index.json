@@ -33524,6 +33524,30 @@
       ]
     },
     {
+      "id": "testclient-sync-validated-benchmark",
+      "input_path": "tests/fixtures/inputs/parity/testclient-sync-validated-benchmark.json",
+      "input_sha256": "4f1da8d2de105da9cd039e186f80416600c81abf4895c028296414dce33618c1",
+      "recipe_path": "tests/fixtures/input-recipes/parity/testclient-sync-validated-benchmark.yaml",
+      "recipe_sha256": "ca859533201646ac5e731486bc106d4cd588b57a0aef02b09942e6c3439e593e",
+      "case_ids": [
+        "fastapi.benchmarks.sync-validated.testclient-request"
+      ],
+      "workload_path": "tests/fixtures/workloads/fastapi_testclient_sync_validated_benchmark.py",
+      "workload_sha256": "19118c7ca21023b136d29a5005fdc2a00d0116581a877e977e1717efc5f2cc3a",
+      "oracle_profile_extension": "testclient",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.benchmarks.sync-validated.testclient-request",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_class.py",
+            "source:upstream-test:tests/test_serialize_response_model.py",
+            "source:upstream-test:tests/test_tutorial/test_body/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "testing-tutorial003-lifecycle-upstream",
       "input_path": "tests/fixtures/inputs/parity/testing-tutorial003-lifecycle-upstream.json",
       "input_sha256": "5affcca68e84c061984fbf70b6c88e2594f6928b8eeee5136c94e722dbdf20de",
@@ -64853,6 +64877,48 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs-ui.swagger-parameters.nested-theme"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_class.py",
+      "fixture_id": "fastapi.test.test-dependency-class",
+      "workflow_id": "testclient-sync-validated-benchmark",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.benchmarks.sync-validated.testclient-request"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_serialize_response_model.py",
+      "fixture_id": "fastapi.test.test-serialize-response-model",
+      "workflow_id": "testclient-sync-validated-benchmark",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.benchmarks.sync-validated.testclient-request"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_body/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-body-test-tutorial001",
+      "workflow_id": "testclient-sync-validated-benchmark",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.benchmarks.sync-validated.testclient-request"
       ],
       "observation_selectors": [
         "http.body.bytes",

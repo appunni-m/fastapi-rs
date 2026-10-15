@@ -61,7 +61,7 @@ RELEASE_CRATE_DIR ?= target/package
 RELEASE_VERSION ?= 0.1.0
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check benchmark-testclient verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -120,6 +120,7 @@ help: ## Show common development commands
 	  '  make benchmark-contract-check Validate benchmark workloads against parity inputs and runner policy' \
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
 	  '  make benchmark-suite  Gate and measure all seven reviewed direct-ASGI workloads' \
+	  '  make benchmark-testclient Gate and measure the focused reused-TestClient workload' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'Builds use the separate hash-locked CPython 3.12.13 Maturin environment; override BUILD_TOOLS_ENV, CARGO, or MATURIN as needed.'
@@ -388,6 +389,9 @@ benchmark-contract-check: parity-inputs ## Validate workload declarations and cu
 	$(PYTHON) -m scripts.benchmarks.contract --check
 	$(PYTHON) -m scripts.benchmarks.run_suite --check
 
+benchmark-testclient-input-check: parity-inputs ## Validate the focused TestClient benchmark declaration
+	$(PYTHON) -m scripts.benchmarks.testclient_contract --check --workload benchmarks/workloads/testclient/testclient-sync-validated.yaml
+
 benchmark-first-slice: benchmark-input-check parity-prepare-oracle parity-prepare-target ## Prepare isolated runtimes, gate parity, and measure the selected direct-ASGI workload
 	$(PYTHON) scripts/benchmarks/run_first_slice.py \
 	  --workload "$(BENCHMARK_WORKLOAD)" \
@@ -396,6 +400,15 @@ benchmark-first-slice: benchmark-input-check parity-prepare-oracle parity-prepar
 	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
 	  --oracle-python "$(ORACLE_PYTHON)" \
 	  --target-python "$(TARGET_PYTHON)"
+
+benchmark-testclient: benchmark-testclient-input-check parity-prepare-oracle-testclient parity-prepare-target-testclient ## Gate and measure the focused TestClient workload
+	$(PYTHON) -m scripts.benchmarks.run_testclient \
+	  --workload benchmarks/workloads/testclient/testclient-sync-validated.yaml \
+	  --fastapi-source "$(FASTAPI_SOURCE)" \
+	  --starlette-source "$(STARLETTE_SOURCE)" \
+	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
+	  --oracle-python "$(ORACLE_TESTCLIENT_PYTHON)" \
+	  --target-python "$(TARGET_TESTCLIENT_PYTHON)"
 
 benchmark-suite: benchmark-input-check parity-prepare-oracle ## Prepare the oracle, then gate and measure the complete reviewed benchmark set
 	$(PYTHON) -m scripts.benchmarks.run_suite \

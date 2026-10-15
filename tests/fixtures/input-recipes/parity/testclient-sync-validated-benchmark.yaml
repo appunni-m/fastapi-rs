@@ -1,0 +1,42 @@
+schema: fastapi-rs/python-asgi-workflow@12
+oracle_profile_extension: testclient
+workload:
+  file: tests/fixtures/workloads/fastapi_testclient_sync_validated_benchmark.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.benchmarks.sync-validated.testclient-request
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors:
+        - outcome
+        - exception_class
+        - exception_message
+      comparison: exact
+    actions:
+      - action_id: sync-validated-post
+        kind: testclient_request
+        request:
+          method: POST
+          url: /sync/validated
+          headers:
+            - [content-type, application/json]
+          content_base64: eyJuYW1lIjoiZm9vIiwidmFsdWUiOjEyM30=
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: workload_trace
+            comparison: ordered
+    source_evidence:
+      - path: tests/benchmarks/test_general_performance.py
+        kind: upstream_test
+      - path: tests/test_tutorial/test_body/test_tutorial001.py
+        kind: upstream_test
+      - path: tests/test_dependency_class.py
+        kind: upstream_test
+      - path: tests/test_serialize_response_model.py
+        kind: upstream_test
+    verification: parity
