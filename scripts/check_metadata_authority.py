@@ -527,6 +527,201 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
     require_equal("Rust injection points", rust_points, set(point_contracts))
 
 
+def validate_runtime_root_namespace_review(
+    metadata: dict[str, Any],
+    manifest: dict[str, Any],
+    inventory: dict[str, Any],
+    fastapi: dict[str, Any],
+) -> None:
+    review = metadata.get("runtime_root_namespace_review")
+    require_equal(
+        "runtime root namespace review schema",
+        review.get("schema") if isinstance(review, dict) else None,
+        "fastapi-rs/runtime-root-namespace-review@1",
+    )
+    require_equal(
+        "runtime root namespace source identity",
+        review.get("source_identity"),
+        {
+            "package": "FastAPI",
+            "version": fastapi["version"],
+            "source_commit": fastapi["commit"],
+        },
+    )
+    profile_refs = [
+        "source_artifacts.runtime_api_surface_core",
+        "source_artifacts.runtime_api_surface_standard",
+    ]
+    require_equal("runtime root namespace profiles", review.get("profiles"), profile_refs)
+
+    inventory_digest = hashlib.sha256(
+        json.dumps(inventory, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    inventory_modules = {row["id"]: row for row in inventory.get("modules", [])}
+    explicit_root_exports = {row["id"] for row in inventory.get("root_exports", [])}
+    source_candidate_count = len(inventory.get("import_bindings", []))
+
+    def count_definition(row: dict[str, Any]) -> int:
+        return 1 + sum(count_definition(member) for member in row.get("members", []))
+
+    source_candidate_count += sum(
+        count_definition(definition)
+        for module in inventory.get("modules", [])
+        for definition in module.get("definitions", [])
+    )
+    runtime_manifest = manifest.get("unresolved", {}).get("runtime_api_surface", {})
+    require_equal(
+        "runtime source candidate count",
+        runtime_manifest.get("source_candidates"),
+        source_candidate_count,
+    )
+    instance_candidates = inventory.get("counts", {}).get("fastapi_instance_assignment_candidates")
+    require_equal(
+        "runtime source candidates include instance assignments",
+        runtime_manifest.get("included_instance_assignment_candidates"),
+        instance_candidates,
+    )
+
+    profile_names = {"core": "runtime_api_surface_core", "standard": "runtime_api_surface_standard"}
+    profiles: dict[str, dict[str, Any]] = {}
+    root_names: dict[str, set[str]] = {}
+    for profile_name, artifact_name in profile_names.items():
+        artifact_ref = manifest["source_artifacts"][artifact_name]
+        artifact_path_value = artifact_path(artifact_ref["path"])
+        profile = load_json(artifact_path_value)
+        validate_digest(artifact_path_value, artifact_ref, f"{profile_name} runtime API surface")
+        require_equal(
+            f"{profile_name} runtime API surface schema",
+            profile.get("schema"),
+            "fastapi-rs/runtime-api-surface@1",
+        )
+        require_equal(
+            f"{profile_name} runtime FastAPI identity",
+            profile.get("authority", {}).get("fastapi"),
+            {"version": fastapi["version"], "commit": fastapi["commit"]},
+        )
+        require_equal(
+            f"{profile_name} runtime inventory digest",
+            profile.get("authority", {}).get("source_inventory_sha256"),
+            inventory_digest,
+        )
+        modules = {row["id"]: row for row in profile.get("modules", [])}
+        root_module = modules.get("fastapi", {})
+        require_equal(
+            f"{profile_name} explicit root export count",
+            root_module.get("source_declared_symbol_count"),
+            len(explicit_root_exports),
+        )
+        require_equal(
+            f"{profile_name} public root runtime name count",
+            root_module.get("public_runtime_name_count"),
+            41,
+        )
+        root_names[profile_name] = {
+            row["id"]
+            for row in profile.get("runtime_only_names", [])
+            if row.get("id", "").startswith("fastapi.")
+            and row["id"].count(".") == 1
+            and row.get("kind") == "module"
+        }
+        profiles[profile_name] = profile
+    require_equal(
+        "runtime-only root module attributes across profiles",
+        root_names["core"],
+        root_names["standard"],
+    )
+    require_equal(
+        "runtime-only root attributes are not explicit exports",
+        root_names["core"] & explicit_root_exports,
+        set(),
+    )
+
+    rows = review.get("rows")
+    if not isinstance(rows, list):
+        raise MetadataError("runtime root namespace review rows must be a list")
+    rows_by_id: dict[str, dict[str, Any]] = {}
+    fastapi_source = (ROOT / fastapi["checkout"]).resolve()
+    allowed_classifications = {"supported", "private_or_internal", "uncertain"}
+    for row in rows:
+        if not isinstance(row, dict):
+            raise MetadataError("runtime root namespace review row must be a mapping")
+        identifier = row.get("id")
+        if not isinstance(identifier, str) or identifier in rows_by_id:
+            raise MetadataError("runtime root namespace review IDs must be unique strings")
+        rows_by_id[identifier] = row
+        classification = row.get("classification")
+        if classification not in allowed_classifications:
+            raise MetadataError(f"invalid runtime root namespace classification: {identifier}")
+        source_path = row.get("source_path")
+        source_module = inventory_modules.get(identifier)
+        if not isinstance(source_path, str) or source_module is None:
+            raise MetadataError(f"runtime root namespace source module is missing: {identifier}")
+        require_equal(
+            f"runtime root namespace source path {identifier}",
+            source_module.get("source_ref", {}).get("path"),
+            source_path,
+        )
+        if not (fastapi_source / source_path).is_file():
+            raise MetadataError(f"runtime root namespace source file is missing: {source_path}")
+        reason = row.get("reason")
+        if not isinstance(reason, str) or not reason.strip():
+            raise MetadataError(f"runtime root namespace reason is missing: {identifier}")
+        evidence = row.get("evidence")
+        if classification == "supported":
+            if not isinstance(evidence, dict) or set(evidence) != {"path", "contains"}:
+                raise MetadataError(
+                    f"supported runtime root module lacks doc evidence: {identifier}"
+                )
+            evidence_path = evidence["path"]
+            evidence_text = evidence["contains"]
+            if (
+                not isinstance(evidence_path, str)
+                or not evidence_path.startswith(("docs/en/docs/", "docs_src/"))
+                or not isinstance(evidence_text, str)
+                or identifier not in evidence_text
+            ):
+                raise MetadataError(f"runtime root module doc evidence is malformed: {identifier}")
+            document_path = fastapi_source / evidence_path
+            if not document_path.is_file() or evidence_text not in document_path.read_text(
+                encoding="utf-8"
+            ):
+                raise MetadataError(f"runtime root module doc evidence is stale: {identifier}")
+        elif evidence is not None:
+            raise MetadataError(
+                "non-supported runtime root module must not claim public doc evidence: "
+                f"{identifier}"
+            )
+
+    require_equal(
+        "runtime root namespace review candidate set",
+        set(rows_by_id),
+        root_names["core"],
+    )
+    counts = Counter(row["classification"] for row in rows)
+    expected_counts = {
+        "candidates": len(rows),
+        "supported": counts.get("supported", 0),
+        "private_or_internal": counts.get("private_or_internal", 0),
+        "uncertain": counts.get("uncertain", 0),
+    }
+    require_equal("runtime root namespace review counts", review.get("counts"), expected_counts)
+    require_equal(
+        "manifest runtime root namespace review source",
+        runtime_manifest.get("root_namespace_review", {}).get("source"),
+        "metadata.yaml:/runtime_root_namespace_review",
+    )
+    require_equal(
+        "manifest runtime root namespace candidate count",
+        runtime_manifest.get("root_namespace_review", {}).get("runtime_only_module_attributes"),
+        expected_counts["candidates"],
+    )
+    require_equal(
+        "manifest runtime root namespace classifications",
+        runtime_manifest.get("root_namespace_review", {}).get("classifications"),
+        {key: expected_counts[key] for key in allowed_classifications},
+    )
+
+
 def validate() -> None:
     metadata = load_yaml(METADATA_PATH)
     require_equal("metadata schema", metadata.get("schema"), "fastapi-rs/api-source-authority@1")
@@ -681,6 +876,7 @@ def validate() -> None:
     }
     for name, expected in derived_inventory_counts.items():
         require_equal(f"API inventory derived {name}", inventory_counts[name], expected)
+    validate_runtime_root_namespace_review(metadata, manifest, inventory, fastapi)
 
     atlas_meta = metadata["classification_atlas"]
     atlas_path = artifact_path(atlas_meta["artifact"])

@@ -47,10 +47,14 @@ not a second manifest or an execution result.
 Runtime namespace reflection complements the AST inventory in
 [`runtime-api-surface-core.json`](../tests/fixtures/runtime-api-surface-core.json)
 and [`runtime-api-surface-standard.json`](../tests/fixtures/runtime-api-surface-standard.json).
-The artifacts cover all 1,593 source symbol IDs: the core profile reflects
-1,590, with `templating` and `testclient` unavailable because their optional
-packages are absent; the standard plus `docs-tests` profile reflects 1,592.
-Both deliberately skip `fastapi.__main__`, whose import invokes the CLI.
+The artifacts cover all 1,643 source symbol IDs, including 50 instance
+assignment candidates: the core profile reflects 1,640, with `templating` and
+`testclient` unavailable because their optional packages are absent; the
+standard plus `docs-tests` profile reflects 1,642. Both deliberately skip
+`fastapi.__main__`, whose import invokes the CLI. Runtime reflection also
+finds 21 extra module attributes on the `fastapi` root. Metadata classifies 11
+from documented import paths as supported and retains 10 as uncertain; those
+namespace observations are separate from source-defined symbol candidates.
 Reflection records importable module names, callable signatures, exact object
 identity aliases, deprecation metadata, and 49 Pydantic-generated OpenAPI model
 classes with their fields and inherited Pydantic members. These profiles are

@@ -539,7 +539,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: c5e393cf8e865687d89216b4c68e39194f54c9acd955b75471af35c9014d2989
+    sha256: 822ddb7e19bd198fdade3bfb21b500a5ac14c6bcaa1419b6189cf5a75f1111f5
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1135,14 +1135,21 @@ unresolved:
   runtime_api_surface:
     source_artifacts: [runtime_api_surface_core, runtime_api_surface_standard]
     state: reflected-on-pinned-cpython-3.12.13
-    source_candidates: 1593
+    source_candidates: 1643
+    included_instance_assignment_candidates: 50
     core_profile_unavailable_modules: [fastapi.templating, fastapi.testclient]
     optional_profile: [standard, docs-tests]
     entrypoint_import_skipped: fastapi.__main__
+    root_namespace_review:
+      source: metadata.yaml:/runtime_root_namespace_review
+      runtime_only_module_attributes: 21
+      classifications: {supported: 11, private_or_internal: 0, uncertain: 10}
     contract_state: >-
-      All source candidates are either reflected or assigned to a recorded
-      optional-module gap/CLI-entrypoint exclusion. CPython 3.10, 3.11, 3.13,
-      and 3.14 remain unreflected.
+      All 1,643 source candidates, including 50 instance-assignment candidates,
+      are reflected or assigned to a recorded optional-module gap/CLI-entrypoint
+      exclusion. The 21 runtime-only root module attributes are separately
+      dispositioned in metadata; reflection alone is not export evidence.
+      CPython 3.10, 3.11, 3.13, and 3.14 remain unreflected.
 
 evidence_policy:
   inventory_and_atlas_are_inputs_only: true
@@ -48483,7 +48490,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
       recipe_sha256: df88ba2cfb00980a13b943df96eb4bf7d295bbb2cac4709a30298f9e695d5da5
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: 307d038e35a738301fbc82e6de796ea6e6f8dde73ce130e2f5c84d9615af668a
+      workload_sha256: 99ab490da5923dee17063438b8de928b174a01ab732e1eff015d6973b01d8d08
       case_id: fastapi.routing.apiroute.asgi.direct-success
       observation_selectors:
       - asgi.application_error.exception
@@ -48501,7 +48508,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
       recipe_sha256: df88ba2cfb00980a13b943df96eb4bf7d295bbb2cac4709a30298f9e695d5da5
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: 307d038e35a738301fbc82e6de796ea6e6f8dde73ce130e2f5c84d9615af668a
+      workload_sha256: 99ab490da5923dee17063438b8de928b174a01ab732e1eff015d6973b01d8d08
       case_id: fastapi.routing.apiroute.asgi.response-model-filters
       observation_selectors:
       - asgi.application_error.exception
@@ -48519,7 +48526,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
       recipe_sha256: df88ba2cfb00980a13b943df96eb4bf7d295bbb2cac4709a30298f9e695d5da5
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: 307d038e35a738301fbc82e6de796ea6e6f8dde73ce130e2f5c84d9615af668a
+      workload_sha256: 99ab490da5923dee17063438b8de928b174a01ab732e1eff015d6973b01d8d08
       case_id: fastapi.routing.apiroute.asgi.path-mismatch-404
       observation_selectors:
       - asgi.application_error.exception
@@ -48536,7 +48543,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
       recipe_sha256: df88ba2cfb00980a13b943df96eb4bf7d295bbb2cac4709a30298f9e695d5da5
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: 307d038e35a738301fbc82e6de796ea6e6f8dde73ce130e2f5c84d9615af668a
+      workload_sha256: 99ab490da5923dee17063438b8de928b174a01ab732e1eff015d6973b01d8d08
       case_id: fastapi.routing.apiroute.asgi.method-mismatch-405
       observation_selectors:
       - asgi.application_error.exception
@@ -48553,7 +48560,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
       recipe_sha256: df88ba2cfb00980a13b943df96eb4bf7d295bbb2cac4709a30298f9e695d5da5
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: 307d038e35a738301fbc82e6de796ea6e6f8dde73ce130e2f5c84d9615af668a
+      workload_sha256: 99ab490da5923dee17063438b8de928b174a01ab732e1eff015d6973b01d8d08
       case_id: fastapi.routing.apiroute.asgi.route-dependency-and-cleanup
       observation_selectors:
       - asgi.application_error.exception

@@ -253,6 +253,112 @@ api_inventory:
       artifact: /counts/symbols_with_source_deprecation_evidence
       manifest: /source_artifacts/api_inventory/counts/source_deprecations
 
+runtime_root_namespace_review:
+  schema: fastapi-rs/runtime-root-namespace-review@1
+  source_identity: {package: FastAPI, version: 0.141.1, source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f}
+  profiles: [source_artifacts.runtime_api_surface_core, source_artifacts.runtime_api_surface_standard]
+  scope: >-
+    Runtime-only module attributes on the fastapi package root are reviewed
+    separately from source-defined API candidates. Reflection proves runtime
+    presence only; it does not prove an export or behavioral support contract.
+  counts: {candidates: 21, supported: 11, private_or_internal: 0, uncertain: 10}
+  rows:
+    - id: fastapi.applications
+      classification: uncertain
+      source_path: fastapi/applications.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.background
+      classification: uncertain
+      source_path: fastapi/background.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.concurrency
+      classification: uncertain
+      source_path: fastapi/concurrency.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.datastructures
+      classification: supported
+      source_path: fastapi/datastructures.py
+      evidence: {path: docs/en/docs/release-notes.md, contains: fastapi.datastructures}
+      reason: Pinned release notes identify this module as the import location for FastAPI data structures.
+    - id: fastapi.dependencies
+      classification: uncertain
+      source_path: fastapi/dependencies/__init__.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.encoders
+      classification: supported
+      source_path: fastapi/encoders.py
+      evidence: {path: docs/en/docs/reference/encoders.md, contains: fastapi.encoders}
+      reason: Pinned API reference exposes jsonable_encoder from this module.
+    - id: fastapi.exception_handlers
+      classification: supported
+      source_path: fastapi/exception_handlers.py
+      evidence: {path: docs/en/docs/tutorial/handling-errors.md, contains: fastapi.exception_handlers}
+      reason: Pinned user documentation instructs consumers to import default handlers from this module.
+    - id: fastapi.exceptions
+      classification: uncertain
+      source_path: fastapi/exceptions.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.logger
+      classification: uncertain
+      source_path: fastapi/logger.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.middleware
+      classification: supported
+      source_path: fastapi/middleware/__init__.py
+      evidence: {path: docs/en/docs/reference/middleware.md, contains: fastapi.middleware}
+      reason: Pinned middleware reference documents FastAPI middleware import paths.
+    - id: fastapi.openapi
+      classification: supported
+      source_path: fastapi/openapi/__init__.py
+      evidence: {path: docs/en/docs/how-to/extending-openapi.md, contains: fastapi.openapi}
+      reason: Pinned OpenAPI documentation names the FastAPI OpenAPI utility module.
+    - id: fastapi.param_functions
+      classification: uncertain
+      source_path: fastapi/param_functions.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.params
+      classification: uncertain
+      source_path: fastapi/params.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.requests
+      classification: supported
+      source_path: fastapi/requests.py
+      evidence: {path: docs/en/docs/reference/httpconnection.md, contains: fastapi.requests}
+      reason: Pinned API reference explicitly gives this module as an import location.
+    - id: fastapi.responses
+      classification: supported
+      source_path: fastapi/responses.py
+      evidence: {path: docs/en/docs/reference/responses.md, contains: fastapi.responses}
+      reason: Pinned API reference documents importing response classes from this module.
+    - id: fastapi.routing
+      classification: supported
+      source_path: fastapi/routing.py
+      evidence: {path: docs/en/docs/how-to/custom-request-and-route.md, contains: fastapi.routing}
+      reason: Pinned user documentation names APIRoute from this module.
+    - id: fastapi.security
+      classification: supported
+      source_path: fastapi/security/__init__.py
+      evidence: {path: docs/en/docs/reference/security/index.md, contains: fastapi.security}
+      reason: Pinned security reference documents the FastAPI security module.
+    - id: fastapi.sse
+      classification: supported
+      source_path: fastapi/sse.py
+      evidence: {path: docs/en/docs/reference/sse.md, contains: fastapi.sse}
+      reason: Pinned API reference explicitly provides imports from this module.
+    - id: fastapi.types
+      classification: uncertain
+      source_path: fastapi/types.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.utils
+      classification: uncertain
+      source_path: fastapi/utils.py
+      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+    - id: fastapi.websockets
+      classification: supported
+      source_path: fastapi/websockets.py
+      evidence: {path: docs/en/docs/reference/websockets.md, contains: fastapi.websockets}
+      reason: Pinned API reference documents WebSocket classes and state through this module.
+
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
