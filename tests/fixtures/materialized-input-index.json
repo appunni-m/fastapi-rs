@@ -1542,16 +1542,17 @@
     {
       "id": "bigger-applications-sections-20261015",
       "input_path": "tests/fixtures/inputs/parity/bigger-applications-sections-20261015.json",
-      "input_sha256": "e93f8a2c49d7657adc986985d05e3188360bc243c56f4d2056818560e1f80ece",
+      "input_sha256": "86fec9b18e7a26be2e91ad038eaf330054420a1c131270ef1045bc1c121bc230",
       "recipe_path": "tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml",
-      "recipe_sha256": "41b5e1f317ed320de1cb5387ed8f5b0761be6042a5a61c346d96ac5cea4bdc5d",
+      "recipe_sha256": "e35679cdc94228806b91918f8392680ea35de7518c86d4b36ce4081d0f50981d",
       "case_ids": [
         "fastapi.docs.bigger-applications.main-router-composition",
         "fastapi.docs.bigger-applications.repeated-router-prefixes",
+        "fastapi.docs.bigger-applications.response-precedence",
         "fastapi.docs.bigger-applications.nested-router-live-addition"
       ],
       "workload_path": "tests/fixtures/workloads/bigger_applications_sections_20261015.py",
-      "workload_sha256": "21efe824151ffe10ec666b13f5b4a29878c027c2dd8b218a225b595962fc8317",
+      "workload_sha256": "c8b118a21f69e28cbd60b14139c2a562e0eac6f9d2fd94622cef63b30a330211",
       "case_contracts": [
         {
           "case_id": "fastapi.docs.bigger-applications.main-router-composition",
@@ -1570,6 +1571,14 @@
           "case_id": "fastapi.docs.bigger-applications.repeated-router-prefixes",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/bigger-applications.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.bigger-applications.response-precedence",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
             "source:documented-page:tutorial/bigger-applications.md"
           ]
         },
@@ -36320,15 +36329,33 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/additional-responses.md",
+      "fixture_id": "fastapi.docs.advanced-additional-responses",
+      "workflow_id": "bigger-applications-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.bigger-applications.response-precedence"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/bigger-applications.md",
       "fixture_id": "fastapi.docs.tutorial-bigger-applications",
       "workflow_id": "bigger-applications-sections-20261015",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs.bigger-applications.main-router-composition",
         "fastapi.docs.bigger-applications.nested-router-live-addition",
-        "fastapi.docs.bigger-applications.repeated-router-prefixes"
+        "fastapi.docs.bigger-applications.repeated-router-prefixes",
+        "fastapi.docs.bigger-applications.response-precedence"
       ],
       "observation_selectors": [
         "construction.exception_class",

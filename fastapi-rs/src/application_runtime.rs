@@ -1822,6 +1822,7 @@ impl PyApiRoute {
                 None,
                 None,
                 None,
+                None,
                 true,
                 GenerateUniqueIdArgument::Omitted,
                 None,
@@ -2717,6 +2718,7 @@ struct FastApiRouterInclude {
     router: Py<PyAny>,
     prefix: String,
     merge_prefix: String,
+    responses: Py<PyDict>,
     response_class: ResponseClassChoice,
     generate_unique_id_function: GenerateUniqueIdChoice,
     tags: Vec<String>,
@@ -3216,6 +3218,7 @@ pub(crate) struct PyFastApi {
     openapi_external_docs: Option<Py<PyAny>>,
     webhooks: Py<PyAny>,
     dependencies: Vec<Py<PyAny>>,
+    responses: Py<PyAny>,
     default_response_class: ResponseClassChoice,
     redirect_slashes: bool,
     strict_content_type: Option<bool>,
@@ -3560,6 +3563,7 @@ pub(crate) struct PyApiRouter {
 
 struct RouterIncludePolicy<'policy> {
     prefix: &'policy str,
+    responses: &'policy Py<PyDict>,
     response_class: &'policy ResponseClassChoice,
     generate_unique_id_function: &'policy GenerateUniqueIdChoice,
     tags: &'policy [String],
@@ -3820,7 +3824,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, debug = false, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, debug = false, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -3849,6 +3853,7 @@ impl PyFastApi {
         openapi_prefix: &str,
         root_path: &str,
         root_path_in_servers: bool,
+        responses: Option<Py<PyAny>>,
         openapi_external_docs: Option<Py<PyAny>>,
         webhooks: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
@@ -3861,6 +3866,7 @@ impl PyFastApi {
         lifespan: Option<Py<PyAny>>,
         strict_content_type: bool,
     ) -> PyResult<Self> {
+        let responses = response_map_or_empty(py, responses)?;
         let user_middleware = match middleware {
             Some(middleware) => py
                 .import("builtins")?
@@ -3970,6 +3976,7 @@ impl PyFastApi {
                     None,
                     None,
                     None,
+                    None,
                     true,
                     GenerateUniqueIdArgument::Omitted,
                     None,
@@ -4007,6 +4014,7 @@ impl PyFastApi {
             openapi_external_docs,
             webhooks,
             dependencies: dependencies.unwrap_or_default(),
+            responses,
             default_response_class: default_response_class.into_choice(py)?,
             redirect_slashes,
             strict_content_type: Some(strict_content_type),
@@ -4999,7 +5007,7 @@ impl PyFastApi {
         Ok(())
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, responses = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -5012,15 +5020,21 @@ impl PyFastApi {
         prefix: &str,
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
+        responses: Option<Py<PyAny>>,
         default_response_class: ResponseClassArgument,
         deprecated: Option<bool>,
         include_in_schema: bool,
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
+        let include_responses = response_map_or_empty(py, responses)?;
         let include_response_class = default_response_class.into_choice(py)?;
         let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
         let mut destination = slf.bind(py).borrow_mut();
         let destination = &mut *destination;
+        let parent_responses = route_response_declarations(py, Some(&destination.responses))?;
+        let include_responses = route_response_declarations(py, Some(&include_responses))?;
+        let inherited_responses =
+            merge_response_maps(py, parent_responses.bind(py), include_responses.bind(py))?;
         let inherited_response_class = ResponseClassChoice::first_explicit(
             py,
             &[&include_response_class, &destination.default_response_class],
@@ -5057,6 +5071,7 @@ impl PyFastApi {
             &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &prefix,
+                responses: &inherited_responses,
                 response_class: &inherited_response_class,
                 generate_unique_id_function: &inherited_generate_unique_id_function,
                 tags: &tags,
@@ -5071,6 +5086,7 @@ impl PyFastApi {
             router: router_object,
             prefix: include_prefix,
             merge_prefix: prefix,
+            responses: inherited_responses.clone_ref(py),
             response_class: inherited_response_class.clone_ref(py),
             generate_unique_id_function: inherited_generate_unique_id_function.clone_ref(py),
             tags: tags.clone(),
@@ -6365,7 +6381,7 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -6377,6 +6393,7 @@ impl PyApiRouter {
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
+        responses: Option<Py<PyAny>>,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
         lifespan: Option<Py<PyAny>>,
@@ -6413,6 +6430,7 @@ impl PyApiRouter {
                 "",
                 "",
                 true,
+                responses.map(|responses| responses.clone_ref(py)),
                 None,
                 Some(py.None()),
                 None,
@@ -6582,7 +6600,7 @@ impl PyApiRouter {
         add_frontend_route(&mut inner, py, path, directory, fallback, check_dir, &[])
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -6596,10 +6614,12 @@ impl PyApiRouter {
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
+        responses: Option<Py<PyAny>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
+        let include_responses = response_map_or_empty(py, responses)?;
         let (inner, parent_tags, parent_dependencies, parent_deprecated, parent_include_in_schema) = {
             let parent = slf.bind(py).borrow();
             (
@@ -6616,6 +6636,13 @@ impl PyApiRouter {
         };
         let include_response_class = default_response_class.into_choice(py)?;
         let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
+        let parent_responses = {
+            let destination = inner.bind(py).borrow();
+            route_response_declarations(py, Some(&destination.responses))?
+        };
+        let include_responses = route_response_declarations(py, Some(&include_responses))?;
+        let inherited_responses =
+            merge_response_maps(py, parent_responses.bind(py), include_responses.bind(py))?;
         let inherited_response_class = {
             let destination = inner.bind(py).borrow();
             ResponseClassChoice::first_explicit(
@@ -6668,6 +6695,7 @@ impl PyApiRouter {
             &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &prefix,
+                responses: &inherited_responses,
                 response_class: &inherited_response_class,
                 generate_unique_id_function: &inherited_generate_unique_id_function,
                 tags: &inherited_tags,
@@ -6682,6 +6710,7 @@ impl PyApiRouter {
             router: router_object,
             prefix: include_prefix,
             merge_prefix: prefix,
+            responses: inherited_responses.clone_ref(py),
             response_class: inherited_response_class.clone_ref(py),
             generate_unique_id_function: inherited_generate_unique_id_function.clone_ref(py),
             tags: inherited_tags.clone(),
@@ -7193,6 +7222,7 @@ fn merge_router_routes_from(
 ) -> PyResult<()> {
     let RouterIncludePolicy {
         prefix,
+        responses: inherited_responses,
         response_class: inherited_response_class,
         generate_unique_id_function: inherited_generate_unique_id_function,
         tags: inherited_tags,
@@ -7208,6 +7238,11 @@ fn merge_router_routes_from(
     )> = Vec::new();
     for source_route in source.routes.iter().skip(starts.routes) {
         let path = format!("{prefix}{}", source_route.path);
+        let responses = merge_response_maps(
+            py,
+            inherited_responses.bind(py),
+            source_route.responses.bind(py),
+        )?;
         let mut route_dependencies = inherited_dependencies
             .iter()
             .map(|dependency| dependency.clone_ref(py))
@@ -7281,7 +7316,7 @@ fn merge_router_routes_from(
                 tags: tags.as_deref().unwrap_or_default(),
                 summary: source_route.summary.as_deref(),
                 response_description: &source_route.response_description,
-                responses: &source_route.responses,
+                responses: &responses,
                 deprecated: combined_deprecated(source_route.deprecated, inherited_deprecated),
                 include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
                 operation_id: source_route.operation_id.as_deref(),
@@ -7355,7 +7390,7 @@ fn merge_router_routes_from(
             param_convertors,
             summary: source_route.summary.clone(),
             response_description: source_route.response_description.clone(),
-            responses: source_route.responses.clone_ref(py),
+            responses: responses.clone_ref(py),
             openapi_extra: source_route
                 .openapi_extra
                 .as_ref()
@@ -7493,6 +7528,7 @@ struct IncludedRouterRefresh {
     index: usize,
     router: Py<PyAny>,
     merge_prefix: String,
+    responses: Py<PyDict>,
     response_class: ResponseClassChoice,
     generate_unique_id_function: GenerateUniqueIdChoice,
     tags: Vec<String>,
@@ -7525,6 +7561,7 @@ fn refresh_included_router_routes_inner(
                 index,
                 router: include.router.clone_ref(py),
                 merge_prefix: include.merge_prefix.clone(),
+                responses: include.responses.clone_ref(py),
                 response_class: include.response_class.clone_ref(py),
                 generate_unique_id_function: include.generate_unique_id_function.clone_ref(py),
                 tags: include.tags.clone(),
@@ -7572,6 +7609,7 @@ fn refresh_included_router_routes_inner(
             &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &include.merge_prefix,
+                responses: &include.responses,
                 response_class: &include.response_class,
                 generate_unique_id_function: &include.generate_unique_id_function,
                 tags: &include.tags,
@@ -7797,6 +7835,27 @@ fn route_response_declarations(
     Ok(declarations.unbind())
 }
 
+fn response_map_or_empty(py: Python<'_>, responses: Option<Py<PyAny>>) -> PyResult<Py<PyAny>> {
+    match responses {
+        Some(responses) if responses.bind(py).is_truthy()? => Ok(responses),
+        _ => Ok(PyDict::new(py).into_any().unbind()),
+    }
+}
+
+fn merge_response_maps(
+    py: Python<'_>,
+    inherited: &Bound<'_, PyDict>,
+    route: &Bound<'_, PyDict>,
+) -> PyResult<Py<PyDict>> {
+    let merged = PyDict::new(py);
+    for declarations in [inherited, route] {
+        for (status, response) in declarations.iter() {
+            merged.set_item(status, response)?;
+        }
+    }
+    Ok(merged.unbind())
+}
+
 fn additional_response_body_allowed(py: Python<'_>, status: &Bound<'_, PyAny>) -> PyResult<bool> {
     if status.is_none() {
         return Ok(true);
@@ -7995,7 +8054,11 @@ impl PyOperationDecorator {
         };
         let callback_param_convertors = route_param_convertors(py, &scope_path)?;
         let path_regex = route_path_regex(py, &scope_path)?;
-        let responses = route_response_declarations(py, self.responses.as_ref())?;
+        let declared_responses = route_response_declarations(py, self.responses.as_ref())?;
+        let response_defaults = self.app.bind(py).borrow().responses.clone_ref(py);
+        let response_defaults = route_response_declarations(py, Some(&response_defaults))?;
+        let responses =
+            merge_response_maps(py, response_defaults.bind(py), declared_responses.bind(py))?;
         if !endpoint.bind(py).is_callable() {
             return Err(PyAssertionError::new_err("An endpoint must be a callable"));
         }

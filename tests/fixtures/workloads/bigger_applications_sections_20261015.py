@@ -40,6 +40,40 @@ def create_app(factory_input: dict[str, str], event_trace: list[str]) -> FastAPI
 
         return app
 
+    if scenario == "response-precedence":
+        app = FastAPI(
+            responses={
+                400: {"description": "Application default"},
+                409: {"description": "Application conflict"},
+            }
+        )
+        router = APIRouter(
+            responses={
+                409: {"description": "Router conflict"},
+                422: {"description": "Router default"},
+            }
+        )
+
+        @router.get(
+            "/item",
+            responses={
+                409: {"description": "Operation conflict"},
+                430: {"description": "Operation default"},
+            },
+        )
+        async def read_response_precedence():
+            return {"kind": "response-precedence"}
+
+        app.include_router(
+            router,
+            prefix="/api",
+            responses={
+                409: {"description": "Include conflict"},
+                412: {"description": "Include default"},
+            },
+        )
+        return app
+
     async def require_query_token(token: str) -> None:
         if token != "permit":
             raise HTTPException(status_code=400, detail="query token rejected")

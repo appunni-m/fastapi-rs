@@ -1247,6 +1247,10 @@ reviewed_api_contract_overlay:
           recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
           case_id: fastapi.first-slice.openapi
           workload_path: tests/fixtures/workloads/first_slice.py
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.response-precedence
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, openapi.document, openapi.paths]
         - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
           workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
@@ -1725,9 +1729,12 @@ reviewed_api_contract_overlay:
         The router-prefix-and-nested-composition workflow calls `FastAPI()` with
         no constructor arguments. It records only default construction needed
         for those requests and adds no coverage for constructor options. Source
-        parameters `debug`, `routes`, `responses`, `callbacks`, and `**extra`,
-        which the current native constructor does not accept, remain
-        unsupported by that binding.
+        parameters `debug`, `routes`, `callbacks`, and `**extra` remain
+        unsupported by that binding. The `responses` constructor map is carried
+        into the app router and shallow-merged by status with include, router,
+        and operation maps. `bigger-applications.response-precedence` selects
+        distinct statuses and a repeated status at each layer in OpenAPI; live
+        identity-checked comparison is still required.
 
         Partial native constructor slice: the exception_handlers argument
         accepts a mapping keyed by exception class or HTTP status code, and
@@ -5477,10 +5484,11 @@ reviewed_api_contract_overlay:
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception]
       supported_slice: >-
         The router-prefix-and-nested-composition workflow supplies only `router`,
-        `prefix`, and `tags` to nested router inclusion. Source `responses` and
-        `callbacks` include parameters are absent from the current native
-        binding; this workflow does not establish them or the other unused
-        include options.
+        `prefix`, and `tags` to nested router inclusion. The native binding also
+        accepts `responses`; `bigger-applications.response-precedence` checks
+        app, include, router, and operation maps by selected OpenAPI status
+        descriptions, including collision precedence. `callbacks` and the other
+        unused include options remain outside this slice.
 
         Nested route sets can be included repeatedly with distinct prefixes and
         string tags. The reviewed inputs observe four concrete routes after two
@@ -5539,6 +5547,10 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override}
         - *generate_unique_id_callback_precedence
         - *response_traversal_parent_child
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.response-precedence
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, openapi.document, openapi.paths]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -5623,14 +5635,25 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.response-precedence
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, openapi.document, openapi.paths]
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         This workflow constructs default routers and one router with a `prefix`;
-        it passes no other APIRouter constructor options. Source parameters
-        `responses`, `callbacks`, `routes`, `redirect_slashes`, `default`,
-        `dependency_overrides_provider`, and `route_class` are omitted by the
-        current native constructor and are not established here.
+        it passes no other APIRouter constructor options apart from the
+        response-precedence case. Source parameters `callbacks`, `routes`,
+        `redirect_slashes`, `default`, `dependency_overrides_provider`, and
+        `route_class` are omitted by the current native constructor and are not
+        established here.
+
+        The response-precedence input supplies router-level defaults and checks
+        that app, include, router, and operation response maps shallow-merge by
+        status with the deepest declaration winning collisions. It observes
+        only selected OpenAPI response descriptions; other response metadata
+        remains unproven.
 
         The native constructor accepts the default or a keyword-only prefix.
         A non-empty `/tenants/{tenant_id}` prefix combines with an app-level
