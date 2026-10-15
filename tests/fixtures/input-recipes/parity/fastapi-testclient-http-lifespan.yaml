@@ -1,0 +1,37 @@
+schema: fastapi-rs/python-asgi-workflow@12
+oracle_profile_extension: testclient
+workload:
+  file: tests/fixtures/workloads/fastapi_testclient_http_lifespan.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.testclient.http-lifespan.request-context
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors:
+        - outcome
+        - exception_class
+        - exception_message
+      comparison: exact
+    actions:
+      - action_id: testclient-http-lifespan
+        kind: testclient_request
+        request:
+          method: GET
+          url: /probe?source=fixture
+          headers: []
+          content_base64: ""
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: workload_trace
+            comparison: ordered
+    source_evidence:
+      - path: docs/en/docs/advanced/testing-events.md
+        kind: upstream_documentation
+      - path: tests/test_tutorial/test_events/test_tutorial003.py
+        kind: upstream_test
+    verification: parity

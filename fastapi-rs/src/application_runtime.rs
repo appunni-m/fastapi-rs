@@ -3839,6 +3839,32 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 
 #[pymethods]
 impl PyFastApi {
+    // Native ASGI calls return Python awaitables, but their PyO3 call slot is
+    // synchronous. Expose the standard coroutine markers so Starlette's
+    // TestClient recognizes FastAPI instances as ASGI3 applications.
+    #[getter(_is_coroutine)]
+    fn asyncio_coroutine_marker(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        py.import("asyncio")?
+            .getattr("coroutines")?
+            .getattr("_is_coroutine")
+            .map(Bound::unbind)
+    }
+
+    #[getter(_is_coroutine_marker)]
+    fn inspect_coroutine_marker(&self, py: Python<'_>) -> PyResult<Option<Py<PyAny>>> {
+        let version = py.import("sys")?.getattr("version_info")?;
+        let major = version.get_item(0)?.extract::<u8>()?;
+        let minor = version.get_item(1)?.extract::<u8>()?;
+        if major > 3 || (major == 3 && minor >= 13) {
+            return py
+                .import("inspect")?
+                .getattr("_is_coroutine_marker")
+                .map(Bound::unbind)
+                .map(Some);
+        }
+        Ok(None)
+    }
+
     #[new]
     #[pyo3(signature = (*, debug = false, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.

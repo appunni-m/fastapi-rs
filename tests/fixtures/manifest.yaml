@@ -466,7 +466,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 2f4fdf927e2c69823938df3e2260ea808f980df65597f42e1007005f5b02811b
+    sha256: 16bd362932b7f4ee4cca70d4495ac594ca07c2b5dfd9d42e0648a2b815b09732
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -502,7 +502,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: b3f7dfe85e90578ef69b5d73edfbdbd4d21050cd5025a7dbb52b6956bddab8dc
+    sha256: 3d44e1dcdf5e7e17817b4be65273ff35dd6f18af4c50a38c23040406978e90ff
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -538,15 +538,15 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@9
-    sha256: 07e82223e66fae1eadbb5536fac42bbd9ca99e792409f74ee834a08a314ab739
-    schema_path: tests/fixtures/schemas/materialized-input-index-v9.schema.json
-    schema_sha256: 0bacedb78119e8855c62f6fbf684444f70452a5e2d12ee6e4e922ec6b3ab31f8
+    schema: fastapi-rs/materialized-input-index@10
+    sha256: 03858cf89386e1b2f6b6eebed82c0a9d37de3af5b58b95b500be7aec733914ed
+    schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
+    schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 627
-      cases: 2561
-      partial_source_mappings: 1854
+      workflows: 628
+      cases: 2562
+      partial_source_mappings: 1856
 
 contract_metadata:
   aliases:
@@ -804,6 +804,20 @@ unresolved:
       Adds a fixed, paired oracle and target package extension for EmailStr
       validation. It declares the exact email-validator and dnspython closure;
       it does not broaden the core runtime package profile.
+  python_asgi_workflow_v12:
+    state: paired-hash-locked-testclient-profile; v1-v11-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@12
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v12.schema.json
+    schema_sha256: 946e601af886047fb0d84127bbaf66ecc5a03361a9dc403743f44f7cf748d695
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@12
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v12.schema.json
+    result_schema_sha256: 2835989291069a0bc61d81fd7edf2e93b3cd5c3f74483fe9a0417ca8b761b2f4
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@13
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v13.schema.json
+    comparison_schema_sha256: abd60ba9efd60656cde7ca9bc885ad044d101feecaea81832bc4d7d4b2139b0f
+    coverage: >-
+      Adds a pinned, paired TestClient HTTPX profile and input-driven client
+      request with context-managed HTTP and lifespan observations.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1

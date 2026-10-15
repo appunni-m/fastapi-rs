@@ -1,5 +1,5 @@
 {
-  "schema": "fastapi-rs/materialized-input-index@9",
+  "schema": "fastapi-rs/materialized-input-index@10",
   "authority": {
     "fastapi": "0.141.1",
     "starlette": "1.6.0"
@@ -9008,6 +9008,29 @@
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.testclient.TestClient"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fastapi-testclient-http-lifespan",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-testclient-http-lifespan.json",
+      "input_sha256": "d351e47b6ea2fe8c2a0b267f8a57b09ec7c5463a8698d6f8cb884daffd5c1f7a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-testclient-http-lifespan.yaml",
+      "recipe_sha256": "d11290499e56491e069224c9582520f7e4722c380c83ac6655915b6d08081e65",
+      "case_ids": [
+        "fastapi.testclient.http-lifespan.request-context"
+      ],
+      "workload_path": "tests/fixtures/workloads/fastapi_testclient_http_lifespan.py",
+      "workload_sha256": "92679920a78b98d37d2201658267c39002ba621c76739cb80cb96261a59830a8",
+      "oracle_profile_extension": "testclient",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.testclient.http-lifespan.request-context",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/testing-events.md",
+            "source:upstream-test:tests/test_tutorial/test_events/test_tutorial003.py"
           ]
         }
       ]
@@ -44856,6 +44879,38 @@
         "http.body.bytes",
         "http.status",
         "python.warnings"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/testing-events.md",
+      "fixture_id": "fastapi.docs.advanced-testing-events",
+      "workflow_id": "fastapi-testclient-http-lifespan",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.workload_trace, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.testclient.http-lifespan.request-context"
+      ],
+      "observation_selectors": [
+        "asgi.lifespan.workload_trace",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_events/test_tutorial003.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-events-test-tutorial003",
+      "workflow_id": "fastapi-testclient-http-lifespan",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.testclient.http-lifespan.request-context"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

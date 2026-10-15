@@ -28,6 +28,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V9_ID,
     WORKFLOW_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V11_ID,
+    WORKFLOW_SCHEMA_V12_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -40,7 +41,7 @@ from scripts.parity.process_contract import (
     load_process_workflow,
 )
 
-INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v9.schema.json"
+INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v10.schema.json"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
@@ -132,6 +133,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
+        WORKFLOW_SCHEMA_V12_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -147,6 +149,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V9_ID,
             WORKFLOW_SCHEMA_V10_ID,
             WORKFLOW_SCHEMA_V11_ID,
+            WORKFLOW_SCHEMA_V12_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -163,6 +166,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -177,10 +181,15 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 if observation["kind"] == "websocket":
                     selectors.add(f"websocket.{observation['selector']}")
             continue
-        path = action["scope"]["path"]
+        if action["kind"] == "testclient_request":
+            path = action["request"]["url"].split("?", 1)[0]
+        else:
+            path = action["scope"]["path"]
         openapi_endpoint = path == "/openapi.json"
         for observation in action["observations"]:
-            if observation["kind"] == "asgi_send":
+            if observation["kind"] == "asgi_lifespan":
+                selectors.add(f"asgi.lifespan.{observation['selector']}")
+            elif observation["kind"] == "asgi_send":
                 selectors.add("asgi.send.message_types")
             elif observation["kind"] == "websocket":
                 selectors.add(f"websocket.{observation['selector']}")
@@ -478,6 +487,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)

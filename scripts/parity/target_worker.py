@@ -36,6 +36,7 @@ from scripts.parity.worker import (
     RESULT_SCHEMA_V9_ID,
     RESULT_SCHEMA_V10_ID,
     RESULT_SCHEMA_V11_ID,
+    RESULT_SCHEMA_V12_ID,
     ROOT,
     WORKFLOW_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID,
@@ -47,6 +48,7 @@ from scripts.parity.worker import (
     WORKFLOW_SCHEMA_V9_ID,
     WORKFLOW_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V11_ID,
+    WORKFLOW_SCHEMA_V12_ID,
     WorkerError,
     _assert_clean_source_tree,
     _git_commit,
@@ -619,8 +621,9 @@ def run_target(
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
+        WORKFLOW_SCHEMA_V12_ID,
     }:
-        raise WorkerError("target worker accepts only Python/ASGI v2 through v11 workflows")
+        raise WorkerError("target worker accepts only Python/ASGI v2 through v12 workflows")
     workload_relative_path = workflow["workload"]["file"]
     if not isinstance(workload_relative_path, str):
         raise WorkerError("workflow workload file reference is malformed")
@@ -640,6 +643,7 @@ def run_target(
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
+        WORKFLOW_SCHEMA_V12_ID,
     } and any(verification_mode(case) == "fault-contract" for case in workflow["cases"])
     identity = _target_identity(
         target_source,
@@ -654,6 +658,7 @@ def run_target(
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
             }
             else None
         ),
@@ -669,6 +674,7 @@ def run_target(
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
+        WORKFLOW_SCHEMA_V12_ID,
     }:
         warning_package_roots = (
             [
@@ -685,6 +691,7 @@ def run_target(
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
             }
             else []
         )
@@ -694,6 +701,7 @@ def run_target(
             WORKFLOW_SCHEMA_V9_ID,
             WORKFLOW_SCHEMA_V10_ID,
             WORKFLOW_SCHEMA_V11_ID,
+            WORKFLOW_SCHEMA_V12_ID,
         }:
             native = importlib.import_module("fastapi_rs._core")
             cases = asyncio.run(
@@ -702,7 +710,9 @@ def run_target(
         else:
             cases = asyncio.run(_run_cases_v3(workflow, factory, warning_package_roots))
         result_schema_id = (
-            RESULT_SCHEMA_V11_ID
+            RESULT_SCHEMA_V12_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V12_ID
+            else RESULT_SCHEMA_V11_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V11_ID
             else RESULT_SCHEMA_V10_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V10_ID

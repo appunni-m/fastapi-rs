@@ -8,6 +8,7 @@ import base64
 import copy
 import datetime as dt
 import hashlib
+import importlib
 import importlib.metadata
 import importlib.util
 import inspect
@@ -35,6 +36,7 @@ WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
 WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow@10"
 WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow@11"
+WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow@12"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -45,6 +47,7 @@ RESULT_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow-result@9"
 RESULT_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow-result@10"
 RESULT_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow-result@11"
+RESULT_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow-result@12"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -487,6 +490,18 @@ def _observe(
         elif kind == "asgi_send":
             result.append(
                 {"index": index, "kind": kind, "values": {"message_types": message_types}}
+            )
+        elif kind == "asgi_lifespan":
+            selector = observation["selector"]
+            if selector != "workload_trace" or workload_trace is None:
+                raise WorkerError(f"worker does not support ASGI lifespan selector: {selector}")
+            result.append(
+                {
+                    "index": index,
+                    "kind": kind,
+                    "selector": selector,
+                    "values": {"workload_trace": copy.deepcopy(workload_trace)},
+                }
             )
         elif kind == "asgi_cancellation":
             selector = observation["selector"]
@@ -977,6 +992,78 @@ async def _run_websocket_conversation_v6(
     )
 
 
+def _run_testclient_request_v1(
+    action: dict[str, Any],
+    app: Any,
+    workload_trace: list[str],
+    warning_package_roots: list[tuple[str, Path]],
+) -> dict[str, Any]:
+    """Drive one input-defined request through the public TestClient context."""
+    emitted_warnings: list[warnings.WarningMessage] = []
+    capture_warnings = action.get("capture_warnings", False)
+    try:
+        testclient_module = importlib.import_module("fastapi.testclient")
+        test_client = getattr(testclient_module, "TestClient")
+        request = action["request"]
+        content = base64.b64decode(request["content_base64"], validate=True)
+
+        def request_response() -> Any:
+            with test_client(app) as client:
+                return client.request(
+                    request["method"],
+                    request["url"],
+                    headers=[tuple(header) for header in request["headers"]],
+                    content=content,
+                )
+
+        if capture_warnings:
+            with warnings.catch_warnings(record=True) as captured:
+                warnings.simplefilter("always")
+                try:
+                    response = request_response()
+                finally:
+                    emitted_warnings.extend(captured)
+        else:
+            response = request_response()
+
+        messages = [
+            {
+                "type": "http.response.start",
+                "status": response.status_code,
+                "headers": list(response.headers.raw),
+            },
+            {
+                "type": "http.response.body",
+                "body": response.content,
+                "more_body": False,
+            },
+        ]
+        observations = _observe(
+            action["observations"],
+            messages,
+            workload_trace=workload_trace,
+            include_selectors=True,
+        )
+        result = {
+            "action_id": action["action_id"],
+            "status": "completed",
+            "observations": observations,
+        }
+    except Exception as exc:
+        result = {
+            "action_id": action["action_id"],
+            "status": "product_error",
+            "error": {"class": type(exc).__name__, "message": str(exc)},
+            "observations": [],
+        }
+    return _add_warning_sidecar(
+        result,
+        selected=capture_warnings,
+        emitted=emitted_warnings,
+        package_roots=warning_package_roots,
+    )
+
+
 async def _run_action_v3(
     action: dict[str, Any],
     app: Any,
@@ -985,6 +1072,10 @@ async def _run_action_v3(
     workload_trace: list[str],
     warning_package_roots: list[tuple[str, Path]],
 ) -> dict[str, Any]:
+    if action["kind"] == "testclient_request":
+        return _run_testclient_request_v1(
+            action, app, workload_trace, warning_package_roots
+        )
     if action["kind"] == "websocket_conversation":
         return await _run_websocket_conversation_v6(
             action, app, lifespan_state, warning_package_roots
@@ -1477,6 +1568,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
+        WORKFLOW_SCHEMA_V12_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1496,6 +1588,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
+        WORKFLOW_SCHEMA_V12_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1509,6 +1602,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
+        WORKFLOW_SCHEMA_V12_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1522,6 +1616,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
             }
             else []
         )
@@ -1534,11 +1629,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V11_ID
+            RESULT_SCHEMA_V12_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V12_ID
+            else RESULT_SCHEMA_V11_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V11_ID
             else RESULT_SCHEMA_V10_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V10_ID

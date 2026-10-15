@@ -104,11 +104,7 @@ impl FastApiLifespan {
     }
 }
 
-#[pyclass(
-    name = "_FastAPILifespanFactory",
-    module = "fastapi_rs._core",
-    unsendable
-)]
+#[pyclass(name = "_FastAPILifespanFactory", module = "fastapi_rs._core")]
 pub(crate) struct PyFastApiLifespanFactory {
     lifespan: Option<Py<PyAny>>,
     on_startup: Vec<Py<PyAny>>,
