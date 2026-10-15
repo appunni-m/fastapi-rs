@@ -316,8 +316,10 @@ def main() -> int:
     fastapi_source = args.fastapi_source.resolve()
     starlette_source = args.starlette_source.resolve()
     starlette_rs_source = args.starlette_rs_source.resolve()
-    oracle_python = args.oracle_python.resolve()
-    target_python = args.target_python.resolve()
+    # Preserve a venv's bin/python symlink: resolving it selects the base
+    # interpreter and bypasses the profile's site-packages.
+    oracle_python = args.oracle_python.absolute()
+    target_python = args.target_python.absolute()
     os.environ["STARLETTE_RS_SOURCE"] = str(starlette_rs_source)
 
     workload, workload_path, workflow, input_path, action = contract.load_workload(
