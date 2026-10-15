@@ -94,6 +94,20 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [],
             "kwargs": {"ref": "#/components/schemas/FieldGuide"},
         },
+        "contact": {
+            "args": [],
+            "kwargs": {
+                "name": "Field Guide team",
+                "url": "https://example.test/contact",
+                "email": "api@example.test",
+                "x-contact-source": "input-defined",
+            },
+        },
+        "contact-defaults": {"args": [], "kwargs": {}},
+        "contact-invalid-email": {
+            "args": [],
+            "kwargs": {"email": "not-an-email"},
+        },
         "openapi-missing-info": {
             "args": [],
             "kwargs": {"openapi": "3.1.0", "paths": {}},

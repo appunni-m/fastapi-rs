@@ -72,17 +72,17 @@ The wheel's actual native links must be inspected per artifact.
 | Crate | Locked `.crate` SHA-256 | Cargo license expression | Inventory role | Source file(s) |
 | --- | --- | --- | --- | --- |
 | `base64 0.22.1` | `72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`0dd882e53de11566d50f8e8e2d5a651bcf3fabee4987d70f306233cf39094ba7`) |
-| `block-buffer 0.12.1` | `d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa` | `MIT OR Apache-2.0` | optional runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`98181e7249d0c01737645ec982499ce99a0f07eb8f7d625b8840d799d10dbc01`) |
+| `block-buffer 0.12.1` | `d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa` | `MIT OR Apache-2.0` | optional runtime, optional build | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`98181e7249d0c01737645ec982499ce99a0f07eb8f7d625b8840d799d10dbc01`) |
 | `bytes 1.12.1` | `fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04` | `MIT` | runtime | `LICENSE` (`45f522cacecb1023856e46df79ca625dfc550c94910078bd8aec6e02880b3d42`) |
 | `cc 1.5.1` | `f360145194ee8e21db5ee7f3fcd4fe52210864c75c985dae33218202c8bbe040` | `MIT OR Apache-2.0` | optional build | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397`) |
-| `cfg-if 1.0.5` | `4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600` | `MIT OR Apache-2.0` | runtime, optional runtime | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397`) |
-| `cmov 0.5.4` | `0c9ea0ac24bc397ab3c98583a3c9ba74fa56b09a4449bbe172b9b1ddb016027a` | `Apache-2.0 OR MIT` | optional runtime | `LICENSE-APACHE` (`cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`), `LICENSE-MIT` (`70c9d40f1f9545c3f133b8a67206e89da850f6468eed072281bb3701514114a9`) |
-| `const-oid 0.10.2` | `a6ef517f0926dd24a1582492c791b6a4818a4d94e789a334894aa15b0d12f55c` | `Apache-2.0 OR MIT` | optional runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`73b9dc2e79c7308998dd30296e073aefaefb944a68fb89aa412c23c0edcabcaa`) |
-| `cpufeatures 0.3.1` | `5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`73b9dc2e79c7308998dd30296e073aefaefb944a68fb89aa412c23c0edcabcaa`) |
+| `cfg-if 1.0.5` | `4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600` | `MIT OR Apache-2.0` | runtime, optional runtime, build | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397`) |
+| `cmov 0.5.4` | `0c9ea0ac24bc397ab3c98583a3c9ba74fa56b09a4449bbe172b9b1ddb016027a` | `Apache-2.0 OR MIT` | optional runtime, optional build | `LICENSE-APACHE` (`cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`), `LICENSE-MIT` (`70c9d40f1f9545c3f133b8a67206e89da850f6468eed072281bb3701514114a9`) |
+| `const-oid 0.10.2` | `a6ef517f0926dd24a1582492c791b6a4818a4d94e789a334894aa15b0d12f55c` | `Apache-2.0 OR MIT` | optional runtime, optional build | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`73b9dc2e79c7308998dd30296e073aefaefb944a68fb89aa412c23c0edcabcaa`) |
+| `cpufeatures 0.3.1` | `5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566` | `MIT OR Apache-2.0` | runtime, build | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`73b9dc2e79c7308998dd30296e073aefaefb944a68fb89aa412c23c0edcabcaa`) |
 | `crc32fast 1.5.2` | `01a7799fd6b852db0e61728dde9a204c423b44d689dbd432522543614b490e78` | `MIT OR Apache-2.0` | optional runtime | `LICENSE-APACHE` (`c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08`), `LICENSE-MIT` (`61d383b05b87d78f94d2937e2580cce47226d17823c0430fbcad09596537efcf`) |
-| `crypto-common 0.2.2` | `ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`d2e7ec5355c96eeade56b09187ceb48a6a30299da3ce7531a66d3d11405ab963`) |
-| `ctutils 0.4.2` | `7d5515a3834141de9eafb9717ad39eea8247b5674e6066c404e8c4b365d2a29e` | `Apache-2.0 OR MIT` | optional runtime | `LICENSE-APACHE` (`cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`), `LICENSE-MIT` (`91585c36e4fb9ab4ca0d3dfac5d66d3c0c62cc51f640a0e1196542daf2267eae`) |
-| `digest 0.11.3` | `f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`af59cea35d7f5e2777a713b8d155d65efa2c339eb43f3c14e868c6ac8506edad`) |
+| `crypto-common 0.2.2` | `ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453` | `MIT OR Apache-2.0` | runtime, build | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`d2e7ec5355c96eeade56b09187ceb48a6a30299da3ce7531a66d3d11405ab963`) |
+| `ctutils 0.4.2` | `7d5515a3834141de9eafb9717ad39eea8247b5674e6066c404e8c4b365d2a29e` | `Apache-2.0 OR MIT` | optional runtime, optional build | `LICENSE-APACHE` (`cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`), `LICENSE-MIT` (`91585c36e4fb9ab4ca0d3dfac5d66d3c0c62cc51f640a0e1196542daf2267eae`) |
+| `digest 0.11.3` | `f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2` | `MIT OR Apache-2.0` | runtime, build | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`af59cea35d7f5e2777a713b8d155d65efa2c339eb43f3c14e868c6ac8506edad`) |
 | `encoding_rs 0.8.35` | `75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3` | `(Apache-2.0 OR MIT) AND BSD-3-Clause` | runtime | `COPYRIGHT` (`11789f45bb180841cd362a5eee6789c68ddb573a11105e30768c308a6add0190`), `LICENSE-APACHE` (`cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`), `LICENSE-MIT` (`3fa4ca83dcc9237839b1bdeb2e6d16bdfb5ec0c5ce42b24694d8bbf0dcbef72c`), `LICENSE-WHATWG` (`838118388fe5c2e7f1dbbaeed13e1c7f3ebf88be91319c7c1d77c18e987d1a50`) |
 | `find-msvc-tools 0.1.14` | `aedcfb3409746eddb02b9e19ebda1c3394f759a152e48ee875a0844d1b955484` | `MIT OR Apache-2.0` | optional build | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397`) |
 | `flate2 1.1.10` | `6e634e2e0ebac1ee034020da1ca582e17ffe4e0f5e985823721e168928136dcb` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`025436edff4cfcdde17a5811fdea78892d8482efd1abdec5a17872d07a4f2112`) |
@@ -99,11 +99,13 @@ The wheel's actual native links must be inspected per artifact.
 | `heck 0.5.0` | `2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea` | `MIT OR Apache-2.0` | optional runtime | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0`) |
 | `hmac 0.13.0` | `6303bc9732ae41b04cb554b844a762b4115a61bfaa81e3e83050991eeb56863f` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`9e0dfd2dd4173a530e238cb6adb37aa78c34c6bc7444e0e10c1ab5d8881f63ba`) |
 | `http 1.5.0` | `918d3568bebf352712bc2ef3d46a8bcf1a75b373be6539de198e9105cbbf9ce0` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`8bb1b50b0e5c9399ae33bd35fab2769010fa6c14e8860c729a52295d84896b7a`), `LICENSE-MIT` (`dc91f8200e4b2a1f9261035d4c18c33c246911a6c0f7b543d75347e61b249cff`) |
+| `http-body 1.1.0` | `ca2a8f2913ee65f60facd6a5905613afaa448497a0230cc41ce022d93290bc2c` | `MIT` | runtime | `LICENSE` (`248378d0a3383c173fb925f17141b88e71580b3ba17ddc6ac3d2a344683232ab`) |
+| `http-body-util 0.1.5` | `23169fe34a5fbcdd3f3862e78fb9b6fccd5f02a6dc6f732547005d45631ce71c` | `MIT` | runtime | `LICENSE` (`248378d0a3383c173fb925f17141b88e71580b3ba17ddc6ac3d2a344683232ab`) |
 | `httparse 1.10.1` | `6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`391a5396cec6230bfabd4ef4eb2350eb895bc5efce377a2218f5702ed020d3e3`) |
 | `httpdate 1.0.3` | `df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`4d10fe5f3aa176b05b229a248866bad70b834c173f1252a814ff4748d8a13837`), `LICENSE-MIT` (`934887691e05d69d7c86ad3f2c360980fa30c15b035e351f3c9865e99da4debc`) |
-| `hybrid-array 0.4.15` | `27f864f10dfb56725ce5ce5472bc52252c8f93a4ab86327122cebf62c5f59a17` | `MIT OR Apache-2.0` | runtime, optional runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`70c9d40f1f9545c3f133b8a67206e89da850f6468eed072281bb3701514114a9`) |
+| `hybrid-array 0.4.15` | `27f864f10dfb56725ce5ce5472bc52252c8f93a4ab86327122cebf62c5f59a17` | `MIT OR Apache-2.0` | runtime, optional runtime, build, optional build | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`70c9d40f1f9545c3f133b8a67206e89da850f6468eed072281bb3701514114a9`) |
 | `itoa 1.0.18` | `8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3`) |
-| `libc 0.2.189` | `3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e`) |
+| `libc 0.2.189` | `3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2` | `MIT OR Apache-2.0` | runtime, build | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e`) |
 | `libz-sys 1.1.29` | `85bc9657773828b90eeb625adff10eeac83cc21bbfd8e23a03eaa8a33c9e28d9` | `MIT OR Apache-2.0` | optional runtime | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`34c467b6945a22696d060b8fdd2379d464acb3408d4c599d3dc5fe4fa1b4c84f`), `src/zlib-ng/LICENSE.md` (`6c9f0d975b41afaa34d22f55bb8986ce69e5cb7ad327cb2b28820cd425edf5ee`), `src/zlib/contrib/dotzlib/LICENSE_1_0.txt` (`36266a8fd073568394cb81cdb2b124f7fdae2c64c1a7ed09db34b4d22efa2951`), `src/zlib/contrib/minizip/LICENSE.Info-Zip` (`fc686023047ce5ce3a18a9b8a777156f0e475929d3de06bac279f3c025d2b2ca`) |
 | `md-5 0.11.0` | `69b6441f590336821bb897fb28fc622898ccceb1d6cea3fde5ea86b090c4de98` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`831e0f43ad0bf014c1c4fec5767aae470434c1d66d6e671be2d823e729063e25`) |
 | `memchr 2.8.3` | `cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98` | `Unlicense OR MIT` | runtime, optional runtime | `COPYING` (`01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f`), `LICENSE-MIT` (`0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f`), `UNLICENSE` (`7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c`) |
@@ -127,14 +129,16 @@ The wheel's actual native links must be inspected per artifact.
 | `serde_derive 1.0.229` | `e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3`) |
 | `serde_json 1.0.151` | `c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3`) |
 | `sha1 0.11.0` | `aacc4cc499359472b4abe1bf11d0b12e688af9a805fa5e3016f9a386dc2d0214` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`831e0f43ad0bf014c1c4fec5767aae470434c1d66d6e671be2d823e729063e25`) |
-| `sha2 0.11.0` | `446ba717509524cb3f22f17ecc096f10f4822d76ab5c0b9822c5f9c284e825f4` | `MIT OR Apache-2.0` | runtime | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`831e0f43ad0bf014c1c4fec5767aae470434c1d66d6e671be2d823e729063e25`) |
+| `sha2 0.11.0` | `446ba717509524cb3f22f17ecc096f10f4822d76ab5c0b9822c5f9c284e825f4` | `MIT OR Apache-2.0` | runtime, build | `LICENSE-APACHE` (`a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5`), `LICENSE-MIT` (`831e0f43ad0bf014c1c4fec5767aae470434c1d66d6e671be2d823e729063e25`) |
 | `shlex 2.0.1` | `f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba` | `MIT OR Apache-2.0` | optional build | `LICENSE-APACHE` (`553fffcd9b1cb158bc3e9edc35da85ca5c3b3d7d2e61c883ebcfa8a65814b583`), `LICENSE-MIT` (`4455bf75a91154108304cb283e0fea9948c14f13e20d60887cf2552449dea3b1`) |
 | `slab 0.4.12` | `0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5` | `MIT` | optional runtime | `LICENSE` (`8ce0830173fdac609dfb4ea603fdc002c2f4af0dc9b1a005653f5da9cf534b18`) |
 | `spin 0.9.9` | `3763264f6b73151db08c50ff20d7d8a0b8796e021cdea7ceedad07b80155fa0e` | `MIT` | runtime | `LICENSE` (`6ac8711fb340c62ce0a4ecd463342d3fa0e8e70de697c863a2e1c0c53006003c`) |
 | `syn 2.0.119` | `872831b642d1a07999a962a351ed35b955ea2cfc8f3862091e2a240a84f17297` | `MIT OR Apache-2.0` | optional runtime | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3`) |
 | `syn 3.0.6` | `8593e8e72159ed2257d083c7a454a85cbf854f37a0966d8d483aff8c8a3ebcee` | `MIT OR Apache-2.0` | runtime, optional runtime | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3`) |
 | `target-lexicon 0.13.5` | `adb6935a6f5c20170eeceb1a3835a49e12e19d792f6dd344ccc76a985ca5a6ca` | `Apache-2.0 WITH LLVM-exception` | build | `LICENSE` (`268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5`) |
-| `typenum 1.20.1` | `b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20` | `MIT OR Apache-2.0` | runtime, optional runtime | `LICENSE` (`db11fec9946737df39ca3898d9cd8c10ec6f6c3a884a6802b0ad0b81b4e8f23a`), `LICENSE-APACHE` (`516b24e051bf5630880ebbd55c40a25ce9552ebaf8970a53e8976eb70e522406`), `LICENSE-MIT` (`a825bd853ab71619a4923d7b4311221427848070ff44d990da39b0b274c1683f`) |
+| `tower-layer 0.3.3` | `121c2a6cda46980bb0fcd1647ffaf6cd3fc79a013de288782836f6df9c48780e` | `MIT` | runtime | `LICENSE` (`4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482`) |
+| `tower-service 0.3.3` | `8df9b6e13f2d32c91b9bd719c00d1958837bc7dec474d94952798cc8e69eeec3` | `MIT` | runtime | `LICENSE` (`4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482`) |
+| `typenum 1.20.1` | `b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20` | `MIT OR Apache-2.0` | runtime, optional runtime, build, optional build | `LICENSE` (`db11fec9946737df39ca3898d9cd8c10ec6f6c3a884a6802b0ad0b81b4e8f23a`), `LICENSE-APACHE` (`516b24e051bf5630880ebbd55c40a25ce9552ebaf8970a53e8976eb70e522406`), `LICENSE-MIT` (`a825bd853ab71619a4923d7b4311221427848070ff44d990da39b0b274c1683f`) |
 | `unicase 2.9.0` | `dbc4bc3a9f746d862c45cb89d705aa10f187bb96c76001afab07a0d35ce60142` | `MIT OR Apache-2.0` | runtime, build | `LICENSE-APACHE` (`a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2`), `LICENSE-MIT` (`4f6bd11a0f17fe5b085ace1daaedb7b002a08316850dd9577c246c6a68a68e8c`) |
 | `unicode-general-category 0.6.0` | `2281c8c1d221438e373249e065ca4989c4c36952c211ff21a0ee91c44a3869e7` | `Apache-2.0` | runtime | `LICENSE` (`b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1`) |
 | `unicode-ident 1.0.26` | `d245f478577f809a851594d02313b640fb437e0bb33866753cff937863096954` | `(MIT OR Apache-2.0) AND Unicode-3.0` | runtime, optional runtime | `LICENSE-APACHE` (`62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a`), `LICENSE-MIT` (`23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3`), `LICENSE-UNICODE` (`f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1`) |
@@ -550,6 +554,39 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 <!-- END CARGO LICENSE TEXT 23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3 -->
+
+
+### Exact license source text `248378d0a3383c173fb925f17141b88e71580b3ba17ddc6ac3d2a344683232ab`
+
+Verbatim source files: `http-body-1.1.0/LICENSE`, `http-body-util-0.1.5/LICENSE`.
+<!-- BEGIN CARGO LICENSE TEXT 248378d0a3383c173fb925f17141b88e71580b3ba17ddc6ac3d2a344683232ab -->
+Copyright (c) 2019-2026 Sean McArthur & Hyper Contributors
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+<!-- END CARGO LICENSE TEXT 248378d0a3383c173fb925f17141b88e71580b3ba17ddc6ac3d2a344683232ab -->
 
 
 ### Exact license source text `268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5`
@@ -1332,6 +1369,39 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 <!-- END CARGO LICENSE TEXT 3fa4ca83dcc9237839b1bdeb2e6d16bdfb5ec0c5ce42b24694d8bbf0dcbef72c -->
+
+
+### Exact license source text `4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482`
+
+Verbatim source files: `tower-layer-0.3.3/LICENSE`, `tower-service-0.3.3/LICENSE`.
+<!-- BEGIN CARGO LICENSE TEXT 4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482 -->
+Copyright (c) 2019 Tower Contributors
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+<!-- END CARGO LICENSE TEXT 4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482 -->
 
 
 ### Exact license source text `4455bf75a91154108304cb283e0fea9948c14f13e20d60887cf2552449dea3b1`
@@ -4749,7 +4819,7 @@ Copyright notice:
 
 ## Starlette-RS — BSD 3-Clause
 
-Source: pinned Starlette-RS `LICENSE.md` at commit `b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`.
+Source: pinned Starlette-RS `LICENSE.md` at commit `4139a72449bf5751e8902fb1c7175ee7f191d338`.
 
 <!-- BEGIN PINNED STARLETTE-RS LICENSE -->
 Copyright © 2018, [Encode OSS Ltd](https://www.encode.io/).

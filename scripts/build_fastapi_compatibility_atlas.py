@@ -12724,9 +12724,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         "counts": {
             "api_candidates": len(candidates),
             "reviewed_inherited_api_candidates": len(reviewed_inherited_api_candidates),
-            "inherited_api_classifications": dict(
-                Counter(row["classification"] for row in reviewed_inherited_api_candidates)
-            ),
+            "inherited_api_classifications": {
+                classification: sum(
+                    row["classification"] == classification
+                    for row in reviewed_inherited_api_candidates
+                )
+                for classification in ("supported", "private/internal", "uncertain")
+            },
             "reviewed_callable_candidates": len(callable_review["rows"]),
             "reviewed_import_binding_candidates": len(import_binding_review["rows"]),
             "reviewed_source_api_candidates": len(source_api_review["rows"]),

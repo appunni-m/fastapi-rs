@@ -1166,7 +1166,10 @@ def validate_compatibility_artifacts(
     )
     _require(
         atlas.get("counts", {}).get("inherited_api_classifications")
-        == dict(sorted(inherited_classifications.items())),
+        == {
+            classification: inherited_classifications.get(classification, 0)
+            for classification in ("supported", "private/internal", "uncertain")
+        },
         "reviewed inherited API classification counts differ from their rows",
     )
 

@@ -142,7 +142,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
+    commit: 4139a72449bf5751e8902fb1c7175ee7f191d338
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -180,16 +180,16 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 7e093ce266b8121c98a55d6fde694d8c672a09e9fb28e7dbe4d121a655a31bd2
+    sha256: 3f8bed1932063ff35bd5ab82fc52983475a5512dcd8cfb6c0a33fdae01605e80
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
+      starlette_rs_contract_commit: 4139a72449bf5751e8902fb1c7175ee7f191d338
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
-    starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
+    starlette_rs_contract_id: starlette-1.6.0-full
     counts:
       candidates: 97
       supported: 7
@@ -199,10 +199,10 @@ source_artifacts:
       starlette_rs_unreviewed_unique_targets: 4
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
-      metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-      manifest_sha256: 4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c
+      metadata_sha256: 2566c40ad6fd3a12e50184f53e814a39aa32055921c06ff1110af289e747f889
+      manifest_sha256: 86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
-      api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
+      api_review_sha256: c94f13e4ee41a4f8e27540b61a40abd09a3afe3bded8a6a02493690a0712b292
   api_source_classification_review:
     path: tests/fixtures/api-source-classification-review.json
     schema: fastapi-rs/source-api-classification-review@2
@@ -463,14 +463,14 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: c5333249f923fd9eb12cfd49b6d8086f757bbb970a2028bf8b9030bb0374bfa9
+    sha256: 2f4fdf927e2c69823938df3e2260ea808f980df65597f42e1007005f5b02811b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
       reviewed_inherited_api_candidates: 13
       inherited_supported: 9
-      inherited_private_or_internal: 1
-      inherited_uncertain: 3
+      inherited_private_or_internal: 4
+      inherited_uncertain: 0
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 392
       source_classifications:
@@ -499,7 +499,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 10a870ef181eb100640011827c32c429fdcfc13714895e8491ca1c7d04f7a815
+    sha256: b3f7dfe85e90578ef69b5d73edfbdbd4d21050cd5025a7dbb52b6956bddab8dc
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -536,13 +536,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@9
-    sha256: 04db7134a03dbb461b3ffdba652f0eba1e31c7afe05a03ff953f1f48d91ee38e
+    sha256: 07e82223e66fae1eadbb5536fac42bbd9ca99e792409f74ee834a08a314ab739
     schema_path: tests/fixtures/schemas/materialized-input-index-v9.schema.json
     schema_sha256: 0bacedb78119e8855c62f6fbf684444f70452a5e2d12ee6e4e922ec6b3ab31f8
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 627
-      cases: 2557
+      cases: 2561
       partial_source_mappings: 1854
 
 contract_metadata:
@@ -1192,8 +1192,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
-    symbols_with_operation_fixture_refs: 248
-    operation_fixture_refs: 1894
+    symbols_with_operation_fixture_refs: 252
+    operation_fixture_refs: 1905
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -23022,11 +23022,11 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       probe_id: api-key-model-result
       probe_kind: callable
@@ -23159,11 +23159,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -23356,11 +23356,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -23551,11 +23551,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -23746,11 +23746,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -23954,11 +23954,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -24151,11 +24151,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -24346,11 +24346,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -24541,11 +24541,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -24697,9 +24697,9 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.components.signature
@@ -24709,11 +24709,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.components.model-result
       probe_id: components-model-result
       probe_kind: callable
@@ -24722,9 +24722,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.components.signature
@@ -24732,11 +24732,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.components.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -25397,6 +25397,95 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.openapi-models.contact.signature
+      probe_id: contact-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.default-values
+      probe_id: contact-default-values
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.invalid-email
+      probe_id: contact-invalid-email
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.model-result
+      probe_id: contact-model-result
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    operation_fixture_refs:
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.openapi-models.contact.signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.model-result
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.default-values
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.invalid-email
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25424,8 +25513,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/642
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
+      known_gaps:
+      - The email-validation profile covers one accepted and one rejected address; the core fallback warning,
+        network-sensitive deliverability behavior, other URL/email coercions, and JSON Schema projection
+        remain unproven.
   - id: fastapi.openapi.models.Contact.email
     kind: field
     source_candidate_ref: /api_candidates/643
@@ -25457,6 +25550,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.model-result
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.default-values
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.invalid-email
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25515,6 +25639,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.model-result
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.default-values
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25573,6 +25718,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.model-result
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
+      case_id: fastapi.openapi-models.contact.default-values
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25646,9 +25812,9 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.discriminator.signature
@@ -25658,11 +25824,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.discriminator.model-result
       probe_id: discriminator-model-result
       probe_kind: callable
@@ -25671,9 +25837,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.discriminator.signature
@@ -25681,11 +25847,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.discriminator.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -27261,11 +27427,11 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.info.model-result
       probe_id: info-model-result
       probe_kind: callable
@@ -27284,11 +27450,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.info.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -30026,11 +30192,11 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.openapi.missing-info-error
       probe_id: openapi-missing-required-info
       probe_kind: callable
@@ -30038,11 +30204,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.openapi.model-result
       probe_id: openapi-model-result
       probe_kind: callable
@@ -30061,21 +30227,21 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.openapi.model-result
       observation_selectors:
       - python.pydantic_model_result
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.openapi.missing-info-error
       observation_selectors:
       - python.call_outcome
@@ -33669,9 +33835,9 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.reference.signature
@@ -33681,11 +33847,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.reference.model-result
       probe_id: reference-model-result
       probe_kind: callable
@@ -33693,11 +33859,11 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.reference.python-field-name-error
       probe_id: reference-field-name-alias-error
       probe_kind: callable
@@ -33706,9 +33872,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.reference.signature
@@ -33716,21 +33882,21 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.reference.model-result
       observation_selectors:
       - python.pydantic_model_result
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.reference.python-field-name-error
       observation_selectors:
       - python.call_outcome
@@ -33800,21 +33966,21 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.reference.model-result
       observation_selectors:
       - python.pydantic_model_result
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.reference.python-field-name-error
       observation_selectors:
       - python.call_outcome
@@ -34455,9 +34621,9 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.schema.signature
@@ -34467,11 +34633,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.schema.model-result
       probe_id: schema-model-result
       probe_kind: callable
@@ -34552,9 +34718,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-model-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
-      input_sha256: 12a83738b5d23c641bf6dd2cf9bab59416d8ddaf1be0a42732449f16a65124d0
+      input_sha256: 8e2fecad703f1220b73afa760777bfabad8b9158b48c8dd229051d6b8ea57a6e
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
-      recipe_sha256: 481f80adfda2dc62b4b968d0b792b85e4d015413cba2464ab1876c9a32368c73
+      recipe_sha256: 55db95fbeb9e1c2d5ff2bc6a162a18342722aab70954eef68720d610ee9a7558
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.openapi-models.schema.signature
@@ -34562,11 +34728,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.schema.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -39469,11 +39635,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -39666,11 +39832,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -39861,11 +40027,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -40142,11 +40308,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -40339,11 +40505,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: openapi-model-result-public-api
       input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
-      input_sha256: 18fdfd10a10b68e8e7fd1db84506588b467a4be5006766325ad739d677ccfe24
+      input_sha256: cecf83af9a14bd1e3a51d4a2a82ef4a3131ee52007d7fcadfe7a4f3ac49e2dab
       recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
-      recipe_sha256: 4ee46d3e465f813d5ad6068e9b8ff63698ec29fcaf81c6f9c95e0a1526b26a94
+      recipe_sha256: cb134961bd04fec201ee27f0104a76e13184d3a6542592db7bc4e0dc796a69f4
       workload_path: tests/fixtures/workloads/openapi_model_projection.py
-      workload_sha256: 0886b06d2c59dbdc6ad884443ebe0e38af76b909d01eeff6bcd799fc169ad863
+      workload_sha256: 61a9638104778aea0ee7e5c6701ac123133540541ae5bfee39fac5e8af483fee
       case_id: fastapi.openapi-models.api-key.model-result
       observation_selectors:
       - python.pydantic_model_result
@@ -63659,7 +63825,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     canonical_operation_ref: &id027
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.applications.Starlette.add_route
@@ -63669,18 +63835,18 @@ api_surface_contract:
           status: unimplemented
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/5/targets/0
+            json_pointer: /surfaces/2/operations/5/targets/0
         python-package:
           status: supported
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/5/targets/1
+            json_pointer: /surfaces/2/operations/5/targets/1
       manifest_operation_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/0/operations/5
+        json_pointer: /surfaces/2/operations/5
       source_operation_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/0/operations/5
+        json_pointer: /api_sources/1/operations/5
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 41
@@ -63758,7 +63924,7 @@ api_surface_contract:
       signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
     sibling_contract_gap: &id029
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.host
       reason: The pinned Starlette-RS review classifies Starlette.host as supported, but the API source
         catalog and manifest do not define a canonical registration-operation contract for it. Its supported
@@ -63767,10 +63933,10 @@ api_surface_contract:
       operation_absent_from_manifest: true
       api_source_surface_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/0
+        json_pointer: /api_sources/1
       manifest_surface_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/0
+        json_pointer: /surfaces/2
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 43
@@ -63883,7 +64049,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     canonical_operation_ref: &id030
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.applications.Starlette.url_path_for
@@ -63893,18 +64059,18 @@ api_surface_contract:
           status: unimplemented
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/6/targets/0
+            json_pointer: /surfaces/2/operations/6/targets/0
         python-package:
           status: supported
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/6/targets/1
+            json_pointer: /surfaces/2/operations/6/targets/1
       manifest_operation_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/0/operations/6
+        json_pointer: /surfaces/2/operations/6
       source_operation_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/0/operations/6
+        json_pointer: /api_sources/1/operations/6
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 46
@@ -63982,7 +64148,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     canonical_operation_ref: &id031
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.routing.Router.url_path_for
@@ -63992,18 +64158,18 @@ api_surface_contract:
           status: partial
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/41/operations/1/targets/0
+            json_pointer: /surfaces/44/operations/2/targets/0
         python-package:
           status: supported
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/41/operations/1/targets/1
+            json_pointer: /surfaces/44/operations/2/targets/1
       manifest_operation_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/41/operations/1
+        json_pointer: /surfaces/44/operations/2
       source_operation_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/42/operations/1
+        json_pointer: /api_sources/45/operations/2
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 737
@@ -64084,7 +64250,7 @@ api_surface_contract:
       assignment: self.routes = [] if routes is None else list(routes)
     attribute_contract_state: source-assignment-linked; sibling-accessor-missing
     sibling_contract_gap: &id033
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.routing.Router.routes
       candidate_state: no_exact_row
       reason: The pinned Starlette-RS Router class and constructor are represented, but its reviewed API
@@ -64097,10 +64263,10 @@ api_surface_contract:
       operation_absent_from_api_review: true
       api_source_surface_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/42
+        json_pointer: /api_sources/45
       manifest_surface_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/41
+        json_pointer: /surfaces/44
       api_catalog_surface_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 725
@@ -64190,7 +64356,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     canonical_operation_ref: &id034
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.applications.Starlette.add_middleware
@@ -64200,18 +64366,18 @@ api_surface_contract:
           status: unimplemented
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/3/targets/0
+            json_pointer: /surfaces/2/operations/3/targets/0
         python-package:
           status: supported
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/3/targets/1
+            json_pointer: /surfaces/2/operations/3/targets/1
       manifest_operation_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/0/operations/3
+        json_pointer: /surfaces/2/operations/3
       source_operation_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/0/operations/3
+        json_pointer: /api_sources/1/operations/3
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 40
@@ -64356,7 +64522,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     canonical_operation_ref: &id035
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.applications.Starlette.add_exception_handler
@@ -64366,18 +64532,18 @@ api_surface_contract:
           status: unimplemented
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/4/targets/0
+            json_pointer: /surfaces/2/operations/4/targets/0
         python-package:
           status: supported
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/4/targets/1
+            json_pointer: /surfaces/2/operations/4/targets/1
       manifest_operation_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/0/operations/4
+        json_pointer: /surfaces/2/operations/4
       source_operation_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/0/operations/4
+        json_pointer: /api_sources/1/operations/4
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 39
@@ -64470,7 +64636,7 @@ api_surface_contract:
       signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
     sibling_contract_gap: &id037
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.mount
       reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
         marks it supported; canonical API sources and the manifest have no registration-operation contract.
@@ -64480,10 +64646,10 @@ api_surface_contract:
       operation_absent_from_manifest: true
       api_source_surface_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/0
+        json_pointer: /api_sources/1
       manifest_surface_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/0
+        json_pointer: /surfaces/2
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 44
@@ -64549,7 +64715,7 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     canonical_operation_ref: &id038
-      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.applications.Starlette.routes
@@ -64559,18 +64725,18 @@ api_surface_contract:
           status: unimplemented
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/7/targets/0
+            json_pointer: /surfaces/2/operations/7/targets/0
         python-package:
           status: supported
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/0/operations/7/targets/1
+            json_pointer: /surfaces/2/operations/7/targets/1
       manifest_operation_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/0/operations/7
+        json_pointer: /surfaces/2/operations/7
       source_operation_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/0/operations/7
+        json_pointer: /api_sources/1/operations/7
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 45

@@ -38,10 +38,10 @@
     "The selected Starlette-RS source advances from c2f254b to 1ddca31. It refreshes sibling benchmark and compatibility documentation only; the manifest, runtime implementation, dependency declarations, API catalog/review, and parity inputs are unchanged. This documentation update establishes no FastAPI-RS benchmark or parity evidence.",
     "The selected Starlette-RS source advances from 1ddca31 to 9c3a70e. Commit 728fc22 defers TestClient HTTP body reads until receive, updates its runtime, adapter, contract, and input-only request-body coverage; 9c3a70e refreshes only sibling benchmark evidence. This optional generic TestClient behavior does not establish FastAPI-RS parity or benchmark evidence.",
     "The selected Starlette-RS source advances from 9c3a70e through 6c1f664 to b8038ef. Commit 6c1f664 adds input-only status-constant deprecation-warning callsite coverage and its adapter, contract, and manifest mapping; b8038ef refreshes sibling parity documentation. Neither commit changes the Starlette-RS runtime, dependency declarations, API catalog, or API review. These generic fixtures and docs establish no FastAPI-RS parity or benchmark evidence.",
-    "The selected Starlette-RS source advances from b8038ef to b4c8a65. The intervening inputs broaden Router lifespan state/startup/shutdown, StaticFiles symlink, stacked and concurrent BaseHTTPMiddleware, and mixed-protocol TestClient coverage. Commit c94ade2 changes the BaseHTTP response machine to execute response background tasks after the final body; cfb2719 adds a feature-gated route-cache fault injector and target-only TestClient fault-contract lane. The sibling API catalog and API review are unchanged. These generic behaviors and target-only fault probes establish no FastAPI-RS parity."
+    "The selected Starlette-RS source advances from b4c8a65 to 4139a724. The sibling now declares the full Starlette 1.6.0 contract; its runtime, adapter, parity manifest, and implementation evidence advanced together. The API catalog stayed stable while the API review, manifest, and metadata changed. This FastAPI crosswalk rechecked all 93 reviewed bindings against their exact sibling catalog rows: BaseRoute is now private/internal, while ExceptionHandler, HTTPConnection, and NoMatchFound are supported in the canonical Starlette namespace. Four FastAPI import targets still have no exact sibling review row. The sibling full-contract claim remains separate from FastAPI-RS behavior and parity claims."
   ],
   "pinned_starlette_rs_sources": {
-    "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
+    "contract_id": "starlette-1.6.0-full",
     "files": {
       "api_catalog": {
         "git_blob": "10f3f8b52a313fb62dd079c2d964226ccb25043c",
@@ -49,23 +49,23 @@
         "sha256": "2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e"
       },
       "api_review": {
-        "git_blob": "9ffc7d7a1eb70d046612baedcae5ab63af4fca33",
+        "git_blob": "cc6e82b59d212d28cfd3a32a602f79ba937a1296",
         "path": "docs/atlas/api-review.csv",
-        "sha256": "8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099"
+        "sha256": "c94f13e4ee41a4f8e27540b61a40abd09a3afe3bded8a6a02493690a0712b292"
       },
       "manifest": {
-        "git_blob": "3ad1662ef7e8d68889a711ee9b685964bdcba767",
+        "git_blob": "563cf8366b55d9c1f4bb16d6b9410b80267d4c07",
         "path": "tests/fixtures/manifest.yaml",
-        "sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c"
+        "sha256": "86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029"
       },
       "metadata": {
-        "git_blob": "48dba059d7eb99fc55ed8da9d7a64041a93839ca",
+        "git_blob": "02f21ff93a9b68993926bc52fe6bc23824ab1434",
         "path": "metadata.yaml",
-        "sha256": "09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47"
+        "sha256": "2566c40ad6fd3a12e50184f53e814a39aa32055921c06ff1110af289e747f889"
       }
     },
-    "manifest_sha256": "4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c",
-    "metadata_sha256": "09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47"
+    "manifest_sha256": "86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029",
+    "metadata_sha256": "2566c40ad6fd3a12e50184f53e814a39aa32055921c06ff1110af289e747f889"
   },
   "rows": [
     {
@@ -225,7 +225,7 @@
         "starlette-rs-target-disposition"
       ],
       "id": "fastapi.applications.BaseRoute",
-      "reason": "FastAPI source imports starlette.routing.BaseRoute into fastapi.applications and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.applications.BaseRoute as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as uncertain; that does not expose the separate FastAPI path.",
+      "reason": "FastAPI source imports starlette.routing.BaseRoute into fastapi.applications and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.applications.BaseRoute as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as private/internal; that does not expose the separate FastAPI path.",
       "recommendation": "private/internal",
       "source": {
         "line": 35,
@@ -233,7 +233,7 @@
       },
       "starlette_rs_review": {
         "catalog_row": "663",
-        "disposition": "uncertain",
+        "disposition": "private/internal",
         "qualified_name": "starlette.routing.BaseRoute",
         "record_type": "class",
         "state": "reviewed"
@@ -278,7 +278,7 @@
         "starlette-rs-target-disposition"
       ],
       "id": "fastapi.applications.ExceptionHandler",
-      "reason": "FastAPI source imports starlette.types.ExceptionHandler into fastapi.applications and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.applications.ExceptionHandler as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as uncertain; that does not expose the separate FastAPI path.",
+      "reason": "FastAPI source imports starlette.types.ExceptionHandler into fastapi.applications and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.applications.ExceptionHandler as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as supported; that does not expose the separate FastAPI path.",
       "recommendation": "private/internal",
       "source": {
         "line": 36,
@@ -286,7 +286,7 @@
       },
       "starlette_rs_review": {
         "catalog_row": "954",
-        "disposition": "uncertain",
+        "disposition": "supported",
         "qualified_name": "starlette.types.ExceptionHandler",
         "record_type": "assignment",
         "state": "reviewed"
@@ -1739,7 +1739,7 @@
         "starlette-rs-target-disposition"
       ],
       "id": "fastapi.dependencies.utils.HTTPConnection",
-      "reason": "FastAPI source imports starlette.requests.HTTPConnection into fastapi.dependencies.utils and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.dependencies.utils.HTTPConnection as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as uncertain; that does not expose the separate FastAPI path.",
+      "reason": "FastAPI source imports starlette.requests.HTTPConnection into fastapi.dependencies.utils and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.dependencies.utils.HTTPConnection as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as supported; that does not expose the separate FastAPI path.",
       "recommendation": "private/internal",
       "source": {
         "line": 83,
@@ -1747,7 +1747,7 @@
       },
       "starlette_rs_review": {
         "catalog_row": "540",
-        "disposition": "uncertain",
+        "disposition": "supported",
         "qualified_name": "starlette.requests.HTTPConnection",
         "record_type": "class",
         "state": "reviewed"
@@ -3076,7 +3076,7 @@
         "starlette-rs-target-disposition"
       ],
       "id": "fastapi.openapi.utils.BaseRoute",
-      "reason": "FastAPI source imports starlette.routing.BaseRoute into fastapi.openapi.utils and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.openapi.utils.BaseRoute as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as uncertain; that does not expose the separate FastAPI path.",
+      "reason": "FastAPI source imports starlette.routing.BaseRoute into fastapi.openapi.utils and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.openapi.utils.BaseRoute as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as private/internal; that does not expose the separate FastAPI path.",
       "recommendation": "private/internal",
       "source": {
         "line": 47,
@@ -3084,7 +3084,7 @@
       },
       "starlette_rs_review": {
         "catalog_row": "663",
-        "disposition": "uncertain",
+        "disposition": "private/internal",
         "qualified_name": "starlette.routing.BaseRoute",
         "record_type": "class",
         "state": "reviewed"
@@ -3300,7 +3300,7 @@
         "starlette-rs-target-disposition"
       ],
       "id": "fastapi.routing.BaseRoute",
-      "reason": "FastAPI source imports starlette.routing.BaseRoute into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.BaseRoute as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as uncertain; that does not expose the separate FastAPI path.",
+      "reason": "FastAPI source imports starlette.routing.BaseRoute into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.BaseRoute as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as private/internal; that does not expose the separate FastAPI path.",
       "recommendation": "private/internal",
       "source": {
         "line": 105,
@@ -3308,7 +3308,7 @@
       },
       "starlette_rs_review": {
         "catalog_row": "663",
-        "disposition": "uncertain",
+        "disposition": "private/internal",
         "qualified_name": "starlette.routing.BaseRoute",
         "record_type": "class",
         "state": "reviewed"
@@ -3695,7 +3695,7 @@
         "starlette-rs-target-disposition"
       ],
       "id": "fastapi.routing.NoMatchFound",
-      "reason": "FastAPI source imports starlette.routing.NoMatchFound into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.NoMatchFound as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as uncertain; that does not expose the separate FastAPI path.",
+      "reason": "FastAPI source imports starlette.routing.NoMatchFound into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.NoMatchFound as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The sibling review classifies the canonical Starlette target as supported; that does not expose the separate FastAPI path.",
       "recommendation": "private/internal",
       "source": {
         "line": 105,
@@ -3703,7 +3703,7 @@
       },
       "starlette_rs_review": {
         "catalog_row": "696",
-        "disposition": "uncertain",
+        "disposition": "supported",
         "qualified_name": "starlette.routing.NoMatchFound",
         "record_type": "class",
         "state": "reviewed"
@@ -5469,7 +5469,7 @@
     "package": "FastAPI",
     "selected_starlette_profile": "1.6.0",
     "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
-    "starlette_rs_contract_commit": "b4c8a65c85e1b0d251ca05874412811eaa3ac7b8",
+    "starlette_rs_contract_commit": "4139a72449bf5751e8902fb1c7175ee7f191d338",
     "starlette_source_commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
     "version": "0.141.1"
   }

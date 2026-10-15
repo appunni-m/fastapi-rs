@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`.
+- Starlette-RS implementation contract: at `4139a72449bf5751e8902fb1c7175ee7f191d338`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -22,7 +22,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 | Candidates | Supported operation contracts | Private/internal | Uncertain |
 |---:|---:|---:|---:|
-| 13 | 9 | 1 | 3 |
+| 13 | 9 | 4 | 0 |
 
 Supported inherited candidates link FastAPI inheritance, documentation, and sibling operation or gap evidence. Classification-only candidates link inheritance, pinned Starlette source, and the pinned Starlette-RS disposition. Only the supported subset enters the public operation contract and fixture requirements.
 
@@ -60,7 +60,7 @@ Candidate function and section records carry source path/SHA evidence, exact who
 
 For the 87 executable functions in excluded test modules, the atlas now records 10 function-specific exclusions and 77 functions that inherit an explicit module-level exclusion, each with the exact pinned-source function span. An inherited disposition locates the function and preserves the module rationale; it is not a separate function review or a parity case.
 
-`make parity-validate` checks 1643 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 53 declared observation selectors. It also validates 890 input-only design records, including 2116 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 627 input-only workflows, 2557 cases, and 1854 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1643 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 53 declared observation selectors. It also validates 890 input-only design records, including 2116 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 627 input-only workflows, 2561 cases, and 1854 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -341,8 +341,8 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `openapi-get-openapi-route-contexts` | 5 | 0 | [`tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml`](../tests/fixtures/input-recipes/parity/openapi-get-openapi-route-contexts.yaml) | [`tests/fixtures/workloads/openapi_get_openapi_route_contexts.py`](../tests/fixtures/workloads/openapi_get_openapi_route_contexts.py) |
 | `openapi-get-openapi-single-route` | 5 | 0 | [`tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml`](../tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml) | [`tests/fixtures/workloads/openapi_get_openapi_single_route.py`](../tests/fixtures/workloads/openapi_get_openapi_single_route.py) |
 | `openapi-model-module-identity` | 1 | 0 | [`tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml`](../tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml) | [`tests/fixtures/workloads/openapi_models_module_identity.py`](../tests/fixtures/workloads/openapi_models_module_identity.py) |
-| `openapi-model-public-api` | 4 | 1 | [`tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml`](../tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml) | [`tests/fixtures/workloads/direct_api_reference_wave.py`](../tests/fixtures/workloads/direct_api_reference_wave.py) |
-| `openapi-model-result-public-api` | 9 | 1 | [`tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml`](../tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml) | [`tests/fixtures/workloads/openapi_model_projection.py`](../tests/fixtures/workloads/openapi_model_projection.py) |
+| `openapi-model-public-api` | 5 | 1 | [`tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml`](../tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml) | [`tests/fixtures/workloads/direct_api_reference_wave.py`](../tests/fixtures/workloads/direct_api_reference_wave.py) |
+| `openapi-model-result-public-api` | 12 | 1 | [`tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml`](../tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml) | [`tests/fixtures/workloads/openapi_model_projection.py`](../tests/fixtures/workloads/openapi_model_projection.py) |
 | `openapi-operations` | 21 | 11 | [`tests/fixtures/input-recipes/parity/openapi-operations.yaml`](../tests/fixtures/input-recipes/parity/openapi-operations.yaml) | [`tests/fixtures/workloads/openapi_operations.py`](../tests/fixtures/workloads/openapi_operations.py) |
 | `openapi-parameter-examples-source-review` | 2 | 1 | [`tests/fixtures/input-recipes/parity/openapi-parameter-examples-source-review.yaml`](../tests/fixtures/input-recipes/parity/openapi-parameter-examples-source-review.yaml) | [`tests/fixtures/workloads/openapi_parameter_examples_source_review.py`](../tests/fixtures/workloads/openapi_parameter_examples_source_review.py) |
 | `openapi-raw-yaml-body-full-document-review` | 1 | 2 | [`tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml`](../tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml) | [`tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py`](../tests/fixtures/workloads/openapi_raw_yaml_body_full_document_review.py) |
@@ -708,7 +708,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 133 | 3 | 1 | 0 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is b4c8a65c85e1b0d251ca05874412811eaa3ac7b8 (pinned, clean Starlette-RS checkout).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 4139a72449bf5751e8902fb1c7175ee7f191d338 (pinned, clean Starlette-RS checkout).
 
 ## Errors, aliases, optional features, and deprecations
 

@@ -256,15 +256,15 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 7e093ce266b8121c98a55d6fde694d8c672a09e9fb28e7dbe4d121a655a31bd2
+  sha256: 3f8bed1932063ff35bd5ab82fc52983475a5512dcd8cfb6c0a33fdae01605e80
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
-  starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
+    starlette_rs_contract_commit: 4139a72449bf5751e8902fb1c7175ee7f191d338
+  starlette_rs_contract_id: starlette-1.6.0-full
   counts:
     candidates: 97
     supported: 7
@@ -274,10 +274,10 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-    manifest_sha256: 4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c
+    metadata_sha256: 2566c40ad6fd3a12e50184f53e814a39aa32055921c06ff1110af289e747f889
+    manifest_sha256: 86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
-    api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
+    api_review_sha256: c94f13e4ee41a4f8e27540b61a40abd09a3afe3bded8a6a02493690a0712b292
 
 source_api_classification_review:
   artifact: tests/fixtures/api-source-classification-review.json
@@ -611,9 +611,9 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
+  commit: 4139a72449bf5751e8902fb1c7175ee7f191d338
   distribution_version: 0.1.0
-  contract_id: starlette-1.6.0-asgi-http-config-session-slice
+  contract_id: starlette-1.6.0-full
   metadata: ../starlette-rs/metadata.yaml
   manifest: ../starlette-rs/tests/fixtures/manifest.yaml
   api_catalog: ../starlette-rs/docs/api-surface.csv
@@ -11093,17 +11093,35 @@ reviewed_api_contract_overlay:
         full schema behavior are not claimed.
 
     fastapi.openapi.models.Contact:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
+      supported_slice: >-
+        Direct identity-checked inputs compare the pinned constructor signature, omitted-field
+        defaults, EmailStr acceptance and rejection under the email-validation profile, URL
+        serialization, and extra-field retention. The no-email-validator fallback, DNS-dependent
+        validation, and broader coercion/schema behavior remain outside this sample.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
           symbol: Contact
           start_line: 61
           end_line: 64
-      supported_slice: >-
-        Source model declaration only: Contact inherits BaseModelWithConfig and declares email,
-        name, url. No direct constructor/model_result case is row-linked; Pydantic signature
-        generation, validation/coercion, extras, serialization, and JSON Schema behavior remain
-        outside this source-only slice.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+          case_id: fastapi.openapi-models.contact.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.invalid-email
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The email-validation profile covers one accepted and one rejected address; the core fallback warning, network-sensitive deliverability behavior, other URL/email coercions, and JSON Schema projection remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
 
     fastapi.openapi.models.Contact.email:
       source_evidence:
@@ -11113,9 +11131,19 @@ reviewed_api_contract_overlay:
           start_line: 61
           end_line: 64
       supported_slice: >-
-        Declared field only: annotation EmailStr | None; default None; source has an optional
-        email-validator/fallback branch. Pydantic validation/coercion, default omission, alias
-        parsing/dump, errors, and full schema behavior are not claimed.
+        Annotation EmailStr | None and default None: direct model inputs compare omission, one
+        accepted address, and the exact invalid-address call error under the pinned
+        email-validation profile. The no-email-validator fallback/warning, DNS-dependent
+        deliverability checks, and other validation inputs remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.invalid-email
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Contact.name:
       source_evidence:
@@ -11125,8 +11153,16 @@ reviewed_api_contract_overlay:
           start_line: 61
           end_line: 64
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Annotation str | None and default None: direct model inputs compare one supplied name and
+        its default None value in the model_dump projection. Other validation/coercion and schema
+        behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.default-values
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Contact.url:
       source_evidence:
@@ -11136,9 +11172,16 @@ reviewed_api_contract_overlay:
           start_line: 61
           end_line: 64
       supported_slice: >-
-        Declared field only: annotation AnyUrl | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Annotation AnyUrl | None and default None: direct model inputs compare one HTTPS URL's
+        JSON-mode serialization and its default None value. Other URL schemes, normalization,
+        coercion, and schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.contact.default-values
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Discriminator.mapping:
       source_evidence:
@@ -14420,45 +14463,39 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRouter.host:
       kind: inherited_method
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter
-      classification: uncertain
+      classification: private/internal
       classification_evidence_rule: >-
-        APIRouter inherits this Router method from Starlette 1.6.0, but the
-        pinned API review does not establish this exact member path as a
-        consumer-facing contract.
+        Starlette-RS source review identifies Router.host as application-level delegation machinery; pinned Starlette docs establish Starlette.host rather than this direct Router member path.
       source_evidence:
         - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
         - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: host, line: 729, start_line: 729, end_line: 731}
       starlette_rs_review:
         qualified_name: starlette.routing.Router.host
-        api_disposition: uncertain
+        api_disposition: private/internal
     fastapi.routing.APIRouter.lifespan:
       kind: inherited_method
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter
-      classification: uncertain
+      classification: private/internal
       classification_evidence_rule: >-
-        APIRouter inherits this ASGI lifecycle handler from Starlette 1.6.0,
-        but the pinned API review does not establish this direct Router member
-        path as a consumer-facing contract.
+        Starlette-RS source review identifies Router.lifespan as internal ASGI-message translation; pinned Starlette docs promise a lifespan context manager, not direct invocation of this ASGI callable.
       source_evidence:
         - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
         - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: lifespan, line: 639, start_line: 639, end_line: 664}
       starlette_rs_review:
         qualified_name: starlette.routing.Router.lifespan
-        api_disposition: uncertain
+        api_disposition: private/internal
     fastapi.routing.APIRouter.mount:
       kind: inherited_method
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter
-      classification: uncertain
+      classification: private/internal
       classification_evidence_rule: >-
-        APIRouter inherits this route-registration method from Starlette
-        1.6.0, but the pinned API review does not establish this exact direct
-        Router member path as a consumer-facing contract.
+        Starlette-RS source review identifies Router.mount as route-list construction delegated from Starlette.mount; pinned docs cover application-level mounting and Mount route objects, not this direct Router method path.
       source_evidence:
         - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
         - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: mount, line: 725, start_line: 725, end_line: 727}
       starlette_rs_review:
         qualified_name: starlette.routing.Router.mount
-        api_disposition: uncertain
+        api_disposition: private/internal
     fastapi.routing.APIRouter.not_found:
       kind: inherited_method
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter
