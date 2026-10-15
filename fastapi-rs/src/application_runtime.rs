@@ -11910,10 +11910,15 @@ fn response_endpoint_context<'py>(
     let endpoint_details = (|| -> PyResult<()> {
         let source_file = inspect.getattr("getsourcefile")?.call1((endpoint,))?;
         if !source_file.is_none() {
-            context.set_item("file", source_file)?;
+            context.set_item("file", &source_file)?;
         }
-        let source_lines = inspect.getattr("getsourcelines")?.call1((endpoint,))?;
-        let line = source_lines.get_item(1)?;
+        let line = match plain_function_source_line(py, endpoint, &source_file)? {
+            Some(line) => line,
+            None => inspect
+                .getattr("getsourcelines")?
+                .call1((endpoint,))?
+                .get_item(1)?,
+        };
         if !line.is_none() {
             context.set_item("line", line)?;
         }
@@ -11934,6 +11939,40 @@ fn response_endpoint_context<'py>(
         format!("{method} {}{path}", root_path.trim_end_matches('/')),
     )?;
     Ok(context)
+}
+
+fn plain_function_source_line<'py>(
+    py: Python<'py>,
+    endpoint: &Bound<'py, PyAny>,
+    source_file: &Bound<'py, PyAny>,
+) -> PyResult<Option<Bound<'py, PyAny>>> {
+    if source_file.is_none() {
+        return Ok(None);
+    }
+
+    let function_type = py.import("types")?.getattr("FunctionType")?;
+    if !endpoint.is_instance(&function_type)? {
+        return Ok(None);
+    }
+    let function_namespace = endpoint.getattr("__dict__")?.cast_into::<PyDict>()?;
+    if function_namespace.contains("__wrapped__")? {
+        return Ok(None);
+    }
+
+    let Ok(source_filename) = source_file.extract::<String>() else {
+        return Ok(None);
+    };
+    if !Path::new(&source_filename).is_file() {
+        return Ok(None);
+    }
+
+    let code = endpoint.getattr("__code__")?;
+    let code_filename = code.getattr("co_filename")?.extract::<String>()?;
+    if code_filename != source_filename {
+        return Ok(None);
+    }
+
+    code.getattr("co_firstlineno").map(Some)
 }
 
 enum PendingAction {
