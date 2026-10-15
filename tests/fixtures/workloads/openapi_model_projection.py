@@ -5,6 +5,7 @@ from __future__ import annotations
 
 def create_argument_bundles() -> dict[str, dict[str, object]]:
     return {
+        "unused": {"args": [], "kwargs": {}},
         "schema": {
             "args": [],
             "kwargs": {
@@ -61,5 +62,40 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "description": "A project key",
                 "x-owner": "input-defined",
             },
+        },
+        "info": {
+            "args": [],
+            "kwargs": {
+                "title": "Field Guide",
+                "version": "2.4",
+                "summary": "Input-defined metadata",
+                "contact": {"name": "API team", "url": "https://example.test/team"},
+                "x-document-owner": "compatibility",
+            },
+        },
+        "openapi": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "Field Guide", "version": "2.4"},
+                "paths": {},
+                "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+                "x-document-owner": "compatibility",
+            },
+        },
+        "reference": {
+            "args": [],
+            "kwargs": {
+                "$ref": "#/components/schemas/FieldGuide",
+                "x-source": "input-defined",
+            },
+        },
+        "reference-field-name-only": {
+            "args": [],
+            "kwargs": {"ref": "#/components/schemas/FieldGuide"},
+        },
+        "openapi-missing-info": {
+            "args": [],
+            "kwargs": {"openapi": "3.1.0", "paths": {}},
         },
     }

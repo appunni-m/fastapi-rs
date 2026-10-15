@@ -11429,17 +11429,31 @@ reviewed_api_contract_overlay:
         outside this source-only slice.
 
     fastapi.openapi.models.Info:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
+      supported_slice: >-
+        Direct identity-checked inputs compare the pinned signature, nested Contact construction,
+        specification-extension retention, and alias/exclude-none model_dump output. Missing
+        required fields, email validation, other nested models, coercions, and alternate dump modes
+        remain outside this sample.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
           symbol: Info
           start_line: 73
           end_line: 80
-      supported_slice: >-
-        The direct API input declares a signature observation for the Info class. A related docs
-        workflow uses Info as a response_model and declares OpenAPI observations for its
-        generated Info schema; standalone construction, model_result, and field validation are
-        not mapped.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+          case_id: fastapi.direct-api-reference-wave.openapi-info-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.info.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Selected constructor output and signature pass direct parity; invalid inputs, optional EmailStr validation, and broader nested-model/default behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
 
     fastapi.openapi.models.Info.contact:
       source_evidence:
@@ -11961,16 +11975,33 @@ reviewed_api_contract_overlay:
         behavior are not claimed.
 
     fastapi.openapi.models.OpenAPI:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
+      supported_slice: >-
+        Direct identity-checked inputs compare the pinned signature, nested Info construction,
+        path and extension fields, and alias/exclude-none model_dump output. A missing required
+        Info field is compared as a Pydantic call error. Populated route graphs, webhooks,
+        recursive components, and alternate dump modes remain outside this sample.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
           symbol: OpenAPI
           start_line: 419
           end_line: 430
-      supported_slice: >-
-        The direct API input declares only a signature observation for the OpenAPI class.
-        App-level openapi.document workflows exercise document generation, not direct OpenAPI
-        model construction, validation, or model_dump for this symbol.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+          case_id: fastapi.direct-api-reference-wave.openapi-model-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.openapi.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.openapi.missing-info-error
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Direct construction covers one empty-path document and the required Info error; populated route graphs, webhook graphs, recursive components, and alternate dump modes remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
 
     fastapi.openapi.models.OpenAPI.components:
       source_evidence:
@@ -12671,17 +12702,32 @@ reviewed_api_contract_overlay:
         behavior are not claimed.
 
     fastapi.openapi.models.Reference:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
+      supported_slice: >-
+        Direct identity-checked inputs compare the pinned constructor signature, `$ref` alias
+        construction and model_dump output, plus the missing-alias call error when only the Python
+        field name is supplied. Additional coercions and schema behavior remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
           symbol: Reference
           start_line: 95
           end_line: 96
-      supported_slice: >-
-        Source model declaration only: Reference inherits BaseModel and declares ref. No direct
-        constructor/model_result case is row-linked; Pydantic signature generation,
-        validation/coercion, extras, serialization, and JSON Schema behavior remain outside this
-        source-only slice.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+          case_id: fastapi.openapi-models.reference.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.reference.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.reference.python-field-name-error
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - One alias input/output and one required-alias error are compared; other Pydantic coercions, JSON Schema generation, and alternate serialization remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
 
     fastapi.openapi.models.Reference.ref:
       source_evidence:
@@ -12692,10 +12738,16 @@ reviewed_api_contract_overlay:
           end_line: 96
       supported_slice: >-
         Declared field only: annotation str; required Field declaration (no default);
-        serialization alias '$ref'; parent input sample only through
-        openapi-models.components.model-result ($ref entry in Components.schemas); no field-row
-        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        serialization alias '$ref'; direct parent inputs compare alias parsing and dumping and
+        confirm a missing alias when only the Python field name is supplied. Other Pydantic
+        validation/coercion and schema behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.reference.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.reference.python-field-name-error
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.RequestBody:
       source_evidence:
