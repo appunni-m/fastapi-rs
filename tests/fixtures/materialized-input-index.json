@@ -27076,18 +27076,19 @@
     {
       "id": "router-late-route-order-parity",
       "input_path": "tests/fixtures/inputs/parity/router-late-route-order-parity.json",
-      "input_sha256": "5f1f2732517b8eb83b87214d8dc2a83b0aef6a1a9cb0211fa4bbb3a99206296a",
+      "input_sha256": "264ea56b1e7b7fedc7b6e4218cdee38b8f462c4eaf7d42764d770142ddce1f63",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml",
-      "recipe_sha256": "f0acca8228e2ee6307286cd31cea44af3d1037c9ab413cbf3c7add75819a378a",
+      "recipe_sha256": "05f0da7d278dc38f6cd5d5bfde78a920eebf1913f2a1874048c0cdca666b7676",
       "case_ids": [
         "fastapi.router-late-route-order.static-before-catch-all",
         "fastapi.router-late-route-order.later-full-after-partial",
         "fastapi.router-late-route-order.partial-only-405",
+        "fastapi.router-late-route-order.websocket-include-slot",
         "fastapi.router-late-route-order.direct-before-late-duplicate",
         "fastapi.router-late-route-order.nested-late-response-model"
       ],
       "workload_path": "tests/fixtures/workloads/router_late_route_order_parity.py",
-      "workload_sha256": "45918420eb15b329c2cec79eb014189fc49ee2c41c12deca9e4687a6d93c2c4d",
+      "workload_sha256": "3c04ef7679a6929990d0ee1a6377e202ffda5f430c65dc9aa639ff063253eab9",
       "case_contracts": [
         {
           "case_id": "fastapi.router-late-route-order.static-before-catch-all",
@@ -27111,6 +27112,13 @@
           ]
         },
         {
+          "case_id": "fastapi.router-late-route-order.websocket-include-slot",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
           "case_id": "fastapi.router-late-route-order.direct-before-late-duplicate",
           "verification": "parity",
           "requirement_refs": [
@@ -27121,6 +27129,28 @@
           "case_id": "fastapi.router-late-route-order.nested-late-response-model",
           "verification": "parity",
           "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "router-late-url-path-for-order",
+      "input_path": "tests/fixtures/inputs/parity/router-late-url-path-for-order.json",
+      "input_sha256": "3b394b7f5e0d68ba5a8209e3ed9a046c916aa4c9ecbb8d11b1605b9493c03d88",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml",
+      "recipe_sha256": "a60b8f03611dfb55734de5c1e55a4c120966f38f23e3f3d73a820134bfd0429f",
+      "case_ids": [
+        "fastapi.router-late-route-order.url-path-for-include-slot"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_late_url_path_for_order.py",
+      "workload_sha256": "592ba1456327124631a75b785c6f1aa1031651c2a83e354de251e05332fcdfca",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.router-late-route-order.url-path-for-include-slot",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/first-steps.md",
             "source:upstream-test:tests/test_router_include_context.py"
           ]
         }
@@ -59749,20 +59779,54 @@
       "fixture_id": "fastapi.test.test-router-include-context",
       "workflow_id": "router-late-route-order-parity",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.router-late-route-order.direct-before-late-duplicate",
         "fastapi.router-late-route-order.later-full-after-partial",
         "fastapi.router-late-route-order.nested-late-response-model",
         "fastapi.router-late-route-order.partial-only-405",
-        "fastapi.router-late-route-order.static-before-catch-all"
+        "fastapi.router-late-route-order.static-before-catch-all",
+        "fastapi.router-late-route-order.websocket-include-slot"
       ],
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "websocket.close_code",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/first-steps.md",
+      "fixture_id": "fastapi.docs.tutorial-first-steps",
+      "workflow_id": "router-late-url-path-for-order",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router-late-route-order.url-path-for-include-slot"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-late-url-path-for-order",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router-late-route-order.url-path-for-include-slot"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

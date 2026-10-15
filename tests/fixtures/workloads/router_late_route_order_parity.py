@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, WebSocket
 from pydantic import BaseModel
 
 
@@ -60,6 +60,22 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             return []
 
         app.include_router(router, prefix="/api")
+
+    elif scenario == "late-websocket-collision":
+        routes = APIRouter()
+        app.include_router(routes, prefix="/api")
+
+        @app.websocket("/api/stream")
+        async def direct_stream(websocket: WebSocket) -> None:
+            await websocket.accept()
+            await websocket.send_text("direct")
+            await websocket.close()
+
+        @routes.websocket("/stream")
+        async def included_stream(websocket: WebSocket) -> None:
+            await websocket.accept()
+            await websocket.send_text("included")
+            await websocket.close()
 
     elif scenario == "direct-and-late-duplicate":
         @app.get("/registry/record", summary="Direct application registration")

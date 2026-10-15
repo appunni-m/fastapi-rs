@@ -85,6 +85,37 @@ cases:
     - {kind: http_response, selectors: [status, headers, body], comparison: exact}
   source_evidence:
   - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.websocket-include-slot
+  factory_input: {scenario: late-websocket-collision}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-websocket-route-order
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /api/stream
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
 - case_id: fastapi.router-late-route-order.direct-before-late-duplicate
   factory_input: {scenario: direct-and-late-duplicate}
   construction_observation:

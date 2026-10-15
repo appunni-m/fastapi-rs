@@ -3444,6 +3444,9 @@ reviewed_api_contract_overlay:
           case_id: fastapi.websocket-validation.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.constructor-override-close
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.websocket-include-slot
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class
@@ -3507,6 +3510,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
           case_id: fastapi.router.include-context.nested-late-api-websocket
           workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.websocket-include-slot
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class
@@ -4881,6 +4887,12 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.partial-only-405
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
+          case_id: fastapi.router-late-route-order.url-path-for-include-slot
+          workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.websocket-include-slot
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
         - *generate_unique_id_callback_precedence
@@ -5578,8 +5590,9 @@ reviewed_api_contract_overlay:
         The nested-late-api-websocket case registers a child WebSocket route
         after the child router is included in this router and after this router
         is included in the app. It compares the composed prefixes and emitted
-        WebSocket events. WebSocket collision ordering remains outside this
-        late-route-order workflow.
+        WebSocket events. The late-route-order workflow also compares API
+        WebSocket collision priority after inclusion and named route reversal
+        when direct and late-included routes share a name and parameter shape.
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
       fixture_refs:
@@ -5613,6 +5626,12 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.partial-only-405
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
+          case_id: fastapi.router-late-route-order.url-path-for-include-slot
+          workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.websocket-include-slot
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
@@ -5923,6 +5942,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.partial-only-405
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
+          case_id: fastapi.router-late-route-order.url-path-for-include-slot
+          workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -6310,6 +6332,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.nested-late-response-model
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
+          case_id: fastapi.router-late-route-order.url-path-for-include-slot
+          workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -14507,6 +14532,9 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.url-path-for.included-router-context
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
+          case_id: fastapi.router-late-route-order.url-path-for-include-slot
+          workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:
@@ -14515,7 +14543,7 @@ reviewed_api_contract_overlay:
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
         known_gaps:
           - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing or mismatched route parameters are not established.
-          - Dynamic router mutation after inclusion and Mount or Host route-context lookup are not covered by the current inputs.
+          - Mount or Host route-context lookup and named URLPath metadata are not covered by the current inputs.
     fastapi.routing.APIRouter.url_path_for:
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter
       canonical_operation_id: starlette.routing.Router.url_path_for
