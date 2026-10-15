@@ -3097,12 +3097,10 @@ reviewed_api_contract_overlay:
         optional availability. FastAPI-RS exposes the alias through a direct
         `starlette.testclient` re-export; its `testclient` extra installs the
         HTTPX version range supported by pinned Starlette-RS. The direct API
-        identity workflow compares this public binding with the canonical
-        `starlette.testclient.TestClient` object in each isolated process; the
-        exact signature workflow remains partial because three
-        Starlette-RS-owned annotations differ from Starlette 1.6.0. Generic
-        request, WebSocket, and lifespan behavior remain Starlette-RS-owned,
-        and full TestClient behavior parity is not established.
+        workflow maps public binding identity and signature observations to the
+        canonical `starlette.testclient.TestClient` object in each isolated
+        process. Generic request, WebSocket, and lifespan behavior are
+        Starlette-RS-owned; full TestClient behavior parity is not established.
     fastapi.websockets.WebSocket:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:

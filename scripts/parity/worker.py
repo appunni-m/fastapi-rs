@@ -50,7 +50,12 @@ ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
         "python-multipart": "0.0.32"
     },
-    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1": {"httpx": "0.28.1"},
+    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1": {
+        "certifi": "2026.1.4",
+        "h11": "0.16.0",
+        "httpcore": "1.0.9",
+        "httpx": "0.28.1",
+    },
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0": {
         "email-validator": "2.3.0",
         "dnspython": "2.8.0",

@@ -420,7 +420,12 @@ def read_manifest() -> dict[str, Any]:
         "testclient": {
             "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1",
             "base_profile": profile["id"],
-            "added_packages": {"httpx": "0.28.1"},
+            "added_packages": {
+                "certifi": "2026.1.4",
+                "h11": "0.16.0",
+                "httpcore": "1.0.9",
+                "httpx": "0.28.1",
+            },
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-oracle-testclient",
         },
@@ -439,7 +444,7 @@ def read_manifest() -> dict[str, Any]:
     }
     if manifest.get("oracle_profile_extensions") != expected_extensions:
         raise ContractError(
-            "manifest optional oracle environment differs from the pinned multipart extension"
+            "manifest oracle optional profiles differ from the pinned package environments"
         )
     target = manifest.get("target")
     if not isinstance(target, dict) or target.get("version") != "0.1.0":
