@@ -1,12 +1,13 @@
-# EmailStr is supplied by the pinned standard-multipart oracle profile.
-schema: fastapi-rs/python-asgi-workflow@3
-oracle_profile_extension: standard-multipart
+# EmailStr uses the paired, hash-locked source and target profile.
+schema: fastapi-rs/python-asgi-workflow@11
+oracle_profile_extension: email-validation
 workload:
   file: tests/fixtures/workloads/extra_models_tutorials_upstream_wave.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.extra-models.tutorial001-flat-user-models
+  verification: parity
   factory_input:
     workflow: user
     user_model_style: flat
@@ -102,6 +103,7 @@ cases:
   - path: docs/en/docs/tutorial/extra-models.md
     kind: upstream_documentation
 - case_id: fastapi.extra-models.tutorial002-inherited-user-models
+  verification: parity
   factory_input:
     workflow: user
     user_model_style: inherited
@@ -148,6 +150,7 @@ cases:
   - path: docs/en/docs/tutorial/extra-models.md
     kind: upstream_documentation
 - case_id: fastapi.extra-models.tutorial003-union-response-model
+  verification: parity
   factory_input:
     workflow: union
   construction_observation: *construction
@@ -233,6 +236,7 @@ cases:
   - path: docs/en/docs/tutorial/extra-models.md
     kind: upstream_documentation
 - case_id: fastapi.extra-models.tutorial004-typed-list-response
+  verification: parity
   factory_input:
     workflow: list
   construction_observation: *construction
@@ -284,6 +288,7 @@ cases:
   - path: docs/en/docs/tutorial/extra-models.md
     kind: upstream_documentation
 - case_id: fastapi.extra-models.tutorial005-typed-map-response
+  verification: parity
   factory_input:
     workflow: map
   construction_observation: *construction

@@ -34,6 +34,7 @@ WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
 WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow@10"
+WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow@11"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -43,13 +44,21 @@ RESULT_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow-result@7"
 RESULT_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow-result@9"
 RESULT_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow-result@10"
+RESULT_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow-result@11"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
         "python-multipart": "0.0.32"
     },
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1": {"httpx": "0.28.1"},
+    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0": {
+        "email-validator": "2.3.0",
+        "dnspython": "2.8.0",
+    },
 }
+ORACLE_EXACT_PACKAGE_SET_PROFILE_IDS = frozenset(
+    {"fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0"}
+)
 ORACLE_BASE_PACKAGES = {
     "annotated-doc": "0.0.4",
     "annotated-types": "0.7.0",
@@ -208,6 +217,31 @@ def _oracle_identity(
                 f"expected {expected_version}, got {actual_version}"
             )
         actual_packages[distribution] = actual_version
+
+    if profile_id in ORACLE_EXACT_PACKAGE_SET_PROFILE_IDS:
+        installed_packages: dict[str, str] = {}
+        for distribution in importlib.metadata.distributions():
+            name = distribution.metadata.get("Name")
+            if not name:
+                raise WorkerError("oracle environment contains a distribution without a name")
+            normalized = re.sub(r"[-_.]+", "-", name).lower()
+            if normalized in installed_packages:
+                raise WorkerError(
+                    f"oracle environment contains duplicate distributions: {normalized}"
+                )
+            installed_packages[normalized] = distribution.version
+        if installed_packages != packages:
+            missing = sorted(set(packages) - set(installed_packages))
+            unexpected = sorted(set(installed_packages) - set(packages))
+            mismatched = sorted(
+                name
+                for name in set(packages) & set(installed_packages)
+                if packages[name] != installed_packages[name]
+            )
+            raise WorkerError(
+                "oracle runtime package profile mismatch "
+                f"(missing={missing}, unexpected={unexpected}, mismatched={mismatched})"
+            )
 
     python_identity = {
         "implementation": platform.python_implementation(),
@@ -1437,6 +1471,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1455,6 +1490,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1467,6 +1503,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1479,6 +1516,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
+                WORKFLOW_SCHEMA_V11_ID,
             }
             else []
         )
@@ -1490,11 +1528,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
+                WORKFLOW_SCHEMA_V11_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V10_ID
+            RESULT_SCHEMA_V11_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V11_ID
+            else RESULT_SCHEMA_V10_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V10_ID
             else RESULT_SCHEMA_V9_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V9_ID

@@ -6378,6 +6378,9 @@ from atlas_documentation_section_case_mappings_first_steps_20261015 import (  # 
 from atlas_documentation_section_case_mappings_openapi_schema_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015,
 )
+from atlas_documentation_section_case_mappings_operation_config_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015,
+)
 from atlas_documentation_section_case_mappings_path_params_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
 )
@@ -6399,6 +6402,9 @@ from atlas_documentation_section_case_mappings_response_headers_1016 import (  #
 from atlas_documentation_section_case_mappings_response_model_remaining_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
 )
+from atlas_documentation_section_case_mappings_security_intro_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
+)
 from atlas_documentation_section_case_mappings_security_scopes_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
 )
@@ -6407,6 +6413,9 @@ from atlas_documentation_section_case_mappings_settings_20261015 import (  # noq
 )
 from atlas_documentation_section_case_mappings_sql_databases_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_SQL_DATABASES_20261015,
+)
+from atlas_documentation_section_case_mappings_ui_clients_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
 )
 
 for _doc_path, _rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():
@@ -6453,6 +6462,7 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015,
     DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
     DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015,
+    DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015,
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
     DOC_SECTION_CASE_MAPPINGS_REQUEST_BODY_CORE_20261015,
@@ -6460,9 +6470,11 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
     DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
     DOC_SECTION_CASE_MAPPINGS_SQL_DATABASES_20261015,
+    DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
 ):
     _section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(_new_section_mappings)
     if _section_mapping_overlaps:

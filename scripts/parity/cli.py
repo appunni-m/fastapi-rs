@@ -37,11 +37,13 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V8_ID,
     WORKFLOW_SCHEMA_V9_ID,
     WORKFLOW_SCHEMA_V10_ID,
+    WORKFLOW_SCHEMA_V11_ID,
     ContractError,
     load_workflow,
     read_json,
     read_manifest,
     select_oracle_profile,
+    select_target_profile,
     sha256_file,
 )
 from scripts.parity.coverage import (
@@ -379,8 +381,9 @@ def target_command(args: argparse.Namespace) -> dict[str, Any]:
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }:
-        raise ContractError("target requires a Python/ASGI v2 through v10 workflow")
+        raise ContractError("target requires a Python/ASGI v2 through v11 workflow")
     python = args.python.absolute()
     if not python.is_file():
         raise ContractError(
@@ -397,7 +400,7 @@ def target_command(args: argparse.Namespace) -> dict[str, Any]:
             for name, version in manifest["oracle_profile"]["packages"].items()
             if name in SHARED_ORACLE_PACKAGES
         },
-        "target": manifest["target"],
+        "target": select_target_profile(manifest, workflow.get("oracle_profile_extension")),
     }
     command = [
         str(python),
@@ -947,7 +950,7 @@ def compare_command(args: argparse.Namespace) -> dict[str, Any]:
         source=source,
         target=target,
         oracle_profile=select_oracle_profile(manifest, workflow.get("oracle_profile_extension")),
-        target_profile=manifest["target"],
+        target_profile=select_target_profile(manifest, workflow.get("oracle_profile_extension")),
         manifest_sha256=manifest_digest,
         input_path=workflow_path.relative_to(ROOT).as_posix(),
         input_sha256=input_digest,

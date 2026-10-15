@@ -2893,6 +2893,9 @@ else:
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_E)
 
 if __package__:
+    from scripts.atlas_documentation_example_review_ui_clients_20261015 import (
+        DOC_EXAMPLE_CITATION_UI_CLIENTS_20261015_EXTENSION,
+    )
     from scripts.atlas_documentation_example_review_wave_f import (
         DOC_EXAMPLE_CITATION_WAVE_F,
     )
@@ -2912,6 +2915,9 @@ if __package__:
         DOC_EXAMPLE_CITATION_WAVE_K,
     )
 else:
+    from atlas_documentation_example_review_ui_clients_20261015 import (
+        DOC_EXAMPLE_CITATION_UI_CLIENTS_20261015_EXTENSION,
+    )
     from atlas_documentation_example_review_wave_f import DOC_EXAMPLE_CITATION_WAVE_F
     from atlas_documentation_example_review_wave_g import DOC_EXAMPLE_CITATION_WAVE_G
     from atlas_documentation_example_review_wave_h import DOC_EXAMPLE_CITATION_WAVE_H
@@ -5365,6 +5371,25 @@ def _extend_documentation_example_workflow_case(
             "observation_selectors": selectors,
         }
     )
+
+
+for _source_path, _extension in DOC_EXAMPLE_CITATION_UI_CLIENTS_20261015_EXTENSION.items():
+    _review = DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.get(_source_path)
+    if _review is None:
+        raise ValueError(f"documentation example has no reviewed source mapping: {_source_path}")
+    _rationale = _extension.get("rationale")
+    _supporting_sources = _extension.get("supporting_sources")
+    _workflow_cases = _extension.get("workflow_cases")
+    if not isinstance(_rationale, str) or not isinstance(_supporting_sources, list):
+        raise ValueError(f"documentation example review extension is malformed: {_source_path}")
+    if not isinstance(_workflow_cases, list):
+        raise ValueError(f"documentation example workflow cases are malformed: {_source_path}")
+    _review["rationale"] = str(_review["rationale"]) + " " + _rationale
+    for _supporting_source in _supporting_sources:
+        if _supporting_source not in _review["supporting_sources"]:
+            _review["supporting_sources"].append(_supporting_source)
+    for _workflow_case in _workflow_cases:
+        _extend_documentation_example_workflow_case(_source_path, _workflow_case)
 
 
 for _source_path, _extensions in DOC_EXAMPLE_WORKFLOW_CASE_EXTENSIONS_PATH_1016.items():

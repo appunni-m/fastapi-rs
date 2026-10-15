@@ -16,6 +16,15 @@ from scripts.atlas_documentation_example_review_mappings import (
 from scripts.atlas_documentation_page_case_links_fastapi_wave_l import (
     DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L,
 )
+from scripts.atlas_documentation_section_case_mappings_operation_config_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_security_intro_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
+)
+from scripts.atlas_documentation_section_case_mappings_ui_clients_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
+)
 from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
@@ -36,7 +45,30 @@ INPUT_DIR = ROOT / "tests/fixtures/inputs/parity"
 FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 INDEX_SCHEMA = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
-INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v8.schema.json"
+INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v9.schema.json"
+
+_REVIEWED_PAGE_SECTION_MAPPINGS = (
+    DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015,
+    DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
+    DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
+)
+
+
+def _reviewed_page_case_selectors(
+    source_path: str, recipe_path: str, case_id: str
+) -> set[str]:
+    """Return selectors explicitly reviewed for this docs page and fixture case."""
+    page_rel = source_path.removeprefix("docs/en/docs/")
+    selectors: set[str] = set()
+    for mappings in _REVIEWED_PAGE_SECTION_MAPPINGS:
+        for (mapped_page, _), mapping in mappings.items():
+            if mapped_page != page_rel or mapping.get("status") == "excluded":
+                continue
+            if mapping.get("recipe_path") == recipe_path and case_id in mapping.get(
+                "case_ids", []
+            ):
+                selectors.update(mapping["observation_selectors"])
+    return selectors
 
 
 def _source_item_id(
@@ -329,6 +361,20 @@ def build_index() -> dict[str, Any]:
                     continue
                 coverage = next(row for row in atlas["coverage_matrix"] if row["id"] == source_id)
                 source_selectors = set(coverage["observation_selectors"])
+                if evidence["kind"] == "upstream_documentation":
+                    reviewed_page_selectors = _reviewed_page_case_selectors(
+                        evidence["path"], workflow_ref["recipe_path"], case["case_id"]
+                    )
+                    if reviewed_page_selectors:
+                        # Reviewed section claims break the one-generation atlas/index refresh
+                        # cycle; retain prior page candidates for whole-case observations.
+                        source_selectors.update(reviewed_page_selectors)
+                        source_selectors.update(
+                            f"construction.{selector}"
+                            for selector in case.get("construction_observation", {}).get(
+                                "selectors", []
+                            )
+                        )
                 if evidence["kind"] == "upstream_documentation_example":
                     # Reviewed mappings own the selector contract. Reading this
                     # from the generated atlas creates a refresh cycle when a

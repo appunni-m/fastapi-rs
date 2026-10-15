@@ -91,6 +91,18 @@ oracle_profile_extensions:
       httpx: 0.28.1
     fastapi_extra: standard
     prepare_target: parity-prepare-oracle-testclient
+  email-validation:
+    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0
+    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/email-validation-cpython-3.12.13.lock
+      sha256: 031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3
+      profile: CPython 3.12.13 with email-validator 2.3.0
+    added_packages:
+      dnspython: 2.8.0
+      email-validator: 2.3.0
+    fastapi_extra: standard
+    prepare_target: parity-prepare-oracle-email-validation
 
 target_profile_extensions:
   testclient:
@@ -107,6 +119,18 @@ target_profile_extensions:
       httpx: 0.28.1
     fastapi_extra: testclient
     prepare_target: parity-prepare-target-testclient
+  email-validation:
+    id: fastapi-rs-email-validation-cpython-3.12.13-email-validator-2.3.0
+    base_profile: fastapi-rs-python-consumer
+    lock:
+      path: requirements/email-validation-cpython-3.12.13.lock
+      sha256: 031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3
+      profile: CPython 3.12.13 with email-validator 2.3.0
+    added_packages:
+      dnspython: 2.8.0
+      email-validator: 2.3.0
+    fastapi_extra: standard
+    prepare_target: parity-prepare-target-email-validation
 
 target:
   id: fastapi-rs-python-consumer
@@ -439,7 +463,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: f00ef5a8e5f7c8f4bf88da31d2bace4655bba55f922ae9477c6b49bf5f38927a
+    sha256: 7c95e52f4fb94b90c1d6e942506eb2a21ab93675c3bf8dadb26a8aa8fb4b5066
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -475,7 +499,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: bcf0979066fb6e3e59d1ac2616856087729d79d060be2fa775926c0eafdc4d12
+    sha256: 6430352230fdd78d3790d3efbd565f238ec89becfabc04c3948689c6c9700f13
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -511,15 +535,15 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@8
-    sha256: 69de38944b1c45921579fe444f42dcaf1f260b8b5597b9341bc73069ebf90f44
-    schema_path: tests/fixtures/schemas/materialized-input-index-v8.schema.json
-    schema_sha256: 81156f1bc13220fd2420fdfaa590a282a2f61fd3c83bbb20cc73bb6c53577bec
+    schema: fastapi-rs/materialized-input-index@9
+    sha256: f5e9aa6655adaae01a58712f892769159c9afb23057e7e517a889343c010aead
+    schema_path: tests/fixtures/schemas/materialized-input-index-v9.schema.json
+    schema_sha256: 0bacedb78119e8855c62f6fbf684444f70452a5e2d12ee6e4e922ec6b3ab31f8
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 615
-      cases: 2518
-      partial_source_mappings: 1796
+      workflows: 617
+      cases: 2522
+      partial_source_mappings: 1815
 
 contract_metadata:
   aliases:
@@ -762,6 +786,21 @@ unresolved:
       equality between the full retry document and a subsequent cached response.
       Selected actions can declare exact source-backed warning-location pairs
       where source and native call stacks have no corresponding frames.
+  python_asgi_workflow_v11:
+    state: paired-hash-locked-email-validation-profile; v1-v10-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@11
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v11.schema.json
+    schema_sha256: 7860e1f836235a60dc8c44382f719929a358081b2e75308b2e7e09b2cad2da67
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@11
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v11.schema.json
+    result_schema_sha256: 6ff6d09773cb9361c3751b3460dc9ff0e9019c4d27152a3a668405139a8a6e02
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@12
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v12.schema.json
+    comparison_schema_sha256: 3b0f12cd1609b458b60fe836268736cb27f16e494b52f0bb5d2f6ebce1e8e082
+    coverage: >-
+      Adds a fixed, paired oracle and target package extension for EmailStr
+      validation. It declares the exact email-validator and dnspython closure;
+      it does not broaden the core runtime package profile.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1
@@ -16904,6 +16943,9 @@ api_surface_contract:
       fixture_id: fastapi.docs.how-to-custom-docs-ui-assets
       fixture_design_ref: /fixture_designs/367
       observation_selectors: &id008
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - docs.response.body.bytes
       - docs.response.headers
       - docs.response.status
@@ -16918,6 +16960,9 @@ api_surface_contract:
     - app-routing
     - openapi-docs
     observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - docs.response.body.bytes
     - docs.response.headers
     - docs.response.status
@@ -18090,6 +18135,9 @@ api_surface_contract:
     - app-routing
     - openapi-docs
     observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - docs.response.body.bytes
     - docs.response.headers
     - docs.response.status
@@ -18171,6 +18219,9 @@ api_surface_contract:
     - app-routing
     - openapi-docs
     observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - docs.response.body.bytes
     - docs.response.headers
     - docs.response.status

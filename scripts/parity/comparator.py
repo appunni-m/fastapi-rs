@@ -17,6 +17,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V8_ID,
     WORKFLOW_SCHEMA_V9_ID,
     WORKFLOW_SCHEMA_V10_ID,
+    WORKFLOW_SCHEMA_V11_ID,
     ContractError,
 )
 from scripts.parity.fault_contracts import (
@@ -124,6 +125,11 @@ def _validate_identity_pair(
     for package in SHARED_ORACLE_PACKAGES:
         if target_identity["packages"].get(package) != expected_packages[package]:
             raise ComparisonError(f"source and target {package} versions differ or are missing")
+    for package, version in optional_packages.items():
+        if expected_packages.get(package) != version:
+            raise ComparisonError(
+                f"source and target optional {package} versions differ or are missing"
+            )
     unexpected_shared = (
         set(source_identity["packages"]) & set(target_identity["packages"])
     ) - PRODUCT_PACKAGES
@@ -623,6 +629,7 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }:
         fault_case_present = any(
             verification_mode(case) == "fault-contract" for case in workflow["cases"]
@@ -673,6 +680,7 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }:
         compare_case = _compare_case_v4
     elif workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
@@ -688,6 +696,7 @@ def compare_workflow_results(
             WORKFLOW_SCHEMA_V8_ID,
             WORKFLOW_SCHEMA_V9_ID,
             WORKFLOW_SCHEMA_V10_ID,
+            WORKFLOW_SCHEMA_V11_ID,
         }:
             mode = verification_mode(case)
             if source_case is None or target_case is None:
@@ -752,6 +761,7 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }:
         parity_results = [case for case in case_results if case["verification"] == "parity"]
         fault_results = [case for case in case_results if case["verification"] == "fault-contract"]

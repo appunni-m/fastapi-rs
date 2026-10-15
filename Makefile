@@ -10,14 +10,19 @@ ORACLE_STANDARD_ENV ?= $(CURDIR)/.venv-oracle-standard
 ORACLE_STANDARD_PYTHON ?= $(ORACLE_STANDARD_ENV)/bin/python
 ORACLE_TESTCLIENT_ENV ?= $(CURDIR)/.venv-oracle-testclient
 ORACLE_TESTCLIENT_PYTHON ?= $(ORACLE_TESTCLIENT_ENV)/bin/python
+ORACLE_EMAIL_VALIDATION_ENV ?= $(CURDIR)/.venv-oracle-email-validation
+ORACLE_EMAIL_VALIDATION_PYTHON ?= $(ORACLE_EMAIL_VALIDATION_ENV)/bin/python
 TARGET_ENV ?= $(CURDIR)/.venv-target
 TARGET_PYTHON ?= $(TARGET_ENV)/bin/python
 TARGET_TESTCLIENT_ENV ?= $(CURDIR)/target/testclient/venv
 TARGET_TESTCLIENT_PYTHON ?= $(TARGET_TESTCLIENT_ENV)/bin/python
+TARGET_EMAIL_VALIDATION_ENV ?= $(CURDIR)/target/email-validation/venv
+TARGET_EMAIL_VALIDATION_PYTHON ?= $(TARGET_EMAIL_VALIDATION_ENV)/bin/python
 FAULT_TARGET_ENV ?= $(CURDIR)/target/fault-injection/venv
 FAULT_TARGET_PYTHON ?= $(FAULT_TARGET_ENV)/bin/python
 TARGET_RUNTIME_LOCK ?= $(CURDIR)/requirements/target-runtime-cpython-3.12.13.lock
 TARGET_TESTCLIENT_LOCK ?= $(CURDIR)/requirements/target-testclient-cpython-3.12.13.lock
+EMAIL_VALIDATION_LOCK ?= $(CURDIR)/requirements/email-validation-cpython-3.12.13.lock
 BUILD_TOOLS_ENV ?= $(CURDIR)/.venv-build-tools
 BUILD_TOOLS_PYTHON ?= $(BUILD_TOOLS_ENV)/bin/python
 BUILD_TOOLS_LOCK ?= $(CURDIR)/requirements/build-tools-cpython-3.12.13.lock
@@ -34,6 +39,7 @@ export STARLETTE_RS_SOURCE
 SOURCE_RESULT ?=
 TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
+PARITY_EMAIL_INPUT ?= tests/fixtures/inputs/parity/extra-models-tutorials-upstream-wave.json
 PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 PARITY_API_PROFILE_EXTENSION ?=
 PARITY_API_ORACLE_PYTHON ?= $(if $(filter testclient,$(PARITY_API_PROFILE_EXTENSION)),$(ORACLE_TESTCLIENT_PYTHON),$(ORACLE_PYTHON))
@@ -55,7 +61,7 @@ RELEASE_CRATE_DIR ?= target/package
 RELEASE_VERSION ?= 0.1.0
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-target parity-prepare-target-testclient fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -90,8 +96,10 @@ help: ## Show common development commands
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
 	  '  make parity-prepare-oracle-testclient Prepare FastAPI standard extra with HTTPX fallback' \
+	  '  make parity-prepare-oracle-email-validation Prepare the hash-locked EmailStr oracle profile' \
 	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and release FastAPI-RS / ../starlette-rs' \
 	  '  make parity-prepare-target-testclient Prepare isolated target HTTPX fallback profile' \
+	  '  make parity-prepare-target-email-validation Prepare the hash-locked EmailStr target profile' \
 	  '  make fault-injection-build Build an isolated fault-enabled extension under target/fault-injection/' \
 	  '  make parity-api-runtime Reflect and verify the pinned FastAPI Python API surface' \
 	  '  make parity-validate Validate workflows, source atlas, and fixture mappings' \
@@ -99,9 +107,12 @@ help: ## Show common development commands
 	  '  make parity-index-check  Check the materialized fixture index is current' \
 	  '  make parity-oracle   Run PARITY_INPUT against the isolated FastAPI oracle' \
 	  '  make parity-oracle-standard Run PARITY_INPUT with locked standard extras' \
+	  '  make parity-oracle-email-validation Run PARITY_EMAIL_INPUT in the locked EmailStr oracle profile' \
 	  '  make parity-target   Run PARITY_INPUT against the isolated FastAPI-RS target' \
+	  '  make parity-target-email-validation Run PARITY_EMAIL_INPUT in the locked EmailStr target profile' \
 	  '  make parity-fault-target Run PARITY_INPUT against the isolated fault-enabled target' \
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
+	  '  make parity-compare-email-validation Compare paired EmailStr workflow artifacts' \
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-process-* Run CLI processes; pass the same PARITY_PROCESS_RUN_ID to pair separate runs' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
@@ -218,6 +229,14 @@ parity-prepare-oracle-testclient: ## Prepare the source TestClient HTTPX-only st
 	$(UV) pip install --python "$(ORACLE_TESTCLIENT_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
 	$(UV) pip check --python "$(ORACLE_TESTCLIENT_PYTHON)"
 
+parity-prepare-oracle-email-validation: ## Prepare the paired, hash-locked source EmailStr profile
+	test -x "$(ORACLE_EMAIL_VALIDATION_PYTHON)" || $(UV) venv --python 3.12.13 "$(ORACLE_EMAIL_VALIDATION_ENV)"
+	$(ORACLE_EMAIL_VALIDATION_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("EmailStr oracle profile requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(ORACLE_EMAIL_VALIDATION_PYTHON)" --require-hashes "$(EMAIL_VALIDATION_LOCK)"
+	$(UV) pip install --python "$(ORACLE_EMAIL_VALIDATION_PYTHON)" --no-deps --editable "$(FASTAPI_SOURCE)"
+	$(UV) pip install --python "$(ORACLE_EMAIL_VALIDATION_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
+	$(UV) pip check --python "$(ORACLE_EMAIL_VALIDATION_PYTHON)"
+
 parity-prepare-target: ## Prepare hash-locked CPython 3.12.13 target and sibling Starlette-RS
 	test -x "$(TARGET_PYTHON)" || $(UV) venv --python 3.12.13 "$(TARGET_ENV)"
 	$(TARGET_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("target runtime lock requires CPython 3.12.13")'
@@ -235,6 +254,15 @@ parity-prepare-target-testclient: ## Prepare hash-locked target TestClient profi
 	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_TESTCLIENT_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 	$(UV) pip check --python "$(TARGET_TESTCLIENT_PYTHON)"
 	$(TARGET_TESTCLIENT_PYTHON) scripts/check_target_runtime_boundary.py
+
+parity-prepare-target-email-validation: ## Prepare the paired, hash-locked target EmailStr profile
+	test -x "$(TARGET_EMAIL_VALIDATION_PYTHON)" || $(UV) venv --python 3.12.13 "$(TARGET_EMAIL_VALIDATION_ENV)"
+	$(TARGET_EMAIL_VALIDATION_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("EmailStr target profile requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(TARGET_EMAIL_VALIDATION_PYTHON)" --require-hashes "$(EMAIL_VALIDATION_LOCK)"
+	PYO3_PYTHON="$(TARGET_EMAIL_VALIDATION_PYTHON)" $(UV) pip install --python "$(TARGET_EMAIL_VALIDATION_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
+	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_EMAIL_VALIDATION_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+	$(UV) pip check --python "$(TARGET_EMAIL_VALIDATION_PYTHON)"
+	$(TARGET_EMAIL_VALIDATION_PYTHON) scripts/check_target_runtime_boundary.py
 
 fault-injection-build: ## Build a fault-enabled extension without replacing the normal target artifact
 	test -x "$(FAULT_TARGET_PYTHON)" || $(UV) venv --python 3.12.13 "$(FAULT_TARGET_ENV)"
@@ -301,9 +329,15 @@ parity-oracle: parity-inputs ## Execute the input workflow against the isolated 
 parity-oracle-standard: parity-inputs ## Execute optional-feature inputs with Starlette 1.6.0 and standard extras
 	$(PYTHON) -m scripts.parity.cli oracle --input "$(PARITY_INPUT)" --python "$(ORACLE_STANDARD_PYTHON)"
 
+parity-oracle-email-validation: parity-inputs parity-prepare-oracle-email-validation ## Execute an EmailStr workflow against the paired locked oracle profile
+	$(PYTHON) -m scripts.parity.cli oracle --input "$(PARITY_EMAIL_INPUT)" --python "$(ORACLE_EMAIL_VALIDATION_PYTHON)"
+
 parity-target: parity-inputs ## Execute PARITY_INPUT against the isolated FastAPI-RS target
 	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_INPUT)" --python "$(TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+
+parity-target-email-validation: parity-inputs parity-prepare-target-email-validation ## Execute an EmailStr workflow against the paired locked target profile
+	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_EMAIL_INPUT)" --python "$(TARGET_EMAIL_VALIDATION_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-fault-target: parity-inputs fault-injection-build ## Execute fault-contract cases against the isolated fault-enabled target
 	$(FAULT_TARGET_PYTHON) scripts/check_target_runtime_boundary.py
@@ -311,6 +345,9 @@ parity-fault-target: parity-inputs fault-injection-build ## Execute fault-contra
 
 parity-compare: ## Compare live source/target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
+
+parity-compare-email-validation: ## Compare completed EmailStr oracle/target artifacts exactly
+	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_EMAIL_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
 
 signature-workflow-migration-check: ## Require every active signature recipe to use API workflow v5
 	$(PYTHON) scripts/migrate_signature_workflows.py

@@ -68,6 +68,34 @@ target_runtime:
       prepare_target: parity-prepare-target-testclient
       source_profile: FastAPI 0.141.1 standard extra with HTTPX fallback
       starlette_rs_profile: 1.6.0 test client with httpx2 absent
+    email-validation:
+      id: fastapi-rs-email-validation-cpython-3.12.13-email-validator-2.3.0
+      base_profile: fastapi-rs-python-consumer
+      lock:
+        path: requirements/email-validation-cpython-3.12.13.lock
+        sha256: 031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3
+        profile: CPython 3.12.13 with email-validator 2.3.0
+      added_packages:
+        dnspython: 2.8.0
+        email-validator: 2.3.0
+      fastapi_extra: standard
+      prepare_target: parity-prepare-target-email-validation
+      source_profile: FastAPI 0.141.1 EmailStr validation dependency closure
+      starlette_rs_profile: 1.6.0 core runtime
+
+oracle_profile_extensions:
+  email-validation:
+    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0
+    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/email-validation-cpython-3.12.13.lock
+      sha256: 031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3
+      profile: CPython 3.12.13 with email-validator 2.3.0
+    added_packages:
+      dnspython: 2.8.0
+      email-validator: 2.3.0
+    fastapi_extra: standard
+    prepare_target: parity-prepare-oracle-email-validation
 
 fastapi_cli_policy:
   command: fastapi

@@ -5285,6 +5285,24 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
           "workflow_id": "docs-openapi-interface"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.ui-clients.automatic-docs-disabled",
+            "fastapi.docs.ui-clients.custom-cdn"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+          "workflow_id": "docs-ui-clients-sections-20261015"
         }
       ],
       "input_only": true,
@@ -5293,7 +5311,8 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ],
       "selector_evidence": [
         {
@@ -5301,7 +5320,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.paths"
           ]
         },
         {
@@ -5335,6 +5355,41 @@
           "role": "additional OAuth redirect and ReDoc routes outside the selected case",
           "sha256": "a72e8cc9ca74f2450041827f0f2335cc98ae8c308b63413b35d43ce18cce08ac",
           "start_line": 22
+        },
+        {
+          "end_line": 8,
+          "path": "docs_src/custom_docs_ui/tutorial001_py310.py",
+          "role": "disable automatic Swagger UI and ReDoc route registration",
+          "sha256": "a72e8cc9ca74f2450041827f0f2335cc98ae8c308b63413b35d43ce18cce08ac",
+          "start_line": 8
+        },
+        {
+          "end_line": 19,
+          "path": "docs_src/custom_docs_ui/tutorial001_py310.py",
+          "role": "custom Swagger UI route with the documented CDN asset URLs",
+          "sha256": "a72e8cc9ca74f2450041827f0f2335cc98ae8c308b63413b35d43ce18cce08ac",
+          "start_line": 11
+        },
+        {
+          "end_line": 24,
+          "path": "docs_src/custom_docs_ui/tutorial001_py310.py",
+          "role": "custom OAuth2 redirect helper route",
+          "sha256": "a72e8cc9ca74f2450041827f0f2335cc98ae8c308b63413b35d43ce18cce08ac",
+          "start_line": 22
+        },
+        {
+          "end_line": 33,
+          "path": "docs_src/custom_docs_ui/tutorial001_py310.py",
+          "role": "custom ReDoc route with its documented CDN asset URL",
+          "sha256": "a72e8cc9ca74f2450041827f0f2335cc98ae8c308b63413b35d43ce18cce08ac",
+          "start_line": 27
+        },
+        {
+          "end_line": 38,
+          "path": "docs_src/custom_docs_ui/tutorial001_py310.py",
+          "role": "documented users path operation represented in the OpenAPI sample",
+          "sha256": "a72e8cc9ca74f2450041827f0f2335cc98ae8c308b63413b35d43ce18cce08ac",
+          "start_line": 36
         }
       ],
       "source_item_id": "documented-example:docs_src/custom_docs_ui/tutorial001_py310.py",
@@ -5351,7 +5406,7 @@
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
       ],
-      "stimulus_design_notes": "The FastAPI 0.141.1 example disables built-in documentation routes and defines a custom Swagger UI HTML route. The independent case observes a separately named custom-docs response and an OpenAPI info projection. It does not establish the source route path or HTML/assets, OAuth redirect route, ReDoc route, or disabled-route misses."
+      "stimulus_design_notes": "The FastAPI 0.141.1 example disables built-in documentation routes and defines a custom Swagger UI HTML route. The independent case observes a separately named custom-docs response and an OpenAPI info projection. It does not establish the source route path or HTML/assets, OAuth redirect route, ReDoc route, or disabled-route misses. The custom-CDN case samples the tutorial's configured Swagger and ReDoc HTML, OAuth redirect helper, enabled OpenAPI path, and matching users route. Its selectors describe case-level observations, so response-byte/status selectors also occur on the users action. The automatic-docs-disabled case reuses only docs_url=None and redoc_url=None, without the tutorial's replacement /docs and /redoc handlers; its misses therefore sample suppression of automatic routes, not the complete tutorial app. The OpenAPI endpoint remains enabled. Neither case fetches or executes CDN assets, renders a browser UI, or exercises an OAuth provider flow. The pinned tutorial tests separately assert the CDN URL strings, redirect helper response, ReDoc URL, and users route response."
     },
     {
       "feature_ids": [
@@ -5363,6 +5418,23 @@
       ],
       "id": "fastapi.docs-example.custom-docs-ui-tutorial002-py310",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.ui-clients.custom-self-hosted"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+          "workflow_id": "docs-ui-clients-sections-20261015"
+        },
         {
           "case_ids": [
             "fastapi.openapi.tutorial-custom-docs-ui-tutorial002.swagger-ui-oauth2-redirect-html"
@@ -5380,9 +5452,12 @@
       ],
       "input_only": true,
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
-        "http.status"
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ],
       "selector_evidence": [
         {
@@ -5390,7 +5465,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.paths"
           ]
         },
         {
@@ -5412,7 +5488,9 @@
         {
           "feature_id": "openapi-docs",
           "selectors": [
-            "http.body.bytes"
+            "docs.response.status",
+            "http.body.bytes",
+            "openapi.document"
           ]
         },
         {
@@ -5420,7 +5498,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.paths"
           ]
         }
       ],
@@ -5431,6 +5510,34 @@
           "role": "route returning the Swagger UI OAuth2 redirect HTML helper",
           "sha256": "4455834e31101bef8a318274c0c73670109c47db6abf2b2bef8a97718cb04446",
           "start_line": 25
+        },
+        {
+          "end_line": 11,
+          "path": "docs_src/custom_docs_ui/tutorial002_py310.py",
+          "role": "StaticFiles import, disabled automatic docs, and /static mount",
+          "sha256": "4455834e31101bef8a318274c0c73670109c47db6abf2b2bef8a97718cb04446",
+          "start_line": 7
+        },
+        {
+          "end_line": 22,
+          "path": "docs_src/custom_docs_ui/tutorial002_py310.py",
+          "role": "Swagger UI route configured with locally served JavaScript and CSS",
+          "sha256": "4455834e31101bef8a318274c0c73670109c47db6abf2b2bef8a97718cb04446",
+          "start_line": 14
+        },
+        {
+          "end_line": 36,
+          "path": "docs_src/custom_docs_ui/tutorial002_py310.py",
+          "role": "ReDoc route configured with its locally served JavaScript asset",
+          "sha256": "4455834e31101bef8a318274c0c73670109c47db6abf2b2bef8a97718cb04446",
+          "start_line": 30
+        },
+        {
+          "end_line": 41,
+          "path": "docs_src/custom_docs_ui/tutorial002_py310.py",
+          "role": "documented users path operation represented in the OpenAPI sample",
+          "sha256": "4455834e31101bef8a318274c0c73670109c47db6abf2b2bef8a97718cb04446",
+          "start_line": 39
         }
       ],
       "source_item_id": "documented-example:docs_src/custom_docs_ui/tutorial002_py310.py",
@@ -5449,7 +5556,7 @@
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
         "Mount the documented static-file application with independent filesystem inputs, then inspect its response and parent OpenAPI boundary."
       ],
-      "stimulus_design_notes": "This example defines several custom docs routes and mounts local assets. The independent case directly returns get_swagger_ui_oauth2_redirect_html() from a separately named route and observes response status, headers, and body. This supports that helper response only; custom Swagger/ReDoc URLs, local static assets, disabled generated docs, and the other routes are not claimed."
+      "stimulus_design_notes": "This example defines several custom docs routes and mounts local assets. The independent case directly returns get_swagger_ui_oauth2_redirect_html() from a separately named route and observes response status, headers, and body. This supports that helper response only; custom Swagger/ReDoc URLs, local static assets, disabled generated docs, and the other routes are not claimed. The self-hosted case samples the tutorial's /static mount, generated Swagger and ReDoc HTML configured with local asset paths, and responses for three synthetic files. Those file bodies are input markers, not vendor distributions; the case does not establish real-asset contents, offline browser rendering, or interaction. Its case-level HTTP selectors also cover the helper, OpenAPI, and users actions, but this added review relies on the custom-docs and static-file responses. The pinned tutorial tests assert the local asset URLs in the emitted HTML and the OAuth redirect helper response."
     },
     {
       "feature_ids": [
@@ -39324,7 +39431,25 @@
             "openapi-docs"
           ],
           "heading": "Generating SDKs { #generating-sdks }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-version"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.openapi-version-for-generators"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-clients-openapi-version-20261015.yaml",
+              "scope_note": "The selected action observes FastAPI's OpenAPI version field, one item the page says SDK tools consume. It does not generate an SDK, test a generator, compile TypeScript, or establish client runtime behavior.",
+              "workflow_id": "docs-clients-openapi-version-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39341,8 +39466,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 exposes its configured OpenAPI version through get_openapi, places it in the root schema object, and serves that schema from the configured OpenAPI endpoint (fastapi/openapi/utils.py:585-614; fastapi/applications.py:1085-1120). The pinned page states that SDK generators must support OpenAPI 3.1 at docs/en/docs/advanced/generate-clients.md:17-20. The linked action observes only the server-generated version field; it does not run or claim compatibility for any external SDK generator.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -39399,7 +39524,25 @@
             "openapi-docs"
           ],
           "heading": "Open Source SDK Generators { #open-source-sdk-generators }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-version"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.openapi-version-for-generators"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-clients-openapi-version-20261015.yaml",
+              "scope_note": "The action observes the server schema version that the section says SDK generators must support. It does not invoke OpenAPI Generator, Hey API, OpenAPI.Tools, or verify their version support.",
+              "workflow_id": "docs-clients-openapi-version-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39408,8 +39551,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 exposes its configured OpenAPI version through get_openapi, places it in the root schema object, and serves that schema from the configured OpenAPI endpoint (fastapi/openapi/utils.py:585-614; fastapi/applications.py:1085-1120). The pinned page states that SDK generators must support OpenAPI 3.1 at docs/en/docs/advanced/generate-clients.md:17-20. The linked action observes only the server-generated version field; it does not run or claim compatibility for any external SDK generator.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -39455,7 +39598,29 @@
             "openapi-docs"
           ],
           "heading": "Create a TypeScript SDK { #create-a-typescript-sdk }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "create-item",
+                "list-items",
+                "openapi-schema"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial001.client-requests-and-openapi"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial001-upstream.yaml",
+              "scope_note": "The actions exercise the documented API requests and selected OpenAPI path/model data used as generator input. They do not run Hey API or inspect generated TypeScript, IDE suggestions, or client-side validation.",
+              "workflow_id": "generate-clients-tutorial001-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39470,8 +39635,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned tutorial declares request and response models and path operations in docs_src/generate_clients/tutorial001_py310.py:7-26. FastAPI 0.141.1 collects route fields and builds the OpenAPI paths and schema components in fastapi/openapi/utils.py:620-679; the app serves the resulting schema from applications.py:1105-1120. Starlette 1.6.0 owns generic ASGI dispatch. The case supplies API and OpenAPI input to a client generator; it does not generate, compile, or execute a client.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -39518,7 +39683,26 @@
             "openapi-docs"
           ],
           "heading": "API Docs { #api-docs }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-schema"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial001.client-requests-and-openapi"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial001-upstream.yaml",
+              "scope_note": "The selected pointers inspect the documented request/response paths and model components from /openapi.json. The action does not fetch or render /docs in a browser.",
+              "workflow_id": "generate-clients-tutorial001-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39527,8 +39711,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned tutorial declares request and response models and path operations in docs_src/generate_clients/tutorial001_py310.py:7-26. FastAPI 0.141.1 collects route fields and builds the OpenAPI paths and schema components in fastapi/openapi/utils.py:620-679; the app serves the resulting schema from applications.py:1105-1120. Starlette 1.6.0 owns generic ASGI dispatch. The case supplies API and OpenAPI input to a client generator; it does not generate, compile, or execute a client.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -39563,7 +39747,25 @@
             "openapi-docs"
           ],
           "heading": "Hey API { #hey-api }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-version"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.openapi-version-for-generators"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-clients-openapi-version-20261015.yaml",
+              "scope_note": "The selected pointer observes only FastAPI's OpenAPI version value presented as input to the named tool. The npx command and generated client files are external and are not run.",
+              "workflow_id": "docs-clients-openapi-version-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39572,8 +39774,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 exposes its configured OpenAPI version through get_openapi, places it in the root schema object, and serves that schema from the configured OpenAPI endpoint (fastapi/openapi/utils.py:585-614; fastapi/applications.py:1085-1120). The pinned page states that SDK generators must support OpenAPI 3.1 at docs/en/docs/advanced/generate-clients.md:17-20. The linked action observes only the server-generated version field; it does not run or claim compatibility for any external SDK generator.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -39645,7 +39847,26 @@
             "openapi-docs"
           ],
           "heading": "FastAPI App with Tags { #fastapi-app-with-tags }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-schema"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial002.tagged-client-requests-and-openapi"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial002-upstream.yaml",
+              "scope_note": "The selected schema pointers expose tagged path operations and their model components. Service grouping in generated TypeScript is not observed.",
+              "workflow_id": "generate-clients-tutorial002-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39662,8 +39883,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 records route tags and operation metadata in the OpenAPI document (fastapi/openapi/utils.py:287-305, 620-679); the selected tutorial case observes its tagged paths and schema values. Grouping generated services or methods by those tags is external SDK-generator behavior and is not claimed.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -39757,7 +39978,26 @@
             "openapi-docs"
           ],
           "heading": "Client Method Names { #client-method-names }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-schema"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial001.client-requests-and-openapi"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial001-upstream.yaml",
+              "scope_note": "The OpenAPI path objects supplied by the basic example include the server's operationId values that a generator can consume. The action does not observe generated method names or naming policy in a client.",
+              "workflow_id": "generate-clients-tutorial001-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39774,8 +40014,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned tutorial declares request and response models and path operations in docs_src/generate_clients/tutorial001_py310.py:7-26. FastAPI 0.141.1 collects route fields and builds the OpenAPI paths and schema components in fastapi/openapi/utils.py:620-679; the app serves the resulting schema from applications.py:1105-1120. Starlette 1.6.0 owns generic ASGI dispatch. The case supplies API and OpenAPI input to a client generator; it does not generate, compile, or execute a client.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -39874,7 +40114,26 @@
             "openapi-docs"
           ],
           "heading": "Custom Operation IDs and Better Method Names { #custom-operation-ids-and-better-method-names }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-operation-ids"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial003-upstream.yaml",
+              "scope_note": "The selected OpenAPI pointers expose the custom operationId values produced by the documented FastAPI callback. They do not establish the client generator's method names or generated source.",
+              "workflow_id": "generate-clients-tutorial003-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39891,8 +40150,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 accepts generate_unique_id_function on FastAPI, passes it to API routes, computes each route unique_id, and uses that value as the OpenAPI operationId (fastapi/applications.py:765-779, 997-999; fastapi/routing.py:1013-1028; fastapi/openapi/utils.py:287-305). The selected action observes the resulting OpenAPI operationId fields only; client method names and generated output are not observed.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -39981,7 +40240,26 @@
             "openapi-docs"
           ],
           "heading": "Custom Generate Unique ID Function { #custom-generate-unique-id-function }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-operation-ids"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial003-upstream.yaml",
+              "scope_note": "The action observes the operationId fields returned from the documented custom generate_unique_id_function. It does not cover missing tags, collisions, or generated client method output.",
+              "workflow_id": "generate-clients-tutorial003-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -39998,8 +40276,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 accepts generate_unique_id_function on FastAPI, passes it to API routes, computes each route unique_id, and uses that value as the OpenAPI operationId (fastapi/applications.py:765-779, 997-999; fastapi/routing.py:1013-1028; fastapi/openapi/utils.py:287-305). The selected action observes the resulting OpenAPI operationId fields only; client method names and generated output are not observed.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -40056,7 +40334,26 @@
             "request-validation"
           ],
           "heading": "Generate a TypeScript Client with Custom Operation IDs { #generate-a-typescript-client-with-custom-operation-ids }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-operation-ids"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial003-upstream.yaml",
+              "scope_note": "The selected action observes the custom OpenAPI operationId input to the external client generator only. It does not execute that generator or claim its TypeScript output.",
+              "workflow_id": "generate-clients-tutorial003-upstream"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -40066,8 +40363,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 accepts generate_unique_id_function on FastAPI, passes it to API routes, computes each route unique_id, and uses that value as the OpenAPI operationId (fastapi/applications.py:765-779, 997-999; fastapi/routing.py:1013-1028; fastapi/openapi/utils.py:287-305). The selected action observes the resulting OpenAPI operationId fields only; client method names and generated output are not observed.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -40113,7 +40410,26 @@
             "openapi-docs"
           ],
           "heading": "Preprocess the OpenAPI Specification for the Client Generator { #preprocess-the-openapi-specification-for-the-client-generator }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-operation-ids"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial003-upstream.yaml",
+              "scope_note": "The selected OpenAPI pointers show the server-produced operationIds before the documented user script modifies a saved file. The Python/Node file transformation and its output are not part of this FastAPI case.",
+              "workflow_id": "generate-clients-tutorial003-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -40128,8 +40444,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 accepts generate_unique_id_function on FastAPI, passes it to API routes, computes each route unique_id, and uses that value as the OpenAPI operationId (fastapi/applications.py:765-779, 997-999; fastapi/routing.py:1013-1028; fastapi/openapi/utils.py:287-305). The selected action observes the resulting OpenAPI operationId fields only; client method names and generated output are not observed.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -40159,7 +40475,7 @@
         },
         {
           "end_line": 177,
-          "exclusion_reason": null,
+          "exclusion_reason": "The pinned section runs the Hey API CLI with a locally preprocessed openapi.json and describes the generated client output (docs/en/docs/advanced/generate-clients.md:166-177).",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -40201,8 +40517,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The consumed file has already been modified by the application-side preprocessing script, and client source generation belongs to the external SDK tool. The section adds no FastAPI route or OpenAPI generation behavior.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -40232,7 +40548,7 @@
         },
         {
           "end_line": 192,
-          "exclusion_reason": null,
+          "exclusion_reason": "The pinned section describes client autocomplete, inline diagnostics, and TypeScript build feedback from generated code (docs/en/docs/advanced/generate-clients.md:178-192).",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -40282,8 +40598,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "IDE completion and compile-time mismatch detection belong to the generated client, editor, language service, and compiler. No FastAPI or ASGI operation is independently observable in this section.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -40318,6 +40634,20 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.docs.ui-clients.openapi-version-for-generators"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-clients-openapi-version-20261015.yaml",
+          "workflow_id": "docs-clients-openapi-version-20261015"
+        },
+        {
+          "case_ids": [
             "fastapi.docs.documentation-wave.openapi-schema.generate-clients"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -40348,6 +40678,38 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial001-upstream.yaml",
           "workflow_id": "generate-clients-tutorial001-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.test.test-tutorial-test-generate-clients-test-tutorial002.tagged-client-requests-and-openapi"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial002-upstream.yaml",
+          "workflow_id": "generate-clients-tutorial002-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial003-upstream.yaml",
+          "workflow_id": "generate-clients-tutorial003-upstream"
         },
         {
           "case_ids": [
@@ -44334,7 +44696,6 @@
     {
       "candidate_observation_selectors": [
         "docs.response.body.bytes",
-        "docs.response.headers",
         "http.body.json",
         "http.cookies",
         "openapi.request_schema",
@@ -44348,7 +44709,6 @@
           "feature_id": "openapi-docs",
           "selectors": [
             "docs.response.body.bytes",
-            "docs.response.headers",
             "http.body.bytes",
             "python.pydantic_model_result"
           ]
@@ -44383,7 +44743,7 @@
       "documented_sections": [
         {
           "end_line": 166,
-          "exclusion_reason": null,
+          "exclusion_reason": "The page heading is a container for the individually mapped advanced operationId, schema visibility, description, response, and OpenAPI extension sections.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -44536,8 +44896,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Pinned docs/en/docs/advanced/path-operation-advanced-configuration.md:1 is only the page title; its independently observable claims are under the child headings. The OpenAPI operationId and OpenAPI Extensions child anchors already have reviewed mappings and are not duplicated here.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -44765,7 +45125,24 @@
             "request-validation"
           ],
           "heading": "Using the *path operation function* name as the operationId { #using-the-path-operation-function-name-as-the-operationid }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "generated-operation-id"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-advanced-configurations.tutorial002"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial002-upstream.yaml",
+              "scope_note": "This samples one custom generate_unique_id_function based on a route function name. It does not test duplicate names across modules, uniqueness enforcement, or every route method.",
+              "workflow_id": "path-operation-advanced-configurations-tutorial002-upstream"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -44777,8 +45154,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 invokes the selected unique-ID function while configuring APIRoute in fastapi/routing.py:1022-1028; fastapi/openapi/utils.py:296-305 writes the route ID into operationId. The selected OpenAPI pointer is the route operation ID.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -44850,7 +45227,24 @@
             "openapi-docs"
           ],
           "heading": "Exclude from OpenAPI { #exclude-from-openapi }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "schema-visible-paths"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-advanced-configurations.tutorial003"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial003-upstream.yaml",
+              "scope_note": "This samples the generated paths for a fixture with one include_in_schema=False operation. It does not separately assert that the route remains reachable over HTTP or inspect rendered documentation UI.",
+              "workflow_id": "path-operation-advanced-configurations-tutorial003-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -44867,8 +45261,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 retains include_in_schema on APIRoute and gates OpenAPI emission in fastapi/openapi/utils.py:331 and :562. The fixture's OpenAPI paths observation is the documented visibility boundary.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -44957,7 +45351,24 @@
             "openapi-docs"
           ],
           "heading": "Advanced description from docstring { #advanced-description-from-docstring }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "item-operation-schema"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-advanced-configurations.tutorial004"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial004-upstream.yaml",
+              "scope_note": "This samples the operation description produced from the tutorial's docstring before its form-feed delimiter. It does not test Sphinx output or the text after the delimiter in another documentation tool.",
+              "workflow_id": "path-operation-advanced-configurations-tutorial004-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -44974,8 +45385,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 cleans the route docstring and truncates it at the first form-feed in fastapi/routing.py:1033-1037; fastapi/openapi/utils.py:291-294 includes the result in the operation. The case selects that operation metadata in OpenAPI.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -45096,7 +45507,28 @@
             "openapi-docs"
           ],
           "heading": "Additional Responses { #additional-responses }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "read-stock-openapi"
+              ],
+              "case_ids": [
+                "fastapi.docs.additional-responses.openapi"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.headers",
+                "docs.response.status",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/additional-responses.yaml",
+              "scope_note": "This samples one generated operation's 200 and 404 response metadata and schema references. It does not exercise every status code, response model, media type, runtime response branch, or error handler. The OpenAPI endpoint's status and headers are captured by the same action as transport observations.",
+              "workflow_id": "additional-responses"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -45115,8 +45547,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 builds declared response metadata while creating APIRoute and emits response objects in fastapi/openapi/utils.py:405-537. The case reads the generated OpenAPI for one inventory operation; Starlette 1.6.0 owns the OpenAPI endpoint's generic ASGI response transport.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -45261,7 +45693,24 @@
             "openapi-docs"
           ],
           "heading": "OpenAPI Extra { #openapi-extra }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_ids": [
+                "fastapi.openapi-extra.deep-merge-and-router-inclusion"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-extra-deep-merge.yaml",
+              "scope_note": "This samples selected nested openapi_extra fields on one direct route and one router-included route. It does not cover every merge shape, the custom requestBody example, or the YAML content-type example; the OpenAPI Extensions child has its own existing reviewed mapping.",
+              "workflow_id": "openapi-extra-deep-merge"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -45278,8 +45727,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 merges each APIRoute.openapi_extra into its generated operation using deep_dict_update in fastapi/openapi/utils.py:537-538. The recipe exercises a direct route and a router-included route; the OpenAPI document and paths are the selected observations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -45519,7 +45968,27 @@
             "openapi-docs"
           ],
           "heading": "Custom OpenAPI *path operation* schema { #custom-openapi-path-operation-schema }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "raw-body",
+                "declared-request-body"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-advanced-configurations.tutorial006"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial006-upstream.yaml",
+              "scope_note": "This samples a raw-byte request route alongside its manually declared OpenAPI requestBody schema. It does not exercise FastAPI JSON parsing or validation, other media types, or arbitrary custom schema fragments.",
+              "workflow_id": "path-operation-advanced-configurations-tutorial006-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -45536,8 +46005,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned example reads request bytes through Request and declares a requestBody schema with openapi_extra. FastAPI 0.141.1 merges that fragment at fastapi/openapi/utils.py:537-538; Starlette 1.6.0 owns Request body consumption and generic ASGI transport. The selected route result and OpenAPI request schema are distinct observations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -45647,7 +46116,29 @@
             "openapi-docs"
           ],
           "heading": "Custom OpenAPI content type { #custom-openapi-content-type }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "valid-yaml",
+                "malformed-yaml",
+                "yaml-with-invalid-item",
+                "yaml-request-schema"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-advanced-configurations.tutorial007"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial007-upstream.yaml",
+              "scope_note": "This samples a YAML request media type, its declared schema, and the tutorial workload's valid and invalid request branches. YAML parsing and Pydantic validation are authored endpoint behavior; the mapping does not claim built-in FastAPI YAML support or automatic request validation for that media type.",
+              "workflow_id": "path-operation-advanced-configurations-tutorial007-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -45664,8 +46155,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 merges the tutorial's manually declared YAML requestBody through APIRoute.openapi_extra at fastapi/openapi/utils.py:537-538. Starlette 1.6.0 owns Request body delivery. YAML decoding and Pydantic validation in the workload are authored endpoint behavior; they are not FastAPI's built-in YAML parsing or request validation.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -45711,6 +46202,23 @@
       ],
       "id": "fastapi.docs.advanced-path-operation-advanced-configuration",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.additional-responses.openapi"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.headers, docs.response.status, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.headers",
+            "docs.response.status",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/additional-responses.yaml",
+          "workflow_id": "additional-responses"
+        },
         {
           "case_ids": [
             "fastapi.docs.documentation-wave.openapi-schema.advanced-operation-configuration"
@@ -45901,6 +46409,7 @@
       ],
       "input_only": true,
       "observation_selectors": [
+        "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
@@ -46084,6 +46593,7 @@
             "openapi.paths"
           ],
           "selectors": [
+            "docs.response.headers",
             "docs.response.status",
             "http.body.bytes",
             "openapi.document",
@@ -50169,7 +50679,25 @@
             "public-api-errors"
           ],
           "heading": "HTTP Basic Auth { #http-basic-auth }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "missing-basic-credentials"
+              ],
+              "case_ids": [
+                "fastapi.advanced.security.http-basic.missing"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/http-basic.yaml",
+              "scope_note": "The selected request omits Authorization and observes FastAPI HTTPBasic's 401 response with its Basic challenge. This covers the ASGI challenge only; the text's integrated browser prompt and automatic browser retry are not run.",
+              "workflow_id": "http-basic"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -50191,8 +50719,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L1-L107. FastAPI 0.141.1's HTTPBasic emits the realm-aware challenge and handles a missing header in fastapi/security/http.py#L197-L219. The selected case cites this page; Starlette 1.6.0 at 4f250d6 carries generic exception responses in starlette/middleware/exceptions.py#L18-L47 and starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -50303,7 +50831,25 @@
             "dependency-security"
           ],
           "heading": "Simple HTTP Basic Auth { #simple-http-basic-auth }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "valid-basic-credentials"
+              ],
+              "case_ids": [
+                "fastapi.advanced.security.http-basic.valid"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/http-basic.yaml",
+              "scope_note": "The selected Basic request returns the parsed username and password fields through the sample route. It does not exercise browser prompts or any username/password authorization policy.",
+              "workflow_id": "http-basic"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -50318,8 +50864,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L15-L28. FastAPI 0.141.1 defines HTTPBasicCredentials and parses a Basic header into that model in fastapi/security/http.py#L16-L27 and #L202-L219. The exact recipe case cites this page; generic ASGI responses use Starlette 1.6.0 at 4f250d6, starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -50420,7 +50966,25 @@
             "public-api-errors"
           ],
           "heading": "Check the username { #check-the-username }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "valid-basic-credentials"
+              ],
+              "case_ids": [
+                "fastapi.advanced.security.http-basic.valid"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/http-basic.yaml",
+              "scope_note": "Partial mapping: the request confirms FastAPI extracts the supplied Basic username/password and delivers them to an application route. The workload does not execute this page's `secrets.compare_digest()` check, reject wrong credentials, or test the resulting application-authored HTTPException branch.",
+              "workflow_id": "http-basic"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -50441,8 +51005,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L29-L107. FastAPI 0.141.1 performs credential parsing in fastapi/security/http.py#L202-L219; the compare_digest and credential policy appear in the user-owned docs_src/security/tutorial007_an_py310.py#L12-L30 and are absent from tests/fixtures/workloads/http_basic.py. The valid case cites the exact page.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -50494,7 +51058,7 @@
         },
         {
           "end_line": 102,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section explains a threat model and the timing behavior of application string comparisons. The selected inputs do not run those comparisons or measure elapsed time.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -50521,8 +51085,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L55-L102. The examples and `secrets.compare_digest()` use are application/Python standard-library behavior in docs_src/security/tutorial007_an_py310.py; no timing-security property is attributed to FastAPI or asserted by this mapping.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -50541,7 +51105,7 @@
         },
         {
           "end_line": 102,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section's claimed comparison-time property is implemented by Python's standard-library `secrets.compare_digest()` in user application code. The HTTPBasic workload does not call it or measure timing.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -50568,8 +51132,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L95-L102. The call is in docs_src/security/tutorial007_an_py310.py#L12-L24; FastAPI only supplies parsed credentials, and no timing-security claim is selected.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -50643,7 +51207,25 @@
             "public-api-errors"
           ],
           "heading": "Return the error { #return-the-error }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "missing-basic-credentials"
+              ],
+              "case_ids": [
+                "fastapi.advanced.security.http-basic.missing"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/http-basic.yaml",
+              "scope_note": "Partial mapping: the selected action observes FastAPI HTTPBasic's built-in missing-header 401 and Basic challenge, which share the documented status and challenge shape. It does not send wrong username/password values or exercise the tutorial's app-authored HTTPException, detail, and custom header branch.",
+              "workflow_id": "http-basic"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -50664,8 +51246,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L103-L107. The specific wrong-credential HTTPException is constructed by the user example in docs_src/security/tutorial007_an_py310.py#L26-L30, while FastAPI's missing-header Basic challenge is in fastapi/security/http.py#L197-L219. The existing missing-credentials case cites the exact page and provides only the limited response-shape observation stated here.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -63772,7 +64354,25 @@
             "middleware-integrations"
           ],
           "heading": "Conditional OpenAPI { #conditional-openapi }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "hidden-openapi",
+                "hidden-swagger-ui",
+                "hidden-redoc"
+              ],
+              "case_ids": [
+                "fastapi.atlas-openapi-tutorial.conditional-hidden-docs"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/atlas-openapi-conditional-interface-review.yaml",
+              "scope_note": "The selected actions observe hidden OpenAPI, Swagger, and ReDoc route statuses for a mounted app configured with an empty OpenAPI URL. The page's Pydantic Settings parsing and environment-variable/server process are outside this case.",
+              "workflow_id": "atlas-openapi-conditional-interface-review"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -63793,8 +64393,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page's server-visible route behavior is conditional on FastAPI's openapi_url, docs_url, and redoc_url configuration (docs/en/docs/how-to/conditional-openapi.md:26-50; fastapi/applications.py:881-890, 1105-1158). The ASGI case uses an app with openapi_url='' and docs_url/redoc_url disabled. Starlette 1.6.0 owns generic mounted routing and 404 dispatch.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -63848,7 +64448,7 @@
         },
         {
           "end_line": 25,
-          "exclusion_reason": null,
+          "exclusion_reason": "The pinned section gives security advice and explains that hiding API docs does not remove path operations (docs/en/docs/how-to/conditional-openapi.md:5-25). It defines no permission, dependency, authentication, or OpenAPI runtime input.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -63908,8 +64508,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The section's model design, permission, password storage, cryptography, and scope recommendations are application security policy. They are not behavior implemented by this FastAPI docs configuration page.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -64358,7 +64958,24 @@
             "middleware-integrations"
           ],
           "heading": "Configure Swagger UI { #configure-swagger-ui }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html"
+              ],
+              "case_ids": [
+                "fastapi.docs-ui.swagger-parameters.override-default"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml",
+              "scope_note": "The selected /docs action observes generated HTML for the documented override example. It does not execute JavaScript or cover all possible Swagger UI parameters.",
+              "workflow_id": "swagger-ui-config-override-wave"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -64378,8 +64995,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 copies its default Swagger UI parameter dictionary, applies the provided parameter overrides, and serializes values into generated HTML (fastapi/openapi/docs.py:13-37, 148-172). FastAPI.applications passes the stored values to its docs HTML helper (fastapi/applications.py:881-890, 1121-1137). Starlette 1.6.0 emits the HTML response; the selected action observes response bytes and status only. It does not execute Swagger UI JavaScript or establish browser rendering.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -64464,7 +65081,24 @@
             "middleware-integrations"
           ],
           "heading": "Disable Syntax Highlighting { #disable-syntax-highlighting }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html"
+              ],
+              "case_ids": [
+                "fastapi.docs-ui.swagger-parameters.default-config"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml",
+              "scope_note": "The selected response bytes contain the configured syntaxHighlight value and FastAPI's generated Swagger UI bootstrap. The resulting browser appearance is not observed.",
+              "workflow_id": "swagger-ui-config-default-wave"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -64479,8 +65113,8 @@
             "process.stdout",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 copies its default Swagger UI parameter dictionary, applies the provided parameter overrides, and serializes values into generated HTML (fastapi/openapi/docs.py:13-37, 148-172). FastAPI.applications passes the stored values to its docs HTML helper (fastapi/applications.py:881-890, 1121-1137). Starlette 1.6.0 emits the HTML response; the selected action observes response bytes and status only. It does not execute Swagger UI JavaScript or establish browser rendering.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -64532,7 +65166,24 @@
             "openapi-docs"
           ],
           "heading": "Change the Theme { #change-the-theme }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html"
+              ],
+              "case_ids": [
+                "fastapi.docs-ui.swagger-parameters.nested-theme"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml",
+              "scope_note": "The selected response bytes contain the nested syntaxHighlight theme option. No browser color rendering or other theme values are sampled.",
+              "workflow_id": "swagger-ui-config-theme-wave"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -64541,8 +65192,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 copies its default Swagger UI parameter dictionary, applies the provided parameter overrides, and serializes values into generated HTML (fastapi/openapi/docs.py:13-37, 148-172). FastAPI.applications passes the stored values to its docs HTML helper (fastapi/applications.py:881-890, 1121-1137). Starlette 1.6.0 emits the HTML response; the selected action observes response bytes and status only. It does not execute Swagger UI JavaScript or establish browser rendering.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -64592,7 +65243,24 @@
             "middleware-integrations"
           ],
           "heading": "Change Default Swagger UI Parameters { #change-default-swagger-ui-parameters }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html"
+              ],
+              "case_ids": [
+                "fastapi.docs-ui.swagger-parameters.override-default"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml",
+              "scope_note": "The response bytes expose one deepLinking override and the generated defaults selected by the workload. This is not an exhaustive inventory of parameters or override combinations.",
+              "workflow_id": "swagger-ui-config-override-wave"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -64607,8 +65275,8 @@
             "process.stdout",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 copies its default Swagger UI parameter dictionary, applies the provided parameter overrides, and serializes values into generated HTML (fastapi/openapi/docs.py:13-37, 148-172). FastAPI.applications passes the stored values to its docs HTML helper (fastapi/applications.py:881-890, 1121-1137). Starlette 1.6.0 emits the HTML response; the selected action observes response bytes and status only. It does not execute Swagger UI JavaScript or establish browser rendering.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -64638,7 +65306,7 @@
         },
         {
           "end_line": 54,
-          "exclusion_reason": null,
+          "exclusion_reason": "This pinned span points readers to Swagger's external configuration reference without declaring an additional FastAPI option or example (docs/en/docs/how-to/configure-swagger-ui.md:51-54).",
           "feature_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -64663,8 +65331,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The external Swagger UI documentation owns the list and behavior of its other JavaScript options. FastAPI-specific parameter serialization is reviewed under the neighboring mapped examples.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -64736,7 +65404,24 @@
             "middleware-integrations"
           ],
           "heading": "JavaScript-only settings { #javascript-only-settings }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html"
+              ],
+              "case_ids": [
+                "fastapi.docs-ui.swagger-parameters.default-config"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml",
+              "scope_note": "The generated HTML response includes FastAPI's JavaScript bootstrap presets as source bytes. It does not accept arbitrary Python-supplied JavaScript objects, execute the script, or validate a browser override.",
+              "workflow_id": "swagger-ui-config-default-wave"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -64756,8 +65441,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 copies its default Swagger UI parameter dictionary, applies the provided parameter overrides, and serializes values into generated HTML (fastapi/openapi/docs.py:13-37, 148-172). FastAPI.applications passes the stored values to its docs HTML helper (fastapi/applications.py:881-890, 1121-1137). Starlette 1.6.0 emits the HTML response; the selected action observes response bytes and status only. It does not execute Swagger UI JavaScript or establish browser rendering.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -65219,7 +65904,27 @@
             "static-files"
           ],
           "heading": "Custom Docs UI Static Assets (Self-Hosting) { #custom-docs-ui-static-assets-self-hosting }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html",
+                "redoc-html"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-cdn",
+                "fastapi.docs.ui-clients.custom-self-hosted"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The two selected actions compare FastAPI-generated Swagger and ReDoc HTML for the documented CDN and local-asset URL forms. Child sections review route disabling, a user path operation, static file responses, and browser-only claims separately. No browser, CDN request, asset execution, or UI rendering is sampled.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -65242,8 +65947,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 get_swagger_ui_html and get_redoc_html build HTML responses from the configured OpenAPI and asset URLs (fastapi/openapi/docs.py:40-194, 197-298); get_swagger_ui_oauth2_redirect_html emits its redirect document at lines 301-380. FastAPI stores the docs URLs and parameters, then conditionally registers its own OpenAPI, Swagger, OAuth redirect, and ReDoc routes (fastapi/applications.py:881-890, 1105-1158). Starlette 1.6.0 owns generic route/mount dispatch and StaticFiles service (starlette/applications.py:98-100; starlette/routing.py:380-425; starlette/staticfiles.py:39-56, 110-152). The selected HTTP actions compare only the emitted response or mounted-file response; they do not execute a browser, fetch a CDN, or render the Swagger UI or ReDoc JavaScript.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -65392,7 +66097,27 @@
             "openapi-docs"
           ],
           "heading": "Custom CDN for JavaScript and CSS { #custom-cdn-for-javascript-and-css }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html",
+                "oauth-redirect",
+                "redoc-html"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-cdn"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The selected custom routes emit HTML containing the configured CDN URLs, and the OAuth helper emits an HTML response. The actions do not fetch those URLs, authenticate with a provider, or render either JavaScript UI.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -65412,8 +66137,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 get_swagger_ui_html and get_redoc_html build HTML responses from the configured OpenAPI and asset URLs (fastapi/openapi/docs.py:40-194, 197-298); get_swagger_ui_oauth2_redirect_html emits its redirect document at lines 301-380. FastAPI stores the docs URLs and parameters, then conditionally registers its own OpenAPI, Swagger, OAuth redirect, and ReDoc routes (fastapi/applications.py:881-890, 1105-1158). Starlette 1.6.0 owns generic route/mount dispatch and StaticFiles service (starlette/applications.py:98-100; starlette/routing.py:380-425; starlette/staticfiles.py:39-56, 110-152). The selected HTTP actions compare only the emitted response or mounted-file response; they do not execute a browser, fetch a CDN, or render the Swagger UI or ReDoc JavaScript.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -65540,7 +66265,27 @@
             "openapi-docs"
           ],
           "heading": "Include the custom docs { #include-the-custom-docs }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html",
+                "oauth-redirect",
+                "redoc-html"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-cdn"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The selected responses cover custom Swagger and ReDoc HTML plus the OAuth redirect helper. They expose URL strings and server response bytes only; the OAuth provider flow and browser-side Swagger/ReDoc code are outside the actions.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -65560,8 +66305,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 get_swagger_ui_html and get_redoc_html build HTML responses from the configured OpenAPI and asset URLs (fastapi/openapi/docs.py:40-194, 197-298); get_swagger_ui_oauth2_redirect_html emits its redirect document at lines 301-380. FastAPI stores the docs URLs and parameters, then conditionally registers its own OpenAPI, Swagger, OAuth redirect, and ReDoc routes (fastapi/applications.py:881-890, 1105-1158). Starlette 1.6.0 owns generic route/mount dispatch and StaticFiles service (starlette/applications.py:98-100; starlette/routing.py:380-425; starlette/staticfiles.py:39-56, 110-152). The selected HTTP actions compare only the emitted response or mounted-file response; they do not execute a browser, fetch a CDN, or render the Swagger UI or ReDoc JavaScript.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -65643,7 +66388,24 @@
             "request-validation"
           ],
           "heading": "Create a *path operation* to test it { #create-a-path-operation-to-test-it }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "api-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-cdn"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The request reaches the documented users path operation and observes its status and response bytes. It does not exercise the client-side UI.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -65655,8 +66417,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned example defines GET /users/{username} at docs_src/custom_docs_ui/tutorial001_py310.py:36-38, and its upstream tutorial test requests /users/john at tests/test_tutorial/test_custom_docs_ui/test_tutorial001.py:34-37. FastAPI binds the path parameter; Starlette 1.6.0 owns generic request dispatch and response emission.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -65797,7 +66559,29 @@
             "static-files"
           ],
           "heading": "Self-hosting JavaScript and CSS for docs { #self-hosting-javascript-and-css-for-docs }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html",
+                "redoc-html",
+                "static-swagger-bundle",
+                "static-swagger-css",
+                "static-redoc"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-self-hosted"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The selected actions inspect emitted HTML URLs and three synthetic files served through a StaticFiles mount. The file contents are input markers, not Swagger or ReDoc distributions; this does not prove offline UI rendering or interaction.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -65820,8 +66604,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 get_swagger_ui_html and get_redoc_html build HTML responses from the configured OpenAPI and asset URLs (fastapi/openapi/docs.py:40-194, 197-298); get_swagger_ui_oauth2_redirect_html emits its redirect document at lines 301-380. FastAPI stores the docs URLs and parameters, then conditionally registers its own OpenAPI, Swagger, OAuth redirect, and ReDoc routes (fastapi/applications.py:881-890, 1105-1158). Starlette 1.6.0 owns generic route/mount dispatch and StaticFiles service (starlette/applications.py:98-100; starlette/routing.py:380-425; starlette/staticfiles.py:39-56, 110-152). The selected HTTP actions compare only the emitted response or mounted-file response; they do not execute a browser, fetch a CDN, or render the Swagger UI or ReDoc JavaScript.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -65895,7 +66679,7 @@
         },
         {
           "end_line": 87,
-          "exclusion_reason": null,
+          "exclusion_reason": "The pinned section shows application and static-directory layouts only (docs/en/docs/how-to/custom-docs-ui-assets.md:65-87). It declares no FastAPI call, ASGI request, or independently observable framework behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -65948,8 +66732,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Filesystem organization and Python package layout are application setup choices. FastAPI does not inspect this diagram during request handling; the later StaticFiles mount and HTTP requests are reviewed under their own sections.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -65990,7 +66774,7 @@
         },
         {
           "end_line": 115,
-          "exclusion_reason": null,
+          "exclusion_reason": "The pinned section instructs the reader to fetch vendor JavaScript and CSS from external CDN URLs and place those bytes in a local directory (docs/en/docs/how-to/custom-docs-ui-assets.md:88-115). It has no FastAPI or ASGI operation.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -66065,8 +66849,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Downloading third-party distributions and choosing a local project directory are external setup behavior. FastAPI emits asset URL strings; Starlette serves a mounted local file when requested. Neither library performs the download.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -66176,7 +66960,24 @@
             "static-files"
           ],
           "heading": "Serve the static files { #serve-the-static-files }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "static-swagger-bundle"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-self-hosted"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The request reaches one file under the documented /static mount and observes its status and body bytes. The synthetic file content proves route-to-file serving for this workload only, not the vendor distribution's operation.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -66191,8 +66992,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned example imports FastAPI.staticfiles.StaticFiles and mounts it at /static (docs_src/custom_docs_ui/tutorial002_py310.py:7-11). FastAPI re-exports the Starlette implementation; Starlette 1.6.0 owns mount matching and StaticFiles lookup/response behavior (starlette/applications.py:98-100; starlette/routing.py:380-425; starlette/staticfiles.py:39-56, 110-152).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -66291,7 +67092,24 @@
             "static-files"
           ],
           "heading": "Test the static files { #test-the-static-files }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "static-redoc"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-self-hosted"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The selected GET returns the independent input marker at the ReDoc asset path. The observation is HTTP status and bytes only; it does not assert that the file is the vendor bundle or that a browser executes it.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -66311,8 +67129,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned section opens /static/redoc.standalone.js and describes the returned JavaScript bytes (docs/en/docs/how-to/custom-docs-ui-assets.md:123-140). The example mounts StaticFiles at /static (docs_src/custom_docs_ui/tutorial002_py310.py:7-11); Starlette 1.6.0 performs static path lookup and response dispatch (starlette/staticfiles.py:110-152).",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -66390,7 +67208,24 @@
             "static-files"
           ],
           "heading": "Disable the automatic docs for static files { #disable-the-automatic-docs-for-static-files }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-disabled",
+                "redoc-disabled"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.automatic-docs-disabled"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The two requests observe that the default Swagger and ReDoc routes are not registered when the app is built with docs_url=None and redoc_url=None. The case does not sample their replacement custom routes.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -66402,8 +67237,8 @@
             "process.stdout",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned tutorial constructs FastAPI(docs_url=None, redoc_url=None) at docs_src/custom_docs_ui/tutorial002_py310.py:9. FastAPI stores those options and adds the corresponding routes only when their configured URLs are truthy (fastapi/applications.py:881-890, 1121-1158). Starlette 1.6.0 supplies the generic unmatched-route response.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "middleware-integrations",
@@ -66527,7 +67362,27 @@
             "static-files"
           ],
           "heading": "Include the custom docs for static files { #include-the-custom-docs-for-static-files }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "swagger-html",
+                "oauth-redirect",
+                "redoc-html"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-self-hosted"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The selected custom responses expose the local JavaScript/CSS URLs and OpenAPI URL in generated HTML, and serve the OAuth redirect helper document. They do not establish browser asset fetching, authentication, or rendering.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -66550,8 +67405,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 get_swagger_ui_html and get_redoc_html build HTML responses from the configured OpenAPI and asset URLs (fastapi/openapi/docs.py:40-194, 197-298); get_swagger_ui_oauth2_redirect_html emits its redirect document at lines 301-380. FastAPI stores the docs URLs and parameters, then conditionally registers its own OpenAPI, Swagger, OAuth redirect, and ReDoc routes (fastapi/applications.py:881-890, 1105-1158). Starlette 1.6.0 owns generic route/mount dispatch and StaticFiles service (starlette/applications.py:98-100; starlette/routing.py:380-425; starlette/staticfiles.py:39-56, 110-152). The selected HTTP actions compare only the emitted response or mounted-file response; they do not execute a browser, fetch a CDN, or render the Swagger UI or ReDoc JavaScript.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -66675,7 +67530,24 @@
             "static-files"
           ],
           "heading": "Create a *path operation* to test static files { #create-a-path-operation-to-test-static-files }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "api-route"
+              ],
+              "case_ids": [
+                "fastapi.docs.ui-clients.custom-self-hosted"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+              "scope_note": "The request reaches the documented users path operation in the self-hosted configuration and observes its status and response bytes; no UI client executes.",
+              "workflow_id": "docs-ui-clients-sections-20261015"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -66690,8 +67562,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned example declares GET /users/{username} at docs_src/custom_docs_ui/tutorial002_py310.py:39-41 and its upstream test requests /users/john at tests/test_tutorial/test_custom_docs_ui/test_tutorial002.py:34-37. FastAPI extracts the path parameter; Starlette 1.6.0 owns generic dispatch and response emission.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -66742,7 +67614,7 @@
         },
         {
           "end_line": 185,
-          "exclusion_reason": null,
+          "exclusion_reason": "The pinned section asks the reader to disconnect WiFi and inspect/interact with Swagger UI in a browser (docs/en/docs/how-to/custom-docs-ui-assets.md:181-185). No browser or external asset request is part of the FastAPI ASGI contract.",
           "feature_evidence": [
             {
               "feature_id": "middleware-integrations",
@@ -66780,8 +67652,8 @@
             "process.stdout",
             "route.match"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "This claim depends on the downloaded Swagger/ReDoc JavaScript, CSS, browser execution, and offline network state. The section declares no new FastAPI operation. The server-generated HTML and synthetic local-file responses are mapped separately, without inferring that the UI renders.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "middleware-integrations",
@@ -66849,10 +67721,35 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-static-files-mount-boundary.yaml",
           "workflow_id": "docs-static-files-mount-boundary"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.ui-clients.automatic-docs-disabled",
+            "fastapi.docs.ui-clients.custom-cdn",
+            "fastapi.docs.ui-clients.custom-self-hosted"
+          ],
+          "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+          "workflow_id": "docs-ui-clients-sections-20261015"
         }
       ],
       "input_only": true,
       "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
@@ -66984,6 +67881,19 @@
             "docs.response.status",
             "http.body.bytes",
             "openapi.document"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
           ]
         }
       ],
@@ -110131,7 +111041,7 @@
       "documented_sections": [
         {
           "end_line": 120,
-          "exclusion_reason": null,
+          "exclusion_reason": "The page title and introduction do not add behavior beyond the separately reviewed metadata and URL child sections.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -110217,8 +111127,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Pinned docs/en/docs/tutorial/metadata.md:1-3 is a title and overview; the concrete API metadata, tag metadata, OpenAPI URL, and docs URL claims appear in child sections and are mapped independently.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -110275,7 +111185,23 @@
             "openapi-docs"
           ],
           "heading": "Metadata for API { #metadata-for-api }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "selected-openapi-info-fields"
+              ],
+              "case_ids": [
+                "fastapi.docs.metadata.tutorial001.openapi-info-fields"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml",
+              "scope_note": "This samples summary, description, terms of service, contact, and license fields in one generated OpenAPI Info object. It does not exercise title or version, Markdown rendering, metadata validation, or the browser docs UI.",
+              "workflow_id": "metadata-tutorial001-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -110284,8 +111210,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned section lists FastAPI application metadata. FastAPI 0.141.1 stores these fields on the application in fastapi/applications.py:875-885 and passes them into get_openapi() at :1084-1097; fastapi/openapi/utils.py:590-612 emits the selected Info fields. The recipe observes OpenAPI data only; Starlette 1.6.0 owns generic ASGI and HTTP transport.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -110320,7 +111246,25 @@
             "openapi-docs"
           ],
           "heading": "License identifier { #license-identifier }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-metadata-test-tutorial001-1.test-openapi-schema"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-1-upstream.yaml",
+              "scope_note": "This samples one SPDX license identifier in the generated Info license object. It does not exercise the mutually exclusive URL form, conflicting values, or invalid identifiers.",
+              "workflow_id": "metadata-tutorial001-1-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -110329,8 +111273,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned section links docs_src/metadata/tutorial001_1_py310.py and FastAPI passes license_info to get_openapi() in fastapi/applications.py:1094; fastapi/openapi/utils.py:611-613 emits the Info license. The recipe observes the OpenAPI document, not UI rendering.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -110397,7 +111341,25 @@
             "openapi-docs"
           ],
           "heading": "Metadata for tags { #metadata-for-tags }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-metadata-test-tutorial004.test-openapi-schema"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial004-upstream.yaml",
+              "scope_note": "This samples the externalDocs object for one configured tag. It does not establish tag descriptions, list ordering, Markdown rendering, metadata for undeclared tags, or rendered docs UI behavior.",
+              "workflow_id": "metadata-tutorial004-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -110414,8 +111376,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 accepts ordered openapi_tags metadata on FastAPI in fastapi/applications.py:222-255 and passes it to OpenAPI generation at :1097; fastapi/openapi/utils.py:675-676 adds the metadata array to the document. The selected pointer is one tag's externalDocs object, not a rendered docs UI.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -110472,7 +111434,25 @@
             "openapi-docs"
           ],
           "heading": "Create metadata for tags { #create-metadata-for-tags }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-metadata-test-tutorial004.test-openapi-schema"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial004-upstream.yaml",
+              "scope_note": "This samples one configured tag's externalDocs object. The input does not compare the tag name, description, ordering, Markdown presentation, or missing metadata for other used tags.",
+              "workflow_id": "metadata-tutorial004-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -110481,8 +111461,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 accepts ordered openapi_tags metadata on FastAPI in fastapi/applications.py:222-255 and passes it to OpenAPI generation at :1097; fastapi/openapi/utils.py:675-676 adds the metadata array to the document. The selected pointer is one tag's externalDocs object, not a rendered docs UI.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -110538,7 +111518,24 @@
             "request-validation"
           ],
           "heading": "Use your tags { #use-your-tags }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "route-tags"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-configurations.tutorial002"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002-upstream.yaml",
+              "scope_note": "This samples tags on three direct path operations. It does not exercise APIRouter-level tag composition, Enum tags, or the separate openapi_tags metadata definitions.",
+              "workflow_id": "path-operation-configurations-tutorial002-upstream"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -110550,8 +111547,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned example assigns tags to path operations. FastAPI 0.141.1 forwards route decorator metadata through fastapi/applications.py:1167-1219, and fastapi/openapi/utils.py:291-293 emits route tags into each operation. The selected OpenAPI paths are route metadata; Starlette 1.6.0 owns generic route dispatch.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -110600,7 +111597,25 @@
             "openapi-docs"
           ],
           "heading": "OpenAPI URL { #openapi-url }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "configured-openapi-location"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-metadata-test-tutorial002.test-openapi-schema"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial002-upstream.yaml",
+              "scope_note": "This samples an OpenAPI endpoint configured at a non-default path. It does not exercise openapi_url=None, root_path mounting, or every interaction with the documentation routes.",
+              "workflow_id": "metadata-tutorial002-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -110609,8 +111624,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 registers the OpenAPI endpoint and conditional Swagger UI/ReDoc routes in fastapi/applications.py:1106-1158. The selected route status, body, and OpenAPI pointers are ASGI-visible configuration results; Starlette 1.6.0 owns generic dispatch and response transport.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -110655,7 +111670,25 @@
             "openapi-docs"
           ],
           "heading": "Docs URLs { #docs-urls }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "configured-swagger-url",
+                "disabled-redoc-url"
+              ],
+              "case_ids": [
+                "fastapi.test.test-tutorial-test-metadata-test-tutorial003.test-swagger-ui-custom-url"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial003-upstream.yaml",
+              "scope_note": "This samples a custom Swagger URL and a disabled ReDoc route. It does not exercise a custom ReDoc URL, docs_url=None, browser rendering, or external UI asset behavior.",
+              "workflow_id": "metadata-tutorial003-upstream"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -110664,8 +111697,8 @@
             "openapi.document",
             "python.pydantic_model_result"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 registers the OpenAPI endpoint and conditional Swagger UI/ReDoc routes in fastapi/applications.py:1106-1158. The selected route status, body, and OpenAPI pointers are ASGI-visible configuration results; Starlette 1.6.0 owns generic dispatch and response transport.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "openapi-docs",
@@ -110722,6 +111755,20 @@
         },
         {
           "case_ids": [
+            "fastapi.test.test-tutorial-test-metadata-test-tutorial001-1.test-openapi-schema"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-1-upstream.yaml",
+          "workflow_id": "metadata-tutorial001-1-upstream"
+        },
+        {
+          "case_ids": [
             "fastapi.docs.metadata.tutorial001.openapi-info-fields"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -110731,6 +111778,63 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml",
           "workflow_id": "metadata-tutorial001-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.test.test-tutorial-test-metadata-test-tutorial002.test-openapi-schema"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial002-upstream.yaml",
+          "workflow_id": "metadata-tutorial002-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.test.test-tutorial-test-metadata-test-tutorial003.test-swagger-ui-custom-url"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial003-upstream.yaml",
+          "workflow_id": "metadata-tutorial003-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.test.test-tutorial-test-metadata-test-tutorial004.test-openapi-schema"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial004-upstream.yaml",
+          "workflow_id": "metadata-tutorial004-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.path-operation-configurations.tutorial002"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002-upstream.yaml",
+          "workflow_id": "path-operation-configurations-tutorial002-upstream"
         }
       ],
       "input_only": true,
@@ -111915,7 +113019,7 @@
       "documented_sections": [
         {
           "end_line": 107,
-          "exclusion_reason": null,
+          "exclusion_reason": "The page heading and introduction group the path-operation options mapped in the child sections; they do not specify a separate operation.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -112007,8 +113111,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Pinned docs/en/docs/tutorial/path-operation-configuration.md:1-7 introduces decorator configuration and distinguishes decorator parameters from endpoint function parameters. The independently observable status, tags, summary, description, response, and deprecation behaviors are mapped under their own headings.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112127,7 +113231,26 @@
             "openapi-docs"
           ],
           "heading": "Response Status Code { #response-status-code }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "post-explicit-status",
+                "openapi-post-status"
+              ],
+              "case_ids": [
+                "fastapi.path-operation.post-status-code-isolated"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-status-code-isolated.yaml",
+              "scope_note": "This samples one explicit response status and its OpenAPI response entry. It does not exercise every status value or the fastapi.status re-export identity and constants individually.",
+              "workflow_id": "path-operation-post-status-code-isolated"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -112144,8 +113267,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned tutorial example sets one route status through the decorator. FastAPI's route decorator passes it into route registration in fastapi/applications.py:1167-1219, and OpenAPI response construction is in fastapi/openapi/utils.py:405-418. The fastapi.status convenience alias is described as a Starlette re-export and is outside these HTTP/OpenAPI observations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112238,7 +113361,24 @@
             "openapi-docs"
           ],
           "heading": "Tags { #tags }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-post-tags"
+              ],
+              "case_ids": [
+                "fastapi.path-operation.post-tags-isolated"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-tags-isolated.yaml",
+              "scope_note": "This samples one string tag on one path operation. It does not cover Enum conversion, tag metadata declarations, APIRouter composition, or docs UI rendering.",
+              "workflow_id": "path-operation-post-tags-isolated"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -112255,8 +113395,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 exposes path-operation configuration through its route decorators in fastapi/applications.py:1167-1219 and stores it on APIRoute in fastapi/routing.py:984-1037. fastapi/openapi/utils.py:281-306 projects summary, operationId, tags, and deprecation metadata into the OpenAPI operation.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112329,7 +113469,24 @@
             "request-validation"
           ],
           "heading": "Tags with Enums { #tags-with-enums }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "enum-route-tags"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-configurations.tutorial002b"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002b-upstream.yaml",
+              "scope_note": "This samples Enum-backed tags on two route operations. It does not cover Enum validation, router-level tag composition, or metadata for the declared tags.",
+              "workflow_id": "path-operation-configurations-tutorial002b-upstream"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -112341,8 +113498,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned section's tutorial002b example supplies Enum members as route tags. FastAPI accepts str or Enum tags in its APIRoute surface (fastapi/routing.py:1172-1174), and fastapi/openapi/utils.py:291-293 emits those tags on the operation. The selector observes the resulting OpenAPI paths.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112404,7 +113561,24 @@
             "request-validation"
           ],
           "heading": "Summary and description { #summary-and-description }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "operation-description"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-configurations.tutorial003-explicit-description"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml",
+              "scope_note": "This samples one explicit summary and description on a POST operation. It does not cover automatic summary generation, docstring extraction, Markdown rendering, or alternate route methods.",
+              "workflow_id": "path-operation-configurations-tutorial003-upstream"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -112416,8 +113590,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 exposes path-operation configuration through its route decorators in fastapi/applications.py:1167-1219 and stores it on APIRoute in fastapi/routing.py:984-1037. fastapi/openapi/utils.py:281-306 projects summary, operationId, tags, and deprecation metadata into the OpenAPI operation.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112479,7 +113653,24 @@
             "request-validation"
           ],
           "heading": "Description from docstring { #description-from-docstring }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "operation-description"
+              ],
+              "case_ids": [
+                "fastapi.path-operation-configurations.tutorial004-docstring-description"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial004-upstream.yaml",
+              "scope_note": "This samples a cleaned multi-line endpoint docstring as an OpenAPI description. It does not exercise form-feed truncation, Markdown rendering, or external documentation consumers.",
+              "workflow_id": "path-operation-configurations-tutorial004-upstream"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -112491,8 +113682,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 uses inspect.cleandoc on an endpoint docstring in fastapi/routing.py:1033-1037; the operation description is assembled in fastapi/openapi/utils.py:291-294. Starlette 1.6.0 owns only the generic HTTP request path used to retrieve OpenAPI.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112565,7 +113756,24 @@
             "openapi-docs"
           ],
           "heading": "Response description { #response-description }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-post-response-descriptions"
+              ],
+              "case_ids": [
+                "fastapi.path-operation.post-response-description-isolated"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-response-description-isolated.yaml",
+              "scope_note": "This samples one explicit response description together with the default and empty description forms on the fixture routes. It does not cover additional response codes, media types, or every response class.",
+              "workflow_id": "path-operation-post-response-description-isolated"
+            }
+          ],
           "observation_selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
@@ -112582,8 +113790,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI's APIRoute stores response_description in fastapi/routing.py:999, and OpenAPI generation assigns it to the response object in fastapi/openapi/utils.py:416-418. The workflow compares the resulting OpenAPI paths only.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112664,7 +113872,24 @@
             "public-api-errors"
           ],
           "heading": "Deprecate a *path operation* { #deprecate-a-path-operation }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "openapi-post-deprecated"
+              ],
+              "case_ids": [
+                "fastapi.path-operation.post-deprecated-isolated"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-deprecated-isolated.yaml",
+              "scope_note": "This samples the deprecated flag on one POST operation in generated OpenAPI. It does not test Python deprecation warnings, removal of the route, or browser UI rendering.",
+              "workflow_id": "path-operation-post-deprecated-isolated"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "error.public_attributes",
@@ -112683,8 +113908,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI 0.141.1 exposes path-operation configuration through its route decorators in fastapi/applications.py:1167-1219 and stores it on APIRoute in fastapi/routing.py:984-1037. fastapi/openapi/utils.py:281-306 projects summary, operationId, tags, and deprecation metadata into the OpenAPI operation.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112725,7 +113950,7 @@
         },
         {
           "end_line": 107,
-          "exclusion_reason": null,
+          "exclusion_reason": "The recap restates that path operations accept decorator metadata and introduces no distinct configuration behavior.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -112770,8 +113995,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Pinned docs/en/docs/tutorial/path-operation-configuration.md:105-107 is a one-sentence recap of the status, tags, summary, description, response description, and deprecation child sections, each mapped separately.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -112822,6 +114047,51 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-schema.yaml",
           "workflow_id": "docs-openapi-schema"
+        },
+        {
+          "case_ids": [
+            "fastapi.path-operation-configurations.tutorial002b"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002b-upstream.yaml",
+          "workflow_id": "path-operation-configurations-tutorial002b-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.path-operation-configurations.tutorial003-explicit-description"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml",
+          "workflow_id": "path-operation-configurations-tutorial003-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.path-operation-configurations.tutorial004-docstring-description"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial004-upstream.yaml",
+          "workflow_id": "path-operation-configurations-tutorial004-upstream"
         },
         {
           "case_ids": [
@@ -112890,6 +114160,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-status-code-isolated.yaml",
           "workflow_id": "path-operation-post-status-code-isolated"
+        },
+        {
+          "case_ids": [
+            "fastapi.path-operation.post-tags-isolated"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-tags-isolated.yaml",
+          "workflow_id": "path-operation-post-tags-isolated"
         },
         {
           "case_ids": [
@@ -129411,7 +130694,7 @@
       "documented_sections": [
         {
           "end_line": 203,
-          "exclusion_reason": null,
+          "exclusion_reason": "This parent heading groups an OAuth2 dependency sample, CLI/server startup, interactive docs, and password-flow discussion. The executable Bearer and OpenAPI behaviors are mapped on their child sections.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -129566,8 +130849,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L1-L203. FastAPI-owned dependency and OpenAPI behavior is mapped below; `fastapi dev` and browser interaction are not selected by the linked ASGI workflows.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -129673,7 +130956,25 @@
             "dependency-security"
           ],
           "heading": "Create `main.py` { #create-main-py }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "required-bearer-provided"
+              ],
+              "case_ids": [
+                "fastapi.docs.security.bearer-required-valid"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
+              "scope_note": "The selected request sends a non-empty Bearer value to a protected operation and observes only its HTTP response. The workload uses `/records/rec-91`, `session/token`, and a declared scope rather than the page snippet's `/items/` and `token`; it does not issue or validate a token.",
+              "workflow_id": "security-dependencies"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -129686,8 +130987,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L19-L24. FastAPI 0.141.1 extracts an opaque Bearer parameter in fastapi/security/oauth2.py#L536-L544 and injects dependencies in fastapi/dependencies/utils.py#L619-L655. The recipe's source_evidence includes this exact page. Starlette 1.6.0 at 4f250d6 owns generic response transport through starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -129718,7 +131019,7 @@
         },
         {
           "end_line": 54,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section describes optional dependency installation and starting a server with the FastAPI CLI or Uvicorn. The selected recipe invokes an ASGI app directly and does not test CLI/process startup.",
           "feature_evidence": [
             {
               "feature_id": "cli-process",
@@ -129778,8 +131079,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L25-L54. Process launching and package installation are not FastAPI ASGI behavior selected by the current security workflows.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -129872,7 +131173,29 @@
             "dependency-security"
           ],
           "heading": "Check it { #check-it }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "inspect-security-schemes-and-operations"
+              ],
+              "case_ids": [
+                "fastapi.docs.security.openapi"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.headers",
+                "docs.response.status",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.security"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
+              "scope_note": "The request observes selected generated security-scheme and operation-security OpenAPI pointers. It does not request `/docs`, run Swagger UI, open a browser, or exercise the authorization button.",
+              "workflow_id": "security-dependencies"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -129887,8 +131210,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L55-L88. FastAPI 0.141.1 gathers dependency security declarations in fastapi/openapi/utils.py#L99-L156 and serves the generated document; the recipe source_evidence includes this page. Starlette 1.6.0 at 4f250d6 handles generic ASGI HTTP responses in starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -129929,7 +131252,7 @@
         },
         {
           "end_line": 114,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section introduces the OAuth2 password flow as a protocol and explicitly says its token endpoint has not yet been created. The linked selected inputs cover Bearer extraction and OpenAPI metadata, not a password form or token issuance operation.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -129988,8 +131311,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L89-L114. FastAPI 0.141.1's OAuth2PasswordBearer records flow metadata at fastapi/security/oauth2.py#L433-L535; that metadata does not implement the external protocol or issue tokens.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -130116,7 +131439,29 @@
             "openapi-docs"
           ],
           "heading": "**FastAPI**'s `OAuth2PasswordBearer` { #fastapis-oauth2passwordbearer }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "inspect-security-schemes-and-operations"
+              ],
+              "case_ids": [
+                "fastapi.docs.security.openapi"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.headers",
+                "docs.response.status",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.security"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
+              "scope_note": "The selected OpenAPI action observes one declared OAuth2 password-flow scheme, its configured token URL and scope, and selected path security requirements. The input does not create that token endpoint, issue/validate tokens, integrate with a provider, or render browser docs.",
+              "workflow_id": "security-dependencies"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -130136,8 +131481,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L115-L186. FastAPI 0.141.1 stores tokenUrl/scopes on OAuth2PasswordBearer in fastapi/security/oauth2.py#L433-L535 and projects security dependencies in fastapi/openapi/utils.py#L99-L156. The selected recipe includes exact page source_evidence; its workload's declared token URL and scope differ from the tutorial snippet.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -130268,7 +131613,25 @@
             "openapi-docs"
           ],
           "heading": "Use it { #use-it }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "required-bearer-provided"
+              ],
+              "case_ids": [
+                "fastapi.docs.security.bearer-required-valid"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
+              "scope_note": "The selected route receives an opaque Bearer parameter through a FastAPI dependency and returns its application-defined response. This is one successful request to a different workload path; it does not validate the token or exercise the browser documentation UI.",
+              "workflow_id": "security-dependencies"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -130288,8 +131651,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L169-L186. OAuth2PasswordBearer reads and returns the Bearer parameter in FastAPI 0.141.1 at fastapi/security/oauth2.py#L536-L544; dependency solving is in fastapi/dependencies/utils.py#L619-L655. The recipe cites this exact page.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -130385,7 +131748,24 @@
             "status-codes"
           ],
           "heading": "What it does { #what-it-does }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.docs.security.bearer-required-missing",
+                "fastapi.docs.security.bearer-required-valid",
+                "fastapi.docs.security.bearer-required-wrong-scheme"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
+              "scope_note": "The three single-action cases sample one valid Bearer header, a missing header, and a non-Bearer scheme, observing response body bytes, ordered headers, and status. A token is treated as opaque input: neither token validity nor token issuance is tested, and no browser is involved.",
+              "workflow_id": "security-dependencies"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -130399,8 +131779,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L187-L200. FastAPI 0.141.1 parses the Authorization scheme and either returns its opaque parameter or raises the required-auth error in fastapi/security/oauth2.py#L536-L544. Each selected recipe case includes the exact documentation source; Starlette 1.6.0 at 4f250d6 carries generic HTTP response status, headers, and bytes in starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -130440,7 +131820,7 @@
         },
         {
           "end_line": 203,
-          "exclusion_reason": null,
+          "exclusion_reason": "This short recap summarizes the earlier dependency sample and adds no new input or behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -130481,8 +131861,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L201-L203; behavior is mapped above.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -130920,7 +132300,7 @@
       "documented_sections": [
         {
           "end_line": 105,
-          "exclusion_reason": null,
+          "exclusion_reason": "This page-level heading groups a Pydantic model, a user lookup helper, dependency injection, and summary prose. The independently sampled current-user dependency is mapped on its specific child sections.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -131009,8 +132389,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L1-L105. The linked workload exercises one successful dependent route that returns an application-defined dict; it does not define the page's Pydantic User model or its fake lookup helper.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -131051,7 +132431,7 @@
         },
         {
           "end_line": 18,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section declares a Pydantic User model in application code. The linked current-user workload returns a dict and selects no Pydantic User model validation, serialization, or generated schema.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -131092,8 +132472,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L11-L18 and includes the tutorial002 model snippet. The relevant input recipe's current-user workload instead returns `dict[str, str]`; it cannot support a claim about this model-specific behavior.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -131182,7 +132562,25 @@
             "dependency-security"
           ],
           "heading": "Create a `get_current_user` dependency { #create-a-get-current-user-dependency }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.current-user"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "The selected successful request passes a Bearer parameter through an application-defined dependency chain and observes the response. The workload checks a fixed reader token and returns a dict; it does not decode a real token or construct the tutorial's Pydantic User.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -131197,8 +132595,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L19-L30. FastAPI 0.141.1 returns the opaque Bearer parameter in fastapi/security/oauth2.py#L536-L544 and solves nested dependencies in fastapi/dependencies/utils.py#L619-L655. The selected case source_evidence names this exact page.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -131239,7 +132637,7 @@
         },
         {
           "end_line": 36,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section's distinguishing behavior is the example application's fake token-to-user lookup and Pydantic User construction. The linked workload returns an app-defined dict after a fixed-token check and does not implement that helper.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -131280,8 +132678,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L31-L36 and references tutorial002_an_py310.py. The selected current-user case has no token decoder, user record lookup, or Pydantic User output to attribute to FastAPI.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -131376,7 +132774,26 @@
             "dependency-security"
           ],
           "heading": "Inject the current user { #inject-the-current-user }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.current-user"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.security"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "The case selects one successful `/users/me` dependency dispatch and the operation's generated security pointers. Its dependent returns an application-defined dict, not the documented Pydantic User; the OpenAPI projection contains no User model schema. It does not test alternate dependables or browser interaction.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -131391,8 +132808,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L37-L62. FastAPI 0.141.1 solves dependency inputs in fastapi/dependencies/utils.py#L619-L655 and projects security dependencies in fastapi/openapi/utils.py#L99-L156. The exact recipe case cites this page; Starlette 1.6.0 at 4f250d6 provides generic response transport in starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -131492,7 +132909,25 @@
             "dependency-security"
           ],
           "heading": "Other models { #other-models }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.current-user"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "The selected response demonstrates one injected dict from one dependency. It does not establish compatibility for every model, class, database object, or authentication mechanism listed in the prose.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -131507,8 +132942,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L63-L78. FastAPI 0.141.1 resolves the selected dependency graph in fastapi/dependencies/utils.py#L619-L655; the exact current-user recipe case cites this page and returns only an app-defined dict.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -131592,7 +133027,25 @@
             "dependency-security"
           ],
           "heading": "Code size { #code-size }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.current-user"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "The case samples a single protected path operation using one dependency chain. It does not establish the prose's thousand-endpoint scale, dependency reuse across many routes, or performance claims.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -131605,8 +133058,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L79-L96. FastAPI 0.141.1's dependency solver is in fastapi/dependencies/utils.py#L619-L655; the selected case contains one route and one successful request, so only that bounded composition is mapped.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -131637,7 +133090,7 @@
         },
         {
           "end_line": 105,
-          "exclusion_reason": null,
+          "exclusion_reason": "The recap summarizes the previously mapped current-user dependency and points to the future username/password endpoint; it adds no selected runtime input.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -131682,8 +133135,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L97-L105; the referenced behavior is mapped above.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -132072,7 +133525,7 @@
       "documented_sections": [
         {
           "end_line": 106,
-          "exclusion_reason": null,
+          "exclusion_reason": "This is an overview heading spanning standards terminology, OpenAPI, and the FastAPI utilities subsection. The individual utility sample is mapped on its child section; the parent adds no single independent input.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -132153,8 +133606,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L1-L106. Its introductory generalizations do not select a distinct FastAPI operation; the query/cookie API-key cases are reviewed on the exact child heading.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -132196,7 +133649,7 @@
         },
         {
           "end_line": 16,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section only directs readers to later chapters and defines no executable input.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132223,8 +133676,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L13-L16; this is navigation prose.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132243,7 +133696,7 @@
         },
         {
           "end_line": 40,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section describes OAuth2 as a standard and mentions third-party login and HTTPS. It contains no FastAPI configuration or ASGI input.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132269,8 +133722,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L17-L40. OAuth2 protocol concepts and third-party identity-provider behavior are not FastAPI-owned runtime behavior.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132289,7 +133742,7 @@
         },
         {
           "end_line": 40,
-          "exclusion_reason": null,
+          "exclusion_reason": "The subsection compares the OAuth 1 and OAuth2 specifications and discusses HTTPS; it selects no FastAPI security utility or request.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132316,8 +133769,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L27-L40; these are standards notes.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132336,7 +133789,7 @@
         },
         {
           "end_line": 58,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section describes OpenID Connect and an identity-provider use case; no FastAPI dependency, route, or provider interaction is selected.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132363,8 +133816,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L41-L58. OpenID Connect protocol and external identity-provider behavior are outside the FastAPI-owned runtime sample.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132383,7 +133836,7 @@
         },
         {
           "end_line": 58,
-          "exclusion_reason": null,
+          "exclusion_reason": "This subsection distinguishes OpenID terminology from OpenID Connect and selects no FastAPI input or operation.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132410,8 +133863,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L51-L58; this is standards prose.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -132493,7 +133946,29 @@
             "openapi-docs"
           ],
           "heading": "OpenAPI { #openapi }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "query-key-openapi"
+              ],
+              "case_ids": [
+                "fastapi.docs.security-schemes.query-api-key"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.body.bytes",
+                "docs.response.status",
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.security"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-security-schemes.yaml",
+              "scope_note": "The selected OpenAPI request observes the QueryApiKey scheme and the query-key operation's security pointer, plus the response and selected OpenAPI projections. It does not cover the whole OpenAPI standard, other scheme families, browser docs, or external OAuth flows.",
+              "workflow_id": "docs-security-schemes"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -132511,8 +133986,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L59-L99. FastAPI 0.141.1 at 95f8322 builds API-key security metadata in fastapi/security/api_key.py#L55-L68, #L134-L145 and projects security dependencies in fastapi/openapi/utils.py#L99-L156. The exact case cites this documentation page; Starlette 1.6.0 at 4f250d6 provides generic ASGI response transport in starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -132571,7 +134046,26 @@
             "dependency-security"
           ],
           "heading": "**FastAPI** utilities { #fastapi-utilities }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.docs.security-schemes.cookie-api-key"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.body.bytes",
+                "docs.response.status",
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.security"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-security-schemes.yaml",
+              "scope_note": "This case samples one APIKeyCookie dependency, its cookie-key route response, and its OpenAPI security entry. It does not establish behavior for every FastAPI security utility or run the browser documentation UI.",
+              "workflow_id": "docs-security-schemes"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -132581,8 +134075,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned page is docs/en/docs/tutorial/security/index.md#L100-L106. The cookie input is extracted by FastAPI 0.141.1 in fastapi/security/api_key.py#L235-L242, #L267-L320; OpenAPI security projection is in fastapi/openapi/utils.py#L99-L156. The recipe already carries this exact documentation source. Generic ASGI response transport is Starlette 1.6.0 at 4f250d6, starlette/responses.py#L163-L171.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -492803,6 +494297,24 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.docs.ui-clients.automatic-docs-disabled",
+            "fastapi.docs.ui-clients.custom-cdn"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+          "workflow_id": "docs-ui-clients-sections-20261015"
+        },
+        {
+          "case_ids": [
             "fastapi.openapi.tutorial-custom-docs-ui-tutorial001.api",
             "fastapi.openapi.tutorial-custom-docs-ui-tutorial001.redoc-html",
             "fastapi.openapi.tutorial-custom-docs-ui-tutorial001.swagger-ui-html",
@@ -493308,6 +494820,23 @@
       ],
       "id": "fastapi.test.test-tutorial-test-custom-docs-ui-test-tutorial002",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.ui-clients.custom-self-hosted"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-ui-clients-sections-20261015.yaml",
+          "workflow_id": "docs-ui-clients-sections-20261015"
+        },
         {
           "case_ids": [
             "fastapi.openapi.tutorial-custom-docs-ui-tutorial002.api",
@@ -523803,6 +525332,20 @@
       ],
       "id": "fastapi.test.test-tutorial-test-generate-clients-test-tutorial001",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.ui-clients.openapi-version-for-generators"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "docs.response.status",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/docs-clients-openapi-version-20261015.yaml",
+          "workflow_id": "docs-clients-openapi-version-20261015"
+        },
         {
           "case_ids": [
             "fastapi.test.test-tutorial-test-generate-clients-test-tutorial001.client-requests-and-openapi"

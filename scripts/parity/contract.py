@@ -35,6 +35,7 @@ WORKFLOW_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v7.sche
 WORKFLOW_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v8.schema.json"
 WORKFLOW_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v9.schema.json"
 WORKFLOW_SCHEMA_V10 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v10.schema.json"
+WORKFLOW_SCHEMA_V11 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v11.schema.json"
 PROCESS_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-process-workflow.schema.json"
 PROCESS_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-process-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
@@ -71,6 +72,7 @@ RESULT_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v7
 RESULT_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v8.schema.json"
 RESULT_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v9.schema.json"
 RESULT_SCHEMA_V10 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v10.schema.json"
+RESULT_SCHEMA_V11 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v11.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
 COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.schema.json"
 COMPARISON_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v4.schema.json"
@@ -81,6 +83,7 @@ COMPARISON_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v8.
 COMPARISON_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v9.schema.json"
 COMPARISON_SCHEMA_V10 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v10.schema.json"
 COMPARISON_SCHEMA_V11 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v11.schema.json"
+COMPARISON_SCHEMA_V12 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v12.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
@@ -90,6 +93,7 @@ WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
 WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow@10"
+WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow@11"
 PROCESS_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-process-workflow@1"
 PROCESS_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow@2"
 PROCESS_WORKFLOW_SCHEMA_IDS = frozenset({PROCESS_WORKFLOW_SCHEMA_ID, PROCESS_WORKFLOW_SCHEMA_V2_ID})
@@ -184,6 +188,7 @@ RESULT_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow-result@7"
 RESULT_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow-result@9"
 RESULT_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow-result@10"
+RESULT_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow-result@11"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
 COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-asgi-comparison@3"
 COMPARISON_SCHEMA_V4_ID = "fastapi-rs/python-asgi-comparison@4"
@@ -194,6 +199,7 @@ COMPARISON_SCHEMA_V8_ID = "fastapi-rs/python-asgi-comparison@8"
 COMPARISON_SCHEMA_V9_ID = "fastapi-rs/python-asgi-comparison@9"
 COMPARISON_SCHEMA_V10_ID = "fastapi-rs/python-asgi-comparison@10"
 COMPARISON_SCHEMA_V11_ID = "fastapi-rs/python-asgi-comparison@11"
+COMPARISON_SCHEMA_V12_ID = "fastapi-rs/python-asgi-comparison@12"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
@@ -205,6 +211,7 @@ WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_V8_ID: WORKFLOW_SCHEMA_V8,
     WORKFLOW_SCHEMA_V9_ID: WORKFLOW_SCHEMA_V9,
     WORKFLOW_SCHEMA_V10_ID: WORKFLOW_SCHEMA_V10,
+    WORKFLOW_SCHEMA_V11_ID: WORKFLOW_SCHEMA_V11,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
@@ -229,6 +236,7 @@ RESULT_SCHEMAS = {
     RESULT_SCHEMA_V8_ID: RESULT_SCHEMA_V8,
     RESULT_SCHEMA_V9_ID: RESULT_SCHEMA_V9,
     RESULT_SCHEMA_V10_ID: RESULT_SCHEMA_V10,
+    RESULT_SCHEMA_V11_ID: RESULT_SCHEMA_V11,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
@@ -250,6 +258,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_V9_ID: COMPARISON_SCHEMA_V9,
     COMPARISON_SCHEMA_V10_ID: COMPARISON_SCHEMA_V10,
     COMPARISON_SCHEMA_V11_ID: COMPARISON_SCHEMA_V11,
+    COMPARISON_SCHEMA_V12_ID: COMPARISON_SCHEMA_V12,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -269,6 +278,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V8_ID,
     WORKFLOW_SCHEMA_V9_ID: RESULT_SCHEMA_V9_ID,
     WORKFLOW_SCHEMA_V10_ID: RESULT_SCHEMA_V10_ID,
+    WORKFLOW_SCHEMA_V11_ID: RESULT_SCHEMA_V11_ID,
     **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
@@ -281,6 +291,7 @@ COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V8_ID: COMPARISON_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V9_ID: COMPARISON_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V10_ID: COMPARISON_SCHEMA_V11_ID,
+    WORKFLOW_SCHEMA_V11_ID: COMPARISON_SCHEMA_V12_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -413,6 +424,18 @@ def read_manifest() -> dict[str, Any]:
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-oracle-testclient",
         },
+        "email-validation": {
+            "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
+            "base_profile": profile["id"],
+            "lock": {
+                "path": "requirements/email-validation-cpython-3.12.13.lock",
+                "sha256": "031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3",
+                "profile": "CPython 3.12.13 with email-validator 2.3.0",
+            },
+            "added_packages": {"dnspython": "2.8.0", "email-validator": "2.3.0"},
+            "fastapi_extra": "standard",
+            "prepare_target": "parity-prepare-oracle-email-validation",
+        },
     }
     if manifest.get("oracle_profile_extensions") != expected_extensions:
         raise ContractError(
@@ -463,7 +486,19 @@ def read_manifest() -> dict[str, Any]:
             },
             "fastapi_extra": "testclient",
             "prepare_target": "parity-prepare-target-testclient",
-        }
+        },
+        "email-validation": {
+            "id": "fastapi-rs-email-validation-cpython-3.12.13-email-validator-2.3.0",
+            "base_profile": target["id"],
+            "lock": {
+                "path": "requirements/email-validation-cpython-3.12.13.lock",
+                "sha256": "031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3",
+                "profile": "CPython 3.12.13 with email-validator 2.3.0",
+            },
+            "added_packages": {"dnspython": "2.8.0", "email-validator": "2.3.0"},
+            "fastapi_extra": "standard",
+            "prepare_target": "parity-prepare-target-email-validation",
+        },
     }
     if manifest.get("target_profile_extensions") != expected_target_extensions:
         raise ContractError(
@@ -796,6 +831,26 @@ def read_manifest() -> dict[str, Any]:
             workflow_v10_contract.get(digest_key),
             label,
         )
+    workflow_v11_contract = unresolved.get("python_asgi_workflow_v11")
+    if not isinstance(workflow_v11_contract, dict):
+        raise ContractError("manifest Python/ASGI v11 workflow contract is missing")
+    if (
+        workflow_v11_contract.get("schema_id") != WORKFLOW_SCHEMA_V11_ID
+        or workflow_v11_contract.get("result_schema_id") != RESULT_SCHEMA_V11_ID
+        or workflow_v11_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V12_ID
+    ):
+        raise ContractError("manifest Python/ASGI v11 schema identities are unsupported")
+    workflow_v11_schema_refs = (
+        ("schema_path", "schema_sha256", "python-asgi-workflow v11 schema"),
+        ("result_schema_path", "result_schema_sha256", "workflow result v11 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v12 schema"),
+    )
+    for path_key, digest_key, label in workflow_v11_schema_refs:
+        _verify_digest_ref(
+            workflow_v11_contract.get(path_key),
+            workflow_v11_contract.get(digest_key),
+            label,
+        )
     api_workflow_contract = (
         unresolved.get("python_api_workflow") if isinstance(unresolved, dict) else None
     )
@@ -1015,6 +1070,21 @@ def select_oracle_profile(
     }
 
 
+def select_target_profile(
+    manifest: dict[str, Any], extension_id: str | None = None
+) -> dict[str, Any]:
+    """Resolve the paired target package extension, when the input declares one."""
+    base = manifest["target"]
+    if extension_id is None:
+        return base
+    extension = manifest["target_profile_extensions"].get(extension_id)
+    if extension is None:
+        return base
+    if extension.get("base_profile") != base.get("id"):
+        raise ContractError(f"target package extension has the wrong base: {extension_id}")
+    return {**base, "optional_runtime_packages": extension["added_packages"]}
+
+
 def _verify_digest_ref(path_value: Any, digest_value: Any, label: str) -> None:
     if not isinstance(path_value, str) or not isinstance(digest_value, str):
         raise ContractError(f"manifest {label} path/digest reference is malformed")
@@ -1111,6 +1181,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V8_ID,
             WORKFLOW_SCHEMA_V9_ID,
             WORKFLOW_SCHEMA_V10_ID,
+            WORKFLOW_SCHEMA_V11_ID,
         }:
             try:
                 mode = verification_mode(case)
@@ -1238,6 +1309,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V8_ID,
             WORKFLOW_SCHEMA_V9_ID,
             WORKFLOW_SCHEMA_V10_ID,
+            WORKFLOW_SCHEMA_V11_ID,
         }:
             _validate_unique_ids(case["actions"], "action_id", f"actions in {case['case_id']}")
             if workflow_schema_id in {
@@ -1249,6 +1321,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
+                WORKFLOW_SCHEMA_V11_ID,
             }:
                 lifespan_positions = [
                     index
@@ -1312,6 +1385,7 @@ def load_workflow(
                         WORKFLOW_SCHEMA_V8_ID,
                         WORKFLOW_SCHEMA_V9_ID,
                         WORKFLOW_SCHEMA_V10_ID,
+                        WORKFLOW_SCHEMA_V11_ID,
                     }
                     and action["kind"] == "websocket_conversation"
                 ):

@@ -285,8 +285,11 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
 
     optional_profiles = authority.get("optional_profiles")
     manifest_profiles = manifest.get("target_profile_extensions")
-    if not isinstance(optional_profiles, dict) or set(optional_profiles) != {"testclient"}:
-        raise MetadataError("target runtime optional profile inventory must declare TestClient")
+    if not isinstance(optional_profiles, dict) or set(optional_profiles) != {
+        "testclient",
+        "email-validation",
+    }:
+        raise MetadataError("target runtime optional profiles must declare TestClient and EmailStr")
     if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(optional_profiles):
         raise MetadataError("manifest target profiles differ from metadata.yaml")
     for profile_name, profile in optional_profiles.items():
@@ -333,6 +336,11 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
                 profile.get(field),
                 manifest_profile.get(field) if isinstance(manifest_profile, dict) else None,
             )
+
+    oracle_profile = metadata.get("oracle_profile_extensions", {}).get("email-validation")
+    manifest_oracle_profile = manifest.get("oracle_profile_extensions", {}).get("email-validation")
+    if not isinstance(oracle_profile, dict) or manifest_oracle_profile != oracle_profile:
+        raise MetadataError("EmailStr oracle profile differs from metadata.yaml authority")
 
 
 def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:
