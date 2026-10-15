@@ -32641,17 +32641,18 @@
     {
       "id": "standalone-apiroute-asgi",
       "input_path": "tests/fixtures/inputs/parity/standalone-apiroute-asgi.json",
-      "input_sha256": "486733f6c0b0eb6737005de820885e648f6a89caeeaef4777c20b819c6a39e2b",
+      "input_sha256": "dbe5227e06d6d502727ada0da275eaf455eba25660cd375b0a2dcd93fd049ba7",
       "recipe_path": "tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml",
-      "recipe_sha256": "663a3c6ed4aa37dba850b5420b948a74c8827e4c7d24f41ae9c3994256ffea64",
+      "recipe_sha256": "df88ba2cfb00980a13b943df96eb4bf7d295bbb2cac4709a30298f9e695d5da5",
       "case_ids": [
         "fastapi.routing.apiroute.asgi.direct-success",
         "fastapi.routing.apiroute.asgi.response-model-filters",
         "fastapi.routing.apiroute.asgi.path-mismatch-404",
-        "fastapi.routing.apiroute.asgi.method-mismatch-405"
+        "fastapi.routing.apiroute.asgi.method-mismatch-405",
+        "fastapi.routing.apiroute.asgi.route-dependency-and-cleanup"
       ],
       "workload_path": "tests/fixtures/workloads/standalone_apiroute_asgi.py",
-      "workload_sha256": "275d9385389b1439fe0afd0982801506fd5b6a316e5fef3e8a69f06742dee107",
+      "workload_sha256": "307d038e35a738301fbc82e6de796ea6e6f8dde73ce130e2f5c84d9615af668a",
       "case_contracts": [
         {
           "case_id": "fastapi.routing.apiroute.asgi.direct-success",
@@ -32679,6 +32680,14 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_route_scope.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.route-dependency-and-cleanup",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextvars.py",
+            "source:upstream-test:tests/test_dependency_yield_scope.py"
           ]
         }
       ]
@@ -64032,6 +64041,41 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_contextvars.py",
+      "fixture_id": "fastapi.test.test-dependency-contextvars",
+      "workflow_id": "standalone-apiroute-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.route-dependency-and-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_yield_scope.py",
+      "fixture_id": "fastapi.test.test-dependency-yield-scope",
+      "workflow_id": "standalone-apiroute-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.route-dependency-and-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status"
       ]
     },
     {

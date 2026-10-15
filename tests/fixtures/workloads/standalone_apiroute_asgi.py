@@ -11,9 +11,11 @@ create or register a FastAPI application.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from contextlib import AsyncExitStack
-from typing import Any, Callable
+from typing import Any
 
+from fastapi import Depends
 from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -34,25 +36,59 @@ class FilteredResponse(BaseModel):
     not_supplied: str = "omitted-default"
 
 
+class DependencyResponse(BaseModel):
+    item_id: int
+    dependency_value: str
+
+
+class DependencyTraceResponse(BaseModel):
+    trace: list[str]
+
+
 def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callable[..., Any]:
     """Construct one APIRoute from recipe inputs and return its ASGI call."""
-    del event_trace
-
     response_models: dict[str, type[BaseModel]] = {
         "item": ItemResponse,
         "filtered": FilteredResponse,
+        "dependency": DependencyResponse,
     }
 
+    route_options: dict[str, Any] = {}
+    trace_route: APIRoute | None = None
     if factory_input["endpoint"] == "item":
 
         async def endpoint(item_id: int) -> dict[str, Any]:
             return {"item_id": item_id, "label": factory_input["label"]}
+    elif factory_input["endpoint"] == "dependency":
+
+        async def route_dependency() -> Any:
+            event_trace.append("dependency-enter")
+            try:
+                yield factory_input["dependency_value"]
+            finally:
+                event_trace.append("dependency-exit")
+
+        async def endpoint(
+            item_id: int,
+            dependency_value: str = Depends(route_dependency),
+        ) -> dict[str, Any]:
+            event_trace.append("endpoint")
+            return {"item_id": item_id, "dependency_value": dependency_value}
+
+        async def trace_endpoint() -> dict[str, Any]:
+            return {"trace": list(event_trace)}
+
+        trace_route = APIRoute(
+            "/_workload-trace",
+            trace_endpoint,
+            response_model=DependencyTraceResponse,
+        )
+        route_options["dependencies"] = [Depends(route_dependency)]
     else:
 
         async def endpoint() -> dict[str, Any]:
             return factory_input["response"]
 
-    route_options: dict[str, Any] = {}
     if "response_model_include" in factory_input:
         route_options["response_model_include"] = set(factory_input["response_model_include"])
     if "response_model_exclude" in factory_input:
@@ -79,8 +115,23 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
     )
 
     async def standalone_route(scope: Any, receive: Any, send: Any) -> None:
+        trace_action = scope["path"] == "/_workload-trace" and trace_route is not None
+        route_to_call: Any = trace_route if trace_action else route
+
+        async def trace_send(message: dict[str, Any]) -> None:
+            if factory_input["endpoint"] == "dependency" and not trace_action:
+                if message["type"] == "http.response.start":
+                    event_trace.append("response-start")
+                elif message["type"] == "http.response.body" and not message.get(
+                    "more_body", False
+                ):
+                    event_trace.append("response-body")
+            await send(message)
+
         async with AsyncExitStack() as stack:
             scope["fastapi_middleware_astack"] = stack
-            await route(scope, receive, send)
+            await route_to_call(scope, receive, trace_send)
+        if factory_input["endpoint"] == "dependency" and not trace_action:
+            event_trace.append("route-return")
 
     return standalone_route

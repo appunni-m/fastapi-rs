@@ -1755,7 +1755,6 @@ impl PyApiRoute {
         strict_content_type: Option<bool>,
     ) -> PyResult<Self> {
         let unsupported_options = [
-            (dependencies.is_some(), "dependencies"),
             (description.is_some(), "description"),
             (
                 dependency_overrides_provider.is_some(),
