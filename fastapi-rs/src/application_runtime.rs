@@ -3132,7 +3132,7 @@ struct ParameterOpenApiPlan {
     openapi_examples: Option<Py<PyAny>>,
 }
 
-#[pyclass(name = "FastAPI", module = "fastapi.applications")]
+#[pyclass(name = "FastAPI", module = "fastapi.applications", dict)]
 pub(crate) struct PyFastApi {
     state: Py<PyAny>,
     debug: bool,
@@ -12964,12 +12964,9 @@ impl FastApiCall {
         if let Some(openapi_url) = openapi_url.as_deref().filter(|url| !url.is_empty()) {
             if route_path == openapi_url && method == "GET" {
                 let root_path = root_path.trim_end_matches('/');
-                let document = openapi_document_for_root_path(
-                    py,
-                    PyFastApi::openapi(self.app.clone_ref(py), py)?,
-                    root_path,
-                    root_path_in_servers,
-                )?;
+                let schema = self.app.bind(py).getattr("openapi")?.call0()?.unbind();
+                let document =
+                    openapi_document_for_root_path(py, schema, root_path, root_path_in_servers)?;
                 self.response_status = 200;
                 self.response_body = json_bytes(py, document.bind(py))?;
                 return self.send_start(py);
