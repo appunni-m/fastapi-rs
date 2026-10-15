@@ -1697,6 +1697,9 @@ struct PyApiRoute {
     stream_item_type: Option<Py<PyAny>>,
     response_field: Option<ResponseField>,
     openapi_snapshots: Vec<OpenApiRouteSnapshot>,
+    standalone_owner: Option<Py<PyFastApi>>,
+    standalone_route_index: Option<usize>,
+    cached_app: Option<Py<PyAny>>,
 }
 
 #[pyclass(name = "RouteContext", module = "fastapi.routing")]
@@ -1859,7 +1862,81 @@ impl PyApiRoute {
         };
         let mut route = clone_api_route(py, &route)?;
         route.callbacks = py.None();
+        route.standalone_owner = Some(inner);
+        route.standalone_route_index = Some(0);
         Ok(route)
+    }
+
+    #[getter]
+    fn app(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let mut route = slf.bind(py).borrow_mut();
+        if let Some(app) = route.cached_app.as_ref() {
+            return Ok(app.clone_ref(py));
+        }
+        let (owner, route_index) = api_route_dispatch_owner(py, slf.bind(py), &route)?;
+        let app = Py::new(py, PyApiRouteAsgiApp { owner, route_index })?.into_any();
+        route.cached_app = Some(app.clone_ref(py));
+        Ok(app)
+    }
+
+    fn __call__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        py.import("starlette.routing")?
+            .getattr("BaseRoute")?
+            .getattr("__call__")?
+            .call1((slf.bind(py), scope, receive, send))
+            .map(Bound::unbind)
+    }
+
+    fn matches(slf: Py<Self>, py: Python<'_>, scope: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let result = py
+            .import("starlette.routing")?
+            .getattr("Route")?
+            .getattr("matches")?
+            .call1((slf.bind(py), scope.bind(py)))?;
+        let match_kind = result.get_item(0)?;
+        let child_scope = result.get_item(1)?;
+        let no_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("NONE")?;
+        if !match_kind.is(&no_match) {
+            child_scope.set_item("route", slf.bind(py))?;
+        }
+        Ok(result.unbind())
+    }
+
+    fn handle(
+        slf: Py<Self>,
+        py: Python<'_>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        py.import("starlette.routing")?
+            .getattr("Route")?
+            .getattr("handle")?
+            .call1((slf.bind(py), scope, receive, send))
+            .map(Bound::unbind)
+    }
+
+    #[pyo3(signature = (name, /, **path_params))]
+    fn url_path_for(
+        slf: Py<Self>,
+        py: Python<'_>,
+        name: &str,
+        path_params: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        py.import("starlette.routing")?
+            .getattr("Route")?
+            .getattr("url_path_for")?
+            .call((slf.bind(py), name), path_params)
+            .map(Bound::unbind)
     }
 
     #[getter]
@@ -2102,6 +2179,12 @@ fn clone_api_route(py: Python<'_>, route: &Py<PyAny>) -> PyResult<PyApiRoute> {
             .iter()
             .map(|snapshot| snapshot.clone_ref(py))
             .collect(),
+        standalone_owner: route
+            .standalone_owner
+            .as_ref()
+            .map(|owner| owner.clone_ref(py)),
+        standalone_route_index: route.standalone_route_index,
+        cached_app: route.cached_app.as_ref().map(|app| app.clone_ref(py)),
     })
 }
 
@@ -2291,6 +2374,9 @@ fn new_api_route_view(
             stream_item_type: config.stream_item_type.map(|value| value.clone_ref(py)),
             response_field: None,
             openapi_snapshots: Vec::new(),
+            standalone_owner: None,
+            standalone_route_index: None,
+            cached_app: None,
         },
     )
     .map(Py::into_any)
@@ -2495,6 +2581,40 @@ fn direct_openapi_route_index(
                         pointer == context_pointer || pointer == effective_pointer
                     })
         })
+}
+
+fn api_route_dispatch_owner(
+    py: Python<'_>,
+    facade: &Bound<'_, PyAny>,
+    route: &PyApiRoute,
+) -> PyResult<(Py<PyFastApi>, usize)> {
+    if let (Some(owner), Some(route_index)) = (
+        route.standalone_owner.as_ref(),
+        route.standalone_route_index,
+    ) {
+        return Ok((owner.clone_ref(py), route_index));
+    }
+
+    let provider = route
+        .dependency_overrides_provider
+        .as_ref()
+        .ok_or_else(|| PyAttributeError::new_err("'APIRoute' has no dispatch owner"))?;
+    let owner = if provider.bind(py).is_instance_of::<PyApiRouter>() {
+        provider
+            .bind(py)
+            .extract::<PyRef<'_, PyApiRouter>>()?
+            .inner
+            .clone_ref(py)
+    } else {
+        provider
+            .bind(py)
+            .extract::<Py<PyFastApi>>()
+            .map_err(|_| PyAttributeError::new_err("'APIRoute' has no dispatch owner"))?
+    };
+    let route_index = direct_openapi_route_index(&owner, facade, facade).ok_or_else(|| {
+        PyAttributeError::new_err("'APIRoute' is not registered with its dispatch owner")
+    })?;
+    Ok((owner, route_index))
 }
 
 fn direct_openapi_contexts(
@@ -3465,6 +3585,12 @@ struct PyFastApiAsgiApp {
     app: Py<PyFastApi>,
 }
 
+#[pyclass(name = "_APIRouteAsgiApp", module = "fastapi_rs._core")]
+struct PyApiRouteAsgiApp {
+    owner: Py<PyFastApi>,
+    route_index: usize,
+}
+
 #[pyclass(name = "_MiddlewareDecorator", module = "fastapi_rs._core")]
 struct PyMiddlewareDecorator {
     app: Py<PyFastApi>,
@@ -3540,6 +3666,26 @@ impl PyFastApiAsgiApp {
         send: Py<PyAny>,
     ) -> PyResult<Py<PyAny>> {
         fastapi_core_call(py, self.app.clone_ref(py), scope, receive, send)
+    }
+}
+
+#[pymethods]
+impl PyApiRouteAsgiApp {
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        fastapi_route_core_call(
+            py,
+            self.owner.clone_ref(py),
+            self.route_index,
+            scope,
+            receive,
+            send,
+        )
     }
 }
 
@@ -12852,36 +12998,20 @@ fn fastapi_core_call(
     receive: Py<PyAny>,
     send: Py<PyAny>,
 ) -> PyResult<Py<PyAny>> {
+    into_python_awaitable(py, FastApiCall::new(app, scope, receive, send, None))
+}
+
+fn fastapi_route_core_call(
+    py: Python<'_>,
+    app: Py<PyFastApi>,
+    route_index: usize,
+    scope: Py<PyAny>,
+    receive: Py<PyAny>,
+    send: Py<PyAny>,
+) -> PyResult<Py<PyAny>> {
     into_python_awaitable(
         py,
-        FastApiCall {
-            app,
-            scope,
-            receive,
-            send,
-            route_index: None,
-            frontend_route_index: None,
-            frontend_path: None,
-            frontend_response_status_override: None,
-            websocket_route_index: None,
-            request: None,
-            websocket: None,
-            injected_response: None,
-            path_params: Vec::new(),
-            pending: None,
-            response_status: 200,
-            response_body: Vec::new(),
-            invocation: None,
-            form_request: None,
-            form_body: None,
-            form_close_started: false,
-            form_body_embedded: false,
-            form_inputs: None,
-            form_query_params: None,
-            form_file_reads: VecDeque::new(),
-            active_form_file_read: None,
-            function_close_continuation: None,
-        },
+        FastApiCall::new(app, scope, receive, send, Some(route_index)),
     )
 }
 
@@ -12891,6 +13021,7 @@ struct FastApiCall {
     receive: Py<PyAny>,
     send: Py<PyAny>,
     route_index: Option<usize>,
+    forced_route_index: Option<usize>,
     frontend_route_index: Option<usize>,
     frontend_path: Option<String>,
     frontend_response_status_override: Option<u16>,
@@ -12915,6 +13046,44 @@ struct FastApiCall {
 }
 
 impl FastApiCall {
+    fn new(
+        app: Py<PyFastApi>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+        forced_route_index: Option<usize>,
+    ) -> Self {
+        Self {
+            app,
+            scope,
+            receive,
+            send,
+            route_index: None,
+            forced_route_index,
+            frontend_route_index: None,
+            frontend_path: None,
+            frontend_response_status_override: None,
+            websocket_route_index: None,
+            request: None,
+            websocket: None,
+            injected_response: None,
+            path_params: Vec::new(),
+            pending: None,
+            response_status: 200,
+            response_body: Vec::new(),
+            invocation: None,
+            form_request: None,
+            form_body: None,
+            form_close_started: false,
+            form_body_embedded: false,
+            form_inputs: None,
+            form_query_params: None,
+            form_file_reads: VecDeque::new(),
+            active_form_file_read: None,
+            function_close_continuation: None,
+        }
+    }
+
     fn request_background_tasks(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.invocation
             .as_ref()
@@ -13468,7 +13637,50 @@ impl FastApiCall {
         self.start_returned_response(py, &response).map(Some)
     }
 
+    fn begin_direct_route(
+        &mut self,
+        py: Python<'_>,
+        route_index: usize,
+    ) -> PyResult<MachineAction> {
+        let scope = self.scope.bind(py);
+        let scope_type = parse_scope_string(scope, "type", "http")?;
+        if scope_type != "http" {
+            return Err(PyValueError::new_err(format!(
+                "FastAPI APIRoute supports HTTP ASGI scopes, not {scope_type:?}"
+            )));
+        }
+        let (has_form_inputs, has_body_inputs) = {
+            let app = self.app.bind(py).borrow();
+            let route = app.routes.get(route_index).ok_or_else(|| {
+                PyRuntimeError::new_err("selected standalone FastAPI route was lost")
+            })?;
+            (
+                route.plan.has_form_inputs(),
+                !route.plan.all_body_parameters().is_empty(),
+            )
+        };
+        self.route_index = Some(route_index);
+        self.injected_response = Some(fastapi_response_state(py)?);
+        let request = py
+            .import("starlette.requests")?
+            .getattr("Request")?
+            .call1((scope, self.receive.bind(py), self.send.bind(py)))?;
+        scope.set_item("starlette._exception_request", &request)?;
+        self.request = Some(request.unbind());
+
+        if has_form_inputs {
+            self.receive_form(py)
+        } else if has_body_inputs {
+            self.receive_http_body(py)
+        } else {
+            self.invoke_http_route(py, &[], false)
+        }
+    }
+
     fn begin(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        if let Some(route_index) = self.forced_route_index {
+            return self.begin_direct_route(py, route_index);
+        }
         let scope = self.scope.bind(py);
         let scope_type = parse_scope_string(scope, "type", "http")?;
         if scope_type == "lifespan" {
@@ -14096,6 +14308,9 @@ impl FastApiCall {
                     Some(&body),
                     Some(&endpoint_ctx),
                 )?;
+                if self.forced_route_index.is_some() {
+                    return Err(validation_error);
+                }
                 if self.has_registered_exception_handler(py, &validation_error)? {
                     return self.route_exception(py, validation_error);
                 }
@@ -14104,6 +14319,16 @@ impl FastApiCall {
                 return self.send_start(py);
             }
             Err(InputDecodeError::BodyParse(_error)) => {
+                if self.forced_route_index.is_some() {
+                    let kwargs = PyDict::new(py);
+                    kwargs.set_item("status_code", 400)?;
+                    kwargs.set_item("detail", "There was an error parsing the body")?;
+                    let exception = py
+                        .import("starlette.exceptions")?
+                        .getattr("HTTPException")?
+                        .call((), Some(&kwargs))?;
+                    return Err(PyErr::from_value(exception));
+                }
                 self.response_status = 400;
                 self.response_body = json_bytes(py, bad_request_body_response_body(py)?.bind(py))?;
                 return self.send_start(py);
@@ -14447,6 +14672,9 @@ impl FastApiCall {
                         request_body,
                         Some(&endpoint_ctx),
                     )?;
+                    if self.forced_route_index.is_some() {
+                        return self.route_exception(py, error);
+                    }
                     if self.has_registered_exception_handler(py, &error)? {
                         return self.route_exception(py, error);
                     }
@@ -15299,6 +15527,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyOperationRouteCallable>()?;
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyFastApiAsgiApp>()?;
+    module.add_class::<PyApiRouteAsgiApp>()?;
     module.add_class::<PyMiddlewareDecorator>()?;
     module.add_class::<PyFastApiHttpMiddleware>()?;
     module.add_class::<PyFastApiCachedReceiveDescriptor>()?;

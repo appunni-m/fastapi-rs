@@ -3600,6 +3600,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.constructor-defaults
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
           case_id: fastapi.openapi.get-openapi.standalone-apiroute
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.direct-success
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.response-model-filters
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.path-mismatch-404
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.method-mismatch-405
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
@@ -3634,18 +3642,23 @@ reviewed_api_contract_overlay:
         response descriptions, additional responses, deprecation, operation IDs,
         OpenAPI extensions, schema exclusion, and custom unique-ID callbacks,
         comparing generated OpenAPI documents. Dependency injection, custom
-        response classes, description, response-model filtering options, ASGI
-        dispatch from a standalone route, custom route-class subclassing, and
-        other APIRoute state remain outside this supported slice. The reviewed
-        source classification keeps direct
+        response classes, description, custom route-class subclassing, and
+        other APIRoute state remain outside this supported slice. The standalone
+        ASGI workflow maps one typed GET response, a combined response-model
+        filter projection, path-mismatch 404, and method-mismatch 405 through a
+        direct route call. It observes HTTP status, headers, body, ASGI message
+        order, and surfaced exceptions. Direct `.app` invocation, body and
+        dependency inputs, validation/exception-handler integration, WebSocket
+        scopes, and other route behavior remain unproven. The reviewed source
+        classification keeps direct
         constructor stability uncertain because upstream documents the route
         customization hook as experimental.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Standalone construction supports the mapped common and selected OpenAPI-facing options; dependency injection, custom response classes, description, response-model filters, strict content type, and callbacks remain unsupported.
-          - Standalone APIRoute supports the mapped get_openapi path only; ASGI dispatch, app, and handler hooks are not implemented.
+          - Standalone construction supports the mapped common and selected OpenAPI-facing options; dependency injection, custom response classes, description, response-model filters beyond the sampled output projection, strict content type, and callbacks remain unsupported or unverified.
+          - Standalone APIRoute dispatch is mapped only for the four selected HTTP cases; direct .app invocation, custom get_route_handler behavior, body inputs, dependency and validation errors, exception-handler integration, and WebSocket scopes remain unverified.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
       source_evidence:

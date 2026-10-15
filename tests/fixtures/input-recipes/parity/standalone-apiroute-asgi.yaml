@@ -1,0 +1,214 @@
+schema: fastapi-rs/python-asgi-workflow@13
+workload:
+  file: tests/fixtures/workloads/standalone_apiroute_asgi.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.routing.apiroute.asgi.direct-success
+    factory_input:
+      route_path: /items/{item_id}
+      methods: [GET]
+      endpoint: item
+      response_model: item
+      label: field-notes
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: direct-get-item
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/17
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body, body_json]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: tests/test_route_scope.py
+        kind: upstream_test
+    verification: parity
+
+  - case_id: fastapi.routing.apiroute.asgi.response-model-filters
+    factory_input:
+      route_path: /filtered
+      methods: [GET]
+      endpoint: filtered
+      response_model: filtered
+      response:
+        display_name: Aurora
+        visible: listed
+        internal_token: token-41
+        state: draft
+        note: null
+      response_model_include:
+        - display_name
+        - visible
+        - internal_token
+        - state
+        - note
+        - not_supplied
+      response_model_exclude: [internal_token]
+      response_model_by_alias: true
+      response_model_exclude_unset: true
+      response_model_exclude_defaults: true
+      response_model_exclude_none: true
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: direct-get-filtered-model
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /filtered
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body, body_json]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: tests/test_response_model_include_exclude.py
+        kind: upstream_test
+    verification: parity
+
+  - case_id: fastapi.routing.apiroute.asgi.path-mismatch-404
+    factory_input:
+      route_path: /items/{item_id}
+      methods: [GET]
+      endpoint: item
+      response_model: item
+      label: field-notes
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: direct-path-mismatch
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /missing
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: tests/test_route_scope.py
+        kind: upstream_test
+    verification: parity
+
+  - case_id: fastapi.routing.apiroute.asgi.method-mismatch-405
+    factory_input:
+      route_path: /items/{item_id}
+      methods: [POST]
+      endpoint: item
+      response_model: item
+      label: field-notes
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: direct-method-mismatch
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/17
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: tests/test_route_scope.py
+        kind: upstream_test
+    verification: parity

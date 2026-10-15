@@ -32639,6 +32639,51 @@
       ]
     },
     {
+      "id": "standalone-apiroute-asgi",
+      "input_path": "tests/fixtures/inputs/parity/standalone-apiroute-asgi.json",
+      "input_sha256": "486733f6c0b0eb6737005de820885e648f6a89caeeaef4777c20b819c6a39e2b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml",
+      "recipe_sha256": "663a3c6ed4aa37dba850b5420b948a74c8827e4c7d24f41ae9c3994256ffea64",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.direct-success",
+        "fastapi.routing.apiroute.asgi.response-model-filters",
+        "fastapi.routing.apiroute.asgi.path-mismatch-404",
+        "fastapi.routing.apiroute.asgi.method-mismatch-405"
+      ],
+      "workload_path": "tests/fixtures/workloads/standalone_apiroute_asgi.py",
+      "workload_sha256": "275d9385389b1439fe0afd0982801506fd5b6a316e5fef3e8a69f06742dee107",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.direct-success",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_route_scope.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.response-model-filters",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_model_include_exclude.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.path-mismatch-404",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_route_scope.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.method-mismatch-405",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_route_scope.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "starlette-response-file-disposition-inline",
       "input_path": "tests/fixtures/inputs/parity/starlette-response-file-disposition-inline.json",
       "input_sha256": "5250249be60be6d7193de9bd8c81b2d0fe4c3d1239144c97a6fff90dd8252b40",
@@ -63987,6 +64032,41 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_include_exclude.py",
+      "fixture_id": "fastapi.test.test-response-model-include-exclude",
+      "workflow_id": "standalone-apiroute-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.body.json, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.response-model-filters"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.body.json",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_route_scope.py",
+      "fixture_id": "fastapi.test.test-route-scope",
+      "workflow_id": "standalone-apiroute-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.direct-success",
+        "fastapi.routing.apiroute.asgi.method-mismatch-405",
+        "fastapi.routing.apiroute.asgi.path-mismatch-404"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
