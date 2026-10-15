@@ -463,7 +463,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: e4472445532124f416569c47631016369886ccbdad805394deea477d1ec2a94a
+    sha256: e3681953729e56e8df9f52714452d02cc60c9435b185cc43d8f8ac9613208168
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -499,7 +499,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 7a2a740fde91c44b83cde94e7bafaf6e7ce9fad9d3a940cf15ac27b6dde34c6a
+    sha256: ce2b60b1ac97689115bad90f9bdde5e60f5a5711f6758e09c25957050a83de7b
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -536,14 +536,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@9
-    sha256: f0cc2fa81aabb02f8f4f82d719f2505457806d90c476facaf81d7a162977ddc0
+    sha256: cd4c7ddc4a6f329b7ac849265071cee36e9707185c20602dcace4a974046a9df
     schema_path: tests/fixtures/schemas/materialized-input-index-v9.schema.json
     schema_sha256: 0bacedb78119e8855c62f6fbf684444f70452a5e2d12ee6e4e922ec6b3ab31f8
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 624
-      cases: 2540
-      partial_source_mappings: 1847
+      workflows: 625
+      cases: 2544
+      partial_source_mappings: 1851
 
 contract_metadata:
   aliases:
@@ -1193,7 +1193,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 244
-    operation_fixture_refs: 1848
+    operation_fixture_refs: 1857
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -15627,6 +15627,69 @@ api_surface_contract:
       - construction.exception_message
       - construction.outcome
       - websocket.close_code
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.late-api-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.late-raw-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.late-frontend
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.nested-late-api-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
       - websocket.event_order
       - websocket.messages
     - workflow_id: webhooks-constructor
@@ -49219,6 +49282,21 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.late-frontend
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -50008,6 +50086,22 @@ api_surface_contract:
       - websocket.close_code
       - websocket.event_order
       - websocket.messages
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.nested-late-api-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
     - workflow_id: generate-unique-id-function-precedence
       input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
       input_sha256: 792aa210ff309cd9dfc2315a9941c6e1d2de09f1014cff5e47bda6446f5b7af2
@@ -50773,6 +50867,38 @@ api_surface_contract:
       - websocket.close_code
       - websocket.event_order
       - websocket.messages
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.late-api-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.nested-late-api-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -50868,6 +50994,22 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
       workload_sha256: 1510421c8908b354f0fb8a5fed995e3050827692b94c564dff1e0108c61995a3
       case_id: fastapi.test.test-ws-router.test-prefix-router
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: router-late-websocket-frontend-source-review
+      input_path: tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json
+      input_sha256: 30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a
+      recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+      recipe_sha256: 79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50
+      workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+      workload_sha256: 0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63
+      case_id: fastapi.router.include-context.late-raw-websocket
       observation_selectors:
       - construction.exception_class
       - construction.exception_message

@@ -27074,6 +27074,55 @@
       ]
     },
     {
+      "id": "router-late-websocket-frontend-source-review",
+      "input_path": "tests/fixtures/inputs/parity/router-late-websocket-frontend-source-review.json",
+      "input_sha256": "30ccda00eca702c3ec432894d34b3b7fb7b1b310c061c6c721d21033903efd8a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml",
+      "recipe_sha256": "79f439c4b291d8206dd89c1028c37fcc5f6c93ac01dc719044c3a48445fb6d50",
+      "case_ids": [
+        "fastapi.router.include-context.late-api-websocket",
+        "fastapi.router.include-context.late-raw-websocket",
+        "fastapi.router.include-context.late-frontend",
+        "fastapi.router.include-context.nested-late-api-websocket"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_late_websocket_frontend_source_review.py",
+      "workload_sha256": "0cb40d72eddd58c8973d70ce1c6056f2b0e773cb0d381e208c11e35a939c7f63",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.router.include-context.late-api-websocket",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py",
+            "source:upstream-test:tests/test_ws_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router.include-context.late-raw-websocket",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py",
+            "source:upstream-test:tests/test_ws_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router.include-context.late-frontend",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/frontend.md",
+            "source:upstream-test:tests/test_frontend.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router.include-context.nested-late-api-websocket",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py",
+            "source:upstream-test:tests/test_ws_router.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "router-live-route-after-include-source-review",
       "input_path": "tests/fixtures/inputs/parity/router-live-route-after-include-source-review.json",
       "input_sha256": "0f7e1051bb403bae7d08c51c3874f2cfb41b428452e38e34ebc1f73e8eeebb09",
@@ -59640,6 +59689,80 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/frontend.md",
+      "fixture_id": "fastapi.docs.tutorial-frontend",
+      "workflow_id": "router-late-websocket-frontend-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router.include-context.late-frontend"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_frontend.py",
+      "fixture_id": "fastapi.test.test-frontend",
+      "workflow_id": "router-late-websocket-frontend-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router.include-context.late-frontend"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-late-websocket-frontend-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router.include-context.late-api-websocket",
+        "fastapi.router.include-context.late-raw-websocket",
+        "fastapi.router.include-context.nested-late-api-websocket"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "router-late-websocket-frontend-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router.include-context.late-api-websocket",
+        "fastapi.router.include-context.late-raw-websocket",
+        "fastapi.router.include-context.nested-late-api-websocket"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "websocket.close_code",
+        "websocket.close_reason",
+        "websocket.event_order",
+        "websocket.messages"
       ]
     },
     {

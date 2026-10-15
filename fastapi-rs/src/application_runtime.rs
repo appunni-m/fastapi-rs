@@ -2718,6 +2718,7 @@ struct FastApiRouterInclude {
     router: Py<PyAny>,
     prefix: String,
     merge_prefix: String,
+    frontend_merge_prefix: String,
     responses: Py<PyDict>,
     response_class: ResponseClassChoice,
     generate_unique_id_function: GenerateUniqueIdChoice,
@@ -2726,7 +2727,10 @@ struct FastApiRouterInclude {
     deprecated: Option<bool>,
     include_in_schema: bool,
     strict_content_type: Option<bool>,
+    source_route_cursor: usize,
     source_route_indexes: Vec<usize>,
+    source_websocket_route_cursor: usize,
+    source_frontend_route_cursor: usize,
     fields: IncludedFieldBranch,
 }
 
@@ -3563,6 +3567,7 @@ pub(crate) struct PyApiRouter {
 
 struct RouterIncludePolicy<'policy> {
     prefix: &'policy str,
+    frontend_prefix: &'policy str,
     responses: &'policy Py<PyDict>,
     response_class: &'policy ResponseClassChoice,
     generate_unique_id_function: &'policy GenerateUniqueIdChoice,
@@ -5048,6 +5053,7 @@ impl PyFastApi {
         );
         let router_object = router.clone_ref(py).into_any();
         let include_prefix = prefix.to_owned();
+        let frontend_merge_prefix = include_prefix.clone();
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = tags.unwrap_or_default();
@@ -5071,6 +5077,7 @@ impl PyFastApi {
             &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &prefix,
+                frontend_prefix: &frontend_merge_prefix,
                 responses: &inherited_responses,
                 response_class: &inherited_response_class,
                 generate_unique_id_function: &inherited_generate_unique_id_function,
@@ -5086,6 +5093,7 @@ impl PyFastApi {
             router: router_object,
             prefix: include_prefix,
             merge_prefix: prefix,
+            frontend_merge_prefix,
             responses: inherited_responses.clone_ref(py),
             response_class: inherited_response_class.clone_ref(py),
             generate_unique_id_function: inherited_generate_unique_id_function.clone_ref(py),
@@ -5097,7 +5105,10 @@ impl PyFastApi {
             deprecated,
             include_in_schema,
             strict_content_type,
+            source_route_cursor: source.routes.len(),
             source_route_indexes: source_route_indexes.clone(),
+            source_websocket_route_cursor: source.websocket_routes.len(),
+            source_frontend_route_cursor: source.frontend_routes.len(),
             fields: IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes),
         });
         destination.lifespan.include_router(py, &source.lifespan)?;
@@ -6596,8 +6607,10 @@ impl PyApiRouter {
         fallback: Py<PyAny>,
         check_dir: Py<PyAny>,
     ) -> PyResult<()> {
+        let path = normalize_frontend_path(path)?;
+        let path = join_frontend_paths(&self.prefix, &path);
         let mut inner = self.inner.bind(py).borrow_mut();
-        add_frontend_route(&mut inner, py, path, directory, fallback, check_dir, &[])
+        add_frontend_route(&mut inner, py, &path, directory, fallback, check_dir, &[])
     }
 
     #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
@@ -6620,10 +6633,18 @@ impl PyApiRouter {
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
         let include_responses = response_map_or_empty(py, responses)?;
-        let (inner, parent_tags, parent_dependencies, parent_deprecated, parent_include_in_schema) = {
+        let (
+            inner,
+            parent_prefix,
+            parent_tags,
+            parent_dependencies,
+            parent_deprecated,
+            parent_include_in_schema,
+        ) = {
             let parent = slf.bind(py).borrow();
             (
                 parent.inner.clone_ref(py),
+                parent.prefix.clone(),
                 parent.tags.clone(),
                 parent
                     .dependencies
@@ -6662,6 +6683,7 @@ impl PyApiRouter {
         };
         let router_object = router.clone_ref(py).into_any();
         let include_prefix = prefix.to_owned();
+        let frontend_merge_prefix = format!("{parent_prefix}{include_prefix}");
         let router = router.bind(py).borrow();
         if inner.as_ptr() == router.inner.as_ptr() {
             return Err(PyAssertionError::new_err(
@@ -6695,6 +6717,7 @@ impl PyApiRouter {
             &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &prefix,
+                frontend_prefix: &frontend_merge_prefix,
                 responses: &inherited_responses,
                 response_class: &inherited_response_class,
                 generate_unique_id_function: &inherited_generate_unique_id_function,
@@ -6710,6 +6733,7 @@ impl PyApiRouter {
             router: router_object,
             prefix: include_prefix,
             merge_prefix: prefix,
+            frontend_merge_prefix,
             responses: inherited_responses.clone_ref(py),
             response_class: inherited_response_class.clone_ref(py),
             generate_unique_id_function: inherited_generate_unique_id_function.clone_ref(py),
@@ -6721,7 +6745,10 @@ impl PyApiRouter {
             deprecated,
             include_in_schema,
             strict_content_type: inherited_strict_content_type,
+            source_route_cursor: source.routes.len(),
             source_route_indexes: source_route_indexes.clone(),
+            source_websocket_route_cursor: source.websocket_routes.len(),
+            source_frontend_route_cursor: source.frontend_routes.len(),
             fields: IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes),
         });
         destination.lifespan.include_router(py, &source.lifespan)
@@ -7222,6 +7249,7 @@ fn merge_router_routes_from(
 ) -> PyResult<()> {
     let RouterIncludePolicy {
         prefix,
+        frontend_prefix,
         responses: inherited_responses,
         response_class: inherited_response_class,
         generate_unique_id_function: inherited_generate_unique_id_function,
@@ -7490,7 +7518,12 @@ fn merge_router_routes_from(
         )?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
-        let route_scope = source_route.route_scope.clone_ref(py);
+        let route_scope = websocket_route_scope(
+            py,
+            &path,
+            source_route.endpoint.bind(py),
+            Some(&source_route.name),
+        )?;
         let index = app
             .websocket_router
             .add_operation(&path, "GET", Some(200))
@@ -7514,7 +7547,7 @@ fn merge_router_routes_from(
         let mut dependency_plan = source_frontend.dependency_plan.clone_ref(py);
         dependency_plan.prepend_dependencies(py, inherited_dependencies)?;
         app.frontend_routes.push(FastApiFrontendRoute {
-            path: join_frontend_paths(prefix, &source_frontend.path),
+            path: join_frontend_paths(frontend_prefix, &source_frontend.path),
             static_files: source_frontend.static_files.clone_ref(py),
             fallback: source_frontend.fallback,
             dependency_plan,
@@ -7528,6 +7561,7 @@ struct IncludedRouterRefresh {
     index: usize,
     router: Py<PyAny>,
     merge_prefix: String,
+    frontend_merge_prefix: String,
     responses: Py<PyDict>,
     response_class: ResponseClassChoice,
     generate_unique_id_function: GenerateUniqueIdChoice,
@@ -7536,7 +7570,10 @@ struct IncludedRouterRefresh {
     deprecated: Option<bool>,
     include_in_schema: bool,
     strict_content_type: Option<bool>,
+    source_route_cursor: usize,
     source_route_indexes: Vec<usize>,
+    source_websocket_route_cursor: usize,
+    source_frontend_route_cursor: usize,
 }
 
 fn refresh_included_router_routes(py: Python<'_>, app: &Py<PyFastApi>) -> PyResult<()> {
@@ -7561,6 +7598,7 @@ fn refresh_included_router_routes_inner(
                 index,
                 router: include.router.clone_ref(py),
                 merge_prefix: include.merge_prefix.clone(),
+                frontend_merge_prefix: include.frontend_merge_prefix.clone(),
                 responses: include.responses.clone_ref(py),
                 response_class: include.response_class.clone_ref(py),
                 generate_unique_id_function: include.generate_unique_id_function.clone_ref(py),
@@ -7573,7 +7611,10 @@ fn refresh_included_router_routes_inner(
                 deprecated: include.deprecated,
                 include_in_schema: include.include_in_schema,
                 strict_content_type: include.strict_content_type,
+                source_route_cursor: include.source_route_cursor,
                 source_route_indexes: include.source_route_indexes.clone(),
+                source_websocket_route_cursor: include.source_websocket_route_cursor,
+                source_frontend_route_cursor: include.source_frontend_route_cursor,
             })
             .collect::<Vec<_>>()
     };
@@ -7588,8 +7629,10 @@ fn refresh_included_router_routes_inner(
         refresh_included_router_routes_inner(py, &source_router, visited)?;
 
         let source = source_router.bind(py).borrow();
-        let route_start = include.source_route_indexes.len();
-        if source.routes.len() <= route_start {
+        if source.routes.len() <= include.source_route_cursor
+            && source.websocket_routes.len() <= include.source_websocket_route_cursor
+            && source.frontend_routes.len() <= include.source_frontend_route_cursor
+        {
             continue;
         }
 
@@ -7609,6 +7652,7 @@ fn refresh_included_router_routes_inner(
             &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &include.merge_prefix,
+                frontend_prefix: &include.frontend_merge_prefix,
                 responses: &include.responses,
                 response_class: &include.response_class,
                 generate_unique_id_function: &include.generate_unique_id_function,
@@ -7619,9 +7663,9 @@ fn refresh_included_router_routes_inner(
                 strict_content_type: include.strict_content_type,
             },
             RouterMergeStarts {
-                routes: route_start,
-                websocket_routes: source.websocket_routes.len(),
-                frontend_routes: source.frontend_routes.len(),
+                routes: include.source_route_cursor,
+                websocket_routes: include.source_websocket_route_cursor,
+                frontend_routes: include.source_frontend_route_cursor,
             },
         )?;
 
@@ -7633,7 +7677,10 @@ fn refresh_included_router_routes_inner(
             .get_mut(include.index)
             .ok_or_else(|| PyRuntimeError::new_err("included router state was lost"))?;
         fields.preserve_ready_state(&router_include.fields);
+        router_include.source_route_cursor = source.routes.len();
         router_include.source_route_indexes = source_route_indexes;
+        router_include.source_websocket_route_cursor = source.websocket_routes.len();
+        router_include.source_frontend_route_cursor = source.frontend_routes.len();
         router_include.fields = fields;
     }
     Ok(())
@@ -13467,6 +13514,7 @@ impl FastApiCall {
     }
 
     fn begin_websocket(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        refresh_included_router_routes(py, &self.app)?;
         let scope = self.scope.bind(py);
         let path = parse_scope_string(scope, "path", "/")?;
         let root_path = parse_scope_string(scope, "root_path", "")?;

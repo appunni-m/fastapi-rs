@@ -3501,6 +3501,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-ws-router.test-router-ws-depends
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml
           case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.late-api-websocket
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.nested-late-api-websocket
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class
@@ -3515,8 +3521,10 @@ reviewed_api_contract_overlay:
         direct route and after a router prefix is included. The separate
         websocket-router-dependencies-upstream cases exercise router-level
         dependency ordering and an override through an included router. The
-        cases observe WebSocket messages and event order. FastAPI owns
-        decorator registration and dependency resolution; generic WebSocket
+        cases observe WebSocket messages and event order. The late API
+        WebSocket cases also cover post-inclusion registration, effective path
+        scope, and inherited dependencies at app and nested-router levels.
+        FastAPI owns decorator registration and dependency resolution; generic WebSocket
         routing and protocol transport remain Starlette 1.6.0 /
         Starlette-RS responsibilities. Custom validation and exception-handler
         dispatch, all path-converter combinations, and TestClient-only behavior
@@ -3543,6 +3551,9 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-ws-router.test-router
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml
           case_id: fastapi.test.test-ws-router.test-prefix-router
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.late-raw-websocket
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
       feature_ids: [app-routing, websocket-lifecycle]
       observation_selectors:
         - websocket.close_code
@@ -3554,9 +3565,11 @@ reviewed_api_contract_overlay:
         exercise direct dispatch and one included router prefix, and compare
         construction plus close code, close reason, event order, and messages.
         The raw route delegates generic WebSocketRoute behavior to pinned
-        Starlette-RS. These cases do not establish the `name` argument,
-        dependency injection, validation, error handling, or all path-converter
-        behavior for websocket_route.
+        Starlette-RS. The late-raw-websocket case registers the route after app
+        inclusion and compares prefixed dispatch and protocol observations.
+        These cases do not establish the `name` argument, dependency injection,
+        validation, error handling, or all path-converter behavior for
+        websocket_route.
     fastapi.routing.APIRoute:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute
       source_evidence:
@@ -4840,6 +4853,18 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override}
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.late-api-websocket
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.late-raw-websocket
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.late-frontend
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.nested-late-api-websocket
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
         - *generate_unique_id_callback_precedence
@@ -4875,6 +4900,12 @@ reviewed_api_contract_overlay:
         inheritance across app, parent-router, include, child-router, and route
         scopes. Router/include `deprecated` values propagate to OpenAPI, and
         `include_in_schema=False` omits routes without affecting dispatch.
+        The late-route source-review cases observe API and raw WebSocket routes
+        plus frontends registered after app inclusion, and a nested API
+        WebSocket registered after both inclusion levels. They compare the
+        configured prefixes, inherited API-WebSocket dependencies, protocol
+        messages and close metadata, and frontend fallback. These cases do not
+        establish precedence for route collisions after late registration.
         The repeated-inclusion fixture observes each effective context's path,
         inherited tags, and generated unique ID for all four concrete prefixes.
         Its isolated OpenAPI fixture compares the complete `/paths` value,
@@ -5517,6 +5548,11 @@ reviewed_api_contract_overlay:
 
         For nested inclusion, the router callback takes precedence over the include callback; a route callback overrides both, and the selected callback sees the effective prefixed route, sampled by `generate-unique-id-function-precedence`. Callback errors and non-string results remain unproven.
 
+        The nested-late-api-websocket case registers a child WebSocket route
+        after the child router is included in this router and after this router
+        is included in the app. It compares the composed prefixes and emitted
+        WebSocket events; late-route collision ordering remains unverified.
+
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
       fixture_refs:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
@@ -5545,6 +5581,9 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-transitive-cycle-include-construction}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override}
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.nested-late-api-websocket
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
         - *generate_unique_id_callback_precedence
         - *response_traversal_parent_child
         - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
@@ -5572,13 +5611,17 @@ reviewed_api_contract_overlay:
           case_id: fastapi.frontend.dependencies-nested-inclusion-order
         - recipe_path: tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml
           case_id: fastapi.frontend.api-route-wins
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml
+          case_id: fastapi.router.include-context.late-frontend
+          workload_path: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
       feature_ids: [app-routing, dependency-security, public-api-errors]
       observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, dependency.call_order, http.status, http.headers.ordered, http.body.bytes, asgi.application_error.exception, route.match]
       supported_slice: >-
         Source-backed operation scope for APIRouter.frontend. The pinned
         frontend-fallback-routing-source-review workflow observes included
         frontend prefixes, router dependency behavior, and static fallback
-        dispatch. The frontend-dependency-source-wave cases add nested
+        dispatch. The late-frontend case also registers the frontend after
+        inclusion with router and include prefixes. The frontend-dependency-source-wave cases add nested
         dependency composition and API-route precedence for an included
         frontend. Prefix composition, priority, and dependency claims remain
         limited to the exact identity-checked inputs; other router inclusion

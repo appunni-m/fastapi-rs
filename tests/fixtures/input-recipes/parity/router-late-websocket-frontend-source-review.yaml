@@ -1,0 +1,147 @@
+# Route additions are made after the public router inclusion calls. Inputs carry
+# only request/session data; observed response and close values are not embedded.
+schema: fastapi-rs/python-asgi-workflow@11
+workload:
+  file: tests/fixtures/workloads/router_late_websocket_frontend_source_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.router.include-context.late-api-websocket
+  verification: parity
+  factory_input:
+    scenario: late-api-websocket
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: late-api-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /mount/v1/ws-api
+      query_string: channel=green
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.receive, text: payload}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.router.include-context.late-raw-websocket
+  verification: parity
+  factory_input:
+    scenario: late-raw-websocket
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: late-raw-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /wire/raw
+      query_string: token=router-input
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.receive, text: raw-payload}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.router.include-context.late-frontend
+  verification: parity
+  factory_input:
+    scenario: late-frontend
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: late-frontend-fallback
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /panel/v2/site/dashboard
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [accept, text/html]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_frontend.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/frontend.md, kind: upstream_documentation}
+- case_id: fastapi.router.include-context.nested-late-api-websocket
+  verification: parity
+  factory_input:
+    scenario: nested-late-api-websocket
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: nested-late-api-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /root/child/nested
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.receive, text: nested-payload}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: tests/test_ws_router.py, kind: upstream_test}
