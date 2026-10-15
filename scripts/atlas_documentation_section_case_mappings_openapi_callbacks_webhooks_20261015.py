@@ -17,7 +17,6 @@ _CALLBACK_RECIPE = (
 _WEBHOOK_TUTORIAL_RECIPE = (
     "tests/fixtures/input-recipes/parity/atlas-openapi-webhook-interface-review.yaml"
 )
-_WEBHOOK_CONSTRUCTOR_RECIPE = "tests/fixtures/input-recipes/parity/webhooks-constructor.yaml"
 
 _HTTP = ["http.status", "http.body.bytes"]
 _OPENAPI = ["docs.response.status", "http.status", "openapi.document"]
@@ -293,9 +292,9 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_CALLBACKS_WEBHOOKS_20261015 = {
             "The schema action corresponds to the documented `new-subscription` operation; "
             "the second action samples an independent ordinary `/accounts/` route, rather "
             "than the tutorial's `/users/` path. Neither action attempts webhook delivery "
-            "or displays the docs UI. The event-name-versus-inbound-path distinction has "
-            "the separate supplemental input in "
-            "RELATED_WORKFLOW_INPUTS below."
+            "or displays the docs UI. A separate page-level route-separation input probes "
+            "`/stock-updated` as an inbound path while inspecting `/webhooks/stock-updated` "
+            "in OpenAPI; that probe does not add a webhook-delivery claim to this section."
         ),
         _WEBHOOK_SCHEMA_RATIONALE,
     ),
@@ -314,51 +313,13 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_CALLBACKS_WEBHOOKS_20261015 = {
 }
 
 
-# The page's event identifier is not an inbound URL path. This focused existing
-# input supplements the exact tutorial example without broadening its primary
-# documentation-section selectors or encoding an expected HTTP status.
-RELATED_WORKFLOW_INPUTS = {
-    (_WEBHOOKS, "an-app-with-webhooks"): [
-        {
-            "recipe_path": _WEBHOOK_CONSTRUCTOR_RECIPE,
-            "case_id": "fastapi.webhooks.constructor-router.openapi-and-route-separation",
-            "action_ids": [
-                "inspect-constructor-supplied-webhook-openapi",
-                "request-webhook-identifier-as-inbound-path",
-            ],
-            "observation_selectors": [
-                "docs.response.status",
-                "http.status",
-                "openapi.document",
-                "openapi.paths",
-            ],
-            "scope_note": (
-                "The OpenAPI action records the `/openapi.json` response status, document, "
-                "and paths including `/webhooks/stock-updated`; the request action records "
-                "the `/stock-updated` response status. The recipe supplies inputs and "
-                "selectors only and makes no fixed-status claim."
-            ),
-            "rationale": (
-                "The page calls the webhook text an event identifier and says users choose "
-                "the destination path elsewhere (docs/en/docs/advanced/openapi-webhooks.md:45-47). "
-                "The existing constructor workflow independently probes the OpenAPI location "
-                "and a request to that identifier; FastAPI keeps app.webhooks separate from "
-                "the routes traversed for ordinary paths "
-                "(fastapi/applications.py:937-948, 1084-1101; "
-                "fastapi/openapi/utils.py:648-675)."
-            ),
-        }
-    ]
-}
-
-
 def _span(path, start, end, role):
     return {"path": path, "start_line": start, "end_line": end, "role": role}
 
 
-# Exact pinned-source spans reviewed for each anchored page section. These are
-# kept beside the mappings because this additive sidecar is intentionally not
-# wired into the shared atlas registry in this change.
+# Exact pinned-source spans reviewed for each anchored page section. The atlas
+# builder consumes the section mappings above; this auxiliary table preserves
+# audit detail that is not projected into the generated atlas.
 SOURCE_SPANS = {
     (_CALLBACKS, "openapi-callbacks"): [
         _span("docs/en/docs/advanced/openapi-callbacks.md", 1, 186, "page overview"),

@@ -271,7 +271,7 @@ DOC_SECTION_CASE_MAPPINGS_BODY_NESTED_MODELS_20261015 = {
         ),
         (
             "Tutorial008 annotates the endpoint parameter as `list[Image]` "
-            "(docs_src/body_nested_models/tutorial008_py310.py:7-17). The fixture sends an "
+            "(docs_src/body_nested_models/tutorial008_py310.py:7-14). The fixture sends an "
             "array and selects FastAPI's request schema and response serialization. "
             + _BODY_PIPELINE
         ),
@@ -291,7 +291,7 @@ DOC_SECTION_CASE_MAPPINGS_BODY_NESTED_MODELS_20261015 = {
         ),
         (
             "Tutorial009 annotates the body as `dict[int, float]` and explains conversion "
-            "from JSON string keys (docs_src/body_nested_models/tutorial009_py310.py:1-12; "
+            "from JSON string keys (docs_src/body_nested_models/tutorial009_py310.py:6-8; "
             "docs/en/docs/tutorial/body-nested-models.md:181-210). The source endpoint's "
             "ordinary JSON dictionary serialization cannot reveal whether its in-process "
             "keys are integers, so the input recipe uses a probe endpoint that evaluates "
