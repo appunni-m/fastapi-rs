@@ -292,7 +292,8 @@ DOC_SECTION_CASE_MAPPINGS = {
         ],
         "scope_note": (
             "This input samples one named external body example in generated OpenAPI and the "
-            "documented response status. It does not claim other parameter locations."
+            "documented response status. Path, Query, Header, Cookie, Form, and File locations "
+            "remain unexercised by this Body-only input."
         ),
         "rationale": (
             "FastAPI retains openapi_examples on parameter metadata and emits it into the "

@@ -309,10 +309,12 @@ DOC_EXAMPLE_CITATION_WAVE_D = {
     ),
     "docs_src/dependencies/tutorial006_an_py310.py": _review(
         (
-            "The example attaches two header-check dependencies to one path operation. "
-            "The independent case samples dependency registration, a separate case "
-            "observes the operation parameters in OpenAPI, and neither covers the two "
-            "documented header error branches."
+            "The example attaches two required header-check dependencies to one path operation. "
+            "Independent requests sample missing headers and each invalid-header response using "
+            "different names and values, selecting status and body. A separate successful request "
+            "with trace readback observes both dependency calls and a discarded return value; the "
+            "other linked case samples dependency registration and its OpenAPI projection. These "
+            "links cover only the listed branches and selected observations."
         ),
         [
             _span(
@@ -329,7 +331,30 @@ DOC_EXAMPLE_CITATION_WAVE_D = {
                     "fastapi.docs.documentation-wave.dependencies-security.path-operation-dependencies"
                 ],
                 ["http.body.bytes", "http.headers.ordered", "http.status", "openapi.paths"],
-            )
+            ),
+            _cases(
+                "dependency-declarations-section-review-20261015.yaml",
+                [
+                    "fastapi.docs.dependency-declarations.section-review."
+                    "decorator-return-value-not-injected"
+                ],
+                [
+                    "construction.exception_class",
+                    "construction.exception_message",
+                    "construction.outcome",
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            ),
+            _cases(
+                "dependency-tutorial-review-upstream.yaml",
+                [
+                    "fastapi.dependencies.tutorial-review.headers-missing",
+                    "fastapi.dependencies.tutorial-review.headers-invalid-token",
+                    "fastapi.dependencies.tutorial-review.headers-invalid-key",
+                ],
+                ["http.body.bytes", "http.status"],
+            ),
         ],
     ),
     "docs_src/dependencies/tutorial006_py310.py": _review(

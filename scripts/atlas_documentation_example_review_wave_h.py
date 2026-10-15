@@ -252,9 +252,11 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
     ),
     "docs_src/dependencies/tutorial003_an_py310.py": _review(
         _text(
-            "The Annotated variant passes a callable class to Depends.",
-            "The independent route samples equivalent resolution; Any annotation and item values",
-            "are not claimed.",
+            "The Annotated variant passes CommonQueryParams to Depends and annotates the injected",
+            "value as Any. The independent catalog workflow samples default and custom windows",
+            "through a separately named class dependency, selecting response body and status.",
+            "The source class, Any annotation behavior, query values, and item literals are not",
+            "claimed.",
         ),
         [
             _span(
@@ -269,14 +271,22 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "documentation-example-review-wave-h.yaml",
                 "fastapi.documentation-example.wave-h.dependencies.callable-class",
                 selectors=HTTP,
-            )
+            ),
+            _case(
+                "dependency-tutorial-review-upstream.yaml",
+                "fastapi.dependencies.tutorial-review.catalog-default-window",
+                "fastapi.dependencies.tutorial-review.catalog-custom-window",
+                selectors=HTTP,
+            ),
         ],
     ),
     "docs_src/dependencies/tutorial004_an_py310.py": _review(
         _text(
             "The typed parameter uses Depends() to infer CommonQueryParams.",
-            "The independent route samples inference/query extraction with different values;",
-            "response literals are not claimed.",
+            "The independent catalog workflow samples its analogous inferred-class route with",
+            "default and custom query windows, selecting response body and status. It uses a",
+            "different class, values, and item data; source defaults and response literals are not",
+            "claimed.",
         ),
         [
             _span(
@@ -291,7 +301,13 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "documentation-example-review-wave-h.yaml",
                 "fastapi.documentation-example.wave-h.dependencies.inferred-class",
                 selectors=HTTP,
-            )
+            ),
+            _case(
+                "dependency-tutorial-review-upstream.yaml",
+                "fastapi.dependencies.tutorial-review.catalog-default-window",
+                "fastapi.dependencies.tutorial-review.catalog-custom-window",
+                selectors=HTTP,
+            ),
         ],
     ),
     "docs_src/settings/app01_py310/main.py": _review(

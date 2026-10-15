@@ -1860,9 +1860,12 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                     "fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema",
                 ],
                 "observation_selectors": [
+                    "docs.response.status",
                     "http.body.bytes",
                     "http.status",
                     "openapi.document",
+                    "openapi.paths",
+                    "openapi.request_schema",
                 ],
             }
         ],
@@ -4813,7 +4816,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
             ],
         },
         "docs_src/dependencies/tutorial002_an_py310.py": {
-            "rationale": "The pinned example uses a callable class as a dependency. The independent case samples class-based dependency resolution, response fields, and the route schema using different class/parameter names; it does not establish the source CommonQueryParams values or constructor customization.",
+            "rationale": "The pinned example injects CommonQueryParams and returns selected query and item fields. One independent case samples callable-class resolution, response fields, and a route schema through a differently named class. Related independently authored catalog cases sample default and custom windows through a separate class dependency, selecting response body and status; the links do not establish source class behavior, values, defaults, or item literals.",
             "supporting_sources": [
                 {
                     "path": "docs_src/dependencies/tutorial002_an_py310.py",
@@ -4834,7 +4837,15 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
                         "http.status",
                         "openapi.paths",
                     ],
-                }
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial-review-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.dependencies.tutorial-review.catalog-default-window",
+                        "fastapi.dependencies.tutorial-review.catalog-custom-window",
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
             ],
         },
         "docs_src/dependencies/tutorial008b_py310.py": {

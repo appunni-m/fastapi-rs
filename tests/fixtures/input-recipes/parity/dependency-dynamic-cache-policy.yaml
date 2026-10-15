@@ -178,7 +178,11 @@ cases:
     scope: *sync-parent-scope
     receive_events: *empty-request
     observations: *response-value
-  source_evidence: *cache-reference
+  source_evidence:
+  - {path: docs/en/docs/tutorial/dependencies/index.md, kind: upstream_documentation}
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
 - case_id: fastapi.dependencies.dynamic-cache-policy.nested-async-parent-sync-child
   verification: parity
   factory_input: {}
@@ -196,7 +200,10 @@ cases:
     scope: *async-parent-scope
     receive_events: *empty-request
     observations: *response-value
-  source_evidence: *cache-reference
+  source_evidence:
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
 - case_id: fastapi.dependencies.dynamic-cache-policy.override-outer-and-rebuilt-children
   verification: parity
   factory_input: {}

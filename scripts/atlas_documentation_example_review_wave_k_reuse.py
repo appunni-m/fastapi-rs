@@ -37,10 +37,10 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
     "docs_src/body_fields/tutorial001_an_py310.py": _review(
         (
             "The route embeds an Item body and applies its model validation. Independent valid and "
-            "invalid requests sample embedded-body parsing and validation; "
-            "the OpenAPI case selects "
-            "the embedded request schema. The tutorial's field values and full model metadata are "
-            "not claimed."
+            "invalid requests sample embedded-body parsing and validation. The OpenAPI cases "
+            "select the request-body reference, embedded component property, and the independent "
+            "model's maximum-length and positive-value field schemas. Other model metadata "
+            "and the tutorial's literal field values are not claimed."
         ),
         [
             _span(
@@ -66,7 +66,24 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
             _case(
                 "body-fields-doc-tutorial001-review.yaml",
                 "fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema",
-                selectors=["http.status", "openapi.paths"],
+                selectors=[
+                    "docs.response.status",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                    "openapi.request_schema",
+                ],
+            ),
+            _case(
+                "body-fields-schema-evidence-20261015.yaml",
+                "fastapi.body-fields.field-json-schema-metadata",
+                selectors=[
+                    "docs.response.status",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                    "openapi.request_schema",
+                ],
             ),
         ],
     ),
@@ -165,10 +182,11 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
     ),
     "docs_src/dependencies/tutorial001_02_an_py310.py": _review(
         (
-            "The example aliases a query-parameter helper through Annotated and Depends. An "
-            "independent request supplies explicit query values to an equivalent helper and "
-            "observes status and body; the second route, defaults, and alias spelling are not "
-            "claimed."
+            "The example aliases a query-parameter helper through Annotated and Depends. One "
+            "independent request sets q while exercising that workload's numeric defaults; a "
+            "separate sample supplies explicit values to an equivalent helper. The links select "
+            "response status and body only; the sibling source route, source default values, and "
+            "alias spelling are not claimed."
         ),
         [
             _span(
@@ -183,7 +201,12 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
                 "atlas-testing-websocket-dependency-defaults.yaml",
                 "fastapi.atlas-testing-dependency.defaults",
                 selectors=HTTP_BODY_STATUS,
-            )
+            ),
+            _case(
+                "dependency-tutorial-review-upstream.yaml",
+                "fastapi.dependencies.tutorial-review.basic-partial-query",
+                selectors=HTTP_BODY_STATUS,
+            ),
         ],
     ),
     "docs_src/dependencies/tutorial001_an_py310.py": _review(

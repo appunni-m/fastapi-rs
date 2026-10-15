@@ -330,9 +330,16 @@ def build_index() -> dict[str, Any]:
                 coverage = next(row for row in atlas["coverage_matrix"] if row["id"] == source_id)
                 source_selectors = set(coverage["observation_selectors"])
                 if evidence["kind"] == "upstream_documentation_example":
-                    source_selectors = set(
-                        coverage["mapping_evidence"].get("example_observation_selectors", [])
-                    )
+                    # Reviewed mappings own the selector contract. Reading this
+                    # from the generated atlas creates a refresh cycle when a
+                    # newly reviewed case expands the example's observations.
+                    source_selectors = {
+                        selector
+                        for row in DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS[evidence["path"]][
+                            "workflow_cases"
+                        ]
+                        for selector in row["observation_selectors"]
+                    }
                 usable = _source_selectors_for_case(
                     case,
                     source_selectors,

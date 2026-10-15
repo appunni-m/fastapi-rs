@@ -6138,6 +6138,7 @@ FEATURES = [
         "terms": (
             "response_model",
             "response model",
+            "responses of lists",
             "response serialization",
             "jsonresponse",
             "streamingresponse",
@@ -6365,17 +6366,26 @@ from atlas_documentation_section_case_mappings_custom_response_wave_m import (  
 from atlas_documentation_section_case_mappings_dependencies_with_yield_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015,
 )
+from atlas_documentation_section_case_mappings_dependency_declarations_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015,
+)
 from atlas_documentation_section_case_mappings_fastapi_wave_l import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_WAVE_L,
 )
 from atlas_documentation_section_case_mappings_first_steps_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
 )
+from atlas_documentation_section_case_mappings_openapi_schema_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015,
+)
 from atlas_documentation_section_case_mappings_path_params_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
 )
 from atlas_documentation_section_case_mappings_query_params_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
+)
+from atlas_documentation_section_case_mappings_request_body_core_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_BODY_CORE_20261015,
 )
 from atlas_documentation_section_case_mappings_request_files_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015,
@@ -6440,9 +6450,12 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_BEHIND_PROXY_20261015,
     DOC_SECTION_CASE_MAPPINGS_BODY_NESTED_MODELS_20261015,
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015,
+    DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015,
     DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015,
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_BODY_CORE_20261015,
     DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
@@ -11827,6 +11840,43 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": "FastAPI AST inventory explicitly excludes Pydantic-generated BaseModel surfaces.",
         },
         {
+            "id": "extra-models-pep604-prose-contradiction",
+            "status": "pinned-source-contradiction; oracle-input-recorded",
+            "question": (
+                "How should the extra-models tutorial's contradictory Python 3.10 union "
+                "prose be represented while preserving the pinned executable contract?"
+            ),
+            "evidence": (
+                "FastAPI 0.141.1 docs/en/docs/tutorial/extra-models.md:177-187 says "
+                "response_model=PlaneItem | CarItem would fail, but its included executable "
+                "docs_src/extra_models/tutorial003_py310.py:31 declares exactly that union. "
+                "The independent extra-models-tutorials-upstream-wave workflow exercises "
+                "a PEP 604 response union through requests and OpenAPI on pinned CPython "
+                "3.12.13. Its section mapping follows executable source and exposes the "
+                "prose discrepancy; it does not turn that prose into an expected error or "
+                "claim verification on Python 3.10."
+            ),
+        },
+        {
+            "id": "separate-schemas-optional-default-prose-contradiction",
+            "status": "pinned-source-contradiction; oracle-input-recorded",
+            "question": (
+                "Which model shapes demonstrate separate input/output schemas under the pinned "
+                "Pydantic contract when the tutorial's optional-default model does not?"
+            ),
+            "evidence": (
+                "FastAPI 0.141.1 docs/en/docs/how-to/separate-openapi-schemas.md:5,68-72,98-99 "
+                "describes distinct input/output schemas. Its tutorial001 and tutorial002 "
+                "source test snapshots instead contain one Item component with name required "
+                "(tests/test_tutorial/test_separate_openapi_schemas/test_tutorial001.py:115-125 "
+                "and test_tutorial002.py). The independent atlas-openapi-schema-modes-interface-review "
+                "workflow observes HTTP input/output and full documents with the setting enabled "
+                "and disabled. For its analogous Record model, public oracle inspection with "
+                "Pydantic 2.13.4 emits one component in both modes. These inputs do not establish "
+                "a schema difference; other model shapes require separate independent evidence."
+            ),
+        },
+        {
             "id": "fastapi-dynamic-runtime-surface",
             "status": "pending",
             "question": "What package attributes, wrappers, signatures, and warnings are added or modified at import/runtime?",
@@ -12891,7 +12941,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 counts["documentation_python_examples_excluded"]
                 + counts["documentation_support_files_excluded"],
             ),
-            "| Documentation section candidates (feature signals) | %d | %d | %d | %d | %d |"
+            "| Documentation sections (discovered or explicitly reviewed) | %d | %d | %d | %d | %d |"
             % (
                 counts["documentation_section_candidates"],
                 counts["documentation_sections_with_reviewed_partial_mapping"],
@@ -12899,10 +12949,14 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 counts["documentation_sections_pending_behavior_review"],
                 counts["documentation_sections_excluded"],
             ),
-            "| Documentation headings without feature signal | %d | — | — | — | — |"
+            "| Headings without feature signal or explicit section review | %d | — | — | — | — |"
             % counts["documentation_headings_without_feature_signal"],
             "",
-            "Section candidates are a finer-grained discovery view, not a replacement for the page denominator. Of %d feature-signal sections, %d have reviewed independent case links, %d remain pending review, and %d inherit an explicit excluded-page rationale. Another %d Markdown headings produced no feature signal and are not silently counted as features."
+            "Section records refine the page inventory and include feature-signal candidates "
+            "and explicitly reviewed headings. Of %d records, %d have reviewed independent "
+            "case links, %d remain pending review, and %d have explicit exclusions at page "
+            "or section level. Another %d Markdown headings have neither a feature signal "
+            "nor an explicit section review and remain outside this section inventory."
             % (
                 counts["documentation_section_candidates"],
                 counts["documentation_sections_with_reviewed_partial_mapping"],
@@ -12925,7 +12979,13 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 materialized_partial_mappings,
             ),
             "",
-            "`mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.",
+            "`mapping_status` labels source-to-feature mapping, while `review_status` and "
+            "independent workflow links record whether a partial input mapping was reviewed. "
+            "A row may therefore retain `candidate` while already having "
+            "`review_status: reviewed_partial` and exact fixture cases/selectors. "
+            "Documentation pages and section records have separate denominators. "
+            "A reviewed section carries its own case, action, and selector links; "
+            "pending sections remain discovery leads.",
             "",
             "Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.",
             "",

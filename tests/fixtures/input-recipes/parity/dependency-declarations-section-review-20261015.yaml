@@ -1,0 +1,59 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/dependency_declarations_section_review_20261015.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.docs.dependency-declarations.section-review.decorator-return-value-not-injected
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: resolve-dependencies-with-valid-values
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /stock
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+            - [x-store-access, allow-stockroom]
+            - [x-parcel-key, parcel-41]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: inspect-recorded-dependency-calls
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /trace
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md
+        kind: upstream_documentation
+      - path: docs_src/dependencies/tutorial006_an_py310.py
+        kind: upstream_documentation_example
