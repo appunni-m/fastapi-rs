@@ -248,9 +248,11 @@ _MAPPINGS = [
     (
         ["docs_src/body_nested_models/tutorial009_py310.py"],
         (
-            "Numeric string keys and float values sample valid dict[int, float] body "
-            "parsing and key conversion. Invalid-key details are outside the "
-            "selected cases."
+            "A fixture-only diagnostic endpoint observes whether Pydantic converted "
+            "JSON string keys to integer keys for dict[int, float]. The tutorial's "
+            "echo case separately samples body acceptance and the response; JSON "
+            "serialization alone cannot distinguish those key types. Invalid-key "
+            "details are outside the selected cases."
         ),
         {
             "docs_src/body_nested_models/tutorial009_py310.py": (
@@ -263,6 +265,11 @@ _MAPPINGS = [
             _case(
                 "docs-example-wave-f-nested-bodies.yaml",
                 "fastapi.docs-example-wave-f.nested-body.integer-float-map",
+                HTTP,
+            ),
+            _case(
+                "docs-example-wave-f-nested-bodies.yaml",
+                "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types",
                 HTTP,
             ),
         ],

@@ -77247,9 +77247,9 @@
     "documentation_python_examples_with_reviewed_partial_mapping": 333,
     "documentation_python_source_files": 461,
     "documentation_section_candidates": 1561,
-    "documentation_sections_excluded": 899,
-    "documentation_sections_pending_behavior_review": 486,
-    "documentation_sections_with_reviewed_partial_mapping": 176,
+    "documentation_sections_excluded": 916,
+    "documentation_sections_pending_behavior_review": 430,
+    "documentation_sections_with_reviewed_partial_mapping": 215,
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 13,
@@ -86311,6 +86311,18 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.docs.behind-proxy.https-slash-redirect"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
+          },
+          {
+            "case_ids": [
               "fastapi.documentation-example.wave-h.proxy-items-route"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -86384,7 +86396,7 @@
           "advanced/behind-a-proxy.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "This file defines one GET route that returns a list. The independent GET samples route status/body with different list values; proxy root-path handling is not claimed.",
+          "rationale": "This file defines one GET route that returns a list. one independent GET samples status/body with a different list, and the behind-proxy input selects the status of a slashless redirect. Proxy root-path handling is not claimed by these route cases.",
           "source_evidence": [
             {
               "end_line": 8,
@@ -86404,6 +86416,15 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/documentation-example-review-wave-h.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.behind-proxy.https-slash-redirect"
+              ],
+              "observation_selectors": [
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml"
             }
           ]
         }
@@ -86783,6 +86804,19 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.docs.behind-proxy.root-path-scope"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
+          },
+          {
+            "case_ids": [
               "fastapi.middleware-proxy.proxy-client-root-path"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -86876,6 +86910,16 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.behind-proxy.root-path-scope"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml"
             }
           ]
         }
@@ -98938,7 +98982,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -98963,7 +99008,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -99007,7 +99053,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -99034,7 +99081,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -99376,7 +99424,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -99401,7 +99450,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -99445,7 +99495,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -99472,7 +99523,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -99814,7 +99866,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -99839,7 +99892,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -99883,7 +99937,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -99910,7 +99965,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -100254,7 +100310,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -100279,7 +100336,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -100343,7 +100401,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -100370,7 +100429,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -100714,7 +100774,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -100739,7 +100800,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -100803,7 +100865,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -100830,7 +100893,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -101173,7 +101237,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -101198,7 +101263,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -101252,7 +101318,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -101279,7 +101346,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -101631,7 +101699,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -101656,7 +101725,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -101700,7 +101770,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -101727,7 +101798,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -102079,7 +102151,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -102104,7 +102177,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -102148,7 +102222,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -102175,7 +102250,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -102496,9 +102572,10 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
-              "fastapi.docs-example-wave-f.nested-body.integer-float-map"
+              "fastapi.docs-example-wave-f.nested-body.integer-float-map",
+              "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
@@ -102522,7 +102599,8 @@
               "http.headers.ordered",
               "http.status",
               "openapi.document",
-              "openapi.paths"
+              "openapi.paths",
+              "openapi.request_schema"
             ],
             "selector_evidence": [
               {
@@ -102547,7 +102625,8 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "openapi.request_schema"
                 ]
               }
             ],
@@ -102560,7 +102639,7 @@
           "tutorial/body-nested-models.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "Numeric string keys and float values sample valid dict[int, float] body parsing and key conversion. Invalid-key details are outside the selected cases.",
+          "rationale": "A fixture-only diagnostic endpoint observes whether Pydantic converted JSON string keys to integer keys for dict[int, float]. The tutorial's echo case separately samples body acceptance and the response; JSON serialization alone cannot distinguish those key types. Invalid-key details are outside the selected cases.",
           "source_evidence": [
             {
               "end_line": 8,
@@ -102580,6 +102659,16 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml"
             }
           ]
         }
@@ -102591,7 +102680,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -102618,7 +102708,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -129448,6 +129539,20 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.docs.dependencies-with-yield.database-session-lifecycle",
+              "fastapi.docs.dependencies-with-yield.try-finally-error"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml",
+            "workflow_id": "dependencies-with-yield-section-review-20261015"
+          },
+          {
+            "case_ids": [
               "fastapi.dependencies.tutorial010.context-manager-in-yield-dependency"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -129524,7 +129629,7 @@
           "tutorial/dependencies/dependencies-with-yield.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "The snippet yields a database session and closes it in a finally block. Independent requests to a context-manager yield dependency observe its result and cleanup state through status and body; database construction and persistence are not claimed.",
+          "rationale": "The snippet yields a database session and closes it in a finally block. Independent requests observe yielded values, cleanup after success, and cleanup when an endpoint raises, through status and body; database construction and persistence are not claimed.",
           "source_evidence": [
             {
               "end_line": 6,
@@ -129544,6 +129649,26 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.dependencies-with-yield.database-session-lifecycle"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.dependencies-with-yield.try-finally-error"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml"
             }
           ]
         }
@@ -245256,6 +245381,21 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
             "workflow_id": "docs-sql-databases-fake-dependency"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.sql-databases.single-model.create-hero",
+              "fastapi.docs.sql-databases.single-model.invalid-hero",
+              "fastapi.docs.sql-databases.single-model.openapi"
+            ],
+            "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+            "workflow_id": "sql-databases-sections-20261015"
           }
         ],
         "mapped_documented_pages": [
@@ -245272,6 +245412,9 @@
             ],
             "fixture_id": "fastapi.docs.tutorial-sql-databases",
             "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
               "docs.response.body.bytes",
               "docs.response.headers",
               "docs.response.status",
@@ -245280,7 +245423,9 @@
               "http.status",
               "openapi.document",
               "openapi.paths",
-              "openapi.request_schema"
+              "openapi.request_schema",
+              "validation.error_class",
+              "validation.error_details"
             ],
             "selector_evidence": [
               {
@@ -245324,7 +245469,9 @@
                   "http.body.bytes",
                   "http.headers.ordered",
                   "http.status",
-                  "openapi.request_schema"
+                  "openapi.request_schema",
+                  "validation.error_class",
+                  "validation.error_details"
                 ]
               },
               {
@@ -245332,7 +245479,21 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "validation.error_class"
+                ]
+              },
+              {
+                "feature_id": null,
+                "schema_extension_required": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
+                ],
+                "selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
                 ]
               }
             ],
@@ -245345,7 +245506,7 @@
           "tutorial/sql-databases.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "The example provides a Session through a yield dependency and an Annotated alias. An independent fake-session workflow observes dependency-driven request handling and cleanup through status and body; database setup and CRUD behavior are not claimed.",
+          "rationale": "The example defines a Hero request model, a yielded Session dependency, and a POST route. Independent Pydantic-only inputs sample model parsing, validation, and the yielded dependency cleanup; a separate page-section mapping selects OpenAPI. SQLModel storage and CRUD persistence are not claimed.",
           "source_evidence": [
             {
               "end_line": 30,
@@ -245353,6 +245514,20 @@
               "role": "session yield dependency and Annotated alias",
               "sha256": "4158ac3ad33a55c894ce80e68bd3bd7b8e3b8da4e0f2cb8d62a45fd9f4229ca7",
               "start_line": 25
+            },
+            {
+              "end_line": 11,
+              "path": "docs_src/sql_databases/tutorial001_an_py310.py",
+              "role": "Hero model field declarations",
+              "sha256": "4158ac3ad33a55c894ce80e68bd3bd7b8e3b8da4e0f2cb8d62a45fd9f4229ca7",
+              "start_line": 7
+            },
+            {
+              "end_line": 45,
+              "path": "docs_src/sql_databases/tutorial001_an_py310.py",
+              "role": "POST request and response model endpoint",
+              "sha256": "4158ac3ad33a55c894ce80e68bd3bd7b8e3b8da4e0f2cb8d62a45fd9f4229ca7",
+              "start_line": 40
             }
           ],
           "workflow_cases": [
@@ -245365,12 +245540,45 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.single-model.create-hero"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.single-model.invalid-hero"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.single-model.openapi"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
             }
           ]
         }
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
@@ -245379,7 +245587,9 @@
         "http.status",
         "openapi.document",
         "openapi.paths",
-        "openapi.request_schema"
+        "openapi.request_schema",
+        "validation.error_class",
+        "validation.error_details"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -245425,7 +245635,9 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
-            "openapi.request_schema"
+            "openapi.request_schema",
+            "validation.error_class",
+            "validation.error_details"
           ]
         },
         {
@@ -245433,7 +245645,21 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "validation.error_class"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
           ]
         }
       ],
@@ -246077,6 +246303,9 @@
             ],
             "fixture_id": "fastapi.docs.tutorial-sql-databases",
             "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
               "docs.response.body.bytes",
               "docs.response.headers",
               "docs.response.status",
@@ -246085,7 +246314,9 @@
               "http.status",
               "openapi.document",
               "openapi.paths",
-              "openapi.request_schema"
+              "openapi.request_schema",
+              "validation.error_class",
+              "validation.error_details"
             ],
             "selector_evidence": [
               {
@@ -246129,7 +246360,9 @@
                   "http.body.bytes",
                   "http.headers.ordered",
                   "http.status",
-                  "openapi.request_schema"
+                  "openapi.request_schema",
+                  "validation.error_class",
+                  "validation.error_details"
                 ]
               },
               {
@@ -246137,7 +246370,21 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "validation.error_class"
+                ]
+              },
+              {
+                "feature_id": null,
+                "schema_extension_required": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
+                ],
+                "selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
                 ]
               }
             ],
@@ -246176,6 +246423,9 @@
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
@@ -246184,7 +246434,9 @@
         "http.status",
         "openapi.document",
         "openapi.paths",
-        "openapi.request_schema"
+        "openapi.request_schema",
+        "validation.error_class",
+        "validation.error_details"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -246230,7 +246482,9 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
-            "openapi.request_schema"
+            "openapi.request_schema",
+            "validation.error_class",
+            "validation.error_details"
           ]
         },
         {
@@ -246238,7 +246492,21 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "validation.error_class"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
           ]
         }
       ],
@@ -246898,6 +247166,24 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
             "workflow_id": "docs-sql-databases-fake-dependency"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.sql-databases.multiple-models.create-public",
+              "fastapi.docs.sql-databases.multiple-models.invalid-create",
+              "fastapi.docs.sql-databases.multiple-models.openapi",
+              "fastapi.docs.sql-databases.multiple-models.read-public-list",
+              "fastapi.docs.sql-databases.multiple-models.update-sparse"
+            ],
+            "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+            "workflow_id": "sql-databases-sections-20261015"
           }
         ],
         "mapped_documented_pages": [
@@ -246914,6 +247200,9 @@
             ],
             "fixture_id": "fastapi.docs.tutorial-sql-databases",
             "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
               "docs.response.body.bytes",
               "docs.response.headers",
               "docs.response.status",
@@ -246922,7 +247211,9 @@
               "http.status",
               "openapi.document",
               "openapi.paths",
-              "openapi.request_schema"
+              "openapi.request_schema",
+              "validation.error_class",
+              "validation.error_details"
             ],
             "selector_evidence": [
               {
@@ -246966,7 +247257,9 @@
                   "http.body.bytes",
                   "http.headers.ordered",
                   "http.status",
-                  "openapi.request_schema"
+                  "openapi.request_schema",
+                  "validation.error_class",
+                  "validation.error_details"
                 ]
               },
               {
@@ -246974,7 +247267,21 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "validation.error_class"
+                ]
+              },
+              {
+                "feature_id": null,
+                "schema_extension_required": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
+                ],
+                "selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
                 ]
               }
             ],
@@ -246987,7 +247294,7 @@
           "tutorial/sql-databases.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "The example's FastAPI slice declares Hero request/response behavior and yields a database session. Independent cases cover required-name validation, model schema projection, and the response/cleanup path with an in-memory fake. SQLModel/SQLite operations, startup table creation, and read/update/delete routes are not covered.",
+          "rationale": "The example's FastAPI slice declares Hero request/response behavior and yields a database session. Independent cases cover required-name validation, model schema projection, response-model filtering, list serialization, sparse PATCH input, and cleanup through in-memory fixtures. SQLModel/SQLite operations, startup table creation, and read/update/delete persistence are not covered.",
           "source_evidence": [
             {
               "end_line": 28,
@@ -247034,12 +247341,64 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.multiple-models.openapi"
+              ],
+              "observation_selectors": [
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.multiple-models.create-public"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.multiple-models.read-public-list"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.multiple-models.update-sparse"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.multiple-models.invalid-create"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml"
             }
           ]
         }
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
@@ -247048,7 +247407,9 @@
         "http.status",
         "openapi.document",
         "openapi.paths",
-        "openapi.request_schema"
+        "openapi.request_schema",
+        "validation.error_class",
+        "validation.error_details"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -247094,7 +247455,9 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
-            "openapi.request_schema"
+            "openapi.request_schema",
+            "validation.error_class",
+            "validation.error_details"
           ]
         },
         {
@@ -247102,7 +247465,21 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "validation.error_class"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
           ]
         }
       ],
@@ -247761,6 +248138,9 @@
             ],
             "fixture_id": "fastapi.docs.tutorial-sql-databases",
             "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
               "docs.response.body.bytes",
               "docs.response.headers",
               "docs.response.status",
@@ -247769,7 +248149,9 @@
               "http.status",
               "openapi.document",
               "openapi.paths",
-              "openapi.request_schema"
+              "openapi.request_schema",
+              "validation.error_class",
+              "validation.error_details"
             ],
             "selector_evidence": [
               {
@@ -247813,7 +248195,9 @@
                   "http.body.bytes",
                   "http.headers.ordered",
                   "http.status",
-                  "openapi.request_schema"
+                  "openapi.request_schema",
+                  "validation.error_class",
+                  "validation.error_details"
                 ]
               },
               {
@@ -247821,7 +248205,21 @@
                 "selectors": [
                   "http.body.bytes",
                   "http.headers.ordered",
-                  "http.status"
+                  "http.status",
+                  "validation.error_class"
+                ]
+              },
+              {
+                "feature_id": null,
+                "schema_extension_required": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
+                ],
+                "selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome"
                 ]
               }
             ],
@@ -247860,6 +248258,9 @@
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
@@ -247868,7 +248269,9 @@
         "http.status",
         "openapi.document",
         "openapi.paths",
-        "openapi.request_schema"
+        "openapi.request_schema",
+        "validation.error_class",
+        "validation.error_details"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -247914,7 +248317,9 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
-            "openapi.request_schema"
+            "openapi.request_schema",
+            "validation.error_class",
+            "validation.error_details"
           ]
         },
         {
@@ -247922,7 +248327,21 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "validation.error_class"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
           ]
         }
       ],
@@ -250950,6 +251369,19 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-sub-applications.yaml",
             "workflow_id": "atlas-testing-websocket-sub-applications"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.behind-proxy.mounted-root-path"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
           }
         ],
         "mapped_documented_pages": [
@@ -251036,6 +251468,16 @@
                 "openapi.document"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-sub-applications.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.behind-proxy.mounted-root-path"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml"
             }
           ]
         }
@@ -261368,7 +261810,7 @@
         "documented_sections": [
           {
             "end_line": 466,
-            "exclusion_reason": null,
+            "exclusion_reason": "This page-level heading is an overview spanning proxy trust, server flags, root_path, OpenAPI/docs URLs, local Traefik configuration, and mounted apps. The pinned page introduces those topics at lines 3-466; its independently observable FastAPI and shared-Starlette behavior is reviewed under the narrower anchored sections below.",
             "feature_evidence": [
               {
                 "feature_id": "app-routing",
@@ -261518,8 +261960,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "A page-wide workflow would conflate server/proxy process behavior with FastAPI application policy and Starlette routing. The source spans separate forwarded headers (docs/en/docs/advanced/behind-a-proxy.md:7-99), root_path and docs URLs (docs/en/docs/advanced/behind-a-proxy.md:100-243, docs/en/docs/advanced/behind-a-proxy.md:331-386), and mounting (docs/en/docs/advanced/behind-a-proxy.md:462-466). The child mappings preserve those ownership boundaries and select only the relevant ASGI actions.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -261600,7 +262042,7 @@
           },
           {
             "end_line": 99,
-            "exclusion_reason": null,
+            "exclusion_reason": "This parent section explains forwarded-header purpose and groups the server-flag and HTTPS-redirect child sections. Reading and trusting those headers is server behavior; the focused child mappings cover the app-visible redirect input and exclude server trust configuration (docs/en/docs/advanced/behind-a-proxy.md:9-13, 25-59, 67-99).",
             "feature_evidence": [
               {
                 "feature_id": "app-routing",
@@ -261701,8 +262143,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1's application __call__ writes configured root_path to the scope and delegates to Starlette (fastapi/applications.py:1160-1163); it does not implement the forwarded-header trust policy described by the pinned docs (docs/en/docs/advanced/behind-a-proxy.md:9-13, 25-39, 67-99). The CLI/server configuration, peer trust, header interpretation, and proxy rewriting are outside the FastAPI ASGI application contract and the Starlette 1.6.0 oracle.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -261772,7 +262214,7 @@
           },
           {
             "end_line": 42,
-            "exclusion_reason": null,
+            "exclusion_reason": "The section configures `fastapi run --forwarded-allow-ips` and describes which remote peers the server trusts. It has no ASGI request action that distinguishes FastAPI application behavior.",
             "feature_evidence": [
               {
                 "feature_id": "cli-process",
@@ -261815,8 +262257,8 @@
               "process.stderr",
               "process.stdout"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1's application __call__ writes configured root_path to the scope and delegates to Starlette (fastapi/applications.py:1160-1163); it does not implement the forwarded-header trust policy described by the pinned docs (docs/en/docs/advanced/behind-a-proxy.md:9-13, 25-39, 67-99). The CLI/server configuration, peer trust, header interpretation, and proxy rewriting are outside the FastAPI ASGI application contract and the Starlette 1.6.0 oracle.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -261887,7 +262329,24 @@
               "request-validation"
             ],
             "heading": "Redirects with HTTPS { #redirects-with-https }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "request-without-trailing-slash"
+                ],
+                "case_ids": [
+                  "fastapi.docs.behind-proxy.https-slash-redirect"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+                "scope_note": "The selected request sends `/items` with ASGI scheme `https` and host `example.com`, then observes the redirect status and headers. It samples URL construction from the scope only; it does not send X-Forwarded headers or claim the proxy's trust policy.",
+                "workflow_id": "behind-proxy-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -261900,8 +262359,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned docs example declares `/items/` and the FastAPI tutorial test sends an HTTPS-origin request to `/items` (docs_src/behind_a_proxy/tutorial001_01_py310.py:1-9; tests/test_tutorial/test_behind_a_proxy/test_tutorial001_01.py:5-16; docs/en/docs/advanced/behind-a-proxy.md:43-59). FastAPI uses Starlette routing for this redirect; Starlette 1.6.0 Router performs the slash retry and builds its URL from the ASGI scope (starlette/routing.py:704-718). Forwarded-header interpretation remains server-owned.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -261939,7 +262398,7 @@
           },
           {
             "end_line": 99,
-            "exclusion_reason": null,
+            "exclusion_reason": "The diagram and prose describe the proxy adding X-Forwarded headers and the application server interpreting them. They specify no FastAPI application operation independently observable from an ASGI scope (docs/en/docs/advanced/behind-a-proxy.md:67-99).",
             "feature_evidence": [
               {
                 "feature_id": "cli-process",
@@ -261991,8 +262450,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1's application __call__ writes configured root_path to the scope and delegates to Starlette (fastapi/applications.py:1160-1163); it does not implement the forwarded-header trust policy described by the pinned docs (docs/en/docs/advanced/behind-a-proxy.md:9-13, 25-39, 67-99). The CLI/server configuration, peer trust, header interpretation, and proxy rewriting are outside the FastAPI ASGI application contract and the Starlette 1.6.0 oracle.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -262127,7 +262586,29 @@
               "middleware-integrations"
             ],
             "heading": "Proxy with a stripped path prefix { #proxy-with-a-stripped-path-prefix }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "read-app-root-path",
+                  "read-openapi-servers",
+                  "read-docs-ui"
+                ],
+                "case_ids": [
+                  "fastapi.docs.behind-proxy.root-path-scope"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+                "scope_note": "The ASGI input supplies `/api/v1` as root_path and requests the unprefixed application route, OpenAPI endpoint, and docs endpoint. The selected response shows FastAPI's root_path projection into the scope, OpenAPI servers, and Swagger URL. The recipe does not run a proxy or assert prefix stripping (docs/en/docs/advanced/behind-a-proxy.md:100-164).",
+                "workflow_id": "behind-proxy-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -262147,8 +262628,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 stores its configured root_path and, in __call__, writes it to the incoming scope only when non-empty (fastapi/applications.py:949, 1160-1163). The OpenAPI handler reads request scope root_path and conditionally prepends it to servers (fastapi/applications.py:1108-1118); Swagger and ReDoc handlers prepend it to their schema URLs (fastapi/applications.py:1123-1158). The pinned docs explain the stripped-prefix ASGI shape and resulting URLs (docs/en/docs/advanced/behind-a-proxy.md:100-128, 147-164), while the tutorial001 route and test demonstrate the request-visible root_path (docs_src/behind_a_proxy/tutorial001_py310.py:1-8; tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py:6-12). Each input is the ASGI scope after any external proxy/server processing; Starlette 1.6.0 owns generic route matching and response dispatch.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -262217,7 +262698,7 @@
           },
           {
             "end_line": 189,
-            "exclusion_reason": null,
+            "exclusion_reason": "The section documents Uvicorn/Hypercorn `--root-path` command-line options. Those server processes create the incoming ASGI scope; no FastAPI CLI process or server startup behavior is part of the FastAPI application workflow (docs/en/docs/advanced/behind-a-proxy.md:166-188).",
             "feature_evidence": [
               {
                 "feature_id": "cli-process",
@@ -262277,8 +262758,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned docs assign `--root-path` to Uvicorn/Hypercorn server configuration (docs/en/docs/advanced/behind-a-proxy.md:166-188). FastAPI's application call consumes the already populated scope and overwrites root_path only when the app option is non-empty (fastapi/applications.py:949, 1160-1163). The server flag and scope construction are not modeled as FastAPI or Starlette behavior.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -262364,7 +262845,24 @@
               "request-validation"
             ],
             "heading": "Checking the current `root_path` { #checking-the-current-root-path }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "read-app-root-path"
+                ],
+                "case_ids": [
+                  "fastapi.docs.behind-proxy.root-path-scope"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+                "scope_note": "The selected `/app` request supplies a non-empty ASGI root_path and observes the example endpoint's scope-derived response. It does not claim how Uvicorn or the proxy creates that scope (docs/en/docs/advanced/behind-a-proxy.md:190-218).",
+                "workflow_id": "behind-proxy-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -262379,8 +262877,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 stores its configured root_path and, in __call__, writes it to the incoming scope only when non-empty (fastapi/applications.py:949, 1160-1163). The OpenAPI handler reads request scope root_path and conditionally prepends it to servers (fastapi/applications.py:1108-1118); Swagger and ReDoc handlers prepend it to their schema URLs (fastapi/applications.py:1123-1158). The pinned docs explain the stripped-prefix ASGI shape and resulting URLs (docs/en/docs/advanced/behind-a-proxy.md:100-128, 147-164), while the tutorial001 route and test demonstrate the request-visible root_path (docs_src/behind_a_proxy/tutorial001_py310.py:1-8; tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py:6-12). Each input is the ASGI scope after any external proxy/server processing; Starlette 1.6.0 owns generic route matching and response dispatch.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -262549,7 +263047,24 @@
               "request-validation"
             ],
             "heading": "About `root_path` { #about-root-path }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "tutorial002-read-root-path"
+                ],
+                "case_ids": [
+                  "fastapi.behind-proxy.tutorial002.app-root-path"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial002-upstream.yaml",
+                "scope_note": "The exact tutorial002 action requests `/app` while the FastAPI app is configured with `/api/v1`; the response selects the scope-visible root_path while the application route remains unprefixed. Server routing and proxy forwarding are outside this action (docs/en/docs/advanced/behind-a-proxy.md:227-242).",
+                "workflow_id": "behind-proxy-tutorial002-upstream"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -262561,8 +263076,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 stores the configured FastAPI(root_path=...) value and applies a non-empty value to the request scope in __call__ (fastapi/applications.py:949, 1160-1163). The pinned section says the app option is equivalent to the server's root_path input and shows the unprefixed `/app` request (docs/en/docs/advanced/behind-a-proxy.md:219-242); tutorial002 supplies that exact app configuration and route (docs_src/behind_a_proxy/tutorial002_py310.py:1-8), and its test requests `/app` and observes root_path (tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py:4-13). Starlette 1.6.0 owns generic route matching and response dispatch.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "root-path",
@@ -262590,7 +263105,7 @@
           },
           {
             "end_line": 251,
-            "exclusion_reason": null,
+            "exclusion_reason": "This section contrasts proxy configurations that strip or retain an external URL prefix. That transformation is performed before the application receives its ASGI scope and is not FastAPI library behavior (docs/en/docs/advanced/behind-a-proxy.md:244-250).",
             "feature_evidence": [
               {
                 "feature_id": "request-validation",
@@ -262616,8 +263131,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned docs describe the two proxy path-rewrite choices before requests reach the Uvicorn application server (docs/en/docs/advanced/behind-a-proxy.md:244-250). FastAPI receives the resulting ASGI scope (fastapi/applications.py:1160-1163); the proxy's external URL and rewrite are not application behavior.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -262636,7 +263151,7 @@
           },
           {
             "end_line": 386,
-            "exclusion_reason": null,
+            "exclusion_reason": "This parent section instructs the reader to configure and run Traefik and Uvicorn. Its process, port, and path-rewrite behavior is external; the child response and docs-URL effects are reviewed independently (docs/en/docs/advanced/behind-a-proxy.md:252-330, 331-386).",
             "feature_evidence": [
               {
                 "feature_id": "cli-process",
@@ -262725,8 +263240,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned example configures Traefik's stripPrefix middleware, ports, and the Uvicorn command as external processes (docs/en/docs/advanced/behind-a-proxy.md:252-330). Those are not FastAPI application actions; the independently observable app and docs URL effects in the following sections are mapped at lines 331-386.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -262811,7 +263326,24 @@
               "request-validation"
             ],
             "heading": "Check the responses { #check-the-responses }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "read-app-root-path"
+                ],
+                "case_ids": [
+                  "fastapi.docs.behind-proxy.root-path-scope"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+                "scope_note": "The selected request is the app-side ASGI shape after a proxy has stripped `/api/v1`: path `/app`, root_path `/api/v1`. The endpoint response is observed; the two network paths and Traefik's path rewrite are not exercised (docs/en/docs/advanced/behind-a-proxy.md:331-366).",
+                "workflow_id": "behind-proxy-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -262823,8 +263355,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 stores its configured root_path and, in __call__, writes it to the incoming scope only when non-empty (fastapi/applications.py:949, 1160-1163). The OpenAPI handler reads request scope root_path and conditionally prepends it to servers (fastapi/applications.py:1108-1118); Swagger and ReDoc handlers prepend it to their schema URLs (fastapi/applications.py:1123-1158). The pinned docs explain the stripped-prefix ASGI shape and resulting URLs (docs/en/docs/advanced/behind-a-proxy.md:100-128, 147-164), while the tutorial001 route and test demonstrate the request-visible root_path (docs_src/behind_a_proxy/tutorial001_py310.py:1-8; tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py:6-12). Each input is the ASGI scope after any external proxy/server processing; Starlette 1.6.0 owns generic route matching and response dispatch.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "root-path",
@@ -262906,7 +263438,28 @@
               "openapi-docs"
             ],
             "heading": "Check the docs UI { #check-the-docs-ui }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "read-openapi-servers",
+                  "read-docs-ui"
+                ],
+                "case_ids": [
+                  "fastapi.docs.behind-proxy.root-path-scope"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+                "scope_note": "The actions select the OpenAPI `/servers` projection and the generated Swagger HTML under an ASGI root_path of `/api/v1`. They observe FastAPI's URLs; no browser frontend or proxy network is run (docs/en/docs/advanced/behind-a-proxy.md:367-385).",
+                "workflow_id": "behind-proxy-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -262922,8 +263475,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 stores its configured root_path and, in __call__, writes it to the incoming scope only when non-empty (fastapi/applications.py:949, 1160-1163). The OpenAPI handler reads request scope root_path and conditionally prepends it to servers (fastapi/applications.py:1108-1118); Swagger and ReDoc handlers prepend it to their schema URLs (fastapi/applications.py:1123-1158). The pinned docs explain the stripped-prefix ASGI shape and resulting URLs (docs/en/docs/advanced/behind-a-proxy.md:100-128, 147-164), while the tutorial001 route and test demonstrate the request-visible root_path (docs_src/behind_a_proxy/tutorial001_py310.py:1-8; tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py:6-12). Each input is the ASGI scope after any external proxy/server processing; Starlette 1.6.0 owns generic route matching and response dispatch. The pinned UI section explains that FastAPI includes root_path in the OpenAPI server and Swagger schema URL (docs/en/docs/advanced/behind-a-proxy.md:367-385).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "root-path",
@@ -263019,7 +263572,7 @@
             "independent_workflow_mappings": [
               {
                 "case_ids": [
-                  "fastapi.behind-proxy.tutorial004.openapi-servers"
+                  "fastapi.behind-proxy.tutorial003.openapi-servers"
                 ],
                 "coverage_status": "partial",
                 "observation_selectors": [
@@ -263029,9 +263582,9 @@
                   "http.status",
                   "openapi.document"
                 ],
-                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial004-upstream.yaml",
-                "scope_note": "This case selects the OpenAPI servers array after a root_path request. It does not assert generic proxy-header interpretation.",
-                "workflow_id": "behind-proxy-tutorial004-upstream"
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial003-upstream.yaml",
+                "scope_note": "This case reads the OpenAPI `/servers` array from the tutorial003 app configured with a FastAPI root_path and two custom servers. It does not run a proxy or assert forwarded-header interpretation.",
+                "workflow_id": "behind-proxy-tutorial003-upstream"
               }
             ],
             "observation_selectors": [
@@ -263049,7 +263602,7 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": "FastAPI can prepend the request root_path as an OpenAPI server when configured; proxy handling itself remains outside this claim.",
+            "review_rationale": "The pinned section specifies that FastAPI prepends the configured root_path ahead of custom servers (docs/en/docs/advanced/behind-a-proxy.md:387-453). Tutorial003 and its test provide the exact app configuration and `/servers` observation (docs_src/behind_a_proxy/tutorial003_py310.py:1-14; tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py:15-47). FastAPI constructs and inserts this server in its OpenAPI handler (fastapi/applications.py:1084-1118); Starlette owns generic ASGI dispatch.",
             "review_status": "reviewed_partial",
             "selector_evidence": [
               {
@@ -263139,7 +263692,27 @@
               "openapi-docs"
             ],
             "heading": "Disable automatic server from `root_path` { #disable-automatic-server-from-root-path }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "tutorial004-read-openapi-servers"
+                ],
+                "case_ids": [
+                  "fastapi.behind-proxy.tutorial004.openapi-servers"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial004-upstream.yaml",
+                "scope_note": "This exact tutorial004 OpenAPI request selects the generated `/servers` value with `root_path_in_servers=False` and a configured root_path. It does not claim the behavior of other OpenAPI fields or server configuration (docs/en/docs/advanced/behind-a-proxy.md:454-461).",
+                "workflow_id": "behind-proxy-tutorial004-upstream"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -263155,8 +263728,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 declares `root_path_in_servers` and conditionally prepends the scope root_path in its OpenAPI handler (fastapi/applications.py:660-679, 1108-1118). The pinned tutorial004 example and test provide the exact configuration and selected server observation (docs_src/behind_a_proxy/tutorial004_py310.py:1-14; tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py:4-47; docs/en/docs/advanced/behind-a-proxy.md:454-460).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "root-path",
@@ -263244,7 +263817,24 @@
               "request-validation"
             ],
             "heading": "Mounting a sub-application { #mounting-a-sub-application }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "read-mounted-subapp-root-path"
+                ],
+                "case_ids": [
+                  "fastapi.docs.behind-proxy.mounted-root-path"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+                "scope_note": "The ASGI scope supplies path `/api/v1/subapi/sub` and root_path `/api/v1`; the response observes the child scope after the documented `/subapi` mount. This samples one HTTP mount and does not exercise Uvicorn's scope construction, other mounts, URL reversal, or proxy routing (docs/en/docs/advanced/behind-a-proxy.md:462-466).",
+                "workflow_id": "behind-proxy-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -263257,8 +263847,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 preserves the supplied root_path when the app option is empty (fastapi/applications.py:1160-1163). Starlette 1.6.0 strips a matching root_path from path before routing (starlette/_utils.py:96-110), then Mount appends its matched prefix to the child scope and Router dispatches that child (starlette/routing.py:394-424, 684-691). The docs say a mounted sub-application works with a proxy root_path (docs/en/docs/advanced/behind-a-proxy.md:462-466); the pinned sub-application example and test establish the `/subapi` mount and `/subapi/sub` route without a proxy root_path (docs_src/sub_applications/tutorial001_py310.py:11-19; tests/test_tutorial/test_sub_applications/test_tutorial001.py:15-18). This action provides a post-server ASGI scope and makes no claim about how the proxy/server constructs it.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -263763,6 +264353,27 @@
         ],
         "headings_indexed": 17,
         "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.docs.behind-proxy.https-slash-redirect",
+              "fastapi.docs.behind-proxy.mounted-root-path",
+              "fastapi.docs.behind-proxy.root-path-scope"
+            ],
+            "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
+              "docs.response.status",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
+          },
           {
             "case_ids": [
               "fastapi.behind-proxy.tutorial002.app-root-path",
@@ -299816,6 +300427,22 @@
         ],
         "headings_indexed": 7,
         "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.docs.behind-proxy.mounted-root-path"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
+          },
           {
             "case_ids": [
               "fastapi.applications.root-path.deprecated-prefix-fallback"
@@ -424113,7 +424740,6 @@
         "docs.response.body.bytes",
         "docs.response.headers",
         "http.body.json",
-        "openapi.request_schema",
         "python.pydantic_model_result",
         "route.match",
         "validation.error_class",
@@ -424141,7 +424767,6 @@
           "selectors": [
             "http.body.bytes",
             "http.body.json",
-            "openapi.request_schema",
             "validation.error_class",
             "validation.error_details"
           ]
@@ -424149,10 +424774,25 @@
       ],
       "candidate_selector_scope": {
         "contract_gate": "One nested model case and schema pointer are linked. Missing: deep/union/list variants, nested invalid paths and all examples. The mapping remains partial pending the full FastAPI manifest and identity/signature checks. Generic HTTP behavior is assigned to Starlette 1.6.0 and the separate Starlette-RS contract.",
-        "unobserved_reviewed_selector_claims": [
-          "openapi.request_schema"
-        ],
-        "workflow_scope_notes": []
+        "unobserved_reviewed_selector_claims": [],
+        "workflow_scope_notes": [
+          {
+            "case_ids": [
+              "fastapi.docs-example-wave-f.nested-body.list-tags-valid",
+              "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types",
+              "fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated",
+              "fastapi.docs-example-wave-f.nested-body.optional-image-present",
+              "fastapi.docs-example-wave-f.nested-body.http-url-invalid",
+              "fastapi.docs-example-wave-f.nested-body.optional-image-list-present",
+              "fastapi.docs-example-wave-f.nested-body.offer-nested-items",
+              "fastapi.docs-example-wave-f.nested-body.top-level-image-list",
+              "fastapi.docs-example-wave-f.nested-body.integer-float-map",
+              "fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+            "scope_note": "All ten listed cases cite this exact page and each sends one HTTP body plus one /openapi.json request. Their action union selects the response and request-body schema pointers, including openapi.request_schema. No other tutorial behavior is claimed."
+          }
+        ]
       },
       "exclusion_reason": null,
       "feature_ids": [
@@ -424245,7 +424885,6 @@
           "docs.response.body.bytes",
           "docs.response.headers",
           "http.body.json",
-          "openapi.request_schema",
           "python.pydantic_model_result",
           "route.match",
           "validation.error_class",
@@ -424273,7 +424912,6 @@
             "selectors": [
               "http.body.bytes",
               "http.body.json",
-              "openapi.request_schema",
               "validation.error_class",
               "validation.error_details"
             ]
@@ -424282,7 +424920,7 @@
         "documented_sections": [
           {
             "end_line": 221,
-            "exclusion_reason": null,
+            "exclusion_reason": "This page heading summarizes multiple independently observable body shapes. Its concrete behavior is represented by the anchored list, nested-model, special-type, pure-list, and dictionary sections below.",
             "feature_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424339,8 +424977,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "A page-wide input would merge unrelated Pydantic schemas and request bodies. Each child mapping selects its own request and schema observations; the two existing exclusions cover IDE-only assistance and recap prose.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424387,7 +425025,28 @@
               "request-validation"
             ],
             "heading": "List fields { #list-fields }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-heterogeneous-bare-list",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The request sends mixed string, integer, and object values to a bare `list` field; the response and request-body/component schema are selected. The independent model uses the same primary field names but omits the tutorial's other Item fields and uses a different route.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424397,8 +425056,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned section embeds tutorial001's bare-list body field (docs_src/body_nested_models/tutorial001_py310.py:7-18). The fixture isolates unparameterized list acceptance/preservation and its OpenAPI schema. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424434,7 +425093,28 @@
               "request-validation"
             ],
             "heading": "List fields with type parameter { #list-fields-with-type-parameter }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-typed-tag-list",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.list-tags-valid"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The request submits string items to a `list[str]` field and selects its request-body schema. This checks the typed-list shape only; it does not claim the separate Python syntax examples as executable behavior.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424444,8 +425124,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The section's executable example declares `tags: list[str]` (docs_src/body_nested_models/tutorial002_py310.py:7-18). The fixture observes accepted JSON values, serialized response, and the declared item schema. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424481,7 +425161,28 @@
               "request-validation"
             ],
             "heading": "Declare a `list` with a type parameter { #declare-a-list-with-a-type-parameter }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-typed-tag-list",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.list-tags-valid"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The same isolated typed-list request selects both runtime JSON handling and the `list[str]` request schema. The illustrative standalone annotation is not executed as an endpoint.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424491,8 +425192,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The child section explains standard generic annotation syntax and embeds tutorial002's `list[str]` model field (docs_src/body_nested_models/tutorial002_py310.py:7-18). FastAPI's body binding/schema projection is covered by the selected request and OpenAPI actions; generic ASGI dispatch is Starlette 1.6.0 behavior.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424533,7 +425234,28 @@
               "request-validation"
             ],
             "heading": "Set types { #set-types }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-unique-tag-set",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The JSON input contains duplicate strings for a `set[str]` body field. The selected response checks de-duplication/serialization, and OpenAPI selects the declared field and request schema.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424543,8 +425265,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned tutorial003 example changes `tags` to `set[str]` and documents duplicate removal (docs_src/body_nested_models/tutorial003_py310.py:7-18). The independent input includes a duplicate and reads the resulting response and schema. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424590,7 +425312,28 @@
               "request-validation"
             ],
             "heading": "Nested Models { #nested-models }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-nested-image",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.optional-image-present"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The selected action submits one present nested image model and reads its OpenAPI body/component schema. It demonstrates one nesting level; recursive list nesting is isolated by the Deeply nested models section. Field names and tutorial example values differ.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424600,8 +425343,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "This section describes Pydantic submodels as fields and embeds tutorial004's Image and Item definitions (docs_src/body_nested_models/tutorial004_py310.py:7-24). The independent request samples successful nested-model parsing and schema projection. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424637,7 +425380,28 @@
               "request-validation"
             ],
             "heading": "Define a submodel { #define-a-submodel }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-nested-image",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.optional-image-present"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The request contains a valid `ReviewImage` value and its OpenAPI component is selected. This observes a concrete nested model shape, not Python class editor behavior or the source tutorial's `url`/`name` field spelling.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424647,8 +425411,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The section's source defines Image as a Pydantic model (docs_src/body_nested_models/tutorial004_py310.py:7-9). FastAPI uses the model as request metadata and projects it through OpenAPI; Pydantic performs field validation. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424689,7 +425453,28 @@
               "request-validation"
             ],
             "heading": "Use the submodel as a type { #use-the-submodel-as-a-type }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-nested-image",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.optional-image-present"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The selected HTTP input carries an image object inside the body model and the schema selectors inspect the containing field and request schema. The fixture does not claim the source example's exact fields or every nested validation branch.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424699,8 +425484,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned endpoint annotates `Item.image` with the `Image` submodel (docs_src/body_nested_models/tutorial004_py310.py:12-24). This independent action samples binding of a nested object and its request schema. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424756,7 +425541,28 @@
               "openapi-docs"
             ],
             "heading": "Special types and validation { #special-types-and-validation }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "reject-invalid-image-url",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.http-url-invalid"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The request sends a malformed URL to an `HttpUrl` nested field and selects the validation response plus its OpenAPI request/component schema. It does not attempt to cover Pydantic's full set of special types.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "docs.response.body.bytes",
               "docs.response.headers",
@@ -424771,8 +425577,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "Tutorial005 declares its nested `Image.url` as `HttpUrl` and says it is validated and documented (docs_src/body_nested_models/tutorial005_py310.py:1-24). The fixture isolates one invalid URL and the field's schema projection. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424824,7 +425630,28 @@
               "request-validation"
             ],
             "heading": "Attributes with lists of submodels { #attributes-with-lists-of-submodels }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-image-list",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.optional-image-list-present"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The body contains a non-empty list of nested image objects and selects the request schema for the containing list field. The tutorial's other model fields and exact image properties are outside this action.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424834,8 +425661,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The section embeds tutorial006's optional list of Image models (docs_src/body_nested_models/tutorial006_py310.py:7-24). Its input observes list-of-submodel body validation/serialization and schema projection. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424871,7 +425698,28 @@
               "request-validation"
             ],
             "heading": "Deeply nested models { #deeply-nested-models }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-offer-with-nested-line",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.offer-nested-items"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The body contains an offer with nested lines and nested image lists, then selects the response and request schema. This samples the documented three model levels, with independent model names and values.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424881,8 +425729,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The source example declares Offer, Item, and Image models at nested levels (docs_src/body_nested_models/tutorial007_py310.py:7-30). The fixture submits the recursive body shape and inspects its request schema. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -424923,7 +425771,28 @@
               "request-validation"
             ],
             "heading": "Bodies of pure lists { #bodies-of-pure-lists }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "submit-image-array",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.top-level-image-list"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The request body is a top-level JSON array of image objects, not an object with a list field. The selected request-body schema distinguishes this shape.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -424933,8 +425802,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "Tutorial008 annotates the endpoint parameter as `list[Image]` (docs_src/body_nested_models/tutorial008_py310.py:7-17). The fixture sends an array and selects FastAPI's request schema and response serialization. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -425027,7 +425896,28 @@
               "request-validation"
             ],
             "heading": "Bodies of arbitrary `dict`s { #bodies-of-arbitrary-dicts }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "probe-integer-dictionary-keys",
+                  "openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+                "scope_note": "The body sends numeric-string keys and decimal values to a `dict[int, float]` parameter. A diagnostic route checks membership using integer keys so the conversion is externally visible; OpenAPI selects the request schema. The probe does not exhaust arbitrary property-name populations.",
+                "workflow_id": "docs-example-wave-f-nested-bodies"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -425037,8 +425927,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "Tutorial009 annotates the body as `dict[int, float]` and explains conversion from JSON string keys (docs_src/body_nested_models/tutorial009_py310.py:1-12; docs/en/docs/tutorial/body-nested-models.md:181-210). The source endpoint's ordinary JSON dictionary serialization cannot reveal whether its in-process keys are integers, so the input recipe uses a probe endpoint that evaluates integer-key membership and returns that boolean. It still uses FastAPI's annotated body binding and OpenAPI schema projection. FastAPI 0.141.1 selects form versus body handling and decides whether JSON parsing applies from the request content type in fastapi/routing.py:425-450; Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() decodes JSON in starlette/requests.py:254-266. FastAPI validates a single non-embedded body field in fastapi/dependencies/utils.py:975-980, and projects request-body schemas in fastapi/openapi/utils.py:377-385. Starlette 1.6.0 owns generic ASGI dispatch and HTTP response transport; Pydantic supplies the declared model-field conversion and validation.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -425689,6 +426579,31 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved",
+              "fastapi.docs-example-wave-f.nested-body.http-url-invalid",
+              "fastapi.docs-example-wave-f.nested-body.integer-float-map",
+              "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types",
+              "fastapi.docs-example-wave-f.nested-body.list-tags-valid",
+              "fastapi.docs-example-wave-f.nested-body.offer-nested-items",
+              "fastapi.docs-example-wave-f.nested-body.optional-image-list-present",
+              "fastapi.docs-example-wave-f.nested-body.optional-image-present",
+              "fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated",
+              "fastapi.docs-example-wave-f.nested-body.top-level-image-list"
+            ],
+            "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths, openapi.request_schema. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document",
+              "openapi.paths",
+              "openapi.request_schema"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+            "workflow_id": "docs-example-wave-f-nested-bodies"
+          },
+          {
+            "case_ids": [
               "fastapi.docs.request-schema.tutorial-body-nested-models.nested-body"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -426079,6 +426994,29 @@
                 "openapi.paths"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs-example-wave-f.nested-body.list-tags-valid",
+                "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types",
+                "fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated",
+                "fastapi.docs-example-wave-f.nested-body.optional-image-present",
+                "fastapi.docs-example-wave-f.nested-body.http-url-invalid",
+                "fastapi.docs-example-wave-f.nested-body.optional-image-list-present",
+                "fastapi.docs-example-wave-f.nested-body.offer-nested-items",
+                "fastapi.docs-example-wave-f.nested-body.top-level-image-list",
+                "fastapi.docs-example-wave-f.nested-body.integer-float-map",
+                "fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.request_schema"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
+              "scope_note": "All ten listed cases cite this exact page and each sends one HTTP body plus one /openapi.json request. Their action union selects the response and request-body schema pointers, including openapi.request_schema. No other tutorial behavior is claimed."
             }
           ]
         },
@@ -426091,7 +427029,8 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
-        "openapi.paths"
+        "openapi.paths",
+        "openapi.request_schema"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -426118,7 +427057,8 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "openapi.request_schema"
           ]
         }
       ],
@@ -438553,7 +439493,7 @@
         "documented_sections": [
           {
             "end_line": 290,
-            "exclusion_reason": null,
+            "exclusion_reason": "The page heading introduces generator dependencies but defines no additional request or response beyond its concrete child sections.",
             "feature_evidence": [
               {
                 "feature_id": "app-routing",
@@ -438662,8 +439602,8 @@
               "validation.error_details",
               "warnings.category_message"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "Each behavior-specific heading below names its own recipe cases, actions, and selectors. The page-level introduction would broaden those separate contracts.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -438760,7 +439700,25 @@
               "dependency-security"
             ],
             "heading": "A database dependency with `yield` { #a-database-dependency-with-yield }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "session-response",
+                  "session-cleanup-observation"
+                ],
+                "case_ids": [
+                  "fastapi.docs.dependencies-with-yield.database-session-lifecycle"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml",
+                "scope_note": "The first response exposes a value from an async yielded in-memory session; a second request reads teardown events. This samples value injection and normal request-scope cleanup, not a database driver, transactions, or a synchronous generator dependency.",
+                "workflow_id": "dependencies-with-yield-section-review-20261015"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -438773,8 +439731,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned tutorial example creates a session, yields it, and closes it in `finally` (`../fastapi/docs_src/dependencies/tutorial007_py310.py:1-6`; the page describes injection and cleanup at lines 26-48). FastAPI wraps generator dependencies as context managers and enters them on the selected exit stack (`../fastapi/fastapi/dependencies/utils.py:566-574,662-672`); its routing stacks surround response creation and sending (`../fastapi/fastapi/routing.py:137-158`).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -438853,7 +439811,26 @@
               "dependency-security"
             ],
             "heading": "A dependency with `yield` and `try` { #a-dependency-with-yield-and-try }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "operation-error",
+                  "error-cleanup-observation"
+                ],
+                "case_ids": [
+                  "fastapi.docs.dependencies-with-yield.try-finally-error"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "asgi.application_error.exception",
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml",
+                "scope_note": "The endpoint raises a `LookupError`; the yielded dependency records the caught exception, re-raises it, and runs `finally`. A follow-up request observes the cleanup trace. The generic 500 response and application-error transport are Starlette behavior; this input uses them to expose FastAPI's dependency teardown path and does not sample exception translation or suppression.",
+                "workflow_id": "dependencies-with-yield-section-review-20261015"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -438868,8 +439845,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The tutorial's `tutorial007` dependency wraps `yield` in `try/finally` (`../fastapi/docs_src/dependencies/tutorial007_py310.py:3-6`). FastAPI enters the generator as a context manager (`../fastapi/fastapi/dependencies/utils.py:566-574`) and exits its request stack around response dispatch (`../fastapi/fastapi/routing.py:137-158`), returning the endpoint exception through teardown. Starlette 1.6.0 owns the generic unhandled-error response.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -438931,7 +439908,25 @@
               "dependency-security"
             ],
             "heading": "Sub-dependencies with `yield` { #sub-dependencies-with-yield }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "chain-result",
+                  "chain-cleanup"
+                ],
+                "case_ids": [
+                  "fastapi.dependencies.tutorial008.async-yield-chain-default"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml",
+                "scope_note": "The selected input follows one all-async, three-node yield chain, returns the leaf value, and reads cleanup afterward. Mixed return/yield graphs, arbitrary fan-out, and other graph shapes are not sampled.",
+                "workflow_id": "dependency-yield-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -438941,8 +439936,8 @@
               "http.status",
               "openapi.security"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned example links three yielded dependencies and uses each parent value during teardown (`../fastapi/docs_src/dependencies/tutorial008_an_py310.py:6-27`). FastAPI recursively solves sub-dependencies and enters generator dependencies on their selected exit stack (`../fastapi/fastapi/dependencies/utils.py:640-680`).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -439019,7 +440014,25 @@
               "public-api-errors"
             ],
             "heading": "Dependencies with `yield` and `HTTPException` { #dependencies-with-yield-and-httpexception }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "owner-error-translated-by-yield-dependency"
+                ],
+                "case_ids": [
+                  "fastapi.dependencies.tutorial008b.default-parameter-exception-translation",
+                  "fastapi.dependencies.tutorial008b.annotated-parameter-exception-translation"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                "scope_note": "Both default and `Annotated` dependency declarations are exercised for the owner-error path, where teardown catches `OwnerError` and raises `HTTPException`. The selected action does not claim custom exception handlers or other exception classes.",
+                "workflow_id": "dependency-yield-errors-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -439041,8 +440054,8 @@
               "validation.error_details",
               "warnings.category_message"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned `tutorial008b` example catches the endpoint's `OwnerError` around `yield` and raises `HTTPException` (`../fastapi/docs_src/dependencies/tutorial008b_py310.py:16-20`; the page links this example at lines 96-114). FastAPI's generator solver is the dependency lifecycle owner (`../fastapi/fastapi/dependencies/utils.py:566-574`).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -439127,7 +440140,27 @@
               "public-api-errors"
             ],
             "heading": "Dependencies with `yield` and `except` { #dependencies-with-yield-and-except }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "suppressed-default",
+                  "suppressed-annotated",
+                  "observed-original-exceptions"
+                ],
+                "case_ids": [
+                  "fastapi.dependencies.tutorial008c.suppressed-yield-exception"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "asgi.application_error.exception",
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                "scope_note": "The default and `Annotated` inputs catch and suppress the endpoint error, then read the dependency's captured exception. FastAPI 0.141.1 additionally raises its `FastAPIError` guard when suppression prevents response creation; the generic 500 response is Starlette-owned. Logs are not observed.",
+                "workflow_id": "dependency-yield-errors-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -439144,8 +440177,8 @@
               "python.signature",
               "warnings.category_message"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned `tutorial008c` example suppresses `InternalError` in the generator (`../fastapi/docs_src/dependencies/tutorial008c_py310.py:10-15`). In 0.141.1, routing detects that the response was never awaited and raises `FastAPIError` (`../fastapi/fastapi/routing.py:137-155`); Starlette 1.6.0 owns its generic server-error response.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -439208,7 +440241,27 @@
               "public-api-errors"
             ],
             "heading": "Always `raise` in Dependencies with `yield` and `except` { #always-raise-in-dependencies-with-yield-and-except }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "reraised-default",
+                  "reraised-annotated",
+                  "observed-original-exceptions"
+                ],
+                "case_ids": [
+                  "fastapi.dependencies.tutorial008d.reraised-yield-exception"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "validation.error_class"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                "scope_note": "The two declaration forms re-raise the original `InternalError`; the later readback exposes the recorded exception. The input observes the application error class and HTTP response, not server log output.",
+                "workflow_id": "dependency-yield-errors-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -439225,8 +440278,8 @@
               "python.signature",
               "warnings.category_message"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned `tutorial008d` example catches `InternalError` and uses bare `raise` (`../fastapi/docs_src/dependencies/tutorial008d_py310.py:10-15`; the page describes the case at lines 124-132). FastAPI's routing exit stack carries the exception through generator teardown (`../fastapi/fastapi/routing.py:137-158`); Starlette 1.6.0 owns generic unhandled-error response behavior.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -439257,7 +440310,7 @@
           },
           {
             "end_line": 186,
-            "exclusion_reason": null,
+            "exclusion_reason": "The sequence diagram combines conditional dependency-start errors, endpoint errors, translated exceptions, response sending, and background-task failures; it is not one independent request contract.",
             "feature_evidence": [
               {
                 "feature_id": "app-routing",
@@ -439356,8 +440409,8 @@
               "validation.error_details",
               "warnings.category_message"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "Yield injection and cleanup, error translation/suppression/re-raise, and scope timing are mapped in their narrower sections. Background-task ordering belongs to the separately reviewed lifecycle workflow, where Starlette owns response background dispatch.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -439476,7 +440529,25 @@
               "dependency-security"
             ],
             "heading": "Early exit and `scope` { #early-exit-and-scope }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "first-response",
+                  "subsequent-response"
+                ],
+                "case_ids": [
+                  "fastapi.dependencies.yield-scope-cleanup"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
+                "scope_note": "A streaming response exposes function- and request-scoped resource state, and a second response reads cleanup events. FastAPI owns the dependency exit-stack timing; Starlette 1.6.0 owns stream iteration and ASGI response sending. This does not cover WebSocket scope or cancellation.",
+                "workflow_id": "dependency-lifecycle"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -439491,8 +440562,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The page specifies function cleanup before the response and request cleanup after it (lines 187-200), and the pinned `tutorial008e` example selects `scope=\"function\"` (`../fastapi/docs_src/dependencies/tutorial008e_py310.py:1-13`). FastAPI closes the function stack before response dispatch and request stack after it (`../fastapi/fastapi/routing.py:137-158`). Starlette 1.6.0 sends streaming response bodies (`../starlette/starlette/responses.py:222-282`).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -439581,7 +440652,27 @@
               "dependency-security"
             ],
             "heading": "`scope` for sub-dependencies { #scope-for-sub-dependencies }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "nested-request-scope",
+                  "named-function-scope",
+                  "regular-function-scope",
+                  "http-scope-cleanup"
+                ],
+                "case_ids": [
+                  "fastapi.dependencies.nested-yield-scopes-http"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle-security-review.yaml",
+                "scope_note": "The requests sample a valid request-scoped pair and a function-scoped parent with yielded function-scoped child, then read cleanup events. This is a small HTTP graph sample; invalid scope combinations, other graph shapes, and WebSocket scopes are not claimed.",
+                "workflow_id": "dependency-lifecycle-security-review"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -439596,8 +440687,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned scope example describes which child scopes remain alive through a parent's cleanup (page lines 202-230). FastAPI builds and validates dependency scope relationships while constructing the graph (`../fastapi/fastapi/dependencies/utils.py:271-349`); the selected actions observe valid HTTP graph combinations and teardown.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -439638,7 +440729,7 @@
           },
           {
             "end_line": 237,
-            "exclusion_reason": null,
+            "exclusion_reason": "This section summarizes historical evolution and links to the advanced guide; it does not add a separate pinned request workflow.",
             "feature_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -439681,8 +440772,8 @@
               "python.signature",
               "warnings.category_message"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI-RS targets the pinned 0.141.1 contract. Current exception and lifecycle inputs are mapped above and in the linked advanced guide; no pre/post-version comparison is included.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -439713,7 +440804,7 @@
           },
           {
             "end_line": 290,
-            "exclusion_reason": null,
+            "exclusion_reason": "The parent heading groups Python context-manager background and a FastAPI dependency example, which have separate ownership and are mapped below.",
             "feature_evidence": [
               {
                 "feature_id": "request-validation",
@@ -439759,8 +440850,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The Python `with` protocol is language/library behavior, while the nested context-manager dependency example is covered by its own child mapping. A parent workflow would combine those distinct contracts.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -439791,7 +440882,7 @@
           },
           {
             "end_line": 257,
-            "exclusion_reason": null,
+            "exclusion_reason": "The file-opening example and `with` cleanup description specify Python context manager behavior, not an independent FastAPI request behavior.",
             "feature_evidence": [
               {
                 "feature_id": "request-validation",
@@ -439832,8 +440923,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The section cites Python's context-manager protocol and describes `open()`; FastAPI's use of generator context managers is an implementation note, while observable dependency behavior is mapped under the yielded-dependency sections.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -439885,7 +440976,25 @@
               "dependency-security"
             ],
             "heading": "Using context managers in dependencies with `yield` { #using-context-managers-in-dependencies-with-yield }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "database-result",
+                  "context-cleanup"
+                ],
+                "case_ids": [
+                  "fastapi.dependencies.tutorial010.context-manager-in-yield-dependency"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml",
+                "scope_note": "The selected route injects the resource yielded by a dependency that uses a synchronous `with` block, then reads context exit and resource cleanup. It does not test passing `@contextmanager` or `@asynccontextmanager` wrappers directly as dependencies; the page says FastAPI applies those internally.",
+                "workflow_id": "dependency-yield-tutorials-upstream"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -439895,8 +441004,8 @@
               "http.status",
               "openapi.security"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned `tutorial010` example uses `with` inside the yielded dependency (`../fastapi/docs_src/dependencies/tutorial010_py310.py:1-13`; page lines 258-288). FastAPI wraps yield-callable dependencies and enters their context on its lifecycle stack (`../fastapi/fastapi/dependencies/utils.py:566-574`).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -440348,6 +441457,24 @@
         ],
         "headings_indexed": 14,
         "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.docs.dependencies-with-yield.database-session-lifecycle",
+              "fastapi.docs.dependencies-with-yield.try-finally-error"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.application_error.exception",
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml",
+            "workflow_id": "dependencies-with-yield-section-review-20261015"
+          },
           {
             "case_ids": [
               "fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator",
@@ -513249,8 +514376,6 @@
         "python.signature",
         "response.background_effects",
         "route.match",
-        "validation.error_class",
-        "validation.error_details",
         "warnings.category_message",
         "websocket.close_code",
         "websocket.event_order",
@@ -513307,9 +514432,7 @@
           "feature_id": "request-validation",
           "selectors": [
             "http.body.bytes",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.json"
           ]
         },
         {
@@ -513318,8 +514441,7 @@
             "http.body.bytes",
             "http.body.json",
             "http.cookies",
-            "response.background_effects",
-            "validation.error_class"
+            "response.background_effects"
           ]
         },
         {
@@ -513344,9 +514466,7 @@
           "lifecycle.event_order",
           "process.stdout",
           "response.background_effects",
-          "route.match",
-          "validation.error_class",
-          "validation.error_details"
+          "route.match"
         ],
         "workflow_scope_notes": [
           {
@@ -513357,6 +514477,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
             "scope_note": "The page uses SQLModel with FastAPI; these fake-dependency cases sample create/cleanup, invalid request handling, and OpenAPI models without claiming database-library behavior."
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.sql-databases.multiple-models.create-public",
+              "fastapi.docs.sql-databases.multiple-models.invalid-create",
+              "fastapi.docs.sql-databases.multiple-models.openapi",
+              "fastapi.docs.sql-databases.multiple-models.read-public-list",
+              "fastapi.docs.sql-databases.multiple-models.update-sparse",
+              "fastapi.docs.sql-databases.single-model.create-hero",
+              "fastapi.docs.sql-databases.single-model.invalid-hero",
+              "fastapi.docs.sql-databases.single-model.openapi"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+            "scope_note": "The eight listed cases sample the single-model and multiple-model request, validation, response-model, and OpenAPI behavior described on this page. They observe app construction, selected HTTP responses and validation details, and the selected OpenAPI projections; they do not claim SQLModel, SQLAlchemy, SQLite, database persistence, or CLI behavior."
           }
         ]
       },
@@ -513532,8 +514666,6 @@
           "python.signature",
           "response.background_effects",
           "route.match",
-          "validation.error_class",
-          "validation.error_details",
           "warnings.category_message",
           "websocket.close_code",
           "websocket.event_order",
@@ -513590,9 +514722,7 @@
             "feature_id": "request-validation",
             "selectors": [
               "http.body.bytes",
-              "http.body.json",
-              "validation.error_class",
-              "validation.error_details"
+              "http.body.json"
             ]
           },
           {
@@ -513601,8 +514731,7 @@
               "http.body.bytes",
               "http.body.json",
               "http.cookies",
-              "response.background_effects",
-              "validation.error_class"
+              "response.background_effects"
             ]
           },
           {
@@ -513620,7 +514749,7 @@
         "documented_sections": [
           {
             "end_line": 357,
-            "exclusion_reason": null,
+            "exclusion_reason": "This top-level page combines SQLModel installation and database configuration with FastAPI request models, yielded dependencies, OpenAPI, and a CLI launch. The narrower child sections below either map a FastAPI-visible ASGI input or exclude third-party/process behavior.",
             "feature_evidence": [
               {
                 "feature_id": "app-routing",
@@ -513759,8 +514888,8 @@
               "websocket.event_order",
               "websocket.messages"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "FastAPI 0.141.1 says an application may use any database library and presents SQLModel only as its example (docs/en/docs/tutorial/sql-databases.md:1-28). A page-wide workflow would mix FastAPI request/schema behavior with SQLModel, SQLAlchemy, SQLite, CLI, and Starlette lifecycle behavior.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -513925,7 +515054,35 @@
               "middleware-integrations"
             ],
             "heading": "Create the App with a Single Model { #create-the-app-with-a-single-model }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.single-model.create-hero",
+                  "fastapi.docs.sql-databases.single-model.invalid-hero",
+                  "fastapi.docs.sql-databases.single-model.openapi"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "docs.response.body.bytes",
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema",
+                  "validation.error_class",
+                  "validation.error_details"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The cases independently send one valid model request, one invalid model request, and one OpenAPI request. The Pydantic shape mirrors the documented Hero fields; these selected actions do not claim SQLModel table creation, database writes, or CLI process startup. The startup subsection excludes SQLModel table creation and points to lifecycle coverage that lacks this page's source evidence.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -513947,8 +515104,8 @@
               "websocket.event_order",
               "websocket.messages"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned single-model example annotates the POST body and response with `Hero` (docs_src/sql_databases/tutorial001_an_py310.py:40-45), while the page states that FastAPI reads the model from JSON and uses its shape in API docs (docs/en/docs/tutorial/sql-databases.md:118-129, 148-167). The recipe selects construction outcome/class/message for each case, `http.status`, `http.headers.ordered`, and `http.body.bytes` for each HTTP action, `validation.error_class` and `validation.error_details` for the invalid body, and the exact OpenAPI document/path/request-schema projections for the schema action. Generic HTTP routing remains Starlette 1.6.0 behavior.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -514038,7 +515195,31 @@
               "middleware-integrations"
             ],
             "heading": "Create Models { #create-models }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.single-model.openapi"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "docs.response.body.bytes",
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The single-model OpenAPI action observes the public schema and POST body/response references generated from the Pydantic-shaped Hero model. It does not observe SQLModel's `table=True`, primary-key, index, or SQL-column behavior.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -514051,8 +515232,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The page describes `Hero` as Pydantic-shaped but also documents SQLModel-only table, primary-key, and index metadata (docs/en/docs/tutorial/sql-databases.md:54-73). The source example defines those fields in `docs_src/sql_databases/tutorial001_an_py310.py:1-11`; this input selects the FastAPI OpenAPI boundary using the equivalent Pydantic fields. Selectors are construction outcome/class/message plus the OpenAPI response metadata/body, document, path, and request schema.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -514083,7 +515264,7 @@
           },
           {
             "end_line": 85,
-            "exclusion_reason": null,
+            "exclusion_reason": "The section configures a SQLModel/SQLAlchemy engine and SQLite connection arguments. It does not specify a FastAPI operation that can be exercised without the database libraries.",
             "feature_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -514110,8 +515291,8 @@
               "http.status",
               "openapi.security"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned example creates an engine with `create_engine` and SQLite `connect_args` (`docs_src/sql_databases/tutorial001_an_py310.py:14-18`). Those are SQLAlchemy and SQLite responsibilities, not FastAPI or Starlette ASGI behavior.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -514157,7 +515338,26 @@
               "dependency-security"
             ],
             "heading": "Create a Session Dependency { #create-a-session-dependency }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "create-hero-with-public-response-model",
+                  "observe-yield-dependency-cleanup"
+                ],
+                "case_ids": [
+                  "fastapi.docs.sql-databases.fake-yield.create-and-cleanup"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
+                "scope_note": "The selected create request uses a yielded fake session dependency, then a second request reads its cleanup counter. The response bodies expose the request and post-request state without loading SQLModel, SQLAlchemy, or SQLite.",
+                "workflow_id": "docs-sql-databases-fake-dependency"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -514170,8 +515370,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned example yields one `Session` per request through an `Annotated` `Depends` alias (`docs_src/sql_databases/tutorial001_an_py310.py:25-30`). The existing fake dependency workload replaces that session with an in-memory value and increments a cleanup counter in `tests/fixtures/workloads/docs_sql_databases_fake_dependency.py:27-51`); its create and cleanup-state actions are grounded by the pinned tutorial test (`tests/test_tutorial/test_sql_databases/test_tutorial002.py`). The exact selected selectors are HTTP status, ordered headers, and response bytes; FastAPI owns dependency resolution, while Starlette 1.6.0 owns HTTP dispatch.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -514202,7 +515402,7 @@
           },
           {
             "end_line": 117,
-            "exclusion_reason": null,
+            "exclusion_reason": "This subsection's startup side effect is SQLModel table creation through SQLAlchemy. The existing FastAPI lifecycle case covers callback and ASGI lifecycle behavior, but its source evidence does not identify this SQL tutorial page; it cannot support a section-to-case link here. SQLModel DDL and database access are excluded.",
             "feature_evidence": [
               {
                 "feature_id": "websocket-lifecycle",
@@ -514228,8 +515428,8 @@
               "websocket.event_order",
               "websocket.messages"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned page describes `SQLModel.metadata.create_all(engine)` at lines 86-90 and says the tables are created on startup at lines 102-110; the pinned example registers `@app.on_event(\"startup\")` around `create_db_and_tables()` (`docs_src/sql_databases/tutorial001_an_py310.py:21-22, 32-37`). FastAPI 0.141.1 marks `APIRouter.on_event` deprecated and retains its registration decorator at `fastapi/routing.py:6415-6445`; callback dispatch remains in `_startup` and `_shutdown` at lines 6363-6393. The independent `fastapi.lifecycle.router-events-legacy` case in `tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml` covers callback order, startup/shutdown, lifecycle errors and workload trace, plus the deprecation warning. Its source evidence points to the events documentation, not `docs/en/docs/tutorial/sql-databases.md`, so it is existing lifecycle coverage rather than evidence for this SQL section. SQLModel table creation remains excluded.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "websocket-lifecycle",
@@ -514280,7 +515480,25 @@
               "dependency-security"
             ],
             "heading": "Create a Hero { #create-a-hero }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.single-model.create-hero"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The valid POST action exercises FastAPI's JSON body model parsing and typed response serialization for the documented Hero shape. Its handler returns the parsed value; database insertion, commit, refresh, and persistence are not selected.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -514293,8 +515511,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The documented route receives `Hero` from JSON and returns `Hero` (`docs_src/sql_databases/tutorial001_an_py310.py:40-45`); the following SQLModel session operations are in lines 47-53 and remain outside this scope. The recipe selects `http.status`, `http.headers.ordered`, and `http.body.bytes` for one independent POST.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -514342,14 +515560,38 @@
               "cli-process"
             ],
             "heading": "Run the App { #run-the-app }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.single-model.openapi"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "docs.response.body.bytes",
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The OpenAPI action samples the model schema consumed by the documented `/docs` UI. It does not launch `fastapi dev`, measure Uvicorn logs, or compare rendered Swagger HTML.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "process.exit_code",
               "process.stderr",
               "process.stdout"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The section instructs users to run `fastapi dev` and inspect `/docs` (docs/en/docs/tutorial/sql-databases.md:148-167). The linked input requests `/openapi.json` and selects `docs.response.status`, `docs.response.headers`, `docs.response.body.bytes`, `openapi.document`, `openapi.paths`, and `openapi.request_schema`, plus construction outcome/class/message. This maps the FastAPI schema presented by the UI while leaving CLI process startup to the separate CLI contract.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -514419,7 +515661,37 @@
               "response-serialization"
             ],
             "heading": "Update the App with Multiple Models { #update-the-app-with-multiple-models }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.multiple-models.openapi",
+                  "fastapi.docs.sql-databases.multiple-models.create-public",
+                  "fastapi.docs.sql-databases.multiple-models.invalid-create",
+                  "fastapi.docs.sql-databases.multiple-models.read-public-list",
+                  "fastapi.docs.sql-databases.multiple-models.update-sparse"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "docs.response.body.bytes",
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema",
+                  "validation.error_class",
+                  "validation.error_details"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The cases independently sample model schemas, a valid and invalid create body, a public list response, and a sparse PATCH body. The inputs do not claim database IDs, storage, SQLModel update behavior, single-record lookup, deletion, or CLI startup.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "dependency.call_order",
               "dependency.cleanup_order",
@@ -514437,8 +515709,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned multiple-model example declares `HeroCreate`, `HeroPublic`, and `HeroUpdate` models and uses request/response models on CRUD routes (`docs_src/sql_databases/tutorial002_an_py310.py:7-28, 56-103`). The Pydantic-only workload preserves those FastAPI-visible shapes while using a fresh app per case. Each linked case also projects construction outcome/class/message. Selected action outputs are HTTP status/headers/bytes, request validation class/details, the OpenAPI response metadata/body, document, paths, and request schema.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -514506,7 +515778,31 @@
               "request-validation"
             ],
             "heading": "Create Multiple Models { #create-multiple-models }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.multiple-models.openapi"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "docs.response.body.bytes",
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The multi-model OpenAPI action selects HeroCreate, HeroPublic, and HeroUpdate schemas and the request/response references that expose them. The inherited HeroBase shape is included through those Pydantic subclasses; SQLModel table metadata is not modeled.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -514516,8 +515812,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The page documents the model fields and optional update model, with the pinned example definitions at `docs_src/sql_databases/tutorial002_py310.py:7-28`. The OpenAPI pointers and construction outcome/class/message select `docs.response.status`, `docs.response.headers`, `docs.response.body.bytes`, `openapi.document`, `openapi.paths`, and `openapi.request_schema`.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "request-validation",
@@ -514558,7 +515854,25 @@
               "response-serialization"
             ],
             "heading": "Create with `HeroCreate` and return a `HeroPublic` { #create-with-herocreate-and-return-a-heropublic }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.multiple-models.create-public"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The POST action accepts HeroCreate and declares HeroPublic as its response model. The returned input record contains a private field so FastAPI response-model filtering remains observable; no SQLModel object or database operation is used.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -514568,8 +515882,8 @@
               "response.background_effects",
               "validation.error_class"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned example declares `hero: HeroCreate` and `response_model=HeroPublic` (`docs_src/sql_databases/tutorial002_py310.py:56-62`). The input selects construction outcome/class/message and `http.status`, `http.headers.ordered`, and `http.body.bytes` for the resulting response. The upstream tutorial tests exercise this route through an isolated test database (`tests/test_tutorial/test_sql_databases/test_tutorial002.py`).",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "response-serialization",
@@ -514610,7 +515924,25 @@
               "response-serialization"
             ],
             "heading": "Read Heroes with `HeroPublic` { #read-heroes-with-heropublic }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.multiple-models.read-public-list"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The GET action returns a list containing a private field under the declared `list[HeroPublic]` response model. It observes FastAPI response filtering without claiming SQLModel query or database behavior.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -514620,8 +515952,8 @@
               "response.background_effects",
               "validation.error_class"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned example uses `response_model=list[HeroPublic]` for the list operation (`docs_src/sql_databases/tutorial002_py310.py:65-72`). The independent GET action selects `http.status`, `http.headers.ordered`, and `http.body.bytes`, alongside construction outcome/class/message; generic route dispatch is Starlette 1.6.0 behavior.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "response-serialization",
@@ -514657,14 +515989,38 @@
               "cli-process"
             ],
             "heading": "Run the App Again { #run-the-app-again }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "case_ids": [
+                  "fastapi.docs.sql-databases.multiple-models.openapi"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "construction.exception_class",
+                  "construction.exception_message",
+                  "construction.outcome",
+                  "docs.response.body.bytes",
+                  "docs.response.headers",
+                  "docs.response.status",
+                  "http.body.bytes",
+                  "http.headers.ordered",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths",
+                  "openapi.request_schema"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+                "scope_note": "The OpenAPI action checks the updated model and operation schemas that the docs UI would present. The `fastapi dev` process, Uvicorn logs, browser UI, and SQLModel startup are outside this selected HTTP action.",
+                "workflow_id": "sql-databases-sections-20261015"
+              }
+            ],
             "observation_selectors": [
               "process.exit_code",
               "process.stderr",
               "process.stdout"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The pinned page asks users to rerun `fastapi dev` and says the updated docs no longer request an ID on create (docs/en/docs/tutorial/sql-databases.md:333-352). The selected GET `/openapi.json` action observes response metadata/body and the OpenAPI document, paths, and request schemas for create, list, and PATCH operations, plus construction outcome/class/message.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "cli-process",
@@ -514679,7 +516035,7 @@
           },
           {
             "end_line": 357,
-            "exclusion_reason": null,
+            "exclusion_reason": "The recap summarizes the use of SQLModel and links to its longer tutorial. It adds no independent FastAPI request, dependency, response, or OpenAPI operation.",
             "feature_evidence": [
               {
                 "feature_id": "middleware-integrations",
@@ -514706,8 +516062,8 @@
               "process.stderr",
               "process.stdout"
             ],
-            "review_rationale": null,
-            "review_status": "pending",
+            "review_rationale": "The recap attributes SQL database interaction and table/data models to SQLModel (docs/en/docs/tutorial/sql-databases.md:353-357). Those external library behaviors are excluded; FastAPI-visible model operations are linked to the narrower sections.",
+            "review_status": "excluded",
             "selector_evidence": [
               {
                 "feature_id": "middleware-integrations",
@@ -515541,6 +516897,38 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
             "workflow_id": "docs-sql-databases-fake-dependency"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.sql-databases.multiple-models.create-public",
+              "fastapi.docs.sql-databases.multiple-models.invalid-create",
+              "fastapi.docs.sql-databases.multiple-models.openapi",
+              "fastapi.docs.sql-databases.multiple-models.read-public-list",
+              "fastapi.docs.sql-databases.multiple-models.update-sparse",
+              "fastapi.docs.sql-databases.single-model.create-hero",
+              "fastapi.docs.sql-databases.single-model.invalid-hero",
+              "fastapi.docs.sql-databases.single-model.openapi"
+            ],
+            "coverage_scope": "Partial independent sample across 8 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.request_schema, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
+              "docs.response.body.bytes",
+              "docs.response.headers",
+              "docs.response.status",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document",
+              "openapi.paths",
+              "openapi.request_schema",
+              "validation.error_class",
+              "validation.error_details"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+            "workflow_id": "sql-databases-sections-20261015"
           }
         ],
         "linked_example_sources": [
@@ -515997,6 +517385,36 @@
               "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
               "scope_note": "The page uses SQLModel with FastAPI; these fake-dependency cases sample create/cleanup, invalid request handling, and OpenAPI models without claiming database-library behavior.",
               "workflow_id": "docs-sql-databases-fake-dependency"
+            },
+            {
+              "case_ids": [
+                "fastapi.docs.sql-databases.multiple-models.create-public",
+                "fastapi.docs.sql-databases.multiple-models.invalid-create",
+                "fastapi.docs.sql-databases.multiple-models.openapi",
+                "fastapi.docs.sql-databases.multiple-models.read-public-list",
+                "fastapi.docs.sql-databases.multiple-models.update-sparse",
+                "fastapi.docs.sql-databases.single-model.create-hero",
+                "fastapi.docs.sql-databases.single-model.invalid-hero",
+                "fastapi.docs.sql-databases.single-model.openapi"
+              ],
+              "observation_selectors": [
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
+                "docs.response.body.bytes",
+                "docs.response.headers",
+                "docs.response.status",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.request_schema",
+                "validation.error_class",
+                "validation.error_details"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+              "scope_note": "The eight listed cases sample the single-model and multiple-model request, validation, response-model, and OpenAPI behavior described on this page. They observe app construction, selected HTTP responses and validation details, and the selected OpenAPI projections; they do not claim SQLModel, SQLAlchemy, SQLite, database persistence, or CLI behavior."
             }
           ]
         },
@@ -516004,6 +517422,9 @@
       },
       "mapping_status": "candidate",
       "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
@@ -516012,7 +517433,9 @@
         "http.status",
         "openapi.document",
         "openapi.paths",
-        "openapi.request_schema"
+        "openapi.request_schema",
+        "validation.error_class",
+        "validation.error_details"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -516058,7 +517481,9 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
-            "openapi.request_schema"
+            "openapi.request_schema",
+            "validation.error_class",
+            "validation.error_details"
           ]
         },
         {
@@ -516066,7 +517491,21 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status"
+            "http.status",
+            "validation.error_class"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
           ]
         }
       ],
@@ -531717,6 +533156,20 @@
       "mapping_evidence": {
         "excluded_test_functions": [],
         "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.docs.dependencies-with-yield.try-finally-error"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.application_error.exception",
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml",
+            "workflow_id": "dependencies-with-yield-section-review-20261015"
+          },
           {
             "case_ids": [
               "fastapi.dependencies.after-yield-cleanup-error",
@@ -627447,6 +628900,21 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.docs.behind-proxy.root-path-scope"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.body.bytes",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
+          },
+          {
+            "case_ids": [
               "fastapi.middleware-proxy.proxy-client-root-path"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -627808,6 +629276,19 @@
       "mapping_evidence": {
         "excluded_test_functions": [],
         "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.docs.behind-proxy.https-slash-redirect"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
+          },
           {
             "case_ids": [
               "fastapi.test.test-tutorial-test-behind-a-proxy-test-tutorial001-01.test-no-redirect",
@@ -718806,6 +720287,32 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-sql-databases-fake-dependency.yaml",
             "workflow_id": "docs-sql-databases-fake-dependency"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.sql-databases.multiple-models.create-public",
+              "fastapi.docs.sql-databases.multiple-models.invalid-create",
+              "fastapi.docs.sql-databases.multiple-models.openapi",
+              "fastapi.docs.sql-databases.multiple-models.read-public-list",
+              "fastapi.docs.sql-databases.multiple-models.update-sparse"
+            ],
+            "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.request_schema, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "docs.response.body.bytes",
+              "docs.response.headers",
+              "docs.response.status",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "openapi.document",
+              "openapi.paths",
+              "openapi.request_schema",
+              "validation.error_class",
+              "validation.error_details"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+            "workflow_id": "sql-databases-sections-20261015"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
@@ -721220,6 +722727,19 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-sub-applications.yaml",
             "workflow_id": "atlas-testing-websocket-sub-applications"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.behind-proxy.mounted-root-path"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+            "workflow_id": "behind-proxy-sections-20261015"
           },
           {
             "case_ids": [

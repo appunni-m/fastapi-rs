@@ -80,4 +80,8 @@ def create_app() -> FastAPI:
     async def create_weight_map(weights: dict[int, float]):
         return weights
 
+    @app.post("/weight-map-probe/")
+    async def inspect_weight_map_key_types(weights: dict[int, float]):
+        return {"has_integer_keys": 17 in weights and 29 in weights}
+
     return app

@@ -123,7 +123,12 @@ DOC_EXAMPLE_CITATION_WAVE_D = {
                 "middleware-proxy-root-path-source-review.yaml",
                 ["fastapi.middleware-proxy.proxy-client-root-path"],
                 ["http.body.bytes", "http.status"],
-            )
+            ),
+            _cases(
+                "behind-proxy-sections-20261015.yaml",
+                ["fastapi.docs.behind-proxy.root-path-scope"],
+                ["http.body.bytes", "http.status"],
+            ),
         ],
     ),
     "docs_src/configure_swagger_ui/tutorial001_py310.py": _review(

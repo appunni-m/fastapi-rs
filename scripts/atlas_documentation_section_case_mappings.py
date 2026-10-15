@@ -422,8 +422,8 @@ DOC_SECTION_CASE_MAPPINGS = {
         "heading": "Additional servers { #additional-servers }",
         "start_line": 387,
         "end_line": 461,
-        "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial004-upstream.yaml",
-        "case_ids": ["fastapi.behind-proxy.tutorial004.openapi-servers"],
+        "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial003-upstream.yaml",
+        "case_ids": ["fastapi.behind-proxy.tutorial003.openapi-servers"],
         "observation_selectors": [
             "docs.response.headers",
             "docs.response.status",
@@ -432,12 +432,18 @@ DOC_SECTION_CASE_MAPPINGS = {
             "openapi.document",
         ],
         "scope_note": (
-            "This case selects the OpenAPI servers array after a root_path request. It does "
-            "not assert generic proxy-header interpretation."
+            "This case reads the OpenAPI `/servers` array from the tutorial003 app configured "
+            "with a FastAPI root_path and two custom servers. It does not run a proxy or "
+            "assert forwarded-header interpretation."
         ),
         "rationale": (
-            "FastAPI can prepend the request root_path as an OpenAPI server when configured; "
-            "proxy handling itself remains outside this claim."
+            "The pinned section specifies that FastAPI prepends the configured root_path "
+            "ahead of custom servers (docs/en/docs/advanced/behind-a-proxy.md:387-453). "
+            "Tutorial003 and its test provide the exact app configuration and `/servers` "
+            "observation (docs_src/behind_a_proxy/tutorial003_py310.py:1-14; "
+            "tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py:15-47). FastAPI "
+            "constructs and inserts this server in its OpenAPI handler "
+            "(fastapi/applications.py:1084-1118); Starlette owns generic ASGI dispatch."
         ),
     },
     ("advanced/custom-response.md", "default-response-class"): {

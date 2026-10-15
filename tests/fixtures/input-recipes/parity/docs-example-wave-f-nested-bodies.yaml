@@ -40,9 +40,115 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1tag-forms~1typed~1{entry_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/TypedTagEntry/properties/tags
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial002_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
+- case_id: fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types
+  actions:
+  - action_id: probe-integer-dictionary-keys
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /weight-map-probe/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"17":2.25,"29":4.75}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1weight-map-probe~1/post/requestBody/content/application~1json/schema
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial009_py310.py
+    kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated
   actions:
   - action_id: submit-unique-tag-set
@@ -71,7 +177,7 @@ cases:
       - 80
     receive_events:
     - type: http.request
-      body: '{"name":"Teal compass","score":8.5,"tags":["moss","fern","moss"]}'
+      body: '{"name":"Teal compass","score":8.5,"tags":["moss","moss"]}'
       more_body: false
     observations:
     - kind: http_response
@@ -79,11 +185,45 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1tag-forms~1unique~1{entry_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/UniqueTagEntry/properties/tags
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial003_py310.py
     kind: upstream_documentation_example
   - path: docs_src/body_nested_models/tutorial004_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.optional-image-present
   actions:
   - action_id: submit-nested-image
@@ -121,11 +261,45 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1assets~1{asset_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/ReviewAsset/properties/image
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial004_py310.py
     kind: upstream_documentation_example
   - path: docs_src/body_nested_models/tutorial005_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.http-url-invalid
   actions:
   - action_id: reject-invalid-image-url
@@ -162,9 +336,43 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1assets~1{asset_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/ReviewImage/properties/href
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial005_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.optional-image-list-present
   actions:
   - action_id: submit-image-list
@@ -201,9 +409,43 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1assets~1{asset_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/ReviewAsset/properties/images
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial006_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.offer-nested-items
   actions:
   - action_id: submit-offer-with-nested-line
@@ -232,7 +474,7 @@ cases:
       - 80
     receive_events:
     - type: http.request
-      body: '{"name":"Trail bundle","cost":64.5,"lines":[{"name":"Survey notebook","cost":12.0,"labels":["waterproof","grid"],"images":[{"href":"https://assets.example.invalid/notebook.png","caption":"Cover"}]},{"name":"Compass
+      body: '{"name":"Trail bundle","cost":64.5,"lines":[{"name":"Survey notebook","cost":12.0,"labels":["grid","grid"],"images":[{"href":"https://assets.example.invalid/notebook.png","caption":"Cover"}]},{"name":"Compass
         case","cost":21.5}]}'
       more_body: false
     observations:
@@ -241,9 +483,44 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1offers~1/post/requestBody/content/application~1json/schema
+      - /components/schemas/ReviewOffer/properties/lines
+      - /components/schemas/OfferLine/properties/images
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial007_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.top-level-image-list
   actions:
   - action_id: submit-image-array
@@ -280,9 +557,42 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1image-batches~1/post/requestBody/content/application~1json/schema
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial008_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.integer-float-map
   actions:
   - action_id: submit-weight-map
@@ -319,9 +629,42 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1weight-maps~1/post/requestBody/content/application~1json/schema
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial009_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation
 - case_id: fastapi.docs-example-wave-f.nested-body.optional-image-absent
   actions:
   - action_id: submit-item-without-image
@@ -438,6 +781,40 @@ cases:
       - status
       - body
       comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1tag-forms~1bare~1{entry_id}/put/requestBody/content/application~1json/schema
+      - /components/schemas/BareTagEntry/properties/tags
+      comparison: exact
   source_evidence:
   - path: docs_src/body_nested_models/tutorial001_py310.py
     kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/body-nested-models.md
+    kind: upstream_documentation

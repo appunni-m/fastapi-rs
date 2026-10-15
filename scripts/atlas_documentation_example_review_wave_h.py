@@ -38,8 +38,9 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
     "docs_src/behind_a_proxy/tutorial001_01_py310.py": _review(
         _text(
             "This file defines one GET route that returns a list.",
-            "The independent GET samples route status/body with different list values;",
-            "proxy root-path handling is not claimed.",
+            "one independent GET samples status/body with a different list, and the",
+            "behind-proxy input selects the status of a slashless redirect.",
+            "Proxy root-path handling is not claimed by these route cases.",
         ),
         [
             _span(
@@ -54,7 +55,12 @@ DOC_EXAMPLE_CITATION_WAVE_H = {
                 "documentation-example-review-wave-h.yaml",
                 "fastapi.documentation-example.wave-h.proxy-items-route",
                 selectors=HTTP,
-            )
+            ),
+            _case(
+                "behind-proxy-sections-20261015.yaml",
+                "fastapi.docs.behind-proxy.https-slash-redirect",
+                selectors=["http.status"],
+            ),
         ],
     ),
     "docs_src/bigger_applications/app_an_py310/dependencies.py": _review(

@@ -211,8 +211,9 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
     "docs_src/dependencies/tutorial007_py310.py": _review(
         (
             "The snippet yields a database session and closes it in a finally block. Independent "
-            "requests to a context-manager yield dependency observe its result and cleanup state "
-            "through status and body; database construction and persistence are not claimed."
+            "requests observe yielded values, cleanup after success, and cleanup when an endpoint "
+            "raises, through status and body; database construction and "
+            "persistence are not claimed."
         ),
         [
             _span(
@@ -227,7 +228,17 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
                 "dependency-yield-tutorials-upstream.yaml",
                 "fastapi.dependencies.tutorial010.context-manager-in-yield-dependency",
                 selectors=HTTP_BODY_STATUS,
-            )
+            ),
+            _case(
+                "dependencies-with-yield-section-review-20261015.yaml",
+                "fastapi.docs.dependencies-with-yield.database-session-lifecycle",
+                selectors=HTTP_BODY_STATUS,
+            ),
+            _case(
+                "dependencies-with-yield-section-review-20261015.yaml",
+                "fastapi.docs.dependencies-with-yield.try-finally-error",
+                selectors=HTTP_BODY_STATUS,
+            ),
         ],
     ),
     "docs_src/dependencies/tutorial008_an_py310.py": _review(
@@ -404,9 +415,10 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
     ),
     "docs_src/sql_databases/tutorial001_an_py310.py": _review(
         (
-            "The example provides a Session through a yield dependency and an Annotated alias. An "
-            "independent fake-session workflow observes dependency-driven request handling and "
-            "cleanup through status and body; database setup and CRUD behavior are not claimed."
+            "The example defines a Hero request model, a yielded Session dependency, and a POST "
+            "route. Independent Pydantic-only inputs sample model parsing, validation, and the "
+            "yielded dependency cleanup; a separate page-section mapping selects OpenAPI. "
+            "SQLModel storage and CRUD persistence are not claimed."
         ),
         [
             _span(
@@ -414,14 +426,41 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
                 25,
                 30,
                 "session yield dependency and Annotated alias",
-            )
+            ),
+            _span(
+                "docs_src/sql_databases/tutorial001_an_py310.py",
+                7,
+                11,
+                "Hero model field declarations",
+            ),
+            _span(
+                "docs_src/sql_databases/tutorial001_an_py310.py",
+                40,
+                45,
+                "POST request and response model endpoint",
+            ),
         ],
         [
             _case(
                 "docs-sql-databases-fake-dependency.yaml",
                 "fastapi.docs.sql-databases.fake-yield.create-and-cleanup",
                 selectors=HTTP_BODY_STATUS,
-            )
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.single-model.create-hero",
+                selectors=HTTP_BODY_STATUS,
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.single-model.invalid-hero",
+                selectors=HTTP_BODY_STATUS,
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.single-model.openapi",
+                selectors=HTTP_BODY_STATUS,
+            ),
         ],
     ),
     "docs_src/sql_databases/tutorial001_py310.py": _review(

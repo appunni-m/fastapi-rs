@@ -6350,17 +6350,26 @@ from atlas_documentation_section_case_mappings_advanced_dependencies_20261015 im
 from atlas_documentation_section_case_mappings_advanced_middleware_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
 )
+from atlas_documentation_section_case_mappings_behind_proxy_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_BEHIND_PROXY_20261015,
+)
 from atlas_documentation_section_case_mappings_bigger_applications_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015,
+)
+from atlas_documentation_section_case_mappings_body_nested_models_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_BODY_NESTED_MODELS_20261015,
 )
 from atlas_documentation_section_case_mappings_custom_response_wave_m import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M,
 )
-from atlas_documentation_section_case_mappings_first_steps_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
+from atlas_documentation_section_case_mappings_dependencies_with_yield_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015,
 )
 from atlas_documentation_section_case_mappings_fastapi_wave_l import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_WAVE_L,
+)
+from atlas_documentation_section_case_mappings_first_steps_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
 )
 from atlas_documentation_section_case_mappings_path_params_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
@@ -6385,6 +6394,9 @@ from atlas_documentation_section_case_mappings_security_scopes_1016 import (  # 
 )
 from atlas_documentation_section_case_mappings_settings_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
+)
+from atlas_documentation_section_case_mappings_sql_databases_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_SQL_DATABASES_20261015,
 )
 
 for _doc_path, _rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():
@@ -6425,6 +6437,9 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
     DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_BEHIND_PROXY_20261015,
+    DOC_SECTION_CASE_MAPPINGS_BODY_NESTED_MODELS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015,
     DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
     DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016,
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
@@ -6434,6 +6449,7 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
     DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_SQL_DATABASES_20261015,
 ):
     _section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(_new_section_mappings)
     if _section_mapping_overlaps:
@@ -6449,11 +6465,25 @@ for _doc_page_path, _doc_page_rows in DOC_PAGE_CASE_LINK_COMPLETIONS.items():
         raise AtlasError(
             "documentation case completion has no reviewed page mapping: " + _doc_page_path
         )
-    if _doc_page_mapping.get("workflow_cases"):
+    _existing_rows = _doc_page_mapping.get("workflow_cases", [])
+    if not isinstance(_existing_rows, list) or any(
+        not isinstance(row, dict) for row in _existing_rows
+    ):
+        raise AtlasError("reviewed documentation workflow rows must be a list: " + _doc_page_path)
+    _existing_keys = {
+        (row.get("recipe_path"), tuple(row.get("case_ids", []))) for row in _existing_rows
+    }
+    _completion_keys = {
+        (row.get("recipe_path"), tuple(row.get("case_ids", []))) for row in _doc_page_rows
+    }
+    if _existing_keys.intersection(_completion_keys):
         raise AtlasError(
             "documentation case completion duplicates reviewed workflow rows: " + _doc_page_path
         )
-    _doc_page_mapping["workflow_cases"] = [dict(row) for row in _doc_page_rows]
+    _doc_page_mapping["workflow_cases"] = [
+        *[dict(row) for row in _existing_rows],
+        *[dict(row) for row in _doc_page_rows],
+    ]
 
 for (
     _doc_page_path,
@@ -10795,9 +10825,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             # Most tutorial headings carry explicit MkDocs anchors. Generated
             # reference pages do not; give those headings a line-key namespace
             # so their source-backed sections can still be reviewed precisely.
-            section_anchor = (
-                anchor_match.group(1) if anchor_match else f"@line:{heading['line']}"
-            )
+            section_anchor = anchor_match.group(1) if anchor_match else f"@line:{heading['line']}"
             section_mapping_key = (rel, section_anchor)
             if not section_evidence:
                 reviewed_section_mapping = (
@@ -11140,9 +11168,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 )
                 continue
             mapping_claims = indexed_mapping_claims[id(mapping)]
-            reviewed_actions_by_case = reviewed_section_action_ids(
-                rel, recipe_path, case_ids
-            )
+            reviewed_actions_by_case = reviewed_section_action_ids(rel, recipe_path, case_ids)
             projected_by_case = {
                 case_id: project_documented_page_case(
                     page_rel=rel,

@@ -1,0 +1,146 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/behind_proxy_sections_20261015.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.behind-proxy.https-slash-redirect
+  factory_input:
+    scenario: https-slash-redirect
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-without-trailing-slash
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: https
+      path: /items
+      query_string: ''
+      root_path: ''
+      headers: [[host, example.com]]
+      client: [127.0.0.1, 123]
+      server: [example.com, 443]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers], comparison: exact}
+  source_evidence:
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+  - path: docs_src/behind_a_proxy/tutorial001_01_py310.py
+    kind: upstream_documentation_example
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial001_01.py
+    kind: upstream_test
+- case_id: fastapi.docs.behind-proxy.root-path-scope
+  factory_input:
+    scenario: root-path-scope
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-app-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /app
+      query_string: ''
+      root_path: /api/v1
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-openapi-servers
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: /api/v1
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/servers]
+      comparison: exact
+  - action_id: read-docs-ui
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /docs
+      query_string: ''
+      root_path: /api/v1
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+  - path: docs_src/behind_a_proxy/tutorial001_py310.py
+    kind: upstream_documentation_example
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.docs.behind-proxy.mounted-root-path
+  factory_input:
+    scenario: mounted-root-path
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-mounted-subapp-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/v1/subapi/sub
+      query_string: ''
+      root_path: /api/v1
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/sub-applications.md
+    kind: upstream_documentation
+  - path: docs_src/sub_applications/tutorial001_py310.py
+    kind: upstream_documentation_example
+  - path: tests/test_tutorial/test_sub_applications/test_tutorial001.py
+    kind: upstream_test

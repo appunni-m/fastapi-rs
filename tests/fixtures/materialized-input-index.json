@@ -1395,6 +1395,50 @@
       ]
     },
     {
+      "id": "behind-proxy-sections-20261015",
+      "input_path": "tests/fixtures/inputs/parity/behind-proxy-sections-20261015.json",
+      "input_sha256": "fa0e3ac1099eafa5d70f84dd00e126fee5b724d6cf9872f11fb4b5a50e85584f",
+      "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-sections-20261015.yaml",
+      "recipe_sha256": "ab23f7e0871e2bf1329d065dcd9982978db1bb569b328efce787bfb6a27d9511",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.https-slash-redirect",
+        "fastapi.docs.behind-proxy.root-path-scope",
+        "fastapi.docs.behind-proxy.mounted-root-path"
+      ],
+      "workload_path": "tests/fixtures/workloads/behind_proxy_sections_20261015.py",
+      "workload_sha256": "3daef6401892f1532f7e46647d194270162f7f50cc2e5b3d4df654355491875a",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.docs.behind-proxy.https-slash-redirect",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/behind_a_proxy/tutorial001_01_py310.py",
+            "source:documented-page:advanced/behind-a-proxy.md",
+            "source:upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial001_01.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.behind-proxy.root-path-scope",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/behind_a_proxy/tutorial001_py310.py",
+            "source:documented-page:advanced/behind-a-proxy.md",
+            "source:upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.behind-proxy.mounted-root-path",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sub_applications/tutorial001_py310.py",
+            "source:documented-page:advanced/behind-a-proxy.md",
+            "source:documented-page:advanced/sub-applications.md",
+            "source:upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "behind-proxy-tutorial002-upstream",
       "input_path": "tests/fixtures/inputs/parity/behind-proxy-tutorial002-upstream.json",
       "input_sha256": "a546141081b060e4f27544c7a15b59ec57e6ff96ce59cd890ad80c97929d10d0",
@@ -3324,6 +3368,38 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_extra_routes.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dependencies-with-yield-section-review-20261015",
+      "input_path": "tests/fixtures/inputs/parity/dependencies-with-yield-section-review-20261015.json",
+      "input_sha256": "527a55125a9150165dc56b847d26516c3bcac72d0902da56768b8ae32ca015d5",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependencies-with-yield-section-review-20261015.yaml",
+      "recipe_sha256": "5620d87f51443c063dc069843c36205a77a23b104647e8d30c86337a7c565ca2",
+      "case_ids": [
+        "fastapi.docs.dependencies-with-yield.database-session-lifecycle",
+        "fastapi.docs.dependencies-with-yield.try-finally-error"
+      ],
+      "workload_path": "tests/fixtures/workloads/dependencies_with_yield_section_review.py",
+      "workload_sha256": "1d84ab547e3e527ecb7ca4807f95537f173b6970655366b64111638d60fd6929",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.docs.dependencies-with-yield.database-session-lifecycle",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/dependencies/tutorial007_py310.py",
+            "source:documented-page:tutorial/dependencies/dependencies-with-yield.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.dependencies-with-yield.try-finally-error",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/dependencies/tutorial007_py310.py",
+            "source:documented-page:tutorial/dependencies/dependencies-with-yield.md",
+            "source:upstream-test:tests/test_dependency_after_yield_raise.py"
           ]
         }
       ]
@@ -6600,11 +6676,12 @@
     {
       "id": "docs-example-wave-f-nested-bodies",
       "input_path": "tests/fixtures/inputs/parity/docs-example-wave-f-nested-bodies.json",
-      "input_sha256": "c8ce929ae000f04a9066a0f165b75f2d6e781b7f31e5441a562f865d20c6d99f",
+      "input_sha256": "cd3e54ac308687d7323628cbe4b874cb185b1e011366ace6fb02029b14e81983",
       "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-nested-bodies.yaml",
-      "recipe_sha256": "6f0959af5f2fe65ee0f7bdf92c329ddb71777e78833506fdaa71c1abd1baccb7",
+      "recipe_sha256": "7df5dfa9b3e2e6cdcce777d98adb800e1305ec4a26d189587fc77bb1c5f4b943",
       "case_ids": [
         "fastapi.docs-example-wave-f.nested-body.list-tags-valid",
+        "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types",
         "fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated",
         "fastapi.docs-example-wave-f.nested-body.optional-image-present",
         "fastapi.docs-example-wave-f.nested-body.http-url-invalid",
@@ -6617,13 +6694,22 @@
         "fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved"
       ],
       "workload_path": "tests/fixtures/workloads/nested_body_tutorial_review.py",
-      "workload_sha256": "a900925692b0ce287b97eb0f45c7c680fee9f063f7fe930e4860ff9d27644c89",
+      "workload_sha256": "0bc8eb2ec6ccd70ae81561503339d0210c4ca3225e3ec30c23ac09e2cdc7a50a",
       "case_contracts": [
         {
           "case_id": "fastapi.docs-example-wave-f.nested-body.list-tags-valid",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/body_nested_models/tutorial002_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial002_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/body_nested_models/tutorial009_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
@@ -6631,7 +6717,8 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/body_nested_models/tutorial003_py310.py",
-            "source:documented-example:docs_src/body_nested_models/tutorial004_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial004_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
@@ -6639,42 +6726,48 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/body_nested_models/tutorial004_py310.py",
-            "source:documented-example:docs_src/body_nested_models/tutorial005_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial005_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
           "case_id": "fastapi.docs-example-wave-f.nested-body.http-url-invalid",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/body_nested_models/tutorial005_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial005_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
           "case_id": "fastapi.docs-example-wave-f.nested-body.optional-image-list-present",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/body_nested_models/tutorial006_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial006_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
           "case_id": "fastapi.docs-example-wave-f.nested-body.offer-nested-items",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/body_nested_models/tutorial007_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial007_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
           "case_id": "fastapi.docs-example-wave-f.nested-body.top-level-image-list",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/body_nested_models/tutorial008_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial008_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
           "case_id": "fastapi.docs-example-wave-f.nested-body.integer-float-map",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/body_nested_models/tutorial009_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial009_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         },
         {
@@ -6696,7 +6789,8 @@
           "case_id": "fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved",
           "verification": "parity",
           "requirement_refs": [
-            "source:documented-example:docs_src/body_nested_models/tutorial001_py310.py"
+            "source:documented-example:docs_src/body_nested_models/tutorial001_py310.py",
+            "source:documented-page:tutorial/body-nested-models.md"
           ]
         }
       ]
@@ -8919,7 +9013,7 @@
       "input_path": "tests/fixtures/inputs/parity/first-steps-page-review-20261015.json",
       "input_sha256": "d19c550db88794d95ff33e40668bfd4260eb41c4d572d25b5f444a61bb21d71d",
       "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml",
-      "recipe_sha256": "c1b385c959d734b8a56fe3ece51516dc51e566253e5610720e8d5163d3033ab5",
+      "recipe_sha256": "96ffe020105ac258c137f7a2cb4528af42b25de33014091fab019fb4cc3d08d4",
       "case_ids": [
         "fastapi.docs.first-steps-page.async-route",
         "fastapi.docs.first-steps-page.sync-route",
@@ -11963,7 +12057,7 @@
         "fastapi.nested-body-tutorial-review.weight-map-request-schema"
       ],
       "workload_path": "tests/fixtures/workloads/nested_body_tutorial_review.py",
-      "workload_sha256": "a900925692b0ce287b97eb0f45c7c680fee9f063f7fe930e4860ff9d27644c89",
+      "workload_sha256": "0bc8eb2ec6ccd70ae81561503339d0210c4ca3225e3ec30c23ac09e2cdc7a50a",
       "case_contracts": [
         {
           "case_id": "fastapi.nested-body-tutorial-review.typed-tags-body",
@@ -30949,6 +31043,96 @@
       ]
     },
     {
+      "id": "sql-databases-sections-20261015",
+      "input_path": "tests/fixtures/inputs/parity/sql-databases-sections-20261015.json",
+      "input_sha256": "550b625e7c0fa7c18289365df1998767efa8aa4c2ee0e55272ce5c4f435aad65",
+      "recipe_path": "tests/fixtures/input-recipes/parity/sql-databases-sections-20261015.yaml",
+      "recipe_sha256": "604ef4cb5c7ef51973b66c70b7bebc9d29a6b8347875b6ec5a3406fa4fc8d08b",
+      "case_ids": [
+        "fastapi.docs.sql-databases.single-model.create-hero",
+        "fastapi.docs.sql-databases.single-model.invalid-hero",
+        "fastapi.docs.sql-databases.single-model.openapi",
+        "fastapi.docs.sql-databases.multiple-models.openapi",
+        "fastapi.docs.sql-databases.multiple-models.create-public",
+        "fastapi.docs.sql-databases.multiple-models.invalid-create",
+        "fastapi.docs.sql-databases.multiple-models.read-public-list",
+        "fastapi.docs.sql-databases.multiple-models.update-sparse"
+      ],
+      "workload_path": "tests/fixtures/workloads/sql_databases_sections_20261015.py",
+      "workload_sha256": "6a9928e7f77d4f221d8d551d4be3896486d0bcf0bd15c54df3927d1fb5434541",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.docs.sql-databases.single-model.create-hero",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial001_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.sql-databases.single-model.invalid-hero",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial001_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.sql-databases.single-model.openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial001_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.sql-databases.multiple-models.openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial002_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md",
+            "source:upstream-test:tests/test_tutorial/test_sql_databases/test_tutorial002.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.sql-databases.multiple-models.create-public",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial002_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md",
+            "source:upstream-test:tests/test_tutorial/test_sql_databases/test_tutorial002.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.sql-databases.multiple-models.invalid-create",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial002_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md",
+            "source:upstream-test:tests/test_tutorial/test_sql_databases/test_tutorial002.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.sql-databases.multiple-models.read-public-list",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial002_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md",
+            "source:upstream-test:tests/test_tutorial/test_sql_databases/test_tutorial002.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.sql-databases.multiple-models.update-sparse",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/sql_databases/tutorial002_an_py310.py",
+            "source:documented-page:tutorial/sql-databases.md",
+            "source:upstream-test:tests/test_tutorial/test_sql_databases/test_tutorial002.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "sse",
       "input_path": "tests/fixtures/inputs/parity/sse.json",
       "input_sha256": "9f4e3afcb98a32b14a544a8adafa53f3bbeaaf5c47e4bc6631747ad61b26d986",
@@ -35270,6 +35454,130 @@
       ]
     },
     {
+      "source_item_id": "documented-example:docs_src/behind_a_proxy/tutorial001_01_py310.py",
+      "fixture_id": "fastapi.docs-example.behind-a-proxy-tutorial001-01-py310",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.https-slash-redirect"
+      ],
+      "observation_selectors": [
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/behind_a_proxy/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.behind-a-proxy-tutorial001-py310",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.root-path-scope"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/sub_applications/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.sub-applications-tutorial001-py310",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.mounted-root-path"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/behind-a-proxy.md",
+      "fixture_id": "fastapi.docs.advanced-behind-a-proxy",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.https-slash-redirect",
+        "fastapi.docs.behind-proxy.mounted-root-path",
+        "fastapi.docs.behind-proxy.root-path-scope"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/sub-applications.md",
+      "fixture_id": "fastapi.docs.advanced-sub-applications",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.mounted-root-path"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-behind-a-proxy-test-tutorial001",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.root-path-scope"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_behind_a_proxy/test_tutorial001_01.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-behind-a-proxy-test-tutorial001-01",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.https-slash-redirect"
+      ],
+      "observation_selectors": [
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-sub-applications-test-tutorial001",
+      "workflow_id": "behind-proxy-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.behind-proxy.mounted-root-path"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-example:docs_src/behind_a_proxy/tutorial002_py310.py",
       "fixture_id": "fastapi.docs-example.behind-a-proxy-tutorial002-py310",
       "workflow_id": "behind-proxy-tutorial002-upstream",
@@ -36996,6 +37304,55 @@
         "fastapi.delete.path-only-route"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial007_py310.py",
+      "fixture_id": "fastapi.docs-example.dependencies-tutorial007-py310",
+      "workflow_id": "dependencies-with-yield-section-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.dependencies-with-yield.database-session-lifecycle",
+        "fastapi.docs.dependencies-with-yield.try-finally-error"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/dependencies/dependencies-with-yield.md",
+      "fixture_id": "fastapi.docs.tutorial-dependencies-dependencies-with-yield",
+      "workflow_id": "dependencies-with-yield-section-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.dependencies-with-yield.database-session-lifecycle",
+        "fastapi.docs.dependencies-with-yield.try-finally-error"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_after_yield_raise.py",
+      "fixture_id": "fastapi.test.test-dependency-after-yield-raise",
+      "workflow_id": "dependencies-with-yield-section-review-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.dependencies-with-yield.try-finally-error"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
         "http.body.bytes",
         "http.status"
       ]
@@ -40317,13 +40674,40 @@
       "fixture_id": "fastapi.docs-example.body-nested-models-tutorial009-py310",
       "workflow_id": "docs-example-wave-f-nested-bodies",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.docs-example-wave-f.nested-body.integer-float-map"
+        "fastapi.docs-example-wave-f.nested-body.integer-float-map",
+        "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types"
       ],
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/body-nested-models.md",
+      "fixture_id": "fastapi.docs.tutorial-body-nested-models",
+      "workflow_id": "docs-example-wave-f-nested-bodies",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths, openapi.request_schema. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved",
+        "fastapi.docs-example-wave-f.nested-body.http-url-invalid",
+        "fastapi.docs-example-wave-f.nested-body.integer-float-map",
+        "fastapi.docs-example-wave-f.nested-body.integer-float-map-key-types",
+        "fastapi.docs-example-wave-f.nested-body.list-tags-valid",
+        "fastapi.docs-example-wave-f.nested-body.offer-nested-items",
+        "fastapi.docs-example-wave-f.nested-body.optional-image-list-present",
+        "fastapi.docs-example-wave-f.nested-body.optional-image-present",
+        "fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated",
+        "fastapi.docs-example-wave-f.nested-body.top-level-image-list"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths",
+        "openapi.request_schema"
       ]
     },
     {
@@ -60810,6 +61194,101 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/sql_databases/tutorial001_an_py310.py",
+      "fixture_id": "fastapi.docs-example.sql-databases-tutorial001-an-py310",
+      "workflow_id": "sql-databases-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.sql-databases.single-model.create-hero",
+        "fastapi.docs.sql-databases.single-model.invalid-hero",
+        "fastapi.docs.sql-databases.single-model.openapi"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/sql_databases/tutorial002_an_py310.py",
+      "fixture_id": "fastapi.docs-example.sql-databases-tutorial002-an-py310",
+      "workflow_id": "sql-databases-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.sql-databases.multiple-models.create-public",
+        "fastapi.docs.sql-databases.multiple-models.invalid-create",
+        "fastapi.docs.sql-databases.multiple-models.openapi",
+        "fastapi.docs.sql-databases.multiple-models.read-public-list",
+        "fastapi.docs.sql-databases.multiple-models.update-sparse"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/sql-databases.md",
+      "fixture_id": "fastapi.docs.tutorial-sql-databases",
+      "workflow_id": "sql-databases-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.request_schema, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.sql-databases.multiple-models.create-public",
+        "fastapi.docs.sql-databases.multiple-models.invalid-create",
+        "fastapi.docs.sql-databases.multiple-models.openapi",
+        "fastapi.docs.sql-databases.multiple-models.read-public-list",
+        "fastapi.docs.sql-databases.multiple-models.update-sparse",
+        "fastapi.docs.sql-databases.single-model.create-hero",
+        "fastapi.docs.sql-databases.single-model.invalid-hero",
+        "fastapi.docs.sql-databases.single-model.openapi"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "docs.response.body.bytes",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.paths",
+        "openapi.request_schema",
+        "validation.error_class",
+        "validation.error_details"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_sql_databases/test_tutorial002.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-sql-databases-test-tutorial002",
+      "workflow_id": "sql-databases-sections-20261015",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.request_schema, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.sql-databases.multiple-models.create-public",
+        "fastapi.docs.sql-databases.multiple-models.invalid-create",
+        "fastapi.docs.sql-databases.multiple-models.openapi",
+        "fastapi.docs.sql-databases.multiple-models.read-public-list",
+        "fastapi.docs.sql-databases.multiple-models.update-sparse"
+      ],
+      "observation_selectors": [
+        "docs.response.body.bytes",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.paths",
+        "openapi.request_schema",
+        "validation.error_class",
+        "validation.error_details"
       ]
     },
     {

@@ -241,9 +241,9 @@ DOC_EXAMPLE_CITATION_WAVE_E = {
         (
             "The example's FastAPI slice declares Hero request/response behavior and "
             "yields a database session. Independent cases cover required-name validation, "
-            "model schema projection, and the response/cleanup path with an in-memory "
-            "fake. SQLModel/SQLite operations, startup table creation, and "
-            "read/update/delete routes are not covered."
+            "model schema projection, response-model filtering, list serialization, sparse "
+            "PATCH input, and cleanup through in-memory fixtures. SQLModel/SQLite operations, "
+            "startup table creation, and read/update/delete persistence are not covered."
         ),
         [
             _span(
@@ -273,6 +273,31 @@ DOC_EXAMPLE_CITATION_WAVE_E = {
             _case(
                 "docs-sql-databases-fake-dependency.yaml",
                 "fastapi.docs.sql-databases.fake-yield.create-and-cleanup",
+                ["http.body.bytes", "http.status"],
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.multiple-models.openapi",
+                ["openapi.document"],
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.multiple-models.create-public",
+                ["http.body.bytes", "http.status"],
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.multiple-models.read-public-list",
+                ["http.body.bytes", "http.status"],
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.multiple-models.update-sparse",
+                ["http.body.bytes", "http.status"],
+            ),
+            _case(
+                "sql-databases-sections-20261015.yaml",
+                "fastapi.docs.sql-databases.multiple-models.invalid-create",
                 ["http.body.bytes", "http.status"],
             ),
         ],
@@ -343,7 +368,12 @@ DOC_EXAMPLE_CITATION_WAVE_E = {
                 "atlas-testing-websocket-sub-applications.yaml",
                 "fastapi.atlas-testing.sub-applications",
                 ["http.body.bytes", "http.status", "openapi.document"],
-            )
+            ),
+            _case(
+                "behind-proxy-sections-20261015.yaml",
+                "fastapi.docs.behind-proxy.mounted-root-path",
+                ["http.body.bytes", "http.status"],
+            ),
         ],
     ),
 }

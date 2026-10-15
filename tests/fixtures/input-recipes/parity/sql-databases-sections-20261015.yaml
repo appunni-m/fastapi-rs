@@ -1,0 +1,248 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/sql_databases_sections_20261015.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.sql-databases.single-model.create-hero
+  factory_input: {revision: single-model}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: create-single-model-hero
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /heroes/
+      query_string: ''
+      root_path: ''
+      headers: [[content-type, application/json], [host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Ada","age":37,"secret_name":"The Analyst"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: &single_model_sources
+  - {path: docs/en/docs/tutorial/sql-databases.md, kind: upstream_documentation}
+  - {path: docs_src/sql_databases/tutorial001_an_py310.py, kind: upstream_documentation_example}
+  - {path: tests/test_tutorial/test_sql_databases/test_tutorial001.py, kind: upstream_test}
+
+- case_id: fastapi.docs.sql-databases.single-model.invalid-hero
+  factory_input: {revision: single-model}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: reject-single-model-without-name
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /heroes/
+      query_string: ''
+      root_path: ''
+      headers: [[content-type, application/json], [host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"age":37,"secret_name":"The Analyst"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+  source_evidence: *single_model_sources
+
+- case_id: fastapi.docs.sql-databases.single-model.openapi
+  factory_input: {revision: single-model}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-single-model-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/Hero
+      - /paths/~1heroes~1/post/requestBody/content/application~1json/schema
+      - /paths/~1heroes~1/post/responses/200/content/application~1json/schema
+      comparison: exact
+  source_evidence: *single_model_sources
+
+- case_id: fastapi.docs.sql-databases.multiple-models.openapi
+  factory_input: {revision: multiple-models}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-multiple-model-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/HeroCreate
+      - /components/schemas/HeroPublic
+      - /components/schemas/HeroUpdate
+      - /paths/~1heroes~1/post/requestBody/content/application~1json/schema
+      - /paths/~1heroes~1/post/responses/200/content/application~1json/schema
+      - /paths/~1heroes~1/get/responses/200/content/application~1json/schema
+      - /paths/~1heroes~1{hero_id}/patch/requestBody/content/application~1json/schema
+      - /paths/~1heroes~1{hero_id}/patch/responses/200/content/application~1json/schema
+      comparison: exact
+  source_evidence: &multiple_model_sources
+  - {path: docs/en/docs/tutorial/sql-databases.md, kind: upstream_documentation}
+  - {path: docs_src/sql_databases/tutorial002_an_py310.py, kind: upstream_documentation_example}
+  - {path: tests/test_tutorial/test_sql_databases/test_tutorial002.py, kind: upstream_test}
+
+- case_id: fastapi.docs.sql-databases.multiple-models.create-public
+  factory_input: {revision: multiple-models}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: create-with-create-and-public-models
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /heroes/
+      query_string: ''
+      root_path: ''
+      headers: [[content-type, application/json], [host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Ada","age":37,"secret_name":"The Analyst"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *multiple_model_sources
+
+- case_id: fastapi.docs.sql-databases.multiple-models.invalid-create
+  factory_input: {revision: multiple-models}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: reject-create-without-secret-name
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /heroes/
+      query_string: ''
+      root_path: ''
+      headers: [[content-type, application/json], [host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Ada","age":37}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+  source_evidence: *multiple_model_sources
+
+- case_id: fastapi.docs.sql-databases.multiple-models.read-public-list
+  factory_input: {revision: multiple-models}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-heroes-with-public-model
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /heroes/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *multiple_model_sources
+
+- case_id: fastapi.docs.sql-databases.multiple-models.update-sparse
+  factory_input: {revision: multiple-models}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: patch-hero-with-one-field
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: PATCH
+      scheme: http
+      path: /heroes/1
+      query_string: ''
+      root_path: ''
+      headers: [[content-type, application/json], [host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Grace"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *multiple_model_sources
