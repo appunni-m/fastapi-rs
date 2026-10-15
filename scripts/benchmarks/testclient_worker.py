@@ -41,6 +41,14 @@ def _git(root: Path, *arguments: str) -> str:
     return result.stdout.strip()
 
 
+def _assert_clean_source(root: Path, label: str) -> None:
+    changes = _git(root, "status", "--porcelain", "--untracked-files=all")
+    if changes:
+        raise TestClientBenchmarkError(
+            f"{label} oracle source tree must be clean before identity/measurement:\n{changes}"
+        )
+
+
 def _digest(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -118,6 +126,8 @@ def _identity(
 ) -> dict[str, Any]:
     """Verify the selected profile and report the code actually loaded."""
     if kind == "fastapi":
+        _assert_clean_source(fastapi_source, "FastAPI")
+        _assert_clean_source(starlette_source, "Starlette")
         fastapi = importlib.import_module("fastapi")
         starlette = importlib.import_module("starlette")
         fastapi_revision = _git(fastapi_source, "rev-parse", "HEAD")

@@ -141,10 +141,8 @@ def _run_worker(
     return measurement
 
 
-def _assert_clean_source(root: Path, label: str, *pathspecs: str) -> None:
+def _assert_clean_source(root: Path, label: str) -> None:
     command = ["git", "-C", str(root), "status", "--porcelain", "--untracked-files=all"]
-    if pathspecs:
-        command.extend(["--", *pathspecs])
     completed = subprocess.run(
         command,
         check=False,
@@ -332,8 +330,8 @@ def main() -> int:
     # Fail before the comparatively expensive parity gate when product source
     # identities cannot be attributed to the pinned revisions.
     _assert_clean_source(ROOT, "FastAPI-RS")
-    _assert_clean_source(fastapi_source, "FastAPI", "fastapi")
-    _assert_clean_source(starlette_source, "Starlette", "starlette")
+    _assert_clean_source(fastapi_source, "FastAPI")
+    _assert_clean_source(starlette_source, "Starlette")
     _assert_clean_source(starlette_rs_source, "Starlette-RS")
     comparison, comparison_path, source, target_result = _fresh_parity(
         input_path=input_path,

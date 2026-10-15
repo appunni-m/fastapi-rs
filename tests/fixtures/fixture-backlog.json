@@ -29453,7 +29453,7 @@
       "documented_sections": [
         {
           "end_line": 41,
-          "exclusion_reason": "The introduction is a page-level summary. Its default status behavior is covered by the tutorial status-code section, and the two additional-status branches are mapped below.",
+          "exclusion_reason": "The introduction is a page-level summary. The default status behavior is mapped under the tutorial status-code page, and the two additional-status branches plus the OpenAPI statement are mapped under their child headings.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -29551,7 +29551,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "Treating the overview as a separate workflow would duplicate the child route inputs and overstate their coverage of response classes and OpenAPI.",
+          "review_rationale": "FastAPI 0.141.1 applies declared or temporary Response status while constructing ordinary return values (fastapi/routing.py:357-372,716-750). The child workflows map those independent behaviors without treating the page overview as another operation.",
           "review_status": "excluded",
           "selector_evidence": [
             {
@@ -29693,7 +29693,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/additional-status-codes-tutorial-upstream.yaml",
-              "scope_note": "The two existing cases observe an updated dictionary returned with status 200 and a directly returned JSONResponse with status 201. The inputs do not test other status codes, response classes, declared response models, or the OpenAPI claim in the next section.",
+              "scope_note": "The two selected requests observe an updated dictionary returned with status 200 and a directly returned JSONResponse with status 201. They do not test other status codes, response classes, response-model bypass, or the OpenAPI statement in the next section.",
               "workflow_id": "additional-status-codes-tutorial-upstream"
             }
           ],
@@ -29710,7 +29710,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI supports returning either a normal endpoint value or a directly returned Response from a path operation. Starlette 1.6.0 owns JSONResponse rendering and wire behavior.",
+          "review_rationale": "FastAPI 0.141.1 serializes ordinary endpoint values and returns a directly returned Response through separate branches (fastapi/routing.py:706-750). Starlette 1.6.0 owns JSONResponse rendering and wire behavior.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -29761,7 +29761,7 @@
         },
         {
           "end_line": 41,
-          "exclusion_reason": "This section makes a negative OpenAPI claim about status codes chosen by a directly returned Response. The linked recipe records only HTTP status and body, so it cannot establish what is absent from the generated OpenAPI document.",
+          "exclusion_reason": "This section claims that a status chosen inside a directly returned Response is not inferred into OpenAPI. The linked recipe cases observe HTTP status and body only, so they cannot establish absence from the generated schema.",
           "feature_evidence": [
             {
               "feature_id": "status-codes",
@@ -29805,7 +29805,7 @@
             "openapi.paths",
             "python.pydantic_model_result"
           ],
-          "review_rationale": "No selected action observes /openapi.json or its status-code entries. The OpenAPI behavior is therefore not claimed by this documentation mapping.",
+          "review_rationale": "FastAPI 0.141.1 generates OpenAPI responses from route.status_code and declared route.responses metadata (fastapi/openapi/utils.py:403-419,473-490); runtime endpoint Responses are returned directly (fastapi/routing.py:706-715). No selected action queries /openapi.json, so this negative OpenAPI claim remains outside the mapping.",
           "review_status": "excluded",
           "selector_evidence": [
             {
@@ -47370,7 +47370,7 @@
       "documented_sections": [
         {
           "end_line": 31,
-          "exclusion_reason": "The title and introduction summarize the use case and temporary Response mechanism mapped under their child headings.",
+          "exclusion_reason": "The title and introduction summarize the default-status and temporary-Response workflows mapped under the child headings.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -47461,7 +47461,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "The child use-case input observes the documented 200/201 outcomes, while the existing child mapping covers dependency status mutation and endpoint overwrite. The page heading adds no independent operation.",
+          "review_rationale": "FastAPI 0.141.1 applies a changed temporary Response status while building the ordinary response (fastapi/routing.py:357-372); the child use-case and parameter rows map the distinct sampled behavior, so this overview adds no operation.",
           "review_status": "excluded",
           "selector_evidence": [
             {
@@ -47577,7 +47577,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-change-status-tutorial-review.yaml",
-              "scope_note": "The two selected requests follow the tutorial's existing-record and create-new branches: the first returns the default 200 and the second sets 201. They sample one in-memory route and returned strings, not dependency ordering or all status values.",
+              "scope_note": "The two selected requests follow the tutorial's existing-record and create-new branches: the first returns 200 and the second sets 201. They sample one in-memory route and returned strings, not dependency ordering, response-model filtering, or all status values.",
               "workflow_id": "response-change-status-tutorial-review"
             }
           ],
@@ -47591,7 +47591,7 @@
             "response.background_effects",
             "validation.error_class"
           ],
-          "review_rationale": "FastAPI applies the endpoint's temporary Response status to the response built from the returned object; Starlette owns the final response wire representation.",
+          "review_rationale": "FastAPI 0.141.1 creates the shared temporary Response during dependency solving (fastapi/dependencies/utils.py:611-614) and applies its status to the response built from a returned value (fastapi/routing.py:357-372,716-750). Starlette 1.6.0 owns final response emission.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -47709,7 +47709,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
-              "scope_note": "The first input samples one dependency setting the injected temporary Response status to 201; the second samples an endpoint setting status 400 over its declared 204. Both select exact status, ordered headers, and body bytes. The cases do not exercise temporary-response headers or cookies, response-model filtering, or multiple status-setting dependencies. Generic Response behavior belongs to Starlette.",
+              "scope_note": "The first input samples a dependency setting the injected temporary Response status to 201; the second samples an endpoint setting status 400 over its declared 204. Both select exact status, ordered headers, and body bytes. They do not exercise temporary-response headers or cookies, response-model filtering, or multiple status-setting dependencies.",
               "workflow_id": "response-policy-matrix"
             }
           ],
@@ -47729,7 +47729,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI 0.141.1 creates and injects the temporary Response in fastapi/dependencies/utils.py:611-614,719-729, chooses its status when building the final response in fastapi/routing.py:357-372, and carries its raw headers to the response built from returned values in fastapi/routing.py:747-750. The two linked cases cite docs/en/docs/advanced/response-change-status-code.md and each contains one selected HTTP action. Starlette 1.6.0 owns generic Response construction and ASGI emission.",
+          "review_rationale": "FastAPI 0.141.1 classifies Response parameters in fastapi/dependencies/utils.py:350-364, creates and injects the shared temporary Response in fastapi/dependencies/utils.py:611-614,719-729, and applies its final status in fastapi/routing.py:357-372. Starlette 1.6.0 owns generic response construction and ASGI emission.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -48123,7 +48123,7 @@
       "documented_sections": [
         {
           "end_line": 51,
-          "exclusion_reason": "This page combines two independently observable paths: an injected temporary Response and a directly returned Response. Those paths are mapped under their own headings; the nested technical details identify Starlette response behavior.",
+          "exclusion_reason": "The page overview describes its temporary-Response and directly returned-Response paths. Those independent paths are mapped under their child headings; the nested cookie API details belong to Starlette 1.6.0.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -48231,7 +48231,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "The page heading is an overview of its child sections rather than a third cookie operation. The selected child inputs cover the documented FastAPI integration paths without claiming generic Starlette cookie behavior.",
+          "review_rationale": "FastAPI 0.141.1 identifies and injects a temporary Response in fastapi/dependencies/utils.py:350-364,611-614,719-720, and transfers its headers in fastapi/routing.py:716-750. The child rows map those route workflows; the overview adds no separate operation.",
           "review_status": "excluded",
           "selector_evidence": [
             {
@@ -48385,7 +48385,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/responses-background-upstream.yaml",
-              "scope_note": "The selected tutorial002 request sets one cookie on the injected temporary Response and returns a dictionary. It observes the final status, ordered headers, and body; dependency-set cookies, response-model filtering, middleware, and a client cookie jar are outside this input.",
+              "scope_note": "The selected request sets one cookie through the endpoint's injected temporary Response and returns a dictionary. It observes status, ordered raw headers, and body bytes. It does not exercise dependency-set cookies, response-model filtering, or TestClient cookie-jar persistence and reuse.",
               "workflow_id": "responses-background-upstream"
             }
           ],
@@ -48405,7 +48405,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI injects the temporary Response and carries its headers to the response built from the returned object. Starlette 1.6.0 owns cookie formatting and HTTP header emission.",
+          "review_rationale": "FastAPI 0.141.1 recognizes Response as a special dependency parameter (fastapi/dependencies/utils.py:350-364), creates and injects the temporary value (fastapi/dependencies/utils.py:611-614,719-720), then copies its raw headers to the serialized response (fastapi/routing.py:716-750). Starlette 1.6.0 owns cookie formatting and HTTP header emission.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -48526,7 +48526,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-cookie-direct-wave.yaml",
-              "scope_note": "The selected request constructs a JSONResponse, calls set_cookie, and returns that response. It observes the resulting status, ordered Set-Cookie header, and body. It does not test response-model bypass, cookie-jar behavior, or every Response subclass.",
+              "scope_note": "The selected request constructs a JSONResponse, calls set_cookie, and returns it. It observes status, ordered raw headers, and body bytes. It does not exercise response-model bypass, cookie-jar behavior, or every Response subclass.",
               "workflow_id": "response-cookie-direct-wave"
             }
           ],
@@ -48541,7 +48541,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI passes a directly returned Response through the route. Starlette 1.6.0 owns JSONResponse rendering, set_cookie formatting, and ASGI emission.",
+          "review_rationale": "FastAPI 0.141.1 returns an endpoint-provided Response through its direct-response branch (fastapi/routing.py:706-715). Starlette 1.6.0 owns JSONResponse rendering, set_cookie formatting, and ASGI response emission.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -48573,7 +48573,7 @@
         },
         {
           "end_line": 51,
-          "exclusion_reason": "This subsection gives FastAPI import conveniences and links to Starlette's generic set_cookie reference. The selected HTTP cases do not compare import paths or object identity, and cookie formatting/options belong to Starlette 1.6.0.",
+          "exclusion_reason": "This subsection documents convenience import paths and links to Starlette's set_cookie reference. The selected route cases do not compare import paths or object identity, and cookie formatting/options are Starlette 1.6.0 behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -48618,7 +48618,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "The FastAPI re-exports are covered by the public API manifest and source authority; the link points readers to Starlette for the cookie API contract. Neither is a separate route behavior in these inputs.",
+          "review_rationale": "FastAPI 0.141.1 re-exports Starlette response classes from fastapi/responses.py:6-12 and the root Response from fastapi/__init__.py:22. Those public identities belong to the API manifest; the linked Starlette page owns the generic cookie contract.",
           "review_status": "excluded",
           "selector_evidence": [
             {
@@ -131979,7 +131979,7 @@
                 "openapi.paths"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/tutorial-response-status-code001-source-review.yaml",
-              "scope_note": "The selected cases observe one endpoint's explicit 201 response and its OpenAPI response entry. They do not exercise every decorator or IntEnum value, and the OpenAPI case does not cover the bodyless-status note for codes such as 204.",
+              "scope_note": "Each linked case has one action. The selected cases observe one endpoint's explicit 201 response and its OpenAPI response entry. They do not exercise every decorator or IntEnum value, or the bodyless-status/OpenAPI note for codes such as 204. The separate existing 204 OpenAPI case lacks this tutorial page as upstream_documentation source evidence and is not projected here.",
               "workflow_id": "tutorial-response-status-code001-source-review"
             }
           ],
@@ -132001,7 +132001,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "FastAPI uses the path-operation status_code for the runtime response and the generated OpenAPI response entry. Starlette owns the emitted HTTP response.",
+          "review_rationale": "FastAPI 0.141.1 normalizes IntEnum route status values (fastapi/routing.py:1029-1032), uses the route or temporary Response status for runtime responses (fastapi/routing.py:357-372), and builds OpenAPI response entries from route metadata (fastapi/openapi/utils.py:403-419). Starlette 1.6.0 owns emitted HTTP response behavior.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -132063,7 +132063,7 @@
         },
         {
           "end_line": 72,
-          "exclusion_reason": "This section explains general HTTP status-code ranges and examples, then links to MDN. Those protocol definitions do not specify an independent FastAPI route or OpenAPI behavior.",
+          "exclusion_reason": "This section describes HTTP status-code ranges and general examples, then links to MDN. Those protocol definitions do not specify a FastAPI route or OpenAPI behavior.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -132111,7 +132111,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "The selected FastAPI cases cover only status values used by the documented routes. The range descriptions are general HTTP semantics.",
+          "review_rationale": "The selected FastAPI cases cover only status values used by the route examples. The ranges and HTTP meanings in docs/en/docs/tutorial/response-status-code.md:50-71 are general protocol guidance.",
           "review_status": "excluded",
           "selector_evidence": [
             {
@@ -132178,7 +132178,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-surface.yaml",
-              "scope_note": "The selected route uses one fastapi.status constant to set its status and observes the HTTP response. It does not compare fastapi.status with starlette.status, check object identity, or exercise every constant listed by the imported enum-like namespace.",
+              "scope_note": "The selected route uses one fastapi.status constant and observes the HTTP response. It does not compare fastapi.status with starlette.status, check object identity, or exercise every constant in the re-exported namespace.",
               "workflow_id": "response-surface"
             }
           ],
@@ -132188,7 +132188,7 @@
             "http.status",
             "openapi.paths"
           ],
-          "review_rationale": "FastAPI accepts a Starlette status constant as the path-operation status_code; this request samples one such route value. The constant namespace itself is a Starlette re-export.",
+          "review_rationale": "FastAPI 0.141.1 re-exports starlette.status as fastapi.status (fastapi/__init__.py:5); APIRoute normalizes IntEnum status values (fastapi/routing.py:1029-1032). The namespace itself is a Starlette re-export.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -132242,7 +132242,7 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/response-change-status-tutorial-review.yaml",
-              "scope_note": "The linked advanced tutorial's two requests observe the configured 200 default and an endpoint-set 201 status. Dependency-provided status and endpoint overwrite behavior are covered by a separate advanced-section mapping.",
+              "scope_note": "The linked advanced tutorial's two requests observe the configured 200 default and an endpoint-set 201 status. Dependency-provided status and endpoint overwrite behavior are covered by the separate advanced-section mapping.",
               "workflow_id": "response-change-status-tutorial-review"
             }
           ],
@@ -132252,7 +132252,7 @@
             "http.status",
             "openapi.paths"
           ],
-          "review_rationale": "FastAPI applies the temporary Response status when constructing the response from the path operation's returned value. Starlette owns HTTP response emission.",
+          "review_rationale": "FastAPI 0.141.1 applies the temporary Response status when building a response from the returned value (fastapi/routing.py:357-372,716-750). Starlette 1.6.0 owns HTTP response emission.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {

@@ -6462,8 +6462,8 @@ from atlas_documentation_section_case_mappings_response_reference_20261015 impor
 from atlas_documentation_section_case_mappings_request_files_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015,
 )
-from atlas_documentation_section_case_mappings_response_cookies_status_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_RESPONSE_COOKIES_STATUS_20261015,
+from atlas_documentation_section_case_mappings_response_status_review_20261016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016,
 )
 from atlas_documentation_section_case_mappings_response_directly_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
@@ -6597,7 +6597,7 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
-    DOC_SECTION_CASE_MAPPINGS_RESPONSE_COOKIES_STATUS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_DEFAULTS_20261015,
     DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,

@@ -270,38 +270,6 @@ DOC_SECTION_CASE_MAPPINGS = {
             "Pydantic performs the resulting value projection."
         ),
     },
-    ("advanced/response-change-status-code.md", "use-a-response-parameter"): {
-        "heading": "Use a `Response` parameter { #use-a-response-parameter }",
-        "start_line": 17,
-        "end_line": 31,
-        "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
-        "case_ids": [
-            "fastapi.response.dependency-status",
-            "fastapi.response.status-overwrite",
-        ],
-        "observation_selectors": [
-            "http.body.bytes",
-            "http.headers.ordered",
-            "http.status",
-        ],
-        "scope_note": (
-            "The first input samples one dependency setting the injected temporary Response "
-            "status to 201; the second samples an endpoint setting status 400 over its declared "
-            "204. Both select exact status, ordered headers, and body bytes. The cases do not "
-            "exercise temporary-response headers or cookies, response-model filtering, or "
-            "multiple status-setting dependencies. Generic Response behavior belongs to "
-            "Starlette."
-        ),
-        "rationale": (
-            "FastAPI 0.141.1 creates and injects the temporary Response in "
-            "fastapi/dependencies/utils.py:611-614,719-729, chooses its status when building "
-            "the final response in fastapi/routing.py:357-372, and carries its raw headers to "
-            "the response built from returned values in fastapi/routing.py:747-750. The two "
-            "linked cases cite docs/en/docs/advanced/response-change-status-code.md and each "
-            "contains one selected HTTP action. Starlette 1.6.0 owns generic Response "
-            "construction and ASGI emission."
-        ),
-    },
     ("tutorial/schema-extra-example.md", "using-the-openapi-examples-parameter"): {
         "heading": "Using the `openapi_examples` Parameter { #using-the-openapi-examples-parameter }",
         "start_line": 91,
