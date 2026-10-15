@@ -196,11 +196,13 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml "
             "has cases fastapi.websockets.tutorial003.home and "
             "fastapi.websockets.tutorial003.single-client-session (HTTP body and one-client "
-            "messages only). These are input recipes and partial samples, not parity results."
+            "echo plus a two-client broadcast/disconnect conversation). The current input has "
+            "no matching Oracle result and remains an unverified input sample."
         ),
         "contract_gate": (
-            "Keep the mapping partial. The tutorial003 subset does not exercise two concurrent "
-            "clients, broadcast delivery, or the disconnect announcement described by the page. "
+            "Keep the mapping partial. The current tutorial003 input declares two concurrent "
+            "clients, broadcast delivery, and a disconnect; no matching Oracle result is present, "
+            "so these behaviors are not yet established by source execution. "
             "The page's binary/JSON statement has no corresponding example input here; current "
             "tutorial cases exercise text only. The page's Header and Security entries have no "
             "matching parameter examples here; the upstream case named test-websocket-with-header "

@@ -1,0 +1,67 @@
+schema: fastapi-rs/python-process-workflow@2
+profiles:
+  oracle: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard
+  target: fastapi-rs-python-consumer
+cases:
+- case_id: fastapi.cli.process.websockets-startup-readiness
+  argv: [fastapi, dev, --no-reload, --port, "{port}"]
+  cwd:
+    kind: isolated-tree
+    files:
+    - path: main.py
+      content: |
+        from fastapi import FastAPI, WebSocket
+
+        app = FastAPI()
+
+        @app.get("/")
+        async def home():
+            return {"message": "WebSocket demo ready"}
+
+        @app.websocket("/ws")
+        async def websocket_endpoint(websocket: WebSocket):
+            await websocket.accept()
+            await websocket.send_text("ready")
+  environment:
+    set:
+      COLUMNS: "100"
+      LINES: "32"
+      NO_COLOR: "1"
+      PYTHONIOENCODING: utf-8
+      TERM: dumb
+    unset: [FASTAPI_ENV, FASTAPI_PUBLIC_URL, PORT]
+  timeout_seconds: 30
+  observations: [process.exit_code, http.status, http.body.bytes]
+  execution:
+    kind: http-server
+    readiness:
+      path: /
+      timeout_seconds: 12
+      poll_interval_ms: 100
+    request:
+      method: GET
+      path: /
+      headers: {}
+      body: ""
+      timeout_seconds: 5
+    shutdown:
+      grace_seconds: 4
+  source_evidence:
+  - path: tests/test_fastapi_cli.py
+    kind: upstream_test
+    sha256: c5256b040fd47757ef89e15c9193348af8eb1f5f38e13193a521ab0033133b8c
+  - path: docs/en/docs/advanced/websockets.md
+    kind: upstream_documentation
+    sha256: 8320bc17f58bd4427b91caf7ab7aceb2143b3203aba29f29116b8829e5f62f31
+  - path: docs/en/docs/fastapi-cli.md
+    kind: upstream_documentation
+    sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+  - path: fastapi/cli.py
+    kind: upstream_implementation_source
+    sha256: 3988596f4351fdd7ae4f9a1fc8f176368341cd90cd38ff126a579fda793e1ea0
+  - path: pyproject.toml
+    kind: upstream_project_metadata
+    sha256: 8762fce1f84ba4fd9033ed58aeadefae050ca485ce97ca5130b7d2d1eb7db6f6
+  - path: uv.lock
+    kind: upstream_lockfile
+    sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165

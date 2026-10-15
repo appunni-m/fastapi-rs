@@ -1586,19 +1586,25 @@ def validate_compatibility_artifacts(
             sections = fixture.get("documented_sections")
             _require(isinstance(sections, list), f"documented page {fixture_id} has no section map")
             for section in sections:
-                _require(
-                    bool(section.get("feature_ids")),
-                    f"documented section in {fixture_id} has no feature mapping",
-                )
-                _require(
-                    bool(section.get("observation_selectors")),
-                    f"documented section in {fixture_id} has no selectors",
-                )
-                register_selectors(
-                    section["observation_selectors"], f"documented section in {fixture_id}"
-                )
-                _reject_output_values(section, f"documented section in {fixture_id}")
                 section_status = section.get("review_status")
+                feature_ids = section.get("feature_ids")
+                observation_selectors = section.get("observation_selectors")
+                if section_status == "excluded" and not feature_ids:
+                    _require(
+                        not observation_selectors,
+                        f"featureless excluded section in {fixture_id} cannot claim selectors",
+                    )
+                else:
+                    _require(
+                        bool(feature_ids),
+                        f"documented section in {fixture_id} has no feature mapping",
+                    )
+                    _require(
+                        bool(observation_selectors),
+                        f"documented section in {fixture_id} has no selectors",
+                    )
+                    register_selectors(observation_selectors, f"documented section in {fixture_id}")
+                _reject_output_values(section, f"documented section in {fixture_id}")
                 _require(
                     section_status in {"pending", "reviewed_partial", "excluded"},
                     f"documented section in {fixture_id} has no explicit review status",
@@ -1622,7 +1628,8 @@ def validate_compatibility_artifacts(
                             and isinstance(mapping.get("case_ids"), list)
                             and bool(mapping.get("case_ids"))
                             and bool(mapping.get("scope_note")),
-                            f"reviewed documented section in {fixture_id} has an incomplete workflow link",
+                            f"reviewed documented section in {fixture_id} "
+                            "has an incomplete workflow link",
                         )
                         register_selectors(
                             mapping.get("observation_selectors"),
@@ -1647,12 +1654,14 @@ def validate_compatibility_artifacts(
                 elif section_status == "excluded":
                     _require(
                         bool(section.get("exclusion_reason")) and not section_mappings,
-                        f"excluded documented section in {fixture_id} needs a reason and no workflow links",
+                        f"excluded documented section in {fixture_id} needs a reason "
+                        "and no workflow links",
                     )
                 else:
                     _require(
                         not section_mappings and not section.get("exclusion_reason"),
-                        f"pending documented section in {fixture_id} cannot claim coverage or exclusion",
+                        f"pending documented section in {fixture_id} cannot claim "
+                        "coverage or exclusion",
                     )
         elif source_row.get("kind") == "documented_python_example_source":
             source_mapping = source_row.get("mapping_evidence", {})

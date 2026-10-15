@@ -57596,10 +57596,8 @@
         "dependency.cleanup_order",
         "error.class",
         "error.public_attributes",
-        "http.body.bytes",
         "http.body.json",
         "http.headers.ordered",
-        "http.status",
         "lifecycle.cleanup_effects",
         "lifecycle.event_order",
         "openapi.paths",
@@ -57620,7 +57618,6 @@
           "selectors": [
             "http.body.bytes",
             "http.headers.ordered",
-            "http.status",
             "openapi.paths",
             "route.match"
           ]
@@ -57633,7 +57630,6 @@
             "http.body.bytes",
             "http.body.json",
             "http.headers.ordered",
-            "http.status",
             "openapi.security"
           ]
         },
@@ -57655,7 +57651,6 @@
             "http.body.bytes",
             "http.body.json",
             "http.headers.ordered",
-            "http.status",
             "openapi.request_schema",
             "validation.error_class",
             "validation.error_details"
@@ -57671,11 +57666,9 @@
         }
       ],
       "candidate_selector_scope": {
-        "contract_gate": "Keep the mapping partial. The tutorial003 subset does not exercise two concurrent clients, broadcast delivery, or the disconnect announcement described by the page. The page's binary/JSON statement has no corresponding example input here; current tutorial cases exercise text only. The page's Header and Security entries have no matching parameter examples here; the upstream case named test-websocket-with-header supplies its token in the query string. The selected recipes do not cover all parameter combinations, Security scopes, dependency cleanup, Python import/alias identity, or WebSocket API signatures. Do not claim those branches from the existing inputs. The class-based WebSocket handling link is Starlette reference material, not a FastAPI example in this page.",
+        "contract_gate": "Keep the mapping partial. The current tutorial003 input declares two concurrent clients, broadcast delivery, and a disconnect; no matching Oracle result is present, so these behaviors are not yet established by source execution. The page's binary/JSON statement has no corresponding example input here; current tutorial cases exercise text only. The page's Header and Security entries have no matching parameter examples here; the upstream case named test-websocket-with-header supplies its token in the query string. The selected recipes do not cover all parameter combinations, Security scopes, dependency cleanup, Python import/alias identity, or WebSocket API signatures. Do not claim those branches from the existing inputs. The class-based WebSocket handling link is Starlette reference material, not a FastAPI example in this page.",
         "unobserved_reviewed_selector_claims": [
-          "http.body.bytes",
-          "http.headers.ordered",
-          "http.status"
+          "http.headers.ordered"
         ],
         "workflow_scope_notes": [
           {
@@ -57691,14 +57684,21 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
             "scope_note": "Partial independent sample across 1 case(s); observes websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed."
+          },
+          {
+            "case_ids": [
+              "fastapi.cli.process.websockets-startup-readiness"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+            "scope_note": "Partial independent process sample; observes FastAPI CLI startup and HTTP readiness for an app that declares a WebSocket route. It does not connect a WebSocket client or claim browser behavior."
           }
         ]
       },
-      "contract_gate": "Keep the mapping partial. The tutorial003 subset does not exercise two concurrent clients, broadcast delivery, or the disconnect announcement described by the page. The page's binary/JSON statement has no corresponding example input here; current tutorial cases exercise text only. The page's Header and Security entries have no matching parameter examples here; the upstream case named test-websocket-with-header supplies its token in the query string. The selected recipes do not cover all parameter combinations, Security scopes, dependency cleanup, Python import/alias identity, or WebSocket API signatures. Do not claim those branches from the existing inputs. The class-based WebSocket handling link is Starlette reference material, not a FastAPI example in this page.",
+      "contract_gate": "Keep the mapping partial. The current tutorial003 input declares two concurrent clients, broadcast delivery, and a disconnect; no matching Oracle result is present, so these behaviors are not yet established by source execution. The page's binary/JSON statement has no corresponding example input here; current tutorial cases exercise text only. The page's Header and Security entries have no matching parameter examples here; the upstream case named test-websocket-with-header supplies its token in the query string. The selected recipes do not cover all parameter combinations, Security scopes, dependency cleanup, Python import/alias identity, or WebSocket API signatures. Do not claim those branches from the existing inputs. The class-based WebSocket handling link is Starlette reference material, not a FastAPI example in this page.",
       "documented_sections": [
         {
           "end_line": 186,
-          "exclusion_reason": null,
+          "exclusion_reason": "The page title aggregates independently reviewed examples and adds no separate operation.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -57845,8 +57845,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Concrete claims map to anchored child sections; the page-level mapping remains partial.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -57918,7 +57918,7 @@
         },
         {
           "end_line": 18,
-          "exclusion_reason": null,
+          "exclusion_reason": "The section installs a separate client package, not FastAPI server behavior.",
           "feature_evidence": [
             {
               "feature_id": "websocket-lifecycle",
@@ -57944,8 +57944,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The commands target the client environment; server behavior is mapped separately.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "websocket-lifecycle",
@@ -57991,7 +57991,24 @@
             "websocket-lifecycle"
           ],
           "heading": "WebSockets client { #websockets-client }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "echo-text-session"
+              ],
+              "case_ids": [
+                "fastapi.websocket.echo-text"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
+              "scope_note": "The server action observes one accepted connection and two text exchanges; it does not run the HTML/JavaScript client or browser.",
+              "workflow_id": "websocket-echo"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "http.body.bytes",
@@ -58005,8 +58022,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The route is FastAPI integration; client code and rendering belong to the external browser surface.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -58062,7 +58079,24 @@
             "websocket-lifecycle"
           ],
           "heading": "In production { #in-production }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "echo-text-session"
+              ],
+              "case_ids": [
+                "fastapi.websocket.echo-text"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
+              "scope_note": "The embedded FastAPI server route is exercised by one accepted echo session; production-client recommendations, HTML, and browser JavaScript are not run.",
+              "workflow_id": "websocket-echo"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "http.body.bytes",
@@ -58076,8 +58110,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The referenced server example uses FastAPI WebSocket integration; the external client choices are outside this observation.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -58121,7 +58155,24 @@
             "websocket-lifecycle"
           ],
           "heading": "Create a `websocket` { #create-a-websocket }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "echo-text-session"
+              ],
+              "case_ids": [
+                "fastapi.websocket.echo-text"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
+              "scope_note": "The action samples FastAPI route integration through an accepted WebSocket and text echo; it does not assert import identity or the re-export's full API.",
+              "workflow_id": "websocket-echo"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "lifecycle.cleanup_effects",
@@ -58130,8 +58181,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The input cites this page; generic connection mechanics belong to Starlette 1.6.0.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "websocket-lifecycle",
@@ -58166,7 +58217,24 @@
             "websocket-lifecycle"
           ],
           "heading": "Await for messages and send messages { #await-for-messages-and-send-messages }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "echo-text-session"
+              ],
+              "case_ids": [
+                "fastapi.websocket.echo-text"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
+              "scope_note": "The action sends and observes two text messages on one connection; binary/JSON helper semantics are generic Starlette behavior.",
+              "workflow_id": "websocket-echo"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "lifecycle.cleanup_effects",
@@ -58175,8 +58243,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The page's server example is sampled with ordered WebSocket observations.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "websocket-lifecycle",
@@ -58233,7 +58301,22 @@
             "websocket-lifecycle"
           ],
           "heading": "Try it { #try-it }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "case_ids": [
+                "fastapi.cli.process.websockets-startup-readiness"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "process.exit_code"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+              "scope_note": "Runs the documented fastapi dev command with a WebSocket app and observes startup plus HTTP readiness; WebSocket exchanges are mapped in route/message sections, browser UI is not run.",
+              "workflow_id": "websockets-cli-startup"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "http.body.bytes",
@@ -58252,8 +58335,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "CLI startup is process behavior; browser controls and images are presentation/client behavior.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -58391,7 +58474,34 @@
             "public-api-errors"
           ],
           "heading": "Using `Depends` and others { #using-depends-and-others }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "cookie-plain",
+                "cookie-annotated",
+                "query-token-plain",
+                "query-token-annotated",
+                "query-token-q-plain",
+                "query-token-q-annotated",
+                "no-credentials-plain",
+                "no-credentials-annotated",
+                "invalid-query-plain",
+                "invalid-query-annotated"
+              ],
+              "case_ids": [
+                "fastapi.atlas-testing.websocket-tutorial002"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "websocket.close_code",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-websockets-tutorial002.yaml",
+              "scope_note": "Cookie/query variants, accepted messages, and policy closes are observed. Header, Security scopes, and explicit Path markers are not covered; the test named with-header sends a query parameter.",
+              "workflow_id": "atlas-testing-websocket-websockets-tutorial002"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -58419,8 +58529,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "These docs-example actions expose FastAPI dependency and parameter binding; generic framing remains Starlette-owned.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -58546,7 +58656,34 @@
             "websocket-lifecycle"
           ],
           "heading": "Try the WebSockets with dependencies { #try-the-websockets-with-dependencies }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "cookie-plain",
+                "cookie-annotated",
+                "query-token-plain",
+                "query-token-annotated",
+                "query-token-q-plain",
+                "query-token-q-annotated",
+                "no-credentials-plain",
+                "no-credentials-annotated",
+                "invalid-query-plain",
+                "invalid-query-annotated"
+              ],
+              "case_ids": [
+                "fastapi.atlas-testing.websocket-tutorial002"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "websocket.close_code",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-websockets-tutorial002.yaml",
+              "scope_note": "The actions exercise server-side cookie/query dependencies and WebSocket outcomes, not browser UI or Header/Security parameters.",
+              "workflow_id": "atlas-testing-websocket-websockets-tutorial002"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -58568,8 +58705,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Only FastAPI WebSocket dependency integration is claimed.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "cli-process",
@@ -58636,7 +58773,24 @@
             "websocket-lifecycle"
           ],
           "heading": "Handling disconnections and multiple clients { #handling-disconnections-and-multiple-clients }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "two-client-broadcast-and-disconnect"
+              ],
+              "case_ids": [
+                "fastapi.websockets.tutorial003.single-client-session"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml",
+              "scope_note": "The current input declares two clients, broadcast delivery, and a disconnect; it observes app-owned manager output plus WebSocket events. No matching pinned Oracle result exists yet.",
+              "workflow_id": "websockets-tutorial003-upstream-subset"
+            }
+          ],
           "observation_selectors": [
             "error.class",
             "lifecycle.cleanup_effects",
@@ -58645,8 +58799,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "This maps the documented integration scenario and integer path binding; connection-manager and broadcast policy are application-owned.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "websocket-lifecycle",
@@ -58664,7 +58818,7 @@
         },
         {
           "end_line": 186,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section links to Starlette's generic WebSocket API and class-based endpoint docs.",
           "feature_evidence": [
             {
               "feature_id": "websocket-lifecycle",
@@ -58690,8 +58844,8 @@
             "websocket.event_order",
             "websocket.messages"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI's integration is scoped elsewhere; Starlette 1.6.0 owns the referenced generic contracts.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "websocket-lifecycle",
@@ -58717,6 +58871,22 @@
       ],
       "id": "fastapi.docs.advanced-websockets",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.atlas-testing.websocket-tutorial002"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "websocket.close_code",
+            "websocket.event_order",
+            "websocket.messages"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-websockets-tutorial002.yaml",
+          "workflow_id": "atlas-testing-websocket-websockets-tutorial002"
+        },
         {
           "case_ids": [
             "fastapi.public-errors.websocket.pre-accept-code-and-reason"
@@ -58746,6 +58916,36 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
           "workflow_id": "websocket-echo"
+        },
+        {
+          "case_ids": [
+            "fastapi.cli.process.websockets-startup-readiness"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, process.exit_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "process.exit_code"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+          "workflow_id": "websockets-cli-startup"
+        },
+        {
+          "case_ids": [
+            "fastapi.websockets.tutorial003.single-client-session"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "websocket.event_order",
+            "websocket.messages"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml",
+          "workflow_id": "websockets-tutorial003-upstream-subset"
         }
       ],
       "input_only": true,
@@ -58753,6 +58953,9 @@
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
+        "http.body.bytes",
+        "http.status",
+        "process.exit_code",
         "websocket.close_code",
         "websocket.close_reason",
         "websocket.event_order",
@@ -58760,7 +58963,7 @@
       ],
       "related_usage_sources": [],
       "reviewed_source_mapping": {
-        "contract_gate": "Keep the mapping partial. The tutorial003 subset does not exercise two concurrent clients, broadcast delivery, or the disconnect announcement described by the page. The page's binary/JSON statement has no corresponding example input here; current tutorial cases exercise text only. The page's Header and Security entries have no matching parameter examples here; the upstream case named test-websocket-with-header supplies its token in the query string. The selected recipes do not cover all parameter combinations, Security scopes, dependency cleanup, Python import/alias identity, or WebSocket API signatures. Do not claim those branches from the existing inputs. The class-based WebSocket handling link is Starlette reference material, not a FastAPI example in this page.",
+        "contract_gate": "Keep the mapping partial. The current tutorial003 input declares two concurrent clients, broadcast delivery, and a disconnect; no matching Oracle result is present, so these behaviors are not yet established by source execution. The page's binary/JSON statement has no corresponding example input here; current tutorial cases exercise text only. The page's Header and Security entries have no matching parameter examples here; the upstream case named test-websocket-with-header supplies its token in the query string. The selected recipes do not cover all parameter combinations, Security scopes, dependency cleanup, Python import/alias identity, or WebSocket API signatures. Do not claim those branches from the existing inputs. The class-based WebSocket handling link is Starlette reference material, not a FastAPI example in this page.",
         "rationale": "The page covers FastAPI WebSocket route registration, Depends/Security and path/query/cookie inputs, a WebSocketException policy close, and disconnect handling. FastAPI owns APIWebSocketRoute construction, WebSocket dependency and parameter binding, and the WebSocket validation-error handler. Starlette 1.6.0 owns the WebSocket connection state machine, accept/receive/send helpers, WebSocketDisconnect, generic WebSocketRoute dispatch, and default WebSocketException close handling. The selectors are limited to the HTTP demo response and supported WebSocket close/message/event observations. The FastAPI WebSocket re-export is a static identity contract; the existing ASGI recipes do not observe Python import or alias identity. Security scopes, OpenAPI, and HTTP validation projections are not behaviors of the WebSocket examples.",
         "source_evidence": [
           {
@@ -58972,7 +59175,7 @@
             "start_line": 23
           }
         ],
-        "stimulus_notes": "The current documented-page mapping fastapi.docs.advanced-websockets links to workflow websocket-echo in tests/fixtures/input-recipes/parity/websocket-echo.yaml, case fastapi.websocket.echo-text (websocket.event_order and websocket.messages; two text exchanges in one session). Reusable existing input workflow websockets-upstream in tests/fixtures/input-recipes/parity/websockets-upstream.yaml has cases fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-websocket, fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-cookie, fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header-and-query, fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-no-credentials, and fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-invalid-data (messages/event order, with close-code and close-reason checks on the latter two). Its case fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-main observes the demo HTTP response. tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml has cases fastapi.websockets.tutorial003.home and fastapi.websockets.tutorial003.single-client-session (HTTP body and one-client messages only). These are input recipes and partial samples, not parity results.",
+        "stimulus_notes": "The current documented-page mapping fastapi.docs.advanced-websockets links to workflow websocket-echo in tests/fixtures/input-recipes/parity/websocket-echo.yaml, case fastapi.websocket.echo-text (websocket.event_order and websocket.messages; two text exchanges in one session). Reusable existing input workflow websockets-upstream in tests/fixtures/input-recipes/parity/websockets-upstream.yaml has cases fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-websocket, fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-cookie, fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header-and-query, fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-no-credentials, and fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-invalid-data (messages/event order, with close-code and close-reason checks on the latter two). Its case fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-main observes the demo HTTP response. tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml has cases fastapi.websockets.tutorial003.home and fastapi.websockets.tutorial003.single-client-session (HTTP body and one-client echo plus a two-client broadcast/disconnect conversation). The current input has no matching Oracle result and remains an unverified input sample.",
         "workflow_cases": [
           {
             "case_ids": [
@@ -58999,10 +59202,43 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
             "scope_note": "Partial independent sample across 1 case(s); observes websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed."
+          },
+          {
+            "case_ids": [
+              "fastapi.cli.process.websockets-startup-readiness"
+            ],
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "process.exit_code"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+            "scope_note": "Partial independent process sample; observes FastAPI CLI startup and HTTP readiness for an app that declares a WebSocket route. It does not connect a WebSocket client or claim browser behavior."
           }
         ]
       },
       "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
         {
           "feature_id": "websocket-lifecycle",
           "schema_extension_required": [
@@ -59020,12 +59256,14 @@
           "schema_extension_required": [
             "construction.exception_class",
             "construction.exception_message",
-            "construction.outcome"
+            "construction.outcome",
+            "process.exit_code"
           ],
           "selectors": [
             "construction.exception_class",
             "construction.exception_message",
-            "construction.outcome"
+            "construction.outcome",
+            "process.exit_code"
           ]
         }
       ],
@@ -59286,6 +59524,13 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/websocket-echo.yaml",
           "scope_note": "Partial independent sample across 1 case(s); observes websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed."
+        },
+        {
+          "case_ids": [
+            "fastapi.cli.process.websockets-startup-readiness"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+          "scope_note": "Partial independent process sample; observes FastAPI CLI startup and HTTP readiness for an app that declares a WebSocket route. It does not connect a WebSocket client or claim browser behavior."
         }
       ]
     },
@@ -60972,6 +61217,20 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-process-workflow.yaml",
           "workflow_id": "fastapi-cli-process-workflow"
+        },
+        {
+          "case_ids": [
+            "fastapi.cli.process.websockets-startup-readiness"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, process.exit_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "process.exit_code"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+          "workflow_id": "websockets-cli-startup"
         }
       ],
       "input_only": true,
@@ -127322,7 +127581,7 @@
       "documented_sections": [
         {
           "end_line": 289,
-          "exclusion_reason": null,
+          "exclusion_reason": "The page title aggregates independently reviewed examples and adds no separate operation.",
           "feature_evidence": [
             {
               "feature_id": "app-routing",
@@ -127480,8 +127739,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Form parsing and authentication map to child sections; tutorial token logic is application-owned.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -127618,7 +127877,25 @@
             "dependency-security"
           ],
           "heading": "Get the `username` and `password` { #get-the-username-and-password }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "Submits valid form-encoded username/password and observes the response; this fixture also supplies its required tenant header and omits scope.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -127633,8 +127910,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The form dependency is FastAPI behavior; credential policy and response payload belong to the fixture app.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -127713,7 +127990,25 @@
             "dependency-security"
           ],
           "heading": "`scope` { #scope }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "scope-present",
+                "scope-absent"
+              ],
+              "case_ids": [
+                "fastapi.docs.simple-oauth2.form.scope-splitting"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/simple-oauth2-form-scopes.yaml",
+              "scope_note": "Two form inputs observe parsed scopes for a space-separated value and an omitted scope field.",
+              "workflow_id": "simple-oauth2-form-scopes"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -127726,8 +128021,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI owns OAuth2PasswordRequestForm scope splitting; the fixture only returns parsed values.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -127859,7 +128154,25 @@
             "public-api-errors"
           ],
           "heading": "Code to get the `username` and `password` { #code-to-get-the-username-and-password }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "Exercises one valid username/password form dependency, not the example's fake database, hashing, or invalid-credential branches.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -127886,8 +128199,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "This partial mapping isolates FastAPI form binding from tutorial-owned credential policy.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -128031,7 +128344,30 @@
             "openapi-docs"
           ],
           "heading": "`OAuth2PasswordRequestForm` { #oauth2passwordrequestform }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch",
+                "openapi"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "openapi.document",
+                "openapi.paths",
+                "openapi.request_schema"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "Submits username/password and selects the /token request-body schema; optional scope/client inputs, the strict class, and missing/wrong grant-type branches are not exercised.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -128051,8 +128387,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The actions sample FastAPI form binding and request-schema projection without claiming every OAuth2 form option.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "app-routing",
@@ -128152,7 +128488,25 @@
             "public-api-errors"
           ],
           "heading": "Use the form data { #use-the-form-data }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "Binds submitted username/password through the form dependency; it does not expose parsed scopes.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -128172,8 +128526,8 @@
             "validation.error_details",
             "warnings.category_message"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI parses and injects the OAuth2 form fields; response content is fixture-owned.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -128216,7 +128570,7 @@
         },
         {
           "end_line": 152,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section describes fake user lookup, hashing, comparison, and Pydantic model construction owned by the tutorial app.",
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -128257,8 +128611,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI form binding is mapped nearby; the credential policy is not a FastAPI contract.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -128289,7 +128643,7 @@
         },
         {
           "end_line": 130,
-          "exclusion_reason": null,
+          "exclusion_reason": "The example's password hashing is application-owned security logic.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128316,8 +128670,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The pinned span invokes no FastAPI API to compute or compare a hash.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128336,7 +128690,7 @@
         },
         {
           "end_line": 130,
-          "exclusion_reason": null,
+          "exclusion_reason": "This section is security rationale prose without independent FastAPI runtime behavior.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128363,8 +128717,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The described hashing implementation is application logic and is separately excluded.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128382,8 +128736,21 @@
           "start_line": 123
         },
         {
+          "end_line": 152,
+          "exclusion_reason": "This section explains Python keyword argument expansion and Pydantic model construction in the tutorial app.",
+          "feature_evidence": [],
+          "feature_ids": [],
+          "heading": "About `**user_dict` { #about-user-dict }",
+          "independent_workflow_mappings": [],
+          "observation_selectors": [],
+          "review_rationale": "The syntax and UserInDB validation are outside FastAPI's runtime contract.",
+          "review_status": "excluded",
+          "selector_evidence": [],
+          "start_line": 131
+        },
+        {
           "end_line": 184,
-          "exclusion_reason": null,
+          "exclusion_reason": "The access-token value, type, and issuance policy are chosen by the tutorial endpoint; FastAPI does not issue OAuth tokens.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128410,8 +128777,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Generic response behavior is mapped elsewhere; this is not a distinct OAuth token service contract.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128483,7 +128850,25 @@
             "status-codes"
           ],
           "heading": "Update the dependencies { #update-the-dependencies }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "authenticated-inactive-user"
+              ],
+              "case_ids": [
+                "fastapi.security.tutorial-003.oauth2-inactive-user"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
+              "scope_note": "Exercises valid Bearer syntax and the disabled-user path, not missing-token, wrong-scheme, active-user, or cleanup-order behavior.",
+              "workflow_id": "security-oauth2-inactive-user-source-wave"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -128497,8 +128882,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "FastAPI resolves the security dependency; the inactive-user 400 is raised by app code.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -128566,7 +128951,25 @@
             "dependency-security"
           ],
           "heading": "See it in action { #see-it-in-action }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "Maps the direct /token request only. Swagger UI clicks and /docs rendering are not observed; /users/me actions map below.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -128579,8 +128982,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The fixture samples the HTTP endpoint reached by authentication, not browser UI.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -128628,7 +129031,25 @@
             "dependency-security"
           ],
           "heading": "Authenticate { #authenticate }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_ids": [
+                "fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+              "scope_note": "Posts valid credentials directly to /token without exercising Swagger UI authorization or /docs.",
+              "workflow_id": "docs-dependencies-security"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -128638,8 +129059,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The form request is FastAPI behavior; the browser authorization interface is not an endpoint observation.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128686,7 +129107,26 @@
             "dependency-security"
           ],
           "heading": "Get your own user data { #get-your-own-user-data }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "authenticated-active-user",
+                "missing-token"
+              ],
+              "case_ids": [
+                "fastapi.security.tutorial-003.oauth2-inactive-user"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
+              "scope_note": "Samples the documented active-user response and unauthenticated 401 directly over ASGI; it does not drive Swagger UI.",
+              "workflow_id": "security-oauth2-inactive-user-source-wave"
+            }
+          ],
           "observation_selectors": [
             "dependency.call_order",
             "dependency.cleanup_order",
@@ -128699,8 +129139,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "The input covers FastAPI's security dependency boundary while keeping the account decision app-owned.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -128748,7 +129188,25 @@
             "request-validation"
           ],
           "heading": "Inactive user { #inactive-user }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "authenticated-inactive-user"
+              ],
+              "case_ids": [
+                "fastapi.security.tutorial-003.oauth2-inactive-user"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
+              "scope_note": "Matches the disabled-user branch and exact HTTP response; the 400 and detail are produced by the example's HTTPException.",
+              "workflow_id": "security-oauth2-inactive-user-source-wave"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -128758,8 +129216,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Authentication dependency resolution is FastAPI-owned; the inactive-user rule is app-owned.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -128778,7 +129236,7 @@
         },
         {
           "end_line": 289,
-          "exclusion_reason": null,
+          "exclusion_reason": "This recap restates form, token, and dependency examples without adding a separate behavior.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128805,8 +129263,8 @@
             "http.status",
             "openapi.security"
           ],
-          "review_rationale": null,
-          "review_status": "pending",
+          "review_rationale": "Runtime claims map to earlier anchored sections; the recap and next-chapter link add no independent output.",
+          "review_status": "excluded",
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
@@ -128863,6 +129321,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
           "workflow_id": "security-oauth2-inactive-user-source-wave"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.simple-oauth2.form.scope-splitting"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/simple-oauth2-form-scopes.yaml",
+          "workflow_id": "simple-oauth2-form-scopes"
         }
       ],
       "input_only": true,
@@ -172813,6 +173284,20 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-process-workflow.yaml",
           "workflow_id": "fastapi-cli-process-workflow"
+        },
+        {
+          "case_ids": [
+            "fastapi.cli.process.websockets-startup-readiness"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, process.exit_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "process.exit_code"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+          "workflow_id": "websockets-cli-startup"
         }
       ],
       "input_only": true,

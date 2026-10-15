@@ -13,6 +13,9 @@ from typing import Any
 from scripts.atlas_documentation_example_review_mappings import (
     DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
 )
+from scripts.atlas_documentation_page_case_links_fastapi_wave_l import (
+    DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L,
+)
 from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
@@ -384,6 +387,99 @@ def build_index() -> dict[str, Any]:
             old = mappings.get((source_id, workflow_id))
             all_case_ids = set(detail["case_ids"])
             all_selectors = set(detail["observation_selectors"])
+            if old:
+                all_case_ids.update(old["case_ids"])
+                all_selectors.update(old["observation_selectors"])
+            mappings[(source_id, workflow_id)] = {
+                "source_item_id": source_id,
+                "fixture_id": backlog_by_source[source_id]["id"],
+                "workflow_id": workflow_id,
+                "coverage_status": "partial",
+                "coverage_scope": _scope(len(all_case_ids), all_selectors),
+                "case_ids": sorted(all_case_ids),
+                "observation_selectors": sorted(all_selectors),
+            }
+
+    for page_rel, reviewed_rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():
+        source_id = "documented-page:" + page_rel
+        if source_id not in backlog_by_source:
+            raise ContractError(
+                "reviewed documentation page link is absent from the compatibility atlas: "
+                + page_rel
+            )
+        for row in reviewed_rows:
+            recipe_path = row["recipe_path"]
+            workflow_id = Path(recipe_path).stem.replace("_", "-")
+            workflow_ref = workflow_rows.get(workflow_id)
+            workflow = workflow_documents.get(workflow_id)
+            if (
+                workflow_ref is None
+                or workflow is None
+                or workflow_ref["recipe_path"] != recipe_path
+            ):
+                raise ContractError(
+                    "reviewed documentation page link references an unknown workflow: "
+                    f"{page_rel} -> {recipe_path}"
+                )
+            cases_by_id = {case["case_id"]: case for case in workflow["cases"]}
+            case_ids = row["case_ids"]
+            missing_cases = sorted(set(case_ids) - cases_by_id.keys())
+            if missing_cases:
+                raise ContractError(
+                    "reviewed documentation page link references unknown cases: "
+                    f"{page_rel} -> {missing_cases}"
+                )
+            declared = set(row["observation_selectors"])
+            observed: set[str] = set()
+            for case_id in case_ids:
+                case = cases_by_id[case_id]
+                page_path = "docs/en/docs/" + page_rel
+                if not any(
+                    evidence.get("path") == page_path
+                    and evidence.get("kind") == "upstream_documentation"
+                    for evidence in case.get("source_evidence", [])
+                ):
+                    raise ContractError(
+                        "reviewed documentation page link lacks exact input evidence: "
+                        f"{page_rel} -> {recipe_path}::{case_id}"
+                    )
+                if workflow["schema"] in PROCESS_WORKFLOW_SCHEMA_IDS:
+                    projected = set(case["observations"])
+                else:
+                    selected_case = case
+                    action_ids = row.get("action_ids")
+                    if action_ids is not None:
+                        actions = {action["action_id"]: action for action in case["actions"]}
+                        missing_actions = sorted(set(action_ids) - actions.keys())
+                        if missing_actions:
+                            raise ContractError(
+                                "reviewed documentation page link references unknown actions: "
+                                f"{page_rel} -> {missing_actions}"
+                            )
+                        selected_case = {
+                            **case,
+                            "actions": [actions[action_id] for action_id in action_ids],
+                        }
+                    projected = _source_selectors_for_case(
+                        selected_case,
+                        set(selector_support),
+                        workflow_schema=workflow["schema"],
+                        selector_support=selector_support,
+                    )
+                observed.update(
+                    selector
+                    for selector in projected
+                    if selector_support.get(selector) in {"supported", "partial"}
+                )
+            if observed != declared:
+                raise ContractError(
+                    "reviewed documentation page selectors differ from linked cases: "
+                    f"{page_rel} / {recipe_path}; expected {sorted(declared)}, "
+                    f"observed {sorted(observed)}"
+                )
+            old = mappings.get((source_id, workflow_id))
+            all_case_ids = set(case_ids)
+            all_selectors = set(declared)
             if old:
                 all_case_ids.update(old["case_ids"])
                 all_selectors.update(old["observation_selectors"])

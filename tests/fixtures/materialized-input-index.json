@@ -1214,9 +1214,9 @@
     {
       "id": "atlas-testing-websocket-websockets-tutorial002",
       "input_path": "tests/fixtures/inputs/parity/atlas-testing-websocket-websockets-tutorial002.json",
-      "input_sha256": "f1813869513b241c88e0cd086576ee95ebf395e7988884107de4d6c655f2b5eb",
+      "input_sha256": "f2bb76be91f70038d1a870c7a19c3f68cc573bf0d5e71df805299ead77a6cb9e",
       "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-websockets-tutorial002.yaml",
-      "recipe_sha256": "821c123ebe2ca66c1247fa5f7bd8d67257bc4d4df107dc0226467997f49281f8",
+      "recipe_sha256": "cf98aaa8e8684dc4f27ba27e76d40891e0f987cba1e47ebae5388cbcd692d021",
       "case_ids": [
         "fastapi.atlas-testing.websocket-tutorial002"
       ],
@@ -1229,6 +1229,7 @@
           "requirement_refs": [
             "source:documented-example:docs_src/websockets_/tutorial002_an_py310.py",
             "source:documented-example:docs_src/websockets_/tutorial002_py310.py",
+            "source:documented-page:advanced/websockets.md",
             "source:upstream-test:tests/test_tutorial/test_websockets/test_tutorial002.py"
           ]
         }
@@ -29118,14 +29119,14 @@
     {
       "id": "security-oauth2-inactive-user-source-wave",
       "input_path": "tests/fixtures/inputs/parity/security-oauth2-inactive-user-source-wave.json",
-      "input_sha256": "3f01cc71f8c263b371cb39029ea7d99e69bde91feb2cecfe0c991e7f0412d087",
+      "input_sha256": "5a8477e0c5d752adec5d3f547862bf652864309d8a4fa78b214151151a0d66b5",
       "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
-      "recipe_sha256": "b499470c868988bec629ce07e758dad5bf0239f9d74e7c0ae72bcffa7526d68d",
+      "recipe_sha256": "e805f807bf052a39e24cb496ef0a970d75991805da8bd1f745a8439065cb6b6c",
       "case_ids": [
         "fastapi.security.tutorial-003.oauth2-inactive-user"
       ],
       "workload_path": "tests/fixtures/workloads/security_oauth2_inactive_user_source_wave.py",
-      "workload_sha256": "0f6a1b48f71fee572543e5ee856ddf603c3326acd5070e1bc2663e3d29298772",
+      "workload_sha256": "e5d8949fe363d2ab21681bc07fe92201da6a40058231c2d86faf1273acf7c68b",
       "case_contracts": [
         {
           "case_id": "fastapi.security.tutorial-003.oauth2-inactive-user",
@@ -29924,6 +29925,28 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_tutorial/test_settings/test_app01.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "simple-oauth2-form-scopes",
+      "input_path": "tests/fixtures/inputs/parity/simple-oauth2-form-scopes.json",
+      "input_sha256": "9d6e6b9073584ec3c0b4836088b1f4ec6141581409a587a9011ab21b41389464",
+      "recipe_path": "tests/fixtures/input-recipes/parity/simple-oauth2-form-scopes.yaml",
+      "recipe_sha256": "1333a4897f8ec1d31dbd9b109c6341c940d6e0515074b4c95a97d28d62fc13b5",
+      "case_ids": [
+        "fastapi.docs.simple-oauth2.form.scope-splitting"
+      ],
+      "workload_path": "tests/fixtures/workloads/simple_oauth2_form_scopes.py",
+      "workload_sha256": "e59b9c9a1f2e563167c2c86a53fe27eee2219d464c1b5ae10d44777a1bfcc5fe",
+      "oracle_profile_extension": "standard-multipart",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.docs.simple-oauth2.form.scope-splitting",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/security/simple-oauth2.md"
           ]
         }
       ]
@@ -32542,11 +32565,33 @@
       ]
     },
     {
+      "id": "websockets-cli-startup",
+      "input_path": "tests/fixtures/inputs/parity/websockets-cli-startup.json",
+      "input_sha256": "0ae09498b9cbd419864d6eea270c69193074ac1f52d5c9aef378b092adaa20c5",
+      "recipe_path": "tests/fixtures/input-recipes/parity/websockets-cli-startup.yaml",
+      "recipe_sha256": "f859dcf07c04528c4ac70091b374d364f29071168d825ed15b4db2deb70bffbc",
+      "case_ids": [
+        "fastapi.cli.process.websockets-startup-readiness"
+      ],
+      "workflow_schema": "fastapi-rs/python-process-workflow@2",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.cli.process.websockets-startup-readiness",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/websockets.md",
+            "source:documented-page:fastapi-cli.md",
+            "source:upstream-test:tests/test_fastapi_cli.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "websockets-tutorial003-upstream-subset",
       "input_path": "tests/fixtures/inputs/parity/websockets-tutorial003-upstream-subset.json",
-      "input_sha256": "2dba9916eb695522bbb02797029d7813b3869dce03f4893846c7c7a80dfed809",
+      "input_sha256": "68db661c084bf71a29f58f193905f63a960839c3dfbef317a2da26c6cd4b33d1",
       "recipe_path": "tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml",
-      "recipe_sha256": "d3c4bf6aa410326893b6196ba0def9df1851f0a20256d426608c4e5b696a5d2a",
+      "recipe_sha256": "764b5cb5dbe0d3ae2771c5620e9e656daa8e9acb68fe26e1b7b632d476847b2a",
       "case_ids": [
         "fastapi.websockets.tutorial003.home",
         "fastapi.websockets.tutorial003.single-client-session"
@@ -32567,6 +32612,7 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/websockets_/tutorial003_py310.py",
+            "source:documented-page:advanced/websockets.md",
             "source:upstream-test:tests/test_tutorial/test_websockets/test_tutorial003.py"
           ]
         }
@@ -34415,6 +34461,23 @@
     {
       "source_item_id": "documented-example:docs_src/websockets_/tutorial002_py310.py",
       "fixture_id": "fastapi.docs-example.websockets-tutorial002-py310",
+      "workflow_id": "atlas-testing-websocket-websockets-tutorial002",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.atlas-testing.websocket-tutorial002"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "websocket.close_code",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/websockets.md",
+      "fixture_id": "fastapi.docs.advanced-websockets",
       "workflow_id": "atlas-testing-websocket-websockets-tutorial002",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -58911,6 +58974,20 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/security/simple-oauth2.md",
+      "fixture_id": "fastapi.docs.tutorial-security-simple-oauth2",
+      "workflow_id": "simple-oauth2-form-scopes",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.simple-oauth2.form.scope-splitting"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_get_model_definitions_formfeed_escape.py",
       "fixture_id": "fastapi.test.test-get-model-definitions-formfeed-escape",
       "workflow_id": "source-review-openapi-gaps",
@@ -61107,6 +61184,51 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/websockets.md",
+      "fixture_id": "fastapi.docs.advanced-websockets",
+      "workflow_id": "websockets-cli-startup",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, process.exit_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.cli.process.websockets-startup-readiness"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "process.exit_code"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:fastapi-cli.md",
+      "fixture_id": "fastapi.docs.fastapi-cli",
+      "workflow_id": "websockets-cli-startup",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, process.exit_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.cli.process.websockets-startup-readiness"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "process.exit_code"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_fastapi_cli.py",
+      "fixture_id": "fastapi.test.test-fastapi-cli",
+      "workflow_id": "websockets-cli-startup",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, process.exit_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.cli.process.websockets-startup-readiness"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "process.exit_code"
+      ]
+    },
+    {
       "source_item_id": "documented-example:docs_src/websockets_/tutorial003_py310.py",
       "fixture_id": "fastapi.docs-example.websockets-tutorial003-py310",
       "workflow_id": "websockets-tutorial003-upstream-subset",
@@ -61118,6 +61240,23 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/websockets.md",
+      "fixture_id": "fastapi.docs.advanced-websockets",
+      "workflow_id": "websockets-tutorial003-upstream-subset",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.websockets.tutorial003.single-client-session"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "websocket.event_order",
         "websocket.messages"
       ]

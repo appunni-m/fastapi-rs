@@ -6338,9 +6338,39 @@ from atlas_documentation_case_selector_overrides import (  # noqa: E402
 from atlas_documentation_page_case_links import (  # noqa: E402
     DOC_PAGE_CASE_LINK_COMPLETIONS,
 )
+from atlas_documentation_page_case_links_fastapi_wave_l import (  # noqa: E402
+    DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L,
+)
 from atlas_documentation_section_case_mappings import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS,
 )
+from atlas_documentation_section_case_mappings_fastapi_wave_l import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_WAVE_L,
+)
+
+for _doc_path, _rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():
+    _existing_rows = DOC_PAGE_CASE_LINK_COMPLETIONS.setdefault(_doc_path, [])
+    _existing_keys = {
+        (row.get("recipe_path"), tuple(row.get("case_ids", []))) for row in _existing_rows
+    }
+    _overlapping_rows = [
+        row
+        for row in _rows
+        if (row.get("recipe_path"), tuple(row.get("case_ids", []))) in _existing_keys
+    ]
+    if _overlapping_rows:
+        raise AtlasError("duplicate reviewed documentation page workflow link: " + _doc_path)
+    _existing_rows.extend(_rows)
+
+_section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(
+    DOC_SECTION_CASE_MAPPINGS_WAVE_L
+)
+if _section_mapping_overlaps:
+    raise AtlasError(
+        "duplicate reviewed documentation-section mapping keys: "
+        + str(sorted(_section_mapping_overlaps))
+    )
+DOC_SECTION_CASE_MAPPINGS.update(DOC_SECTION_CASE_MAPPINGS_WAVE_L)
 
 for _doc_page_path, _doc_page_rows in DOC_PAGE_CASE_LINK_COMPLETIONS.items():
     _doc_page_mapping = DOC_PAGE_REVIEW_MAPPINGS.get(_doc_page_path)
@@ -6458,10 +6488,6 @@ def documented_case_selectors(
             raise AtlasError("action_ids are absent from the linked case: " + str(missing_actions))
         selected_case = dict(case)
         selected_case["actions"] = [action_by_id[action_id] for action_id in action_ids]
-        if action_ids is not None:
-            # An explicit action scope does not include independent construction
-            # observations from the same case.
-            selected_case.pop("construction_observation", None)
 
     selected = _source_selectors_for_case(
         selected_case,
@@ -6469,11 +6495,36 @@ def documented_case_selectors(
         workflow_schema=workflow_schema,
         selector_support=selector_support,
     )
+    if action_ids is not None:
+        # Retain construction data for schema projection, then exclude its
+        # independent observations from this action-scoped documentation link.
+        selected = {selector for selector in selected if not selector.startswith("construction.")}
+        if case.get("construction_observation", {}).get("capture_warnings") is True:
+            selected.discard("python.warnings")
     return {
         selector
         for selector in selected
         if selector_support.get(selector) in {"supported", "partial"}
     }
+
+
+def reviewed_section_action_ids(
+    page_rel: str, recipe_path: str, case_ids: Sequence[str]
+) -> list[str] | None:
+    """Return the union of exact reviewed action scopes for a page workflow mapping."""
+    selected: set[str] = set()
+    expected_cases = list(case_ids)
+    for (section_page, _anchor), mapping in DOC_SECTION_CASE_MAPPINGS.items():
+        if (
+            section_page == page_rel
+            and isinstance(mapping, dict)
+            and mapping.get("status", "workflow") == "workflow"
+            and mapping.get("recipe_path") == recipe_path
+            and mapping.get("case_ids") == expected_cases
+            and isinstance(mapping.get("action_ids"), list)
+        ):
+            selected.update(mapping["action_ids"])
+    return sorted(selected) if selected else None
 
 
 def read_first_asgi_workflow() -> dict[str, Any]:
@@ -6861,7 +6912,13 @@ def validate_doc_section_mapping_shape(
         return None, [f"{section_label} must be an object"]
 
     common_fields = {"heading", "start_line", "end_line"}
-    workflow_fields = {"recipe_path", "case_ids", "observation_selectors", "scope_note"}
+    workflow_fields = {
+        "recipe_path",
+        "case_ids",
+        "action_ids",
+        "observation_selectors",
+        "scope_note",
+    }
     exclusion_fields = {"exclusion_reason"}
     status = mapping.get("status", "workflow")
     errors = []
@@ -6880,7 +6937,7 @@ def validate_doc_section_mapping_shape(
             )
     else:
         allowed_fields = common_fields | workflow_fields | {"status", "rationale"}
-        required_fields = common_fields | workflow_fields | {"rationale"}
+        required_fields = common_fields | (workflow_fields - {"action_ids"}) | {"rationale"}
         mixed_fields = sorted(exclusion_fields.intersection(mapping))
         if mixed_fields:
             errors.append(
@@ -9722,11 +9779,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         if row_overlay is None:
             return mappings
         if coverage_item.get("kind") != "upstream_test_module":
-            raise AtlasError("Starlette ownership overlays may target upstream test rows only: " + str(row_id))
+            raise AtlasError(
+                "Starlette ownership overlays may target upstream test rows only: " + str(row_id)
+            )
 
         mappings_by_feature = {mapping.get("feature_id"): mapping for mapping in mappings}
         if len(mappings_by_feature) != len(mappings):
-            raise AtlasError("Starlette ownership mapping has duplicate feature IDs: " + str(row_id))
+            raise AtlasError(
+                "Starlette ownership mapping has duplicate feature IDs: " + str(row_id)
+            )
         for feature_id, overlay in row_overlay.items():
             mapping = mappings_by_feature.get(feature_id)
             if mapping is None or mapping.get("ownership_boundary") != "owner review required":
@@ -9737,7 +9798,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     + feature_id
                 )
             if set(overlay) != {"ownership_boundary", "scope_note", "operation_specs"}:
-                raise AtlasError("reviewed Starlette ownership overlay has unsupported fields: " + str(row_id))
+                raise AtlasError(
+                    "reviewed Starlette ownership overlay has unsupported fields: " + str(row_id)
+                )
             ownership_boundary = overlay["ownership_boundary"]
             scope_note = overlay["scope_note"]
             operation_specs = overlay["operation_specs"]
@@ -9748,7 +9811,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 or not scope_note.strip()
                 or not isinstance(operation_specs, (list, tuple))
             ):
-                raise AtlasError("reviewed Starlette ownership overlay is malformed: " + str(row_id))
+                raise AtlasError(
+                    "reviewed Starlette ownership overlay is malformed: " + str(row_id)
+                )
             operation_refs = []
             for spec in operation_specs:
                 if (
@@ -9759,11 +9824,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     or not isinstance(spec[2], (list, tuple))
                     or any(not isinstance(requirement_id, str) for requirement_id in spec[2])
                 ):
-                    raise AtlasError("reviewed Starlette operation reference is malformed: " + str(row_id))
-                operation_refs.append(
-                    starlette_contract_operation_ref(
-                        spec[0], spec[1], spec[2], ownership_boundary
+                    raise AtlasError(
+                        "reviewed Starlette operation reference is malformed: " + str(row_id)
                     )
+                operation_refs.append(
+                    starlette_contract_operation_ref(spec[0], spec[1], spec[2], ownership_boundary)
                 )
             mapping["ownership_boundary"] = ownership_boundary
             mapping["status"] = (
@@ -10650,12 +10715,58 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             end_line = min(next_positions) - 1 if next_positions else len(lines)
             section_text = "\n".join(lines[heading["line"] : end_line])
             section_evidence = feature_match_evidence(heading["text"], section_text)
+            anchor_match = re.search(r"\{\s*#([A-Za-z0-9_-]+)\s*\}\s*$", heading["text"])
+            section_mapping_key = (rel, anchor_match.group(1)) if anchor_match else None
             if not section_evidence:
+                reviewed_section_mapping = (
+                    DOC_SECTION_CASE_MAPPINGS.get(section_mapping_key)
+                    if section_mapping_key is not None
+                    else None
+                )
+                if reviewed_section_mapping is not None:
+                    assert section_mapping_key is not None
+                    reviewed_section_mapping_keys_seen.add(section_mapping_key)
+                    section_label = f"docs/en/docs/{rel}#{section_mapping_key[1]} section mapping"
+                    section_mapping_status, shape_errors = validate_doc_section_mapping_shape(
+                        reviewed_section_mapping, section_label
+                    )
+                    documented_page_validation_errors.extend(shape_errors)
+                    if (
+                        not isinstance(reviewed_section_mapping, dict)
+                        or section_mapping_status != "excluded"
+                    ):
+                        documented_page_validation_errors.append(
+                            f"{section_label} has no feature evidence and must be an exclusion"
+                        )
+                        continue
+                    if (
+                        reviewed_section_mapping.get("heading") != heading["text"]
+                        or type(reviewed_section_mapping.get("start_line")) is not int
+                        or reviewed_section_mapping.get("start_line") != heading["line"]
+                        or type(reviewed_section_mapping.get("end_line")) is not int
+                        or reviewed_section_mapping.get("end_line") != end_line
+                    ):
+                        documented_page_validation_errors.append(
+                            f"{section_label} heading or pinned source span has changed"
+                        )
+                    documented_sections.append(
+                        {
+                            "heading": heading["text"],
+                            "start_line": heading["line"],
+                            "end_line": end_line,
+                            "feature_ids": [],
+                            "feature_evidence": [],
+                            "observation_selectors": [],
+                            "selector_evidence": [],
+                            "review_status": "excluded",
+                            "independent_workflow_mappings": [],
+                            "exclusion_reason": reviewed_section_mapping.get("exclusion_reason"),
+                            "review_rationale": reviewed_section_mapping.get("rationale"),
+                        }
+                    )
                 continue
             section_feature_evidence.extend(section_evidence)
             section_features = [item["feature_id"] for item in section_evidence]
-            anchor_match = re.search(r"\{\s*#([A-Za-z0-9_-]+)\s*\}\s*$", heading["text"])
-            section_mapping_key = (rel, anchor_match.group(1)) if anchor_match else None
             reviewed_section_mapping = (
                 DOC_SECTION_CASE_MAPPINGS.get(section_mapping_key)
                 if section_mapping_key is not None
@@ -10696,9 +10807,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         )
                     elif isinstance(reviewed_section_mapping, dict):
                         section_review_status = "excluded"
-                        section_exclusion_reason = reviewed_section_mapping.get(
-                            "exclusion_reason"
-                        )
+                        section_exclusion_reason = reviewed_section_mapping.get("exclusion_reason")
                         section_review_rationale = reviewed_section_mapping.get("rationale")
                     reviewed_section_mapping = None
                 elif section_mapping_status is None:
@@ -10715,6 +10824,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     )
                     recipe_path = ""
                 case_ids = reviewed_case_ids(reviewed_section_mapping, section_label)
+                action_ids = reviewed_action_ids(reviewed_section_mapping, section_label)
                 selector_claims = reviewed_selector_claims(
                     reviewed_section_mapping.get("observation_selectors"), section_label
                 )
@@ -10742,6 +10852,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         recipe_path=recipe_path,
                         case_id=case_id,
                         source_selectors=selector_ids,
+                        action_ids=action_ids,
                     )
                     for case_id in case_ids
                 }
@@ -10763,16 +10874,17 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     workflow_id = (
                         workflows_for_recipe[0]["id"] if len(workflows_for_recipe) == 1 else None
                     )
-                    section_workflow_mappings = [
-                        {
-                            "workflow_id": workflow_id,
-                            "recipe_path": recipe_path,
-                            "case_ids": case_ids,
-                            "observation_selectors": sorted(selector_claims),
-                            "coverage_status": "partial",
-                            "scope_note": reviewed_section_mapping["scope_note"],
-                        }
-                    ]
+                    section_workflow_mapping = {
+                        "workflow_id": workflow_id,
+                        "recipe_path": recipe_path,
+                        "case_ids": case_ids,
+                        "observation_selectors": sorted(selector_claims),
+                        "coverage_status": "partial",
+                        "scope_note": reviewed_section_mapping["scope_note"],
+                    }
+                    if action_ids is not None:
+                        section_workflow_mapping["action_ids"] = action_ids
+                    section_workflow_mappings = [section_workflow_mapping]
                     section_review_status = "reviewed_partial"
                     section_exclusion_reason = None
                     section_review_rationale = reviewed_section_mapping["rationale"]
@@ -10945,6 +11057,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     f"{mapping_label} has no valid exact case_ids"
                 )
                 continue
+            mapping_claims = indexed_mapping_claims[id(mapping)]
+            action_ids = reviewed_section_action_ids(rel, recipe_path, case_ids)
             projected_by_case = {
                 case_id: project_documented_page_case(
                     page_rel=rel,
@@ -10952,11 +11066,26 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     recipe_path=recipe_path,
                     case_id=case_id,
                     source_selectors=selector_ids,
+                    action_ids=action_ids,
                 )
                 for case_id in case_ids
             }
             observed_for_mapping = set().union(*projected_by_case.values())
-            mapping_claims = indexed_mapping_claims[id(mapping)]
+            if action_ids is not None and observed_for_mapping != mapping_claims:
+                # Source-index mappings are case-scoped unless one exact reviewed
+                # section scope explains their selector set without overclaiming.
+                action_ids = None
+                projected_by_case = {
+                    case_id: project_documented_page_case(
+                        page_rel=rel,
+                        page_source_path=page_source_path,
+                        recipe_path=recipe_path,
+                        case_id=case_id,
+                        source_selectors=selector_ids,
+                    )
+                    for case_id in case_ids
+                }
+                observed_for_mapping = set().union(*projected_by_case.values())
             missing = mapping_claims - observed_for_mapping
             unselected = observed_for_mapping - mapping_claims
             if missing or unselected:
@@ -11526,8 +11655,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         for feature_id in row_overlays
     }
     observed_overlay_counts = Counter(
-        feature_id
-        for _, feature_id in expected_starlette_ownership_overlays
+        feature_id for _, feature_id in expected_starlette_ownership_overlays
     )
     if dict(observed_overlay_counts) != STARLETTE_RS_OWNERSHIP_EXPECTED_FEATURE_COUNTS:
         raise AtlasError(
@@ -11541,8 +11669,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             coverage_item, mappings, applied_starlette_ownership_overlays
         )
     if applied_starlette_ownership_overlays != expected_starlette_ownership_overlays:
-        missing = sorted(expected_starlette_ownership_overlays - applied_starlette_ownership_overlays)
-        unexpected = sorted(applied_starlette_ownership_overlays - expected_starlette_ownership_overlays)
+        missing = sorted(
+            expected_starlette_ownership_overlays - applied_starlette_ownership_overlays
+        )
+        unexpected = sorted(
+            applied_starlette_ownership_overlays - expected_starlette_ownership_overlays
+        )
         raise AtlasError(
             "reviewed Starlette ownership overlay coverage mismatch: "
             + json.dumps({"missing": missing, "unexpected": unexpected})

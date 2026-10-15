@@ -14,8 +14,20 @@ def create_app() -> FastAPI:
         token: Annotated[str, Depends(bearer)],
     ) -> dict[str, str | bool]:
         users = {
-            "active-account": {"username": "active-account", "disabled": False},
-            "disabled-account": {"username": "disabled-account", "disabled": True},
+            "active-account": {
+                "username": "johndoe",
+                "email": "johndoe@example.com",
+                "full_name": "John Doe",
+                "disabled": False,
+                "hashed_password": "fakehashedsecret",
+            },
+            "disabled-account": {
+                "username": "alice",
+                "email": "alice@example.com",
+                "full_name": "Alice Smith",
+                "disabled": True,
+                "hashed_password": "fakehashedsecret2",
+            },
         }
         user = users.get(token)
         if user is None:

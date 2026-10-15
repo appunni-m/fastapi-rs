@@ -1,0 +1,60 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/simple_oauth2_form_scopes.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.simple-oauth2.form.scope-splitting
+  actions:
+  - action_id: scope-present
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /token
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/x-www-form-urlencoded]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: username=reader&password=secret&scope=items%3Aread%20users%3Awrite
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: scope-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /token
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/x-www-form-urlencoded]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: username=reader&password=secret
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/security/simple-oauth2.md
+    kind: upstream_documentation
