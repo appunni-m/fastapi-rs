@@ -1751,16 +1751,8 @@ impl PyApiRoute {
         generate_unique_id_function: GenerateUniqueIdArgument,
         strict_content_type: Option<bool>,
     ) -> PyResult<Self> {
-        let omitted_model = omitted_response_model();
         let unsupported_options = [
-            (
-                !response_model.bind(py).is(omitted_model.bind(py)),
-                "response_model",
-            ),
-            (status_code.is_some(), "status_code"),
-            (tags.is_some(), "tags"),
             (dependencies.is_some(), "dependencies"),
-            (summary.is_some(), "summary"),
             (description.is_some(), "description"),
             (
                 response_description != "Successful Response",
@@ -1768,8 +1760,6 @@ impl PyApiRoute {
             ),
             (responses.is_some(), "responses"),
             (deprecated.is_some(), "deprecated"),
-            (name.is_some(), "name"),
-            (methods.is_some(), "methods"),
             (operation_id.is_some(), "operation_id"),
             (response_model_include.is_some(), "response_model_include"),
             (response_model_exclude.is_some(), "response_model_exclude"),
@@ -1829,21 +1819,65 @@ impl PyApiRoute {
                 None,
             )?,
         )?;
-        PyApiRouter::add_api_route(
-            scratch_router.clone_ref(py),
+        let inner = scratch_router.bind(py).borrow().inner.clone_ref(py);
+        let response_model = if response_model.bind(py).is_none() {
+            None
+        } else {
+            Some(response_model)
+        };
+        let decorator = operation_decorator(
+            inner.clone_ref(py),
             py,
             path,
+            "GET",
+            response_model,
+            status_code,
+            ResponseModelOptions {
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
+                include_in_schema,
+                response_description: Some(response_description.to_owned()),
+                responses,
+                openapi_extra,
+                summary,
+                operation_id,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
+                deprecated,
+                tags,
+                dependencies: dependencies.unwrap_or_default(),
+                response_class: ResponseClassChoice::from_python(py, default_response_class(py)?),
+                name,
+            },
+        )?;
+        decorator
+            .bind(py)
+            .borrow_mut()
+            .dependency_overrides_provider = None;
+        let normalized_methods = PySet::empty(py)?;
+        if let Some(methods) = methods {
+            for method in methods.bind(py).try_iter()? {
+                normalized_methods.add(method?.call_method0("upper")?)?;
+            }
+        } else {
+            normalized_methods.add("GET")?;
+        }
+        let callback_methods = normalized_methods
+            .iter()
+            .map(|method| method.extract::<String>())
+            .collect::<PyResult<Vec<_>>>()?;
+        register_multi_method_api_route(
+            py,
+            decorator,
             endpoint,
+            callback_methods,
             None,
             None,
             true,
-            None,
-            None,
-            GenerateUniqueIdArgument::Omitted,
-            None,
-            None,
         )?;
-        let inner = scratch_router.bind(py).borrow().inner.clone_ref(py);
         let route = {
             let app = inner.bind(py).borrow();
             app.routes

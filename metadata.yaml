@@ -3586,6 +3586,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.routing.apiroute.constructor-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.routing.apiroute.constructor-common-options
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.routing.apiroute.constructor-explicit-none-response-model
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
           case_id: fastapi.routing.apiroute.constructor-defaults
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
@@ -3611,8 +3615,10 @@ reviewed_api_contract_overlay:
         inputs map callback-time method addition, removal, and clearing on direct
         routes and included-route contexts through route inspection, request
         dispatch, and OpenAPI. The pinned constructor signature is compared
-        exactly; construction and direct get_openapi behavior are mapped for one
-        static GET endpoint with no parameters, return annotation, or docstring.
+        exactly; default construction and direct get_openapi behavior are mapped
+        for one static GET endpoint. A separate standalone-route workflow maps
+        methods, name, tags, summary, status_code, an explicit response model,
+        and explicit response_model=None, comparing generated OpenAPI documents.
         Other constructor options, ASGI dispatch from a standalone route, custom
         route-class subclassing, and other APIRoute state remain outside this
         supported slice. The reviewed source classification keeps direct
@@ -3622,7 +3628,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Non-default constructor options are declared in the pinned signature but raise NotImplementedError until mapped to parity inputs and implemented.
+          - Only methods, name, tags, summary, status_code, and response_model (including explicit None) are currently implemented for standalone construction; other non-default options raise NotImplementedError.
           - Standalone APIRoute supports the mapped get_openapi path only; ASGI dispatch, app, and handler hooks are not implemented.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
@@ -4210,6 +4216,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.standalone-apiroute
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-common-options
+          workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-explicit-none-response-model
+          workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
+          observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-multi-route.yaml
           case_id: fastapi.openapi.get-openapi.two-static-get-routes
           workload_path: tests/fixtures/workloads/openapi_get_openapi_multi_route.py
@@ -4252,7 +4266,10 @@ reviewed_api_contract_overlay:
         and empty dependency/parameter plans produce their default operation
         documents. Static GET routes with a primary response model also emit
         its shared or split response schema according to the flag. Route-level
-        tags are preserved for supported operations. The linked fixtures also
+        tags are preserved for supported operations. Standalone APIRoute fixtures
+        additionally map methods, name, tags, summary, status_code, and response_model
+        into exact OpenAPI documents, including explicit response_model=None disabling
+        return-type inference. The linked fixtures also
         cover filtered RouteContext inputs from included routers, effective
         paths and dependency security, webhook RouteContext inputs with request
         schemas and security, and live method and response declarations read at
