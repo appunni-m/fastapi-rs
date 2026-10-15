@@ -10047,9 +10047,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         row_overlay = STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS.get(row_id)
         if row_overlay is None:
             return mappings
-        if coverage_item.get("kind") != "upstream_test_module":
+        row_key_prefix = {
+            "upstream_test_module": "upstream-test",
+            "documented_python_example_source": "documented-example",
+            "documented_feature_page": "documented-page",
+        }.get(coverage_item.get("kind"))
+        if row_key_prefix is None or not str(row_id).startswith(row_key_prefix + ":"):
             raise AtlasError(
-                "Starlette ownership overlays may target upstream test rows only: " + str(row_id)
+                "Starlette ownership overlay row key does not match a reviewed source kind: "
+                + str(row_id)
             )
 
         mappings_by_feature = {mapping.get("feature_id"): mapping for mapping in mappings}

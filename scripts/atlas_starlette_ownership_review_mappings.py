@@ -1,9 +1,10 @@
-"""Reviewed row-keyed Starlette ownership overlays for the 2026-10-15 audits.
+"""Reviewed row-keyed Starlette ownership overlays for the 2026-10-15/16 audits.
 
-These mappings classify the source observations in the three audit reports;
-Starlette-RS links identify ownership only and do not establish FastAPI-RS
-support or parity. The generator resolves every operation against its pinned
-manifest and carries the target support gaps into the atlas.
+These mappings classify source observations documented in
+docs/atlas/reviews/starlette-ownership-2026-10-16 and earlier upstream-test
+reviews. Starlette-RS links identify ownership only and do not establish
+FastAPI-RS support or parity. The generator resolves each operation against
+its pinned manifest and carries target support gaps into the atlas.
 """
 
 from __future__ import annotations
@@ -12,10 +13,10 @@ from typing import Any
 
 STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS: dict[str, dict[str, dict[str, Any]]] = {}
 STARLETTE_RS_OWNERSHIP_EXPECTED_FEATURE_COUNTS = {
-    "status-codes": 74,
-    "request-body": 10,
+    "status-codes": 126,
+    "request-body": 15,
     "asgi-error-propagation": 4,
-    "dependency-overrides": 3,
+    "dependency-overrides": 15,
 }
 
 
@@ -25,9 +26,10 @@ def _review_rows(
     ownership_boundary: str,
     scope_note: str,
     operation_specs: tuple[tuple[str, str, tuple[str, ...]], ...] = (),
+    row_key_prefix: str = "upstream-test",
 ) -> None:
     for source_path in source_paths:
-        row_id = "upstream-test:" + source_path
+        row_id = row_key_prefix + ":" + source_path
         row = STARLETTE_RS_OWNERSHIP_ROW_OVERLAYS.setdefault(row_id, {})
         if feature_id in row:
             raise ValueError(
@@ -48,6 +50,28 @@ _RESPONSE_STATUS = (
             "starlette.responses.Response.asgi-call.empty-response",
             "starlette.responses.Response.asgi-call.non-empty-response",
         ),
+    ),
+)
+_RESPONSE_STATUS_NON_EMPTY = (
+    (
+        "starlette.responses.Response",
+        "asgi-call",
+        ("starlette.responses.Response.asgi-call.non-empty-response",),
+    ),
+)
+_RESPONSE_STATUS_EMPTY = (
+    (
+        "starlette.responses.Response",
+        "asgi-call",
+        ("starlette.responses.Response.asgi-call.empty-response",),
+    ),
+)
+_STREAMING_RESPONSE_STATUS = (
+    *_RESPONSE_STATUS_NON_EMPTY,
+    (
+        "starlette.responses.StreamingResponse",
+        "asgi-call",
+        ("starlette.responses.StreamingResponse.asgi-call.unknown-size-content",),
     ),
 )
 _REQUEST_BODY_JSON = (
@@ -262,6 +286,91 @@ _review_rows(
 )
 
 
+# Documented Python examples: source paths and line-level status evidence are
+# recorded in the tracked review table; links cover only generic emission.
+_STATUS_DOC_NON_EMPTY_NOTE = """The tracked source audit at docs/atlas/reviews/starlette-ownership-2026-10-16/status-codes.md records the exact status-selection lines for this row. FastAPI or example code selects explicit statuses; Starlette Response supplies the generic default and emits the response. This link covers only non-empty response status/body emission and does not establish FastAPI-RS parity."""
+_STATUS_DOC_EMPTY_NOTE = """The tracked source audit at docs/atlas/reviews/starlette-ownership-2026-10-16/status-codes.md records the exact route configuration for this row. FastAPI configures RedirectResponse with 302; this link covers generic empty-response status emission, not RedirectResponse's unrelated default 307 behavior. No FastAPI-RS parity is claimed."""
+_STATUS_DOC_STREAM_NOTE = """The tracked source audit at docs/atlas/reviews/starlette-ownership-2026-10-16/status-codes.md records the exact status sites for this row. Application/FastAPI code selects error statuses; Starlette StreamingResponse supplies the successful stream's default 200 and emits it. Links cover only generic response and finite synchronous stream emission; no FastAPI-RS parity is claimed."""
+
+_review_rows(
+    "status-codes",
+    (
+        "docs_src/additional_responses/tutorial001_py310.py",
+        "docs_src/additional_responses/tutorial003_py310.py",
+        "docs_src/additional_status_codes/tutorial001_an_py310.py",
+        "docs_src/additional_status_codes/tutorial001_py310.py",
+        "docs_src/app_testing/tutorial002_py310.py",
+        "docs_src/app_testing/tutorial003_py310.py",
+        "docs_src/app_testing/tutorial004_py310.py",
+        "docs_src/authentication_error_status_code/tutorial001_an_py310.py",
+        "docs_src/bigger_applications/app_an_py310/dependencies.py",
+        "docs_src/bigger_applications/app_an_py310/routers/items.py",
+        "docs_src/custom_request_and_route/tutorial002_an_py310.py",
+        "docs_src/custom_request_and_route/tutorial002_py310.py",
+        "docs_src/custom_response/tutorial003_py310.py",
+        "docs_src/custom_response/tutorial004_py310.py",
+        "docs_src/dependencies/tutorial006_an_py310.py",
+        "docs_src/dependencies/tutorial006_py310.py",
+        "docs_src/dependencies/tutorial008b_an_py310.py",
+        "docs_src/dependencies/tutorial008b_py310.py",
+        "docs_src/dependencies/tutorial008c_an_py310.py",
+        "docs_src/dependencies/tutorial008c_py310.py",
+        "docs_src/dependencies/tutorial008d_an_py310.py",
+        "docs_src/dependencies/tutorial008d_py310.py",
+        "docs_src/dependencies/tutorial012_an_py310.py",
+        "docs_src/dependencies/tutorial012_py310.py",
+        "docs_src/dependency_testing/tutorial001_an_py310.py",
+        "docs_src/dependency_testing/tutorial001_py310.py",
+        "docs_src/handling_errors/tutorial001_py310.py",
+        "docs_src/handling_errors/tutorial002_py310.py",
+        "docs_src/handling_errors/tutorial003_py310.py",
+        "docs_src/handling_errors/tutorial004_py310.py",
+        "docs_src/handling_errors/tutorial005_py310.py",
+        "docs_src/handling_errors/tutorial006_py310.py",
+        "docs_src/path_operation_advanced_configuration/tutorial007_py310.py",
+        "docs_src/path_operation_configuration/tutorial001_py310.py",
+        "docs_src/response_change_status_code/tutorial001_py310.py",
+        "docs_src/response_status_code/tutorial001_py310.py",
+        "docs_src/response_status_code/tutorial002_py310.py",
+        "docs_src/security/tutorial003_an_py310.py",
+        "docs_src/security/tutorial003_py310.py",
+        "docs_src/security/tutorial004_an_py310.py",
+        "docs_src/security/tutorial004_py310.py",
+        "docs_src/security/tutorial005_an_py310.py",
+        "docs_src/security/tutorial005_py310.py",
+        "docs_src/security/tutorial007_an_py310.py",
+        "docs_src/security/tutorial007_py310.py",
+        "docs_src/sql_databases/tutorial001_an_py310.py",
+        "docs_src/sql_databases/tutorial001_py310.py",
+        "docs_src/sql_databases/tutorial002_an_py310.py",
+        "docs_src/sql_databases/tutorial002_py310.py",
+    ),
+    "FastAPI/application status selection with generic Starlette response emission",
+    _STATUS_DOC_NON_EMPTY_NOTE,
+    _RESPONSE_STATUS_NON_EMPTY,
+    row_key_prefix="documented-example",
+)
+_review_rows(
+    "status-codes",
+    ("docs_src/custom_response/tutorial006c_py310.py",),
+    "FastAPI-configured redirect status with generic empty-response emission",
+    _STATUS_DOC_EMPTY_NOTE,
+    _RESPONSE_STATUS_EMPTY,
+    row_key_prefix="documented-example",
+)
+_review_rows(
+    "status-codes",
+    (
+        "docs_src/dependencies/tutorial013_an_py310.py",
+        "docs_src/dependencies/tutorial014_an_py310.py",
+    ),
+    "Application-selected errors with generic streaming-response status emission",
+    _STATUS_DOC_STREAM_NOTE,
+    _STREAMING_RESPONSE_STATUS,
+    row_key_prefix="documented-example",
+)
+
+
 # Request-body review: link only generic receive/parse/value operations and
 # leave FastAPI extraction, validation, OpenAPI, and app-defined behavior local.
 _BODY_FORM_URLENCODED = (
@@ -290,6 +399,13 @@ _BODY_FORM_MULTIPART = (
 )
 _BODY_JSON = (*_REQUEST_BODY_JSON, *_REQUEST_DISPATCH_JSON)
 _BODY_BYTES = _REQUEST_BODY_BYTES
+_BODY_DOC_CACHE_REUSE = (
+    (
+        "starlette.requests.Request",
+        "body-stream-json",
+        ("starlette.request.body-cache-reuse",),
+    ),
+)
 
 _review_rows(
     "request-body",
@@ -360,6 +476,30 @@ _review_rows(
     _BODY_JSON,
 )
 
+_BODY_DOC_CACHE_NOTE = """The tracked source audit at docs/atlas/reviews/starlette-ownership-2026-10-16/request-body.md identifies the exact example and independent input. The link is limited to repeated Request.body() byte-content reuse; FastAPI field parsing/validation, custom route behavior, and OpenAPI projection remain separate. These HTTP observations do not prove Python bytes-object identity or FastAPI-RS parity."""
+_review_rows(
+    "request-body",
+    (
+        "docs_src/custom_request_and_route/tutorial002_an_py310.py",
+        "docs_src/custom_request_and_route/tutorial002_py310.py",
+        "docs_src/openapi_callbacks/tutorial001_py310.py",
+    ),
+    "FastAPI/Pydantic body behavior with narrowly observed generic Request cache reuse",
+    _BODY_DOC_CACHE_NOTE,
+    _BODY_DOC_CACHE_REUSE,
+    row_key_prefix="documented-example",
+)
+_review_rows(
+    "request-body",
+    (
+        "docs_src/path_operation_advanced_configuration/tutorial006_py310.py",
+        "docs_src/path_operation_advanced_configuration/tutorial007_py310.py",
+    ),
+    "Generic raw Request body access with application-defined processing and FastAPI OpenAPI projection",
+    """The tracked source audit at docs/atlas/reviews/starlette-ownership-2026-10-16/request-body.md records the exact endpoint lines and mapped actions. Each action reads one complete raw body once; no existing sibling requirement isolates that observation. YAML parsing/manual Pydantic validation (where present) is application-owned, openapi_extra is FastAPI-owned, and no FastAPI-RS parity is claimed.""",
+    row_key_prefix="documented-example",
+)
+
 
 # Error and dependency review: link the outer Starlette HTTP policy only where
 # the reports identify it; accepted-session WebSocket propagation stays open.
@@ -414,4 +554,46 @@ _review_rows(
     ("tests/test_tutorial/test_settings/test_app02.py",),
     "FastAPI-owned settings dependency override",
     """FastAPI replaces get_settings through dependency_overrides and passes the replacement Settings value to the route. The source does not assert cache hits or invalidation; no exact generic Starlette operation or parity claim applies.""",
+)
+
+_DEPENDENCY_OVERRIDE_DOC_NOTE = """The tracked source audit at docs/atlas/reviews/starlette-ownership-2026-10-16/dependency-overrides.md identifies the paired example and independent ASGI case. FastAPI owns override lookup, replacement dependency graph construction, and solving; Starlette app dispatch and response emission are separate atlas boundaries. The link records ownership only and does not claim FastAPI-RS parity."""
+_review_rows(
+    "dependency-overrides",
+    (
+        "docs_src/dependency_testing/tutorial001_an_py310.py",
+        "docs_src/dependency_testing/tutorial001_py310.py",
+        "docs_src/settings/app02_an_py310/main.py",
+        "docs_src/settings/app02_an_py310/test_main.py",
+        "docs_src/settings/app02_py310/main.py",
+        "docs_src/settings/app02_py310/test_main.py",
+    ),
+    "FastAPI-owned dependency override resolution",
+    _DEPENDENCY_OVERRIDE_DOC_NOTE,
+    row_key_prefix="documented-example",
+)
+_review_rows(
+    "dependency-overrides",
+    (
+        "docs_src/settings/app01_py310/main.py",
+        "docs_src/settings/app03_an_py310/main.py",
+        "docs_src/settings/app03_py310/main.py",
+        "docs_src/settings/tutorial001_py310.py",
+    ),
+    "Page-inherited dependency-override association; no override observed",
+    """The tracked source audit at docs/atlas/reviews/starlette-ownership-2026-10-16/dependency-overrides.md records these exact settings example rows. Their source/workload demonstrates global settings projection or ordinary Depends injection, not dependency_overrides lookup or replacement. The association is inherited from the page; no sibling operation or parity claim applies.""",
+    row_key_prefix="documented-example",
+)
+_review_rows(
+    "dependency-overrides",
+    ("advanced/settings.md",),
+    "FastAPI-owned dependency override resolution documented by the settings page",
+    """The pinned page documents a get_settings dependency replacement at docs/en/docs/advanced/settings.md:175-184; the settings-doc-review-20261015 case observes one replacement response. FastAPI owns override lookup and solving. Generic ASGI/response behavior is represented by separate feature mappings; no Starlette operation or FastAPI-RS parity is claimed here.""",
+    row_key_prefix="documented-page",
+)
+_review_rows(
+    "dependency-overrides",
+    ("reference/fastapi.md",),
+    "FastAPI-owned dependency_overrides public attribute documented by the API reference",
+    """The pinned API reference lists dependency_overrides at docs/en/docs/reference/fastapi.md:17, and FastAPI initializes the public mapping in fastapi/applications.py:967-984. This page's selected OpenAPI case does not exercise overrides; the separate dependency-lifecycle case fastapi.dependencies.override-resolution covers one mapping and request result. Starlette has no dependency-override operation, and no FastAPI-RS parity is claimed by this association.""",
+    row_key_prefix="documented-page",
 )

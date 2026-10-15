@@ -895,6 +895,19 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.atlas-testing.tutorial002"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-app-testing-ws.yaml",
+          "workflow_id": "atlas-testing-websocket-app-testing-ws"
+        },
+        {
+          "case_ids": [
             "fastapi.docs.testing-websockets.testclient-example"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -908,9 +921,25 @@
       ],
       "input_only": true,
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
         "websocket.messages"
       ],
       "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
         {
           "feature_id": "websocket-lifecycle",
           "selectors": [
@@ -940,7 +969,7 @@
         "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status.",
         "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
       ],
-      "stimulus_design_notes": "The pinned example defines an HTTP route and a WebSocket endpoint tested through TestClient. This independent TestClient case observes only WebSocket messages; it does not establish the source HTTP route response, the TestClient harness/import behavior, or close/event-order semantics for this source."
+      "stimulus_design_notes": "The pinned example defines an HTTP route and a WebSocket endpoint tested through TestClient. One independent raw-ASGI case observes the HTTP status and body; a separate TestClient-derived case observes WebSocket messages only. These cases do not establish the TestClient harness/import behavior or WebSocket close/event-order semantics for this source."
     },
     {
       "feature_ids": [

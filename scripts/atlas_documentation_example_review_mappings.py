@@ -4715,7 +4715,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
         "docs_src/app_testing/tutorial002_py310.py": {
-            "rationale": "The pinned example defines an HTTP route and a WebSocket endpoint tested through TestClient. This independent TestClient case observes only WebSocket messages; it does not establish the source HTTP route response, the TestClient harness/import behavior, or close/event-order semantics for this source.",
+            "rationale": "The pinned example defines an HTTP route and a WebSocket endpoint tested through TestClient. One independent raw-ASGI case observes the HTTP status and body; a separate TestClient-derived case observes WebSocket messages only. These cases do not establish the TestClient harness/import behavior or WebSocket close/event-order semantics for this source.",
             "supporting_sources": [
                 {
                     "path": "docs_src/app_testing/tutorial002_py310.py",
@@ -4726,10 +4726,15 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
             ],
             "workflow_cases": [
                 {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-app-testing-ws.yaml",
+                    "case_ids": ["fastapi.atlas-testing.tutorial002"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
                     "recipe_path": "tests/fixtures/input-recipes/parity/testing_websockets.yaml",
                     "case_ids": ["fastapi.docs.testing-websockets.testclient-example"],
                     "observation_selectors": ["websocket.messages"],
-                }
+                },
             ],
         },
         "docs_src/background_tasks/tutorial001_py310.py": {
