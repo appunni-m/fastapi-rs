@@ -406,16 +406,15 @@ def check_public_fastapi_facade() -> None:
 def check_wheel_package_sources() -> None:
     """Require each source Python package to be included in the wheel config."""
     configured_package_list = _configured_python_packages()
-    if len(configured_package_list) != len(set(configured_package_list)):
+    package_parts = [_python_package_parts(package) for package in configured_package_list]
+    normalized_packages = [".".join(parts) for parts in package_parts]
+    if len(normalized_packages) != len(set(normalized_packages)):
         raise SystemExit("tool.maturin.python-packages contains duplicate packages")
 
     missing_directories = []
     missing_initializers = []
-    for package in configured_package_list:
-        package_parts = package.split(".")
-        if not package_parts or any(not part.isidentifier() for part in package_parts):
-            raise SystemExit(f"invalid package name in tool.maturin.python-packages: {package!r}")
-        package_directory = PYTHON_PACKAGE_ROOT.joinpath(*package_parts)
+    for parts in package_parts:
+        package_directory = PYTHON_PACKAGE_ROOT.joinpath(*parts)
         if not package_directory.is_dir():
             missing_directories.append(package_directory)
         elif not (package_directory / "__init__.py").is_file():
@@ -428,7 +427,7 @@ def check_wheel_package_sources() -> None:
             "__init__.py: " + ", ".join(str(path) for path in missing_paths)
         )
 
-    configured_packages = set(configured_package_list)
+    configured_packages = set(normalized_packages)
     source_packages = {
         ".".join(path.parent.relative_to(PYTHON_PACKAGE_ROOT).parts)
         for path in PYTHON_PACKAGE_ROOT.rglob("__init__.py")
@@ -438,6 +437,21 @@ def check_wheel_package_sources() -> None:
             "tool.maturin.python-packages must match Python package sources: "
             f"configured={sorted(configured_packages)!r}, source={sorted(source_packages)!r}"
         )
+
+
+def _python_package_parts(package: str) -> tuple[str, ...]:
+    """Normalize Maturin package names and slash-separated source paths."""
+    separator = "/" if "/" in package else "."
+    parts = tuple(package.split(separator))
+    if (
+        not parts
+        or any(not part.isidentifier() for part in parts)
+        or any((separator == "/") and "." in part for part in parts)
+    ):
+        raise SystemExit(
+            f"invalid package name or path in tool.maturin.python-packages: {package!r}"
+        )
+    return parts
 
 
 def check_rust_binding_import_boundary() -> None:
