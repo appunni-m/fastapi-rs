@@ -3626,12 +3626,17 @@ struct PyFastApiCachedReceive {
     request: Py<PyAny>,
 }
 
-#[pyclass(name = "_FastAPIHTTPExceptionHandler", module = "fastapi_rs._core")]
+#[pyclass(
+    name = "_FastAPIHTTPExceptionHandler",
+    module = "fastapi_rs._core",
+    dict
+)]
 struct PyFastApiHttpExceptionHandler;
 
 #[pyclass(
     name = "_FastAPIRequestValidationExceptionHandler",
-    module = "fastapi_rs._core"
+    module = "fastapi_rs._core",
+    dict
 )]
 struct PyFastApiRequestValidationExceptionHandler;
 
@@ -4003,17 +4008,7 @@ impl PyFastApi {
 
     #[getter(_is_coroutine_marker)]
     fn inspect_coroutine_marker(&self, py: Python<'_>) -> PyResult<Option<Py<PyAny>>> {
-        let version = py.import("sys")?.getattr("version_info")?;
-        let major = version.get_item(0)?.extract::<u8>()?;
-        let minor = version.get_item(1)?.extract::<u8>()?;
-        if major > 3 || (major == 3 && minor >= 13) {
-            return py
-                .import("inspect")?
-                .getattr("_is_coroutine_marker")
-                .map(Bound::unbind)
-                .map(Some);
-        }
-        Ok(None)
+        inspect_coroutine_marker(py)
     }
 
     #[new]
@@ -4109,17 +4104,17 @@ impl PyFastApi {
             .import("starlette.exceptions")?
             .getattr("HTTPException")?;
         if !exception_handlers.contains(&http_exception_type)? {
-            exception_handlers.set_item(
-                http_exception_type,
-                Py::new(py, PyFastApiHttpExceptionHandler)?.into_any(),
-            )?;
+            let handler = py
+                .import("fastapi_rs._core")?
+                .getattr("http_exception_handler")?;
+            exception_handlers.set_item(http_exception_type, handler)?;
         }
         let request_validation_exception_type = crate::errors::request_validation_error_type(py);
         if !exception_handlers.contains(&request_validation_exception_type)? {
-            exception_handlers.set_item(
-                request_validation_exception_type,
-                Py::new(py, PyFastApiRequestValidationExceptionHandler)?.into_any(),
-            )?;
+            let handler = py
+                .import("fastapi_rs._core")?
+                .getattr("request_validation_exception_handler")?;
+            exception_handlers.set_item(request_validation_exception_type, handler)?;
         }
         let websocket_validation_exception_type =
             crate::errors::websocket_request_validation_error_type(py);
@@ -5726,60 +5721,157 @@ fn fastapi_cached_request_message(
     Ok(MachineAction::Complete(message.into_any().unbind()))
 }
 
+#[derive(Clone, Copy)]
+enum FastApiDefaultExceptionHandlerKind {
+    Http,
+    RequestValidation,
+}
+
+struct FastApiDefaultExceptionHandlerCall {
+    kind: FastApiDefaultExceptionHandlerKind,
+    exception: Py<PyAny>,
+}
+
+impl AwaitableStateMachine for FastApiDefaultExceptionHandlerCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        let response = match input {
+            MachineResume::Start => {
+                let exception = self.exception.bind(py);
+                match self.kind {
+                    FastApiDefaultExceptionHandlerKind::Http => {
+                        default_http_exception_response(py, exception)?
+                    }
+                    FastApiDefaultExceptionHandlerKind::RequestValidation => {
+                        default_request_validation_exception_response(py, exception)?
+                    }
+                }
+            }
+            MachineResume::Error(error) => return Err(error),
+            MachineResume::Value(_) => {
+                return Err(PyRuntimeError::new_err(
+                    "FastAPI exception handler resumed without an awaited operation",
+                ));
+            }
+        };
+        Ok(MachineAction::Complete(response))
+    }
+}
+
+fn default_http_exception_response(
+    py: Python<'_>,
+    exception: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let status_code = exception.getattr("status_code")?.extract::<u16>()?;
+    let response_module = py.import("starlette.responses")?;
+    let has_body = status_code >= 200 && !matches!(status_code, 204 | 205 | 304);
+    let response_type = if has_body {
+        response_module.getattr("JSONResponse")?
+    } else {
+        response_module.getattr("Response")?
+    };
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("status_code", status_code)?;
+    let headers =
+        py.import("builtins")?
+            .getattr("getattr")?
+            .call1((exception, "headers", py.None()))?;
+    if !headers.is_none() {
+        kwargs.set_item("headers", headers)?;
+    }
+    if has_body {
+        let content = PyDict::new(py);
+        content.set_item("detail", exception.getattr("detail")?)?;
+        response_type
+            .call((content,), Some(&kwargs))
+            .map(Bound::unbind)
+    } else {
+        response_type.call((), Some(&kwargs)).map(Bound::unbind)
+    }
+}
+
+fn default_request_validation_exception_response(
+    py: Python<'_>,
+    exception: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let encoded_errors = jsonable_encoder_default(py, &exception.call_method0("errors")?)?;
+    let content = PyDict::new(py);
+    content.set_item("detail", encoded_errors)?;
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("status_code", 422)?;
+    py.import("starlette.responses")?
+        .getattr("JSONResponse")?
+        .call((content,), Some(&kwargs))
+        .map(Bound::unbind)
+}
+
 #[pymethods]
 impl PyFastApiHttpExceptionHandler {
-    fn __call__(
-        &self,
-        py: Python<'_>,
-        _request: Py<PyAny>,
-        exception: Py<PyAny>,
-    ) -> PyResult<Py<PyAny>> {
-        let exception = exception.bind(py);
-        let status_code = exception.getattr("status_code")?.extract::<u16>()?;
-        let response_module = py.import("starlette.responses")?;
-        let has_body = status_code >= 200 && !matches!(status_code, 204 | 205 | 304);
-        let response_type = if has_body {
-            response_module.getattr("JSONResponse")?
-        } else {
-            response_module.getattr("Response")?
-        };
-        let kwargs = PyDict::new(py);
-        kwargs.set_item("status_code", status_code)?;
-        let headers = exception.getattr("headers")?;
-        if !headers.is_none() {
-            kwargs.set_item("headers", headers)?;
-        }
-        if has_body {
-            let content = PyDict::new(py);
-            content.set_item("detail", exception.getattr("detail")?)?;
-            response_type
-                .call((content,), Some(&kwargs))
-                .map(Bound::unbind)
-        } else {
-            response_type.call((), Some(&kwargs)).map(Bound::unbind)
-        }
+    #[getter(_is_coroutine)]
+    fn asyncio_coroutine_marker(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        py.import("asyncio")?
+            .getattr("coroutines")?
+            .getattr("_is_coroutine")
+            .map(Bound::unbind)
+    }
+
+    #[getter(_is_coroutine_marker)]
+    fn inspect_coroutine_marker(&self, py: Python<'_>) -> PyResult<Option<Py<PyAny>>> {
+        inspect_coroutine_marker(py)
+    }
+
+    #[pyo3(signature = (request, exc))]
+    fn __call__(&self, py: Python<'_>, request: Py<PyAny>, exc: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let _ = request;
+        into_python_awaitable(
+            py,
+            FastApiDefaultExceptionHandlerCall {
+                kind: FastApiDefaultExceptionHandlerKind::Http,
+                exception: exc,
+            },
+        )
     }
 }
 
 #[pymethods]
 impl PyFastApiRequestValidationExceptionHandler {
-    fn __call__(
-        &self,
-        py: Python<'_>,
-        _request: Py<PyAny>,
-        exception: Py<PyAny>,
-    ) -> PyResult<Py<PyAny>> {
-        let encoded_errors =
-            jsonable_encoder_default(py, &exception.bind(py).call_method0("errors")?)?;
-        let content = PyDict::new(py);
-        content.set_item("detail", encoded_errors)?;
-        let kwargs = PyDict::new(py);
-        kwargs.set_item("status_code", 422)?;
-        py.import("starlette.responses")?
-            .getattr("JSONResponse")?
-            .call((content,), Some(&kwargs))
+    #[getter(_is_coroutine)]
+    fn asyncio_coroutine_marker(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        py.import("asyncio")?
+            .getattr("coroutines")?
+            .getattr("_is_coroutine")
             .map(Bound::unbind)
     }
+
+    #[getter(_is_coroutine_marker)]
+    fn inspect_coroutine_marker(&self, py: Python<'_>) -> PyResult<Option<Py<PyAny>>> {
+        inspect_coroutine_marker(py)
+    }
+
+    #[pyo3(signature = (request, exc))]
+    fn __call__(&self, py: Python<'_>, request: Py<PyAny>, exc: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let _ = request;
+        into_python_awaitable(
+            py,
+            FastApiDefaultExceptionHandlerCall {
+                kind: FastApiDefaultExceptionHandlerKind::RequestValidation,
+                exception: exc,
+            },
+        )
+    }
+}
+
+fn inspect_coroutine_marker(py: Python<'_>) -> PyResult<Option<Py<PyAny>>> {
+    let version = py.import("sys")?.getattr("version_info")?;
+    let major = version.get_item(0)?.extract::<u8>()?;
+    let minor = version.get_item(1)?.extract::<u8>()?;
+    if major > 3 || (major == 3 && minor >= 13) {
+        return py
+            .import("inspect")?
+            .getattr("_is_coroutine_marker")
+            .map(Bound::unbind)
+            .map(Some);
+    }
+    Ok(None)
 }
 
 #[pymethods]
@@ -15534,6 +15626,40 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApiMessageCapture>()?;
     module.add_class::<PyFastApiHttpExceptionHandler>()?;
     module.add_class::<PyFastApiRequestValidationExceptionHandler>()?;
+    let py = module.py();
+    let http_exception_handler = Py::new(py, PyFastApiHttpExceptionHandler)?.into_any();
+    let request_type = py.import("starlette.requests")?.getattr("Request")?;
+    let http_exception_type = py
+        .import("starlette.exceptions")?
+        .getattr("HTTPException")?;
+    let response_type = py.import("starlette.responses")?.getattr("Response")?;
+    install_exception_handler_metadata(
+        py,
+        http_exception_handler.bind(py),
+        "http_exception_handler",
+        [("request", &request_type), ("exc", &http_exception_type)],
+        &response_type,
+    )?;
+    module.add("http_exception_handler", http_exception_handler)?;
+
+    let request_validation_exception_handler =
+        Py::new(py, PyFastApiRequestValidationExceptionHandler)?.into_any();
+    let request_validation_exception_type = crate::errors::request_validation_error_type(py);
+    let json_response_type = py.import("starlette.responses")?.getattr("JSONResponse")?;
+    install_exception_handler_metadata(
+        py,
+        request_validation_exception_handler.bind(py),
+        "request_validation_exception_handler",
+        [
+            ("request", &request_type),
+            ("exc", &request_validation_exception_type),
+        ],
+        &json_response_type,
+    )?;
+    module.add(
+        "request_validation_exception_handler",
+        request_validation_exception_handler,
+    )?;
     module.add_class::<PyExceptionHandlerDecorator>()?;
     module.add_class::<PyFastApiCallNext>()?;
     module.add_class::<PyApiRouter>()?;
@@ -15597,6 +15723,49 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     }
     register_ujson_response(module)?;
     Ok(())
+}
+
+fn install_exception_handler_metadata(
+    py: Python<'_>,
+    callable: &Bound<'_, PyAny>,
+    name: &str,
+    parameter_specs: [(&str, &Bound<'_, PyAny>); 2],
+    return_type: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    callable.setattr("__module__", "fastapi.exception_handlers")?;
+    callable.setattr("__name__", name)?;
+    callable.setattr("__qualname__", name)?;
+    // Python 3.12 needs function-like code flags; calls still enter native __call__.
+    let async_code = py
+        .import("asyncio")?
+        .getattr("sleep")?
+        .getattr("__code__")?;
+    callable.setattr("__code__", async_code)?;
+    callable.setattr("__defaults__", py.None())?;
+    callable.setattr("__kwdefaults__", py.None())?;
+    let annotations = PyDict::new(py);
+    for (parameter_name, annotation) in parameter_specs {
+        annotations.set_item(parameter_name, annotation)?;
+    }
+    annotations.set_item("return", return_type)?;
+    callable.setattr("__annotations__", annotations)?;
+
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let parameter_kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let python_parameters = PyList::empty(py);
+    for (parameter_name, annotation) in parameter_specs {
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("annotation", annotation)?;
+        python_parameters
+            .append(parameter_type.call((parameter_name, &parameter_kind), Some(&kwargs))?)?;
+    }
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", return_type)?;
+    let signature = inspect
+        .getattr("Signature")?
+        .call((python_parameters,), Some(&signature_kwargs))?;
+    callable.setattr("__signature__", signature)
 }
 
 /// Install source-derived Python introspection signatures after native API types register.

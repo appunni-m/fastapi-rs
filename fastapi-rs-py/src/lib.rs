@@ -10,6 +10,20 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList, PyModule};
 
+const FASTAPI_PUBLIC_ROOT_MODULES: &[&str] = &[
+    "datastructures",
+    "encoders",
+    "exception_handlers",
+    "middleware",
+    "openapi",
+    "requests",
+    "responses",
+    "routing",
+    "security",
+    "sse",
+    "websockets",
+];
+
 #[pyclass(name = "jsonable_encoder", module = "fastapi.encoders", dict)]
 struct PyJsonableEncoder;
 
@@ -378,6 +392,18 @@ fn require_supported_scope(scope_type: &str) -> PyResult<&'static str> {
     }
 }
 
+fn bootstrap_target_fastapi_modules(py: Python<'_>) -> PyResult<()> {
+    let modules = py.import("sys")?.getattr("modules")?;
+    if modules.contains("fastapi")? {
+        let import_module = py.import("importlib")?.getattr("import_module")?;
+        for child in FASTAPI_PUBLIC_ROOT_MODULES {
+            let module_path = format!("fastapi.{child}");
+            import_module.call1((module_path,))?;
+        }
+    }
+    Ok(())
+}
+
 #[pymodule]
 fn _core(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("__version__", "0.141.1")?;
@@ -394,5 +420,6 @@ fn _core(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let encoder = Py::new(module.py(), PyJsonableEncoder)?;
     install_encoder_signature(module.py(), encoder.bind(module.py()))?;
     module.add("jsonable_encoder", encoder)?;
+    bootstrap_target_fastapi_modules(module.py())?;
     Ok(())
 }

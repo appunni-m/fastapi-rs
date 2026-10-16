@@ -37,6 +37,11 @@ FASTAPI_LOGGER_NAME = re.compile(
     r"\.\s*getattr\(\s*['\"]getLogger['\"]\s*\)\s*\?\s*"
     r"\.\s*call1\(\s*\(\s*(?P<value>['\"]fastapi['\"])\s*,\s*\)\s*\)"
 )
+FASTAPI_TARGET_PACKAGE_BOOTSTRAP = re.compile(
+    r"\bfn\s+bootstrap_target_fastapi_modules\s*\([^)]*\)[^{]*\{.*?"
+    r"modules\s*\.\s*contains\(\s*(?P<value>['\"]fastapi['\"])\s*\)",
+    re.DOTALL,
+)
 PUBLIC_FASTAPI_EXPORTS = [
     "APIRouter",
     "BackgroundTasks",
@@ -438,6 +443,7 @@ def check_wheel_package_sources() -> None:
 def check_rust_binding_import_boundary() -> None:
     """Reject literal imports of original FastAPI from either Rust crate."""
     violations = []
+    check_fastapi_root_module_bootstrap()
     rust_files = sorted(path for root in RUST_SOURCE_ROOTS for path in root.rglob("*.rs"))
     for path in rust_files:
         source = path.read_text(encoding="utf-8")
@@ -446,6 +452,7 @@ def check_rust_binding_import_boundary() -> None:
                 _is_fastapi_module_metadata(source, match.start())
                 or _is_fastapi_module_metadata_const(source, match.start())
                 or _is_fastapi_logger_name(source, match.start())
+                or _is_fastapi_target_package_bootstrap(source, match.start())
             ):
                 continue
             line = source.count("\n", 0, match.start()) + 1
@@ -462,6 +469,59 @@ def check_rust_binding_import_boundary() -> None:
             )
     if violations:
         raise SystemExit("\n".join(violations))
+
+
+def check_fastapi_root_module_bootstrap() -> None:
+    """Keep the Rust bootstrap exactly aligned with reviewed root module rows."""
+    metadata = (PROJECT_ROOT / "metadata.yaml").read_text(encoding="utf-8")
+    review_match = re.search(
+        r"(?ms)^runtime_root_namespace_review:\n(?P<body>.*?)(?=^[A-Za-z_][A-Za-z0-9_]*:\s*$|\Z)",
+        metadata,
+    )
+    if review_match is None:
+        raise SystemExit("metadata.yaml is missing runtime_root_namespace_review")
+    review_body = review_match.group("body")
+    rows_match = re.search(r"(?ms)^  rows:\n(?P<rows>.*)$", review_body)
+    if rows_match is None:
+        raise SystemExit("runtime_root_namespace_review has no rows")
+    supported_modules = []
+    for row in re.split(r"(?m)^    - id: ", rows_match.group("rows"))[1:]:
+        identifier = row.splitlines()[0].strip()
+        classification = re.search(r"(?m)^      classification: (\w+)\s*$", row)
+        if classification is not None and classification.group(1) == "supported":
+            if not identifier.startswith("fastapi.") or identifier.count(".") != 1:
+                raise SystemExit(f"invalid supported root module in metadata.yaml: {identifier!r}")
+            supported_modules.append(identifier.removeprefix("fastapi."))
+
+    binding_source = (PROJECT_ROOT / "fastapi-rs-py" / "src" / "lib.rs").read_text(encoding="utf-8")
+    module_list = re.search(
+        r"(?s)const FASTAPI_PUBLIC_ROOT_MODULES:\s*&\[&str\]\s*=\s*&\[(?P<items>.*?)\];",
+        binding_source,
+    )
+    if module_list is None:
+        raise SystemExit("Rust target package has no reviewed root module bootstrap list")
+    rust_modules = re.findall(r"['\"]([a-z_]+)['\"]", module_list.group("items"))
+    if rust_modules != supported_modules or len(rust_modules) != len(set(rust_modules)):
+        raise SystemExit(
+            "Rust FastAPI root module bootstrap must exactly match supported metadata rows: "
+            f"rust={rust_modules!r}, metadata={supported_modules!r}"
+        )
+
+    for module_name in supported_modules:
+        module_file = PYTHON_PACKAGE_ROOT / "fastapi" / f"{module_name}.py"
+        package_file = PYTHON_PACKAGE_ROOT / "fastapi" / module_name / "__init__.py"
+        if not module_file.is_file() and not package_file.is_file():
+            raise SystemExit(
+                f"supported FastAPI root module has no runtime facade: fastapi.{module_name}"
+            )
+
+
+def _is_fastapi_target_package_bootstrap(source: str, offset: int) -> bool:
+    """Allow only the root package lookup required by its reviewed child imports."""
+    return any(
+        match.start("value") == offset
+        for match in FASTAPI_TARGET_PACKAGE_BOOTSTRAP.finditer(source)
+    )
 
 
 def _is_fastapi_module_metadata(source: str, offset: int) -> bool:

@@ -3436,16 +3436,28 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial006-review.yaml
           case_id: fastapi.docs-example.handling-errors.tutorial006.delegated-http-error
+        - recipe_path: tests/fixtures/input-recipes/parity/root-documented-module-attributes.yaml
+          case_id: fastapi.root.documented-module-attributes
       feature_ids: [public-api-errors]
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         The documented tutorial imports this public coroutine and directly awaits
         it from a registered Starlette HTTPException handler. The linked input
         observes the delegated 409 response status and exact JSON body for one
-        FastAPI HTTPException. It does not establish direct-call identity or
-        signature parity, response-header behavior, body-forbidden statuses,
-        arbitrary Starlette HTTPException subclasses, or the full handler
-        contract.
+        FastAPI HTTPException. A separate root-module input records the handler's
+        coroutine-function classification and inspect.signature string, and
+        confirms the FastAPI default handler map references the same callable.
+        It does not establish Python-function identity/type, response-header
+        behavior, body-forbidden statuses, arbitrary Starlette HTTPException
+        subclasses, or the full handler contract.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiHttpExceptionHandler::__call__
+        known_gaps:
+          - Python function identity and function-only introspection are not established.
+          - Response header and body-forbidden status behavior are not covered by linked inputs.
+          - Arbitrary Starlette HTTPException subclasses and all detail types are not covered.
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/handling-errors.md
           fixture_id: fastapi.docs.tutorial-handling-errors
@@ -3493,15 +3505,27 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial006-review.yaml
           case_id: fastapi.docs-example.handling-errors.tutorial006.delegated-validation-error
+        - recipe_path: tests/fixtures/input-recipes/parity/root-documented-module-attributes.yaml
+          case_id: fastapi.root.documented-module-attributes
       feature_ids: [public-api-errors, request-validation]
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         The documented tutorial imports this public coroutine and directly awaits
         it from a registered RequestValidationError handler. The linked input
         observes a 422 response and exact serialized error body for one invalid
-        path parameter. It does not establish direct-call identity or signature
-        parity, arbitrary validation records, body serialization options, or the
-        full handler contract.
+        path parameter. A separate root-module input records coroutine-function
+        classification and inspect.signature, and confirms the FastAPI default
+        handler map references the same callable. Arbitrary validation records,
+        body serialization options, and the full handler contract remain outside
+        this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRequestValidationExceptionHandler::__call__
+        known_gaps:
+          - Python function identity and function-only introspection are not established.
+          - Arbitrary validation records and encoded value types are not covered by linked inputs.
+          - Direct calls with unusual Request objects are not covered.
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/handling-errors.md
           fixture_id: fastapi.docs.tutorial-handling-errors

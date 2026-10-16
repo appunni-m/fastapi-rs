@@ -539,7 +539,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: eb8484150e6b8a320f2b5c5179ab7aea8ea35fd8448a1850e2d024f2ff21ff11
+    sha256: b809123c3eb9895bdfcaaeb1338b2f9e54a0a50a99361b0be56dbf515bb60eb9
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1231,7 +1231,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 252
-    operation_fixture_refs: 1920
+    operation_fixture_refs: 1922
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -21288,6 +21288,17 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: root-documented-module-attributes
+      input_path: tests/fixtures/inputs/parity/root-documented-module-attributes.json
+      input_sha256: 24e0bc9d077d0092f8f19956c26d93ed14aa8c2790d1353e3d77af210a844aec
+      recipe_path: tests/fixtures/input-recipes/parity/root-documented-module-attributes.yaml
+      recipe_sha256: bedf6042ad4b882ddb3e39bb8574aee566d043698f22f3fadd71303c8785105b
+      workload_path: tests/fixtures/workloads/root_documented_modules.py
+      workload_sha256: 38a967aa6ff9bee718b367de73a9f1973ad4b2a19a480e8241180fd31027efcd
+      case_id: fastapi.root.documented-module-attributes
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -21312,8 +21323,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/545
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiHttpExceptionHandler::__call__
+      known_gaps:
+      - Python function identity and function-only introspection are not established.
+      - Response header and body-forbidden status behavior are not covered by linked inputs.
+      - Arbitrary Starlette HTTPException subclasses and all detail types are not covered.
   - id: fastapi.exception_handlers.request_validation_exception_handler
     kind: async_function
     source_candidate_ref: /api_candidates/548
@@ -21361,6 +21376,17 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: root-documented-module-attributes
+      input_path: tests/fixtures/inputs/parity/root-documented-module-attributes.json
+      input_sha256: 24e0bc9d077d0092f8f19956c26d93ed14aa8c2790d1353e3d77af210a844aec
+      recipe_path: tests/fixtures/input-recipes/parity/root-documented-module-attributes.yaml
+      recipe_sha256: bedf6042ad4b882ddb3e39bb8574aee566d043698f22f3fadd71303c8785105b
+      workload_path: tests/fixtures/workloads/root_documented_modules.py
+      workload_sha256: 38a967aa6ff9bee718b367de73a9f1973ad4b2a19a480e8241180fd31027efcd
+      case_id: fastapi.root.documented-module-attributes
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -21387,8 +21413,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/548
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRequestValidationExceptionHandler::__call__
+      known_gaps:
+      - Python function identity and function-only introspection are not established.
+      - Arbitrary validation records and encoded value types are not covered by linked inputs.
+      - Direct calls with unusual Request objects are not covered.
   - id: fastapi.exceptions.HTTPException
     kind: class
     source_candidate_ref: /api_candidates/562
