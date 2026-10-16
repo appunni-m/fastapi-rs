@@ -1789,6 +1789,7 @@ impl PyApiRoute {
                 None,
                 None,
                 None,
+                None,
                 true,
                 GenerateUniqueIdArgument::Omitted,
                 None,
@@ -4239,6 +4240,7 @@ impl PyFastApi {
                     None,
                     None,
                     None,
+                    None,
                     true,
                     GenerateUniqueIdArgument::Omitted,
                     None,
@@ -5420,6 +5422,7 @@ impl PyFastApi {
                 strict_content_type,
             },
         )?;
+        append_included_starlette_routes(py, destination, &source.constructor_routes, &prefix)?;
         destination.router_includes.push(FastApiRouterInclude {
             route_position,
             websocket_route_position,
@@ -6829,7 +6832,7 @@ impl PyApiRouter {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, routes = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -6842,6 +6845,7 @@ impl PyApiRouter {
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
         responses: Option<Py<PyAny>>,
+        routes: Option<Py<PyAny>>,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
         lifespan: Option<Py<PyAny>>,
@@ -6858,7 +6862,7 @@ impl PyApiRouter {
             PyFastApi::new(
                 py,
                 false,
-                None,
+                routes,
                 "FastAPI",
                 None,
                 "",
@@ -7235,6 +7239,12 @@ impl PyApiRouter {
                 include_in_schema,
                 strict_content_type: inherited_strict_content_type,
             },
+        )?;
+        append_included_starlette_routes(
+            py,
+            &mut destination,
+            &source.constructor_routes,
+            &prefix,
         )?;
         destination.router_includes.push(FastApiRouterInclude {
             route_position,
@@ -7761,6 +7771,30 @@ fn merge_router_routes(
             frontend_routes: 0,
         },
     )
+}
+
+fn append_included_starlette_routes(
+    py: Python<'_>,
+    destination: &mut PyFastApi,
+    source_routes: &[Py<PyAny>],
+    prefix: &str,
+) -> PyResult<()> {
+    let route_type = py.import("starlette.routing")?.getattr("Route")?;
+    for route in source_routes {
+        let route = route.bind(py);
+        if !route.get_type().is(&route_type) {
+            continue;
+        }
+        let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
+        let endpoint = route.getattr("endpoint")?;
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("methods", route.getattr("methods")?)?;
+        kwargs.set_item("name", route.getattr("name")?)?;
+        kwargs.set_item("include_in_schema", route.getattr("include_in_schema")?)?;
+        let included_route = route_type.call((path, endpoint), Some(&kwargs))?;
+        destination.mounted_routes.push(included_route.unbind());
+    }
+    Ok(())
 }
 
 fn merge_router_routes_from(

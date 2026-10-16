@@ -755,6 +755,27 @@
       ]
     },
     {
+      "id": "apirouter-constructor-starlette-route",
+      "input_path": "tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json",
+      "input_sha256": "9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml",
+      "recipe_sha256": "ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d",
+      "case_ids": [
+        "fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch"
+      ],
+      "workload_path": "tests/fixtures/workloads/apirouter_constructor_starlette_route.py",
+      "workload_sha256": "81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "apirouter-default-response-class",
       "input_path": "tests/fixtures/inputs/parity/apirouter-default-response-class.json",
       "input_sha256": "bdde2b75c1103044e059627a77f8bb193041bbe31c0d3d3ff8be41c61e7c6306",
@@ -36066,6 +36087,22 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "apirouter-constructor-starlette-route",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

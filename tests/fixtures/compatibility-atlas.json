@@ -596200,6 +596200,21 @@
           },
           {
             "case_ids": [
+              "fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.send.message_types",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml",
+            "workflow_id": "apirouter-constructor-starlette-route"
+          },
+          {
+            "case_ids": [
               "fastapi.applications.constructor.starlette-route-dispatch"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -733178,7 +733193,7 @@
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
-          "The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation also projects generic routes supplied directly to FastAPI. Standalone APIRouter constructor routes, empty or multi-route list behavior, ordering, list identity or mutation, generic route inclusion, and other APIRouter route configurations remain outside this partial contract."
+          "The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation also projects generic routes supplied directly to FastAPI. Constructor-route HTTP dispatch is covered only through an included, prefixed stock Starlette Route; empty or multi-route list behavior, list identity or mutation, route ordering, nested inclusion, and other route families remain outside this partial contract."
         ],
         "rust_binding": "fastapi-rs/src/application_runtime.rs::PyApiRouter::routes",
         "status": "partial-contract"

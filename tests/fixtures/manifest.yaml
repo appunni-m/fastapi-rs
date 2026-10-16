@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: f30712c7f45c2d23acbabc5c1b25dee78f8d5dc9b72b9ac0072581f48c2deaf7
+    sha256: c163b30963b21aa769829042196afe692500d6f3939a5922105ededa244f10ce
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 9e0691cc26c765c0f1068442ceb77c3b47bbfae98d83fe676b265b35ccd9a8d3
+    sha256: 4b4b9d6d811d6747cef2286a70bb5e77c29c8101342e272ebba112f90479d64b
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 3afebb5ab77da68a031c899acb192fa5224741e14f0c7c7cfbfeb4fd4c7af806
+    sha256: 6610c1795ee4c31cf9368bc255600696f6daa6cb5634b42c67400ff2f89ce76d
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 642
-      cases: 2615
-      partial_source_mappings: 1885
+      workflows: 643
+      cases: 2616
+      partial_source_mappings: 1886
 
 contract_metadata:
   aliases:
@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 255
-    operation_fixture_refs: 1944
+    operation_fixture_refs: 1948
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1294,6 +1294,19 @@ api_surface_contract:
       observation_selectors: &id002 []
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
       input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
@@ -15581,6 +15594,19 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
       input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
@@ -18436,11 +18462,11 @@ api_surface_contract:
       known_gaps:
       - Direct FastAPI constructor routes are projected through the shared router; full matching generic
         routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query
-        string. The standalone APIRouter constructor still omits routes; generic partial matches, other
-        redirect combinations, route-family inclusion/prefix behavior, generated documentation-route projection,
-        callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation
-        and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity
-        when a router outlives its app remain unverified.
+        string. APIRouter constructor-route dispatch covers one prefixed stock HTTP Route; generic partial
+        matches, other redirect combinations, mixed ordering, other route-family inclusion/prefix behavior,
+        generated documentation-route projection, callbacks, startup and shutdown handlers, route_class
+        customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated
+        replacement behavior, and lifetime parity when a router outlives its app remain unverified.
   - id: fastapi.applications.FastAPI.state
     kind: field
     source_candidate_ref: /api_candidates/228
@@ -49869,6 +49895,19 @@ api_surface_contract:
       observation_selectors: *id019
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: generate-unique-id-function-precedence
       input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
       input_sha256: 792aa210ff309cd9dfc2315a9941c6e1d2de09f1014cff5e47bda6446f5b7af2
@@ -51249,6 +51288,19 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
     operation_fixture_refs:
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
       input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
@@ -65053,9 +65105,10 @@ api_surface_contract:
       status: partial-contract
       known_gaps:
       - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation
-        also projects generic routes supplied directly to FastAPI. Standalone APIRouter constructor routes,
-        empty or multi-route list behavior, ordering, list identity or mutation, generic route inclusion,
-        and other APIRouter route configurations remain outside this partial contract.
+        also projects generic routes supplied directly to FastAPI. Constructor-route HTTP dispatch is
+        covered only through an included, prefixed stock Starlette Route; empty or multi-route list behavior,
+        list identity or mutation, route ordering, nested inclusion, and other route families remain outside
+        this partial contract.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::routes
   - id: fastapi.applications.FastAPI.add_middleware
     kind: inherited_method

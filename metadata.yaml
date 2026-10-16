@@ -1356,6 +1356,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/metadata.md}
@@ -4923,6 +4924,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_response_model_as_return_annotation.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
@@ -5026,6 +5030,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_response_model_data_filter.py, symbol: test_filter_top_level_model}
@@ -5052,6 +5057,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_response_model_as_return_annotation.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
@@ -5199,6 +5207,11 @@ reviewed_api_contract_overlay:
         An explicit include callback supplies the fallback for an included router whose callback retains its default, sampled by `generate-unique-id-function-precedence`. Nested callback error timing and non-string results remain unproven.
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
+
+        One input covers a prefixed stock Starlette HTTP `Route` supplied via
+        `APIRouter(routes=...)`. Generic route ordering against API routes,
+        nested constructor-route copies, and other BaseRoute families remain
+        open.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -5406,7 +5419,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Direct FastAPI constructor routes are projected through the shared router; full matching generic routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query string. The standalone APIRouter constructor still omits routes; generic partial matches, other redirect combinations, route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
+          - Direct FastAPI constructor routes are projected through the shared router; full matching generic routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query string. APIRouter constructor-route dispatch covers one prefixed stock HTTP Route; generic partial matches, other redirect combinations, mixed ordering, other route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
     fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url:
       source_evidence:
         - path: fastapi/applications.py
@@ -5850,6 +5863,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_strict_content_type_nested.py}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
+        - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
@@ -5919,7 +5933,14 @@ reviewed_api_contract_overlay:
         when direct and late-included routes share a name and parameter shape.
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
+
+        One input covers a prefixed stock Starlette HTTP `Route` supplied via
+        `APIRouter(routes=...)`; generic route ordering, nested constructor-route
+        inclusion, and other BaseRoute families remain open.
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
@@ -6026,6 +6047,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
         - {path: tests/test_strict_content_type_router_level.py}
         - {path: tests/test_strict_content_type_nested.py}
         - {path: docs/en/docs/advanced/strict-content-type.md}
@@ -6043,6 +6065,9 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
         - *response_class_router_custom
@@ -6108,9 +6133,10 @@ reviewed_api_contract_overlay:
         the source signature. The FastAPI constructor now snapshots the supplied
         iterable and dispatches the first generic route with a full match; the
         linked workflow covers one direct Starlette `Route` HTTP request. The
-        separate APIRouter constructor still omits `routes`. Generic partial
-        matches, slash redirects, arbitrary route families, mixed declaration
-        order with later registrations, and router inclusion/prefix behavior
+        APIRouter constructor also snapshots `routes`; the linked input
+        observes one stock Starlette HTTP `Route` included by FastAPI with a
+        prefix. Generic partial matches, slash redirects, other route families,
+        nested constructor-route inclusion, and mixed declaration ordering
         remain open compatibility requirements.
         Five response-field-lifecycle inputs reach router construction/GET and
         application inclusion with fixed response models and omitted or concrete
@@ -15073,7 +15099,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::routes
         known_gaps:
-          - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation also projects generic routes supplied directly to FastAPI. Standalone APIRouter constructor routes, empty or multi-route list behavior, ordering, list identity or mutation, generic route inclusion, and other APIRouter route configurations remain outside this partial contract.
+          - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation also projects generic routes supplied directly to FastAPI. Constructor-route HTTP dispatch is covered only through an included, prefixed stock Starlette Route; empty or multi-route list behavior, list identity or mutation, route ordering, nested inclusion, and other route families remain outside this partial contract.
     fastapi.applications.FastAPI.add_middleware:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       canonical_operation_id: starlette.applications.Starlette.add_middleware
