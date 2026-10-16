@@ -659,27 +659,32 @@ are build-time support for this discovery/fallback path.
 
 ## Python package dependencies
 
-The Python distribution directly pins `annotated-doc==0.0.4`,
-`pydantic==2.13.4`,
-`pydantic-core==2.46.4`, and `starlette-rs-py==0.1.0` in `pyproject.toml`.
-FastAPI-RS Rust code imports `annotated_doc.Doc` through PyO3 while registering
-public Python signatures, dependency/security parameters, and exceptions; it
-constructs the `Annotated` documentation metadata consumed by introspection.
-Pydantic's Python package builds schemas and exposes model behavior, while the
-separately installed `pydantic-core` wheel supplies its Rust
-validation/serialization engine. `starlette-rs-py` is a separate Rust/Python
-package and declares AnyIO `>=3.6.2,<5` plus typing-extensions `>=4.12.0` in
-its own manifest. Maturin 1.14.1 is
-the Python build-system dependency. The external target runtime closure is
-hash-locked for CPython 3.12.13 in
-[`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock);
-the local Starlette-RS source install is separately pinned. The FastAPI
-0.141.1 oracle closure is separately locked and documented in
-[`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
+`pyproject.toml` directly pins `annotated-doc==0.0.4`, `pydantic==2.13.4`,
+`pydantic-core==2.46.4`, and `starlette-rs-py==0.1.0`. The external target
+profile resolves eight registry distributions in
+[`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock).
+That lock is for CPython 3.12.13; the project requires Python >=3.10, so
+conditional edges can differ on other supported interpreters. The local
+Starlette-RS source install is pinned separately through `metadata.yaml` and is
+not a registry-lock entry. The FastAPI 0.141.1 oracle closure remains separate
+in [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
-The Pydantic-owned Rust crate graph inside `pydantic-core` is mapped separately
-in [`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md). It is not
-part of this workspace's `Cargo.lock` and is not a FastAPI-RS Cargo dependency.
+| Distribution | Target role and dependency path | Purpose and consumer | Implementation/native parts | License evidence |
+| --- | --- | --- | --- | --- |
+| `annotated-doc` 0.0.4 | Direct FastAPI-RS runtime pin. | Rust imports `annotated_doc.Doc` through PyO3 to construct Python `Annotated` documentation metadata for public signatures, parameters, security APIs, and exceptions (`fastapi-rs-py/src/lib.rs`, `fastapi-rs/src/parameters.rs`, `fastapi-rs/src/errors.rs`). | Python package; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/annotated-doc/0.0.4/json) |
+| `pydantic` 2.13.4 | Direct FastAPI-RS runtime pin. | Python model, `Field`, `TypeAdapter`, validation-error, and schema APIs called from Rust through PyO3 for model validation and OpenAPI/schema generation (`fastapi-rs/src/application_runtime.rs`, `fastapi-rs/src/openapi_models.rs`). | Python package and orchestration; model definitions and user validators remain Python objects. | [MIT](https://pypi.org/pypi/pydantic/2.13.4/json) |
+| `pydantic-core` 2.46.4 | Direct FastAPI-RS runtime pin; also Pydantic's required Core dependency. | Provides CoreSchema helpers, undefined sentinels, URL values, and Pydantic's validation/serialization engine; FastAPI-RS calls the pinned Python API through PyO3 (`fastapi-rs/src/datastructures.rs`, `fastapi-rs/src/encoding.rs`, `fastapi-rs/src/openapi_models.rs`). | Separate Pydantic-owned Rust/PyO3 extension wheel; outside this workspace's Cargo graph. | [MIT](https://pypi.org/pypi/pydantic-core/2.46.4/json) |
+| `annotated-types` 0.7.0 | Pydantic runtime transitive dependency (`pydantic -> annotated-types`). | Supplies Python `Annotated` constraint metadata that Pydantic consumes when constructing and validating fields; FastAPI-RS passes field metadata to Pydantic rather than implementing these types. | Python-only metadata types; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/annotated-types/0.7.0/json) |
+| `typing-inspection` 0.4.2 | Pydantic runtime transitive dependency (`pydantic -> typing-inspection`). | Python typing-object inspection used by Pydantic's model/schema processing; retained as part of the pinned Pydantic runtime closure. | Python implementation; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/typing-inspection/0.4.2/json) |
+| `typing-extensions` 4.16.0 | Shared runtime dependency: `starlette-rs-py` declares `>=4.12.0`; Pydantic declares `>=4.14.1`, and AnyIO declares it for Python <3.13. | Supplies typing APIs on supported Python versions. FastAPI-RS imports `TypeAliasType` and `deprecated` through PyO3 (`fastapi-rs/src/application_runtime.rs`, `fastapi-rs/src/parameter_classes.rs`). | Python-only typing backports/definitions. | [PSF-2.0](https://pypi.org/pypi/typing-extensions/4.16.0/json) |
+| `anyio` 4.12.1 | Runtime dependency of the pinned `starlette-rs-py` package (`anyio>=3.6.2,<5`). | Provides the worker-pool and capacity-limiter APIs used by the Starlette-RS Python package's gzip and concurrency adapters (`starlette/middleware/gzip.py`, `starlette/concurrency.py` in the pinned Starlette-RS source). | Python concurrency/networking library over asyncio or Trio; this target profile selects no Trio extra. | [MIT](https://pypi.org/pypi/anyio/4.12.1/json) |
+| `idna` 3.18 | AnyIO runtime transitive dependency (`anyio` declares `idna>=2.8`); exact version is selected by the target lock. | Included to satisfy AnyIO 4.12.1's published runtime dependency metadata. Its pinned Python source has no direct `idna` import, and FastAPI-RS has no direct import, so no separate FastAPI-RS behavior is attributed to this package. | Python implementation of IDNA hostname conversion; no native component indicated by its wheel metadata. | [BSD-3-Clause](https://pypi.org/pypi/idna/3.18/json) |
+| `starlette-rs-py` 0.1.0 | Direct FastAPI-RS runtime dependency; exact source revision and tree identity are recorded in `metadata.yaml`. | Exposes the `starlette` Python package and its Rust-backed generic ASGI, request, response, middleware, routing, and test-client behavior. FastAPI-RS delegates Starlette-owned behavior to this sibling package. | Thin Python package plus a native Rust extension; AnyIO and typing-extensions are its declared Python runtime dependencies. | [BSD-3-Clause](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/LICENSE.md) |
+
+The Pydantic-owned Rust crate graph inside `pydantic-core` is inventoried
+separately in [`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md),
+not in this workspace's Cargo graph. Maturin 1.14.1 belongs to the isolated
+build-tool profile below, not to the target runtime closure.
 
 {build_tool_inventory}
 
