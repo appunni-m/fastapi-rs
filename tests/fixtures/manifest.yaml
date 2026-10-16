@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 88b0ec9bf4e247b43861ef2cf97c76bba2dc6628c4c2f6ff5b85cb0756365669
+    sha256: 390efe2953ce697bf3220ebdbdef6a060015e8326873244739c5baa7a41bf8df
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,11 +513,11 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 7f98f2b9becde8aae7200804c7e82a33ea237c94e20b2e82f3f69e16c774634e
+    sha256: d7e8f1b847357141856c999ad1c8df781b36faf9b8ddeeaf30a1e2a63c240e5d
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
-      test_case_designs: 2116
+      test_case_designs: 2121
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: ece7ee366bfb3f78ad182acc26a158d7f8c9354c052fe2982e9c787f1e67a9f9
+    sha256: ae1bee27d5042cd7a8813636e61e4eb8e55d3f06cbe3fbadcc2da5e7efabf4a0
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 644
-      cases: 2622
-      partial_source_mappings: 1888
+      workflows: 645
+      cases: 2632
+      partial_source_mappings: 1889
 
 contract_metadata:
   aliases:
@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 255
-    operation_fixture_refs: 1984
+    operation_fixture_refs: 2004
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -10426,6 +10426,156 @@ api_surface_contract:
       - openapi.document
       - openapi.paths
       - openapi.request_schema
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
     - workflow_id: webhooks-constructor
       input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
       input_sha256: 4df72113beb82a387e211be01d3682ea1e84a2efe3c7e643daa63408ea13131a
@@ -16916,6 +17066,156 @@ api_surface_contract:
       - openapi.document
       - openapi.paths
       - openapi.request_schema
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
+    - workflow_id: separate-input-output-schemas-runtime
+      input_path: tests/fixtures/inputs/parity/separate-input-output-schemas-runtime.json
+      input_sha256: a4f47a467d80dd8cd64926df952584d5105f07d1bc28b0641ad9e80d4c58a81a
+      recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+      recipe_sha256: 1a2cb8f3373754f376be45d50c13a90d103ccb6bbc21935b60bba283f6319805
+      workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+      workload_sha256: 236b3d8f216f48c85c3acd307a2ee36e06ac0d65c723d71dea47384ea9d2059f
+      case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.status
     - workflow_id: generate-unique-id-duplicate-warnings
       input_path: tests/fixtures/inputs/parity/generate-unique-id-duplicate-warnings.json
       input_sha256: 35b0f23bf2a4863b9ff900126556da5f8300f1fe62eb2dfb1f4582ac19a61baa

@@ -77268,7 +77268,7 @@
     "starlette_integration_edges": 133,
     "starlette_module_namespace_crosswalks": 1,
     "starlette_private_helper_behavior_crosswalks": 3,
-    "test_function_designs": 2116,
+    "test_function_designs": 2121,
     "test_functions_in_excluded_modules": 87,
     "test_functions_with_individual_exclusion": 10,
     "test_functions_with_inherited_module_exclusion": 77,
@@ -561056,216 +561056,7 @@
       "id": "upstream-test:tests/test_openapi_separate_input_output_schemas.py",
       "kind": "upstream_test_module",
       "mapping_evidence": {
-        "excluded_test_functions": [
-          {
-            "end_line": 72,
-            "line": 62,
-            "name": "test_create_item",
-            "reason": "The function sends the same model payload to two apps with separate_input_output_schemas enabled/disabled, then compares their runtime status and serialized model body. That option is consumed by OpenAPI generation; this assertion is runtime validation/serialization, and no active input case compares two app configurations as a paired result.",
-            "source_evidence": [
-              {
-                "end_line": 72,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "upstream test function",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 62
-              },
-              {
-                "end_line": 72,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "pinned FastAPI 0.141.1 test function test_create_item and its assertions",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 62
-              },
-              {
-                "end_line": 455,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 375
-              },
-              {
-                "end_line": 342,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 301
-              },
-              {
-                "end_line": 1103,
-                "path": "fastapi/applications.py",
-                "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
-                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
-                "start_line": 1070
-              }
-            ]
-          },
-          {
-            "end_line": 93,
-            "line": 75,
-            "name": "test_create_item_with_sub",
-            "reason": "This function compares nested default/omitted-field response serialization across split and unsplit app instances; its assertion is runtime Pydantic model output, not generated OpenAPI. No active input performs the cross-configuration response comparison.",
-            "source_evidence": [
-              {
-                "end_line": 93,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "upstream test function",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 75
-              },
-              {
-                "end_line": 93,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "pinned FastAPI 0.141.1 test function test_create_item_with_sub and its assertions",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 75
-              },
-              {
-                "end_line": 455,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 375
-              },
-              {
-                "end_line": 342,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 301
-              },
-              {
-                "end_line": 1103,
-                "path": "fastapi/applications.py",
-                "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
-                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
-                "start_line": 1070
-              }
-            ]
-          },
-          {
-            "end_line": 120,
-            "line": 96,
-            "name": "test_create_item_list",
-            "reason": "The function compares list-body validation and serialized responses across split and unsplit apps. Those are runtime request/response and Pydantic behaviors; the schema recipe does not make a paired runtime assertion.",
-            "source_evidence": [
-              {
-                "end_line": 120,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "upstream test function",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 96
-              },
-              {
-                "end_line": 120,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "pinned FastAPI 0.141.1 test function test_create_item_list and its assertions",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 96
-              },
-              {
-                "end_line": 455,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 375
-              },
-              {
-                "end_line": 342,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 301
-              },
-              {
-                "end_line": 1103,
-                "path": "fastapi/applications.py",
-                "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
-                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
-                "start_line": 1070
-              }
-            ]
-          },
-          {
-            "end_line": 140,
-            "line": 123,
-            "name": "test_read_items",
-            "reason": "The function compares nested model serialization, optional values, and defaults for GET responses across split and unsplit apps. It observes runtime Pydantic output, not OpenAPI, and no active workflow pairs these app configurations.",
-            "source_evidence": [
-              {
-                "end_line": 140,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "upstream test function",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 123
-              },
-              {
-                "end_line": 140,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "pinned FastAPI 0.141.1 test function test_read_items and its assertions",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 123
-              },
-              {
-                "end_line": 342,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 301
-              },
-              {
-                "end_line": 1103,
-                "path": "fastapi/applications.py",
-                "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
-                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
-                "start_line": 1070
-              }
-            ]
-          },
-          {
-            "end_line": 156,
-            "line": 143,
-            "name": "test_with_computed_field",
-            "reason": "The function compares runtime computed-field serialization for a POST response across split and unsplit app configurations. Pydantic computes/serializes the field and the test does not request OpenAPI; the adjacent schema case separately observes computed-field input/output schemas.",
-            "source_evidence": [
-              {
-                "end_line": 156,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "upstream test function",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 143
-              },
-              {
-                "end_line": 156,
-                "path": "tests/test_openapi_separate_input_output_schemas.py",
-                "role": "pinned FastAPI 0.141.1 test function test_with_computed_field and its assertions",
-                "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
-                "start_line": 143
-              },
-              {
-                "end_line": 455,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 375
-              },
-              {
-                "end_line": 342,
-                "path": "fastapi/routing.py",
-                "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
-                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 301
-              },
-              {
-                "end_line": 1103,
-                "path": "fastapi/applications.py",
-                "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
-                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
-                "start_line": 1070
-              }
-            ]
-          }
-        ],
+        "excluded_test_functions": [],
         "independent_workflow_mappings": [
           {
             "case_ids": [
@@ -561283,10 +561074,73 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/openapi-schemas.yaml",
             "workflow_id": "openapi-schemas"
+          },
+          {
+            "case_ids": [
+              "fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared",
+              "fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split",
+              "fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.shared",
+              "fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.split",
+              "fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.shared",
+              "fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.split",
+              "fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared",
+              "fastapi.openapi-separate-input-output-schemas.runtime-create-item.split",
+              "fastapi.openapi-separate-input-output-schemas.runtime-read-items.shared",
+              "fastapi.openapi-separate-input-output-schemas.runtime-read-items.split"
+            ],
+            "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.body.json",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml",
+            "workflow_id": "separate-input-output-schemas-runtime"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
         "matched_test_functions": [
+          {
+            "case_id": "fastapi.test.test-openapi-separate-input-output-schemas.test-create-item",
+            "end_line": 72,
+            "line": 62,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_create_item"
+          },
+          {
+            "case_id": "fastapi.test.test-openapi-separate-input-output-schemas.test-create-item-with-sub",
+            "end_line": 93,
+            "line": 75,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_create_item_with_sub"
+          },
+          {
+            "case_id": "fastapi.test.test-openapi-separate-input-output-schemas.test-create-item-list",
+            "end_line": 120,
+            "line": 96,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_create_item_list"
+          },
+          {
+            "case_id": "fastapi.test.test-openapi-separate-input-output-schemas.test-read-items",
+            "end_line": 140,
+            "line": 123,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_read_items"
+          },
+          {
+            "case_id": "fastapi.test.test-openapi-separate-input-output-schemas.test-with-computed-field",
+            "end_line": 156,
+            "line": 143,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_with_computed_field"
+          },
           {
             "case_id": "fastapi.test.test-openapi-separate-input-output-schemas.test-openapi-schema",
             "end_line": 438,
@@ -561319,6 +561173,139 @@
         "reviewed_module_mapping": {
           "rationale": "Source-reviewed OpenAPI/security module; per-function workflow coverage and exclusions are linked below.",
           "supporting_sources": [
+            {
+              "end_line": 72,
+              "path": "tests/test_openapi_separate_input_output_schemas.py",
+              "role": "pinned FastAPI 0.141.1 test function test_create_item and its assertions",
+              "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
+              "start_line": 62
+            },
+            {
+              "end_line": 455,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 342,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 301
+            },
+            {
+              "end_line": 1103,
+              "path": "fastapi/applications.py",
+              "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
+              "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+              "start_line": 1070
+            },
+            {
+              "end_line": 93,
+              "path": "tests/test_openapi_separate_input_output_schemas.py",
+              "role": "pinned FastAPI 0.141.1 test function test_create_item_with_sub and its assertions",
+              "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
+              "start_line": 75
+            },
+            {
+              "end_line": 455,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 342,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 301
+            },
+            {
+              "end_line": 1103,
+              "path": "fastapi/applications.py",
+              "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
+              "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+              "start_line": 1070
+            },
+            {
+              "end_line": 120,
+              "path": "tests/test_openapi_separate_input_output_schemas.py",
+              "role": "pinned FastAPI 0.141.1 test function test_create_item_list and its assertions",
+              "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
+              "start_line": 96
+            },
+            {
+              "end_line": 455,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 342,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 301
+            },
+            {
+              "end_line": 1103,
+              "path": "fastapi/applications.py",
+              "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
+              "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+              "start_line": 1070
+            },
+            {
+              "end_line": 140,
+              "path": "tests/test_openapi_separate_input_output_schemas.py",
+              "role": "pinned FastAPI 0.141.1 test function test_read_items and its assertions",
+              "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
+              "start_line": 123
+            },
+            {
+              "end_line": 342,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 301
+            },
+            {
+              "end_line": 1103,
+              "path": "fastapi/applications.py",
+              "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
+              "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+              "start_line": 1070
+            },
+            {
+              "end_line": 156,
+              "path": "tests/test_openapi_separate_input_output_schemas.py",
+              "role": "pinned FastAPI 0.141.1 test function test_with_computed_field and its assertions",
+              "sha256": "c0681da3624b16d5a9a23b6f8ddd3fd44bb75d8ed5845f1b28cdbe933b3388ba",
+              "start_line": 143
+            },
+            {
+              "end_line": 455,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI builds endpoint request handling and invokes dependency/body processing",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 342,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 301
+            },
+            {
+              "end_line": 1103,
+              "path": "fastapi/applications.py",
+              "role": "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
+              "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+              "start_line": 1070
+            },
             {
               "end_line": 438,
               "path": "tests/test_openapi_separate_input_output_schemas.py",
@@ -561377,6 +561364,116 @@
             }
           ],
           "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-create-item.split"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.split"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.shared"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.split"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.shared"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-read-items.split"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-read-items.shared"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+            },
             {
               "case_ids": [
                 "fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema"

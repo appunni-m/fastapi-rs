@@ -1,0 +1,238 @@
+schema: fastapi-rs/python-asgi-workflow@13
+workload:
+  file: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.split
+    factory_input: {separate_input_output_schemas: true}
+    construction_observation: &construction
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: post-item
+        kind: http_request
+        scope: &post_items_scope
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /items/
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '{"name":"Plumbus"}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: &create_item_source
+      - {path: tests/test_openapi_separate_input_output_schemas.py, kind: upstream_test}
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared
+    factory_input: {separate_input_output_schemas: false}
+    construction_observation: *construction
+    actions:
+      - action_id: post-item
+        kind: http_request
+        scope: *post_items_scope
+        receive_events:
+          - {type: http.request, body: '{"name":"Plumbus"}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: *create_item_source
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.split
+    factory_input: {separate_input_output_schemas: true}
+    construction_observation: *construction
+    actions:
+      - action_id: post-item-with-sub
+        kind: http_request
+        scope: *post_items_scope
+        receive_events:
+          - type: http.request
+            body: '{"name":"Plumbus","sub":{"subname":"SubPlumbus","sub_description":"Sub WTF"}}'
+            more_body: false
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: &create_item_with_sub_source
+      - {path: tests/test_openapi_separate_input_output_schemas.py, kind: upstream_test}
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.shared
+    factory_input: {separate_input_output_schemas: false}
+    construction_observation: *construction
+    actions:
+      - action_id: post-item-with-sub
+        kind: http_request
+        scope: *post_items_scope
+        receive_events:
+          - type: http.request
+            body: '{"name":"Plumbus","sub":{"subname":"SubPlumbus","sub_description":"Sub WTF"}}'
+            more_body: false
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: *create_item_with_sub_source
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.split
+    factory_input: {separate_input_output_schemas: true}
+    construction_observation: *construction
+    actions:
+      - action_id: post-item-list
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /items-list/
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: '[{"name":"Plumbus"},{"name":"Portal Gun","description":"Device to travel through the multi-rick-verse"}]'
+            more_body: false
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: &create_item_list_source
+      - {path: tests/test_openapi_separate_input_output_schemas.py, kind: upstream_test}
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.shared
+    factory_input: {separate_input_output_schemas: false}
+    construction_observation: *construction
+    actions:
+      - action_id: post-item-list
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          path: /items-list/
+          scheme: http
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: '[{"name":"Plumbus"},{"name":"Portal Gun","description":"Device to travel through the multi-rick-verse"}]'
+            more_body: false
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: *create_item_list_source
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.split
+    factory_input: {separate_input_output_schemas: true}
+    construction_observation: *construction
+    actions:
+      - action_id: get-items
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: &read_items_source
+      - {path: tests/test_openapi_separate_input_output_schemas.py, kind: upstream_test}
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.shared
+    factory_input: {separate_input_output_schemas: false}
+    construction_observation: *construction
+    actions:
+      - action_id: get-items
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: *read_items_source
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split
+    factory_input: {separate_input_output_schemas: true}
+    construction_observation: *construction
+    actions:
+      - action_id: post-computed-field
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /with-computed-field/
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '{"name":"example"}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: &computed_field_source
+      - {path: tests/test_openapi_separate_input_output_schemas.py, kind: upstream_test}
+    verification: parity
+
+  - case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared
+    factory_input: {separate_input_output_schemas: false}
+    construction_observation: *construction
+    actions:
+      - action_id: post-computed-field
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /with-computed-field/
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '{"name":"example"}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body, body_json], comparison: exact}
+    source_evidence: *computed_field_source
+    verification: parity

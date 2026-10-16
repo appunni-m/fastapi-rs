@@ -34,6 +34,9 @@ SOURCE_IDENTITIES = {
 }
 
 _OPENAPI_SCHEMAS = "tests/fixtures/input-recipes/parity/openapi-schemas.yaml"
+_SEPARATE_SCHEMA_RUNTIME = (
+    "tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml"
+)
 _OPENAPI_OPERATIONS = "tests/fixtures/input-recipes/parity/openapi-operations.yaml"
 _SECURITY_RECIPE = "tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml"
 _WEBHOOKS_RECIPE = "tests/fixtures/input-recipes/parity/webhooks-security.yaml"
@@ -83,6 +86,29 @@ def _workflow(
         "observation_selectors": list(selectors),
         "coverage": coverage,
     }
+
+
+def _separate_schema_runtime_workflows(
+    slug: str, action_id: str, request_summary: str
+) -> list[dict[str, Any]]:
+    case_prefix = "fastapi.openapi-separate-input-output-schemas.runtime"
+    selectors = ["http.status", "http.body.bytes", "http.body.json"]
+    return [
+        _workflow(
+            _SEPARATE_SCHEMA_RUNTIME,
+            f"{case_prefix}-{slug}.split",
+            [action_id],
+            selectors,
+            f"{request_summary} with separate_input_output_schemas=True.",
+        ),
+        _workflow(
+            _SEPARATE_SCHEMA_RUNTIME,
+            f"{case_prefix}-{slug}.shared",
+            [action_id],
+            selectors,
+            f"{request_summary} with separate_input_output_schemas=False.",
+        ),
+    ]
 
 
 def _mapping(
@@ -516,6 +542,110 @@ OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW = {
         },
         "tests/test_openapi_separate_input_output_schemas.py": {
             "test_mappings": {
+                "test_create_item": _mapping(
+                    "tests/test_openapi_separate_input_output_schemas.py",
+                    "test_create_item",
+                    feature_ids=["request-validation", "response-serialization"],
+                    workflows=_separate_schema_runtime_workflows(
+                        "create-item",
+                        "post-item",
+                        "POST /items/ with the simple Plumbus input",
+                    ),
+                    rationale=(
+                        "Paired live cases run the same POST under the default split and explicit shared-schema settings, selecting parsed JSON as asserted by the source and exact response bytes as an additional check."
+                    ),
+                    contract_gate=(
+                        "Each mode is compared independently against the pinned oracle. The runner does not add a cross-case assertion between the two mode results; current oracle observations must match the source's split-versus-shared equality assertion."
+                    ),
+                    supporting_sources=(
+                        _FASTAPI_REQUEST_HANDLER,
+                        _FASTAPI_RESPONSE_SERIALIZATION,
+                        _FASTAPI_OPENAPI_ENTRY,
+                    ),
+                ),
+                "test_create_item_with_sub": _mapping(
+                    "tests/test_openapi_separate_input_output_schemas.py",
+                    "test_create_item_with_sub",
+                    feature_ids=["request-validation", "response-serialization"],
+                    workflows=_separate_schema_runtime_workflows(
+                        "create-item-with-sub",
+                        "post-item-with-sub",
+                        "POST /items/ with nested SubItem fields",
+                    ),
+                    rationale=(
+                        "Paired live cases exercise the nested body under both constructor settings and compare status plus parsed response JSON, including default fields."
+                    ),
+                    contract_gate=(
+                        "The oracle and target are compared independently for each setting; no cross-case assertion is added by the runner. Pydantic owns model defaults and computed serialization."
+                    ),
+                    supporting_sources=(
+                        _FASTAPI_REQUEST_HANDLER,
+                        _FASTAPI_RESPONSE_SERIALIZATION,
+                        _FASTAPI_OPENAPI_ENTRY,
+                    ),
+                ),
+                "test_create_item_list": _mapping(
+                    "tests/test_openapi_separate_input_output_schemas.py",
+                    "test_create_item_list",
+                    feature_ids=["request-validation", "response-serialization"],
+                    workflows=_separate_schema_runtime_workflows(
+                        "create-item-list",
+                        "post-item-list",
+                        "POST /items-list/ with a list of Item inputs",
+                    ),
+                    rationale=(
+                        "Paired live cases exercise list-body validation and parsed response values in split and shared-schema modes."
+                    ),
+                    contract_gate=(
+                        "Each mode receives its own oracle-to-target comparison. Pydantic owns list model conversion and default values; the runner does not impose a relation between the two case results."
+                    ),
+                    supporting_sources=(
+                        _FASTAPI_REQUEST_HANDLER,
+                        _FASTAPI_RESPONSE_SERIALIZATION,
+                        _FASTAPI_OPENAPI_ENTRY,
+                    ),
+                ),
+                "test_read_items": _mapping(
+                    "tests/test_openapi_separate_input_output_schemas.py",
+                    "test_read_items",
+                    feature_ids=["response-serialization"],
+                    workflows=_separate_schema_runtime_workflows(
+                        "read-items",
+                        "get-items",
+                        "GET /items/ with nested and default-valued items",
+                    ),
+                    rationale=(
+                        "Paired live cases compare the same list response status and parsed JSON in both app configurations."
+                    ),
+                    contract_gate=(
+                        "The input observes each mode against the oracle independently; Pydantic owns nested model defaults and serialization, and the comparator does not assert equality across cases."
+                    ),
+                    supporting_sources=(
+                        _FASTAPI_RESPONSE_SERIALIZATION,
+                        _FASTAPI_OPENAPI_ENTRY,
+                    ),
+                ),
+                "test_with_computed_field": _mapping(
+                    "tests/test_openapi_separate_input_output_schemas.py",
+                    "test_with_computed_field",
+                    feature_ids=["request-validation", "response-serialization"],
+                    workflows=_separate_schema_runtime_workflows(
+                        "computed-field",
+                        "post-computed-field",
+                        "POST /with-computed-field/ with a computed response field",
+                    ),
+                    rationale=(
+                        "Paired live cases compare the computed-field response JSON and status in both schema modes."
+                    ),
+                    contract_gate=(
+                        "Pydantic computes and serializes the field. The runner compares each mode against the oracle but does not add a cross-case equality assertion."
+                    ),
+                    supporting_sources=(
+                        _FASTAPI_REQUEST_HANDLER,
+                        _FASTAPI_RESPONSE_SERIALIZATION,
+                        _FASTAPI_OPENAPI_ENTRY,
+                    ),
+                ),
                 "test_openapi_schema": _mapping(
                     "tests/test_openapi_separate_input_output_schemas.py",
                     "test_openapi_schema",
@@ -577,139 +707,7 @@ OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW = {
                     ),
                 ),
             },
-            "exclusions": {
-                "test_create_item": _exclusion(
-                    "tests/test_openapi_separate_input_output_schemas.py",
-                    "test_create_item",
-                    (
-                        "The function sends the same model payload to two apps with separate_input_output_schemas enabled/disabled, then compares their runtime status and serialized model body. That option is consumed by OpenAPI generation; this assertion is runtime validation/serialization, and no active input case compares two app configurations as a paired result."
-                    ),
-                    owner="FastAPI runtime request/response lane and Pydantic model conversion; OpenAPI split-schema behavior is mapped separately",
-                    supporting_sources=(
-                        _FASTAPI_REQUEST_HANDLER,
-                        _FASTAPI_RESPONSE_SERIALIZATION,
-                        _FASTAPI_OPENAPI_ENTRY,
-                    ),
-                    related_workflows=(
-                        _workflow(
-                            _OPENAPI_SCHEMAS,
-                            "fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema",
-                            ["openapi"],
-                            [
-                                "http.status",
-                                "openapi.document",
-                                "openapi.paths",
-                                "openapi.request_schema",
-                            ],
-                            "Related schema-mode case; it does not compare runtime responses across two app configurations.",
-                        ),
-                    ),
-                ),
-                "test_create_item_with_sub": _exclusion(
-                    "tests/test_openapi_separate_input_output_schemas.py",
-                    "test_create_item_with_sub",
-                    (
-                        "This function compares nested default/omitted-field response serialization across split and unsplit app instances; its assertion is runtime Pydantic model output, not generated OpenAPI. No active input performs the cross-configuration response comparison."
-                    ),
-                    owner="FastAPI runtime response serialization and Pydantic model defaults",
-                    supporting_sources=(
-                        _FASTAPI_REQUEST_HANDLER,
-                        _FASTAPI_RESPONSE_SERIALIZATION,
-                        _FASTAPI_OPENAPI_ENTRY,
-                    ),
-                    related_workflows=(
-                        _workflow(
-                            _OPENAPI_SCHEMAS,
-                            "fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema",
-                            ["openapi"],
-                            [
-                                "http.status",
-                                "openapi.document",
-                                "openapi.paths",
-                                "openapi.request_schema",
-                            ],
-                            "Related schema-mode case does not assert nested runtime serialization equivalence.",
-                        ),
-                    ),
-                ),
-                "test_create_item_list": _exclusion(
-                    "tests/test_openapi_separate_input_output_schemas.py",
-                    "test_create_item_list",
-                    (
-                        "The function compares list-body validation and serialized responses across split and unsplit apps. Those are runtime request/response and Pydantic behaviors; the schema recipe does not make a paired runtime assertion."
-                    ),
-                    owner="FastAPI runtime request/response lane and Pydantic model conversion",
-                    supporting_sources=(
-                        _FASTAPI_REQUEST_HANDLER,
-                        _FASTAPI_RESPONSE_SERIALIZATION,
-                        _FASTAPI_OPENAPI_ENTRY,
-                    ),
-                    related_workflows=(
-                        _workflow(
-                            _OPENAPI_SCHEMAS,
-                            "fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema",
-                            ["openapi"],
-                            [
-                                "http.status",
-                                "openapi.document",
-                                "openapi.paths",
-                                "openapi.request_schema",
-                            ],
-                            "Related schema-mode case does not compare runtime list payloads.",
-                        ),
-                    ),
-                ),
-                "test_read_items": _exclusion(
-                    "tests/test_openapi_separate_input_output_schemas.py",
-                    "test_read_items",
-                    (
-                        "The function compares nested model serialization, optional values, and defaults for GET responses across split and unsplit apps. It observes runtime Pydantic output, not OpenAPI, and no active workflow pairs these app configurations."
-                    ),
-                    owner="FastAPI runtime response serialization and Pydantic model defaults",
-                    supporting_sources=(_FASTAPI_RESPONSE_SERIALIZATION, _FASTAPI_OPENAPI_ENTRY),
-                    related_workflows=(
-                        _workflow(
-                            _OPENAPI_SCHEMAS,
-                            "fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema",
-                            ["openapi"],
-                            [
-                                "http.status",
-                                "openapi.document",
-                                "openapi.paths",
-                                "openapi.request_schema",
-                            ],
-                            "Related schema-mode case does not inspect runtime GET response bodies.",
-                        ),
-                    ),
-                ),
-                "test_with_computed_field": _exclusion(
-                    "tests/test_openapi_separate_input_output_schemas.py",
-                    "test_with_computed_field",
-                    (
-                        "The function compares runtime computed-field serialization for a POST response across split and unsplit app configurations. Pydantic computes/serializes the field and the test does not request OpenAPI; the adjacent schema case separately observes computed-field input/output schemas."
-                    ),
-                    owner="FastAPI runtime response serialization and Pydantic computed-field behavior",
-                    supporting_sources=(
-                        _FASTAPI_REQUEST_HANDLER,
-                        _FASTAPI_RESPONSE_SERIALIZATION,
-                        _FASTAPI_OPENAPI_ENTRY,
-                    ),
-                    related_workflows=(
-                        _workflow(
-                            _OPENAPI_SCHEMAS,
-                            "fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema",
-                            ["openapi"],
-                            [
-                                "http.status",
-                                "openapi.document",
-                                "openapi.paths",
-                                "openapi.request_schema",
-                            ],
-                            "Related schema-mode case observes computed-field schema references, not computed-field runtime serialization.",
-                        ),
-                    ),
-                ),
-            },
+            "exclusions": {},
         },
         "tests/test_top_level_security_scheme_in_openapi.py": {
             "test_mappings": {

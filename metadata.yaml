@@ -1407,6 +1407,46 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema-no-separate
           workload_path: tests/fixtures/workloads/openapi_schemas.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
@@ -1966,6 +2006,9 @@ reviewed_api_contract_overlay:
         false maps ordinary response fields to validation-mode schemas while
         models with computed fields retain serialization-mode schemas. The
         linked inputs compare both modes through the generated OpenAPI document.
+        Paired runtime inputs select status, exact body bytes, and parsed JSON
+        for simple, nested, list, read-list, and computed-field requests under
+        both settings; the five source test functions map to those cases.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -5773,6 +5816,46 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema-no-separate
           workload_path: tests/fixtures/workloads/openapi_schemas.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-with-sub.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item-list.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-read-items.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [http.status, http.body.bytes, http.body.json]
         - *generate_unique_id_duplicate_warnings
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
