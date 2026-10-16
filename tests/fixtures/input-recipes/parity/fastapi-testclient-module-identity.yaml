@@ -1,0 +1,28 @@
+schema: fastapi-rs/python-api-workflow@7
+workload:
+  file: tests/fixtures/workloads/documented_core_module_identities.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.testclient.module-identity
+  probes:
+  - probe_id: module-identity
+    public_module:
+      module: fastapi.testclient
+      bindings:
+      - TestClient
+    observations:
+    - kind: python_import_path
+      selector: import_path
+      comparison: exact
+    - kind: python_object_identity
+      selector: object_identity
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/testclient.md
+    kind: upstream_documentation
+    sha256: 5c2c07456342432f90fd3596262011d9f318d6de98ea9027c6ecb12f9b6aee71
+  - path: fastapi/testclient.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.testclient.TestClient
+    sha256: 9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4
