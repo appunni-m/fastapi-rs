@@ -4,12 +4,20 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+fastapi_rs_source_tree_sha256 = importlib.import_module(
+    "scripts.parity.source_identity"
+).fastapi_rs_source_tree_sha256
+
 DEFAULT_INPUT = ROOT / "tests/fixtures/inputs/parity/first-asgi-request.json"
 
 
@@ -43,6 +51,59 @@ def _artifact(result: dict[str, object], step: str) -> str:
     return artifact
 
 
+def _git_revision(source: Path, label: str) -> str:
+    completed = subprocess.run(
+        ["git", "-C", str(source), "rev-parse", "HEAD"],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    revision = completed.stdout.strip()
+    if completed.returncode != 0 or re.fullmatch(r"[a-f0-9]{40}", revision) is None:
+        detail = completed.stderr.strip()
+        raise RuntimeError(f"cannot identify {label} source revision: {detail}")
+    return revision
+
+
+def _target_identity(
+    result: dict[str, object],
+    *,
+    fastapi_revision: str,
+    source_tree_sha256: str,
+    starlette_rs_revision: str,
+) -> dict[str, str]:
+    identity = result.get("identity")
+    if not isinstance(identity, dict):
+        raise RuntimeError("target run did not report its runtime identity")
+    repositories = identity.get("repositories")
+    if not isinstance(repositories, dict):
+        raise RuntimeError("target run did not report its repository identities")
+    if identity.get("target_revision") != fastapi_revision:
+        raise RuntimeError(
+            "target result revision differs from the current FastAPI-RS checkout: "
+            f"expected {fastapi_revision}, got {identity.get('target_revision')}"
+        )
+    if repositories.get("fastapi_rs") != fastapi_revision:
+        raise RuntimeError("target result has inconsistent FastAPI-RS revision fields")
+    if repositories.get("starlette_rs") != starlette_rs_revision:
+        raise RuntimeError("target result Starlette-RS revision differs from its source checkout")
+    if identity.get("source_tree_sha256") != source_tree_sha256:
+        raise RuntimeError(
+            "target result source-tree digest differs from the current "
+            "FastAPI-RS/Starlette-RS trees"
+        )
+    binary_sha256 = identity.get("target_binary_sha256")
+    if not isinstance(binary_sha256, str) or re.fullmatch(r"[a-f0-9]{64}", binary_sha256) is None:
+        raise RuntimeError("target result compiled-extension digest is missing or malformed")
+    return {
+        "target_revision": fastapi_revision,
+        "source_tree_sha256": source_tree_sha256,
+        "target_binary_sha256": binary_sha256,
+        "starlette_rs_revision": starlette_rs_revision,
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
@@ -62,6 +123,10 @@ def main() -> int:
     starlette_source = args.starlette_source.resolve()
     starlette_rs_source = args.starlette_rs_source.resolve()
     target_source = args.target_source.resolve()
+
+    expected_target_revision = _git_revision(target_source, "FastAPI-RS")
+    expected_starlette_rs_revision = _git_revision(starlette_rs_source, "Starlette-RS")
+    expected_source_tree_sha256 = fastapi_rs_source_tree_sha256(target_source, starlette_rs_source)
 
     oracle = _run_cli(
         "oracle run",
@@ -91,6 +156,19 @@ def main() -> int:
             str(starlette_rs_source),
         ],
     )
+    target_identity = _target_identity(
+        target,
+        fastapi_revision=expected_target_revision,
+        source_tree_sha256=expected_source_tree_sha256,
+        starlette_rs_revision=expected_starlette_rs_revision,
+    )
+    if (
+        _git_revision(target_source, "FastAPI-RS") != expected_target_revision
+        or _git_revision(starlette_rs_source, "Starlette-RS") != expected_starlette_rs_revision
+        or fastapi_rs_source_tree_sha256(target_source, starlette_rs_source)
+        != expected_source_tree_sha256
+    ):
+        raise RuntimeError("FastAPI-RS or Starlette-RS source changed during the parity run")
     comparison = _run_cli(
         "comparison",
         [
@@ -121,6 +199,7 @@ def main() -> int:
                 "summary": summary,
                 "oracle_result": _artifact(oracle, "oracle run"),
                 "target_result": _artifact(target, "target run"),
+                "target_identity": target_identity,
                 "comparison_result": _artifact(comparison, "comparison"),
             },
             indent=2,
@@ -133,6 +212,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+    except (OSError, RuntimeError, subprocess.SubprocessError, ValueError) as error:
         print(f"parity first slice: {error}", file=sys.stderr)
         raise SystemExit(2) from error

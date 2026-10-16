@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import hashlib
 import importlib
 import importlib.machinery
 import importlib.metadata
 import json
-import os
 import platform
 import re
 import shutil
@@ -25,6 +23,7 @@ from urllib.parse import unquote, urlsplit
 import tomllib
 
 from scripts.parity.fault_contracts import verification_mode
+from scripts.parity.source_identity import SourceIdentityError, combine_digests, source_tree_sha256
 from scripts.parity.worker import (
     RESULT_SCHEMA_ID,
     RESULT_SCHEMA_V3_ID,
@@ -177,59 +176,6 @@ def _extension_path(module: Any, label: str) -> Path:
     ):
         raise WorkerError(f"{label} did not load a compiled Python extension: {resolved}")
     return resolved
-
-
-def _source_tree_sha256(root: Path, label: str) -> str:
-    """Hash tracked and non-ignored source files, including working-tree edits."""
-    completed = subprocess.run(
-        [
-            "git",
-            "-C",
-            str(root),
-            "ls-files",
-            "--cached",
-            "--others",
-            "--exclude-standard",
-            "-z",
-        ],
-        check=False,
-        capture_output=True,
-        timeout=30,
-    )
-    if completed.returncode != 0:
-        detail = completed.stderr.decode("utf-8", errors="replace").strip()
-        raise WorkerError(f"cannot enumerate {label} source files: {detail}")
-
-    paths = sorted(set(entry for entry in completed.stdout.split(b"\0") if entry))
-    digest = hashlib.sha256()
-    for relative_bytes in paths:
-        relative = os.fsdecode(relative_bytes)
-        path = root / relative
-        digest.update(relative_bytes)
-        digest.update(b"\0")
-        if path.is_symlink():
-            digest.update(b"symlink\0")
-            digest.update(os.fsencode(os.readlink(path)))
-        elif path.is_file():
-            digest.update(b"file\0")
-            with path.open("rb") as stream:
-                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-                    digest.update(chunk)
-        else:
-            # A deleted tracked file must affect the identity too.
-            digest.update(b"missing\0")
-        digest.update(b"\0")
-    return digest.hexdigest()
-
-
-def _combine_digests(entries: dict[str, str]) -> str:
-    digest = hashlib.sha256()
-    for name, value in sorted(entries.items()):
-        digest.update(name.encode("utf-8"))
-        digest.update(b"\0")
-        digest.update(value.encode("ascii"))
-        digest.update(b"\0")
-    return digest.hexdigest()
 
 
 def _cargo_starlette_rs_source(target_source: Path, starlette_rs_source: Path) -> Path:
@@ -528,13 +474,16 @@ def _target_identity(
     _assert_module_source(fastapi_rs, binding_root, "FastAPI-RS private binding")
 
     fastapi_rs_revision = _git_commit(target_source, "FastAPI-RS")
-    source_tree_sha256 = _combine_digests(
-        {
-            "fastapi-rs": _source_tree_sha256(target_source, "FastAPI-RS"),
-            "starlette-rs": _source_tree_sha256(starlette_rs_source, "Starlette-RS"),
-        }
-    )
-    target_binary_sha256 = _combine_digests(
+    try:
+        combined_source_tree_sha256 = combine_digests(
+            {
+                "fastapi-rs": source_tree_sha256(target_source, "FastAPI-RS"),
+                "starlette-rs": source_tree_sha256(starlette_rs_source, "Starlette-RS"),
+            }
+        )
+    except SourceIdentityError as exc:
+        raise WorkerError(str(exc)) from exc
+    target_binary_sha256 = combine_digests(
         {
             "fastapi_rs._core": _sha256_file(fastapi_native_path),
             "starlette_rs_py._core": _sha256_file(starlette_native_path),
@@ -556,7 +505,7 @@ def _target_identity(
             "starlette_rs": starlette_rs_revision,
         },
         "target_revision": fastapi_rs_revision,
-        "source_tree_sha256": source_tree_sha256,
+        "source_tree_sha256": combined_source_tree_sha256,
         "target_binary_sha256": target_binary_sha256,
         "packages": actual_packages,
     }
