@@ -4900,6 +4900,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
         - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
+        - {path: tests/test_ws_router.py}
         - {path: fastapi/utils.py, symbol: get_value_or_default}
         - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
         - {path: fastapi/_compat/v2.py, symbol: ModelField}
@@ -4926,6 +4927,9 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
@@ -4960,7 +4964,7 @@ reviewed_api_contract_overlay:
         - *additional_field_two_contexts
         - *additional_field_retry
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code, websocket.close_reason, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Partial native router: default and non-empty path prefixes, GET route
         decorators, nested inclusion with repeated prefixes, and ordered string
@@ -5029,6 +5033,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_strict_content_type_nested.py}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
+        - {path: tests/test_ws_router.py}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
@@ -5059,6 +5064,9 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
@@ -5147,7 +5155,7 @@ reviewed_api_contract_overlay:
         - *additional_field_two_contexts
         - *additional_field_retry
       feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
-      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code, websocket.close_reason, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         The router-prefix-and-nested-composition workflow supplies only `router`
         and `prefix` to app inclusion, adding `tags` on repeated inclusion.
@@ -5217,11 +5225,14 @@ reviewed_api_contract_overlay:
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
 
-        A prefixed stock Starlette HTTP `Route` supplied via
-        `APIRouter(routes=...)` participates at its include-registration slot.
-        The route-order workflow compares generic/API order, nested constructor
-        prefixes, and partial-match fallback. Other BaseRoute families remain
-        open.
+        Prefixed stock Starlette HTTP `Route` and `WebSocketRoute` values
+        supplied via `APIRouter(routes=...)` participate at their
+        include-registration slot. The nested constructor-route case includes
+        an inner router through an outer APIRouter before FastAPI applies
+        `/api`; the WebSocket observation compares acceptance, message, and
+        close metadata. The route-order workflow compares generic/API order,
+        nested constructor prefixes, and HTTP partial-match fallback. Other
+        BaseRoute families remain open.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -5871,6 +5882,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_ws_router.py}
         - {path: tests/test_strict_content_type_nested.py}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
@@ -5890,7 +5902,7 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, public-api-errors, response-serialization]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code, websocket.close_reason, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception]
       supported_slice: >-
         The router-prefix-and-nested-composition workflow supplies only `router`,
         `prefix`, and `tags` to nested router inclusion. The native binding also
@@ -5944,13 +5956,18 @@ reviewed_api_contract_overlay:
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
 
-        `APIRouter(routes=...)` constructor routes participate at their
-        include-registration slot. The route-order workflow compares generic/API
-        order, nested constructor-route prefixes, and partial-match fallback.
-        Other BaseRoute families remain open.
+        `APIRouter(routes=...)` constructor HTTP and WebSocket routes participate
+        at their include-registration slot. The focused nested constructor-route
+        case covers raw WebSocket prefix dispatch through an APIRouter include
+        and FastAPI inclusion. The route-order workflow compares generic/API
+        order, nested constructor-route prefixes, and HTTP partial-match
+        fallback. Other BaseRoute families remain open.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
@@ -6059,6 +6076,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
         - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
+        - {path: tests/test_ws_router.py}
         - {path: fastapi/utils.py, symbol: get_value_or_default}
         - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
         - {path: fastapi/_compat/v2.py, symbol: ModelField}
@@ -6087,6 +6105,9 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
+          workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+          case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.included-constructor-route-slot-order
@@ -6123,7 +6144,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, openapi.document, openapi.paths]
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code, websocket.close_reason, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         This workflow constructs default routers and one router with a `prefix`;
         it passes no other APIRouter constructor options apart from the
@@ -6162,10 +6183,12 @@ reviewed_api_contract_overlay:
         the source signature. The FastAPI constructor now snapshots the supplied
         iterable and dispatches the first generic route with a full match; the
         linked workflow covers one direct Starlette `Route` HTTP request. The
-        APIRouter constructor also snapshots `routes`; the linked inputs observe
-        prefixed dispatch, include-slot ordering against API routes, nested
-        constructor-route prefixes, and generic partial-match fallback both
-        after a later API full match and when no later route fully matches.
+        APIRouter constructor also snapshots `routes`; linked inputs observe
+        prefixed HTTP dispatch, included raw WebSocket dispatch through nested
+        APIRouter and FastAPI inclusion, include-slot ordering against API
+        routes, nested constructor-route prefixes, and generic HTTP
+        partial-match fallback both after a later API full match and when no
+        later route fully matches.
         Slash redirects, other route families, and other ordering combinations
         remain open.
         Five response-field-lifecycle inputs reach router construction/GET and

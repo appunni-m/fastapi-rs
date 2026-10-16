@@ -4262,7 +4262,7 @@ impl PyFastApi {
             )?
             .into_any(),
         };
-        Ok(Self {
+        let mut app = Self {
             state,
             debug,
             route_scope_prefix: String::new(),
@@ -4319,7 +4319,9 @@ impl PyFastApi {
             user_middleware,
             middleware_stack: None,
             router_view: None,
-        })
+        };
+        register_constructor_websocket_routes(&mut app, py)?;
+        Ok(app)
     }
 
     #[getter]
@@ -11792,6 +11794,30 @@ fn add_raw_websocket_route(
         raw: true,
     });
     app.bump_routes_version();
+    Ok(())
+}
+
+fn register_constructor_websocket_routes(app: &mut PyFastApi, py: Python<'_>) -> PyResult<()> {
+    let route_type = py.import("starlette.routing")?.getattr("WebSocketRoute")?;
+    let is_instance = py.import("builtins")?.getattr("isinstance")?;
+    let constructor_routes = app
+        .constructor_routes
+        .iter()
+        .map(|route| route.clone_ref(py))
+        .collect::<Vec<_>>();
+    for route in constructor_routes {
+        if !is_instance
+            .call1((route.bind(py), &route_type))?
+            .is_truthy()?
+        {
+            continue;
+        }
+        let route = route.bind(py);
+        let path = route.getattr("path")?.extract::<String>()?;
+        let endpoint = route.getattr("endpoint")?;
+        let name = route.getattr("name")?.extract::<String>()?;
+        add_raw_websocket_route(app, py, &path, &endpoint, Some(&name))?;
+    }
     Ok(())
 }
 

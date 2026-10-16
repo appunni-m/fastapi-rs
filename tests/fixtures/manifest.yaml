@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 96f8d98a76e377b86ced8f7647088afbac4822d09adac64c1b9872c2ebe71edb
+    sha256: d45850ff1fa7f9ab36c0efedd0fc0454120cbf1ff3f44a5839ce3dad2d4315c8
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 255e5787f6279708634e528a9572bdc274ab5cbf51e48348947fd4af654e28dd
+    sha256: b4954c2e92ae5fe34b2d2041feac80638c1e577ccf2cfd1facef252b72b29c93
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 95a46f8450ebaa613d2876ade659fd9225d0df1a9450d75f47f7704461f223be
+    sha256: 0507c294477befe0de69ead4c00d2d4d6d6c2077afdc7e5c663cc170502f0675
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 643
-      cases: 2620
-      partial_source_mappings: 1886
+      cases: 2621
+      partial_source_mappings: 1887
 
 contract_metadata:
   aliases:
@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 255
-    operation_fixture_refs: 1961
+    operation_fixture_refs: 1965
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1296,17 +1296,30 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: apirouter-constructor-starlette-route
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
-      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
       recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
-      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
       workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
-      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
       case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
       observation_selectors:
       - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
+      case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
+      observation_selectors:
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
       input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
@@ -1655,6 +1668,10 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - websocket.close_code
+    - websocket.close_reason
+    - websocket.event_order
+    - websocket.messages
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.APIRouter/supported_slice
@@ -15653,17 +15670,30 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: apirouter-constructor-starlette-route
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
-      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
       recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
-      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
       workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
-      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
       case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
       observation_selectors:
       - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
+      case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
+      observation_selectors:
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
       input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
@@ -16380,6 +16410,8 @@ api_surface_contract:
     - python.signature
     - python.warnings
     - warnings.category_message
+    - websocket.close_code
+    - websocket.close_reason
     - websocket.event_order
     - websocket.messages
     operation_scope:
@@ -49998,17 +50030,30 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: apirouter-constructor-starlette-route
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
-      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
       recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
-      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
       workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
-      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
       case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
       observation_selectors:
       - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
+      case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
+      observation_selectors:
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
     - workflow_id: router-late-route-order-parity
       input_path: tests/fixtures/inputs/parity/router-late-route-order-parity.json
       input_sha256: 1e300623e7d6d4a95f008784e5e9917a879ff581a90914437db3021819a42881
@@ -50368,6 +50413,10 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - websocket.close_code
+    - websocket.close_reason
+    - websocket.event_order
+    - websocket.messages
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter.__init__/supported_slice
@@ -51434,17 +51483,30 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: apirouter-constructor-starlette-route
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
-      input_sha256: 9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
       recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
-      recipe_sha256: ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
       workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
-      workload_sha256: 81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
       case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
       observation_selectors:
       - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: apirouter-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
+      input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
+      recipe_sha256: 5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee
+      workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+      workload_sha256: 715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4
+      case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
+      observation_selectors:
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
       input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
@@ -51896,6 +51958,10 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - websocket.close_code
+    - websocket.close_reason
+    - websocket.event_order
+    - websocket.messages
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter.include_router/supported_slice

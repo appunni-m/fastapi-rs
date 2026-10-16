@@ -757,20 +757,28 @@
     {
       "id": "apirouter-constructor-starlette-route",
       "input_path": "tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json",
-      "input_sha256": "9842c2431b3e211e8db1a02fb67999fe97f5d96a9812ab6ebc1f77b5b47e1a38",
+      "input_sha256": "74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02",
       "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml",
-      "recipe_sha256": "ca1d8e9e3894ae4319604f953999d68203c04673dc454936540f399f90f7ba3d",
+      "recipe_sha256": "5d8a886fef3ffe462d4232a9738ff1510e9bc660e3e9505ec9bef5cb47af5aee",
       "case_ids": [
-        "fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch"
+        "fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch",
+        "fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch"
       ],
       "workload_path": "tests/fixtures/workloads/apirouter_constructor_starlette_route.py",
-      "workload_sha256": "81d9759b25fd06e5a466dd1be4aaaa27ca53fc9e4c1c01ffe9ce378cfdf83f98",
+      "workload_sha256": "715f8e37166af3b48d1c345a18b438003c8889bfa5d624b8cbb0c9d901b1ebd4",
       "case_contracts": [
         {
           "case_id": "fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_ws_router.py"
           ]
         }
       ]
@@ -36135,6 +36143,22 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "apirouter-constructor-starlette-route",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.close_reason",
+        "websocket.event_order",
+        "websocket.messages"
       ]
     },
     {
