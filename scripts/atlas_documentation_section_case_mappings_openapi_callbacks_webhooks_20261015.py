@@ -69,7 +69,8 @@ _CALLBACK_SCHEMA_RATIONALE = (
 
 _WEBHOOK_SCHEMA_RATIONALE = (
     "The pinned tutorial declares a POST webhook operation and an ordinary /users route "
-    "(docs_src/openapi_webhooks/tutorial001_py310.py:15-24); its upstream tutorial test "
+    "whose request body uses the Subscription model declared at "
+    "docs_src/openapi_webhooks/tutorial001_py310.py:9-24; its upstream tutorial test "
     "requests /openapi.json (tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py:23-26). "
     "FastAPI 0.141.1 stores webhooks in a separate APIRouter "
     "(fastapi/applications.py:937-948), passes its routes to get_openapi "
@@ -137,7 +138,8 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_CALLBACKS_WEBHOOKS_20261015 = {
         ["callback-openapi-document"],
         _OPENAPI,
         (
-            "The selected /openapi.json action observes the callback-bearing schema only. "
+            "The selected /openapi.json action compares the complete generated OpenAPI "
+            "document; the recipe's empty JSON pointer selects its root. "
             "The HTTPX example at lines 52-55 is application-owned outbound delivery and "
             "is excluded; the recipe also does not render Swagger UI."
         ),
@@ -293,7 +295,8 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_CALLBACKS_WEBHOOKS_20261015 = {
             "the second action samples an independent ordinary `/accounts/` route, rather "
             "than the tutorial's `/users/` path. Neither action attempts webhook delivery "
             "or displays the docs UI. A separate page-level route-separation input probes "
-            "`/stock-updated` as an inbound path while inspecting `/webhooks/stock-updated` "
+            "`/catalog-rebuilt` as an inbound path while inspecting "
+            "`/webhooks/catalog-rebuilt` "
             "in OpenAPI; that probe does not add a webhook-delivery claim to this section."
         ),
         _WEBHOOK_SCHEMA_RATIONALE,
@@ -447,9 +450,9 @@ SOURCE_SPANS = {
         ),
         _span(
             "docs_src/openapi_webhooks/tutorial001_py310.py",
-            15,
+            9,
             20,
-            "tutorial POST webhook operation",
+            "Subscription request-body model and POST webhook operation",
         ),
         _span(
             "tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py",
@@ -467,7 +470,10 @@ SOURCE_SPANS = {
             "app.webhooks example, identifier explanation, and nested docs section",
         ),
         _span(
-            "docs_src/openapi_webhooks/tutorial001_py310.py", 15, 24, "webhook plus ordinary route"
+            "docs_src/openapi_webhooks/tutorial001_py310.py",
+            9,
+            24,
+            "Subscription request-body model, webhook, and ordinary route",
         ),
         _span(
             "tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py",

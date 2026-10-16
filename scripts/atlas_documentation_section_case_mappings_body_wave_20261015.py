@@ -11,6 +11,9 @@ _BODY_MULTI_RECIPE = (
 _BODY_UPDATES_RECIPE = "tests/fixtures/input-recipes/parity/body-updates-page-review-20261015.yaml"
 _BODY_SURFACE_RECIPE = "tests/fixtures/input-recipes/parity/body-surface.yaml"
 _DATACLASSES_RECIPE = "tests/fixtures/input-recipes/parity/dataclasses.yaml"
+_DATACLASS_REQUEST_RECIPE = (
+    "tests/fixtures/input-recipes/parity/docs-example-dataclass-request-wave-g.yaml"
+)
 _JSON_BYTES_RECIPE = "tests/fixtures/input-recipes/parity/json_base64_bytes.yaml"
 
 _HTTP = ["http.body.bytes", "http.headers.ordered", "http.status"]
@@ -35,6 +38,12 @@ _DATACLASS_RESPONSE_OPENAPI = [
     "http.headers.ordered",
     "http.status",
     "openapi.document",
+]
+_DATACLASS_REQUEST_RESPONSE_SCHEMA = [
+    "http.body.bytes",
+    "http.status",
+    "openapi.document",
+    "openapi.paths",
 ]
 _JSON_BYTES_BASE64_INPUT_SCHEMA = [
     "docs.response.body.bytes",
@@ -109,10 +118,23 @@ _BODY_UPDATES_RATIONALE = (
 
 _DATACLASSES_RATIONALE = (
     "FastAPI 0.141.1 creates a Pydantic-backed ModelField from the declared response type "
-    "in fastapi/utils.py:58-77 and validates/serializes response content through that field "
-    "in fastapi/routing.py:301-342. The recipe uses a standard-library dataclass as "
+    "in fastapi/utils.py:58-77. APIRoute creates the response field for the declared type "
+    "in fastapi/routing.py:1081-1112 and validates/serializes response content through that "
+    "field in fastapi/routing.py:301-342. The recipe uses a standard-library dataclass as "
     "response_model and inspects its emitted OpenAPI component; Pydantic supplies dataclass "
     "validation and serialization. Starlette 1.6.0 owns generic response transport."
+)
+
+_DATACLASS_REQUEST_RATIONALE = (
+    "The pinned tutorial example declares a standard-library Item dataclass as a path "
+    "operation parameter and returns it (docs_src/dataclasses_/tutorial001_py310.py:1-19). "
+    "FastAPI 0.141.1 constructs APIRoute dependency and body-field state in "
+    "fastapi/routing.py:1081-1112, parses request JSON at fastapi/routing.py:425-450, and "
+    "classifies/validates body fields in fastapi/dependencies/utils.py:491-505,951-998. "
+    "The independent Entry workload changes the route and values while preserving the "
+    "standard-dataclass request shape; it observes the exact response and selected operation "
+    "OpenAPI path. Pydantic supplies dataclass validation. Starlette 1.6.0 owns generic ASGI "
+    "routing and response transport."
 )
 
 _JSON_BYTES_RATIONALE = (
@@ -349,20 +371,23 @@ DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015 = {
         ),
         _BODY_UPDATES_RATIONALE,
     ),
-    (_DATACLASSES_PAGE, "using-dataclasses"): _excluded(
+    (_DATACLASSES_PAGE, "using-dataclasses"): _workflow(
         "Using Dataclasses { #using-dataclasses }",
         1,
         95,
+        _DATACLASS_REQUEST_RECIPE,
+        ["fastapi.docs-wave-g.dataclasses.stdlib-request-and-return"],
+        ["parse-and-return-independent-dataclass", "inspect-independent-dataclass-openapi"],
+        _DATACLASS_REQUEST_RESPONSE_SCHEMA,
         (
-            "This H1 page container spans multiple distinct dataclass uses; concrete "
-            "response-model behavior is mapped on its child section."
+            "The workflow maps the standard-library Item request/return example embedded at "
+            "lines 5-13: its independent Entry route observes exact response bytes and the "
+            "POST operation object through a JSON Pointer in the OpenAPI document. The separate "
+            "response_model child remains separately "
+            "mapped; nested dataclass structures and external Pydantic guidance remain "
+            "excluded below."
         ),
-        (
-            "Pinned docs/en/docs/advanced/dataclasses.md:1-95 includes the standard-dataclass "
-            "overview, response_model example, nested request/response structures, external "
-            "Pydantic guidance, and version history. The response-model child has its own "
-            "partial workflow; nested structures remain explicitly excluded below."
-        ),
+        _DATACLASS_REQUEST_RATIONALE,
     ),
     (_DATACLASSES_PAGE, "dataclasses-in-response-model"): _workflow(
         "Dataclasses in `response_model` { #dataclasses-in-response-model }",

@@ -77246,9 +77246,9 @@
     "documentation_python_examples_with_reviewed_partial_mapping": 333,
     "documentation_python_source_files": 461,
     "documentation_section_candidates": 1583,
-    "documentation_sections_excluded": 1053,
+    "documentation_sections_excluded": 1052,
     "documentation_sections_pending_behavior_review": 0,
-    "documentation_sections_with_reviewed_partial_mapping": 530,
+    "documentation_sections_with_reviewed_partial_mapping": 531,
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 13,
@@ -119984,17 +119984,22 @@
               "http.body.bytes",
               "http.headers.ordered",
               "http.status",
-              "openapi.document"
+              "openapi.document",
+              "openapi.paths"
             ],
             "selector_evidence": [
               {
                 "feature_id": "openapi-docs",
+                "schema_extension_required": [
+                  "openapi.paths"
+                ],
                 "selectors": [
                   "docs.response.body.bytes",
                   "docs.response.headers",
                   "docs.response.status",
                   "http.body.bytes",
-                  "openapi.document"
+                  "openapi.document",
+                  "openapi.paths"
                 ]
               },
               {
@@ -120048,19 +120053,24 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "openapi-docs",
+          "schema_extension_required": [
+            "openapi.paths"
+          ],
           "selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
             "http.body.bytes",
-            "openapi.document"
+            "openapi.document",
+            "openapi.paths"
           ]
         },
         {
@@ -120415,17 +120425,22 @@
               "http.body.bytes",
               "http.headers.ordered",
               "http.status",
-              "openapi.document"
+              "openapi.document",
+              "openapi.paths"
             ],
             "selector_evidence": [
               {
                 "feature_id": "openapi-docs",
+                "schema_extension_required": [
+                  "openapi.paths"
+                ],
                 "selectors": [
                   "docs.response.body.bytes",
                   "docs.response.headers",
                   "docs.response.status",
                   "http.body.bytes",
-                  "openapi.document"
+                  "openapi.document",
+                  "openapi.paths"
                 ]
               },
               {
@@ -120490,19 +120505,24 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "openapi-docs",
+          "schema_extension_required": [
+            "openapi.paths"
+          ],
           "selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
             "http.body.bytes",
-            "openapi.document"
+            "openapi.document",
+            "openapi.paths"
           ]
         },
         {
@@ -120867,17 +120887,22 @@
               "http.body.bytes",
               "http.headers.ordered",
               "http.status",
-              "openapi.document"
+              "openapi.document",
+              "openapi.paths"
             ],
             "selector_evidence": [
               {
                 "feature_id": "openapi-docs",
+                "schema_extension_required": [
+                  "openapi.paths"
+                ],
                 "selectors": [
                   "docs.response.body.bytes",
                   "docs.response.headers",
                   "docs.response.status",
                   "http.body.bytes",
-                  "openapi.document"
+                  "openapi.document",
+                  "openapi.paths"
                 ]
               },
               {
@@ -120938,19 +120963,24 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "openapi-docs",
+          "schema_extension_required": [
+            "openapi.paths"
+          ],
           "selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
             "http.body.bytes",
-            "openapi.document"
+            "openapi.document",
+            "openapi.paths"
           ]
         },
         {
@@ -263737,7 +263767,7 @@
         "documented_sections": [
           {
             "end_line": 95,
-            "exclusion_reason": "This H1 page container spans multiple distinct dataclass uses; concrete response-model behavior is mapped on its child section.",
+            "exclusion_reason": null,
             "feature_evidence": [
               {
                 "feature_id": "app-routing",
@@ -263827,7 +263857,27 @@
               "response-serialization"
             ],
             "heading": "Using Dataclasses { #using-dataclasses }",
-            "independent_workflow_mappings": [],
+            "independent_workflow_mappings": [
+              {
+                "action_ids": [
+                  "parse-and-return-independent-dataclass",
+                  "inspect-independent-dataclass-openapi"
+                ],
+                "case_ids": [
+                  "fastapi.docs-wave-g.dataclasses.stdlib-request-and-return"
+                ],
+                "coverage_status": "partial",
+                "observation_selectors": [
+                  "http.body.bytes",
+                  "http.status",
+                  "openapi.document",
+                  "openapi.paths"
+                ],
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-dataclass-request-wave-g.yaml",
+                "scope_note": "The workflow maps the standard-library Item request/return example embedded at lines 5-13: its independent Entry route observes exact response bytes and the POST operation object through a JSON Pointer in the OpenAPI document. The separate response_model child remains separately mapped; nested dataclass structures and external Pydantic guidance remain excluded below.",
+                "workflow_id": "docs-example-dataclass-request-wave-g"
+              }
+            ],
             "observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -263841,8 +263891,8 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": "Pinned docs/en/docs/advanced/dataclasses.md:1-95 includes the standard-dataclass overview, response_model example, nested request/response structures, external Pydantic guidance, and version history. The response-model child has its own partial workflow; nested structures remain explicitly excluded below.",
-            "review_status": "excluded",
+            "review_rationale": "The pinned tutorial example declares a standard-library Item dataclass as a path operation parameter and returns it (docs_src/dataclasses_/tutorial001_py310.py:1-19). FastAPI 0.141.1 constructs APIRoute dependency and body-field state in fastapi/routing.py:1081-1112, parses request JSON at fastapi/routing.py:425-450, and classifies/validates body fields in fastapi/dependencies/utils.py:491-505,951-998. The independent Entry workload changes the route and values while preserving the standard-dataclass request shape; it observes the exact response and selected operation OpenAPI path. Pydantic supplies dataclass validation. Starlette 1.6.0 owns generic ASGI routing and response transport.",
+            "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "feature_id": "app-routing",
@@ -263961,7 +264011,7 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": "FastAPI 0.141.1 creates a Pydantic-backed ModelField from the declared response type in fastapi/utils.py:58-77 and validates/serializes response content through that field in fastapi/routing.py:301-342. The recipe uses a standard-library dataclass as response_model and inspects its emitted OpenAPI component; Pydantic supplies dataclass validation and serialization. Starlette 1.6.0 owns generic response transport.",
+            "review_rationale": "FastAPI 0.141.1 creates a Pydantic-backed ModelField from the declared response type in fastapi/utils.py:58-77. APIRoute creates the response field for the declared type in fastapi/routing.py:1081-1112 and validates/serializes response content through that field in fastapi/routing.py:301-342. The recipe uses a standard-library dataclass as response_model and inspects its emitted OpenAPI component; Pydantic supplies dataclass validation and serialization. Starlette 1.6.0 owns generic response transport.",
             "review_status": "reviewed_partial",
             "selector_evidence": [
               {
@@ -264380,6 +264430,21 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/dataclasses.yaml",
             "workflow_id": "dataclasses"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs-wave-g.dataclasses.stdlib-request-and-return"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-dataclass-request-wave-g.yaml",
+            "workflow_id": "docs-example-dataclass-request-wave-g"
           }
         ],
         "linked_example_sources": [
@@ -264583,19 +264648,24 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "openapi-docs",
+          "schema_extension_required": [
+            "openapi.paths"
+          ],
           "selectors": [
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
             "http.body.bytes",
-            "openapi.document"
+            "openapi.document",
+            "openapi.paths"
           ]
         },
         {
@@ -272209,7 +272279,7 @@
                   "openapi.document"
                 ],
                 "recipe_path": "tests/fixtures/input-recipes/parity/atlas-openapi-callback-interface-review.yaml",
-                "scope_note": "The selected /openapi.json action observes the callback-bearing schema only. The HTTPX example at lines 52-55 is application-owned outbound delivery and is excluded; the recipe also does not render Swagger UI.",
+                "scope_note": "The selected /openapi.json action compares the complete generated OpenAPI document; the recipe's empty JSON pointer selects its root. The HTTPX example at lines 52-55 is application-owned outbound delivery and is excluded; the recipe also does not render Swagger UI.",
                 "workflow_id": "atlas-openapi-callback-interface-review"
               }
             ],
@@ -273922,7 +273992,7 @@
               "openapi.document",
               "python.pydantic_model_result"
             ],
-            "review_rationale": "The pinned tutorial declares a POST webhook operation and an ordinary /users route (docs_src/openapi_webhooks/tutorial001_py310.py:15-24); its upstream tutorial test requests /openapi.json (tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py:23-26). FastAPI 0.141.1 stores webhooks in a separate APIRouter (fastapi/applications.py:937-948), passes its routes to get_openapi (fastapi/applications.py:1084-1101), and emits them under the OpenAPI webhooks member (fastapi/openapi/utils.py:648-675). The linked independent recipe samples one POST webhook schema; it does not execute webhook delivery, test other methods, or render a browser UI.",
+            "review_rationale": "The pinned tutorial declares a POST webhook operation and an ordinary /users route whose request body uses the Subscription model declared at docs_src/openapi_webhooks/tutorial001_py310.py:9-24; its upstream tutorial test requests /openapi.json (tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py:23-26). FastAPI 0.141.1 stores webhooks in a separate APIRouter (fastapi/applications.py:937-948), passes its routes to get_openapi (fastapi/applications.py:1084-1101), and emits them under the OpenAPI webhooks member (fastapi/openapi/utils.py:648-675). The linked independent recipe samples one POST webhook schema; it does not execute webhook delivery, test other methods, or render a browser UI.",
             "review_status": "reviewed_partial",
             "selector_evidence": [
               {
@@ -273999,7 +274069,7 @@
                   "openapi.document"
                 ],
                 "recipe_path": "tests/fixtures/input-recipes/parity/atlas-openapi-webhook-interface-review.yaml",
-                "scope_note": "The schema action corresponds to the documented `new-subscription` operation; the second action samples an independent ordinary `/accounts/` route, rather than the tutorial's `/users/` path. Neither action attempts webhook delivery or displays the docs UI. A separate page-level route-separation input probes `/stock-updated` as an inbound path while inspecting `/webhooks/stock-updated` in OpenAPI; that probe does not add a webhook-delivery claim to this section.",
+                "scope_note": "The schema action corresponds to the documented `new-subscription` operation; the second action samples an independent ordinary `/accounts/` route, rather than the tutorial's `/users/` path. Neither action attempts webhook delivery or displays the docs UI. A separate page-level route-separation input probes `/catalog-rebuilt` as an inbound path while inspecting `/webhooks/catalog-rebuilt` in OpenAPI; that probe does not add a webhook-delivery claim to this section.",
                 "workflow_id": "atlas-openapi-webhook-interface-review"
               }
             ],
@@ -274019,7 +274089,7 @@
               "validation.error_class",
               "validation.error_details"
             ],
-            "review_rationale": "The pinned tutorial declares a POST webhook operation and an ordinary /users route (docs_src/openapi_webhooks/tutorial001_py310.py:15-24); its upstream tutorial test requests /openapi.json (tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py:23-26). FastAPI 0.141.1 stores webhooks in a separate APIRouter (fastapi/applications.py:937-948), passes its routes to get_openapi (fastapi/applications.py:1084-1101), and emits them under the OpenAPI webhooks member (fastapi/openapi/utils.py:648-675). The linked independent recipe samples one POST webhook schema; it does not execute webhook delivery, test other methods, or render a browser UI.",
+            "review_rationale": "The pinned tutorial declares a POST webhook operation and an ordinary /users route whose request body uses the Subscription model declared at docs_src/openapi_webhooks/tutorial001_py310.py:9-24; its upstream tutorial test requests /openapi.json (tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py:23-26). FastAPI 0.141.1 stores webhooks in a separate APIRouter (fastapi/applications.py:937-948), passes its routes to get_openapi (fastapi/applications.py:1084-1101), and emits them under the OpenAPI webhooks member (fastapi/openapi/utils.py:648-675). The linked independent recipe samples one POST webhook schema; it does not execute webhook delivery, test other methods, or render a browser UI.",
             "review_status": "reviewed_partial",
             "selector_evidence": [
               {
