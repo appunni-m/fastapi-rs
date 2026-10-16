@@ -17,7 +17,9 @@ generic client behavior is owned by Starlette-RS. It also publishes a narrow
 `templates` extra for the direct `fastapi.templating.Jinja2Templates` facade;
 the extra pins only Jinja2 and MarkupSafe. “Absent” below means no target
 package/feature mapping is declared, not an explicit exclusion. Presence in a
-parity/dev environment is not support.
+parity/dev environment is not support. The target `testclient` optional runtime
+closure is documented in the
+[dependency and license map](DEPENDENCIES.md#target-optional-runtime-profile-testclient).
 
 ## Published runtime surfaces
 

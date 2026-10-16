@@ -41,6 +41,28 @@ The profile records the facade's import path, alias identity, and callable
 signature. Starlette-RS owns generic rendering behavior; this optional package
 closure does not implement it in FastAPI-RS.
 
+## Target optional runtime profile: testclient
+
+The `testclient` extra adds the optional runtime dependency for the direct
+`fastapi.testclient.TestClient` facade. The paired CPython 3.12.13 target lock
+resolves 12 external distributions: the eight packages in the base target
+runtime profile plus HTTPX and its three additional locked dependencies below.
+The base packages and their purposes are documented in the
+[target Python dependency inventory](RUST_TARGET_DEPENDENCIES.md#python-package-dependencies).
+The complete hash-locked profile is
+[`requirements/target-testclient-cpython-3.12.13.lock`](../requirements/target-testclient-cpython-3.12.13.lock).
+
+| Package | Version and profile role | Purpose | Language and native components | License evidence |
+|---|---|---|---|---|
+| HTTPX | `0.28.1`; direct optional runtime dependency in the `testclient` extra (`httpx>=0.27.0,<0.29.0`) | Provides the HTTP client used by Starlette-RS TestClient for in-process requests. FastAPI exposes the TestClient alias. | Python HTTP client; no native component in the locked wheel. | BSD-3-Clause ([0.28.1 wheel metadata](https://pypi.org/pypi/httpx/0.28.1/json)). |
+| HTTPcore | `1.0.9`; transitive optional runtime dependency of HTTPX | Supplies HTTPX's low-level connection pools and transport implementation. | Python implementation; no native component in the locked wheel. | BSD-3-Clause ([1.0.9 wheel metadata](https://pypi.org/pypi/httpcore/1.0.9/json)). |
+| h11 | `0.16.0`; transitive optional runtime dependency of HTTPcore | Implements the HTTP/1.1 protocol used by HTTPcore. | Pure-Python HTTP/1.1 state machine. | MIT ([0.16.0 wheel metadata](https://pypi.org/pypi/h11/0.16.0/json)). |
+| certifi | `2026.1.4`; transitive optional runtime dependency of HTTPX and included in the profile lock | Supplies the CA certificate bundle used by HTTPX's default TLS verification. | Python package containing CA certificate data; no native component. | MPL-2.0 ([2026.1.4 wheel metadata](https://pypi.org/pypi/certifi/2026.1.4/json)). |
+
+Starlette-RS owns TestClient behavior; the extra supplies its HTTPX client
+dependency. This package closure does not implement the FastAPI application or
+server-side HTTP stack.
+
 Dependency signature resolution also uses the pinned Pydantic 2.13.4 private
 `pydantic._internal._typing_extra.try_eval_type` helper through PyO3. It
 resolves string annotations from `inspect.signature` in the unwrapped
