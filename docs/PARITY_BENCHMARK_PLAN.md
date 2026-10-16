@@ -53,19 +53,24 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The current first-slice valid-request baseline is
-[`docs/benchmarks/2026-10-16-a1a619e.md`](benchmarks/2026-10-16-a1a619e.md).
+[`docs/benchmarks/2026-10-17-fc27ab5.md`](benchmarks/2026-10-17-fc27ab5.md).
 Its ignored receipt
-`benchmark-results/20261016T163006Z-59a8e709-a5d1-4697-94e0-04486d305938.json`
+`benchmark-results/20261016T194410Z-e9800f2f-7fd6-4af4-a3e2-4a6e8b1cf764.json`
 (SHA-256
-`fe2fb6b02d6a1caa2084887e384410367587b5105af87570d6b3c6e97f123226`)
-binds FastAPI-RS `a1a619e` and pinned Starlette-RS
+`98e6d3df02d04c38000df6b9fe87783e7b14c17003107f39f9774e9282d753c7`)
+binds FastAPI-RS `fc27ab5` and pinned Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338`; its live 13-case parity gate
 passed 13/13. On this one direct-ASGI workload, FastAPI-RS median latency was
-1.140x FastAPI and p95 latency was 1.215x; sequential request-loop throughput
-was 5,919 requests/second versus 6,783. These results describe this valid
-request only. The Starlette control is contextual and is not subtracted.
+1.133x FastAPI and p95 latency was 0.454x; sequential request-loop throughput
+was 6,111 requests/second versus 4,447. These mixed observations describe this
+valid request only. The Starlette control is contextual and is not subtracted.
 
 The preceding one-workload baseline
+[`docs/benchmarks/2026-10-16-a1a619e.md`](benchmarks/2026-10-16-a1a619e.md)
+binds FastAPI-RS `a1a619e` and is historical. Its receipt is retained in the
+ignored benchmark output directory.
+
+The previous one-workload baseline
 [`docs/benchmarks/2026-10-16-bccc10c.md`](benchmarks/2026-10-16-bccc10c.md)
 binds FastAPI-RS `bccc10c` and is historical. Its receipt is retained in the
 ignored benchmark output directory.
@@ -78,14 +83,14 @@ binds FastAPI-RS `6bb19bc`; it is historical and is superseded by the current
 receipt above.
 
 The latest complete seven-workload suite available in local ignored output is
-`benchmark-results/suite-20261016T023943Z-4f961fd7-3d5f-45f9-84c0-4d7815a9e522.json`
+`benchmark-results/stale/suite-20261016T023943Z-4f961fd7-3d5f-45f9-84c0-4d7815a9e522.json`
 (SHA-256
 `e62b11c6604e5c7d76ac3269156d1db72e2da35088906c0bc89f292c1f584909`). It
 completed 7/7 workloads with 45/45 selected parity comparisons passing and
 used the pinned Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`.
 It binds FastAPI-RS `2c3e94d6`, so it is historical evidence for an earlier
-target revision; the current one-workload baseline above does not replace a
-fresh seven-workload suite.
+target revision, not current suite-contract evidence. The current one-workload
+baseline above does not replace a fresh seven-workload suite.
 
 A newer one-workload TestClient receipt,
 `benchmark-results/testclient/7aa89e37-44f6-4b88-878d-0b09e04fb971.json`
