@@ -850,8 +850,9 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     "docs_src/header_params/tutorial001_an_py310.py": {
         "rationale": (
             "The documented route declares user_agent with Header() and a Python default of "
-            "None. The linked input omits the user-agent header and observes the response "
-            "status and body, limiting this mapping to the omitted-header default None."
+            "None. One linked input omits the header to sample its default, while another "
+            "supplies the hyphenated user-agent name to sample the default header alias. "
+            "Both observe response status and body only."
         ),
         "supporting_sources": [
             {
@@ -866,7 +867,14 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial001-annotated.yaml",
                 "case_ids": ["fastapi.header.tutorial001.annotated.absent-user-agent"],
                 "observation_selectors": ["http.body.bytes", "http.status"],
-            }
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+                "case_ids": [
+                    "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017"
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            },
         ],
     },
     "docs_src/header_params/tutorial003_py310.py": {
@@ -976,7 +984,14 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                     "fastapi.header.convert-underscores-false.hyphen-name",
                 ],
                 "observation_selectors": ["http.body.bytes", "http.status"],
-            }
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+                "case_ids": [
+                    "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            },
         ],
     },
     "docs_src/path_operation_configuration/tutorial001_py310.py": {

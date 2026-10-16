@@ -213,22 +213,29 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
         "Automatic conversion { #automatic-conversion }",
         33,
         56,
-        _REQUEST_PARAMETERS,
-        ["fastapi.request-parameters.header.underscore-alias"],
-        ["get-underscore-header-alias"],
+        _P + "header-convert-underscores-documentation-20261017.yaml",
+        [
+            "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017",
+            "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017",
+        ],
+        ["send-header"],
         _HTTP,
         (
-            "The page-backed action sends x-trace-id to the Python x_trace_id field and "
-            "observes its response. The explicit convert_underscores=False example and "
-            "proxy restrictions are not tested by this row."
+            "The two page-backed actions send a hyphenated header for default conversion "
+            "and an underscore-named header with convert_underscores=False, then observe "
+            "the resolved values. The proxy and server restrictions in the warning are "
+            "not exercised."
         ),
         (
-            "The pinned section describes default underscore-to-hyphen aliasing and then "
-            "shows how to disable it (docs/en/docs/tutorial/header-params.md:33-56). The "
-            "selected page-backed case samples the default alias. Header defaults "
-            "convert_underscores to True, and FastAPI derives the header alias from the "
-            "Python name when enabled (fastapi/params.py:303-317; "
-            "fastapi/dependencies/utils.py:524-528)."
+            "The pinned section documents default underscore-to-hyphen conversion and the "
+            "explicit Header(convert_underscores=False) opt-out "
+            "(docs/en/docs/tutorial/header-params.md:41-49). FastAPI 0.141.1 declares "
+            "the flag on Header and stores it on the field info "
+            "(fastapi/params.py:303-316, 352-353), then selects a hyphenated alias only "
+            "when conversion is enabled (fastapi/dependencies/utils.py:524-528). The two "
+            "independent requests send request-label for Header() and request_label for "
+            "Header(convert_underscores=False). Starlette 1.6.0 performs case-insensitive "
+            "lookup for the already selected header name (starlette/datastructures.py:537-539)."
         ),
     ),
     ("tutorial/header-params.md", "duplicate-headers"): _workflow(
@@ -411,23 +418,34 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "page-cited input workflow."
         ),
     ),
-    ("tutorial/header-param-models.md", "disable-convert-underscores"): _excluded(
+    ("tutorial/header-param-models.md", "disable-convert-underscores"): _workflow(
         "Disable Convert Underscores { #disable-convert-underscores }",
         54,
         69,
+        _P + "header-convert-underscores-documentation-20261017.yaml",
+        [
+            "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+        ],
+        ["get-model-underscore-header"],
+        _HTTP,
         (
-            "The model-level convert_underscores=False combination needs a page-cited input "
-            "workflow; ordinary Header conversion is mapped on header-params.md."
+            "The page-backed request supplies the underscore-named header matching one "
+            "required model field and observes the response value. It does not sample "
+            "default model conversion, extra-header policy, OpenAPI, or the proxy/server "
+            "warning. Pydantic's string validation and response serialization are not "
+            "separate claims in this row."
         ),
         (
             "The pinned section applies Header(convert_underscores=False) to a Pydantic "
-            "header model (docs/en/docs/tutorial/header-param-models.md:54-69; "
-            "docs_src/header_param_models/tutorial003_an_py310.py:17-20). The existing "
-            "input recipe for this model option cites its source example and upstream test "
-            "but not this Markdown page, so it cannot be linked as this page's evidence. "
-            "Default Header conversion is mapped under tutorial/header-params.md; this "
-            "exclusion leaves the model-level combination unclaimed pending page-cited "
-            "input evidence."
+            "header model, after explaining the default `save_data`-to-`save-data` alias "
+            "conversion (docs/en/docs/tutorial/header-param-models.md:56-62). The "
+            "independent request sends request_label using the model field's exact "
+            "underscore name. FastAPI 0.141.1 expands the single model into header fields, "
+            "reads convert_underscores from the top-level Header, and only rewrites field "
+            "names when the flag is true (fastapi/dependencies/utils.py:793-803, 809-824). "
+            "Starlette 1.6.0 retrieves the selected key without underscore conversion "
+            "(starlette/datastructures.py:537-539); Pydantic owns validation of the "
+            "resulting string model field, not FastAPI's header-name selection."
         ),
     ),
     ("tutorial/header-param-models.md", "summary"): _excluded(

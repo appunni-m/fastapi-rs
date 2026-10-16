@@ -471,7 +471,7 @@ _MAPPINGS = [
                 "docs-example-wave-f-request-parameter-models.yaml",
                 "fastapi.docs-example-wave-f.header-model.underscore-preserved",
                 HTTP,
-            )
+            ),
         ],
     ),
     (
@@ -840,6 +840,18 @@ DOC_EXAMPLE_CITATION_WAVE_F = {
     for paths, rationale, spans, cases in _MAPPINGS
     for path, review in _family(paths, rationale, spans, cases).items()
 }
+
+_header_model_annotated_review = DOC_EXAMPLE_CITATION_WAVE_F[
+    "docs_src/header_param_models/tutorial003_an_py310.py"
+]
+_header_model_annotated_review["workflow_cases"] = [
+    *_header_model_annotated_review["workflow_cases"],
+    _case(
+        "header-convert-underscores-documentation-20261017.yaml",
+        "fastapi.header.models.convert-underscores-false.field-name-review-20261017",
+        HTTP,
+    ),
+]
 
 
 DOC_EXAMPLE_EXCLUSION_WAVE_F = {

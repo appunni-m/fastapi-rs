@@ -11691,6 +11691,49 @@
       ]
     },
     {
+      "id": "header-convert-underscores-documentation-20261017",
+      "input_path": "tests/fixtures/inputs/parity/header-convert-underscores-documentation-20261017.json",
+      "input_sha256": "4c656cf4d5d94322ff17bf8590f52cb589105bf88157178e223029743eb9e5a0",
+      "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+      "recipe_sha256": "bccc1dfdc19394cf48bf70198768e4185b24dc48c374f1835d807d7e1156cc8d",
+      "case_ids": [
+        "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017",
+        "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017",
+        "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+      ],
+      "workload_path": "tests/fixtures/workloads/header_convert_underscores_documentation_20261017.py",
+      "workload_sha256": "91fe538c95c5a6dc687484ca1411409abc5efa7f0c0cef06abc92d40bcfe78bb",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/header_params/tutorial001_an_py310.py",
+            "source:documented-page:tutorial/header-params.md",
+            "source:upstream-test:tests/test_tutorial/test_header_params/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/header_params/tutorial002_an_py310.py",
+            "source:documented-page:tutorial/header-params.md",
+            "source:upstream-test:tests/test_tutorial/test_header_params/test_tutorial002.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.header.models.convert-underscores-false.field-name-review-20261017",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/header_param_models/tutorial003_an_py310.py",
+            "source:documented-page:tutorial/header-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial003.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "header-convert-underscores-false",
       "input_path": "tests/fixtures/inputs/parity/header-convert-underscores-false.json",
       "input_sha256": "4939a9137767299b5f01a8b7713ab55ba85427de82893e749431e1ccbea5f3d8",
@@ -18651,9 +18694,9 @@
     {
       "id": "path-operation-configurations-tutorial002-upstream",
       "input_path": "tests/fixtures/inputs/parity/path-operation-configurations-tutorial002-upstream.json",
-      "input_sha256": "1863b12a617a7f9220aa51cbaf08186838b6e211088a0a72aff773d6427466db",
+      "input_sha256": "a82e4fdc3040eee8dceac573122f220d0323429950f298c79aa968cc726feb9c",
       "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002-upstream.yaml",
-      "recipe_sha256": "96580032984b3160a311409ec6cb817fadb3618a87bd154fe5f0006d894e2b8a",
+      "recipe_sha256": "d569efaac684468240464a1284c92b5579571aa5b3bc05ff4e396a5f4762e2ef",
       "case_ids": [
         "fastapi.path-operation-configurations.tutorial002"
       ],
@@ -18666,6 +18709,7 @@
           "requirement_refs": [
             "source:documented-example:docs_src/path_operation_configuration/tutorial002_py310.py",
             "source:documented-page:tutorial/metadata.md",
+            "source:documented-page:tutorial/path-operation-configuration.md",
             "source:upstream-test:tests/test_tutorial/test_path_operation_configurations/test_tutorial002.py"
           ]
         }
@@ -48592,6 +48636,119 @@
       ]
     },
     {
+      "source_item_id": "documented-example:docs_src/header_param_models/tutorial003_an_py310.py",
+      "fixture_id": "fastapi.docs-example.header-param-models-tutorial003-an-py310",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/header_params/tutorial001_an_py310.py",
+      "fixture_id": "fastapi.docs-example.header-params-tutorial001-an-py310",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/header_params/tutorial002_an_py310.py",
+      "fixture_id": "fastapi.docs-example.header-params-tutorial002-an-py310",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/header-param-models.md",
+      "fixture_id": "fastapi.docs.tutorial-header-param-models",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/header-params.md",
+      "fixture_id": "fastapi.docs.tutorial-header-params",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017",
+        "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial003.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-header-param-models-test-tutorial003",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_header_params/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-header-params-test-tutorial001",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_header_params/test_tutorial002.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-header-params-test-tutorial002",
+      "workflow_id": "header-convert-underscores-documentation-20261017",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-example:docs_src/header_params/tutorial002_an_py310.py",
       "fixture_id": "fastapi.docs-example.header-params-tutorial002-an-py310",
       "workflow_id": "header-convert-underscores-false",
@@ -52422,6 +52579,22 @@
     {
       "source_item_id": "documented-page:tutorial/metadata.md",
       "fixture_id": "fastapi.docs.tutorial-metadata",
+      "workflow_id": "path-operation-configurations-tutorial002-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation-configurations.tutorial002"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/path-operation-configuration.md",
+      "fixture_id": "fastapi.docs.tutorial-path-operation-configuration",
       "workflow_id": "path-operation-configurations-tutorial002-upstream",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",

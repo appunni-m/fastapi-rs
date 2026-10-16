@@ -1,0 +1,135 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/header_convert_underscores_documentation_20261017.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017
+  actions:
+  - action_id: send-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /default/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - request-label
+        - default-alias
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/header-params.md
+    kind: upstream_documentation
+  - path: docs_src/header_params/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+  - path: tests/test_tutorial/test_header_params/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017
+  actions:
+  - action_id: send-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /preserved/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - request_label
+        - underscore-preserved
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/header-params.md
+    kind: upstream_documentation
+  - path: docs_src/header_params/tutorial002_an_py310.py
+    kind: upstream_documentation_example
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.header.models.convert-underscores-false.field-name-review-20261017
+  actions:
+  - action_id: get-model-underscore-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /model/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - request_label
+        - model-underscore-preserved
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/header-param-models.md
+    kind: upstream_documentation
+  - path: docs_src/header_param_models/tutorial003_an_py310.py
+    kind: upstream_documentation_example
+  - path: tests/test_tutorial/test_header_param_models/test_tutorial003.py
+    kind: upstream_test

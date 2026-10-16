@@ -55,6 +55,9 @@ from scripts.atlas_documentation_section_case_mappings_extra_form_fields_2026101
 from scripts.atlas_documentation_section_case_mappings_fastapi_cli_entrypoint_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015,
 )
+from scripts.atlas_documentation_section_case_mappings_first_steps_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
+)
 from scripts.atlas_documentation_section_case_mappings_form_parameters_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_FORM_PARAMETERS_20261015,
 )
@@ -114,6 +117,9 @@ from scripts.atlas_documentation_section_case_mappings_security_reference_sectio
 )
 from scripts.atlas_documentation_section_case_mappings_security_scopes_1016 import (
     DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016,
+)
+from scripts.atlas_documentation_section_case_mappings_settings_20261015 import (
+    DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
 )
 from scripts.atlas_documentation_section_case_mappings_streaming_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_STREAMING_20261015,
@@ -195,6 +201,8 @@ _REVIEWED_PAGE_SECTION_MAPPINGS = (
     DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
     DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015,
     DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015,
+    DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
 )
 
 
@@ -507,14 +515,8 @@ def build_index() -> dict[str, Any]:
                     )
                     if reviewed_page_selectors:
                         # Reviewed section claims break the one-generation atlas/index refresh
-                        # cycle; retain prior page candidates for whole-case observations.
+                        # cycle while keeping source mappings limited to documented behavior.
                         source_selectors.update(reviewed_page_selectors)
-                        source_selectors.update(
-                            f"construction.{selector}"
-                            for selector in case.get("construction_observation", {}).get(
-                                "selectors", []
-                            )
-                        )
                 if evidence["kind"] == "upstream_documentation_example":
                     # Reviewed mappings own the selector contract. Reading this
                     # from the generated atlas creates a refresh cycle when a

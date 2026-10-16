@@ -13166,6 +13166,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-example-wave-f-request-parameter-models.yaml",
           "workflow_id": "docs-example-wave-f-request-parameter-models"
+        },
+        {
+          "case_ids": [
+            "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
         }
       ],
       "input_only": true,
@@ -13304,6 +13317,19 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
+        },
+        {
+          "case_ids": [
             "fastapi.header.tutorial001.annotated.absent-user-agent"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -13359,7 +13385,7 @@
         "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
-      "stimulus_design_notes": "The documented route declares user_agent with Header() and a Python default of None. The linked input omits the user-agent header and observes the response status and body, limiting this mapping to the omitted-header default None."
+      "stimulus_design_notes": "The documented route declares user_agent with Header() and a Python default of None. One linked input omits the header to sample its default, while another supplies the hyphenated user-agent name to sample the default header alias. Both observe response status and body only."
     },
     {
       "feature_ids": [
@@ -13436,6 +13462,19 @@
       ],
       "id": "fastapi.docs-example.header-params-tutorial002-an-py310",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
+        },
         {
           "case_ids": [
             "fastapi.header.convert-underscores-false.hyphen-name",
@@ -113369,7 +113408,7 @@
         },
         {
           "end_line": 69,
-          "exclusion_reason": "The model-level convert_underscores=False combination needs a page-cited input workflow; ordinary Header conversion is mapped on header-params.md.",
+          "exclusion_reason": null,
           "feature_evidence": [
             {
               "feature_id": "request-validation",
@@ -113396,7 +113435,24 @@
             "request-validation"
           ],
           "heading": "Disable Convert Underscores { #disable-convert-underscores }",
-          "independent_workflow_mappings": [],
+          "independent_workflow_mappings": [
+            {
+              "action_ids": [
+                "get-model-underscore-header"
+              ],
+              "case_ids": [
+                "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+              ],
+              "coverage_status": "partial",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+              "scope_note": "The page-backed request supplies the underscore-named header matching one required model field and observes the response value. It does not sample default model conversion, extra-header policy, OpenAPI, or the proxy/server warning. Pydantic's string validation and response serialization are not separate claims in this row.",
+              "workflow_id": "header-convert-underscores-documentation-20261017"
+            }
+          ],
           "observation_selectors": [
             "http.body.bytes",
             "http.body.json",
@@ -113406,8 +113462,8 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "The pinned section applies Header(convert_underscores=False) to a Pydantic header model (docs/en/docs/tutorial/header-param-models.md:54-69; docs_src/header_param_models/tutorial003_an_py310.py:17-20). The existing input recipe for this model option cites its source example and upstream test but not this Markdown page, so it cannot be linked as this page's evidence. Default Header conversion is mapped under tutorial/header-params.md; this exclusion leaves the model-level combination unclaimed pending page-cited input evidence.",
-          "review_status": "excluded",
+          "review_rationale": "The pinned section applies Header(convert_underscores=False) to a Pydantic header model, after explaining the default `save_data`-to-`save-data` alias conversion (docs/en/docs/tutorial/header-param-models.md:56-62). The independent request sends request_label using the model field's exact underscore name. FastAPI 0.141.1 expands the single model into header fields, reads convert_underscores from the top-level Header, and only rewrites field names when the flag is true (fastapi/dependencies/utils.py:793-803, 809-824). Starlette 1.6.0 retrieves the selected key without underscore conversion (starlette/datastructures.py:537-539); Pydantic owns validation of the resulting string model field, not FastAPI's header-name selection.",
+          "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "feature_id": "request-validation",
@@ -113495,6 +113551,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
           "workflow_id": "docs-request-schema"
+        },
+        {
+          "case_ids": [
+            "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
         }
       ],
       "input_only": true,
@@ -114150,19 +114219,20 @@
           "independent_workflow_mappings": [
             {
               "action_ids": [
-                "get-underscore-header-alias"
+                "send-header"
               ],
               "case_ids": [
-                "fastapi.request-parameters.header.underscore-alias"
+                "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017",
+                "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
               ],
               "coverage_status": "partial",
               "observation_selectors": [
                 "http.body.bytes",
                 "http.status"
               ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-parameters.yaml",
-              "scope_note": "The page-backed action sends x-trace-id to the Python x_trace_id field and observes its response. The explicit convert_underscores=False example and proxy restrictions are not tested by this row.",
-              "workflow_id": "request-validation-parameters"
+              "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+              "scope_note": "The two page-backed actions send a hyphenated header for default conversion and an underscore-named header with convert_underscores=False, then observe the resolved values. The proxy and server restrictions in the warning are not exercised.",
+              "workflow_id": "header-convert-underscores-documentation-20261017"
             }
           ],
           "observation_selectors": [
@@ -114174,7 +114244,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "The pinned section describes default underscore-to-hyphen aliasing and then shows how to disable it (docs/en/docs/tutorial/header-params.md:33-56). The selected page-backed case samples the default alias. Header defaults convert_underscores to True, and FastAPI derives the header alias from the Python name when enabled (fastapi/params.py:303-317; fastapi/dependencies/utils.py:524-528).",
+          "review_rationale": "The pinned section documents default underscore-to-hyphen conversion and the explicit Header(convert_underscores=False) opt-out (docs/en/docs/tutorial/header-params.md:41-49). FastAPI 0.141.1 declares the flag on Header and stores it on the field info (fastapi/params.py:303-316, 352-353), then selects a hyphenated alias only when conversion is enabled (fastapi/dependencies/utils.py:524-528). The two independent requests send request-label for Header() and request_label for Header(convert_underscores=False). Starlette 1.6.0 performs case-insensitive lookup for the already selected header name (starlette/datastructures.py:537-539).",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -114381,6 +114451,20 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
           "workflow_id": "first-asgi-request"
+        },
+        {
+          "case_ids": [
+            "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017",
+            "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
         },
         {
           "case_ids": [
@@ -117746,6 +117830,21 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-schema.yaml",
           "workflow_id": "docs-openapi-schema"
+        },
+        {
+          "case_ids": [
+            "fastapi.path-operation-configurations.tutorial002"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002-upstream.yaml",
+          "workflow_id": "path-operation-configurations-tutorial002-upstream"
         },
         {
           "case_ids": [
@@ -553528,6 +553627,19 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
+        },
+        {
+          "case_ids": [
             "fastapi.request-parameter-model-tutorial.header-003-underscore-disabled"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -553928,6 +554040,19 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.header.automatic-conversion.default-hyphen-wire-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
+        },
+        {
+          "case_ids": [
             "fastapi.query-header-review.header001.annotated.default-user-agent",
             "fastapi.query-header-review.header001.annotated.irrelevant-x-header",
             "fastapi.query-header-review.header001.annotated.openapi",
@@ -554316,6 +554441,19 @@
       ],
       "id": "fastapi.test.test-tutorial-test-header-params-test-tutorial002",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.header.automatic-conversion.preserved-underscore-wire-name-review-20261017"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-documentation-20261017.yaml",
+          "workflow_id": "header-convert-underscores-documentation-20261017"
+        },
         {
           "case_ids": [
             "fastapi.header.convert-underscores-false.hyphen-name",
