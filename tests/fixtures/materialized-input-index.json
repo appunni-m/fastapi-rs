@@ -16708,6 +16708,177 @@
       ]
     },
     {
+      "id": "openapi-server-models",
+      "input_path": "tests/fixtures/inputs/parity/openapi-server-models.json",
+      "input_sha256": "0fb33fa2679d8385dbfb2e40998050d751daf0601423e3d9b8d9961311c0df14",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-server-models.yaml",
+      "recipe_sha256": "ec9e9965171c3660ee8ac3b2542090248d24a94f90757b49ad0a2db59135f64d",
+      "case_ids": [
+        "fastapi.openapi-models.server.required-url-missing",
+        "fastapi.openapi-models.server.defaults",
+        "fastapi.openapi-models.server.nested-variables-extra-allow",
+        "fastapi.openapi-models.server-variable.required-default-missing",
+        "fastapi.openapi-models.server-variable.defaults",
+        "fastapi.openapi-models.server-variable.empty-enum"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_server_models_projection.py",
+      "workload_sha256": "0807c54c3e666461464255280c4855c203c0cf60695b0b292eabcbc78c107292",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi-models.server-variable.defaults",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.server-variable.empty-enum",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.server-variable.required-default-missing",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.defaults",
+          "symbol_id": "fastapi.openapi.models.Server",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.nested-variables-extra-allow",
+          "symbol_id": "fastapi.openapi.models.Server",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.nested-variables-extra-allow",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.required-url-missing",
+          "symbol_id": "fastapi.openapi.models.Server",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi-models.server-variable.defaults",
+          "probe_id": "server-variable-defaults",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server-variable.empty-enum",
+          "probe_id": "server-variable-empty-enum",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server-variable.required-default-missing",
+          "probe_id": "server-variable-required-default-missing",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.defaults",
+          "probe_id": "server-defaults",
+          "symbol_id": "fastapi.openapi.models.Server",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.nested-variables-extra-allow",
+          "probe_id": "server-nested-variables-extra-allow",
+          "symbol_id": "fastapi.openapi.models.Server",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.nested-variables-extra-allow",
+          "probe_id": "server-variable-extra-allow",
+          "symbol_id": "fastapi.openapi.models.ServerVariable",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.required-url-missing",
+          "probe_id": "server-required-url-missing",
+          "symbol_id": "fastapi.openapi.models.Server",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-models.server.required-url-missing",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Server"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Server"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server.nested-variables-extra-allow",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Server",
+            "api:fastapi.openapi.models.ServerVariable"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server-variable.required-default-missing",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.ServerVariable"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server-variable.defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.ServerVariable"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.server-variable.empty-enum",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.ServerVariable"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-servers-route-review",
       "input_path": "tests/fixtures/inputs/parity/openapi-servers-route-review.json",
       "input_sha256": "67a2210881c03ee2fd2460cbfe52f9af723b86735b80193e47d3f5bc63781e92",

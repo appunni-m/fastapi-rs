@@ -11173,11 +11173,16 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 57
           end_line: 58
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
       feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       supported_slice: >-
-        Native Pydantic base model is used in the APIKey model inheritance
-        chain with the source extra-field configuration. Standalone extra-field
-        validation and schema parity remain unverified.
+        The source extra-field configuration is exercised through a Server
+        instance and a nested ServerVariable instance whose additional fields
+        are observed in the exact model_dump projection. Other inherited model
+        configurations and standalone base-class behavior remain unverified.
     fastapi.openapi.models.SecurityBase:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       source_evidence:
@@ -14800,11 +14805,21 @@ reviewed_api_contract_overlay:
           symbol: Server
           start_line: 89
           end_line: 92
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.required-url-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
       supported_slice: >-
-        Source model declaration only: Server inherits BaseModelWithConfig and declares
-        description, url, variables. No direct constructor/model_result case is row-linked;
-        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
-        Schema behavior remain outside this source-only slice.
+        The input-only direct model workflow maps the required URL, optional
+        field defaults, nested variables, and extra fields on both Server and
+        its nested ServerVariable. It also maps the missing-URL call outcome.
+        Live target equality remains pending; other coercion, validation,
+        serialization, and JSON Schema behavior is not claimed.
 
     fastapi.openapi.models.Server.description:
       source_evidence:
@@ -14813,9 +14828,17 @@ reviewed_api_contract_overlay:
           symbol: Server
           start_line: 89
           end_line: 92
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        The exact model_dump inputs map the optional None default and a
+        populated description value. Live target equality and other values or
+        validation behavior remain unverified.
 
     fastapi.openapi.models.Server.url:
       source_evidence:
@@ -14824,10 +14847,19 @@ reviewed_api_contract_overlay:
           symbol: Server
           start_line: 89
           end_line: 92
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.required-url-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
       supported_slice: >-
-        Declared field only: annotation AnyUrl | str; required declaration (no default).
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        The exact model_dump inputs map populated URL values; a separate
+        missing-URL input maps the required-field call outcome. Live target
+        equality and other URL validation or coercion remain unverified.
 
     fastapi.openapi.models.Server.variables:
       source_evidence:
@@ -14836,10 +14868,18 @@ reviewed_api_contract_overlay:
           symbol: Server
           start_line: 89
           end_line: 92
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       supported_slice: >-
-        Declared field only: annotation dict[str, ServerVariable] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        The exact model_dump inputs map the optional None default and a nested
+        name-to-ServerVariable mapping. The nested case includes optional
+        fields and additional fields on both models. Live target equality and
+        other mapping values remain unverified.
 
     fastapi.openapi.models.ServerVariable:
       source_evidence:
@@ -14848,11 +14888,23 @@ reviewed_api_contract_overlay:
           symbol: ServerVariable
           start_line: 83
           end_line: 86
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.required-default-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.empty-enum
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
       supported_slice: >-
-        Source model declaration only: ServerVariable inherits BaseModelWithConfig and declares
-        default, description, enum. No direct constructor/model_result case is row-linked;
-        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
-        Schema behavior remain outside this source-only slice.
+        The input-only direct model workflow maps required default behavior,
+        optional field defaults and values, a nested instance with an allowed
+        extra, and the empty-enum validation outcome. Live target equality
+        remains pending; other coercion, validation, serialization, and JSON
+        Schema behavior is not claimed.
 
     fastapi.openapi.models.ServerVariable.default:
       source_evidence:
@@ -14861,10 +14913,21 @@ reviewed_api_contract_overlay:
           symbol: ServerVariable
           start_line: 83
           end_line: 86
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.required-default-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.empty-enum
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
       supported_slice: >-
-        Declared field only: annotation str; required declaration (no default). Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        The exact model_dump inputs map supplied default values; a separate
+        missing-default input maps the required-field call outcome. Live target
+        equality and other values remain unverified.
 
     fastapi.openapi.models.ServerVariable.description:
       source_evidence:
@@ -14873,9 +14936,17 @@ reviewed_api_contract_overlay:
           symbol: ServerVariable
           start_line: 83
           end_line: 86
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.defaults
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        The exact model_dump inputs map the optional None default and a
+        populated nested-variable description. Live target equality and other
+        values remain unverified.
 
     fastapi.openapi.models.ServerVariable.enum:
       source_evidence:
@@ -14884,10 +14955,19 @@ reviewed_api_contract_overlay:
           symbol: ServerVariable
           start_line: 83
           end_line: 86
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-server-models.yaml
+          case_id: fastapi.openapi-models.server-variable.empty-enum
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
       supported_slice: >-
-        Declared field only: annotation Annotated[list[str] | None, Field(min_length=1)];
-        default None. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        The exact model_dump inputs map the None default and a populated enum;
+        the empty-list input maps the min_length validation outcome. Live target
+        equality and other enum values remain unverified.
 
     fastapi.openapi.models.Tag:
       source_evidence:

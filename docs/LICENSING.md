@@ -14,8 +14,10 @@ it does not relicense FastAPI, Starlette, Pydantic, or third-party material.
 
 ## Upstream and dependency material
 
-- FastAPI 0.141.1 is MIT-licensed. FastAPI source is not copied into this
-  repository; if any covered material is added later, preserve its notice.
+- FastAPI 0.141.1 is MIT-licensed. Its implementation modules are not copied
+  into this repository. The repository does include selected signature and
+  annotation metadata from the pinned source; the applicable notice and file
+  list are in [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
 - The selected Starlette compatibility contract is 1.6.0 (BSD-3-Clause).
   Starlette-RS is a separate BSD-3-Clause project and remains a distinct
   dependency. Its complete BSD-3-Clause notice is reproduced in

@@ -1,0 +1,103 @@
+schema: fastapi-rs/python-api-workflow@4
+workload:
+  file: tests/fixtures/workloads/openapi_server_models_projection.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-models.server.required-url-missing
+  probes:
+  - probe_id: server-required-url-missing
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Server
+    argument_bundle: server-missing-url
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: &server_source_evidence
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Server
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-models.server.defaults
+  probes:
+  - probe_id: server-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Server
+    argument_bundle: server-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: *server_source_evidence
+- case_id: fastapi.openapi-models.server.nested-variables-extra-allow
+  probes:
+  - probe_id: server-nested-variables-extra-allow
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Server
+    argument_bundle: server-nested-variables-extra
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: server-variable-extra-allow
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ServerVariable
+    argument_bundle: server-variable-extra
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Server
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.ServerVariable
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-models.server-variable.required-default-missing
+  probes:
+  - probe_id: server-variable-required-default-missing
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ServerVariable
+    argument_bundle: server-variable-missing-default
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: &server_variable_source_evidence
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.ServerVariable
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-models.server-variable.defaults
+  probes:
+  - probe_id: server-variable-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ServerVariable
+    argument_bundle: server-variable-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: *server_variable_source_evidence
+- case_id: fastapi.openapi-models.server-variable.empty-enum
+  probes:
+  - probe_id: server-variable-empty-enum
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ServerVariable
+    argument_bundle: server-variable-empty-enum
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *server_variable_source_evidence
