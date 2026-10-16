@@ -5388,12 +5388,17 @@ reviewed_api_contract_overlay:
         The linked input-only workflow observes object identity, prefix,
         redirect_slashes, strict_content_type, default_response_class,
         dependencies, and shared route registration with documentation routes
-        disabled. Other constructor wiring and router behavior are outside this
-        reviewed slice.
+        disabled. A separate input-only constructor-route case observes a
+        trailing-slash redirect from a generic Starlette `Route`, including
+        preservation of its query string. Other constructor wiring and router
+        behavior are outside this reviewed slice.
       fixture_refs:
         - case_id: fastapi.application.router.identity-and-initial-settings
           recipe_path: tests/fixtures/input-recipes/parity/application-router.yaml
           observation_selectors: [http.status, http.body.bytes]
+        - case_id: fastapi.applications.constructor.starlette-route-dispatch
+          recipe_path: tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.body.bytes]
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::router
@@ -5401,7 +5406,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Direct FastAPI constructor routes are projected through the shared router and full matching generic routes dispatch before docs and API routes. The standalone APIRouter constructor still omits routes; generic partial matches, redirects, route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
+          - Direct FastAPI constructor routes are projected through the shared router; full matching generic routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query string. The standalone APIRouter constructor still omits routes; generic partial matches, other redirect combinations, route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
     fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url:
       source_evidence:
         - path: fastapi/applications.py

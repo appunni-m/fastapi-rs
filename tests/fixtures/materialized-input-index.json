@@ -829,20 +829,21 @@
     {
       "id": "application-constructor-starlette-route",
       "input_path": "tests/fixtures/inputs/parity/application-constructor-starlette-route.json",
-      "input_sha256": "d14c83726a41abc02fda2a5f9f9406cd04c42ecf72683e2ebe45c943d8e9e3f6",
+      "input_sha256": "a4f07d917d29d790a0d0dbb3be993d0c8f666f9212c3090fab5b7d7354a5bf2c",
       "recipe_path": "tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml",
-      "recipe_sha256": "4c0bef588f60687b714931db5f3665f6121b113e32dea2e78198764a66dd38cc",
+      "recipe_sha256": "939278c6de44eb7c7eb5620b931e0c51c4f2d3d9645606e9b2cb61fb39f4277e",
       "case_ids": [
         "fastapi.applications.constructor.starlette-route-dispatch"
       ],
       "workload_path": "tests/fixtures/workloads/application_constructor_starlette_route.py",
-      "workload_sha256": "8ee0520d42ab5cc0b2dda46c223794e5aca0ba97f81d11661c2ec913f8550106",
+      "workload_sha256": "95ca7f221733e911b9b105862f1278392e8aa736c80d71558d89ef9d44a05f6a",
       "case_contracts": [
         {
           "case_id": "fastapi.applications.constructor.starlette-route-dispatch",
           "verification": "parity",
           "requirement_refs": [
-            "source:upstream-test:tests/test_router_include_context.py"
+            "source:upstream-test:tests/test_router_include_context.py",
+            "source:upstream-test:tests/test_router_redirect_slashes.py"
           ]
         }
       ]
@@ -36141,6 +36142,22 @@
     {
       "source_item_id": "upstream-test:tests/test_router_include_context.py",
       "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "application-constructor-starlette-route",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.constructor.starlette-route-dispatch"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_redirect_slashes.py",
+      "fixture_id": "fastapi.test.test-router-redirect-slashes",
       "workflow_id": "application-constructor-starlette-route",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",

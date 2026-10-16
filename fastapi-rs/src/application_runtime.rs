@@ -14041,17 +14041,58 @@ impl FastApiCall {
         root_path: &str,
         method: &str,
     ) -> PyResult<Option<MachineAction>> {
-        let redirect_path = {
+        let (redirect_path, constructor_routes) = {
             let app = self.app.bind(py).borrow();
             if !app.redirect_slashes {
                 return Ok(None);
             }
-            app.docs_router
-                .find_slash_redirect_path(path, root_path, method)
-                .or_else(|| app.router.find_slash_redirect_path(path, root_path, method))
+            (
+                app.docs_router
+                    .find_slash_redirect_path(path, root_path, method)
+                    .or_else(|| app.router.find_slash_redirect_path(path, root_path, method)),
+                app.constructor_routes
+                    .iter()
+                    .map(|route| route.clone_ref(py))
+                    .collect::<Vec<_>>(),
+            )
         };
-        let Some(redirect_path) = redirect_path else {
-            return Ok(None);
+        let redirect_path = match redirect_path {
+            Some(redirect_path) => redirect_path,
+            None => {
+                let route_path = py
+                    .import("starlette.routing")?
+                    .getattr("_get_route_path")?
+                    .call1((self.scope.bind(py),))?
+                    .extract::<String>()?;
+                if route_path == "/" {
+                    return Ok(None);
+                }
+                let redirect_path = if route_path.ends_with('/') {
+                    path.trim_end_matches('/').to_owned()
+                } else {
+                    format!("{path}/")
+                };
+                let redirect_scope = PyDict::new(py);
+                redirect_scope.call_method1("update", (self.scope.bind(py),))?;
+                redirect_scope.set_item("path", &redirect_path)?;
+                let none_match = py
+                    .import("starlette.routing")?
+                    .getattr("Match")?
+                    .getattr("NONE")?;
+                let mut has_redirect_match = false;
+                for route in constructor_routes {
+                    let match_result =
+                        route.bind(py).call_method1("matches", (&redirect_scope,))?;
+                    if !match_result.get_item(0)?.is(&none_match) {
+                        has_redirect_match = true;
+                        break;
+                    }
+                }
+                if !has_redirect_match {
+                    return Ok(None);
+                }
+                redirect_path
+            }
         };
 
         let redirect_scope = PyDict::new(py);

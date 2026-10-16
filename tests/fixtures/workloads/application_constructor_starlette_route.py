@@ -16,8 +16,13 @@ async def fastapi_get_route() -> PlainTextResponse:
     return PlainTextResponse("FastAPI route served")
 
 
+async def catalog_route(_request: Request) -> PlainTextResponse:
+    return PlainTextResponse("catalog route served")
+
+
 def create_app() -> FastAPI:
     post_route = Route("/constructor-route", constructor_route, methods=["POST"])
-    app = FastAPI(routes=[post_route])
+    catalog = Route("/catalog/", catalog_route, methods=["GET"])
+    app = FastAPI(routes=[post_route, catalog])
     app.get("/constructor-route", response_class=PlainTextResponse)(fastapi_get_route)
     return app

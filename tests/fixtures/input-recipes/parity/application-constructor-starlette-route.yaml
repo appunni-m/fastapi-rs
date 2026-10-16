@@ -10,6 +10,10 @@
 # A POST-only constructor Route is partial for GET; a later FastAPI GET route is
 # full. PUT checks the constructor route's first partial and one-token Allow
 # value without relying on iteration order for Starlette's GET/HEAD method set.
+# Starlette 1.6.0 Router.app checks alternate slash paths only after no original
+# full/partial match, and redirects if any route matches the alternate path
+# (starlette/routing.py:682-718). The final action checks that a constructor
+# route receives this fallback and the redirect preserves the query string.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/application_constructor_starlette_route.py
@@ -75,6 +79,27 @@ cases:
     observations:
     - {kind: http_response, selectors: [status, headers, body], comparison: exact}
     - {kind: asgi_send, selector: message_types, comparison: ordered}
+  - action_id: get-constructor-route-slash-redirect-preserves-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog
+      query_string: probe=1
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
   source_evidence:
   - path: tests/test_router_include_context.py
+    kind: upstream_test
+  - path: tests/test_router_redirect_slashes.py
     kind: upstream_test
