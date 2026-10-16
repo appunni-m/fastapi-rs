@@ -217,3 +217,165 @@ cases:
       comparison: exact
   source_evidence:
   - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.mixed-add-route-api-order
+  factory_input: {scenario: mixed-add-route-api-order}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: generic-route-registered-first
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /generic-first
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: api-route-registered-first
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api-first
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.included-constructor-route-slot-order
+  factory_input: {scenario: included-constructor-route-slot-order}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: included-route-registered-first
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /generic-first/items
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: api-route-registered-first
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api-first/items
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.nested-constructor-route-prefix
+  factory_input: {scenario: nested-constructor-route-prefix}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: nested-generic-route-wins
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/v1/items
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.router-late-route-order.included-constructor-partial-fallback
+  factory_input: {scenario: included-constructor-partial-fallback}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: later-api-full-beats-generic-partial
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/items
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: first-generic-partial-controls-405
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /api/items
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}

@@ -4,6 +4,8 @@ from typing import Any
 
 from fastapi import APIRouter, FastAPI, WebSocket
 from pydantic import BaseModel
+from starlette.responses import PlainTextResponse
+from starlette.routing import Route
 
 
 class ContactCard(BaseModel):
@@ -114,6 +116,75 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
                 },
                 "private_envelope_field": "filtered-envelope-field",
             }
+
+    elif scenario == "mixed-add-route-api-order":
+
+        def generic_first(request: Any) -> PlainTextResponse:
+            del request
+            return PlainTextResponse("generic-first")
+
+        app.add_route("/generic-first", generic_first, methods=["GET"])
+
+        @app.get("/generic-first")
+        def api_after_generic() -> dict[str, str]:
+            return {"selected": "api-after-generic"}
+
+        @app.get("/api-first")
+        def api_first() -> dict[str, str]:
+            return {"selected": "api-first"}
+
+        def generic_after(request: Any) -> PlainTextResponse:
+            del request
+            return PlainTextResponse("generic-after")
+
+        app.add_route("/api-first", generic_after, methods=["GET"])
+
+    elif scenario == "included-constructor-route-slot-order":
+
+        def generic_item(request: Any) -> PlainTextResponse:
+            del request
+            return PlainTextResponse("included-generic")
+
+        router = APIRouter(routes=[Route("/items", generic_item, methods=["GET"])])
+        app.include_router(router, prefix="/generic-first")
+
+        @app.get("/generic-first/items")
+        def api_after_include() -> dict[str, str]:
+            return {"selected": "api-after-include"}
+
+        @app.get("/api-first/items")
+        def api_before_include() -> dict[str, str]:
+            return {"selected": "api-before-include"}
+
+        app.include_router(router, prefix="/api-first")
+
+    elif scenario == "nested-constructor-route-prefix":
+
+        def generic_nested_item(request: Any) -> PlainTextResponse:
+            del request
+            return PlainTextResponse("nested-generic")
+
+        leaf = APIRouter(routes=[Route("/items", generic_nested_item, methods=["GET"])])
+        middle = APIRouter()
+        middle.include_router(leaf, prefix="/v1")
+        app.include_router(middle, prefix="/api")
+
+        @app.get("/api/v1/items")
+        def api_after_nested_include() -> dict[str, str]:
+            return {"selected": "api-after-nested-include"}
+
+    elif scenario == "included-constructor-partial-fallback":
+
+        def generic_post(request: Any) -> PlainTextResponse:
+            del request
+            return PlainTextResponse("generic-post")
+
+        router = APIRouter(routes=[Route("/items", generic_post, methods=["POST"])])
+        app.include_router(router, prefix="/api")
+
+        @app.get("/api/items")
+        def api_get() -> dict[str, str]:
+            return {"selected": "api-get"}
 
     else:
         raise ValueError(f"unsupported route-order scenario: {scenario}")

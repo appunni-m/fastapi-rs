@@ -1376,6 +1376,7 @@ impl ResponseFieldState {
 
 struct FastApiRoute {
     operation_index: Option<usize>,
+    route_matcher: Option<FastApiOperationRouter>,
     path: String,
     path_format: String,
     url_path_format: String,
@@ -2897,6 +2898,18 @@ struct FastApiRouterInclude {
     fields: IncludedFieldBranch,
 }
 
+#[derive(Clone, Copy)]
+enum HttpDispatchEntry {
+    ApiRoute(usize),
+    MountedRoute(usize),
+    RouterInclude(usize),
+}
+
+enum HttpDispatchCandidate {
+    ApiRoute(usize),
+    StarletteRoute(Py<PyAny>),
+}
+
 #[derive(Clone)]
 struct IncludedFieldBranch {
     direct_indexes: Vec<usize>,
@@ -3404,6 +3417,7 @@ pub(crate) struct PyFastApi {
     named_routes: NamedRouteTable,
     constructor_routes: Vec<Py<PyAny>>,
     routes: Vec<FastApiRoute>,
+    http_dispatch_order: Vec<HttpDispatchEntry>,
     router_includes: Vec<FastApiRouterInclude>,
     routes_version: AtomicU64,
     openapi_cache: Mutex<OpenApiCache>,
@@ -4292,6 +4306,7 @@ impl PyFastApi {
             named_routes: NamedRouteTable::new(),
             constructor_routes,
             routes: Vec::new(),
+            http_dispatch_order: Vec::new(),
             router_includes: Vec::new(),
             routes_version: AtomicU64::new(0),
             openapi_cache: Mutex::new(OpenApiCache {
@@ -5204,7 +5219,10 @@ impl PyFastApi {
             kwargs.set_item("name", name)?;
         }
         let mount = mount_type.call((path, app.bind(py)), Some(&kwargs))?;
+        let route_index = self.mounted_routes.len();
         self.mounted_routes.push(mount.unbind());
+        self.http_dispatch_order
+            .push(HttpDispatchEntry::MountedRoute(route_index));
         Ok(())
     }
 
@@ -5228,7 +5246,10 @@ impl PyFastApi {
         }
         kwargs.set_item("include_in_schema", include_in_schema)?;
         let route_object = route_type.call((path, route.bind(py)), Some(&kwargs))?;
+        let route_index = self.mounted_routes.len();
         self.mounted_routes.push(route_object.unbind());
+        self.http_dispatch_order
+            .push(HttpDispatchEntry::MountedRoute(route_index));
         Ok(())
     }
 
@@ -5246,7 +5267,10 @@ impl PyFastApi {
             kwargs.set_item("name", name)?;
         }
         let route = host_type.call((host, app.bind(py)), Some(&kwargs))?;
+        let route_index = self.mounted_routes.len();
         self.mounted_routes.push(route.unbind());
+        self.http_dispatch_order
+            .push(HttpDispatchEntry::MountedRoute(route_index));
         Ok(())
     }
 
@@ -5422,7 +5446,6 @@ impl PyFastApi {
                 strict_content_type,
             },
         )?;
-        append_included_starlette_routes(py, destination, &source.constructor_routes, &prefix)?;
         destination.router_includes.push(FastApiRouterInclude {
             route_position,
             websocket_route_position,
@@ -5449,6 +5472,10 @@ impl PyFastApi {
             source_frontend_route_indexes,
             fields: IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes),
         });
+        let include_index = destination.router_includes.len() - 1;
+        destination
+            .http_dispatch_order
+            .push(HttpDispatchEntry::RouterInclude(include_index));
         destination.lifespan.include_router(py, &source.lifespan)?;
         destination.bump_routes_version();
         drop(source);
@@ -7240,12 +7267,6 @@ impl PyApiRouter {
                 strict_content_type: inherited_strict_content_type,
             },
         )?;
-        append_included_starlette_routes(
-            py,
-            &mut destination,
-            &source.constructor_routes,
-            &prefix,
-        )?;
         destination.router_includes.push(FastApiRouterInclude {
             route_position,
             websocket_route_position,
@@ -7272,6 +7293,10 @@ impl PyApiRouter {
             source_frontend_route_indexes,
             fields: IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes),
         });
+        let include_index = destination.router_includes.len() - 1;
+        destination
+            .http_dispatch_order
+            .push(HttpDispatchEntry::RouterInclude(include_index));
         destination.lifespan.include_router(py, &source.lifespan)?;
         drop(source);
         drop(router);
@@ -7773,28 +7798,169 @@ fn merge_router_routes(
     )
 }
 
-fn append_included_starlette_routes(
+fn prefix_starlette_route(
     py: Python<'_>,
-    destination: &mut PyFastApi,
-    source_routes: &[Py<PyAny>],
+    route: &Bound<'_, PyAny>,
     prefix: &str,
-) -> PyResult<()> {
+) -> PyResult<Option<Py<PyAny>>> {
     let route_type = py.import("starlette.routing")?.getattr("Route")?;
-    for route in source_routes {
-        let route = route.bind(py);
-        if !route.get_type().is(&route_type) {
-            continue;
-        }
-        let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
-        let endpoint = route.getattr("endpoint")?;
-        let kwargs = PyDict::new(py);
-        kwargs.set_item("methods", route.getattr("methods")?)?;
-        kwargs.set_item("name", route.getattr("name")?)?;
-        kwargs.set_item("include_in_schema", route.getattr("include_in_schema")?)?;
-        let included_route = route_type.call((path, endpoint), Some(&kwargs))?;
-        destination.mounted_routes.push(included_route.unbind());
+    let is_route = py
+        .import("builtins")?
+        .getattr("isinstance")?
+        .call1((route, &route_type))?
+        .is_truthy()?;
+    if !is_route {
+        return Ok(None);
     }
-    Ok(())
+
+    let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("methods", route.getattr("methods")?)?;
+    kwargs.set_item("name", route.getattr("name")?)?;
+    kwargs.set_item("include_in_schema", route.getattr("include_in_schema")?)?;
+    route_type
+        .call((path, route.getattr("endpoint")?), Some(&kwargs))
+        .map(|route| Some(route.unbind()))
+}
+
+fn collect_http_dispatch_candidates(
+    py: Python<'_>,
+    app: &Py<PyFastApi>,
+    include_constructor_routes: bool,
+    prefix: &str,
+    visiting: &mut HashSet<usize>,
+) -> PyResult<Vec<HttpDispatchCandidate>> {
+    let app_identity = app.as_ptr() as usize;
+    if !visiting.insert(app_identity) {
+        return Err(PyRuntimeError::new_err(
+            "recursive APIRouter inclusion encountered during HTTP dispatch",
+        ));
+    }
+
+    let (constructor_routes, mounted_routes, dispatch_order, includes) = {
+        let app = app.bind(py).borrow();
+        let includes = app
+            .router_includes
+            .iter()
+            .map(|include| {
+                (
+                    include.router.clone_ref(py),
+                    include.merge_prefix.clone(),
+                    include.source_route_indexes.clone(),
+                )
+            })
+            .collect::<Vec<_>>();
+        (
+            app.constructor_routes
+                .iter()
+                .map(|route| route.clone_ref(py))
+                .collect::<Vec<_>>(),
+            app.mounted_routes
+                .iter()
+                .map(|route| route.clone_ref(py))
+                .collect::<Vec<_>>(),
+            app.http_dispatch_order.clone(),
+            includes,
+        )
+    };
+
+    let mut candidates = Vec::new();
+    if include_constructor_routes {
+        for route in constructor_routes {
+            if let Some(route) = prefix_starlette_route(py, route.bind(py), prefix)? {
+                candidates.push(HttpDispatchCandidate::StarletteRoute(route));
+            }
+        }
+    }
+
+    for entry in dispatch_order {
+        match entry {
+            HttpDispatchEntry::ApiRoute(route_index) => {
+                if route_index >= app.bind(py).borrow().routes.len() {
+                    return Err(PyRuntimeError::new_err(
+                        "HTTP dispatch references a missing FastAPI route",
+                    ));
+                }
+                candidates.push(HttpDispatchCandidate::ApiRoute(route_index));
+            }
+            HttpDispatchEntry::MountedRoute(route_index) => {
+                let route = mounted_routes.get(route_index).ok_or_else(|| {
+                    PyRuntimeError::new_err("HTTP dispatch references a missing Starlette route")
+                })?;
+                if prefix.is_empty() {
+                    candidates.push(HttpDispatchCandidate::StarletteRoute(route.clone_ref(py)));
+                } else if let Some(route) = prefix_starlette_route(py, route.bind(py), prefix)? {
+                    candidates.push(HttpDispatchCandidate::StarletteRoute(route));
+                }
+            }
+            HttpDispatchEntry::RouterInclude(include_index) => {
+                let (router, include_prefix, source_route_indexes) =
+                    includes.get(include_index).ok_or_else(|| {
+                        PyRuntimeError::new_err("HTTP dispatch references a missing router include")
+                    })?;
+                let source_app = router
+                    .bind(py)
+                    .extract::<PyRef<'_, PyApiRouter>>()?
+                    .inner_app(py)?;
+                let nested_prefix = format!("{prefix}{include_prefix}");
+                let nested = collect_http_dispatch_candidates(
+                    py,
+                    &source_app,
+                    true,
+                    &nested_prefix,
+                    visiting,
+                )?;
+                for candidate in nested {
+                    match candidate {
+                        HttpDispatchCandidate::ApiRoute(source_index) => {
+                            let destination_index = source_route_indexes
+                                .get(source_index)
+                                .copied()
+                                .ok_or_else(|| {
+                                    PyRuntimeError::new_err("included HTTP route mapping was lost")
+                                })?;
+                            candidates.push(HttpDispatchCandidate::ApiRoute(destination_index));
+                        }
+                        HttpDispatchCandidate::StarletteRoute(route) => {
+                            candidates.push(HttpDispatchCandidate::StarletteRoute(route));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    visiting.remove(&app_identity);
+    Ok(candidates)
+}
+
+fn single_api_route_matcher(
+    path: &str,
+    methods: &[String],
+    status_code: Option<u16>,
+) -> PyResult<FastApiOperationRouter> {
+    let mut matcher = FastApiOperationRouter::new();
+    matcher
+        .add_operation_with_methods(path, methods.iter().map(String::as_str), status_code)
+        .map_err(|error| PyValueError::new_err(error.to_string()))?;
+    Ok(matcher)
+}
+
+fn http_method_not_allowed_response(
+    py: Python<'_>,
+    allowed_methods: &[String],
+) -> PyResult<Py<PyAny>> {
+    let headers = PyDict::new(py);
+    headers.set_item("Allow", allowed_methods.join(", "))?;
+    let content = PyDict::new(py);
+    content.set_item("detail", "Method Not Allowed")?;
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("status_code", 405)?;
+    kwargs.set_item("headers", headers)?;
+    py.import("starlette.responses")?
+        .getattr("JSONResponse")?
+        .call((content,), Some(&kwargs))
+        .map(Bound::unbind)
 }
 
 fn merge_router_routes_from(
@@ -7953,6 +8119,15 @@ fn merge_router_routes_from(
         } else {
             None
         };
+        let route_matcher = if route_scope.is_some() {
+            Some(single_api_route_matcher(
+                &path,
+                &methods,
+                source_route.status_code,
+            )?)
+        } else {
+            None
+        };
         // Included routes are lazy in FastAPI. Resolve class-dependent stream
         // behavior alongside response fields at first dispatch/OpenAPI access.
         let sse_stream = false;
@@ -7972,6 +8147,7 @@ fn merge_router_routes_from(
         }
         app.routes.push(FastApiRoute {
             operation_index,
+            route_matcher,
             path,
             url_path_format: path_format.clone(),
             path_format,
@@ -8930,6 +9106,15 @@ impl PyOperationDecorator {
         } else {
             Some(http_route_scope(py, &scope_path, endpoint.bind(py), &methods, &name)?.0)
         };
+        let route_matcher = if route_scope.is_some() {
+            Some(single_api_route_matcher(
+                &self.path,
+                &methods,
+                self.status_code,
+            )?)
+        } else {
+            None
+        };
         let (summary, tags) = api_route_callback_summary_tags(
             public_route.bind(py),
             self.summary.as_deref(),
@@ -8957,6 +9142,7 @@ impl PyOperationDecorator {
         }
         let route = FastApiRoute {
             operation_index,
+            route_matcher,
             path: self.path.clone(),
             path_format,
             url_path_format,
@@ -9015,6 +9201,9 @@ impl PyOperationDecorator {
             .collect::<PyResult<Vec<_>>>()?;
         set_api_route_openapi_snapshots(py, &route.public_route, openapi_snapshots)?;
         app.routes.push(route);
+        let route_index = app.routes.len() - 1;
+        app.http_dispatch_order
+            .push(HttpDispatchEntry::ApiRoute(route_index));
         app.bump_routes_version();
         Ok(endpoint)
     }
@@ -13666,65 +13855,6 @@ impl FastApiCall {
         }
     }
 
-    fn dispatch_mounted_app(
-        &mut self,
-        py: Python<'_>,
-        earlier_fallback: Option<HttpRouteFallback>,
-    ) -> PyResult<Option<MachineAction>> {
-        let mounted_routes = self
-            .app
-            .bind(py)
-            .borrow()
-            .mounted_routes
-            .iter()
-            .map(|route| route.clone_ref(py))
-            .collect::<Vec<_>>();
-        let scope = self.scope.bind(py);
-        let full_match = py
-            .import("starlette.routing")?
-            .getattr("Match")?
-            .getattr("FULL")?;
-        let partial_match = py
-            .import("starlette.routing")?
-            .getattr("Match")?
-            .getattr("PARTIAL")?;
-        let mut partial_route = None;
-
-        for route in mounted_routes {
-            let match_result = route.bind(py).call_method1("matches", (scope,))?;
-            let route_match = match_result.get_item(0)?;
-            if route_match.is(&partial_match) && partial_route.is_none() {
-                partial_route = Some((route.clone_ref(py), match_result.get_item(1)?.unbind()));
-            }
-            if !route_match.is(&full_match) {
-                continue;
-            }
-
-            let child_scope = match_result.get_item(1)?;
-            scope.call_method1("update", (child_scope,))?;
-            let awaitable = route
-                .bind(py)
-                .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
-            self.pending = Some(PendingAction::MountedApp);
-            return Ok(Some(MachineAction::Await(awaitable.unbind())));
-        }
-
-        if let Some(fallback) = earlier_fallback {
-            return self.dispatch_http_fallback(py, fallback).map(Some);
-        }
-
-        if let Some((route, child_scope)) = partial_route {
-            scope.call_method1("update", (child_scope.bind(py),))?;
-            let awaitable = route
-                .bind(py)
-                .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
-            self.pending = Some(PendingAction::MountedApp);
-            return Ok(Some(MachineAction::Await(awaitable.unbind())));
-        }
-
-        Ok(None)
-    }
-
     fn dispatch_frontend_route(
         &mut self,
         py: Python<'_>,
@@ -14185,6 +14315,166 @@ impl FastApiCall {
         }
     }
 
+    fn begin_api_route(
+        &mut self,
+        py: Python<'_>,
+        route_index: usize,
+        path_params: Vec<(String, String)>,
+    ) -> PyResult<MachineAction> {
+        self.route_index = Some(route_index);
+        self.path_params = path_params;
+        self.injected_response = Some(fastapi_response_state(py)?);
+        let (route_scope, effective_route_context) = {
+            let app = self.app.bind(py).borrow();
+            let route = app
+                .routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+            (
+                route
+                    .route_scope
+                    .as_ref()
+                    .ok_or_else(|| {
+                        PyRuntimeError::new_err("selected FastAPI route has no dispatch scope")
+                    })?
+                    .clone_ref(py),
+                route
+                    .effective_route_context
+                    .as_ref()
+                    .map(|context| context.clone_ref(py)),
+            )
+        };
+        let scope = self.scope.bind(py);
+        scope.set_item("route", route_scope)?;
+        if let Some(effective_route_context) = effective_route_context {
+            let fastapi_scope =
+                scope.call_method1("setdefault", (concat!("fast", "api"), PyDict::new(py)))?;
+            fastapi_scope.set_item("effective_route_context", effective_route_context)?;
+        }
+        let converted_path_params = PyDict::new(py);
+        {
+            let app = self.app.bind(py).borrow();
+            let route = app
+                .routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+            let convertors = route.param_convertors.bind(py);
+            for (name, value) in &self.path_params {
+                let convertor = convertors.get_item(name)?.ok_or_else(|| {
+                    PyRuntimeError::new_err("matched FastAPI route is missing a path convertor")
+                })?;
+                converted_path_params
+                    .set_item(name, convertor.call_method1("convert", (value,))?)?;
+            }
+        }
+        scope.set_item("path_params", converted_path_params)?;
+        let request_type = py.import("starlette.requests")?.getattr("Request")?;
+        let request = request_type.call1((scope, self.receive.bind(py), self.send.bind(py)))?;
+        scope.set_item("starlette._exception_request", &request)?;
+        self.request = Some(request.unbind());
+        let (has_form_inputs, has_body_inputs) = {
+            let app = self.app.bind(py).borrow();
+            let route = app
+                .routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+            (
+                route.plan.has_form_inputs(),
+                !route.plan.all_body_parameters().is_empty(),
+            )
+        };
+        if has_form_inputs {
+            self.receive_form(py)
+        } else if has_body_inputs {
+            self.receive_http_body(py)
+        } else {
+            self.invoke_http_route(py, &[], false)
+        }
+    }
+
+    fn dispatch_registered_http_routes(
+        &mut self,
+        py: Python<'_>,
+        path: &str,
+        root_path: &str,
+        method: &str,
+        mut earlier_fallback: Option<HttpRouteFallback>,
+    ) -> PyResult<Option<MachineAction>> {
+        let candidates =
+            collect_http_dispatch_candidates(py, &self.app, false, "", &mut HashSet::new())?;
+        let scope = self.scope.bind(py);
+        let full_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("FULL")?;
+        let partial_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("PARTIAL")?;
+
+        for candidate in candidates {
+            match candidate {
+                HttpDispatchCandidate::ApiRoute(route_index) => {
+                    let match_result = {
+                        let app = self.app.bind(py).borrow();
+                        let route = app.routes.get(route_index).ok_or_else(|| {
+                            PyRuntimeError::new_err("selected FastAPI route was lost")
+                        })?;
+                        route
+                            .route_matcher
+                            .as_ref()
+                            .map(|matcher| matcher.matches(path, root_path, method))
+                    };
+                    match match_result {
+                        Some(FastApiOperationMatch::Matched { path_params, .. }) => {
+                            materialize_included_response_fields(
+                                py,
+                                &self.app,
+                                Some(route_index),
+                                None,
+                            )?;
+                            return self.begin_api_route(py, route_index, path_params).map(Some);
+                        }
+                        Some(FastApiOperationMatch::MethodNotAllowed {
+                            allowed_methods, ..
+                        }) => {
+                            if earlier_fallback.is_none() {
+                                let response =
+                                    http_method_not_allowed_response(py, &allowed_methods)?;
+                                earlier_fallback = Some(HttpRouteFallback::Response(response));
+                            }
+                        }
+                        Some(FastApiOperationMatch::NotFound) | None => {}
+                    }
+                }
+                HttpDispatchCandidate::StarletteRoute(route) => {
+                    let match_result = route.bind(py).call_method1("matches", (scope,))?;
+                    let route_match = match_result.get_item(0)?;
+                    let child_scope = match_result.get_item(1)?.unbind();
+                    if route_match.is(&partial_match) && earlier_fallback.is_none() {
+                        earlier_fallback = Some(HttpRouteFallback::StarletteRoute {
+                            route: route.clone_ref(py),
+                            child_scope: child_scope.clone_ref(py),
+                        });
+                    }
+                    if route_match.is(&full_match) {
+                        materialize_included_response_fields(py, &self.app, None, None)?;
+                        return self
+                            .handle_constructor_route(py, route, child_scope)
+                            .map(Some);
+                    }
+                }
+            }
+        }
+
+        if let Some(fallback) = earlier_fallback {
+            materialize_included_response_fields(py, &self.app, None, None)?;
+            return self.dispatch_http_fallback(py, fallback).map(Some);
+        }
+
+        Ok(None)
+    }
+
     fn begin(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         if let Some(route_index) = self.forced_route_index {
             return self.begin_direct_route(py, route_index);
@@ -14335,156 +14625,22 @@ impl FastApiCall {
             }
         }
 
-        let match_result = self
-            .app
-            .bind(py)
-            .borrow()
-            .router
-            .matches(&path, &root_path, &method);
-        let matched_route_index = match &match_result {
-            FastApiOperationMatch::Matched {
-                operation_index, ..
-            } => {
-                let app = self.app.bind(py).borrow();
-                Some(
-                    app.routes
-                        .iter()
-                        .position(|route| route.operation_index == Some(*operation_index))
-                        .ok_or_else(|| {
-                            PyRuntimeError::new_err("selected FastAPI operation was lost")
-                        })?,
-                )
-            }
-            _ => None,
-        };
-        // A partial match does not stop traversal. Misses/405 visit all branches;
-        // a full match still builds every direct field of each visited branch.
-        materialize_included_response_fields(py, &self.app, matched_route_index, None)?;
-        match match_result {
-            FastApiOperationMatch::Matched { path_params, .. } => {
-                let route_index = matched_route_index.ok_or_else(|| {
-                    PyRuntimeError::new_err("selected FastAPI route index was lost")
-                })?;
-                self.route_index = Some(route_index);
-                self.path_params = path_params;
-                self.injected_response = Some(fastapi_response_state(py)?);
-                let (route_scope, effective_route_context) = {
-                    let app = self.app.bind(py).borrow();
-                    let route = app.routes.get(route_index).ok_or_else(|| {
-                        PyRuntimeError::new_err("selected FastAPI route was lost")
-                    })?;
-                    (
-                        route
-                            .route_scope
-                            .as_ref()
-                            .ok_or_else(|| {
-                                PyRuntimeError::new_err(
-                                    "selected FastAPI route has no dispatch scope",
-                                )
-                            })?
-                            .clone_ref(py),
-                        route
-                            .effective_route_context
-                            .as_ref()
-                            .map(|context| context.clone_ref(py)),
-                    )
-                };
-                scope.set_item("route", route_scope)?;
-                if let Some(effective_route_context) = effective_route_context {
-                    let fastapi_scope = scope
-                        .call_method1("setdefault", (concat!("fast", "api"), PyDict::new(py)))?;
-                    fastapi_scope.set_item("effective_route_context", effective_route_context)?;
-                }
-                let converted_path_params = PyDict::new(py);
-                {
-                    let app = self.app.bind(py).borrow();
-                    let route = app.routes.get(route_index).ok_or_else(|| {
-                        PyRuntimeError::new_err("selected FastAPI route was lost")
-                    })?;
-                    let convertors = route.param_convertors.bind(py);
-                    for (name, value) in &self.path_params {
-                        let convertor = convertors.get_item(name)?.ok_or_else(|| {
-                            PyRuntimeError::new_err(
-                                "matched FastAPI route is missing a path convertor",
-                            )
-                        })?;
-                        converted_path_params
-                            .set_item(name, convertor.call_method1("convert", (value,))?)?;
-                    }
-                }
-                scope.set_item("path_params", converted_path_params)?;
-                let request_type = py.import("starlette.requests")?.getattr("Request")?;
-                let request =
-                    request_type.call1((scope, self.receive.bind(py), self.send.bind(py)))?;
-                scope.set_item("starlette._exception_request", &request)?;
-                self.request = Some(request.unbind());
-                let (has_form_inputs, has_body_inputs) = {
-                    let app = self.app.bind(py).borrow();
-                    let route = app.routes.get(route_index).ok_or_else(|| {
-                        PyRuntimeError::new_err("selected FastAPI route was lost")
-                    })?;
-                    (
-                        route.plan.has_form_inputs(),
-                        !route.plan.all_body_parameters().is_empty(),
-                    )
-                };
-                if has_form_inputs {
-                    self.receive_form(py)
-                } else if has_body_inputs {
-                    self.receive_http_body(py)
-                } else {
-                    self.invoke_http_route(py, &[], false)
-                }
-            }
-            FastApiOperationMatch::MethodNotAllowed {
-                allowed_methods, ..
-            } => {
-                let headers = PyDict::new(py);
-                headers.set_item("Allow", allowed_methods.join(", "))?;
-                let content = PyDict::new(py);
-                content.set_item("detail", "Method Not Allowed")?;
-                let kwargs = PyDict::new(py);
-                kwargs.set_item("status_code", 405)?;
-                kwargs.set_item("headers", headers)?;
-                let response = py
-                    .import("starlette.responses")?
-                    .getattr("JSONResponse")?
-                    .call((content,), Some(&kwargs))?;
-                if earlier_fallback.is_none() {
-                    earlier_fallback = Some(HttpRouteFallback::Response(response.unbind()));
-                }
-                if let Some(action) = self.dispatch_mounted_app(py, earlier_fallback)? {
-                    return Ok(action);
-                }
-                if let Some(action) = self.redirect_http_slash(py, &path, &root_path, &method)? {
-                    return Ok(action);
-                }
-                if let Some(action) = self.dispatch_frontend_route(py, &route_path, &method)? {
-                    return Ok(action);
-                }
-                let exception = py
-                    .import("starlette.exceptions")?
-                    .getattr("HTTPException")?
-                    .call1((404,))?;
-                Err(PyErr::from_value(exception))
-            }
-            FastApiOperationMatch::NotFound => {
-                if let Some(action) = self.dispatch_mounted_app(py, earlier_fallback)? {
-                    return Ok(action);
-                }
-                if let Some(action) = self.redirect_http_slash(py, &path, &root_path, &method)? {
-                    return Ok(action);
-                }
-                if let Some(action) = self.dispatch_frontend_route(py, &route_path, &method)? {
-                    return Ok(action);
-                }
-                let exception = py
-                    .import("starlette.exceptions")?
-                    .getattr("HTTPException")?
-                    .call1((404,))?;
-                Err(PyErr::from_value(exception))
-            }
+        if let Some(action) =
+            self.dispatch_registered_http_routes(py, &path, &root_path, &method, earlier_fallback)?
+        {
+            return Ok(action);
         }
+        if let Some(action) = self.redirect_http_slash(py, &path, &root_path, &method)? {
+            return Ok(action);
+        }
+        if let Some(action) = self.dispatch_frontend_route(py, &route_path, &method)? {
+            return Ok(action);
+        }
+        let exception = py
+            .import("starlette.exceptions")?
+            .getattr("HTTPException")?
+            .call1((404,))?;
+        Err(PyErr::from_value(exception))
     }
 
     fn begin_websocket(&mut self, py: Python<'_>) -> PyResult<MachineAction> {

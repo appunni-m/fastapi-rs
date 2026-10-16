@@ -28085,19 +28085,23 @@
     {
       "id": "router-late-route-order-parity",
       "input_path": "tests/fixtures/inputs/parity/router-late-route-order-parity.json",
-      "input_sha256": "264ea56b1e7b7fedc7b6e4218cdee38b8f462c4eaf7d42764d770142ddce1f63",
+      "input_sha256": "1e300623e7d6d4a95f008784e5e9917a879ff581a90914437db3021819a42881",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml",
-      "recipe_sha256": "05f0da7d278dc38f6cd5d5bfde78a920eebf1913f2a1874048c0cdca666b7676",
+      "recipe_sha256": "81a8c4dc4425f0fb74be894394baed65759565eada5fdc0987c36bccc1c7aef4",
       "case_ids": [
         "fastapi.router-late-route-order.static-before-catch-all",
         "fastapi.router-late-route-order.later-full-after-partial",
         "fastapi.router-late-route-order.partial-only-405",
         "fastapi.router-late-route-order.websocket-include-slot",
         "fastapi.router-late-route-order.direct-before-late-duplicate",
-        "fastapi.router-late-route-order.nested-late-response-model"
+        "fastapi.router-late-route-order.nested-late-response-model",
+        "fastapi.router-late-route-order.mixed-add-route-api-order",
+        "fastapi.router-late-route-order.included-constructor-route-slot-order",
+        "fastapi.router-late-route-order.nested-constructor-route-prefix",
+        "fastapi.router-late-route-order.included-constructor-partial-fallback"
       ],
       "workload_path": "tests/fixtures/workloads/router_late_route_order_parity.py",
-      "workload_sha256": "f989beae71dbeaf5ad87212a5d3106ead8f46abde9de5579fb2c7ecbcaf101d1",
+      "workload_sha256": "a71c0b1bb18c0799731c8329c734536edec80de74dac9784f93a564b5457ae59",
       "case_contracts": [
         {
           "case_id": "fastapi.router-late-route-order.static-before-catch-all",
@@ -28136,6 +28140,34 @@
         },
         {
           "case_id": "fastapi.router-late-route-order.nested-late-response-model",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.mixed-add-route-api-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.included-constructor-route-slot-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.nested-constructor-route-prefix",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router-late-route-order.included-constructor-partial-fallback",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_router_include_context.py"
@@ -61291,10 +61323,14 @@
       "fixture_id": "fastapi.test.test-router-include-context",
       "workflow_id": "router-late-route-order-parity",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.router-late-route-order.direct-before-late-duplicate",
+        "fastapi.router-late-route-order.included-constructor-partial-fallback",
+        "fastapi.router-late-route-order.included-constructor-route-slot-order",
         "fastapi.router-late-route-order.later-full-after-partial",
+        "fastapi.router-late-route-order.mixed-add-route-api-order",
+        "fastapi.router-late-route-order.nested-constructor-route-prefix",
         "fastapi.router-late-route-order.nested-late-response-model",
         "fastapi.router-late-route-order.partial-only-405",
         "fastapi.router-late-route-order.static-before-catch-all",

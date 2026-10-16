@@ -5120,6 +5120,15 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.websocket-include-slot
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-route-slot-order
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-constructor-route-prefix
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-partial-fallback
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
         - *generate_unique_id_callback_precedence
@@ -5208,9 +5217,10 @@ reviewed_api_contract_overlay:
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
 
-        One input covers a prefixed stock Starlette HTTP `Route` supplied via
-        `APIRouter(routes=...)`. Generic route ordering against API routes,
-        nested constructor-route copies, and other BaseRoute families remain
+        A prefixed stock Starlette HTTP `Route` supplied via
+        `APIRouter(routes=...)` participates at its include-registration slot.
+        The route-order workflow compares generic/API order, nested constructor
+        prefixes, and partial-match fallback. Other BaseRoute families remain
         open.
       target_binding:
         implementation_owner: fastapi-rs
@@ -5419,7 +5429,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Direct FastAPI constructor routes are projected through the shared router; full matching generic routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query string. APIRouter constructor-route dispatch covers one prefixed stock HTTP Route; generic partial matches, other redirect combinations, mixed ordering, other route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
+          - Direct FastAPI constructor routes are projected through the shared router; full matching generic routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query string. APIRouter constructor-route dispatch covers prefixed stock HTTP Routes, nested prefixes, include-slot order against API routes, and generic partial-match fallback. Mixed FastAPI add_route/API order is covered in both directions. Other redirect combinations, route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
     fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url:
       source_evidence:
         - path: fastapi/applications.py
@@ -5934,9 +5944,10 @@ reviewed_api_contract_overlay:
 
         Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
 
-        One input covers a prefixed stock Starlette HTTP `Route` supplied via
-        `APIRouter(routes=...)`; generic route ordering, nested constructor-route
-        inclusion, and other BaseRoute families remain open.
+        `APIRouter(routes=...)` constructor routes participate at their
+        include-registration slot. The route-order workflow compares generic/API
+        order, nested constructor-route prefixes, and partial-match fallback.
+        Other BaseRoute families remain open.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
@@ -5977,6 +5988,15 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.websocket-include-slot
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-route-slot-order
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-constructor-route-prefix
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-partial-fallback
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
@@ -6068,6 +6088,15 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-route-slot-order
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-constructor-route-prefix
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-partial-fallback
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
         - *response_class_router_custom
@@ -6133,11 +6162,12 @@ reviewed_api_contract_overlay:
         the source signature. The FastAPI constructor now snapshots the supplied
         iterable and dispatches the first generic route with a full match; the
         linked workflow covers one direct Starlette `Route` HTTP request. The
-        APIRouter constructor also snapshots `routes`; the linked input
-        observes one stock Starlette HTTP `Route` included by FastAPI with a
-        prefix. Generic partial matches, slash redirects, other route families,
-        nested constructor-route inclusion, and mixed declaration ordering
-        remain open compatibility requirements.
+        APIRouter constructor also snapshots `routes`; the linked inputs observe
+        prefixed dispatch, include-slot ordering against API routes, nested
+        constructor-route prefixes, and generic partial-match fallback both
+        after a later API full match and when no later route fully matches.
+        Slash redirects, other route families, and other ordering combinations
+        remain open.
         Five response-field-lifecycle inputs reach router construction/GET and
         application inclusion with fixed response models and omitted or concrete
         router/include/route response classes. They observe original versus
@@ -6691,6 +6721,18 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.nested-late-response-model
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.mixed-add-route-api-order
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-route-slot-order
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.nested-constructor-route-prefix
+          workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
+          case_id: fastapi.router-late-route-order.included-constructor-partial-fallback
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
           case_id: fastapi.router-late-route-order.url-path-for-include-slot
