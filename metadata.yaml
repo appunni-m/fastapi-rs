@@ -3838,6 +3838,7 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 1126
           end_line: 1281
+        - {path: tests/test_additional_responses_custom_model_in_callback.py}
         - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
@@ -3848,6 +3849,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.constructor-explicit-none-response-model
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-openapi-options
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operations.yaml
+          case_id: fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema
+          workload_path: tests/fixtures/workloads/openapi_operations.py
+          observation_selectors: [openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.openapi.get-openapi.standalone-apiroute-openapi-options
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
@@ -3890,6 +3895,10 @@ reviewed_api_contract_overlay:
         OpenAPI document; dependency injection, custom response classes,
         response-model filters, and full standalone ASGI
         behavior remain outside this direct constructor slice.
+        A FastAPI-registered APIRoute retains the direct callbacks list and
+        contributes its callback path item and custom response model to OpenAPI,
+        sampled by `additional-responses-custom-model-in-callback.openapi-schema`.
+        Manually constructing a standalone APIRoute with callbacks is unverified.
         The input inspects FastAPI-registered APIRoute instances for one direct
         GET path operation and one GET operation included through nested
         APIRouter instances. It compares only path, path_format, name, methods,
@@ -3921,7 +3930,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description; dependency overrides, custom response classes, response-model filters beyond the sampled output projection, strict content type, and callbacks remain unsupported or unverified.
+          - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description; dependency overrides, custom response classes, response-model filters beyond the sampled output projection, strict content type, and callbacks on a manually constructed route remain unverified.
           - Standalone APIRoute dispatch is mapped only for the five selected HTTP cases; direct .app invocation, custom get_route_handler behavior, body inputs, dependency overrides and errors, validation errors, exception-handler integration, and WebSocket scopes remain unverified.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
@@ -6488,6 +6497,10 @@ reviewed_api_contract_overlay:
         - *response_traversal_returned_response
         - *additional_field_two_contexts
         - *additional_field_retry
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operations.yaml
+          case_id: fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema
+          workload_path: tests/fixtures/workloads/openapi_operations.py
+          observation_selectors: [openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge.yaml
           case_id: fastapi.openapi-extra.deep-merge-and-router-inclusion
           workload_path: tests/fixtures/workloads/openapi_extra_deep_merge.py
@@ -6545,10 +6558,15 @@ reviewed_api_contract_overlay:
         Explicit `status_code=None` matches omission for the default
         JSONResponse class: HTTP status and OpenAPI use 200 in
         path-operation-status-code-none-isolated. Custom response-class
-        defaults remain unresolved and outside this slice. The public
-        `callbacks` route option is not accepted or emitted into OpenAPI yet;
-        callback routes and callback operation objects remain outside this
-        reviewed slice.
+        defaults remain unresolved and outside this slice. A direct operation
+        callback list containing an APIRoute is emitted as an OpenAPI callback
+        path item, and its additional response model is registered in root
+        components, sampled by
+        `additional-responses-custom-model-in-callback.openapi-schema`.
+        Router/include/app callback inheritance, non-APIRoute entries, callback
+        security-scheme components, duplicate callback names or operation IDs,
+        callback routes excluded from schema, same-name callback/parent model
+        collisions, and nested callbacks remain unverified.
         Five response-field-lifecycle inputs reach router construction/GET and
         application inclusion with fixed response models and omitted or concrete
         router/include/route response classes. They observe original versus
@@ -7186,6 +7204,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: serialize}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: tests/test_additional_responses_custom_model_in_callback.py}
         - {path: fastapi/routing.py, symbol: post}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
@@ -7253,6 +7272,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operations.yaml
+          case_id: fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema
+          workload_path: tests/fixtures/workloads/openapi_operations.py
+          observation_selectors: [openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
         - recipe_path: tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml
@@ -7296,6 +7319,14 @@ reviewed_api_contract_overlay:
         JSONResponse class: HTTP status and OpenAPI use 200 in
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
+        A direct operation callback list containing an APIRoute is emitted as
+        an OpenAPI callback path item, and its additional response model is
+        registered under root components, sampled by
+        `additional-responses-custom-model-in-callback.openapi-schema`.
+        Router/include/app callback inheritance, non-APIRoute entries, callback
+        security-scheme components, duplicate callback names or operation IDs,
+        callback routes excluded from schema, same-name callback/parent model
+        collisions, and nested callbacks remain unverified.
         The response-field-traversal
         earlier-partial-direct-match-reaches-later-full-include input registers an
         earlier direct POST with a fixed traced response model and a later included

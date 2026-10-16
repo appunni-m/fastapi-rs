@@ -45,6 +45,8 @@ pub(crate) struct OpenApiOperation {
     pub(crate) response_status_key: Option<String>,
     pub(crate) parameters: Vec<OpenApiParameter>,
     pub(crate) security_schemes: Vec<(String, Py<PyAny>)>,
+    pub(crate) callbacks: Option<Py<PyAny>>,
+    pub(crate) callback_definitions: Vec<Py<PyDict>>,
     pub(crate) security_requirements: Vec<(String, Vec<String>)>,
     pub(crate) validation_parameters_present: bool,
     pub(crate) request_model_name: Option<String>,
@@ -224,6 +226,13 @@ pub(crate) fn openapi_document(
             let definition = jsonable_encoder(py, scheme.bind(py), &encoder_options)?;
             register_security_scheme(&mut security_schemes, name.clone(), definition.unbind());
         }
+        for definitions in &operation.callback_definitions {
+            for (name, schema) in definitions.bind(py).iter() {
+                let name = name.extract::<String>()?;
+                let schema = schema.unbind();
+                collect_model_schema(py, &mut schemas, &name, &schema, true)?;
+            }
+        }
         for parameter in &operation.parameters {
             collect_schema_definitions(py, &mut schemas, &parameter.schema, true)?;
         }
@@ -315,6 +324,9 @@ pub(crate) fn openapi_document(
         operation_document.set_item("operationId", operation_id)?;
         if operation.deprecated == Some(true) {
             operation_document.set_item("deprecated", true)?;
+        }
+        if let Some(callbacks) = operation.callbacks.as_ref() {
+            operation_document.set_item("callbacks", callbacks.bind(py))?;
         }
 
         if !operation.parameters.is_empty() {
