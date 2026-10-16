@@ -59,17 +59,82 @@ const UJSON_RESPONSE_DOC: &str = concat!(
     "    "
 );
 const UJSON_RESPONSE_MISSING_ASSERTION: &str = "ujson must be installed to use UJSONResponse";
+const ORJSON_RESPONSE_DEPRECATION_MESSAGE: &str = concat!(
+    "ORJSONResponse is deprecated, FastAPI now serializes data directly to JSON ",
+    "bytes via Pydantic when a return type or response model is set, which is ",
+    "faster and doesn't need a custom response class. Read more in the FastAPI ",
+    "docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model ",
+    "and https://fastapi.tiangolo.com/tutorial/response-model/",
+);
+const ORJSON_RESPONSE_DOC: &str = concat!(
+    "JSON response using the orjson library to serialize data to JSON.\n\n",
+    "    **Deprecated**: `ORJSONResponse` is deprecated. FastAPI now serializes data\n",
+    "    directly to JSON bytes via Pydantic when a return type or response model is\n",
+    "    set, which is faster and doesn't need a custom response class.\n\n",
+    "    Read more in the\n",
+    "    [FastAPI docs for Custom Response](https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model)\n",
+    "    and the\n",
+    "    [FastAPI docs for Response Model](https://fastapi.tiangolo.com/tutorial/response-model/).\n\n",
+    "    **Note**: `orjson` is not included with FastAPI and must be installed\n",
+    "    separately, e.g. `pip install orjson`.\n",
+    "    "
+);
+const ORJSON_RESPONSE_MISSING_ASSERTION: &str = "orjson must be installed to use ORJSONResponse";
 
-#[pyclass(name = "_UjsonResponseRenderDescriptor")]
-struct UjsonResponseRenderDescriptor {
-    ujson: Option<Py<PyAny>>,
+#[derive(Clone, Copy)]
+enum DeprecatedJsonResponseKind {
+    Ujson,
+    Orjson,
+}
+
+impl DeprecatedJsonResponseKind {
+    fn class_name(self) -> &'static str {
+        match self {
+            Self::Ujson => "UJSONResponse",
+            Self::Orjson => "ORJSONResponse",
+        }
+    }
+
+    fn module_name(self) -> &'static str {
+        match self {
+            Self::Ujson => "ujson",
+            Self::Orjson => "orjson",
+        }
+    }
+
+    fn deprecation_message(self) -> &'static str {
+        match self {
+            Self::Ujson => UJSON_RESPONSE_DEPRECATION_MESSAGE,
+            Self::Orjson => ORJSON_RESPONSE_DEPRECATION_MESSAGE,
+        }
+    }
+
+    fn documentation(self) -> &'static str {
+        match self {
+            Self::Ujson => UJSON_RESPONSE_DOC,
+            Self::Orjson => ORJSON_RESPONSE_DOC,
+        }
+    }
+
+    fn missing_assertion(self) -> &'static str {
+        match self {
+            Self::Ujson => UJSON_RESPONSE_MISSING_ASSERTION,
+            Self::Orjson => ORJSON_RESPONSE_MISSING_ASSERTION,
+        }
+    }
+}
+
+#[pyclass(name = "_DeprecatedJsonResponseRenderDescriptor")]
+struct DeprecatedJsonResponseRenderDescriptor {
+    serializer_module: Option<Py<PyAny>>,
+    kind: DeprecatedJsonResponseKind,
     class_signature: Py<PyAny>,
     instance_signature: Py<PyAny>,
     annotations: Py<PyAny>,
 }
 
 #[pymethods]
-impl UjsonResponseRenderDescriptor {
+impl DeprecatedJsonResponseRenderDescriptor {
     fn __get__(
         &self,
         py: Python<'_>,
@@ -83,8 +148,12 @@ impl UjsonResponseRenderDescriptor {
         };
         let method = Py::new(
             py,
-            UjsonResponseRenderMethod {
-                ujson: self.ujson.as_ref().map(|module| module.clone_ref(py)),
+            DeprecatedJsonResponseRenderMethod {
+                serializer_module: self
+                    .serializer_module
+                    .as_ref()
+                    .map(|module| module.clone_ref(py)),
+                kind: self.kind,
                 signature: signature.clone().unbind(),
             },
         )?;
@@ -92,21 +161,22 @@ impl UjsonResponseRenderDescriptor {
         method_bound.setattr("__name__", "render")?;
         method_bound.setattr("__doc__", py.None())?;
         method_bound.setattr("__module__", "fastapi.responses")?;
-        method_bound.setattr("__qualname__", "UJSONResponse.render")?;
+        method_bound.setattr("__qualname__", format!("{}.render", self.kind.class_name()))?;
         method_bound.setattr("__annotations__", self.annotations.bind(py))?;
         method_bound.setattr("__signature__", signature)?;
         Ok(method.into_any())
     }
 }
 
-#[pyclass(name = "_UjsonResponseRenderMethod", dict)]
-struct UjsonResponseRenderMethod {
-    ujson: Option<Py<PyAny>>,
+#[pyclass(name = "_DeprecatedJsonResponseRenderMethod", dict)]
+struct DeprecatedJsonResponseRenderMethod {
+    serializer_module: Option<Py<PyAny>>,
+    kind: DeprecatedJsonResponseKind,
     signature: Py<PyAny>,
 }
 
 #[pymethods]
-impl UjsonResponseRenderMethod {
+impl DeprecatedJsonResponseRenderMethod {
     #[pyo3(signature = (*args, **kwargs))]
     fn __call__(
         &self,
@@ -120,19 +190,38 @@ impl UjsonResponseRenderMethod {
         let content = arguments
             .get_item("content")?
             .ok_or_else(|| PyTypeError::new_err("missing required argument: 'content'"))?;
-        let Some(ujson) = self.ujson.as_ref() else {
-            return Err(PyAssertionError::new_err(UJSON_RESPONSE_MISSING_ASSERTION));
+        let Some(serializer_module) = self.serializer_module.as_ref() else {
+            return Err(PyAssertionError::new_err(self.kind.missing_assertion()));
         };
-        let kwargs = PyDict::new(py);
-        kwargs.set_item("ensure_ascii", false)?;
-        let json = ujson
-            .bind(py)
-            .call_method("dumps", (content,), Some(&kwargs))?;
-        json.call_method1("encode", ("utf-8",)).map(Bound::unbind)
+        match self.kind {
+            DeprecatedJsonResponseKind::Ujson => {
+                let kwargs = PyDict::new(py);
+                kwargs.set_item("ensure_ascii", false)?;
+                let json =
+                    serializer_module
+                        .bind(py)
+                        .call_method("dumps", (content,), Some(&kwargs))?;
+                json.call_method1("encode", ("utf-8",)).map(Bound::unbind)
+            }
+            DeprecatedJsonResponseKind::Orjson => {
+                let module = serializer_module.bind(py);
+                let non_str_keys = module.getattr("OPT_NON_STR_KEYS")?;
+                let serialize_numpy = module.getattr("OPT_SERIALIZE_NUMPY")?;
+                let options = py
+                    .import("operator")?
+                    .getattr("or_")?
+                    .call1((non_str_keys, serialize_numpy))?;
+                let kwargs = PyDict::new(py);
+                kwargs.set_item("option", options)?;
+                module
+                    .call_method("dumps", (content,), Some(&kwargs))
+                    .map(Bound::unbind)
+            }
+        }
     }
 }
 
-fn ujson_response_render_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
+fn deprecated_json_response_render_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let inspect = py.import("inspect")?;
     let parameter = inspect.getattr("Parameter")?;
     let kind = parameter.getattr("POSITIONAL_OR_KEYWORD")?;
@@ -149,13 +238,14 @@ fn ujson_response_render_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .map(Bound::unbind)
 }
 
-#[pyclass(name = "_UjsonResponseNew", dict)]
-struct UjsonResponseNew {
+#[pyclass(name = "_DeprecatedJsonResponseNew", dict)]
+struct DeprecatedJsonResponseNew {
     response_class: Py<PyAny>,
+    kind: DeprecatedJsonResponseKind,
 }
 
 #[pymethods]
-impl UjsonResponseNew {
+impl DeprecatedJsonResponseNew {
     #[pyo3(signature = (cls, *args, **kwargs))]
     fn __call__(
         &self,
@@ -166,7 +256,7 @@ impl UjsonResponseNew {
     ) -> PyResult<Py<PyAny>> {
         let _ = (args, kwargs);
         if cls.is(self.response_class.bind(py)) {
-            emit_ujson_response_deprecation_warning(py)?;
+            emit_deprecated_json_response_warning(py, self.kind)?;
         }
         py.import("builtins")?
             .getattr("object")?
@@ -176,13 +266,14 @@ impl UjsonResponseNew {
     }
 }
 
-#[pyclass(name = "_UjsonResponseInitSubclass", dict)]
-struct UjsonResponseInitSubclass {
+#[pyclass(name = "_DeprecatedJsonResponseInitSubclass", dict)]
+struct DeprecatedJsonResponseInitSubclass {
     response_class: Py<PyAny>,
+    kind: DeprecatedJsonResponseKind,
 }
 
 #[pymethods]
-impl UjsonResponseInitSubclass {
+impl DeprecatedJsonResponseInitSubclass {
     #[pyo3(signature = (cls, *args, **kwargs))]
     fn __call__(
         &self,
@@ -191,7 +282,7 @@ impl UjsonResponseInitSubclass {
         args: &Bound<'_, PyTuple>,
         kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<()> {
-        emit_ujson_response_deprecation_warning(py)?;
+        emit_deprecated_json_response_warning(py, self.kind)?;
         let parent_init_subclass = py
             .import("builtins")?
             .getattr("super")?
@@ -202,14 +293,17 @@ impl UjsonResponseInitSubclass {
     }
 }
 
-fn emit_ujson_response_deprecation_warning(py: Python<'_>) -> PyResult<()> {
+fn emit_deprecated_json_response_warning(
+    py: Python<'_>,
+    kind: DeprecatedJsonResponseKind,
+) -> PyResult<()> {
     let kwargs = PyDict::new(py);
     // The source class adds one Python wrapper around construction. This native
     // replacement has no corresponding frame, so step over one fewer frame.
     kwargs.set_item("stacklevel", 2)?;
     py.import("warnings")?.getattr("warn")?.call(
         (
-            UJSON_RESPONSE_DEPRECATION_MESSAGE,
+            kind.deprecation_message(),
             crate::errors::fastapi_deprecation_warning_type(py),
         ),
         Some(&kwargs),
@@ -217,19 +311,25 @@ fn emit_ujson_response_deprecation_warning(py: Python<'_>) -> PyResult<()> {
     Ok(())
 }
 
-fn register_ujson_response(module: &Bound<'_, PyModule>) -> PyResult<()> {
+fn register_deprecated_json_response_helpers(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    module.add_class::<DeprecatedJsonResponseRenderDescriptor>()?;
+    module.add_class::<DeprecatedJsonResponseRenderMethod>()?;
+    module.add_class::<DeprecatedJsonResponseNew>()?;
+    module.add_class::<DeprecatedJsonResponseInitSubclass>()?;
+    Ok(())
+}
+
+fn register_deprecated_json_response(
+    module: &Bound<'_, PyModule>,
+    kind: DeprecatedJsonResponseKind,
+) -> PyResult<()> {
     let py = module.py();
-    let class_signature = ujson_response_render_signature(py)?;
+    let class_signature = deprecated_json_response_render_signature(py)?;
     let instance_signature = bound_operation_signature(py, class_signature.bind(py))?;
     let annotations = PyDict::new(py);
     annotations.set_item("content", py.import("typing")?.getattr("Any")?)?;
     annotations.set_item("return", py.get_type::<PyBytes>())?;
-    module.add_class::<UjsonResponseRenderDescriptor>()?;
-    module.add_class::<UjsonResponseRenderMethod>()?;
-    module.add_class::<UjsonResponseNew>()?;
-    module.add_class::<UjsonResponseInitSubclass>()?;
-
-    let ujson = match py.import("ujson") {
+    let serializer_module = match py.import(kind.module_name()) {
         Ok(module) => Some(module.into_any().unbind()),
         Err(error) if error.is_instance_of::<PyModuleNotFoundError>(py) => None,
         Err(error) => return Err(error),
@@ -238,14 +338,15 @@ fn register_ujson_response(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let bases = PyTuple::new(py, [json_response.clone()])?;
     let namespace = PyDict::new(py);
     namespace.set_item("__module__", "fastapi.responses")?;
-    namespace.set_item("__doc__", UJSON_RESPONSE_DOC)?;
-    namespace.set_item("__deprecated__", UJSON_RESPONSE_DEPRECATION_MESSAGE)?;
+    namespace.set_item("__doc__", kind.documentation())?;
+    namespace.set_item("__deprecated__", kind.deprecation_message())?;
     namespace.set_item(
         "render",
         Py::new(
             py,
-            UjsonResponseRenderDescriptor {
-                ujson,
+            DeprecatedJsonResponseRenderDescriptor {
+                serializer_module,
+                kind,
                 class_signature,
                 instance_signature,
                 annotations: annotations.into_any().unbind(),
@@ -255,15 +356,16 @@ fn register_ujson_response(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let response_class =
         py.import("builtins")?
             .getattr("type")?
-            .call1(("UJSONResponse", bases, namespace))?;
+            .call1((kind.class_name(), bases, namespace))?;
 
     let new_method = Py::new(
         py,
-        UjsonResponseNew {
+        DeprecatedJsonResponseNew {
             response_class: response_class.clone().unbind(),
+            kind,
         },
     )?;
-    new_method.setattr(py, "__deprecated__", UJSON_RESPONSE_DEPRECATION_MESSAGE)?;
+    new_method.setattr(py, "__deprecated__", kind.deprecation_message())?;
     let staticmethod = py
         .import("builtins")?
         .getattr("staticmethod")?
@@ -272,18 +374,27 @@ fn register_ujson_response(module: &Bound<'_, PyModule>) -> PyResult<()> {
 
     let init_subclass = Py::new(
         py,
-        UjsonResponseInitSubclass {
+        DeprecatedJsonResponseInitSubclass {
             response_class: response_class.clone().unbind(),
+            kind,
         },
     )?;
-    init_subclass.setattr(py, "__deprecated__", UJSON_RESPONSE_DEPRECATION_MESSAGE)?;
+    init_subclass.setattr(py, "__deprecated__", kind.deprecation_message())?;
     let classmethod = py
         .import("builtins")?
         .getattr("classmethod")?
         .call1((init_subclass,))?;
     response_class.setattr("__init_subclass__", classmethod)?;
 
-    module.add("UJSONResponse", response_class)
+    module.add(kind.class_name(), response_class)
+}
+
+fn register_ujson_response(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    register_deprecated_json_response(module, DeprecatedJsonResponseKind::Ujson)
+}
+
+fn register_orjson_response(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    register_deprecated_json_response(module, DeprecatedJsonResponseKind::Orjson)
 }
 
 #[pyclass(name = "_PydanticBytesSchemaDescriptor")]
@@ -16353,7 +16464,9 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     ] {
         module.add(name, module.py().import(module_path)?.getattr(name)?)?;
     }
+    register_deprecated_json_response_helpers(module)?;
     register_ujson_response(module)?;
+    register_orjson_response(module)?;
     Ok(())
 }
 

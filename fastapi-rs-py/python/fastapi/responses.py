@@ -11,6 +11,9 @@ from fastapi_rs._core import (
     JSONResponse as JSONResponse,
 )
 from fastapi_rs._core import (
+    ORJSONResponse as ORJSONResponse,
+)
+from fastapi_rs._core import (
     PlainTextResponse as PlainTextResponse,
 )
 from fastapi_rs._core import (
@@ -31,6 +34,7 @@ __all__ = [
     "FileResponse",
     "HTMLResponse",
     "JSONResponse",
+    "ORJSONResponse",
     "PlainTextResponse",
     "RedirectResponse",
     "Response",

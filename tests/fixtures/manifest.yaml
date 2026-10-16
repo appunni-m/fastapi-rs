@@ -550,13 +550,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 913306342165322ef6c589927ba53040a9b44d368d80f9fa1da585682ac694ab
+    sha256: 5cbd95f0e5b2264657a73ec2b0be9d8ada0d433b0d67fd08d46307fe57430eed
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 646
-      cases: 2634
+      workflows: 648
+      cases: 2644
       partial_source_mappings: 1889
 
 contract_metadata:
@@ -1240,9 +1240,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 151
-    symbols_with_operation_fixture_refs: 255
-    operation_fixture_refs: 2004
+    symbols_with_direct_api_input_workflow_refs: 171
+    symbols_with_operation_fixture_refs: 257
+    operation_fixture_refs: 2006
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -23005,7 +23005,20 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: &id012 []
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-cors
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id026
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23029,6 +23042,8 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.cors.CORSMiddleware/supported_slice
@@ -23074,7 +23089,20 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: *id012
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-gzip
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id027
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23098,6 +23126,8 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.gzip.GZipMiddleware/supported_slice
@@ -23143,7 +23173,20 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: *id012
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-httpsredirect
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id028
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23167,6 +23210,8 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware/supported_slice
@@ -23212,7 +23257,20 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: *id012
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-trustedhost
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id029
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23236,6 +23294,8 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.trustedhost.TrustedHostMiddleware/supported_slice
@@ -23859,7 +23919,7 @@ api_surface_contract:
       case_id: fastapi.openapi-models.module-identity
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: &id026
+      observation_selectors: &id030
       - python.import_path
       - python.object_identity
     - workflow_id: openapi-model-result-public-api
@@ -46895,14 +46955,27 @@ api_surface_contract:
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-httpconnection
       fixture_design_ref: /fixture_designs/378
-      observation_selectors: &id027
+      observation_selectors: &id031
       - http.body.bytes
       - http.headers.ordered
       - http.status
       - websocket.close_code
       - websocket.event_order
       - websocket.messages
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.requests
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id032
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -46929,6 +47002,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -46977,7 +47052,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-request
       fixture_design_ref: /fixture_designs/382
       observation_selectors: *id015
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.requests
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -47004,6 +47092,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.requests.Request/supported_slice
@@ -47053,7 +47143,20 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id033
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -47080,6 +47183,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.FileResponse/supported_slice
@@ -47125,7 +47230,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -47152,6 +47270,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.HTMLResponse/supported_slice
@@ -47197,7 +47317,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     operation_fixture_refs:
     - workflow_id: openapi-validation-response
       input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
@@ -48477,6 +48610,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     - validation.error_details
     operation_scope:
       status: slice-described
@@ -48523,7 +48658,32 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
+    operation_fixture_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -48533,6 +48693,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.ORJSONResponse/supported_slice
@@ -48545,8 +48707,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1034
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::register_orjson_response
+      known_gaps:
+      - Successful optional-orjson serialization, constructor warning details, and broader class behavior
+        remain unverified.
   - id: fastapi.responses.ORJSONResponse.render
     kind: method
     source_candidate_ref: /api_candidates/1035
@@ -48578,7 +48743,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: orjson-response-optional-render
+      input_path: tests/fixtures/inputs/parity/orjson-response-optional-render.json
+      input_sha256: b3aecb0659fd71fc9095c88d557087a6660eeb883bff901fd89904991886dbff
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-optional-render.yaml
+      recipe_sha256: 3969f951f5d91e450e82452cbfc919b2c1d72448b87b5b797798a557d740641a
+      workload_path: tests/fixtures/workloads/orjson_response_optional_render.py
+      workload_sha256: 2f74f5d43cb7978d8871e8ae3a966c526cfc8741cc48298ada98ab4fad29a127
+      case_id: fastapi.responses.orjson-response.missing-optional-render
+      probe_id: render-missing-orjson
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    operation_fixture_refs:
+    - workflow_id: orjson-response-optional-render
+      input_path: tests/fixtures/inputs/parity/orjson-response-optional-render.json
+      input_sha256: b3aecb0659fd71fc9095c88d557087a6660eeb883bff901fd89904991886dbff
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-optional-render.yaml
+      recipe_sha256: 3969f951f5d91e450e82452cbfc919b2c1d72448b87b5b797798a557d740641a
+      workload_path: tests/fixtures/workloads/orjson_response_optional_render.py
+      workload_sha256: 2f74f5d43cb7978d8871e8ae3a966c526cfc8741cc48298ada98ab4fad29a127
+      case_id: fastapi.responses.orjson-response.missing-optional-render
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -48588,6 +48776,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.call_outcome
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.ORJSONResponse.render/supported_slice
@@ -48600,8 +48789,10 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1035
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
+      known_gaps:
+      - Successful serialization when optional orjson is installed and nonstandard values are not covered.
   - id: fastapi.responses.PlainTextResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1036
@@ -48633,7 +48824,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -48660,6 +48864,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.PlainTextResponse/supported_slice
@@ -48705,7 +48911,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -48732,6 +48951,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.RedirectResponse/supported_slice
@@ -48783,7 +49004,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -48812,6 +49046,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.Response/supported_slice
@@ -48857,7 +49093,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -48884,6 +49133,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.StreamingResponse/supported_slice
@@ -48929,13 +49180,26 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-responses
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     operation_fixture_refs:
     - workflow_id: custom-response-tutorial001-upstream
       input_path: tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json
-      input_sha256: 60d9ed2f46d55bd422b1aef4a27983604a38272d01208e379571d089282e3a0e
+      input_sha256: f84c4a7f99b5615081d59e2699fa6c1d8f587cf3cca73e89919b4c9af695d327
       recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
-      recipe_sha256: aba44b357e84bf4f18aa75b048b72660817b44d9c070238c8aca3898896e4507
+      recipe_sha256: 24545a55a5c55396d3457c735a9c93c61aac29abc25a2928458905e0da648dc5
       workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
       workload_sha256: 739504b2f3bdf997ae151327ea5f2a281609376b522554f4c9b0477ff16deade
       case_id: fastapi.custom-response.tutorial001.items-response
@@ -48948,9 +49212,9 @@ api_surface_contract:
       - warnings.category_message
     - workflow_id: custom-response-tutorial001-upstream
       input_path: tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json
-      input_sha256: 60d9ed2f46d55bd422b1aef4a27983604a38272d01208e379571d089282e3a0e
+      input_sha256: f84c4a7f99b5615081d59e2699fa6c1d8f587cf3cca73e89919b4c9af695d327
       recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
-      recipe_sha256: aba44b357e84bf4f18aa75b048b72660817b44d9c070238c8aca3898896e4507
+      recipe_sha256: 24545a55a5c55396d3457c735a9c93c61aac29abc25a2928458905e0da648dc5
       workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
       workload_sha256: 739504b2f3bdf997ae151327ea5f2a281609376b522554f4c9b0477ff16deade
       case_id: fastapi.custom-response.tutorial001.openapi
@@ -48973,6 +49237,8 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.document
+    - python.import_path
+    - python.object_identity
     - warnings.category_message
     operation_scope:
       status: slice-described
@@ -49029,9 +49295,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: custom-response-tutorial001-upstream
       input_path: tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json
-      input_sha256: 60d9ed2f46d55bd422b1aef4a27983604a38272d01208e379571d089282e3a0e
+      input_sha256: f84c4a7f99b5615081d59e2699fa6c1d8f587cf3cca73e89919b4c9af695d327
       recipe_path: tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml
-      recipe_sha256: aba44b357e84bf4f18aa75b048b72660817b44d9c070238c8aca3898896e4507
+      recipe_sha256: 24545a55a5c55396d3457c735a9c93c61aac29abc25a2928458905e0da648dc5
       workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
       workload_sha256: 739504b2f3bdf997ae151327ea5f2a281609376b522554f4c9b0477ff16deade
       case_id: fastapi.custom-response.tutorial001.items-response
@@ -49066,7 +49332,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1042
       status: partial-contract
-      rust_binding: fastapi-rs/src/application_runtime.rs::UjsonResponseRenderDescriptor
+      rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       known_gaps:
       - Successful optional-`ujson` serialization, arbitrary content, and direct render-signature behavior
         remain unverified.
@@ -53903,6 +54169,19 @@ api_surface_contract:
       - openapi.security
       - python.signature
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id034
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -54072,6 +54351,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -54122,6 +54403,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -54235,6 +54529,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -54285,6 +54581,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -54454,6 +54763,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -54502,6 +54813,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -54551,6 +54875,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -54601,6 +54927,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -54736,6 +55075,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -54784,6 +55125,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -54821,6 +55175,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -54880,6 +55236,19 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -55006,6 +55375,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -55056,6 +55427,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -55118,6 +55502,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -55168,6 +55554,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -55230,6 +55629,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -55280,6 +55681,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -55434,6 +55848,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -55488,6 +55904,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -55539,6 +55968,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -55589,6 +56020,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -55674,6 +56118,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -55726,6 +56172,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -55811,6 +56270,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -55863,6 +56324,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -56035,6 +56509,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -56088,6 +56564,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id020
     input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -56185,6 +56674,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.import_path
+    - python.object_identity
     - python.signature
     operation_scope:
       status: slice-described
@@ -63023,7 +63514,7 @@ api_surface_contract:
       case_id: fastapi.sse.module-identity
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: &id028
+      observation_selectors: &id035
       - python.import_path
       - python.object_identity
     operation_fixture_refs:
@@ -64229,8 +64720,21 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: &id029 []
-    input_workflow_refs: []
+      observation_selectors: &id036 []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.staticfiles
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id037
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -64254,6 +64758,8 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.staticfiles.StaticFiles/supported_slice
@@ -64372,7 +64878,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: &id030 []
+      observation_selectors: &id038 []
     input_workflow_refs: []
     identity_workflow_refs: []
     feature_ids:
@@ -64423,7 +64929,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: &id031 []
+      observation_selectors: &id039 []
     input_workflow_refs:
     - workflow_id: fastapi-testclient-alias-identity
       input_path: tests/fixtures/inputs/parity/fastapi-testclient-alias-identity.json
@@ -64626,7 +65132,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-websockets
       fixture_design_ref: /fixture_designs/389
       observation_selectors: *id004
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.websockets
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id040
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -64650,6 +65169,8 @@ api_surface_contract:
     - public-api-errors
     - websocket-lifecycle
     observation_selectors:
+    - python.import_path
+    - python.object_identity
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -64699,7 +65220,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-websockets
       fixture_design_ref: /fixture_designs/389
       observation_selectors: *id004
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.websockets
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -64726,6 +65260,8 @@ api_surface_contract:
     - error.args
     - error.class
     - error.public_attributes
+    - python.import_path
+    - python.object_identity
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -64774,7 +65310,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-websockets
       fixture_design_ref: /fixture_designs/389
       observation_selectors: *id004
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.websockets
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -64798,6 +65347,8 @@ api_surface_contract:
     - public-api-errors
     - websocket-lifecycle
     observation_selectors:
+    - python.import_path
+    - python.object_identity
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -64818,7 +65369,7 @@ api_surface_contract:
   module_targets:
   - id: fastapi.middleware.cors
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/19
     source_target_ref: /modules/19
     source_candidate_refs:
@@ -64844,9 +65395,24 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.cors
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.middleware.cors
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-cors
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id026
+      symbol_ids:
+      - fastapi.middleware.cors.CORSMiddleware
   - id: fastapi.middleware.gzip
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/21
     source_target_ref: /modules/20
     source_candidate_refs:
@@ -64872,9 +65438,24 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.gzip
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.middleware.gzip
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-gzip
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id027
+      symbol_ids:
+      - fastapi.middleware.gzip.GZipMiddleware
   - id: fastapi.middleware.httpsredirect
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/23
     source_target_ref: /modules/21
     source_candidate_refs:
@@ -64900,9 +65481,24 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.httpsredirect
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.middleware.httpsredirect
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-httpsredirect
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id028
+      symbol_ids:
+      - fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware
   - id: fastapi.middleware.trustedhost
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/25
     source_target_ref: /modules/22
     source_candidate_refs:
@@ -64928,6 +65524,21 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.trustedhost
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.middleware.trustedhost
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.middleware-trustedhost
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id029
+      symbol_ids:
+      - fastapi.middleware.trustedhost.TrustedHostMiddleware
   - id: fastapi.openapi.models
     target_kind: source_module
     contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
@@ -65052,7 +65663,7 @@ api_surface_contract:
       case_id: fastapi.openapi-models.module-identity
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: *id026
+      observation_selectors: *id030
       symbol_ids:
       - fastapi.openapi.models.APIKey
       - fastapi.openapi.models.APIKeyIn
@@ -65099,7 +65710,7 @@ api_surface_contract:
       - fastapi.openapi.models.XML
   - id: fastapi.requests
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/32
     source_target_ref: /modules/31
     source_candidate_refs:
@@ -65122,14 +65733,30 @@ api_surface_contract:
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-httpconnection
       fixture_design_ref: /fixture_designs/378
-      observation_selectors: *id027
+      observation_selectors: *id031
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.requests
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.requests
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.requests
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id032
+      symbol_ids:
+      - fastapi.requests.HTTPConnection
+      - fastapi.requests.Request
   - id: fastapi.responses
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/34
     source_target_ref: /modules/32
     source_candidate_refs:
@@ -65171,9 +65798,32 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.responses
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id033
+      symbol_ids:
+      - fastapi.responses.FileResponse
+      - fastapi.responses.HTMLResponse
+      - fastapi.responses.JSONResponse
+      - fastapi.responses.ORJSONResponse
+      - fastapi.responses.PlainTextResponse
+      - fastapi.responses.RedirectResponse
+      - fastapi.responses.Response
+      - fastapi.responses.StreamingResponse
+      - fastapi.responses.UJSONResponse
   - id: fastapi.security
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/44
     source_target_ref: /modules/34
     source_candidate_refs:
@@ -65227,6 +65877,35 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.security
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id034
+      symbol_ids:
+      - fastapi.security.APIKeyCookie
+      - fastapi.security.APIKeyHeader
+      - fastapi.security.APIKeyQuery
+      - fastapi.security.HTTPAuthorizationCredentials
+      - fastapi.security.HTTPBasic
+      - fastapi.security.HTTPBasicCredentials
+      - fastapi.security.HTTPBearer
+      - fastapi.security.HTTPDigest
+      - fastapi.security.OAuth2
+      - fastapi.security.OAuth2AuthorizationCodeBearer
+      - fastapi.security.OAuth2PasswordBearer
+      - fastapi.security.OAuth2PasswordRequestForm
+      - fastapi.security.OAuth2PasswordRequestFormStrict
+      - fastapi.security.OpenIdConnect
+      - fastapi.security.SecurityScopes
   - id: fastapi.sse
     target_kind: source_module
     contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
@@ -65269,13 +65948,13 @@ api_surface_contract:
       case_id: fastapi.sse.module-identity
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: *id028
+      observation_selectors: *id035
       symbol_ids:
       - fastapi.sse.EventSourceResponse
       - fastapi.sse.ServerSentEvent
   - id: fastapi.staticfiles
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/63
     source_target_ref: /modules/42
     source_candidate_refs:
@@ -65296,11 +65975,26 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: *id029
+      observation_selectors: *id036
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.staticfiles
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.staticfiles
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.staticfiles
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id037
+      symbol_ids:
+      - fastapi.staticfiles.StaticFiles
   - id: fastapi.templating
     target_kind: source_module
     contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
@@ -65324,7 +66018,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: *id030
+      observation_selectors: *id038
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.templating
@@ -65352,14 +66046,14 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: *id031
+      observation_selectors: *id039
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.testclient
       status: full-contract-not-established
   - id: fastapi.websockets
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/70
     source_target_ref: /modules/47
     source_candidate_refs:
@@ -65389,6 +66083,23 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.websockets
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.websockets
+      workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.websockets
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id040
+      symbol_ids:
+      - fastapi.websockets.WebSocket
+      - fastapi.websockets.WebSocketDisconnect
+      - fastapi.websockets.WebSocketState
   inherited_operations:
   - id: fastapi.applications.FastAPI.add_route
     kind: inherited_method
@@ -65442,7 +66153,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id032
+    canonical_operation_ref: &id041
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -65478,7 +66189,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id032
+        canonical_operation_ref: *id041
       status: partial-contract
       known_gaps:
       - Current parity covers basic registration and dispatch plus a method miss; argument and signature
@@ -65529,7 +66240,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id033
+    signature_source_ref: &id042
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -65541,7 +66252,7 @@ api_surface_contract:
       end_line: 102
       signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id034
+    sibling_contract_gap: &id043
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.host
       reason: The pinned Starlette-RS review classifies Starlette.host as supported, but the API source
@@ -65569,8 +66280,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id033
-        sibling_contract_gap_ref: *id034
+        signature_source_ref: *id042
+        sibling_contract_gap_ref: *id043
       status: partial-contract
       known_gaps:
       - Current parity covers one named subdomain dispatch; other host patterns, named host-route reversal,
@@ -65666,7 +66377,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id035
+    canonical_operation_ref: &id044
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -65702,7 +66413,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id035
+        canonical_operation_ref: *id044
       status: partial-contract
       known_gaps:
       - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing
@@ -65765,7 +66476,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id036
+    canonical_operation_ref: &id045
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -65801,7 +66512,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id036
+        canonical_operation_ref: *id045
       status: partial-contract
       known_gaps:
       - The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader
@@ -65854,7 +66565,7 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
-    attribute_source_ref: &id037
+    attribute_source_ref: &id046
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -65867,7 +66578,7 @@ api_surface_contract:
       end_line: 586
       assignment: self.routes = [] if routes is None else list(routes)
     attribute_contract_state: source-assignment-linked; sibling-accessor-missing
-    sibling_contract_gap: &id038
+    sibling_contract_gap: &id047
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.routing.Router.routes
       candidate_state: no_exact_row
@@ -65903,8 +66614,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-attribute-assignment-with-sibling-accessor-gap
-        attribute_source_ref: *id037
-        sibling_contract_gap_ref: *id038
+        attribute_source_ref: *id046
+        sibling_contract_gap_ref: *id047
       status: partial-contract
       known_gaps:
       - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation
@@ -65975,7 +66686,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id039
+    canonical_operation_ref: &id048
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66011,7 +66722,7 @@ api_surface_contract:
       implementation_owner: starlette-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id039
+        canonical_operation_ref: *id048
       status: full-contract-not-established
   - id: fastapi.applications.FastAPI.add_exception_handler
     kind: inherited_method
@@ -66141,7 +66852,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id040
+    canonical_operation_ref: &id049
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66177,7 +66888,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id040
+        canonical_operation_ref: *id049
       status: partial-contract
       known_gaps:
       - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
@@ -66243,7 +66954,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id041
+    signature_source_ref: &id050
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -66255,7 +66966,7 @@ api_surface_contract:
       end_line: 99
       signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id042
+    sibling_contract_gap: &id051
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.mount
       reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
@@ -66284,8 +66995,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id041
-        sibling_contract_gap_ref: *id042
+        signature_source_ref: *id050
+        sibling_contract_gap_ref: *id051
       status: partial-contract
       known_gaps:
       - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
@@ -66334,7 +67045,7 @@ api_surface_contract:
     - openapi-docs
     observation_selectors:
     - http.body.bytes
-    canonical_operation_ref: &id043
+    canonical_operation_ref: &id052
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66370,7 +67081,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id043
+        canonical_operation_ref: *id052
       status: partial-contract
       known_gaps:
       - The projection includes generic route objects supplied directly to FastAPI, but does not establish

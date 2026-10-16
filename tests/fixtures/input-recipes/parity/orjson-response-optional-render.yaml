@@ -1,0 +1,22 @@
+schema: fastapi-rs/python-api-workflow@7
+workload:
+  file: tests/fixtures/workloads/orjson_response_optional_render.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.responses.orjson-response.missing-optional-render
+  probes:
+  - probe_id: render-missing-orjson
+    public_callable:
+      module: fastapi.responses
+      attribute: ORJSONResponse.render
+    argument_bundle: render-content
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/responses.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.responses.ORJSONResponse.render
+    sha256: 04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d

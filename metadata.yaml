@@ -1041,6 +1041,60 @@ reviewed_api_contract_overlay:
     targets use separate module-target identity workflow links; an error link
     does not promote an uncertain exception into the public import contract.
   module_target_identity_refs:
+    fastapi.middleware.cors:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.middleware-cors
+      probe_id: module-identity
+      binding_count: 1
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.middleware.gzip:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.middleware-gzip
+      probe_id: module-identity
+      binding_count: 1
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.middleware.httpsredirect:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.middleware-httpsredirect
+      probe_id: module-identity
+      binding_count: 1
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.middleware.trustedhost:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.middleware-trustedhost
+      probe_id: module-identity
+      binding_count: 1
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.requests:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.requests
+      probe_id: module-identity
+      binding_count: 2
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.responses:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.responses
+      probe_id: module-identity
+      binding_count: 9
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.security:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.security
+      probe_id: module-identity
+      binding_count: 15
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.staticfiles:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.staticfiles
+      probe_id: module-identity
+      binding_count: 1
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.websockets:
+      workflow_id: documented-core-module-identities
+      case_id: fastapi.documented-module.websockets
+      probe_id: module-identity
+      binding_count: 3
+      observation_selectors: [python.import_path, python.object_identity]
     fastapi.openapi.models:
       workflow_id: openapi-model-module-identity
       case_id: fastapi.openapi-models.module-identity
@@ -11386,6 +11440,7 @@ reviewed_api_contract_overlay:
         and optional headers to Starlette.
 
     fastapi.responses.ORJSONResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register_orjson_response
       source_evidence:
         - path: fastapi/responses.py
           kind: source-definition
@@ -11395,8 +11450,19 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Deprecated JSON response class requiring optional `orjson`; class construction uses the
         JSON response envelope, while serialization is the separately listed `render` operation.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+          case_id: fastapi.documented-module.responses
+          workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+          observation_selectors: [python.import_path, python.object_identity]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Successful optional-orjson serialization, constructor warning details, and broader class behavior remain unverified.
 
     fastapi.responses.ORJSONResponse.render:
+      rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       source_evidence:
         - path: fastapi/responses.py
           kind: source-definition
@@ -11407,6 +11473,16 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Serialize content to bytes with the two pinned ORJSON options; preserve the source
         assertion when the optional package is absent.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/orjson-response-optional-render.yaml
+          case_id: fastapi.responses.orjson-response.missing-optional-render
+          workload_path: tests/fixtures/workloads/orjson_response_optional_render.py
+          observation_selectors: [python.call_outcome]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Successful serialization when optional orjson is installed and nonstandard values are not covered.
 
     fastapi.responses.UJSONResponse:
       rust_binding: fastapi-rs/src/application_runtime.rs::register_ujson_response
@@ -11441,7 +11517,7 @@ reviewed_api_contract_overlay:
           - The source warning points to FastAPI's Python routing frame, which has no native target counterpart; the selected parity recipe records and narrowly normalizes the exact pinned source/target warning locations.
 
     fastapi.responses.UJSONResponse.render:
-      rust_binding: fastapi-rs/src/application_runtime.rs::UjsonResponseRenderDescriptor
+      rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       source_evidence:
         - path: fastapi/responses.py
           kind: source-definition
