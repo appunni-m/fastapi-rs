@@ -89,6 +89,11 @@ def validate_wheel(wheel_path: Path) -> list[str]:
             raise SystemExit(f"wheel Name is {metadata.get('Name')!r}, expected {expected_name!r}")
         if str(wheel_metadata.get("Root-Is-Purelib", "")).lower() != "false":
             raise SystemExit("native FastAPI-RS wheel must set Root-Is-Purelib: false")
+        if "Operating System :: OS Independent" in metadata.get_all("Classifier", []):
+            raise SystemExit("native FastAPI-RS wheel must not claim OS independence")
+        wheel_tags = wheel_metadata.get_all("Tag", [])
+        if not wheel_tags or any(tag.endswith("-any") for tag in wheel_tags):
+            raise SystemExit("native FastAPI-RS wheel must use platform-specific wheel tags")
 
         expected_dependencies = [_requirement(value) for value in project.get("dependencies", [])]
         optional_dependencies = project.get("optional-dependencies", {})

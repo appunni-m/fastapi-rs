@@ -136,9 +136,11 @@ Cargo license sections, zlib notice, and Cargo copies, run
 `make license-notices-update` and review the diff.
 
 `scripts/check_release_wheel.py` requires both declared license files in a
-wheel, checks `License-File` metadata, and compares archived bytes with the
-repository. Since the complete selected Cargo license-source union is in
-`THIRD_PARTY_NOTICES.md`, this byte comparison covers those texts too.
+wheel, checks `License-File` metadata, compares archived bytes with the
+repository, and rejects universal `any` wheel tags and the unverified
+`Operating System :: OS Independent` classifier. Since the complete selected
+Cargo license-source union is in `THIRD_PARTY_NOTICES.md`, this byte comparison
+covers those texts too.
 `make license-artifact-check RELEASE_NOTICE_WHEEL=<wheel-path>`
 also requires the already-built `fastapi-rs-<version>.crate` and
 `fastapi-rs-py-<version>.crate` under `RELEASE_CRATE_DIR` and checks their
@@ -196,6 +198,14 @@ The following checks were run from clean FastAPI-RS commit
   checkout and `RUSTC_WRAPPER=` because the default sibling checkout is at a
   different revision and the configured `sccache` wrapper is unavailable in
   this sandbox.
+- A focused rebuild at `target/wheels/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
+  has SHA-256
+  `f596657f53aa987740649b33d9e06d9f9edcbb34c6b01ce2fd1297c6452a869d`.
+  `make build-python` passed the release-wheel checker; the archive has
+  `Root-Is-Purelib: false`, the platform-specific
+  `cp310-abi3-macosx_11_0_arm64` tag, and no OS-independent classifier. This
+  confirms one local arm64 artifact only; other platform support remains
+  unverified.
 
 This evidence covers one local macOS arm64 build. It does not verify other
 platform artifacts or publishable Cargo archives. The extracted-sdist build
