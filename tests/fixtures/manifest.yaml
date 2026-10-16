@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: d45850ff1fa7f9ab36c0efedd0fc0454120cbf1ff3f44a5839ce3dad2d4315c8
+    sha256: 88b0ec9bf4e247b43861ef2cf97c76bba2dc6628c4c2f6ff5b85cb0756365669
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: b4954c2e92ae5fe34b2d2041feac80638c1e577ccf2cfd1facef252b72b29c93
+    sha256: 7f98f2b9becde8aae7200804c7e82a33ea237c94e20b2e82f3f69e16c774634e
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 0507c294477befe0de69ead4c00d2d4d6d6c2077afdc7e5c663cc170502f0675
+    sha256: ece7ee366bfb3f78ad182acc26a158d7f8c9354c052fe2982e9c787f1e67a9f9
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 643
-      cases: 2621
-      partial_source_mappings: 1887
+      workflows: 644
+      cases: 2622
+      partial_source_mappings: 1888
 
 contract_metadata:
   aliases:
@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 255
-    operation_fixture_refs: 1965
+    operation_fixture_refs: 1984
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -54627,6 +54627,70 @@ api_surface_contract:
       case_id: fastapi.security.public-api.http-bearer
       observation_selectors:
       - python.signature
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-bearer-optional-empty-token
+      input_path: tests/fixtures/inputs/parity/http-bearer-optional-empty-token.json
+      input_sha256: 8c4996225661bd4d7c141a2ed0d13f290dbc68cd51d0bc00ff00eb939856fd10
+      recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+      recipe_sha256: 9223a5826c702ea84b79cff7637f77a9887fd1defb225f094d4e182d01965cbe
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.empty-token
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-openapi-schema
+      observation_selectors:
+      - docs.response.headers
+      - docs.response.status
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -58911,6 +58975,70 @@ api_surface_contract:
       case_id: fastapi.security.public-api.http-bearer
       observation_selectors:
       - python.signature
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-bearer-optional-empty-token
+      input_path: tests/fixtures/inputs/parity/http-bearer-optional-empty-token.json
+      input_sha256: 8c4996225661bd4d7c141a2ed0d13f290dbc68cd51d0bc00ff00eb939856fd10
+      recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+      recipe_sha256: 9223a5826c702ea84b79cff7637f77a9887fd1defb225f094d4e182d01965cbe
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.empty-token
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-openapi-schema
+      observation_selectors:
+      - docs.response.headers
+      - docs.response.status
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -58994,6 +59122,54 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/authentication_error_status_code_tutorial.py
       workload_sha256: ba0cfb6233e14e6b84bfb68286e0d2da6287898425f6eaab4cb712aa8f3e92b3
       case_id: fastapi.docs.auth-error-status.valid-bearer
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-bearer-optional-empty-token
+      input_path: tests/fixtures/inputs/parity/http-bearer-optional-empty-token.json
+      input_sha256: 8c4996225661bd4d7c141a2ed0d13f290dbc68cd51d0bc00ff00eb939856fd10
+      recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+      recipe_sha256: 9223a5826c702ea84b79cff7637f77a9887fd1defb225f094d4e182d01965cbe
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.empty-token
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -59107,6 +59283,70 @@ api_surface_contract:
       case_id: fastapi.security.public-api.http-bearer
       observation_selectors:
       - python.signature
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-bearer-optional-empty-token
+      input_path: tests/fixtures/inputs/parity/http-bearer-optional-empty-token.json
+      input_sha256: 8c4996225661bd4d7c141a2ed0d13f290dbc68cd51d0bc00ff00eb939856fd10
+      recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+      recipe_sha256: 9223a5826c702ea84b79cff7637f77a9887fd1defb225f094d4e182d01965cbe
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.empty-token
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer-optional.test-openapi-schema
+      observation_selectors:
+      - docs.response.headers
+      - docs.response.status
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security

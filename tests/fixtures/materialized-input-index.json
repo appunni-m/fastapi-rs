@@ -11143,6 +11143,27 @@
       ]
     },
     {
+      "id": "http-bearer-optional-empty-token",
+      "input_path": "tests/fixtures/inputs/parity/http-bearer-optional-empty-token.json",
+      "input_sha256": "8c4996225661bd4d7c141a2ed0d13f290dbc68cd51d0bc00ff00eb939856fd10",
+      "recipe_path": "tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml",
+      "recipe_sha256": "9223a5826c702ea84b79cff7637f77a9887fd1defb225f094d4e182d01965cbe",
+      "case_ids": [
+        "fastapi.security.http-bearer-optional.empty-token"
+      ],
+      "workload_path": "tests/fixtures/workloads/security_credentials_upstream.py",
+      "workload_sha256": "cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.http-bearer-optional.empty-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_bearer_optional.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "http-body-json-projection",
       "input_path": "tests/fixtures/inputs/parity/http-body-json-projection.json",
       "input_sha256": "c09a69c6c4b6715be599c3589e665ba91de03cce10fbbb96eb1852250659a921",
@@ -47544,6 +47565,21 @@
         "http.status",
         "openapi.document",
         "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_http_bearer_optional.py",
+      "fixture_id": "fastapi.test.test-security-http-bearer-optional",
+      "workflow_id": "http-bearer-optional-empty-token",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.http-bearer-optional.empty-token"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

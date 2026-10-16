@@ -8901,16 +8901,28 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.auth-error-status.valid-bearer
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-bearer
-      feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+          case_id: fastapi.security.http-bearer-optional.empty-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-openapi-schema
+      feature_ids: [dependency-security, openapi-docs, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial native HTTPBearer slice: the documented root import constructs
         a bearer dependency with default arguments. The independent
         authentication-error-status-code-tutorial workflow covers a subclass
         that overrides the missing-credential response and a valid bearer
-        credential. OpenAPI security, optional authentication, non-bearer and
-        empty credentials, constructor options, and the full HTTPBase hierarchy
-        remain outside this slice.
+        credential. The upstream security workflow also covers optional
+        authentication with valid, absent, empty, and non-Bearer credentials,
+        plus the optional scheme and operation security in OpenAPI. Other
+        constructor options and the full HTTPBase hierarchy remain outside
+        this slice.
     fastapi.security.http.HTTPBearer:
       rust_binding: fastapi-rs/src/security.rs::PyHttpBearer
       source_evidence:
@@ -8930,14 +8942,26 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.auth-error-status.valid-bearer
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-bearer
-      feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+          case_id: fastapi.security.http-bearer-optional.empty-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-openapi-schema
+      feature_ids: [dependency-security, openapi-docs, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial native HTTPBearer slice: exposes a Python-subclassable Rust
         dependency with an awaitable Request call path. Identity-checked ASGI
         cases cover dynamic missing-credential error overrides and valid Bearer
-        extraction. The separate HTTPBase type, other authentication schemes,
-        optional authentication, and OpenAPI security remain unsupported.
+        extraction. The upstream security workflow covers HTTPBearer with
+        auto_error=False for valid, missing, empty, and wrong-scheme credentials,
+        plus the OpenAPI scheme and operation security. The separate HTTPBase
+        type and other authentication schemes remain unsupported.
     fastapi.security.http.HTTPBearer.__init__:
       rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::new
       source_evidence:
@@ -8953,12 +8977,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.auth-error-status.valid-bearer
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+          case_id: fastapi.security.http-bearer-optional.empty-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-openapi-schema
       feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
-        Partial constructor slice: the reviewed workflow constructs HTTPBearer
-        and its Python subclass with all defaults. Non-default options and full
-        annotated signature parity remain outside this slice.
+        The reviewed workflow constructs HTTPBearer with auto_error=False and
+        an explicit scheme name for an optional route, then observes its
+        request behavior and generated OpenAPI scheme/security. Other
+        constructor options and full annotated signature parity remain outside
+        this slice.
     fastapi.security.http.HTTPBearer.__call__:
       rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::__call__
       source_evidence:
@@ -8972,6 +9008,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.auth-error-status.legacy-forbidden
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.valid-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/http-bearer-optional-empty-token.yaml
+          case_id: fastapi.security.http-bearer-optional.empty-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.http-bearer-optional.test-security-http-bearer-incorrect-scheme-credentials
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
