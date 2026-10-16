@@ -14,7 +14,7 @@ FASTAPI_SOURCE = {
 }
 
 STARLETTE_RS_TARGET = {
-    "commit": "b4c8a65c85e1b0d251ca05874412811eaa3ac7b8",
+    "commit": "4139a72449bf5751e8902fb1c7175ee7f191d338",
     "role": "target implementation of the separate Starlette 1.6.0 generic contract",
 }
 
