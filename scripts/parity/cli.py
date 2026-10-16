@@ -208,6 +208,11 @@ def _validate_indexed_api_workflow(
     backlog = read_json(ROOT / source_artifacts["fixture_backlog"]["path"])
     selector_catalog = read_json(ROOT / source_artifacts["observation_selector_catalog"]["path"])
     index = read_json(ROOT / source_artifacts["materialized_input_index"]["path"])
+    relative_input = _relative_path(workflow_path)
+    matching = [row for row in index["workflows"] if row["input_path"] == relative_input]
+    if len(matching) != 1:
+        raise ContractError("direct API workflow is not uniquely indexed as a materialized input")
+    selected_workflow_id = matching[0]["id"]
     validate_compatibility_artifacts(
         atlas,
         backlog,
@@ -222,12 +227,9 @@ def _validate_indexed_api_workflow(
         backlog=backlog,
         selector_catalog=selector_catalog,
         fastapi_source=fastapi_source,
+        workflow_ids={selected_workflow_id},
     )
 
-    relative_input = _relative_path(workflow_path)
-    matching = [row for row in index["workflows"] if row["input_path"] == relative_input]
-    if len(matching) != 1:
-        raise ContractError("direct API workflow is not uniquely indexed as a materialized input")
     indexed = matching[0]
     if (
         indexed["input_sha256"] != input_digest

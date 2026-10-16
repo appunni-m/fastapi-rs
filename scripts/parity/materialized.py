@@ -282,8 +282,15 @@ def validate_materialized_input_index(
     backlog: dict[str, Any],
     selector_catalog: dict[str, Any],
     fastapi_source: Path,
+    workflow_ids: set[str] | None = None,
 ) -> dict[str, Any]:
-    """Validate workflow digests, concrete source mapping, and observed selectors."""
+    """Validate workflow digests, concrete source mapping, and observed selectors.
+
+    ``workflow_ids`` narrows workflow/evidence validation to selected rows for
+    incremental parity runs. Schema, authority, and index-wide uniqueness
+    checks still apply; crosswalks for sources used by selected workflows are
+    checked against every indexed mapping for those sources.
+    """
     schema = read_json(INDEX_SCHEMA)
     Draft202012Validator.check_schema(schema)
     errors = sorted(
@@ -301,9 +308,18 @@ def validate_materialized_input_index(
     if index["authority"] != {"fastapi": "0.141.1", "starlette": "1.6.0"}:
         _fail("index authority differs from the selected FastAPI/Starlette contract")
 
-    workflow_by_id = {row["id"]: row for row in index["workflows"]}
-    if len(workflow_by_id) != len(index["workflows"]):
+    all_workflows_by_id = {row["id"]: row for row in index["workflows"]}
+    if len(all_workflows_by_id) != len(index["workflows"]):
         _fail("workflow IDs must be unique")
+    if workflow_ids is not None:
+        missing_workflow_ids = workflow_ids - all_workflows_by_id.keys()
+        if missing_workflow_ids:
+            _fail("unknown selected workflow IDs: " + ", ".join(sorted(missing_workflow_ids)))
+        workflow_by_id = {
+            workflow_id: all_workflows_by_id[workflow_id] for workflow_id in workflow_ids
+        }
+    else:
+        workflow_by_id = all_workflows_by_id
     mapping_keys = [(row["source_item_id"], row["workflow_id"]) for row in index["mappings"]]
     if len(set(mapping_keys)) != len(index["mappings"]):
         _fail("source item/workflow mappings must be unique")
@@ -521,8 +537,12 @@ def validate_materialized_input_index(
         workflow_schemas[workflow_id] = workflow["schema"]
 
     mapped_cases: dict[str, set[str]] = {workflow_id: set() for workflow_id in workflow_by_id}
+    selected_source_ids: set[str] = set()
     for mapping in index["mappings"]:
+        if workflow_ids is not None and mapping["workflow_id"] not in workflow_ids:
+            continue
         source_id = mapping["source_item_id"]
+        selected_source_ids.add(source_id)
         coverage = coverage_rows.get(source_id)
         backlog_row = backlog_rows.get(source_id)
         if coverage is None or backlog_row is None:
@@ -629,9 +649,16 @@ def validate_materialized_input_index(
 
     expected_mappings_by_source: dict[str, list[dict[str, Any]]] = {}
     for mapping in sorted(
-        index["mappings"], key=lambda row: (row["source_item_id"], row["workflow_id"])
+        (
+            row
+            for row in index["mappings"]
+            if workflow_ids is None or row["source_item_id"] in selected_source_ids
+        ),
+        key=lambda row: (row["source_item_id"], row["workflow_id"]),
     ):
-        workflow = workflow_by_id[mapping["workflow_id"]]
+        workflow = all_workflows_by_id.get(mapping["workflow_id"])
+        if workflow is None:
+            _fail(f"mapping references unknown workflow: {mapping['workflow_id']}")
         expected_mappings_by_source.setdefault(mapping["source_item_id"], []).append(
             {
                 "workflow_id": mapping["workflow_id"],
@@ -643,7 +670,11 @@ def validate_materialized_input_index(
             }
         )
 
-    for source_id, coverage in coverage_rows.items():
+    crosswalk_source_ids = coverage_rows if workflow_ids is None else selected_source_ids
+    for source_id in crosswalk_source_ids:
+        coverage = coverage_rows.get(source_id)
+        if coverage is None:
+            _fail(f"source item is absent from the coverage matrix: {source_id}")
         if coverage.get("kind") not in {
             "upstream_test_module",
             "documented_feature_page",
@@ -661,11 +692,16 @@ def validate_materialized_input_index(
         ):
             _fail(f"backlog workflow crosswalk differs from the materialized index: {source_id}")
 
+    selected_mappings = [
+        mapping
+        for mapping in index["mappings"]
+        if workflow_ids is None or mapping["workflow_id"] in workflow_ids
+    ]
     return {
         "workflows": len(workflow_by_id),
         "cases": sum(len(cases) for cases in workflow_cases.values()),
-        "source_mappings": len(index["mappings"]),
+        "source_mappings": len(selected_mappings),
         "partial_mappings": sum(
-            mapping["coverage_status"] == "partial" for mapping in index["mappings"]
+            mapping["coverage_status"] == "partial" for mapping in selected_mappings
         ),
     }
