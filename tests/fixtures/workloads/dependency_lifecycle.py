@@ -65,6 +65,30 @@ def create_app() -> FastAPI:
             resource["open"] = False
             state["events"].append("request-exit")
 
+    def scope_identity_resource() -> dict[str, bool]:
+        resource = {"open": True}
+        try:
+            yield resource
+        finally:
+            resource["open"] = False
+
+    ExplicitRequestResource = Annotated[
+        dict[str, bool], Depends(scope_identity_resource, scope="request")
+    ]
+    DefaultRequestResource = Annotated[
+        dict[str, bool], Depends(scope_identity_resource)
+    ]
+
+    @app.get("/yield/scope-cache-identity")
+    async def scope_cache_identity(
+        explicit: ExplicitRequestResource,
+        implicit: DefaultRequestResource,
+    ) -> dict[str, bool]:
+        return {
+            "same_resource": explicit is implicit,
+            "both_open": explicit["open"] and implicit["open"],
+        }
+
     @app.get("/yield/scopes")
     async def yield_scopes(
         function_value: Annotated[dict[str, bool], Depends(function_resource, scope="function")],

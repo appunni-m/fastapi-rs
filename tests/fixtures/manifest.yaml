@@ -466,7 +466,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: ca6367a9230635de4b91aa21e9334544ff606b40535438eefd3df9929d6a5a3e
+    sha256: 80ecf7af32a4348ee8d295e65b4511dd2c32196527f88cc3500104c0e6c67a70
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -502,7 +502,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 0fb237a242fbc0d404e7a193f0ac8112a25eb2865f45f9f4263dd189fb082c16
+    sha256: 77afcd436a9782bc86a637a3b9736c50a48a8ac4051d5e74f521fa7516800cec
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -539,13 +539,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: b809123c3eb9895bdfcaaeb1338b2f9e54a0a50a99361b0be56dbf515bb60eb9
+    sha256: 7062fe07644a05d6cddd95fceee83e9e8067a4d7cc2331a8cc20798caf2a170b
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 633
-      cases: 2586
+      cases: 2587
       partial_source_mappings: 1872
 
 contract_metadata:
@@ -1231,7 +1231,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 252
-    operation_fixture_refs: 1922
+    operation_fixture_refs: 1923
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -4731,12 +4731,23 @@ api_surface_contract:
       - http.status
     - workflow_id: dependency-lifecycle
       input_path: tests/fixtures/inputs/parity/dependency-lifecycle.json
-      input_sha256: fe402d7458f225bf320c48eb3e822841ab797feac8edf4c024631376e9bf5634
+      input_sha256: aa21dc96b4b95a604355301ed354b92bc55a8214e50b05b7f1829bdf959161d2
       recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
-      recipe_sha256: 5756382429e3301608c4c85f09596fc1e86bb0fd719f16420c429f10adae8e26
+      recipe_sha256: 91d89c62dd222231acba115f11cf59b2439402a8c3414285713c634c63ea8f26
       workload_path: tests/fixtures/workloads/dependency_lifecycle.py
-      workload_sha256: 9def1f56483fe1e554423b201924325ad2c9f2bfbec90ec1bbcac059d76e07cf
+      workload_sha256: 8e7f16a7b38bf8fe56d576075950c3a07e8382e7b52f14813852319d9541f353
       case_id: fastapi.dependencies.yield-scope-cleanup
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-lifecycle
+      input_path: tests/fixtures/inputs/parity/dependency-lifecycle.json
+      input_sha256: aa21dc96b4b95a604355301ed354b92bc55a8214e50b05b7f1829bdf959161d2
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
+      recipe_sha256: 91d89c62dd222231acba115f11cf59b2439402a8c3414285713c634c63ea8f26
+      workload_path: tests/fixtures/workloads/dependency_lifecycle.py
+      workload_sha256: 8e7f16a7b38bf8fe56d576075950c3a07e8382e7b52f14813852319d9541f353
+      case_id: fastapi.dependencies.yield-scope-cache-normalization
       observation_selectors:
       - http.body.bytes
       - http.status
@@ -12561,11 +12572,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: dependency-lifecycle
       input_path: tests/fixtures/inputs/parity/dependency-lifecycle.json
-      input_sha256: fe402d7458f225bf320c48eb3e822841ab797feac8edf4c024631376e9bf5634
+      input_sha256: aa21dc96b4b95a604355301ed354b92bc55a8214e50b05b7f1829bdf959161d2
       recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
-      recipe_sha256: 5756382429e3301608c4c85f09596fc1e86bb0fd719f16420c429f10adae8e26
+      recipe_sha256: 91d89c62dd222231acba115f11cf59b2439402a8c3414285713c634c63ea8f26
       workload_path: tests/fixtures/workloads/dependency_lifecycle.py
-      workload_sha256: 9def1f56483fe1e554423b201924325ad2c9f2bfbec90ec1bbcac059d76e07cf
+      workload_sha256: 8e7f16a7b38bf8fe56d576075950c3a07e8382e7b52f14813852319d9541f353
       case_id: fastapi.dependencies.override-resolution
       observation_selectors:
       - http.body.bytes

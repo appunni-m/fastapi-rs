@@ -176258,7 +176258,7 @@
           ],
           "reviewed_mapping": {
             "contract_gate": "Partial: the linked input runs the public ASGI application directly, not FastAPI/Starlette TestClient or HTTPX. It compares response events and any surfaced ASGI exception; it does not claim TestClient raise_server_exceptions behavior, buffered stream/session mechanics, or HTTPX transport compatibility. Starlette 1.6.0 owns those generic client and transport semantics.",
-            "rationale": "A request-scoped generator depends twice on the same request resource and yields a named resource tuple; the new case observes the shared identity's open state during response streaming and cleanup afterward.",
+            "rationale": "The request-scoped generator reaches the same yield callable through explicit request scope and omitted scope; the new case observes shared resource identity while the request scope is open.",
             "source_evidence": [
               {
                 "end_line": 179,
@@ -177788,9 +177788,10 @@
         },
         {
           "case_ids": [
+            "fastapi.dependencies.yield-scope-cache-normalization",
             "fastapi.dependencies.yield-scope-cleanup"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "http.body.bytes",

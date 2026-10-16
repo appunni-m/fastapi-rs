@@ -676,14 +676,20 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
             "test_sub",
             features=["dependency-security", "response-serialization"],
             selectors=HTTP,
-            rationale="A request-scoped generator depends twice on the same request resource and yields a named resource tuple; the new case observes the shared identity's open state during response streaming and cleanup afterward.",
+            rationale="The request-scoped generator reaches the same yield callable through explicit request scope and omitted scope; the new case observes shared resource identity while the request scope is open.",
             links=[
                 _link(
                     NEW_RECIPE,
                     "fastapi.dependencies.nested-yield-scopes-http",
                     ["nested-request-scope", "http-scope-cleanup"],
                     HTTP,
-                )
+                ),
+                _link(
+                    _LIFECYCLE,
+                    "fastapi.dependencies.yield-scope-cache-normalization",
+                    ["explicit-request-and-default-scope-share-yield-resource"],
+                    HTTP,
+                ),
             ],
             gate=_ASGI_CLIENT_GATE,
             evidence=(

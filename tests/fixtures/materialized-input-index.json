@@ -4382,18 +4382,19 @@
     {
       "id": "dependency-lifecycle",
       "input_path": "tests/fixtures/inputs/parity/dependency-lifecycle.json",
-      "input_sha256": "fe402d7458f225bf320c48eb3e822841ab797feac8edf4c024631376e9bf5634",
+      "input_sha256": "aa21dc96b4b95a604355301ed354b92bc55a8214e50b05b7f1829bdf959161d2",
       "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
-      "recipe_sha256": "5756382429e3301608c4c85f09596fc1e86bb0fd719f16420c429f10adae8e26",
+      "recipe_sha256": "91d89c62dd222231acba115f11cf59b2439402a8c3414285713c634c63ea8f26",
       "case_ids": [
         "fastapi.dependencies.cache-reuse",
         "fastapi.dependencies.cache-bypass",
         "fastapi.dependencies.override-resolution",
         "fastapi.dependencies.yield-scope-cleanup",
-        "fastapi.dependencies.yield-cleanup-error"
+        "fastapi.dependencies.yield-cleanup-error",
+        "fastapi.dependencies.yield-scope-cache-normalization"
       ],
       "workload_path": "tests/fixtures/workloads/dependency_lifecycle.py",
-      "workload_sha256": "9def1f56483fe1e554423b201924325ad2c9f2bfbec90ec1bbcac059d76e07cf",
+      "workload_sha256": "8e7f16a7b38bf8fe56d576075950c3a07e8382e7b52f14813852319d9541f353",
       "case_contracts": [
         {
           "case_id": "fastapi.dependencies.cache-reuse",
@@ -4436,6 +4437,13 @@
           "requirement_refs": [
             "source:documented-page:tutorial/dependencies/dependencies-with-yield.md",
             "source:upstream-test:tests/test_dependency_yield_except_httpexception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependencies.yield-scope-cache-normalization",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_yield_scope.py"
           ]
         }
       ]
@@ -39448,8 +39456,9 @@
       "fixture_id": "fastapi.test.test-dependency-yield-scope",
       "workflow_id": "dependency-lifecycle",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.dependencies.yield-scope-cache-normalization",
         "fastapi.dependencies.yield-scope-cleanup"
       ],
       "observation_selectors": [

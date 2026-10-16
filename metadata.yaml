@@ -7205,6 +7205,11 @@ reviewed_api_contract_overlay:
           start_line: 166
           end_line: 171
         - path: tests/test_dependency_yield_scope.py
+          symbol: test_sub
+          kind: source-definition
+          start_line: 174
+          end_line: 179
+        - path: tests/test_dependency_yield_scope.py
           symbol: test_broken_scope
           kind: source-definition
           start_line: 182
@@ -7560,6 +7565,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
           case_id: fastapi.dependencies.yield-scope-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
+          case_id: fastapi.dependencies.yield-scope-cache-normalization
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml
           case_id: fastapi.dependencies.websocket-function-scope-isolated
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml
@@ -7789,6 +7796,10 @@ reviewed_api_contract_overlay:
         synchronous dependencies. Selected nested async and yielded graphs are
         linked above and in the OAuth2 dependency-cleanup workflow; unreviewed
         coroutine/yield graph and scope combinations remain open.
+        The independent `yield-scope-cache-normalization` input reaches the same
+        sync-yield callable through explicit request scope and omitted scope and
+        observes that both parameters share the request-scoped resource, as in
+        `tests/test_dependency_yield_scope.py::test_sub`.
         Injected `BackgroundTasks`, generator
         overrides, None-based dependency inference, Security/OAuth scope
         injection and OpenAPI integration,
