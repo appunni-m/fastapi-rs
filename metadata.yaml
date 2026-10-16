@@ -4780,6 +4780,10 @@ reviewed_api_contract_overlay:
         - *first_asgi_json_suffix
         - *first_asgi_text_plain
         - *first_asgi_missing_content_type
+        - recipe_path: tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml
+          case_id: fastapi.middleware-proxy.proxy-root-path-without-auto-server
+          workload_path: tests/fixtures/workloads/middleware_proxy_source_review.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -4952,6 +4956,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+        FastAPI(root_path=...) also writes its configured prefix into an empty ASGI
+        scope before route execution; the proxy-root-path-without-auto-server input
+        observes that scope value in the endpoint response and the associated
+        OpenAPI request.
         Four additional-response cases cover media-type content merging, model-derived
         response schemas, preserved examples, and status-description defaults for
         declared responses; they do not establish arbitrary metadata-key or malformed
@@ -5869,6 +5877,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.root-path.request-local-server-isolation
           workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
           observation_selectors: [http.status, openapi.document, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.existing-server-deduplicated
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml
+          case_id: fastapi.middleware-proxy.proxy-root-path-without-auto-server
+          workload_path: tests/fixtures/workloads/middleware_proxy_source_review.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-schemas.yaml
           case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema
           workload_path: tests/fixtures/workloads/openapi_schemas.py
@@ -6003,7 +6019,11 @@ reviewed_api_contract_overlay:
         OpenAPI parity remain outside this slice. The root-path fixture selects
         configured-prefix fallback and precedence, ASGI scope propagation,
         mutable `root_path` and `root_path_in_servers` attributes, and automatic
-        server insertion gating. The request-local isolation case observes
+        server insertion gating. The existing-server case verifies that a
+        configured server equal to the request root path remains a single entry
+        with its description. The disabled-insertion case verifies that
+        `root_path_in_servers=False` preserves an explicitly configured server
+        list. Both observe exact `/servers` content. The request-local isolation case observes
         three different incoming root paths, a following clean request, and
         caller-owned server configuration through the same app; this covers the
         per-request cache isolation contract without claiming complete OpenAPI

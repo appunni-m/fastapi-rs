@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 171
     symbols_with_operation_fixture_refs: 257
-    operation_fixture_refs: 2006
+    operation_fixture_refs: 2009
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -9085,6 +9085,23 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: middleware-proxy-root-path-source-review
+      input_path: tests/fixtures/inputs/parity/middleware-proxy-root-path-source-review.json
+      input_sha256: ddafac4c11d27ebb5b059b4ff5d683e6253a0eca1dcfcafda79bd765ad4662cd
+      recipe_path: tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml
+      recipe_sha256: d0eaac4c4c316f224fbc9b317aefbbddd9bcb47eaebc02526bcfae06c5aaa396
+      workload_path: tests/fixtures/workloads/middleware_proxy_source_review.py
+      workload_sha256: b05e1193aec3b198d01d930258797a33016bdd406300238f32c906e020c3bd74
+      case_id: fastapi.middleware-proxy.proxy-root-path-without-auto-server
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: openapi-validation-response
       input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
       input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
@@ -17039,6 +17056,38 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
       - openapi.document
+    - workflow_id: deprecated-openapi-prefix-tutorial-review
+      input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
+      input_sha256: 58b3219e322153f4186ce1cd605b1ee00f695e54faf95978bd621b39ff03e5c5
+      recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+      recipe_sha256: 17ff7fb2064a1becddf89a6410d96e6dfc3694d0a5d45b22b9226999e91ea05b
+      workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+      workload_sha256: 0402472addcc6a224b3ebd4b1ea2511663e694ef4baaaf8b71bdc2befce8fa8c
+      case_id: fastapi.applications.root-path.existing-server-deduplicated
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: middleware-proxy-root-path-source-review
+      input_path: tests/fixtures/inputs/parity/middleware-proxy-root-path-source-review.json
+      input_sha256: ddafac4c11d27ebb5b059b4ff5d683e6253a0eca1dcfcafda79bd765ad4662cd
+      recipe_path: tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml
+      recipe_sha256: d0eaac4c4c316f224fbc9b317aefbbddd9bcb47eaebc02526bcfae06c5aaa396
+      workload_path: tests/fixtures/workloads/middleware_proxy_source_review.py
+      workload_sha256: b05e1193aec3b198d01d930258797a33016bdd406300238f32c906e020c3bd74
+      case_id: fastapi.middleware-proxy.proxy-root-path-without-auto-server
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: openapi-schemas
       input_path: tests/fixtures/inputs/parity/openapi-schemas.json
       input_sha256: 52221fe11576c89d41befd09f9744b113a648c65d8c6ccdeb7cfbe01004ba204
