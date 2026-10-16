@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: cc6ce003d7fbfef7dba86b06b7102364d6e0a1d30e37c6971e1bc56160ef2687
+    sha256: 374ae684d1460237b01996707d80941f0794aa652bab1ea0e904a54886c16df1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: fc6959b71b6b40601e0ea0f232679c27571915a456c936024006359b48d001e9
+    sha256: 97b7a27b2f791311a5acfdda66bc8435c11281657e7a35a7db20dbab609aa484
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,13 +574,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 264b10ae48588a8972f8a8d2cac3bd1869cf4872eb1d9fb6882928256912919c
+    sha256: 91b809bb1b8f59794efec3f5a3c4b63c96a58d119080dcd1b3ff8d96912d3cef
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 656
-      cases: 2663
+      cases: 2666
       partial_source_mappings: 1902
 
 contract_metadata:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2045
+    operation_fixture_refs: 2051
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -22260,6 +22260,96 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: b23ad71d3d47c0fd79ef08b910540f09e4a8cc80f1ca2510bcfd3ebd5f3f9d5d
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: 72b208d082512ab1d19a1b0fbb0570e2b04c97383a8977eb2d29e54ed00aafe7
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: 77fd181a38c348d7da03fc81025aa92053c2741ec47c13ad0496d20ea03cb303
+      case_id: fastapi.public-errors.http.fastapi-json-detail-and-header
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: b23ad71d3d47c0fd79ef08b910540f09e4a8cc80f1ca2510bcfd3ebd5f3f9d5d
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: 72b208d082512ab1d19a1b0fbb0570e2b04c97383a8977eb2d29e54ed00aafe7
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: 77fd181a38c348d7da03fc81025aa92053c2741ec47c13ad0496d20ea03cb303
+      case_id: fastapi.public-errors.http.starlette-base-detail-and-header
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: b23ad71d3d47c0fd79ef08b910540f09e4a8cc80f1ca2510bcfd3ebd5f3f9d5d
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: 72b208d082512ab1d19a1b0fbb0570e2b04c97383a8977eb2d29e54ed00aafe7
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: 77fd181a38c348d7da03fc81025aa92053c2741ec47c13ad0496d20ea03cb303
+      case_id: fastapi.public-errors.http.bodyless-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: b23ad71d3d47c0fd79ef08b910540f09e4a8cc80f1ca2510bcfd3ebd5f3f9d5d
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: 72b208d082512ab1d19a1b0fbb0570e2b04c97383a8977eb2d29e54ed00aafe7
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: 77fd181a38c348d7da03fc81025aa92053c2741ec47c13ad0496d20ea03cb303
+      case_id: fastapi.public-errors.http.informational-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: b23ad71d3d47c0fd79ef08b910540f09e4a8cc80f1ca2510bcfd3ebd5f3f9d5d
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: 72b208d082512ab1d19a1b0fbb0570e2b04c97383a8977eb2d29e54ed00aafe7
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: 77fd181a38c348d7da03fc81025aa92053c2741ec47c13ad0496d20ea03cb303
+      case_id: fastapi.public-errors.http.reset-content-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: b23ad71d3d47c0fd79ef08b910540f09e4a8cc80f1ca2510bcfd3ebd5f3f9d5d
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: 72b208d082512ab1d19a1b0fbb0570e2b04c97383a8977eb2d29e54ed00aafe7
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: 77fd181a38c348d7da03fc81025aa92053c2741ec47c13ad0496d20ea03cb303
+      case_id: fastapi.public-errors.http.not-modified-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -22288,8 +22378,9 @@ api_surface_contract:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiHttpExceptionHandler::__call__
       known_gaps:
       - Python function identity and function-only introspection are not established.
-      - Response header and body-forbidden status behavior are not covered by linked inputs.
-      - Arbitrary Starlette HTTPException subclasses and all detail types are not covered.
+      - All body-allowed status codes and detail value types are not covered.
+      - Arbitrary Starlette HTTPException subclasses beyond the base class are not covered.
+      - Unusual runtime status-code and request argument types are not covered.
   - id: fastapi.exception_handlers.request_validation_exception_handler
     kind: async_function
     source_candidate_ref: /api_candidates/548

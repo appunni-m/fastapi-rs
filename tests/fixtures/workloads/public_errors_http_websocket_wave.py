@@ -39,6 +39,30 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             headers={"X-Failure-Origin": "bodyless"},
         )
 
+    @app.get("/errors/informational")
+    async def informational_http_error() -> None:
+        raise HTTPException(
+            status_code=199,
+            detail="Informational responses do not carry a body.",
+            headers={"X-Failure-Origin": "informational"},
+        )
+
+    @app.get("/errors/reset-content")
+    async def reset_content_http_error() -> None:
+        raise HTTPException(
+            status_code=205,
+            detail="Reset-content responses do not carry a body.",
+            headers={"X-Failure-Origin": "reset-content"},
+        )
+
+    @app.get("/errors/not-modified")
+    async def not_modified_http_error() -> None:
+        raise HTTPException(
+            status_code=304,
+            detail="Not-modified responses do not carry a body.",
+            headers={"X-Failure-Origin": "not-modified"},
+        )
+
     @app.websocket("/errors/websocket")
     async def websocket_policy_error(websocket: WebSocket) -> None:
         del websocket

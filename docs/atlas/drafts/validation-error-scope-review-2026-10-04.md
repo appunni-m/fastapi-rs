@@ -63,9 +63,25 @@ This establishes only the exact response-projected error-sequence cases in the
 overlay; direct method invocation/signature, other validation subclasses, and
 the broader exception-handler matrix remain open.
 
-## Default HTTP handler workflow result
+## Historical default HTTP handler result (2026-10-04)
 
 The root task linked the two documented `fastapi.exception_handlers` functions
 to their existing tutorial 006 cases and added source-bounded operation scope
 descriptions. Identity-checked oracle execution completed both cases under
-FastAPI 0.141.1 / Starlette 1.6.0 (`parity-results/oracle/603ea750-d439-4dc9-a308-c9c2b8f3a070.json`). The 409 FastAPI HTTP-exception and 422 request-validation responses were observed as exact body bytes with status selectors. The target worker did not produce a result: it failed to import `fastapi.exception_handlers` with `ModuleNotFoundError`. Thus these cases are mapped source inputs, not parity evidence; implementing and exposing the two native handlers remains required before comparison.
+FastAPI 0.141.1 / Starlette 1.6.0 (`parity-results/oracle/603ea750-d439-4dc9-a308-c9c2b8f3a070.json`). The 409 FastAPI HTTP-exception and 422 request-validation responses were observed as exact body bytes with status selectors. At that time the target worker failed to import `fastapi.exception_handlers` with `ModuleNotFoundError`. That result is superseded by the verification below.
+
+## Verification follow-up (2026-10-17)
+
+The current target exposes the handlers through the Rust-owned FastAPI facade.
+Identity-checked oracle/target comparisons now pass for the tutorial workflow
+(2/2, comparison `parity-results/comparisons/5f44d230-1ac8-4578-a03b-14647f8e8909.json`),
+the documented root-module attributes (1/1,
+`parity-results/comparisons/be5e5025-04d8-4466-bed2-5bff093fb565.json`),
+and the public-errors workflow (7/7,
+`parity-results/comparisons/89ecc827-fe50-438f-a2bd-919ff961f165.json`).
+The latter covers FastAPI and Starlette HTTP exceptions, response headers,
+body suppression for statuses 199, 204, 205, and 304, and a selected WebSocket
+case. These results establish only the linked slices. The metadata overlay
+remains `partial-contract` and lists Python function identity, the full
+body-allowed status range, arbitrary exception subclasses, and unusual
+runtime arguments as open gaps.

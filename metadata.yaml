@@ -3619,32 +3619,48 @@ reviewed_api_contract_overlay:
     fastapi.exception_handlers.http_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: http_exception_handler}
+        - {path: fastapi/utils.py, symbol: is_body_allowed_for_status_code}
         - {path: docs_src/handling_errors/tutorial006_py310.py, symbol: custom_http_exception_handler}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial006-review.yaml
           case_id: fastapi.docs-example.handling-errors.tutorial006.delegated-http-error
         - recipe_path: tests/fixtures/input-recipes/parity/root-documented-module-attributes.yaml
           case_id: fastapi.root.documented-module-attributes
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.fastapi-json-detail-and-header
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.starlette-base-detail-and-header
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.bodyless-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.informational-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.reset-content-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.not-modified-status-with-detail
       feature_ids: [public-api-errors]
-      observation_selectors: [http.status, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         The documented tutorial imports this public coroutine and directly awaits
-        it from a registered Starlette HTTPException handler. The linked input
-        observes the delegated 409 response status and exact JSON body for one
-        FastAPI HTTPException. A separate root-module input records the handler's
-        coroutine-function classification and inspect.signature string, and
-        confirms the FastAPI default handler map references the same callable.
-        It does not establish Python-function identity/type, response-header
-        behavior, body-forbidden statuses, arbitrary Starlette HTTPException
-        subclasses, or the full handler contract.
+        it from a registered Starlette HTTPException handler. The tutorial
+        workflow observes its 409 response, while the public-errors workflow
+        observes structured FastAPI detail and headers, the Starlette base
+        exception and headers, and body suppression for statuses 199, 204, 205,
+        and 304. A separate root-module input records coroutine-function
+        classification and inspect.signature, and confirms the default FastAPI
+        handler map references the same callable. This remains a partial
+        contract: it does not establish Python-function identity/type, every
+        body-allowed status or detail value, arbitrary Starlette exception
+        subclasses beyond the base class, or unusual runtime argument types.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiHttpExceptionHandler::__call__
         known_gaps:
           - Python function identity and function-only introspection are not established.
-          - Response header and body-forbidden status behavior are not covered by linked inputs.
-          - Arbitrary Starlette HTTPException subclasses and all detail types are not covered.
+          - All body-allowed status codes and detail value types are not covered.
+          - Arbitrary Starlette HTTPException subclasses beyond the base class are not covered.
+          - Unusual runtime status-code and request argument types are not covered.
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/handling-errors.md
           fixture_id: fastapi.docs.tutorial-handling-errors
