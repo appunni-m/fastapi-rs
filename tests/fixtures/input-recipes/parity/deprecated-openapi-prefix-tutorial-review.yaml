@@ -205,3 +205,107 @@ cases:
   source_evidence:
   - {path: tests/test_openapi_cache_root_path.py, kind: upstream_test}
   - {path: docs/en/docs/advanced/behind-a-proxy.md, kind: upstream_documentation}
+  # Covers request-local OpenAPI server insertion: different request root paths
+  # must not accumulate in the cached schema, and must not mutate caller-owned
+  # server configuration. See the focused tests in the source module.
+- case_id: fastapi.applications.root-path.request-local-server-isolation
+  verification: parity
+  factory_input:
+    servers:
+    - {url: https://prod.example.com}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: openapi-with-first-request-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: /path-a
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: openapi, json_pointers: [/servers], comparison: exact}
+  - action_id: openapi-with-second-request-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: /path-b
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: openapi, json_pointers: [/servers], comparison: exact}
+  - action_id: openapi-with-third-request-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: /path-c
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: openapi, json_pointers: [/servers], comparison: exact}
+  - action_id: openapi-with-no-request-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: openapi, json_pointers: [/servers], comparison: exact}
+  - action_id: caller-and-application-server-configuration-after-requests
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /configured-servers
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_openapi_cache_root_path.py, kind: upstream_test}

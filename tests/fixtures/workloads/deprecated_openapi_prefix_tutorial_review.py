@@ -29,11 +29,13 @@ def create_app(factory_input: Mapping[str, Any], _event_trace: list[str]) -> Fas
     handler = _RecordHandler()
     logger = logging.getLogger("fastapi")
     logger.addHandler(handler)
+    supplied_servers = factory_input.get("servers")
     try:
         app = FastAPI(
             openapi_prefix=factory_input.get("openapi_prefix", ""),
             root_path=factory_input.get("root_path", ""),
             root_path_in_servers=factory_input.get("root_path_in_servers", True),
+            servers=supplied_servers,
         )
     finally:
         logger.removeHandler(handler)
@@ -55,5 +57,11 @@ def create_app(factory_input: Mapping[str, Any], _event_trace: list[str]) -> Fas
             "scope_root_path": request.scope.get("root_path", ""),
             "deprecation_records": handler.records,
         }
+
+    if supplied_servers is not None:
+
+        @app.get("/configured-servers", include_in_schema=False)
+        def configured_servers() -> dict[str, Any]:
+            return {"supplied": supplied_servers, "application": app.servers}
 
     return app

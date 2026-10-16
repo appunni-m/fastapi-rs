@@ -5722,6 +5722,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.root-path.mutable-public-attributes
           workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.request-local-server-isolation
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [http.status, openapi.document, http.headers.ordered, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-schemas.yaml
           case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema
           workload_path: tests/fixtures/workloads/openapi_schemas.py
@@ -5816,7 +5820,14 @@ reviewed_api_contract_overlay:
         OpenAPI parity remain outside this slice. The root-path fixture selects
         configured-prefix fallback and precedence, ASGI scope propagation,
         mutable `root_path` and `root_path_in_servers` attributes, and automatic
-        server insertion gating; it does not establish all OpenAPI behavior. In the pinned
+        server insertion gating. The request-local isolation case observes
+        three different incoming root paths, a following clean request, and
+        caller-owned server configuration through the same app; this covers the
+        per-request cache isolation contract without claiming complete OpenAPI
+        parity. The `FastAPI.servers` instance-field candidate remains
+        `uncertain` as an independently public attribute in the source atlas;
+        this case observes it only as the configured OpenAPI server list during
+        the cache-isolation workflow. In the pinned
         sub-applications workflow, parsed `/paths` match for the parent and
         mounted app, but exact response-body bytes differ because the target
         serializes schema-object keys in a different order; raw OpenAPI bytes

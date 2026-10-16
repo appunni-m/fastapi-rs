@@ -4374,6 +4374,16 @@ impl PyFastApi {
     }
 
     #[getter]
+    fn servers(&self, py: Python<'_>) -> Py<PyAny> {
+        self.servers.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_servers(&mut self, servers: Py<PyAny>) {
+        self.servers = servers;
+    }
+
+    #[getter]
     fn swagger_ui_oauth2_redirect_url(&self, py: Python<'_>) -> Py<PyAny> {
         self.swagger_ui_oauth2_redirect_url
             .as_deref()
