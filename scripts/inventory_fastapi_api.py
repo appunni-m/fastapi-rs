@@ -35,6 +35,10 @@ INSTANCE_ASSIGNMENT_OWNERS = {
     ("fastapi.datastructures", "DefaultPlaceholder"),
 }
 DOC_TARGET = re.compile(r"^\s*:::\s+(fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*$")
+DOC_MODULE_IMPORT = re.compile(
+    r"^\s*(?:from\s+(fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)+)\s+import\b|"
+    r"import\s+(fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)+)(?=\s|,|;|$))"
+)
 LOCK_PACKAGE = re.compile(
     r"(?ms)^\[\[package\]\]\s*\n(?:(?!^\[\[package\]\]).)*?"
     r'^name = "(?P<name>[^"]+)"\s*\n'
@@ -798,6 +802,14 @@ def documented_targets(
                         "line": line_no,
                     }
                 )
+            for import_match in DOC_MODULE_IMPORT.finditer(line):
+                module_name = import_match.group(1) or import_match.group(2)
+                discovered.setdefault(module_name, []).append(
+                    {
+                        "path": path.relative_to(checkout).as_posix(),
+                        "line": line_no,
+                    }
+                )
     module_names = set(modules)
     result: list[dict[str, Any]] = []
     for target in sorted(discovered):
@@ -957,7 +969,11 @@ def build_inventory(checkout: Path) -> dict[str, Any]:
             f"documented targets did not resolve to source modules/bindings: {unresolved}"
         )
     for target in targets:
-        target["deprecation_evidence"] = document_deprecation_evidence(checkout, target["id"])
+        target["deprecation_evidence"] = (
+            document_deprecation_evidence(checkout, target["id"])
+            if target["resolution_kind"] != "module"
+            else []
+        )
     exports = root_exports(modules, import_records)
     pydantic_classes = propagate_pydantic_models(module_records)
     pydantic_integrations = [

@@ -1047,6 +1047,12 @@ reviewed_api_contract_overlay:
       probe_id: module-identity
       binding_count: 43
       observation_selectors: [python.import_path, python.object_identity]
+    fastapi.sse:
+      workflow_id: sse-module-identity
+      case_id: fastapi.sse.module-identity
+      probe_id: module-identity
+      binding_count: 2
+      observation_selectors: [python.import_path, python.object_identity]
   identity_workflow_refs:
     fastapi.status:
       - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_starlette_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}

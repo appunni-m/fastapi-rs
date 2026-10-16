@@ -170,11 +170,11 @@ source_artifacts:
   api_inventory:
     path: tests/fixtures/api-inventory.json
     schema: fastapi-rs/source-api-inventory@1
-    sha256: ade1e1a3a3ef66d14b40f2fae3d5a9ce8e76911bfa2f12c9f2cbe149c5df9674
+    sha256: 6458cd32a14ba5f1daa2309aee9ee8d9a03879bd1862ba96c448976b8118f1e4
     purpose: pinned-source inventory input; not support or parity evidence
     counts:
       root_exports: 21
-      documented_targets: 61
+      documented_targets: 73
       python_source_modules: 48
       source_defined_callables: 350
       import_bindings: 651
@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: e687169f5da203acf4c501497eb693998c52edb523936dc856b8b89df9217da2
+    sha256: b61d5cd9abd95c0550421ac46dcf527bca85e667f7af6a470b51f7a021450311
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 9a383d8b7b87e1d39d494fe42bbf8c9fa0754fdc298770cd40aa5c44f3c40928
+    sha256: 08df8bbb6e08800b80b40847be4d351aa3a591be305f948a61429985f38639ee
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -530,7 +530,7 @@ source_artifacts:
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
     schema: fastapi-rs/runtime-api-surface@1
-    sha256: 4c8559154d9b0eb9eeb5d622a421729f7277ddad3bee1b77ffe5bd9e4545b46a
+    sha256: 40cbfea4e068f87df20df43d35187b27189d0150f4bd1ddbf42cf91be002c59b
     purpose: CPython 3.12.13 reflection with FastAPI core runtime dependencies only
     counts:
       source_symbols_reflected: 1640
@@ -540,7 +540,7 @@ source_artifacts:
   runtime_api_surface_standard:
     path: tests/fixtures/runtime-api-surface-standard.json
     schema: fastapi-rs/runtime-api-surface@1
-    sha256: 203739561fcdb27880c7a5eb9bd3fcea901f7b8bf4837ccdf4df8fd3edebb8be
+    sha256: 3dd1426cc62cf5d1741e8abbaab3328cd9296578c2bb091ff55c06fda29ce655
     purpose: CPython 3.12.13 reflection with locked standard and docs-tests extras
     counts:
       source_symbols_reflected: 1642
@@ -550,13 +550,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: b71fb75e3bc7a7a12dd299cdc3a1423528b1d8812f9f45b0286b5a110149205d
+    sha256: 913306342165322ef6c589927ba53040a9b44d368d80f9fa1da585682ac694ab
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 645
-      cases: 2633
+      workflows: 646
+      cases: 2634
       partial_source_mappings: 1889
 
 contract_metadata:
@@ -1216,10 +1216,10 @@ api_surface_contract:
     required_public_symbols: 480
     required_inherited_operations: 9
     required_public_api_candidates: 489
-    required_documented_module_targets: 1
-    documented_source_module_targets: 1
-    module_targets_with_documentation_refs: 1
-    module_targets_with_supported_symbols: 1
+    required_documented_module_targets: 13
+    documented_source_module_targets: 13
+    module_targets_with_documentation_refs: 13
+    module_targets_with_supported_symbols: 13
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 246
@@ -1240,7 +1240,7 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 149
+    symbols_with_direct_api_input_workflow_refs: 151
     symbols_with_operation_fixture_refs: 255
     operation_fixture_refs: 2004
     symbols_with_identity_workflow_refs: 44
@@ -46895,7 +46895,7 @@ api_surface_contract:
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-httpconnection
       fixture_design_ref: /fixture_designs/378
-      observation_selectors:
+      observation_selectors: &id027
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -63012,7 +63012,20 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: sse-module-identity
+      input_path: tests/fixtures/inputs/parity/sse-module-identity.json
+      input_sha256: 298850f41ab0dff61ae3356380d7412d6def3be1d7552fe5a993c28f02d05da6
+      recipe_path: tests/fixtures/input-recipes/parity/sse-module-identity.yaml
+      recipe_sha256: 4ae6c7e679877f2232d48f6c4d861fdf7969badc6e60b35ca9b1a2613d24b9c7
+      workload_path: tests/fixtures/workloads/sse_module_identity.py
+      workload_sha256: ca5b719efa7b7a65cc3d9d71c1c4b2abcbddd1d53fe4cece232bcddf669c1a07
+      case_id: fastapi.sse.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id028
+      - python.import_path
+      - python.object_identity
     operation_fixture_refs:
     - workflow_id: sse
       input_path: tests/fixtures/inputs/parity/sse.json
@@ -63296,6 +63309,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.EventSourceResponse/supported_slice
@@ -63340,7 +63355,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-sse
       fixture_design_ref: /fixture_designs/386
       observation_selectors: *id023
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: sse-module-identity
+      input_path: tests/fixtures/inputs/parity/sse-module-identity.json
+      input_sha256: 298850f41ab0dff61ae3356380d7412d6def3be1d7552fe5a993c28f02d05da6
+      recipe_path: tests/fixtures/input-recipes/parity/sse-module-identity.yaml
+      recipe_sha256: 4ae6c7e679877f2232d48f6c4d861fdf7969badc6e60b35ca9b1a2613d24b9c7
+      workload_path: tests/fixtures/workloads/sse_module_identity.py
+      workload_sha256: ca5b719efa7b7a65cc3d9d71c1c4b2abcbddd1d53fe4cece232bcddf669c1a07
+      case_id: fastapi.sse.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     operation_fixture_refs:
     - workflow_id: sse
       input_path: tests/fixtures/inputs/parity/sse.json
@@ -63534,6 +63562,8 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.import_path
+    - python.object_identity
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent/supported_slice
@@ -64199,7 +64229,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: []
+      observation_selectors: &id029 []
     input_workflow_refs: []
     identity_workflow_refs:
     - workflow_id: root-alias-identity
@@ -64342,7 +64372,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: []
+      observation_selectors: &id030 []
     input_workflow_refs: []
     identity_workflow_refs: []
     feature_ids:
@@ -64393,7 +64423,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: []
+      observation_selectors: &id031 []
     input_workflow_refs:
     - workflow_id: fastapi-testclient-alias-identity
       input_path: tests/fixtures/inputs/parity/fastapi-testclient-alias-identity.json
@@ -64786,523 +64816,211 @@ api_surface_contract:
       status: full-contract-not-established
       rust_binding: fastapi-rs/src/application_runtime.rs::register
   module_targets:
+  - id: fastapi.middleware.cors
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/19
+    source_target_ref: /modules/19
+    source_candidate_refs:
+    - /api_candidates/597
+    source_candidate_ids:
+    - fastapi.middleware.cors.CORSMiddleware
+    runtime_reflections:
+      core:
+        module_ref: /modules/19
+        status: imported
+      standard:
+        module_ref: /modules/19
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/middleware.md
+      source_line: 12
+      coverage_matrix_ref: /coverage_matrix/544
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id012
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.middleware.cors
+      status: full-contract-not-established
+  - id: fastapi.middleware.gzip
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/21
+    source_target_ref: /modules/20
+    source_candidate_refs:
+    - /api_candidates/598
+    source_candidate_ids:
+    - fastapi.middleware.gzip.GZipMiddleware
+    runtime_reflections:
+      core:
+        module_ref: /modules/20
+        status: imported
+      standard:
+        module_ref: /modules/20
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/middleware.md
+      source_line: 20
+      coverage_matrix_ref: /coverage_matrix/544
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id012
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.middleware.gzip
+      status: full-contract-not-established
+  - id: fastapi.middleware.httpsredirect
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/23
+    source_target_ref: /modules/21
+    source_candidate_refs:
+    - /api_candidates/599
+    source_candidate_ids:
+    - fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware
+    runtime_reflections:
+      core:
+        module_ref: /modules/21
+        status: imported
+      standard:
+        module_ref: /modules/21
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/middleware.md
+      source_line: 28
+      coverage_matrix_ref: /coverage_matrix/544
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id012
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.middleware.httpsredirect
+      status: full-contract-not-established
+  - id: fastapi.middleware.trustedhost
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/25
+    source_target_ref: /modules/22
+    source_candidate_refs:
+    - /api_candidates/600
+    source_candidate_ids:
+    - fastapi.middleware.trustedhost.TrustedHostMiddleware
+    runtime_reflections:
+      core:
+        module_ref: /modules/22
+        status: imported
+      standard:
+        module_ref: /modules/22
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/middleware.md
+      source_line: 36
+      coverage_matrix_ref: /coverage_matrix/544
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id012
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.middleware.trustedhost
+      status: full-contract-not-established
   - id: fastapi.openapi.models
     target_kind: source_module
     contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
-    source_documented_target_ref: /documented_targets/27
+    source_documented_target_ref: /documented_targets/31
     source_target_ref: /modules/27
     source_candidate_refs:
     - /api_candidates/616
-    - /api_candidates/617
-    - /api_candidates/618
-    - /api_candidates/619
     - /api_candidates/620
-    - /api_candidates/621
-    - /api_candidates/622
-    - /api_candidates/623
     - /api_candidates/628
     - /api_candidates/631
-    - /api_candidates/632
-    - /api_candidates/633
-    - /api_candidates/634
-    - /api_candidates/635
-    - /api_candidates/636
-    - /api_candidates/637
-    - /api_candidates/638
-    - /api_candidates/639
-    - /api_candidates/640
-    - /api_candidates/641
     - /api_candidates/642
-    - /api_candidates/643
-    - /api_candidates/644
-    - /api_candidates/645
     - /api_candidates/646
-    - /api_candidates/647
-    - /api_candidates/648
     - /api_candidates/649
-    - /api_candidates/650
-    - /api_candidates/651
-    - /api_candidates/652
-    - /api_candidates/653
-    - /api_candidates/654
     - /api_candidates/656
-    - /api_candidates/657
-    - /api_candidates/658
-    - /api_candidates/659
-    - /api_candidates/660
-    - /api_candidates/661
     - /api_candidates/662
-    - /api_candidates/663
-    - /api_candidates/664
     - /api_candidates/667
-    - /api_candidates/668
-    - /api_candidates/669
     - /api_candidates/670
-    - /api_candidates/671
-    - /api_candidates/672
     - /api_candidates/673
     - /api_candidates/674
-    - /api_candidates/675
-    - /api_candidates/676
-    - /api_candidates/677
-    - /api_candidates/678
-    - /api_candidates/679
-    - /api_candidates/680
-    - /api_candidates/681
     - /api_candidates/683
-    - /api_candidates/684
-    - /api_candidates/685
-    - /api_candidates/686
     - /api_candidates/687
-    - /api_candidates/688
-    - /api_candidates/689
-    - /api_candidates/690
-    - /api_candidates/691
-    - /api_candidates/692
-    - /api_candidates/693
     - /api_candidates/696
-    - /api_candidates/697
-    - /api_candidates/698
-    - /api_candidates/699
-    - /api_candidates/700
     - /api_candidates/701
-    - /api_candidates/702
-    - /api_candidates/703
     - /api_candidates/704
-    - /api_candidates/705
-    - /api_candidates/706
     - /api_candidates/707
-    - /api_candidates/708
-    - /api_candidates/709
     - /api_candidates/710
-    - /api_candidates/711
     - /api_candidates/712
-    - /api_candidates/713
     - /api_candidates/714
-    - /api_candidates/715
     - /api_candidates/716
-    - /api_candidates/717
-    - /api_candidates/718
-    - /api_candidates/719
-    - /api_candidates/720
     - /api_candidates/721
-    - /api_candidates/722
-    - /api_candidates/723
-    - /api_candidates/724
-    - /api_candidates/725
-    - /api_candidates/726
-    - /api_candidates/727
-    - /api_candidates/728
-    - /api_candidates/729
-    - /api_candidates/730
-    - /api_candidates/731
     - /api_candidates/732
-    - /api_candidates/733
-    - /api_candidates/734
     - /api_candidates/735
-    - /api_candidates/736
-    - /api_candidates/737
-    - /api_candidates/738
-    - /api_candidates/739
-    - /api_candidates/740
-    - /api_candidates/741
-    - /api_candidates/742
-    - /api_candidates/743
-    - /api_candidates/744
-    - /api_candidates/745
-    - /api_candidates/746
-    - /api_candidates/747
     - /api_candidates/749
-    - /api_candidates/750
-    - /api_candidates/751
     - /api_candidates/752
-    - /api_candidates/753
-    - /api_candidates/754
-    - /api_candidates/755
-    - /api_candidates/756
-    - /api_candidates/757
-    - /api_candidates/758
-    - /api_candidates/759
-    - /api_candidates/760
-    - /api_candidates/761
-    - /api_candidates/762
     - /api_candidates/763
-    - /api_candidates/764
-    - /api_candidates/765
-    - /api_candidates/766
-    - /api_candidates/767
     - /api_candidates/768
-    - /api_candidates/769
-    - /api_candidates/770
-    - /api_candidates/771
-    - /api_candidates/772
-    - /api_candidates/773
-    - /api_candidates/774
-    - /api_candidates/775
-    - /api_candidates/776
-    - /api_candidates/777
-    - /api_candidates/778
-    - /api_candidates/779
-    - /api_candidates/780
-    - /api_candidates/781
     - /api_candidates/782
-    - /api_candidates/783
     - /api_candidates/784
-    - /api_candidates/785
-    - /api_candidates/786
-    - /api_candidates/787
     - /api_candidates/788
-    - /api_candidates/789
-    - /api_candidates/790
-    - /api_candidates/791
-    - /api_candidates/792
     - /api_candidates/793
-    - /api_candidates/794
-    - /api_candidates/795
-    - /api_candidates/796
-    - /api_candidates/797
-    - /api_candidates/798
-    - /api_candidates/799
-    - /api_candidates/800
-    - /api_candidates/801
-    - /api_candidates/802
-    - /api_candidates/803
-    - /api_candidates/804
-    - /api_candidates/805
-    - /api_candidates/806
-    - /api_candidates/807
-    - /api_candidates/808
-    - /api_candidates/809
-    - /api_candidates/810
-    - /api_candidates/811
-    - /api_candidates/812
-    - /api_candidates/813
-    - /api_candidates/814
-    - /api_candidates/815
-    - /api_candidates/816
-    - /api_candidates/817
-    - /api_candidates/818
-    - /api_candidates/819
-    - /api_candidates/820
-    - /api_candidates/821
-    - /api_candidates/822
-    - /api_candidates/823
-    - /api_candidates/824
-    - /api_candidates/825
-    - /api_candidates/826
-    - /api_candidates/827
-    - /api_candidates/828
-    - /api_candidates/829
-    - /api_candidates/830
-    - /api_candidates/831
-    - /api_candidates/832
-    - /api_candidates/833
-    - /api_candidates/834
-    - /api_candidates/835
-    - /api_candidates/836
-    - /api_candidates/837
-    - /api_candidates/838
-    - /api_candidates/839
-    - /api_candidates/840
-    - /api_candidates/841
-    - /api_candidates/842
-    - /api_candidates/843
-    - /api_candidates/844
-    - /api_candidates/845
-    - /api_candidates/846
-    - /api_candidates/847
-    - /api_candidates/848
-    - /api_candidates/849
-    - /api_candidates/850
-    - /api_candidates/851
-    - /api_candidates/852
-    - /api_candidates/853
-    - /api_candidates/854
     - /api_candidates/855
     - /api_candidates/856
     - /api_candidates/857
-    - /api_candidates/858
-    - /api_candidates/859
     - /api_candidates/860
     - /api_candidates/861
-    - /api_candidates/862
-    - /api_candidates/863
-    - /api_candidates/864
-    - /api_candidates/865
     - /api_candidates/866
-    - /api_candidates/867
-    - /api_candidates/868
-    - /api_candidates/869
     - /api_candidates/870
-    - /api_candidates/871
-    - /api_candidates/872
-    - /api_candidates/873
     - /api_candidates/874
-    - /api_candidates/875
-    - /api_candidates/876
-    - /api_candidates/877
     - /api_candidates/880
-    - /api_candidates/881
-    - /api_candidates/882
-    - /api_candidates/883
-    - /api_candidates/884
-    - /api_candidates/885
     source_candidate_ids:
     - fastapi.openapi.models.APIKey
-    - fastapi.openapi.models.APIKey.in_
-    - fastapi.openapi.models.APIKey.name
-    - fastapi.openapi.models.APIKey.type_
     - fastapi.openapi.models.APIKeyIn
-    - fastapi.openapi.models.APIKeyIn.cookie
-    - fastapi.openapi.models.APIKeyIn.header
-    - fastapi.openapi.models.APIKeyIn.query
     - fastapi.openapi.models.BaseModelWithConfig
     - fastapi.openapi.models.Components
-    - fastapi.openapi.models.Components.callbacks
-    - fastapi.openapi.models.Components.examples
-    - fastapi.openapi.models.Components.headers
-    - fastapi.openapi.models.Components.links
-    - fastapi.openapi.models.Components.parameters
-    - fastapi.openapi.models.Components.pathItems
-    - fastapi.openapi.models.Components.requestBodies
-    - fastapi.openapi.models.Components.responses
-    - fastapi.openapi.models.Components.schemas
-    - fastapi.openapi.models.Components.securitySchemes
     - fastapi.openapi.models.Contact
-    - fastapi.openapi.models.Contact.email
-    - fastapi.openapi.models.Contact.name
-    - fastapi.openapi.models.Contact.url
     - fastapi.openapi.models.Discriminator
-    - fastapi.openapi.models.Discriminator.mapping
-    - fastapi.openapi.models.Discriminator.propertyName
     - fastapi.openapi.models.Encoding
-    - fastapi.openapi.models.Encoding.allowReserved
-    - fastapi.openapi.models.Encoding.contentType
-    - fastapi.openapi.models.Encoding.explode
-    - fastapi.openapi.models.Encoding.headers
-    - fastapi.openapi.models.Encoding.style
     - fastapi.openapi.models.Example
-    - fastapi.openapi.models.Example.__pydantic_config__
-    - fastapi.openapi.models.Example.description
-    - fastapi.openapi.models.Example.externalValue
-    - fastapi.openapi.models.Example.summary
-    - fastapi.openapi.models.Example.value
     - fastapi.openapi.models.ExternalDocumentation
-    - fastapi.openapi.models.ExternalDocumentation.description
-    - fastapi.openapi.models.ExternalDocumentation.url
     - fastapi.openapi.models.HTTPBase
-    - fastapi.openapi.models.HTTPBase.scheme
-    - fastapi.openapi.models.HTTPBase.type_
     - fastapi.openapi.models.HTTPBearer
-    - fastapi.openapi.models.HTTPBearer.bearerFormat
-    - fastapi.openapi.models.HTTPBearer.scheme
     - fastapi.openapi.models.Header
     - fastapi.openapi.models.Info
-    - fastapi.openapi.models.Info.contact
-    - fastapi.openapi.models.Info.description
-    - fastapi.openapi.models.Info.license
-    - fastapi.openapi.models.Info.summary
-    - fastapi.openapi.models.Info.termsOfService
-    - fastapi.openapi.models.Info.title
-    - fastapi.openapi.models.Info.version
     - fastapi.openapi.models.License
-    - fastapi.openapi.models.License.identifier
-    - fastapi.openapi.models.License.name
-    - fastapi.openapi.models.License.url
     - fastapi.openapi.models.Link
-    - fastapi.openapi.models.Link.description
-    - fastapi.openapi.models.Link.operationId
-    - fastapi.openapi.models.Link.operationRef
-    - fastapi.openapi.models.Link.parameters
-    - fastapi.openapi.models.Link.requestBody
-    - fastapi.openapi.models.Link.server
     - fastapi.openapi.models.MediaType
-    - fastapi.openapi.models.MediaType.encoding
-    - fastapi.openapi.models.MediaType.example
-    - fastapi.openapi.models.MediaType.examples
-    - fastapi.openapi.models.MediaType.schema_
     - fastapi.openapi.models.OAuth2
-    - fastapi.openapi.models.OAuth2.flows
-    - fastapi.openapi.models.OAuth2.type_
     - fastapi.openapi.models.OAuthFlow
-    - fastapi.openapi.models.OAuthFlow.refreshUrl
-    - fastapi.openapi.models.OAuthFlow.scopes
     - fastapi.openapi.models.OAuthFlowAuthorizationCode
-    - fastapi.openapi.models.OAuthFlowAuthorizationCode.authorizationUrl
-    - fastapi.openapi.models.OAuthFlowAuthorizationCode.tokenUrl
     - fastapi.openapi.models.OAuthFlowClientCredentials
-    - fastapi.openapi.models.OAuthFlowClientCredentials.tokenUrl
     - fastapi.openapi.models.OAuthFlowImplicit
-    - fastapi.openapi.models.OAuthFlowImplicit.authorizationUrl
     - fastapi.openapi.models.OAuthFlowPassword
-    - fastapi.openapi.models.OAuthFlowPassword.tokenUrl
     - fastapi.openapi.models.OAuthFlows
-    - fastapi.openapi.models.OAuthFlows.authorizationCode
-    - fastapi.openapi.models.OAuthFlows.clientCredentials
-    - fastapi.openapi.models.OAuthFlows.implicit
-    - fastapi.openapi.models.OAuthFlows.password
     - fastapi.openapi.models.OpenAPI
-    - fastapi.openapi.models.OpenAPI.components
-    - fastapi.openapi.models.OpenAPI.externalDocs
-    - fastapi.openapi.models.OpenAPI.info
-    - fastapi.openapi.models.OpenAPI.jsonSchemaDialect
-    - fastapi.openapi.models.OpenAPI.openapi
-    - fastapi.openapi.models.OpenAPI.paths
-    - fastapi.openapi.models.OpenAPI.security
-    - fastapi.openapi.models.OpenAPI.servers
-    - fastapi.openapi.models.OpenAPI.tags
-    - fastapi.openapi.models.OpenAPI.webhooks
     - fastapi.openapi.models.OpenIdConnect
-    - fastapi.openapi.models.OpenIdConnect.openIdConnectUrl
-    - fastapi.openapi.models.OpenIdConnect.type_
     - fastapi.openapi.models.Operation
-    - fastapi.openapi.models.Operation.callbacks
-    - fastapi.openapi.models.Operation.deprecated
-    - fastapi.openapi.models.Operation.description
-    - fastapi.openapi.models.Operation.externalDocs
-    - fastapi.openapi.models.Operation.operationId
-    - fastapi.openapi.models.Operation.parameters
-    - fastapi.openapi.models.Operation.requestBody
-    - fastapi.openapi.models.Operation.responses
-    - fastapi.openapi.models.Operation.security
-    - fastapi.openapi.models.Operation.servers
-    - fastapi.openapi.models.Operation.summary
-    - fastapi.openapi.models.Operation.tags
     - fastapi.openapi.models.Parameter
-    - fastapi.openapi.models.Parameter.in_
-    - fastapi.openapi.models.Parameter.name
     - fastapi.openapi.models.ParameterBase
-    - fastapi.openapi.models.ParameterBase.allowReserved
-    - fastapi.openapi.models.ParameterBase.content
-    - fastapi.openapi.models.ParameterBase.deprecated
-    - fastapi.openapi.models.ParameterBase.description
-    - fastapi.openapi.models.ParameterBase.example
-    - fastapi.openapi.models.ParameterBase.examples
-    - fastapi.openapi.models.ParameterBase.explode
-    - fastapi.openapi.models.ParameterBase.required
-    - fastapi.openapi.models.ParameterBase.schema_
-    - fastapi.openapi.models.ParameterBase.style
     - fastapi.openapi.models.ParameterInType
-    - fastapi.openapi.models.ParameterInType.cookie
-    - fastapi.openapi.models.ParameterInType.header
-    - fastapi.openapi.models.ParameterInType.path
-    - fastapi.openapi.models.ParameterInType.query
     - fastapi.openapi.models.PathItem
-    - fastapi.openapi.models.PathItem.delete
-    - fastapi.openapi.models.PathItem.description
-    - fastapi.openapi.models.PathItem.get
-    - fastapi.openapi.models.PathItem.head
-    - fastapi.openapi.models.PathItem.options
-    - fastapi.openapi.models.PathItem.parameters
-    - fastapi.openapi.models.PathItem.patch
-    - fastapi.openapi.models.PathItem.post
-    - fastapi.openapi.models.PathItem.put
-    - fastapi.openapi.models.PathItem.ref
-    - fastapi.openapi.models.PathItem.servers
-    - fastapi.openapi.models.PathItem.summary
-    - fastapi.openapi.models.PathItem.trace
     - fastapi.openapi.models.Reference
-    - fastapi.openapi.models.Reference.ref
     - fastapi.openapi.models.RequestBody
-    - fastapi.openapi.models.RequestBody.content
-    - fastapi.openapi.models.RequestBody.description
-    - fastapi.openapi.models.RequestBody.required
     - fastapi.openapi.models.Response
-    - fastapi.openapi.models.Response.content
-    - fastapi.openapi.models.Response.description
-    - fastapi.openapi.models.Response.headers
-    - fastapi.openapi.models.Response.links
     - fastapi.openapi.models.Schema
-    - fastapi.openapi.models.Schema.additionalProperties
-    - fastapi.openapi.models.Schema.allOf
-    - fastapi.openapi.models.Schema.anchor
-    - fastapi.openapi.models.Schema.anyOf
-    - fastapi.openapi.models.Schema.comment
-    - fastapi.openapi.models.Schema.const
-    - fastapi.openapi.models.Schema.contains
-    - fastapi.openapi.models.Schema.contentEncoding
-    - fastapi.openapi.models.Schema.contentMediaType
-    - fastapi.openapi.models.Schema.contentSchema
-    - fastapi.openapi.models.Schema.default
-    - fastapi.openapi.models.Schema.defs
-    - fastapi.openapi.models.Schema.dependentRequired
-    - fastapi.openapi.models.Schema.dependentSchemas
-    - fastapi.openapi.models.Schema.deprecated
-    - fastapi.openapi.models.Schema.description
-    - fastapi.openapi.models.Schema.discriminator
-    - fastapi.openapi.models.Schema.dynamicAnchor
-    - fastapi.openapi.models.Schema.dynamicRef
-    - fastapi.openapi.models.Schema.else_
-    - fastapi.openapi.models.Schema.enum
-    - fastapi.openapi.models.Schema.example
-    - fastapi.openapi.models.Schema.examples
-    - fastapi.openapi.models.Schema.exclusiveMaximum
-    - fastapi.openapi.models.Schema.exclusiveMinimum
-    - fastapi.openapi.models.Schema.externalDocs
-    - fastapi.openapi.models.Schema.format
-    - fastapi.openapi.models.Schema.id
-    - fastapi.openapi.models.Schema.if_
-    - fastapi.openapi.models.Schema.items
-    - fastapi.openapi.models.Schema.maxContains
-    - fastapi.openapi.models.Schema.maxItems
-    - fastapi.openapi.models.Schema.maxLength
-    - fastapi.openapi.models.Schema.maxProperties
-    - fastapi.openapi.models.Schema.maximum
-    - fastapi.openapi.models.Schema.minContains
-    - fastapi.openapi.models.Schema.minItems
-    - fastapi.openapi.models.Schema.minLength
-    - fastapi.openapi.models.Schema.minProperties
-    - fastapi.openapi.models.Schema.minimum
-    - fastapi.openapi.models.Schema.multipleOf
-    - fastapi.openapi.models.Schema.not_
-    - fastapi.openapi.models.Schema.oneOf
-    - fastapi.openapi.models.Schema.pattern
-    - fastapi.openapi.models.Schema.patternProperties
-    - fastapi.openapi.models.Schema.prefixItems
-    - fastapi.openapi.models.Schema.properties
-    - fastapi.openapi.models.Schema.propertyNames
-    - fastapi.openapi.models.Schema.readOnly
-    - fastapi.openapi.models.Schema.ref
-    - fastapi.openapi.models.Schema.required
-    - fastapi.openapi.models.Schema.schema_
-    - fastapi.openapi.models.Schema.then
-    - fastapi.openapi.models.Schema.title
-    - fastapi.openapi.models.Schema.type
-    - fastapi.openapi.models.Schema.unevaluatedItems
-    - fastapi.openapi.models.Schema.unevaluatedProperties
-    - fastapi.openapi.models.Schema.uniqueItems
-    - fastapi.openapi.models.Schema.vocabulary
-    - fastapi.openapi.models.Schema.writeOnly
-    - fastapi.openapi.models.Schema.xml
     - fastapi.openapi.models.SchemaOrBool
     - fastapi.openapi.models.SchemaType
     - fastapi.openapi.models.SecurityBase
-    - fastapi.openapi.models.SecurityBase.description
-    - fastapi.openapi.models.SecurityBase.type_
     - fastapi.openapi.models.SecurityScheme
     - fastapi.openapi.models.SecuritySchemeType
-    - fastapi.openapi.models.SecuritySchemeType.apiKey
-    - fastapi.openapi.models.SecuritySchemeType.http
-    - fastapi.openapi.models.SecuritySchemeType.oauth2
-    - fastapi.openapi.models.SecuritySchemeType.openIdConnect
     - fastapi.openapi.models.Server
-    - fastapi.openapi.models.Server.description
-    - fastapi.openapi.models.Server.url
-    - fastapi.openapi.models.Server.variables
     - fastapi.openapi.models.ServerVariable
-    - fastapi.openapi.models.ServerVariable.default
-    - fastapi.openapi.models.ServerVariable.description
-    - fastapi.openapi.models.ServerVariable.enum
     - fastapi.openapi.models.Tag
-    - fastapi.openapi.models.Tag.description
-    - fastapi.openapi.models.Tag.externalDocs
-    - fastapi.openapi.models.Tag.name
     - fastapi.openapi.models.XML
-    - fastapi.openapi.models.XML.attribute
-    - fastapi.openapi.models.XML.name
-    - fastapi.openapi.models.XML.namespace
-    - fastapi.openapi.models.XML.prefix
-    - fastapi.openapi.models.XML.wrapped
     runtime_reflections:
       core:
         module_ref: /modules/27
@@ -65379,6 +65097,298 @@ api_surface_contract:
       - fastapi.openapi.models.ServerVariable
       - fastapi.openapi.models.Tag
       - fastapi.openapi.models.XML
+  - id: fastapi.requests
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/32
+    source_target_ref: /modules/31
+    source_candidate_refs:
+    - /api_candidates/1026
+    - /api_candidates/1027
+    source_candidate_ids:
+    - fastapi.requests.HTTPConnection
+    - fastapi.requests.Request
+    runtime_reflections:
+      core:
+        module_ref: /modules/31
+        status: imported
+      standard:
+        module_ref: /modules/31
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/httpconnection.md
+      source_line: 8
+      coverage_matrix_ref: /coverage_matrix/542
+      mapping_status: candidate
+      fixture_id: fastapi.docs.reference-httpconnection
+      fixture_design_ref: /fixture_designs/378
+      observation_selectors: *id027
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.requests
+      status: full-contract-not-established
+  - id: fastapi.responses
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/34
+    source_target_ref: /modules/32
+    source_candidate_refs:
+    - /api_candidates/1031
+    - /api_candidates/1032
+    - /api_candidates/1033
+    - /api_candidates/1034
+    - /api_candidates/1036
+    - /api_candidates/1038
+    - /api_candidates/1039
+    - /api_candidates/1040
+    - /api_candidates/1041
+    source_candidate_ids:
+    - fastapi.responses.FileResponse
+    - fastapi.responses.HTMLResponse
+    - fastapi.responses.JSONResponse
+    - fastapi.responses.ORJSONResponse
+    - fastapi.responses.PlainTextResponse
+    - fastapi.responses.RedirectResponse
+    - fastapi.responses.Response
+    - fastapi.responses.StreamingResponse
+    - fastapi.responses.UJSONResponse
+    runtime_reflections:
+      core:
+        module_ref: /modules/32
+        status: imported
+      standard:
+        module_ref: /modules/32
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/responses.md
+      source_line: 10
+      coverage_matrix_ref: /coverage_matrix/551
+      mapping_status: candidate
+      fixture_id: fastapi.docs.reference-responses
+      fixture_design_ref: /fixture_designs/384
+      observation_selectors: *id016
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.responses
+      status: full-contract-not-established
+  - id: fastapi.security
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/44
+    source_target_ref: /modules/34
+    source_candidate_refs:
+    - /api_candidates/1459
+    - /api_candidates/1460
+    - /api_candidates/1461
+    - /api_candidates/1462
+    - /api_candidates/1463
+    - /api_candidates/1464
+    - /api_candidates/1465
+    - /api_candidates/1466
+    - /api_candidates/1467
+    - /api_candidates/1468
+    - /api_candidates/1469
+    - /api_candidates/1470
+    - /api_candidates/1471
+    - /api_candidates/1472
+    - /api_candidates/1473
+    source_candidate_ids:
+    - fastapi.security.APIKeyCookie
+    - fastapi.security.APIKeyHeader
+    - fastapi.security.APIKeyQuery
+    - fastapi.security.HTTPAuthorizationCredentials
+    - fastapi.security.HTTPBasic
+    - fastapi.security.HTTPBasicCredentials
+    - fastapi.security.HTTPBearer
+    - fastapi.security.HTTPDigest
+    - fastapi.security.OAuth2
+    - fastapi.security.OAuth2AuthorizationCodeBearer
+    - fastapi.security.OAuth2PasswordBearer
+    - fastapi.security.OAuth2PasswordRequestForm
+    - fastapi.security.OAuth2PasswordRequestFormStrict
+    - fastapi.security.OpenIdConnect
+    - fastapi.security.SecurityScopes
+    runtime_reflections:
+      core:
+        module_ref: /modules/34
+        status: imported
+      standard:
+        module_ref: /modules/34
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/security/index.md
+      source_line: 12
+      coverage_matrix_ref: /coverage_matrix/552
+      mapping_status: candidate
+      fixture_id: fastapi.docs.reference-security-index
+      fixture_design_ref: /fixture_designs/385
+      observation_selectors: *id020
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.security
+      status: full-contract-not-established
+  - id: fastapi.sse
+    target_kind: source_module
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
+    source_documented_target_ref: /documented_targets/60
+    source_target_ref: /modules/41
+    source_candidate_refs:
+    - /api_candidates/1579
+    - /api_candidates/1583
+    source_candidate_ids:
+    - fastapi.sse.EventSourceResponse
+    - fastapi.sse.ServerSentEvent
+    runtime_reflections:
+      core:
+        module_ref: /modules/41
+        status: imported
+      standard:
+        module_ref: /modules/41
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/sse.md
+      source_line: 12
+      coverage_matrix_ref: /coverage_matrix/553
+      mapping_status: candidate
+      fixture_id: fastapi.docs.reference-sse
+      fixture_design_ref: /fixture_designs/386
+      observation_selectors: *id023
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.sse
+      status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.sse
+      workflow_id: sse-module-identity
+      input_path: tests/fixtures/inputs/parity/sse-module-identity.json
+      input_sha256: 298850f41ab0dff61ae3356380d7412d6def3be1d7552fe5a993c28f02d05da6
+      recipe_path: tests/fixtures/input-recipes/parity/sse-module-identity.yaml
+      recipe_sha256: 4ae6c7e679877f2232d48f6c4d861fdf7969badc6e60b35ca9b1a2613d24b9c7
+      workload_path: tests/fixtures/workloads/sse_module_identity.py
+      workload_sha256: ca5b719efa7b7a65cc3d9d71c1c4b2abcbddd1d53fe4cece232bcddf669c1a07
+      case_id: fastapi.sse.module-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id028
+      symbol_ids:
+      - fastapi.sse.EventSourceResponse
+      - fastapi.sse.ServerSentEvent
+  - id: fastapi.staticfiles
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/63
+    source_target_ref: /modules/42
+    source_candidate_refs:
+    - /api_candidates/1600
+    source_candidate_ids:
+    - fastapi.staticfiles.StaticFiles
+    runtime_reflections:
+      core:
+        module_ref: /modules/42
+        status: imported
+      standard:
+        module_ref: /modules/42
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/staticfiles.md
+      source_line: 10
+      coverage_matrix_ref: /coverage_matrix/554
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id029
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.staticfiles
+      status: full-contract-not-established
+  - id: fastapi.templating
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/66
+    source_target_ref: /modules/43
+    source_candidate_refs:
+    - /api_candidates/1602
+    source_candidate_ids:
+    - fastapi.templating.Jinja2Templates
+    runtime_reflections:
+      core:
+        module_ref: /modules/43
+        status: optional_feature_unavailable
+      standard:
+        module_ref: /modules/43
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/templating.md
+      source_line: 10
+      coverage_matrix_ref: /coverage_matrix/556
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id030
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.templating
+      status: full-contract-not-established
+  - id: fastapi.testclient
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/68
+    source_target_ref: /modules/44
+    source_candidate_refs:
+    - /api_candidates/1603
+    source_candidate_ids:
+    - fastapi.testclient.TestClient
+    runtime_reflections:
+      core:
+        module_ref: /modules/44
+        status: optional_feature_unavailable
+      standard:
+        module_ref: /modules/44
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/testclient.md
+      source_line: 10
+      coverage_matrix_ref: /coverage_matrix/557
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id031
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.testclient
+      status: full-contract-not-established
+  - id: fastapi.websockets
+    target_kind: source_module
+    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    source_documented_target_ref: /documented_targets/70
+    source_target_ref: /modules/47
+    source_candidate_refs:
+    - /api_candidates/1640
+    - /api_candidates/1641
+    - /api_candidates/1642
+    source_candidate_ids:
+    - fastapi.websockets.WebSocket
+    - fastapi.websockets.WebSocketDisconnect
+    - fastapi.websockets.WebSocketState
+    runtime_reflections:
+      core:
+        module_ref: /modules/47
+        status: imported
+      standard:
+        module_ref: /modules/47
+        status: imported
+    documentation_refs:
+    - source_path: docs/en/docs/reference/websockets.md
+      source_line: 56
+      coverage_matrix_ref: /coverage_matrix/559
+      mapping_status: candidate
+      fixture_id: fastapi.docs.reference-websockets
+      fixture_design_ref: /fixture_designs/389
+      observation_selectors: *id004
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.websockets
+      status: full-contract-not-established
   inherited_operations:
   - id: fastapi.applications.FastAPI.add_route
     kind: inherited_method
@@ -65432,7 +65442,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id027
+    canonical_operation_ref: &id032
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -65468,7 +65478,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id027
+        canonical_operation_ref: *id032
       status: partial-contract
       known_gaps:
       - Current parity covers basic registration and dispatch plus a method miss; argument and signature
@@ -65519,7 +65529,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id028
+    signature_source_ref: &id033
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -65531,7 +65541,7 @@ api_surface_contract:
       end_line: 102
       signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id029
+    sibling_contract_gap: &id034
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.host
       reason: The pinned Starlette-RS review classifies Starlette.host as supported, but the API source
@@ -65559,8 +65569,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id028
-        sibling_contract_gap_ref: *id029
+        signature_source_ref: *id033
+        sibling_contract_gap_ref: *id034
       status: partial-contract
       known_gaps:
       - Current parity covers one named subdomain dispatch; other host patterns, named host-route reversal,
@@ -65656,7 +65666,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id030
+    canonical_operation_ref: &id035
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -65692,7 +65702,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id030
+        canonical_operation_ref: *id035
       status: partial-contract
       known_gaps:
       - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing
@@ -65755,7 +65765,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id031
+    canonical_operation_ref: &id036
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -65791,7 +65801,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id031
+        canonical_operation_ref: *id036
       status: partial-contract
       known_gaps:
       - The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader
@@ -65844,7 +65854,7 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
-    attribute_source_ref: &id032
+    attribute_source_ref: &id037
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -65857,7 +65867,7 @@ api_surface_contract:
       end_line: 586
       assignment: self.routes = [] if routes is None else list(routes)
     attribute_contract_state: source-assignment-linked; sibling-accessor-missing
-    sibling_contract_gap: &id033
+    sibling_contract_gap: &id038
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.routing.Router.routes
       candidate_state: no_exact_row
@@ -65893,8 +65903,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-attribute-assignment-with-sibling-accessor-gap
-        attribute_source_ref: *id032
-        sibling_contract_gap_ref: *id033
+        attribute_source_ref: *id037
+        sibling_contract_gap_ref: *id038
       status: partial-contract
       known_gaps:
       - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation
@@ -65965,7 +65975,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id034
+    canonical_operation_ref: &id039
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66001,7 +66011,7 @@ api_surface_contract:
       implementation_owner: starlette-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id034
+        canonical_operation_ref: *id039
       status: full-contract-not-established
   - id: fastapi.applications.FastAPI.add_exception_handler
     kind: inherited_method
@@ -66131,7 +66141,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id035
+    canonical_operation_ref: &id040
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66167,7 +66177,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id035
+        canonical_operation_ref: *id040
       status: partial-contract
       known_gaps:
       - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
@@ -66233,7 +66243,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id036
+    signature_source_ref: &id041
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -66245,7 +66255,7 @@ api_surface_contract:
       end_line: 99
       signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id037
+    sibling_contract_gap: &id042
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.mount
       reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
@@ -66274,8 +66284,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id036
-        sibling_contract_gap_ref: *id037
+        signature_source_ref: *id041
+        sibling_contract_gap_ref: *id042
       status: partial-contract
       known_gaps:
       - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
@@ -66324,7 +66334,7 @@ api_surface_contract:
     - openapi-docs
     observation_selectors:
     - http.body.bytes
-    canonical_operation_ref: &id038
+    canonical_operation_ref: &id043
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66360,7 +66370,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id038
+        canonical_operation_ref: *id043
       status: partial-contract
       known_gaps:
       - The projection includes generic route objects supplied directly to FastAPI, but does not establish

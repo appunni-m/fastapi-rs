@@ -1,0 +1,33 @@
+schema: fastapi-rs/python-api-workflow@7
+workload:
+  file: tests/fixtures/workloads/sse_module_identity.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.sse.module-identity
+  probes:
+  - probe_id: module-identity
+    public_module:
+      module: fastapi.sse
+      bindings:
+      - EventSourceResponse
+      - ServerSentEvent
+    observations:
+    - kind: python_import_path
+      selector: import_path
+      comparison: exact
+    - kind: python_object_identity
+      selector: object_identity
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/sse.md
+    kind: upstream_documentation
+    sha256: 9181734adce713f41d7bd3f6079f0c60842e0200b5ffc3ffd6cc03f99657eba0
+  - path: fastapi/sse.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.sse.EventSourceResponse
+    sha256: dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd
+  - path: fastapi/sse.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.sse.ServerSentEvent
+    sha256: dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd

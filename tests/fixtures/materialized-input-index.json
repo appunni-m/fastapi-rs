@@ -33170,6 +33170,64 @@
       ]
     },
     {
+      "id": "sse-module-identity",
+      "input_path": "tests/fixtures/inputs/parity/sse-module-identity.json",
+      "input_sha256": "298850f41ab0dff61ae3356380d7412d6def3be1d7552fe5a993c28f02d05da6",
+      "recipe_path": "tests/fixtures/input-recipes/parity/sse-module-identity.yaml",
+      "recipe_sha256": "4ae6c7e679877f2232d48f6c4d861fdf7969badc6e60b35ca9b1a2613d24b9c7",
+      "case_ids": [
+        "fastapi.sse.module-identity"
+      ],
+      "workload_path": "tests/fixtures/workloads/sse_module_identity.py",
+      "workload_sha256": "ca5b719efa7b7a65cc3d9d71c1c4b2abcbddd1d53fe4cece232bcddf669c1a07",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.sse.module-identity",
+          "symbol_id": "fastapi.sse.EventSourceResponse",
+          "path": "fastapi/sse.py",
+          "sha256": "dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd"
+        },
+        {
+          "case_id": "fastapi.sse.module-identity",
+          "symbol_id": "fastapi.sse.ServerSentEvent",
+          "path": "fastapi/sse.py",
+          "sha256": "dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.sse.module-identity",
+          "probe_id": "module-identity",
+          "symbol_id": "fastapi.sse.EventSourceResponse",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.import_path",
+            "python.object_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.sse.module-identity",
+          "probe_id": "module-identity",
+          "symbol_id": "fastapi.sse.ServerSentEvent",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.import_path",
+            "python.object_identity"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.sse.module-identity",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.sse.EventSourceResponse",
+            "api:fastapi.sse.ServerSentEvent"
+          ]
+        }
+      ]
+    },
+    {
       "id": "standalone-apiroute-asgi",
       "input_path": "tests/fixtures/inputs/parity/standalone-apiroute-asgi.json",
       "input_sha256": "dbe5227e06d6d502727ada0da275eaf455eba25660cd375b0a2dcd93fd049ba7",

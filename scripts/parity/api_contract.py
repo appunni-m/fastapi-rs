@@ -127,6 +127,9 @@ def _documented_module_targets(
         for source_ref in source_refs:
             candidate_modules.add(_module_id_for_inventory_ref(source_ref, candidate, inventory))
         for module_id in candidate_modules:
+            prefix = f"{module_id}."
+            if not candidate_id.startswith(prefix) or "." in candidate_id[len(prefix) :]:
+                continue
             candidate_refs, candidate_ids = candidates_by_module.setdefault(module_id, ([], []))
             if candidate_id not in candidate_ids:
                 candidate_refs.append(candidate_ref)
