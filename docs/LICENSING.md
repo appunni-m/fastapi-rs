@@ -201,11 +201,14 @@ focused archive validator accepted all 201 members, verified the vendored
 Starlette-RS source hash against `metadata.yaml`, and found no machine-local
 paths, build outputs, or profiling files. A wheel build from an extracted copy
 passed the vendored-source identity check, built a development-profile abi3
-wheel, and passed the wheel content and license validator. The separate
-release-profile build stopped during LTO with `No space left on device`. This
-validates the source archive and an extracted-source wheel build; a clean
-release-profile build and Cargo archive verification remain outstanding before
-publication.
+wheel at
+`target/release-sdist-validation-wheels/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
+(SHA-256
+`6fe6a9a19cc6ad4e71ff80a4e19f7b012ce3c726635610ea940e76ef147589a5`), and
+passed the wheel content and license validator. The separate release-profile
+build stopped during LTO with `No space left on device`. This validates the
+source archive and an extracted-source wheel build; a clean release-profile
+build and Cargo archive verification remain outstanding before publication.
 
 The inspected arm64 wheel
 `target/wheels-x0mz-20261012/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
