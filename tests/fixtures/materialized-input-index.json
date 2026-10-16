@@ -25174,16 +25174,18 @@
     {
       "id": "request-optional-list-aliases-20261016",
       "input_path": "tests/fixtures/inputs/parity/request-optional-list-aliases-20261016.json",
-      "input_sha256": "c768de79436afa0e5f61b05a3aaa7329f4fd0410b27701a57cd6c1d3d39fece1",
+      "input_sha256": "49093dc42d3ac85c4fa7ed83452eee1c2074bb15dd6e80b1f6000613ffac1bd4",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml",
-      "recipe_sha256": "6546c104ae2e74afb11bd2ec2aa5b80eb62b6178d62f90988673135f47441e9b",
+      "recipe_sha256": "6ad0756523be9d754bad0d6730336e444a84a80e35f2ab4ca68f436d0651b14e",
       "case_ids": [
         "fastapi.request-optional-list-aliases.form.alias-selection",
         "fastapi.request-optional-list-aliases.form.validation-alias-selection",
         "fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection",
         "fastapi.request-optional-list-aliases.file.alias-selection",
         "fastapi.request-optional-list-aliases.file.validation-alias-selection",
-        "fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection"
+        "fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection",
+        "fastapi.request-optional-list-aliases.form.openapi-schema",
+        "fastapi.request-optional-list-aliases.file.openapi-schema"
       ],
       "workload_path": "tests/fixtures/workloads/request_optional_list_aliases_20261016.py",
       "workload_sha256": "1b5d20ffef754e93e55229e56795ad04a71646e23ae17b0a5f62c5b9674230b0",
@@ -25226,6 +25228,20 @@
         },
         {
           "case_id": "fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_file/test_optional_list.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-optional-list-aliases.form.openapi-schema",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_form/test_optional_list.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-optional-list-aliases.file.openapi-schema",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_request_params/test_file/test_optional_list.py"
@@ -57636,15 +57652,19 @@
       "fixture_id": "fastapi.test.test-request-params-test-file-test-optional-list",
       "workflow_id": "request-optional-list-aliases-20261016",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection",
         "fastapi.request-optional-list-aliases.file.alias-selection",
+        "fastapi.request-optional-list-aliases.file.openapi-schema",
         "fastapi.request-optional-list-aliases.file.validation-alias-selection"
       ],
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
-        "http.status"
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {
@@ -57652,15 +57672,19 @@
       "fixture_id": "fastapi.test.test-request-params-test-form-test-optional-list",
       "workflow_id": "request-optional-list-aliases-20261016",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection",
         "fastapi.request-optional-list-aliases.form.alias-selection",
+        "fastapi.request-optional-list-aliases.form.openapi-schema",
         "fastapi.request-optional-list-aliases.form.validation-alias-selection"
       ],
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
-        "http.status"
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

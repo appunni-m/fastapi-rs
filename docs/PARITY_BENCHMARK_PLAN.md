@@ -53,17 +53,22 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The current first-slice valid-request baseline is
-[`docs/benchmarks/2026-10-16-bccc10c.md`](benchmarks/2026-10-16-bccc10c.md).
+[`docs/benchmarks/2026-10-16-a1a619e.md`](benchmarks/2026-10-16-a1a619e.md).
 Its ignored receipt
-`benchmark-results/20261016T131143Z-5a064911-fe6c-4f4a-865e-488d8be386b3.json`
+`benchmark-results/20261016T163006Z-59a8e709-a5d1-4697-94e0-04486d305938.json`
 (SHA-256
-`f939904eb4e831463c42333b29003f003c9134a61b167158f2c1ec17f3c3a376`)
-binds FastAPI-RS `bccc10c` and the pinned Starlette-RS
+`fe2fb6b02d6a1caa2084887e384410367587b5105af87570d6b3c6e97f123226`)
+binds FastAPI-RS `a1a619e` and pinned Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338`; its live 13-case parity gate
 passed 13/13. On this one direct-ASGI workload, FastAPI-RS median latency was
-1.203x FastAPI and p95 latency was 1.385x; sequential request-loop throughput
-was 4,516 requests/second versus 5,568. These results describe this valid
+1.140x FastAPI and p95 latency was 1.215x; sequential request-loop throughput
+was 5,919 requests/second versus 6,783. These results describe this valid
 request only. The Starlette control is contextual and is not subtracted.
+
+The preceding one-workload baseline
+[`docs/benchmarks/2026-10-16-bccc10c.md`](benchmarks/2026-10-16-bccc10c.md)
+binds FastAPI-RS `bccc10c` and is historical. Its receipt is retained in the
+ignored benchmark output directory.
 
 The previous one-workload receipt
 `benchmark-results/20261016T111732Z-afec247b-f026-4500-9901-11878a57e57d.json`

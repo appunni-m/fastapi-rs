@@ -287193,8 +287193,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -287207,8 +287210,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -287219,7 +287228,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287262,23 +287271,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287289,7 +287315,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287332,23 +287358,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287359,7 +287402,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287397,8 +287440,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -287411,8 +287457,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -287423,7 +287475,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287466,23 +287518,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287493,7 +287562,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287536,23 +287605,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287563,7 +287649,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287606,23 +287692,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287633,7 +287736,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287675,8 +287778,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -287689,8 +287795,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -287701,7 +287813,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287748,23 +287860,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287775,7 +287904,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287822,23 +287951,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287849,7 +287995,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287896,23 +288042,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -287923,7 +288086,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -287965,8 +288128,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -287979,8 +288145,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -287991,7 +288163,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -288038,23 +288210,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -288065,7 +288254,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -288112,23 +288301,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -288139,7 +288345,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -288186,23 +288392,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -288213,7 +288436,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -288260,23 +288483,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -288287,7 +288527,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         }
       ],
       "feature_ids": [
@@ -288315,13 +288555,17 @@
           "case_ids": [
             "fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection",
             "fastapi.request-optional-list-aliases.file.alias-selection",
+            "fastapi.request-optional-list-aliases.file.openapi-schema",
             "fastapi.request-optional-list-aliases.file.validation-alias-selection"
           ],
-          "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml",
           "workflow_id": "request-optional-list-aliases-20261016"
@@ -288394,7 +288638,7 @@
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
         "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
       ],
-      "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+      "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.file.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-selection (actions: bytes-python-name, bytes-declared-alias, uploadfile-python-name, uploadfile-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.validation-alias-selection (actions: bytes-python-name, bytes-validation-alias, uploadfile-python-name, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection (actions: bytes-python-name, bytes-declared-alias, bytes-validation-alias, uploadfile-python-name, uploadfile-declared-alias, uploadfile-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.file.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
     },
     {
       "case_designs": [
@@ -291734,8 +291978,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -291748,8 +291995,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -291760,7 +292013,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -291798,23 +292051,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -291825,7 +292095,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -291863,23 +292133,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -291890,7 +292177,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -291928,8 +292215,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -291942,8 +292232,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -291954,7 +292250,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -291992,23 +292288,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292019,7 +292332,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292057,23 +292370,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292084,7 +292414,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292122,23 +292452,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292149,7 +292496,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292191,8 +292538,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -292205,8 +292555,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -292217,7 +292573,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292259,23 +292615,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292286,7 +292659,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292328,23 +292701,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292355,7 +292745,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292397,23 +292787,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292424,7 +292831,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292466,8 +292873,11 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
@@ -292480,8 +292890,14 @@
             },
             {
               "feature_id": "openapi-docs",
+              "schema_extension_required": [
+                "openapi.paths"
+              ],
               "selectors": [
-                "http.body.bytes"
+                "docs.response.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
               ]
             }
           ],
@@ -292492,7 +292908,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292534,23 +292950,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292561,7 +292994,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292603,23 +293036,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292630,7 +293080,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292672,23 +293122,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292699,7 +293166,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         },
         {
           "feature_evidence": [
@@ -292741,23 +293208,40 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "reviewed_mapping": null,
           "selector_evidence": [
             {
               "feature_id": "request-validation",
+              "schema_extension_required": [
+                "openapi.document"
+              ],
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.document"
               ]
             },
             {
               "feature_id": "status-codes",
               "selectors": [
                 "http.body.bytes",
-                "http.status"
+                "http.status",
+                "openapi.paths"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "docs.response.status"
+              ],
+              "selectors": [
+                "docs.response.status"
               ]
             }
           ],
@@ -292768,7 +293252,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
         }
       ],
       "feature_ids": [
@@ -292796,13 +293280,17 @@
           "case_ids": [
             "fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection",
             "fastapi.request-optional-list-aliases.form.alias-selection",
+            "fastapi.request-optional-list-aliases.form.openapi-schema",
             "fastapi.request-optional-list-aliases.form.validation-alias-selection"
           ],
-          "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "docs.response.status",
             "http.body.bytes",
-            "http.status"
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml",
           "workflow_id": "request-optional-list-aliases-20261016"
@@ -292875,7 +293363,7 @@
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
         "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
       ],
-      "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+      "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-missing (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-multipart.yaml::fastapi.request-multipart.form.optional-list-repeated (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-selection (actions: direct-python-name, direct-declared-alias, model-python-name, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.validation-alias-selection (actions: direct-python-name, direct-validation-alias, model-python-name, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection (actions: direct-python-name, direct-declared-alias, direct-validation-alias, model-python-name, model-declared-alias, model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-optional-list-aliases-20261016.yaml::fastapi.request-optional-list-aliases.form.openapi-schema (actions: inspect-openapi; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results."
     },
     {
       "case_designs": [

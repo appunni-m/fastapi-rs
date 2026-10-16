@@ -847,3 +847,85 @@ cases:
   source_evidence:
   - path: tests/test_request_params/test_file/test_optional_list.py
     kind: upstream_test
+- case_id: fastapi.request-optional-list-aliases.form.openapi-schema
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1optional-list-alias/post/requestBody
+      - /paths/~1model-optional-list-alias/post/requestBody
+      - /paths/~1optional-list-validation-alias/post/requestBody
+      - /paths/~1model-optional-list-validation-alias/post/requestBody
+      - /paths/~1optional-list-alias-and-validation-alias/post/requestBody
+      - /paths/~1model-optional-list-alias-and-validation-alias/post/requestBody
+      - /components/schemas
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_list.py
+    kind: upstream_test
+- case_id: fastapi.request-optional-list-aliases.file.openapi-schema
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1optional-list-bytes-alias/post/requestBody
+      - /paths/~1optional-list-uploadfile-alias/post/requestBody
+      - /paths/~1optional-list-bytes-validation-alias/post/requestBody
+      - /paths/~1optional-list-uploadfile-validation-alias/post/requestBody
+      - /paths/~1optional-list-bytes-alias-and-validation-alias/post/requestBody
+      - /paths/~1optional-list-uploadfile-alias-and-validation-alias/post/requestBody
+      - /components/schemas
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional_list.py
+    kind: upstream_test
