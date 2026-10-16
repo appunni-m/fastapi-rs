@@ -87,14 +87,16 @@ An earlier OpenAPI response-contract checkpoint passed 214 selected normal
 cases and six separate fault contracts; its incremental coverage added 42 Rust
 regions. See the
 [checkpoint report](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
-for that run's identity, scope and remaining schema-order gaps. No benchmark
-receipt currently matches the FastAPI-RS source revision and pinned Starlette-RS
-revision. The latest complete seven-workload suite is historical and binds
-FastAPI-RS `9ba612a5` with Starlette-RS `b4c8a65c`; a newer one-case TestClient
-receipt uses FastAPI-RS `e76c1986` with Starlette-RS `4139a72`. See the
+for that run's identity, scope and remaining schema-order gaps. The current
+first-slice valid-request benchmark binds FastAPI-RS `bccc10c` and pinned
+Starlette-RS `4139a724`; its 13-case parity gate passed before timing. Results
+are limited to that one direct-ASGI request. The latest complete seven-workload
+suite passed all 45 selected parity comparisons on FastAPI-RS `2c3e94d6` with
+pinned Starlette-RS `4139a724`, but is historical for the earlier target
+revision; the TestClient receipt is also historical. See the
 [benchmark evidence freshness note](docs/PARITY_BENCHMARK_PLAN.md#benchmark-evidence-freshness)
-and detailed historical results. Do not treat those results as current
-performance claims or as evidence of full API parity.
+and [current first-slice measurements](docs/benchmarks/2026-10-16-bccc10c.md).
+Neither this measurement nor the older receipts establish full API parity.
 
 Use `make parity-prepare-oracle` for the core environment and
 `make parity-validate` to check source evidence and workflow links. The

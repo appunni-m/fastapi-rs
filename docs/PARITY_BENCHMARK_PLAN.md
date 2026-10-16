@@ -53,26 +53,34 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The current first-slice valid-request baseline is
-[`docs/benchmarks/2026-10-16-6bb19bc.md`](benchmarks/2026-10-16-6bb19bc.md).
-Its ignored result receipt
+[`docs/benchmarks/2026-10-16-bccc10c.md`](benchmarks/2026-10-16-bccc10c.md).
+Its ignored receipt
+`benchmark-results/20261016T131143Z-5a064911-fe6c-4f4a-865e-488d8be386b3.json`
+(SHA-256
+`f939904eb4e831463c42333b29003f003c9134a61b167158f2c1ec17f3c3a376`)
+binds FastAPI-RS `bccc10c` and the pinned Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`; its live 13-case parity gate
+passed 13/13. On this one direct-ASGI workload, FastAPI-RS median latency was
+1.203x FastAPI and p95 latency was 1.385x; sequential request-loop throughput
+was 4,516 requests/second versus 5,568. These results describe this valid
+request only. The Starlette control is contextual and is not subtracted.
+
+The previous one-workload receipt
 `benchmark-results/20261016T111732Z-afec247b-f026-4500-9901-11878a57e57d.json`
 (SHA-256
 `234ef470418a31859f7ce4c9aa69c32da5664143aacdea326ca2662ddfebd572`)
-binds FastAPI-RS `6bb19bc` and Starlette-RS
-`4139a72449bf5751e8902fb1c7175ee7f191d338`; its live 13-case parity gate
-passed 13/13. On this one direct-ASGI workload, FastAPI-RS median latency was
-1.277x FastAPI and p95 latency was 3.689x; sequential request-loop throughput
-was 4,055 requests/second versus 7,054. These results identify a measured gap
-for this case only. The Starlette control is contextual and is not subtracted.
+binds FastAPI-RS `6bb19bc`; it is historical and is superseded by the current
+receipt above.
 
 The latest complete seven-workload suite available in local ignored output is
-`benchmark-results/suite-20261015T111504Z-3ee84a83-4af0-48fe-8160-7eec76f19c4e.json`
+`benchmark-results/suite-20261016T023943Z-4f961fd7-3d5f-45f9-84c0-4d7815a9e522.json`
 (SHA-256
-`aadf1caa67bcd764bc4e4340538dc51415925989f94210c604cb396afb809d46`). It
-completed 7/7 workloads and its recorded parity gates passed 45/45 selected
-comparisons, but it binds FastAPI-RS `9ba612a5` and Starlette-RS `b4c8a65c`,
-so it is historical evidence for earlier target code and a superseded sibling
-revision.
+`e62b11c6604e5c7d76ac3269156d1db72e2da35088906c0bc89f292c1f584909`). It
+completed 7/7 workloads with 45/45 selected parity comparisons passing and
+used the pinned Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`.
+It binds FastAPI-RS `2c3e94d6`, so it is historical evidence for an earlier
+target revision; the current one-workload baseline above does not replace a
+fresh seven-workload suite.
 
 A newer one-workload TestClient receipt,
 `benchmark-results/testclient/7aa89e37-44f6-4b88-878d-0b09e04fb971.json`
