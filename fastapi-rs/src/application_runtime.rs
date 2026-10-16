@@ -13028,6 +13028,24 @@ enum PendingAction {
     BackgroundTasks,
 }
 
+enum HttpRouteFallback {
+    StarletteRoute {
+        route: Py<PyAny>,
+        child_scope: Py<PyAny>,
+    },
+    Response(Py<PyAny>),
+}
+
+struct StarletteRouteMatch {
+    route: Py<PyAny>,
+    child_scope: Py<PyAny>,
+}
+
+struct ConstructorRouteMatches {
+    full: Option<StarletteRouteMatch>,
+    partial: Option<StarletteRouteMatch>,
+}
+
 enum FunctionCloseContinuation {
     ReturnedResponse(Py<PyAny>),
     SendStart(Option<Py<PyAny>>),
@@ -13541,7 +13559,7 @@ impl FastApiCall {
         &self,
         py: Python<'_>,
         scope: &Bound<'_, PyAny>,
-    ) -> PyResult<Option<(Py<PyAny>, Py<PyAny>)>> {
+    ) -> PyResult<ConstructorRouteMatches> {
         let routes = self
             .app
             .bind(py)
@@ -13554,15 +13572,34 @@ impl FastApiCall {
             .import("starlette.routing")?
             .getattr("Match")?
             .getattr("FULL")?;
+        let partial_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("PARTIAL")?;
+        let mut partial_route = None;
 
         for route in routes {
             let match_result = route.bind(py).call_method1("matches", (scope,))?;
-            if match_result.get_item(0)?.is(&full_match) {
-                return Ok(Some((route, match_result.get_item(1)?.unbind())));
+            let route_match = match_result.get_item(0)?;
+            let child_scope = match_result.get_item(1)?.unbind();
+            if route_match.is(&partial_match) && partial_route.is_none() {
+                partial_route = Some(StarletteRouteMatch {
+                    route: route.clone_ref(py),
+                    child_scope: child_scope.clone_ref(py),
+                });
+            }
+            if route_match.is(&full_match) {
+                return Ok(ConstructorRouteMatches {
+                    full: Some(StarletteRouteMatch { route, child_scope }),
+                    partial: partial_route,
+                });
             }
         }
 
-        Ok(None)
+        Ok(ConstructorRouteMatches {
+            full: None,
+            partial: partial_route,
+        })
     }
 
     fn handle_constructor_route(
@@ -13580,7 +13617,26 @@ impl FastApiCall {
         Ok(MachineAction::Await(awaitable.unbind()))
     }
 
-    fn dispatch_mounted_app(&mut self, py: Python<'_>) -> PyResult<Option<MachineAction>> {
+    fn dispatch_http_fallback(
+        &mut self,
+        py: Python<'_>,
+        fallback: HttpRouteFallback,
+    ) -> PyResult<MachineAction> {
+        match fallback {
+            HttpRouteFallback::StarletteRoute { route, child_scope } => {
+                self.handle_constructor_route(py, route, child_scope)
+            }
+            HttpRouteFallback::Response(response) => {
+                self.start_returned_response(py, response.bind(py))
+            }
+        }
+    }
+
+    fn dispatch_mounted_app(
+        &mut self,
+        py: Python<'_>,
+        earlier_fallback: Option<HttpRouteFallback>,
+    ) -> PyResult<Option<MachineAction>> {
         let mounted_routes = self
             .app
             .bind(py)
@@ -13617,6 +13673,10 @@ impl FastApiCall {
                 .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
             self.pending = Some(PendingAction::MountedApp);
             return Ok(Some(MachineAction::Await(awaitable.unbind())));
+        }
+
+        if let Some(fallback) = earlier_fallback {
+            return self.dispatch_http_fallback(py, fallback).map(Some);
         }
 
         if let Some((route, child_scope)) = partial_route {
@@ -14076,8 +14136,16 @@ impl FastApiCall {
             .call1((scope,))?
             .extract::<String>()?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
-        if let Some((route, child_scope)) = self.match_constructor_route(py, scope)? {
-            return self.handle_constructor_route(py, route, child_scope);
+        let constructor_matches = self.match_constructor_route(py, scope)?;
+        let mut earlier_fallback =
+            constructor_matches
+                .partial
+                .map(|matched| HttpRouteFallback::StarletteRoute {
+                    route: matched.route,
+                    child_scope: matched.child_scope,
+                });
+        if let Some(matched) = constructor_matches.full {
+            return self.handle_constructor_route(py, matched.route, matched.child_scope);
         }
         let (
             openapi_url,
@@ -14184,7 +14252,9 @@ impl FastApiCall {
                         .import("starlette.responses")?
                         .getattr("JSONResponse")?
                         .call((content,), Some(&kwargs))?;
-                    return self.start_returned_response(py, &response);
+                    if earlier_fallback.is_none() {
+                        earlier_fallback = Some(HttpRouteFallback::Response(response.unbind()));
+                    }
                 }
                 DetailedRouteMatch::NotFound => {}
             }
@@ -14305,10 +14375,26 @@ impl FastApiCall {
                     .import("starlette.responses")?
                     .getattr("JSONResponse")?
                     .call((content,), Some(&kwargs))?;
-                self.start_returned_response(py, &response)
+                if earlier_fallback.is_none() {
+                    earlier_fallback = Some(HttpRouteFallback::Response(response.unbind()));
+                }
+                if let Some(action) = self.dispatch_mounted_app(py, earlier_fallback)? {
+                    return Ok(action);
+                }
+                if let Some(action) = self.redirect_http_slash(py, &path, &root_path, &method)? {
+                    return Ok(action);
+                }
+                if let Some(action) = self.dispatch_frontend_route(py, &route_path, &method)? {
+                    return Ok(action);
+                }
+                let exception = py
+                    .import("starlette.exceptions")?
+                    .getattr("HTTPException")?
+                    .call1((404,))?;
+                Err(PyErr::from_value(exception))
             }
             FastApiOperationMatch::NotFound => {
-                if let Some(action) = self.dispatch_mounted_app(py)? {
+                if let Some(action) = self.dispatch_mounted_app(py, earlier_fallback)? {
                     return Ok(action);
                 }
                 if let Some(action) = self.redirect_http_slash(py, &path, &root_path, &method)? {
@@ -14331,8 +14417,9 @@ impl FastApiCall {
         let scope = self.scope.bind(py);
         let path = parse_scope_string(scope, "path", "/")?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
-        if let Some((route, child_scope)) = self.match_constructor_route(py, scope)? {
-            return self.handle_constructor_route(py, route, child_scope);
+        let constructor_matches = self.match_constructor_route(py, scope)?;
+        if let Some(matched) = constructor_matches.full {
+            return self.handle_constructor_route(py, matched.route, matched.child_scope);
         }
         let match_result = self
             .app
