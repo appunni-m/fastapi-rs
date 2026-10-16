@@ -4085,6 +4085,11 @@ impl PyFastApi {
         lifespan: Option<Py<PyAny>>,
         strict_content_type: bool,
     ) -> PyResult<Self> {
+        if openapi_url.is_some_and(|url| !url.is_empty()) && title.is_empty() {
+            return Err(PyAssertionError::new_err(
+                "A title must be provided for OpenAPI, e.g.: 'My API'",
+            ));
+        }
         let responses = response_map_or_empty(py, responses)?;
         let user_middleware = match middleware {
             Some(middleware) => py
@@ -4273,6 +4278,16 @@ impl PyFastApi {
     #[setter]
     fn set_debug(&mut self, debug: bool) {
         self.debug = debug;
+    }
+
+    #[getter]
+    fn title(&self) -> &str {
+        &self.title
+    }
+
+    #[setter]
+    fn set_title(&mut self, title: String) {
+        self.title = title;
     }
 
     #[getter]

@@ -5449,6 +5449,11 @@ reviewed_api_contract_overlay:
           symbol: openapi
           start_line: 1084
           end_line: 1103
+        - path: fastapi/applications.py
+          kind: source-use
+          symbol: setup
+          start_line: 1121
+          end_line: 1158
         - path: docs/en/docs/tutorial/metadata.md
           kind: documentation-text
           start_line: 7
@@ -5461,12 +5466,44 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi-extra.full-document-merge-add-override
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
           case_id: fastapi.openapi-extra.full-document-raw-yaml-body
+        - case_id: fastapi.application.title.default
+          recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+          observation_selectors: [http.status, http.body.json]
+        - case_id: fastapi.application.title.custom-and-docs-ui
+          recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+          observation_selectors: [http.status, http.body.json, http.body.bytes, openapi.document]
+        - case_id: fastapi.application.title.mutated-before-openapi
+          recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+          observation_selectors: [http.status, http.body.json]
+        - case_id: fastapi.application.title.mutated-after-openapi-cache
+          recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+          observation_selectors: [http.status, http.body.json, http.body.bytes]
+        - case_id: fastapi.application.title.empty-with-openapi-disabled
+          recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+          observation_selectors: [http.status, http.body.json]
+        - case_id: fastapi.application.title.empty-with-openapi-enabled
+          recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         The pinned constructor declares `title` as `str` with default `FastAPI`
-        and stores it on the application. `openapi()` passes the stored value
-        as the generated OpenAPI document title, matching the metadata docs.
-        Other metadata fields, title validation, and full document/UI generation
-        are outside this field scope.
+        and stores it on the application. It requires a truthy title when
+        `openapi_url` is enabled. `openapi()` passes the current stored value as
+        the generated OpenAPI document title; Swagger UI and ReDoc use it in
+        their HTML titles. The linked input-only workflow reads and mutates the
+        public field, observes default/custom values, the constructor assertion,
+        pre-cache and post-cache mutation, the cached schema title, and both
+        documentation HTML titles. Other metadata fields, non-string assignment,
+        attribute deletion, and complete document/UI behavior remain outside
+        this field scope.
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::title
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Constructor strings and string reassignment are covered; non-string runtime values and deleting the Python attribute are unverified.
+          - The linked inputs observe the OpenAPI info title and selected Swagger UI/ReDoc HTML, not all metadata-dependent OpenAPI and documentation behavior.
     fastapi.applications.FastAPI.openapi_version:
       source_evidence:
         - path: fastapi/applications.py

@@ -1,0 +1,198 @@
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/application_title.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.application.title.default
+  verification: parity
+  factory_input: {}
+  construction_observation: &title-construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-public-title-and-openapi-info
+    kind: http_request
+    scope: &title-observer-scope
+      type: http
+      asgi: &title-asgi
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /_observe/title
+      query_string: ''
+      root_path: ''
+      headers: &title-headers
+      - - host
+        - testserver
+      client: &title-client [127.0.0.1, 123]
+      server: &title-server [testserver, 80]
+    receive_events: &title-empty-request
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: &title-json-response
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence: &title-source-evidence
+  - path: docs/en/docs/tutorial/metadata.md
+    kind: upstream_documentation
+  - path: docs/en/docs/how-to/custom-docs-ui-assets.md
+    kind: upstream_documentation
+
+- case_id: fastapi.application.title.custom-and-docs-ui
+  verification: parity
+  factory_input:
+    title: Catalog API
+  construction_observation: *title-construction
+  actions:
+  - action_id: observe-custom-title-and-openapi-info
+    kind: http_request
+    scope: *title-observer-scope
+    receive_events: *title-empty-request
+    observations: *title-json-response
+  - action_id: observe-openapi-http-route-title
+    kind: http_request
+    scope:
+      type: http
+      asgi: *title-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *title-headers
+      client: *title-client
+      server: *title-server
+    receive_events: *title-empty-request
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers: [/info/title]
+      comparison: exact
+  - action_id: observe-swagger-ui-title
+    kind: http_request
+    scope:
+      type: http
+      asgi: *title-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /docs
+      query_string: ''
+      root_path: ''
+      headers: *title-headers
+      client: *title-client
+      server: *title-server
+    receive_events: *title-empty-request
+    observations: &title-html-response
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: observe-redoc-title
+    kind: http_request
+    scope:
+      type: http
+      asgi: *title-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /redoc
+      query_string: ''
+      root_path: ''
+      headers: *title-headers
+      client: *title-client
+      server: *title-server
+    receive_events: *title-empty-request
+    observations: *title-html-response
+  source_evidence: *title-source-evidence
+
+- case_id: fastapi.application.title.mutated-before-openapi
+  verification: parity
+  factory_input:
+    title: Original API
+    _mutated_title: Updated API
+  construction_observation: *title-construction
+  actions:
+  - action_id: observe-mutated-title-before-openapi-cache
+    kind: http_request
+    scope: *title-observer-scope
+    receive_events: *title-empty-request
+    observations: *title-json-response
+  source_evidence: *title-source-evidence
+
+- case_id: fastapi.application.title.mutated-after-openapi-cache
+  verification: parity
+  factory_input:
+    title: Cached API
+    _prime_openapi_cache: true
+    _mutated_title: Updated API
+  construction_observation: *title-construction
+  actions:
+  - action_id: observe-title-after-openapi-cache
+    kind: http_request
+    scope: *title-observer-scope
+    receive_events: *title-empty-request
+    observations: *title-json-response
+  - action_id: observe-mutated-swagger-ui-title
+    kind: http_request
+    scope:
+      type: http
+      asgi: *title-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /docs
+      query_string: ''
+      root_path: ''
+      headers: *title-headers
+      client: *title-client
+      server: *title-server
+    receive_events: *title-empty-request
+    observations: *title-html-response
+  - action_id: observe-mutated-redoc-title
+    kind: http_request
+    scope:
+      type: http
+      asgi: *title-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /redoc
+      query_string: ''
+      root_path: ''
+      headers: *title-headers
+      client: *title-client
+      server: *title-server
+    receive_events: *title-empty-request
+    observations: *title-html-response
+  source_evidence: *title-source-evidence
+
+- case_id: fastapi.application.title.empty-with-openapi-disabled
+  verification: parity
+  factory_input:
+    title: ''
+    openapi_url: null
+  construction_observation: *title-construction
+  actions:
+  - action_id: observe-empty-title-with-openapi-disabled
+    kind: http_request
+    scope: *title-observer-scope
+    receive_events: *title-empty-request
+    observations: *title-json-response
+  source_evidence: *title-source-evidence
+
+- case_id: fastapi.application.title.empty-with-openapi-enabled
+  verification: parity
+  factory_input:
+    title: ''
+  construction_observation: *title-construction
+  actions: []
+  source_evidence: *title-source-evidence

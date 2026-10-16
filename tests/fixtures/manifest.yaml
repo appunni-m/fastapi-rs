@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 327d68b60e7d9ed2a0c18efd6bfac7b99cb9e89d87491641599e0ceb47ab2cf2
+    sha256: 30335695264b113444d59ae3d63317095a75d8ded0fd7505116225527a2ea8a2
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 856882ea320491aaf2d37530b9e11ec2018be5f26f414027dd35422d8f606dfc
+    sha256: 6e901f37a3374499c95a5341d6d601feae45a97cfbeb94d58c0ffe6b22a09dfb
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 09aec62bc0179e64387eb119d284bb3b2333f6baaa7a8d05618358048bb3d3be
+    sha256: d83d94bfa472a285f135d023a617f29c66a8bed6192bee3d57436ef118fd311b
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 638
-      cases: 2605
-      partial_source_mappings: 1879
+      workflows: 639
+      cases: 2611
+      partial_source_mappings: 1881
 
 contract_metadata:
   aliases:
@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 254
-    operation_fixture_refs: 1933
+    operation_fixture_refs: 1939
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -18636,6 +18636,90 @@ api_surface_contract:
       - http.body.bytes
       - http.status
       - openapi.document
+    - workflow_id: application-title
+      input_path: tests/fixtures/inputs/parity/application-title.json
+      input_sha256: b68090600fc45e29877dfa3dd6ebf9ae24b88cc4bbc31f78c2ce9ccbeb309e5a
+      recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+      recipe_sha256: 0c55bbb3d09b1e99e3ff57305f8455f8ccfe7168817d368f23ec13b63fdbddee
+      workload_path: tests/fixtures/workloads/application_title.py
+      workload_sha256: a84119dd261d7ab7282a2809de40b044ecb830cf88620d5ceb77c528d5590376
+      case_id: fastapi.application.title.default
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: application-title
+      input_path: tests/fixtures/inputs/parity/application-title.json
+      input_sha256: b68090600fc45e29877dfa3dd6ebf9ae24b88cc4bbc31f78c2ce9ccbeb309e5a
+      recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+      recipe_sha256: 0c55bbb3d09b1e99e3ff57305f8455f8ccfe7168817d368f23ec13b63fdbddee
+      workload_path: tests/fixtures/workloads/application_title.py
+      workload_sha256: a84119dd261d7ab7282a2809de40b044ecb830cf88620d5ceb77c528d5590376
+      case_id: fastapi.application.title.custom-and-docs-ui
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+    - workflow_id: application-title
+      input_path: tests/fixtures/inputs/parity/application-title.json
+      input_sha256: b68090600fc45e29877dfa3dd6ebf9ae24b88cc4bbc31f78c2ce9ccbeb309e5a
+      recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+      recipe_sha256: 0c55bbb3d09b1e99e3ff57305f8455f8ccfe7168817d368f23ec13b63fdbddee
+      workload_path: tests/fixtures/workloads/application_title.py
+      workload_sha256: a84119dd261d7ab7282a2809de40b044ecb830cf88620d5ceb77c528d5590376
+      case_id: fastapi.application.title.mutated-before-openapi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: application-title
+      input_path: tests/fixtures/inputs/parity/application-title.json
+      input_sha256: b68090600fc45e29877dfa3dd6ebf9ae24b88cc4bbc31f78c2ce9ccbeb309e5a
+      recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+      recipe_sha256: 0c55bbb3d09b1e99e3ff57305f8455f8ccfe7168817d368f23ec13b63fdbddee
+      workload_path: tests/fixtures/workloads/application_title.py
+      workload_sha256: a84119dd261d7ab7282a2809de40b044ecb830cf88620d5ceb77c528d5590376
+      case_id: fastapi.application.title.mutated-after-openapi-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: application-title
+      input_path: tests/fixtures/inputs/parity/application-title.json
+      input_sha256: b68090600fc45e29877dfa3dd6ebf9ae24b88cc4bbc31f78c2ce9ccbeb309e5a
+      recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+      recipe_sha256: 0c55bbb3d09b1e99e3ff57305f8455f8ccfe7168817d368f23ec13b63fdbddee
+      workload_path: tests/fixtures/workloads/application_title.py
+      workload_sha256: a84119dd261d7ab7282a2809de40b044ecb830cf88620d5ceb77c528d5590376
+      case_id: fastapi.application.title.empty-with-openapi-disabled
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: application-title
+      input_path: tests/fixtures/inputs/parity/application-title.json
+      input_sha256: b68090600fc45e29877dfa3dd6ebf9ae24b88cc4bbc31f78c2ce9ccbeb309e5a
+      recipe_path: tests/fixtures/input-recipes/parity/application-title.yaml
+      recipe_sha256: 0c55bbb3d09b1e99e3ff57305f8455f8ccfe7168817d368f23ec13b63fdbddee
+      workload_path: tests/fixtures/workloads/application_title.py
+      workload_sha256: a84119dd261d7ab7282a2809de40b044ecb830cf88620d5ceb77c528d5590376
+      case_id: fastapi.application.title.empty-with-openapi-enabled
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -18648,6 +18732,7 @@ api_surface_contract:
     - docs.response.headers
     - docs.response.status
     - http.body.bytes
+    - http.body.json
     - http.headers.ordered
     - http.status
     - openapi.document
@@ -18664,8 +18749,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/234
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::title
+      known_gaps:
+      - Constructor strings and string reassignment are covered; non-string runtime values and deleting
+        the Python attribute are unverified.
+      - The linked inputs observe the OpenAPI info title and selected Swagger UI/ReDoc HTML, not all metadata-dependent
+        OpenAPI and documentation behavior.
   - id: fastapi.applications.FastAPI.trace
     kind: method
     source_candidate_ref: /api_candidates/235
