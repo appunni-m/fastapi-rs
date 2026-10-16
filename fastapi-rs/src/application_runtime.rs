@@ -5867,6 +5867,22 @@ impl PyFastApi {
                 .map(Bound::unbind);
         }
 
+        let starlette_routes =
+            collect_http_dispatch_candidates(py, &slf, true, "", &mut HashSet::new())?;
+        for candidate in starlette_routes {
+            let HttpDispatchCandidate::StarletteRoute(route) = candidate else {
+                continue;
+            };
+            match route
+                .bind(py)
+                .call_method("url_path_for", (name,), Some(path_params))
+            {
+                Ok(url_path) => return Ok(url_path.unbind()),
+                Err(error) if error.is_instance(py, &no_match_type) => {}
+                Err(error) => return Err(error),
+            }
+        }
+
         let exception = no_match_type.call1((name, path_params))?;
         Err(PyErr::from_value(exception))
     }
@@ -8270,24 +8286,69 @@ fn prefix_starlette_route(
     route: &Bound<'_, PyAny>,
     prefix: &str,
 ) -> PyResult<Option<Py<PyAny>>> {
-    let route_type = py.import("starlette.routing")?.getattr("Route")?;
+    let routing = py.import("starlette.routing")?;
+    let route_type = routing.getattr("Route")?;
     let is_route = py
         .import("builtins")?
         .getattr("isinstance")?
         .call1((route, &route_type))?
         .is_truthy()?;
-    if !is_route {
-        return Ok(None);
+    if is_route {
+        let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("methods", route.getattr("methods")?)?;
+        kwargs.set_item("name", route.getattr("name")?)?;
+        kwargs.set_item("include_in_schema", route.getattr("include_in_schema")?)?;
+        return route_type
+            .call((path, route.getattr("endpoint")?), Some(&kwargs))
+            .map(|route| Some(route.unbind()));
     }
 
-    let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
-    let kwargs = PyDict::new(py);
-    kwargs.set_item("methods", route.getattr("methods")?)?;
-    kwargs.set_item("name", route.getattr("name")?)?;
-    kwargs.set_item("include_in_schema", route.getattr("include_in_schema")?)?;
-    route_type
-        .call((path, route.getattr("endpoint")?), Some(&kwargs))
-        .map(|route| Some(route.unbind()))
+    let is_instance = py.import("builtins")?.getattr("isinstance")?;
+    let mount_type = routing.getattr("Mount")?;
+    if is_instance.call1((route, &mount_type))?.is_truthy()? {
+        let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("name", route.getattr("name")?)?;
+        let rebuilt = mount_type.call((path, route.getattr("app")?), Some(&kwargs))?;
+        let copied = py.import("copy")?.call_method1("copy", (route,))?;
+        for attribute in [
+            "path",
+            "path_regex",
+            "path_format",
+            "param_convertors",
+            "_route_table",
+            "_uses_compatibility_matcher",
+        ] {
+            if rebuilt.hasattr(attribute)? {
+                copied.setattr(attribute, rebuilt.getattr(attribute)?)?;
+            }
+        }
+        return Ok(Some(copied.unbind()));
+    }
+
+    let host_type = routing.getattr("Host")?;
+    if is_instance.call1((route, &host_type))?.is_truthy()? {
+        let app = route.getattr("app")?;
+        let app = if prefix.is_empty() {
+            app
+        } else {
+            let mount_kwargs = PyDict::new(py);
+            let mount = mount_type.call((prefix, &app), Some(&mount_kwargs))?;
+            let routes = PyList::empty(py);
+            routes.append(mount)?;
+            let router_kwargs = PyDict::new(py);
+            router_kwargs.set_item("routes", routes)?;
+            routing.getattr("Router")?.call((), Some(&router_kwargs))?
+        };
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("name", route.getattr("name")?)?;
+        return host_type
+            .call((route.getattr("host")?, app), Some(&kwargs))
+            .map(|route| Some(route.unbind()));
+    }
+
+    Ok(None)
 }
 
 fn collect_http_dispatch_candidates(

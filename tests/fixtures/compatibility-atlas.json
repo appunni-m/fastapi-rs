@@ -453314,6 +453314,21 @@
           },
           {
             "case_ids": [
+              "fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for",
+              "fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml",
+            "workflow_id": "starlette-routing-runtime-upstream"
+          },
+          {
+            "case_ids": [
               "fastapi.applications.url-path-for.explicit-route-name",
               "fastapi.test.test-starlette-urlconvertors.test-route-converters-float-url-path-for",
               "fastapi.test.test-starlette-urlconvertors.test-route-converters-int-url-path-for",
@@ -733422,6 +733437,16 @@
           "case_id": "fastapi.router-late-route-order.url-path-for-include-slot",
           "recipe_path": "tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml",
           "workload_path": "tests/fixtures/workloads/router_late_url_path_for_order.py"
+        },
+        {
+          "case_id": "fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for",
+          "recipe_path": "tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml",
+          "workload_path": "tests/fixtures/workloads/starlette_routing_runtime.py"
+        },
+        {
+          "case_id": "fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for",
+          "recipe_path": "tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml",
+          "workload_path": "tests/fixtures/workloads/starlette_routing_runtime.py"
         }
       ],
       "id": "fastapi.applications.FastAPI.url_path_for",
@@ -733457,13 +733482,21 @@
         {
           "path": "tests/test_starlette_urlconvertors.py",
           "symbol": "test_route_converters_float"
+        },
+        {
+          "path": "tests/test_router_include_context.py",
+          "symbol": "test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for"
+        },
+        {
+          "path": "tests/test_router_include_context.py",
+          "symbol": "test_included_starlette_host_keeps_prefix_runtime_and_url_path_for"
         }
       ],
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
           "Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing or mismatched route parameters are not established.",
-          "Mount or Host route-context lookup and named URLPath metadata are not covered by the current inputs."
+          "Mount and Host reversal is covered only for included constructor cases with the fixed `/api` prefix and the sampled nested path and host parameters; route-name collision ordering, other prefix combinations, and lone-surrogate paths remain unestablished."
         ],
         "rust_binding": "fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for",
         "status": "partial-contract"

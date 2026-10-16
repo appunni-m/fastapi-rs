@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 7aad91bca8fc2a41e760392f7f4bfc9073151e0dbaf533780d6eb1a6543d39dc
+    sha256: 32665dfb56ef21b9df3cec26f0ba72561f202b50359966b12136ebf331e527b1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 107ae8ef94decc65d42a188d72cf958db704f3cc60416b5476e1bb912c2d4670
+    sha256: 0475129546e61633702da9a39b9ddaf438287f155320c2b20b21f058237062ed
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 6415807f5da820b0ca6cd39309028a04a03842cab0b227ba2a24b12d1989f4fc
+    sha256: 0c6f16a94ab020c5e5c1745e96d617cce013afc878b99c4102f01a336afccdc2
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 656
       cases: 2667
-      partial_source_mappings: 1903
+      partial_source_mappings: 1904
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2052
+    operation_fixture_refs: 2056
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -16369,6 +16369,30 @@ api_surface_contract:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: starlette-routing-runtime-upstream
+      input_path: tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json
+      input_sha256: fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0
+      recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+      recipe_sha256: e399b2f03534ccb6886e59d169206b5a84156f171e8bc54c8ae4270737c7a50f
+      workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+      workload_sha256: ea163066de32886626de994fe4f84a257c6dd4ba0f495119a87fc7049c02cca0
+      case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: starlette-routing-runtime-upstream
+      input_path: tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json
+      input_sha256: fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0
+      recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+      recipe_sha256: e399b2f03534ccb6886e59d169206b5a84156f171e8bc54c8ae4270737c7a50f
+      workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+      workload_sha256: ea163066de32886626de994fe4f84a257c6dd4ba0f495119a87fc7049c02cca0
+      case_id: fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for
+      observation_selectors:
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -51284,6 +51308,30 @@ api_surface_contract:
       - websocket.close_reason
       - websocket.event_order
       - websocket.messages
+    - workflow_id: starlette-routing-runtime-upstream
+      input_path: tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json
+      input_sha256: fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0
+      recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+      recipe_sha256: e399b2f03534ccb6886e59d169206b5a84156f171e8bc54c8ae4270737c7a50f
+      workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+      workload_sha256: ea163066de32886626de994fe4f84a257c6dd4ba0f495119a87fc7049c02cca0
+      case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: starlette-routing-runtime-upstream
+      input_path: tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json
+      input_sha256: fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0
+      recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+      recipe_sha256: e399b2f03534ccb6886e59d169206b5a84156f171e8bc54c8ae4270737c7a50f
+      workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+      workload_sha256: ea163066de32886626de994fe4f84a257c6dd4ba0f495119a87fc7049c02cca0
+      case_id: fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: router-late-route-order-parity
       input_path: tests/fixtures/inputs/parity/router-late-route-order-parity.json
       input_sha256: 1e300623e7d6d4a95f008784e5e9917a879ff581a90914437db3021819a42881
@@ -67146,6 +67194,10 @@ api_surface_contract:
       symbol: test_route_converters_int
     - path: tests/test_starlette_urlconvertors.py
       symbol: test_route_converters_float
+    - path: tests/test_router_include_context.py
+      symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for
+    - path: tests/test_router_include_context.py
+      symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/584
       source_path: docs/en/docs/tutorial/first-steps.md
@@ -67206,6 +67258,20 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+      case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
+      workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+      case_id: fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for
+      workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     feature_ids:
     - app-routing
     - middleware-integrations
@@ -67256,7 +67322,9 @@ api_surface_contract:
       known_gaps:
       - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing
         or mismatched route parameters are not established.
-      - Mount or Host route-context lookup and named URLPath metadata are not covered by the current inputs.
+      - Mount and Host reversal is covered only for included constructor cases with the fixed `/api` prefix
+        and the sampled nested path and host parameters; route-name collision ordering, other prefix combinations,
+        and lone-surrogate paths remain unestablished.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
   - id: fastapi.routing.APIRouter.url_path_for
     kind: inherited_method

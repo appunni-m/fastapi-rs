@@ -34626,9 +34626,9 @@
     {
       "id": "starlette-routing-runtime-upstream",
       "input_path": "tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json",
-      "input_sha256": "f69ef4eeca5997c0973d4988157464b838b434a52149bb2a30bb3fca528854ba",
+      "input_sha256": "fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0",
       "recipe_path": "tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml",
-      "recipe_sha256": "3f38e58659d885576e098edd4d5d9f670fb0f8c5a2f256064f5147a7a7c503e8",
+      "recipe_sha256": "e399b2f03534ccb6886e59d169206b5a84156f171e8bc54c8ae4270737c7a50f",
       "case_ids": [
         "fastapi.test.test-router-include-context.test-later-full-match-wins-over-earlier-included-partial-match",
         "fastapi.test.test-router-include-context.test-included-partial-match-returns-405-when-no-later-full-match-exists",
@@ -34656,6 +34656,7 @@
           "case_id": "fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/first-steps.md",
             "source:upstream-test:tests/test_router_include_context.py"
           ]
         },
@@ -34663,6 +34664,7 @@
           "case_id": "fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/first-steps.md",
             "source:upstream-test:tests/test_router_include_context.py"
           ]
         }
@@ -66773,6 +66775,22 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/first-steps.md",
+      "fixture_id": "fastapi.docs.tutorial-first-steps",
+      "workflow_id": "starlette-routing-runtime-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for",
+        "fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

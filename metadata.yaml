@@ -5253,6 +5253,8 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
+        - {path: tests/test_router_include_context.py, symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for}
+        - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_with_no_token}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_foo_token_jessica}
@@ -5350,6 +5352,12 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.included-constructor-partial-fallback
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
+          workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for
+          workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
         - *generate_unique_id_callback_precedence
@@ -5378,10 +5386,15 @@ reviewed_api_contract_overlay:
         The callback include parameter is covered by
         `atlas-pending-callbacks-source-wave`, which observes the merged callback
         routes in an OpenAPI operation. Other unused include options remain
-        outside this slice.
+        outside this slice. The included Starlette Mount and Host cases compare
+        prefixed HTTP dispatch and named URL reversal only; WebSocket dispatch
+        through those route families, route-name collisions, and other prefix
+        combinations remain unestablished.
 
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
+        included Starlette Mount and Host cases compare prefixed HTTP dispatch and
+        named URL reversal for constructor-supplied route families.
         relative-path router case observes inclusion with prefix `/v2`, dispatch
         at `/v2items/sku-17`, and URL reversal. The
         reviewed fixtures cover path parameters, repeated nested inclusions,
@@ -6255,7 +6268,9 @@ reviewed_api_contract_overlay:
         case covers raw WebSocket prefix dispatch through an APIRouter include
         and FastAPI inclusion. The route-order workflow compares generic/API
         order, nested constructor-route prefixes, and HTTP partial-match
-        fallback. Other BaseRoute families remain open.
+        fallback. Prefixed Starlette Mount and Host constructor routes also
+        compare HTTP dispatch and named URL reversal; WebSocket dispatch through
+        those route families and other BaseRoute families remain open.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
@@ -6408,6 +6423,12 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
+          workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for
+          workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.included-constructor-route-slot-order
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
@@ -6498,7 +6519,8 @@ reviewed_api_contract_overlay:
         routes, nested constructor-route prefixes, and generic HTTP
         partial-match fallback both after a later API full match and when no
         later route fully matches.
-        Slash redirects, other route families, and other ordering combinations
+        Slash redirects, route families beyond the sampled Starlette Route,
+        WebSocketRoute, Mount, and Host cases, and other ordering combinations
         remain open.
         Five response-field-lifecycle inputs reach router construction/GET and
         application inclusion with fixed response models and omitted or concrete
@@ -15528,6 +15550,8 @@ reviewed_api_contract_overlay:
             - 'You can use all the [Starlette](https://starlette.dev/) functionality with `FastAPI` too.'
         - {path: tests/test_starlette_urlconvertors.py, symbol: test_route_converters_int}
         - {path: tests/test_starlette_urlconvertors.py, symbol: test_route_converters_float}
+        - {path: tests/test_router_include_context.py, symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for}
+        - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for}
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/first-steps.md
           fixture_id: fastapi.docs.tutorial-first-steps
@@ -15548,6 +15572,12 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
           case_id: fastapi.router-late-route-order.url-path-for-include-slot
           workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
+          workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
+          case_id: fastapi.test.test-router-include-context.test-included-starlette-host-keeps-prefix-runtime-and-url-path-for
+          workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:
@@ -15556,7 +15586,7 @@ reviewed_api_contract_overlay:
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
         known_gaps:
           - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing or mismatched route parameters are not established.
-          - Mount or Host route-context lookup and named URLPath metadata are not covered by the current inputs.
+          - Mount and Host reversal is covered only for included constructor cases with the fixed `/api` prefix and the sampled nested path and host parameters; route-name collision ordering, other prefix combinations, and lone-surrogate paths remain unestablished.
     fastapi.routing.APIRouter.url_path_for:
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter
       canonical_operation_id: starlette.routing.Router.url_path_for
