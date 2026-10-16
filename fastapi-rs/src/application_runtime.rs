@@ -1901,6 +1901,7 @@ impl PyApiRoute {
                 None,
                 None,
                 None,
+                None,
                 true,
                 GenerateUniqueIdArgument::Omitted,
                 None,
@@ -2997,6 +2998,7 @@ struct FastApiRouterInclude {
     generate_unique_id_function: GenerateUniqueIdChoice,
     tags: Vec<String>,
     dependencies: Vec<Py<PyAny>>,
+    callbacks: Vec<Py<PyAny>>,
     deprecated: Option<bool>,
     include_in_schema: bool,
     strict_content_type: Option<bool>,
@@ -3493,6 +3495,7 @@ pub(crate) struct PyFastApi {
     is_router_inner: bool,
     router_tags: Vec<String>,
     router_dependencies: Vec<Py<PyAny>>,
+    router_callbacks: Py<PyAny>,
     router_deprecated: Option<bool>,
     router_include_in_schema: bool,
     title: String,
@@ -3929,6 +3932,7 @@ struct RouterIncludePolicy<'policy> {
     generate_unique_id_function: &'policy GenerateUniqueIdChoice,
     tags: &'policy [String],
     dependencies: &'policy [Py<PyAny>],
+    callbacks: &'policy [Py<PyAny>],
     deprecated: Option<bool>,
     include_in_schema: bool,
     strict_content_type: Option<bool>,
@@ -4201,7 +4205,7 @@ impl PyFastApi {
     }
 
     #[new]
-    #[pyo3(signature = (*, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true, **extra))]
+    #[pyo3(signature = (*, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, callbacks = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true, **extra))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -4232,6 +4236,7 @@ impl PyFastApi {
         root_path: &str,
         root_path_in_servers: bool,
         responses: Option<Py<PyAny>>,
+        callbacks: Option<Py<PyAny>>,
         openapi_external_docs: Option<Py<PyAny>>,
         webhooks: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
@@ -4253,6 +4258,10 @@ impl PyFastApi {
             ));
         }
         let responses = response_map_or_empty(py, responses)?;
+        let router_callbacks = match callbacks {
+            Some(callbacks) if callbacks.bind(py).is_truthy()? => callbacks,
+            _ => PyList::empty(py).into_any().unbind(),
+        };
         let user_middleware = match middleware {
             Some(middleware) => py
                 .import("builtins")?
@@ -4375,6 +4384,7 @@ impl PyFastApi {
                     None,
                     None,
                     None,
+                    None,
                     true,
                     GenerateUniqueIdArgument::Omitted,
                     None,
@@ -4390,6 +4400,7 @@ impl PyFastApi {
             is_router_inner: false,
             router_tags: Vec::new(),
             router_dependencies: Vec::new(),
+            router_callbacks,
             router_deprecated: deprecated,
             router_include_in_schema: include_in_schema,
             title: title.to_owned(),
@@ -5513,7 +5524,7 @@ impl PyFastApi {
         Ok(())
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, responses = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, responses = None, deprecated = None, include_in_schema = true, default_response_class = ResponseClassArgument::Omitted, callbacks = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -5527,14 +5538,21 @@ impl PyFastApi {
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         responses: Option<Py<PyAny>>,
-        default_response_class: ResponseClassArgument,
         deprecated: Option<bool>,
         include_in_schema: bool,
+        default_response_class: ResponseClassArgument,
+        callbacks: Option<Py<PyAny>>,
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
         let include_responses = response_map_or_empty(py, responses)?;
         let include_response_class = default_response_class.into_choice(py)?;
         let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
+        let router_callbacks = {
+            let destination = slf.bind(py).borrow();
+            callback_values(destination.router_callbacks.bind(py))?
+        };
+        let include_callbacks =
+            inherited_callback_values(py, &router_callbacks, callbacks.as_ref())?;
         let source_inner = { router.bind(py).borrow().inner_app(py)? };
         refresh_included_router_routes(py, &source_inner)?;
         let mut destination_guard = slf.bind(py).borrow_mut();
@@ -5594,6 +5612,7 @@ impl PyFastApi {
                 generate_unique_id_function: &inherited_generate_unique_id_function,
                 tags: &tags,
                 dependencies: &inherited_dependencies,
+                callbacks: &include_callbacks,
                 deprecated,
                 include_in_schema,
                 strict_content_type,
@@ -5613,6 +5632,10 @@ impl PyFastApi {
             dependencies: inherited_dependencies
                 .iter()
                 .map(|dependency| dependency.clone_ref(py))
+                .collect(),
+            callbacks: include_callbacks
+                .iter()
+                .map(|callback| callback.clone_ref(py))
                 .collect(),
             deprecated,
             include_in_schema,
@@ -7124,7 +7147,7 @@ impl PyApiRouter {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, routes = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, routes = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -7137,6 +7160,7 @@ impl PyApiRouter {
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
         responses: Option<Py<PyAny>>,
+        callbacks: Option<Py<PyAny>>,
         routes: Option<Py<PyAny>>,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
@@ -7149,6 +7173,10 @@ impl PyApiRouter {
         validate_router_prefix(prefix)?;
         let router_tags = tags.unwrap_or_default();
         let router_dependencies = dependencies.unwrap_or_default();
+        let router_callbacks = match callbacks {
+            Some(callbacks) if callbacks.bind(py).is_truthy()? => callbacks,
+            _ => PyList::empty(py).into_any().unbind(),
+        };
         let inner = Py::new(
             py,
             PyFastApi::new(
@@ -7176,6 +7204,7 @@ impl PyApiRouter {
                 "",
                 true,
                 responses.map(|responses| responses.clone_ref(py)),
+                Some(router_callbacks.clone_ref(py)),
                 None,
                 Some(py.None()),
                 None,
@@ -7201,6 +7230,7 @@ impl PyApiRouter {
                 .iter()
                 .map(|dependency| dependency.clone_ref(py))
                 .collect();
+            inner.router_callbacks = router_callbacks.clone_ref(py);
             inner.router_deprecated = deprecated;
             inner.router_include_in_schema = include_in_schema;
             inner.strict_content_type = strict_content_type;
@@ -7219,6 +7249,22 @@ impl PyApiRouter {
     #[getter]
     fn prefix(&self) -> &str {
         &self.prefix
+    }
+
+    #[getter]
+    fn callbacks(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        Ok(self
+            .inner_app(py)?
+            .bind(py)
+            .borrow()
+            .router_callbacks
+            .clone_ref(py))
+    }
+
+    #[setter]
+    fn set_callbacks(&mut self, py: Python<'_>, callbacks: Py<PyAny>) -> PyResult<()> {
+        self.inner_app(py)?.bind(py).borrow_mut().router_callbacks = callbacks;
+        Ok(())
     }
 
     #[getter]
@@ -7409,7 +7455,7 @@ impl PyApiRouter {
         add_frontend_route(&mut inner, py, &path, directory, fallback, check_dir, &[])
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -7424,6 +7470,7 @@ impl PyApiRouter {
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
         responses: Option<Py<PyAny>>,
+        callbacks: Option<Py<PyAny>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
         generate_unique_id_function: GenerateUniqueIdArgument,
@@ -7436,12 +7483,18 @@ impl PyApiRouter {
             parent_prefix,
             parent_tags,
             parent_dependencies,
+            parent_callbacks,
             parent_deprecated,
             parent_include_in_schema,
         ) = {
             let parent = slf.bind(py).borrow();
+            let inner = parent.inner_app(py)?;
+            let parent_callbacks = {
+                let inner = inner.bind(py).borrow();
+                callback_values(inner.router_callbacks.bind(py))?
+            };
             (
-                parent.inner_app(py)?,
+                inner,
                 parent.prefix.clone(),
                 parent.tags.clone(),
                 parent
@@ -7449,10 +7502,13 @@ impl PyApiRouter {
                     .iter()
                     .map(|dependency| dependency.clone_ref(py))
                     .collect::<Vec<_>>(),
+                parent_callbacks,
                 parent.deprecated,
                 parent.include_in_schema,
             )
         };
+        let include_callbacks =
+            inherited_callback_values(py, &parent_callbacks, callbacks.as_ref())?;
         let include_response_class = default_response_class.into_choice(py)?;
         let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
         let parent_responses = {
@@ -7530,6 +7586,7 @@ impl PyApiRouter {
                 generate_unique_id_function: &inherited_generate_unique_id_function,
                 tags: &inherited_tags,
                 dependencies: &inherited_dependencies,
+                callbacks: &include_callbacks,
                 deprecated,
                 include_in_schema,
                 strict_content_type: inherited_strict_content_type,
@@ -7549,6 +7606,10 @@ impl PyApiRouter {
             dependencies: inherited_dependencies
                 .iter()
                 .map(|dependency| dependency.clone_ref(py))
+                .collect(),
+            callbacks: include_callbacks
+                .iter()
+                .map(|callback| callback.clone_ref(py))
                 .collect(),
             deprecated,
             include_in_schema,
@@ -7705,6 +7766,62 @@ fn combined_route_tags(
         tags.extend_from_slice(route_tags);
     }
     Some(tags)
+}
+
+fn callback_values(callbacks: &Bound<'_, PyAny>) -> PyResult<Vec<Py<PyAny>>> {
+    callbacks
+        .try_iter()?
+        .map(|callback| callback.map(Bound::unbind))
+        .collect()
+}
+
+fn inherited_callback_values(
+    py: Python<'_>,
+    inherited: &[Py<PyAny>],
+    callbacks: Option<&Py<PyAny>>,
+) -> PyResult<Vec<Py<PyAny>>> {
+    let mut values = inherited
+        .iter()
+        .map(|callback| callback.clone_ref(py))
+        .collect::<Vec<_>>();
+    if let Some(callbacks) = callbacks {
+        let callbacks = callbacks.bind(py);
+        if callbacks.is_truthy()? {
+            values.extend(callback_values(callbacks)?);
+        }
+    }
+    Ok(values)
+}
+
+fn router_route_callbacks(
+    py: Python<'_>,
+    router_callbacks: &Py<PyAny>,
+    route_callbacks: Option<&Py<PyAny>>,
+) -> PyResult<Py<PyAny>> {
+    let callbacks = router_callbacks.bind(py).call_method0("copy")?;
+    if let Some(route_callbacks) = route_callbacks {
+        let route_callbacks = route_callbacks.bind(py);
+        if route_callbacks.is_truthy()? {
+            callbacks.call_method1("extend", (route_callbacks,))?;
+        }
+    }
+    Ok(callbacks.unbind())
+}
+
+fn effective_route_callbacks(
+    py: Python<'_>,
+    inherited: &[Py<PyAny>],
+    route_callbacks: &Py<PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let mut values = inherited
+        .iter()
+        .map(|callback| callback.clone_ref(py))
+        .collect::<Vec<_>>();
+    if route_callbacks.bind(py).is_truthy()? {
+        values.extend(callback_values(route_callbacks.bind(py))?);
+    }
+    PyList::new(py, values.iter().map(|callback| callback.bind(py)))
+        .map(|callbacks| callbacks.into_any().unbind())
 }
 
 fn combined_deprecated(route: Option<bool>, inherited: Option<bool>) -> Option<bool> {
@@ -8248,6 +8365,7 @@ fn merge_router_routes_from(
         generate_unique_id_function: inherited_generate_unique_id_function,
         tags: inherited_tags,
         dependencies: inherited_dependencies,
+        callbacks: inherited_callbacks,
         deprecated: inherited_deprecated,
         include_in_schema: inherited_include_in_schema,
         strict_content_type: inherited_strict_content_type,
@@ -8309,6 +8427,12 @@ fn merge_router_routes_from(
         let response_class = response_class_resolution.provisional_choice(py);
         let path_format = route_path_format(py, &path)?;
         let tags = combined_route_tags(inherited_tags, source_route.tags.as_deref());
+        let source_callbacks = source_route
+            .public_route
+            .bind(py)
+            .getattr("callbacks")?
+            .unbind();
+        let callbacks = effective_route_callbacks(py, inherited_callbacks, &source_callbacks)?;
         let generate_unique_id_function = GenerateUniqueIdChoice::first_explicit(
             py,
             &[
@@ -8353,7 +8477,7 @@ fn merge_router_routes_from(
                 response_class: &response_class,
                 response_class_resolution: Some(&response_class_resolution),
                 dependency_overrides_provider: Some(dependency_overrides_provider),
-                callbacks: None,
+                callbacks: Some(&callbacks),
                 strict_content_type: &strict_content_type,
                 stream_item_type: source_route.stream_item_type.as_ref(),
             },
@@ -8698,6 +8822,7 @@ struct IncludedRouterRefresh {
     generate_unique_id_function: GenerateUniqueIdChoice,
     tags: Vec<String>,
     dependencies: Vec<Py<PyAny>>,
+    callbacks: Vec<Py<PyAny>>,
     deprecated: Option<bool>,
     include_in_schema: bool,
     strict_content_type: Option<bool>,
@@ -8740,6 +8865,11 @@ fn refresh_included_router_routes_inner(
                     .dependencies
                     .iter()
                     .map(|dependency| dependency.clone_ref(py))
+                    .collect(),
+                callbacks: include
+                    .callbacks
+                    .iter()
+                    .map(|callback| callback.clone_ref(py))
                     .collect(),
                 deprecated: include.deprecated,
                 include_in_schema: include.include_in_schema,
@@ -8801,6 +8931,7 @@ fn refresh_included_router_routes_inner(
                 generate_unique_id_function: &include.generate_unique_id_function,
                 tags: &include.tags,
                 dependencies: &include.dependencies,
+                callbacks: &include.callbacks,
                 deprecated: include.deprecated,
                 include_in_schema: include.include_in_schema,
                 strict_content_type: include.strict_content_type,
@@ -9223,6 +9354,8 @@ fn operation_decorator(
 #[pymethods]
 impl PyOperationDecorator {
     fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let router_callbacks = { self.app.bind(py).borrow().router_callbacks.clone_ref(py) };
+        let callbacks = router_route_callbacks(py, &router_callbacks, self.callbacks.as_ref())?;
         let (inferred_name, param_convertors) =
             route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
         let name = self.name.clone().unwrap_or(inferred_name);
@@ -9361,7 +9494,7 @@ impl PyOperationDecorator {
                 response_class: &response_class,
                 response_class_resolution: None,
                 dependency_overrides_provider: self.dependency_overrides_provider.as_ref(),
-                callbacks: self.callbacks.as_ref(),
+                callbacks: Some(&callbacks),
                 strict_content_type: &strict_content_type_value,
                 stream_item_type: None,
             },
