@@ -5343,8 +5343,28 @@ reviewed_api_contract_overlay:
         schema route only when the value is truthy; the automatic Swagger UI and
         ReDoc routes that use it are also gated by that value. The documented
         `None` case disables the schema and those automatic documentation UIs.
-        URL rewriting, custom UI configuration, and request/response behavior are
-        outside this field scope.
+        The linked input-only workflow reads the public field and observes
+        default/custom/disabled route registration. Post-construction mutation,
+        URL rewriting, custom UI configuration, and OpenAPI response contents
+        are outside this field scope.
+      fixture_refs:
+        - case_id: fastapi.application.openapi-url.default-field-and-routes
+          recipe_path: tests/fixtures/input-recipes/parity/application-openapi-url.yaml
+          observation_selectors: [http.status, http.body.json]
+        - case_id: fastapi.application.openapi-url.custom-field-and-route
+          recipe_path: tests/fixtures/input-recipes/parity/application-openapi-url.yaml
+          observation_selectors: [http.status, http.body.json]
+        - case_id: fastapi.application.openapi-url.disabled-field-and-routes
+          recipe_path: tests/fixtures/input-recipes/parity/application-openapi-url.yaml
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi_url
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Constructor-time default, custom path, and None values are covered with their OpenAPI and docs route registration. Post-construction assignment, falsey values other than None, root-path rewriting, custom UI configuration, and OpenAPI document contents remain unverified.
     fastapi.applications.FastAPI.router:
       source_evidence:
         - path: fastapi/applications.py

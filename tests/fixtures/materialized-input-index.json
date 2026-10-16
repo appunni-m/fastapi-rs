@@ -827,6 +827,43 @@
       ]
     },
     {
+      "id": "application-openapi-url",
+      "input_path": "tests/fixtures/inputs/parity/application-openapi-url.json",
+      "input_sha256": "b94411e0ef4e7296f653df67b518ba06f2701917ead0eb11a114085c46a2521b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/application-openapi-url.yaml",
+      "recipe_sha256": "88270fc61d97da83e2ed60536321cff905a20545f48d489c4f29751e25e97392",
+      "case_ids": [
+        "fastapi.application.openapi-url.default-field-and-routes",
+        "fastapi.application.openapi-url.custom-field-and-route",
+        "fastapi.application.openapi-url.disabled-field-and-routes"
+      ],
+      "workload_path": "tests/fixtures/workloads/application_openapi_url.py",
+      "workload_sha256": "2eea8777ec27c97acc804e91f7602b8631b605e5d1c925ce53abb4600c27ee7e",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.application.openapi-url.default-field-and-routes",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.openapi-url.custom-field-and-route",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.openapi-url.disabled-field-and-routes",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "application-route-registration-upstream",
       "input_path": "tests/fixtures/inputs/parity/application-route-registration-upstream.json",
       "input_sha256": "7440983174e91935c61615df2ecc02c086ba4f124cc31bf396d5150d5ff9e24b",
@@ -10816,7 +10853,7 @@
         "fastapi.request-parameters.header.list-alias-validation-alias-validation-alias-valid"
       ],
       "workload_path": "tests/fixtures/workloads/header_list_alias_validation_alias_20261016.py",
-      "workload_sha256": "0ba41d27f20cb3c7d190a81ee8bc15d43a72e0c4f3c1cb506e1995a8ee45d370",
+      "workload_sha256": "0c483514ead3815755b4efd6a84fdc4b30382e2f67d33f0ecb91987dcd1de9bb",
       "oracle_profile_extension": "standard-multipart",
       "case_contracts": [
         {
@@ -35916,6 +35953,26 @@
         "fastapi.test.test-application.test-enum-status-code-response"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/metadata.md",
+      "fixture_id": "fastapi.docs.tutorial-metadata",
+      "workflow_id": "application-openapi-url",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.openapi-url.custom-field-and-route",
+        "fastapi.application.openapi-url.default-field-and-routes",
+        "fastapi.application.openapi-url.disabled-field-and-routes"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "docs.response.status",
         "http.body.bytes",
         "http.status"
       ]
