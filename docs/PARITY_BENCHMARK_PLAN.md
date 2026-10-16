@@ -50,6 +50,30 @@ Starlette's entire public denominator. Benchmarks and parity exercise the same
 Python consumer surface; Rust-only microbenchmarks are not FastAPI parity or
 consumer-surface benchmark results.
 
+## Benchmark evidence freshness
+
+No saved benchmark receipt matches the current FastAPI-RS source revision and
+the pinned Starlette-RS revision `4139a72449bf5751e8902fb1c7175ee7f191d338`.
+The latest complete seven-workload suite available in local ignored output is
+`benchmark-results/suite-20261015T111504Z-3ee84a83-4af0-48fe-8160-7eec76f19c4e.json`
+(SHA-256
+`aadf1caa67bcd764bc4e4340538dc51415925989f94210c604cb396afb809d46`). It
+completed 7/7 workloads and its recorded parity gates passed 45/45 selected
+comparisons, but it binds FastAPI-RS `9ba612a5` and Starlette-RS `b4c8a65c`,
+so it is historical evidence for earlier target code and a superseded sibling
+revision.
+
+A newer one-workload TestClient receipt,
+`benchmark-results/testclient/7aa89e37-44f6-4b88-878d-0b09e04fb971.json`
+(SHA-256
+`fbc10709f87035b37966e2050c6d9d75723c38ad4a6adb1ce8547c9c3b426c43`),
+passed its single parity case and used the pinned Starlette-RS `4139a72`, but
+it binds FastAPI-RS `e76c1986` and covers only
+`fastapi.testclient.sync-validated-post`. It is also historical, not a current
+performance result. The detailed seven-workload table below records an earlier
+2026-10-14 run and must likewise be read as historical. Re-run a workload only
+after its identity-checked parity gate passes for the current target.
+
 ## Parity suite
 
 The first thirteen-case HTTP request/response slice now has a Rust-owned target,
@@ -245,7 +269,7 @@ do not subtract them from FastAPI timings as a claimed FastAPI-only cost. Only
 compare FastAPI to FastAPI-RS for workloads whose behavioral parity gate
 passes.
 
-The implemented suite currently measures seven direct-ASGI workloads through
+The configured suite contains seven direct-ASGI workloads through
 the isolated FastAPI Python consumers. Each run gates the full selected
 workflow, performs an untimed response check, then records 50 warmups and five
 rounds of 200 sequential samples per subject. Per-request latency starts at
@@ -258,7 +282,7 @@ server. Internal Rust timing attribution may be added as a measurement of this
 same implementation; it is not a separate target. Do not infer component costs
 by subtracting the Starlette control or from the end-to-end target time.
 
-#### Current completed seven-workload run (2026-10-14; commit 4ae3a35)
+#### Recorded seven-workload run (2026-10-14; historical target identity)
 
 The suite completed at `2026-10-14T19:44:20Z` with suite ID
 `5897d445-2b20-4c47-af92-7e33e2a90a93` and receipt
