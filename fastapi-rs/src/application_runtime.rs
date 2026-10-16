@@ -4062,7 +4062,7 @@ impl PyFastApi {
     }
 
     #[new]
-    #[pyo3(signature = (*, debug = false, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, debug = false, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -4103,6 +4103,8 @@ impl PyFastApi {
         on_shutdown: Option<Py<PyAny>>,
         lifespan: Option<Py<PyAny>>,
         strict_content_type: bool,
+        deprecated: Option<bool>,
+        include_in_schema: bool,
     ) -> PyResult<Self> {
         if openapi_url.is_some_and(|url| !url.is_empty()) && title.is_empty() {
             return Err(PyAssertionError::new_err(
@@ -4234,8 +4236,8 @@ impl PyFastApi {
             is_router_inner: false,
             router_tags: Vec::new(),
             router_dependencies: Vec::new(),
-            router_deprecated: None,
-            router_include_in_schema: true,
+            router_deprecated: deprecated,
+            router_include_in_schema: include_in_schema,
             title: title.to_owned(),
             summary,
             description: description.to_owned(),
@@ -6860,6 +6862,8 @@ impl PyApiRouter {
                 on_shutdown,
                 lifespan,
                 strict_content_type.unwrap_or(true),
+                deprecated,
+                include_in_schema,
             )?,
         )?;
         {
