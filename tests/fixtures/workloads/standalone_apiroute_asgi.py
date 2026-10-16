@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from contextlib import AsyncExitStack
+from types import SimpleNamespace
 from typing import Any
 
 from fastapi import Depends
@@ -74,6 +75,19 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
         ) -> dict[str, Any]:
             event_trace.append("endpoint")
             return {"item_id": item_id, "dependency_value": dependency_value}
+
+        if factory_input.get("override_dependency"):
+
+            async def override_route_dependency() -> Any:
+                event_trace.append("override-enter")
+                try:
+                    yield factory_input["dependency_override_value"]
+                finally:
+                    event_trace.append("override-exit")
+
+            route_options["dependency_overrides_provider"] = SimpleNamespace(
+                dependency_overrides={route_dependency: override_route_dependency}
+            )
 
         async def trace_endpoint() -> dict[str, Any]:
             return {"trace": list(event_trace)}

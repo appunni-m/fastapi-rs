@@ -778,25 +778,27 @@ impl CallablePlan {
         context: &InvocationContext<'_, '_>,
         declared_scope: Option<&str>,
     ) -> PyResult<Option<Self>> {
-        // Each reached edge reads the current provider dictionary. Release the
-        // app borrow before lookup, signature analysis, or any Python hooks.
-        let dependency_overrides = {
-            let app = context
-                .dependency_overrides_provider
-                .bind(context.py)
-                .borrow();
-            app.dependency_overrides.clone_ref(context.py)
-        };
-        let dependency_overrides = dependency_overrides.bind(context.py);
-        if dependency_overrides.is_empty() {
+        // Each reached edge reads the current provider dictionary before
+        // lookup, signature analysis, or any Python hooks.
+        let provider = context.dependency_overrides_provider.bind(context.py);
+        if !provider.is_truthy()? {
+            return Ok(None);
+        }
+        let dependency_overrides = provider.getattr("dependency_overrides")?;
+        if !dependency_overrides.is_truthy()? {
             return Ok(None);
         }
         // FastAPI rebuilds every edge for a nonempty override map, including
         // unchanged callables. The caller retains the original edge's cache
         // identity and raw use_cache policy while solving the rebuilt signature.
         let callable = dependency_overrides
-            .get_item(self.callable.bind(context.py))?
-            .unwrap_or_else(|| self.callable.bind(context.py).clone())
+            .call_method1(
+                "get",
+                (
+                    self.callable.bind(context.py),
+                    self.callable.bind(context.py),
+                ),
+            )?
             .unbind();
         let mut plan = Self::build(
             context.py,
@@ -1113,7 +1115,7 @@ struct InvocationContext<'context, 'py> {
     body_fields_embedded: bool,
     form_body_embedded: bool,
     failures: &'context mut Vec<ValidationIssue>,
-    dependency_overrides_provider: &'context Py<PyFastApi>,
+    dependency_overrides_provider: &'context Py<PyAny>,
     dependency_cache: &'context mut HashMap<DependencyCacheKey, Py<PyAny>>,
     prepared_dependency_values: &'context mut HashMap<usize, Py<PyAny>>,
     dependency_override_cursor: &'context mut usize,
@@ -1911,18 +1913,6 @@ impl PyApiRoute {
         generate_unique_id_function: GenerateUniqueIdArgument,
         strict_content_type: StrictContentTypeArgument,
     ) -> PyResult<Self> {
-        let unsupported_options = [(
-            dependency_overrides_provider.is_some(),
-            "dependency_overrides_provider",
-        )];
-        if let Some((_, option)) = unsupported_options
-            .iter()
-            .find(|(unsupported, _)| *unsupported)
-        {
-            return Err(PyNotImplementedError::new_err(format!(
-                "FastAPI-RS APIRoute construction does not yet implement the {option} option"
-            )));
-        }
         let response_class = response_class.into_choice(py)?;
 
         // Build through the Rust-owned route pipeline so OpenAPI receives a
@@ -1987,7 +1977,7 @@ impl PyApiRoute {
         decorator
             .bind(py)
             .borrow_mut()
-            .dependency_overrides_provider = None;
+            .dependency_overrides_provider = dependency_overrides_provider;
         let normalized_methods = PySet::empty(py)?;
         if let Some(methods) = methods {
             for method in methods.bind(py).try_iter()? {
@@ -2029,7 +2019,19 @@ impl PyApiRoute {
             return Ok(app.clone_ref(py));
         }
         let (owner, route_index) = api_route_dispatch_owner(py, slf.bind(py), &route)?;
-        let app = Py::new(py, PyApiRouteAsgiApp { owner, route_index })?.into_any();
+        let dependency_overrides_provider = route
+            .dependency_overrides_provider
+            .as_ref()
+            .map(|provider| provider.clone_ref(py));
+        let app = Py::new(
+            py,
+            PyApiRouteAsgiApp {
+                owner,
+                route_index,
+                dependency_overrides_provider,
+            },
+        )?
+        .into_any();
         route.cached_app = Some(app.clone_ref(py));
         Ok(app)
     }
@@ -3804,6 +3806,7 @@ struct PyFastApiAsgiApp {
 struct PyApiRouteAsgiApp {
     owner: Py<PyFastApi>,
     route_index: usize,
+    dependency_overrides_provider: Option<Py<PyAny>>,
 }
 
 #[pyclass(name = "_MiddlewareDecorator", module = "fastapi_rs._core")]
@@ -3905,6 +3908,9 @@ impl PyApiRouteAsgiApp {
             scope,
             receive,
             send,
+            self.dependency_overrides_provider
+                .as_ref()
+                .map(|provider| provider.clone_ref(py)),
         )
     }
 }
@@ -14076,7 +14082,7 @@ fn fastapi_core_call(
     receive: Py<PyAny>,
     send: Py<PyAny>,
 ) -> PyResult<Py<PyAny>> {
-    into_python_awaitable(py, FastApiCall::new(app, scope, receive, send, None))
+    into_python_awaitable(py, FastApiCall::new(app, scope, receive, send, None, None))
 }
 
 fn fastapi_route_core_call(
@@ -14086,15 +14092,24 @@ fn fastapi_route_core_call(
     scope: Py<PyAny>,
     receive: Py<PyAny>,
     send: Py<PyAny>,
+    dependency_overrides_provider: Option<Py<PyAny>>,
 ) -> PyResult<Py<PyAny>> {
     into_python_awaitable(
         py,
-        FastApiCall::new(app, scope, receive, send, Some(route_index)),
+        FastApiCall::new(
+            app,
+            scope,
+            receive,
+            send,
+            Some(route_index),
+            dependency_overrides_provider,
+        ),
     )
 }
 
 struct FastApiCall {
     app: Py<PyFastApi>,
+    route_dependency_overrides_provider: Option<Py<PyAny>>,
     scope: Py<PyAny>,
     receive: Py<PyAny>,
     send: Py<PyAny>,
@@ -14130,9 +14145,11 @@ impl FastApiCall {
         receive: Py<PyAny>,
         send: Py<PyAny>,
         forced_route_index: Option<usize>,
+        route_dependency_overrides_provider: Option<Py<PyAny>>,
     ) -> Self {
         Self {
             app,
+            route_dependency_overrides_provider,
             scope,
             receive,
             send,
@@ -15690,6 +15707,13 @@ impl FastApiCall {
         Ok(body_fields_embedded(&plan.all_body_parameters()))
     }
 
+    fn dependency_overrides_provider(&self, py: Python<'_>) -> Py<PyAny> {
+        self.route_dependency_overrides_provider
+            .as_ref()
+            .map(|provider| provider.clone_ref(py))
+            .unwrap_or_else(|| self.app.clone_ref(py).into_any())
+    }
+
     fn invoke_route(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         if self.websocket_route_index.is_none()
             && self.frontend_route_index.is_none()
@@ -15717,6 +15741,7 @@ impl FastApiCall {
             .injected_response
             .as_ref()
             .map(|response| response.bind(py));
+        let dependency_overrides_provider = self.dependency_overrides_provider(py);
         let invocation = self
             .invocation
             .as_mut()
@@ -15770,7 +15795,7 @@ impl FastApiCall {
                 body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
-                dependency_overrides_provider: &self.app,
+                dependency_overrides_provider: &dependency_overrides_provider,
                 dependency_cache: &mut invocation.dependency_cache,
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
@@ -15910,6 +15935,7 @@ impl FastApiCall {
             .injected_response
             .as_ref()
             .map(|response| response.bind(py));
+        let dependency_overrides_provider = self.dependency_overrides_provider(py);
         let route_body_fields_embedded = self.selected_body_fields_embedded(py)?;
         let advance = {
             let invocation = self
@@ -15926,7 +15952,7 @@ impl FastApiCall {
                 body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
-                dependency_overrides_provider: &self.app,
+                dependency_overrides_provider: &dependency_overrides_provider,
                 dependency_cache: &mut invocation.dependency_cache,
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,

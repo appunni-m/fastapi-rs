@@ -1,4 +1,6 @@
 schema: fastapi-rs/python-asgi-workflow@13
+# FastAPI fastapi/routing.py passes the configured dependency override provider
+# to the route handler; dependencies/utils.py resolves overrides per edge.
 workload:
   file: tests/fixtures/workloads/standalone_apiroute_asgi.py
   factory: create_app
@@ -286,6 +288,86 @@ cases:
             comparison: exact
     source_evidence:
       - path: tests/test_dependency_contextvars.py
+        kind: upstream_test
+      - path: tests/test_dependency_yield_scope.py
+        kind: upstream_test
+    verification: parity
+
+  - case_id: fastapi.routing.apiroute.asgi.route-dependency-provider-override
+    factory_input:
+      route_path: /items/{item_id}
+      methods: [GET]
+      endpoint: dependency
+      response_model: dependency
+      dependency_value: route-value
+      override_dependency: true
+      dependency_override_value: provider-value
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: direct-get-with-provider-override
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items/23
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, body, body_json]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+      - action_id: inspect-provider-override-cleanup-trace
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /_workload-trace
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, body, body_json]
+            comparison: exact
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: tests/test_dependency_overrides.py
         kind: upstream_test
       - path: tests/test_dependency_yield_scope.py
         kind: upstream_test
