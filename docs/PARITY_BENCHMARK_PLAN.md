@@ -52,8 +52,19 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-No saved benchmark receipt matches the current FastAPI-RS source revision and
-the pinned Starlette-RS revision `4139a72449bf5751e8902fb1c7175ee7f191d338`.
+The current first-slice valid-request baseline is
+[`docs/benchmarks/2026-10-16-6bb19bc.md`](benchmarks/2026-10-16-6bb19bc.md).
+Its ignored result receipt
+`benchmark-results/20261016T111732Z-afec247b-f026-4500-9901-11878a57e57d.json`
+(SHA-256
+`234ef470418a31859f7ce4c9aa69c32da5664143aacdea326ca2662ddfebd572`)
+binds FastAPI-RS `6bb19bc` and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`; its live 13-case parity gate
+passed 13/13. On this one direct-ASGI workload, FastAPI-RS median latency was
+1.277x FastAPI and p95 latency was 3.689x; sequential request-loop throughput
+was 4,055 requests/second versus 7,054. These results identify a measured gap
+for this case only. The Starlette control is contextual and is not subtracted.
+
 The latest complete seven-workload suite available in local ignored output is
 `benchmark-results/suite-20261015T111504Z-3ee84a83-4af0-48fe-8160-7eec76f19c4e.json`
 (SHA-256
@@ -87,6 +98,9 @@ oracle; comparison receipt
 `parity-results/comparisons/bd7fa5a5-86c2-4ad9-9445-0688df0e2256.json`
 binds manifest SHA-256
 `d808858a9fd54ded33b713a8b1fa31db3c9cf17e0fcbfc6d07dd3815e88b8b1c`.
+The fresh 2026-10-16 receipt in the evidence-freshness section supersedes this
+historical result for the valid-request workload only; broader parity remains
+incomplete.
 
 Direct Python API workflows use isolated source and target workers, a versioned
 result schema, and exact comparison. The 2026-10-14 receipt below contains one
