@@ -63,9 +63,11 @@ BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 RELEASE_NOTICE_WHEEL ?=
 RELEASE_CRATE_DIR ?= target/package
 RELEASE_VERSION ?= 0.1.0
+RELEASE_SDIST_DIR ?= target/release-sdist
+RELEASE_SDIST_WHEEL_DIR ?= target/release-sdist-validation-wheels
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check benchmark-testclient verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check benchmark-testclient verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -78,6 +80,7 @@ help: ## Show common development commands
 	  '  make build          Build the Rust crates and Python wheel' \
 	  '  make build-rust     Build Rust crates with the pinned Starlette-RS source overlay' \
 	  '  make build-python   Build the Python wheel under target/wheels' \
+	  '  make release-sdist  Build, inspect, and rebuild a wheel from a portable source archive' \
 	  '  make build-tools-prepare Prepare hash-locked CPython 3.12.13 Maturin environment' \
 	  '  make developer-tools-prepare Install the hash-locked Ruff/uv/schema/YAML tool profile' \
 	  '  make developer-tools-inventory-update Resolve and render the developer-tool dependency closure' \
@@ -184,6 +187,9 @@ developer-tools-prepare: developer-tools-inventory-check ## Prepare the isolated
 
 build-python: build-tools-prepare ## Build and statically validate the release wheel under target/wheels
 	$(PYTHON) scripts/build_target_extension.py --release-wheel --python "$(BUILD_TOOLS_PYTHON)" --maturin "$(MATURIN)" --out target/wheels --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+
+release-sdist: build-tools-prepare ## Build, inspect, and rebuild a wheel from a portable source distribution
+	$(PYTHON) scripts/build_target_extension.py --release-sdist --python "$(BUILD_TOOLS_PYTHON)" --maturin "$(MATURIN)" --out "$(RELEASE_SDIST_DIR)" --wheel-out "$(RELEASE_SDIST_WHEEL_DIR)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 compatibility-atlas-update: parity-inputs ## Rebuild generated source atlas, fixture backlog, index, and contract
 	$(PYTHON) scripts/build_fastapi_compatibility_atlas.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-source "$(STARLETTE_SOURCE)" --starlette-rs-root "$(STARLETTE_RS_SOURCE)"

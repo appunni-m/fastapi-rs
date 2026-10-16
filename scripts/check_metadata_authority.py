@@ -25,6 +25,7 @@ from source_api_review_schema import (
     validate_source_api_review_schema,
     validate_source_api_selection,
 )
+from starlette_rs_source_identity import source_tree_sha256
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / "metadata.yaml"
@@ -204,6 +205,12 @@ def validate_pinned_source_checkout(label: str, root: Path, expected: dict[str, 
         canonical_repository(remote),
         canonical_repository(expected["repository"]),
     )
+    if label == "Starlette-RS":
+        require_equal(
+            "Starlette-RS source tree SHA-256",
+            source_tree_sha256(root, tracked_only=True),
+            expected.get("source_tree_sha256"),
+        )
 
 
 def validate_ci_source_checkouts(metadata: dict[str, Any]) -> None:

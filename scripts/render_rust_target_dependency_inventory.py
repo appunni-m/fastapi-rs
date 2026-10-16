@@ -16,6 +16,7 @@ from typing import Any
 
 import tomllib
 import yaml
+from starlette_rs_source_identity import source_tree_sha256
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs" / "RUST_TARGET_DEPENDENCIES.md"
@@ -157,6 +158,15 @@ def validate_starlette_rs_revision(source_root: Path) -> str:
         raise RuntimeError(
             "Starlette-RS implementation sources are dirty; dependency inventory requires "
             f"the clean pinned revision {expected_revision}\n{changes}"
+        )
+    expected_tree = authority["starlette_rs"].get("source_tree_sha256")
+    if not isinstance(expected_tree, str) or not re.fullmatch(r"[0-9a-f]{64}", expected_tree):
+        raise RuntimeError("metadata.yaml has no valid Starlette-RS source_tree_sha256 pin")
+    actual_tree = source_tree_sha256(source_root, tracked_only=True)
+    if actual_tree != expected_tree:
+        raise RuntimeError(
+            "Starlette-RS source-tree digest mismatch: "
+            f"metadata pins {expected_tree}, selected source is {actual_tree}"
         )
     return expected_revision
 
@@ -602,15 +612,17 @@ path dependency.
 | `mime_guess` 2.0.5 | Starlette-RS normal dependency | Infers file-response media types from paths in `starlette-rs/src/file_response.rs`. |
 | `serde_json` 1.0.151 | Starlette-RS normal dependency | JSON protocol parsing and output in `starlette-rs/src/bin/starlette-rs-parity-adapter.rs`. |
 | `sha2` 0.11.0 | Starlette-RS normal dependency | SHA-256 dependency-lock identity check in the same parity adapter. |
+| `sha2` 0.11.0 | `fastapi-rs` build dependency | Verifies the metadata-pinned Starlette-RS source tree when building from a source archive; not linked into FastAPI-RS runtime code. |
 
 The four file-response dependencies are used by the Starlette-RS library.
-`serde_json` and `sha2` are used by its parity-adapter binary but are currently
-declared as normal dependencies, so they remain in the package's Cargo graph.
-The adapter uses Rust; the zlib path additionally links the platform C zlib
-library. The `cc`, `pkg-config`, and `vcpkg` crates support native zlib
-discovery/building. Transitive crates below PyO3 provide Python C-API bindings,
-procedural macros, Rust syntax/token processing, and their helper routines;
-each exact edge is listed below.
+For Starlette-RS, `serde_json` and `sha2` are used by its parity-adapter binary
+but remain normal dependencies. FastAPI-RS also uses `sha2` as a build-only
+source-provenance check; it is not included in the runtime extension. The adapter
+uses Rust; the zlib path additionally links the platform C zlib library. The
+`cc`, `pkg-config`, and `vcpkg` crates support native zlib discovery/building.
+Transitive crates below PyO3 provide Python C-API bindings, procedural macros,
+Rust syntax/token processing, and their helper routines; each exact edge is
+listed below.
 
 ## Complete locked package graph
 

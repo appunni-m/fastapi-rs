@@ -194,6 +194,17 @@ but no Cargo archives were built or verified. Resolve source-archive contents,
 the build-time Starlette-RS source identity contract, and Cargo package
 verification before claiming source-distribution readiness.
 
+A replacement archive was built and checked at
+`target/release-sdist/fastapi_rs-0.1.0.tar.gz` (SHA-256
+`bbdc4fb9882460a7efa0fa234fab5ef83e7e81e3eaef42f76a76abf720eeead6`). The
+focused archive validator accepted all 201 members, verified the vendored
+Starlette-RS source hash against `metadata.yaml`, and found no machine-local
+paths, build outputs, or profiling files. A wheel build from an extracted copy
+reached the vendored-source identity check, but native compilation stopped with
+`No space left on device` during both release and development-profile attempts.
+This validates the archive structure and source identity only; a clean wheel
+rebuild and Cargo archive verification remain outstanding before publication.
+
 The inspected arm64 wheel
 `target/wheels-x0mz-20261012/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
 (SHA-256 `a29839e2c0679ac6fcff483c847e08022037688e07dcd49044662eac2c80bc5b`)

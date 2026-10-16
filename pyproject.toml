@@ -41,9 +41,34 @@ Upstream = "https://github.com/fastapi/fastapi"
 [tool.maturin]
 manifest-path = "fastapi-rs-py/Cargo.toml"
 python-source = "fastapi-rs-py/python"
-python-packages = ["fastapi", "fastapi.middleware", "fastapi.openapi", "fastapi.security", "fastapi_rs"]
+python-packages = [
+    "fastapi",
+    "fastapi/middleware",
+    "fastapi/openapi",
+    "fastapi/security",
+    "fastapi_rs",
+]
+sdist-generator = "git"
 module-name = "fastapi_rs._core"
 features = ["pyo3/extension-module"]
+include = [
+    { path = "metadata.yaml", format = "sdist" },
+    { path = "starlette-rs/Cargo.toml", format = "sdist" },
+    { path = "starlette-rs/Cargo.lock", format = "sdist" },
+    { path = "starlette-rs/rust-toolchain.toml", format = "sdist" },
+    { path = "starlette-rs/README.md", format = "sdist" },
+    { path = "starlette-rs/LICENSE.md", format = "sdist" },
+    { path = "starlette-rs/THIRD_PARTY_NOTICES.md", format = "sdist" },
+    { path = "starlette-rs/starlette-rs/**/*", format = "sdist" },
+    { path = "starlette-rs/starlette-rs-py/**/*", format = "sdist" },
+    { path = "starlette-rs/examples/**/*", format = "sdist" },
+]
+exclude = [
+    { path = "target/**", format = "sdist" },
+    { path = "**/*.profraw", format = "sdist" },
+    { path = "**/*.pyc", format = "sdist" },
+    { path = "**/__pycache__/**", format = "sdist" },
+]
 
 [tool.ruff]
 line-length = 100

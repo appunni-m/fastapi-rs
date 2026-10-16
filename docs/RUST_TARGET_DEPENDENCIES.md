@@ -28,15 +28,17 @@ path dependency.
 | `mime_guess` 2.0.5 | Starlette-RS normal dependency | Infers file-response media types from paths in `starlette-rs/src/file_response.rs`. |
 | `serde_json` 1.0.151 | Starlette-RS normal dependency | JSON protocol parsing and output in `starlette-rs/src/bin/starlette-rs-parity-adapter.rs`. |
 | `sha2` 0.11.0 | Starlette-RS normal dependency | SHA-256 dependency-lock identity check in the same parity adapter. |
+| `sha2` 0.11.0 | `fastapi-rs` build dependency | Verifies the metadata-pinned Starlette-RS source tree when building from a source archive; not linked into FastAPI-RS runtime code. |
 
 The four file-response dependencies are used by the Starlette-RS library.
-`serde_json` and `sha2` are used by its parity-adapter binary but are currently
-declared as normal dependencies, so they remain in the package's Cargo graph.
-The adapter uses Rust; the zlib path additionally links the platform C zlib
-library. The `cc`, `pkg-config`, and `vcpkg` crates support native zlib
-discovery/building. Transitive crates below PyO3 provide Python C-API bindings,
-procedural macros, Rust syntax/token processing, and their helper routines;
-each exact edge is listed below.
+For Starlette-RS, `serde_json` and `sha2` are used by its parity-adapter binary
+but remain normal dependencies. FastAPI-RS also uses `sha2` as a build-only
+source-provenance check; it is not included in the runtime extension. The adapter
+uses Rust; the zlib path additionally links the platform C zlib library. The
+`cc`, `pkg-config`, and `vcpkg` crates support native zlib discovery/building.
+Transitive crates below PyO3 provide Python C-API bindings, procedural macros,
+Rust syntax/token processing, and their helper routines; each exact edge is
+listed below.
 
 ## Complete locked package graph
 
@@ -69,7 +71,7 @@ either license, while `AND` requires both.
 | ctutils 0.4.2 | Apache-2.0 OR MIT | Rust; Cargo targets: library, test target | optional runtime, optional build | No Cargo links declaration or reviewed boundary annotation | registry | — | Constant-time utility library with selection and equality testing support targeting cryptographic applications. Supports `const fn` where appropriate. Built on the `cmov` crate which provides architecture-specific predication intrinsics. Heavily inspired by the `subtle` crate. | cmov 0.5.4 |
 | digest 0.11.3 | MIT OR Apache-2.0 | Rust; Cargo targets: library, test target | runtime, build | No Cargo links declaration or reviewed boundary annotation | registry | alloc, block-api, default, mac, oid | Traits for cryptographic hash functions and message authentication codes | block-buffer 0.12.1, crypto-common 0.2.2, const-oid 0.10.2, ctutils 0.4.2 |
 | encoding_rs 0.8.35 | (Apache-2.0 OR MIT) AND BSD-3-Clause | Rust; Cargo targets: library | runtime | No Cargo links declaration or reviewed boundary annotation | registry | alloc, default | A Gecko-oriented implementation of the Encoding Standard | cfg-if 1.0.5 |
-| fastapi-rs 0.1.0 | file: ../LICENSE.md | Rust; Cargo targets: build script, library | runtime | No Cargo links declaration or reviewed boundary annotation | workspace/path | default | Rust implementation core for the FastAPI replacement | base64 0.22.1, pyo3 0.29.2, starlette-rs 0.1.0 |
+| fastapi-rs 0.1.0 | file: ../LICENSE.md | Rust; Cargo targets: build script, library | runtime | No Cargo links declaration or reviewed boundary annotation | workspace/path | default | Rust implementation core for the FastAPI replacement | base64 0.22.1, pyo3 0.29.2, sha2 0.11.0 (build), starlette-rs 0.1.0 |
 | fastapi-rs-py 0.1.0 | file: ../LICENSE.md | Rust; Cargo targets: C-compatible dynamic library, build script | runtime | No Cargo links declaration or reviewed boundary annotation | workspace/path | default | PyO3 binding for the FastAPI-RS implementation | fastapi-rs 0.1.0, pyo3 0.29.2, pyo3-build-config 0.29.2 (build) |
 | find-msvc-tools 0.1.14 | MIT OR Apache-2.0 | Rust; Cargo targets: library | optional build | No Cargo links declaration or reviewed boundary annotation | registry | — | Find windows-specific tools, read MSVC versions from the registry and from COM interfaces | — |
 | flate2 1.1.10 | MIT OR Apache-2.0 | Rust; Cargo targets: example, library, test target | runtime | No Cargo links declaration or reviewed boundary annotation | registry | any_c_zlib, any_impl, any_zlib, libz-sys, zlib | DEFLATE compression and decompression exposed as Read/BufRead/Write streams. Supports miniz_oxide and multiple zlib implementations. Supports zlib, gzip, and raw deflate streams. | crc32fast 1.5.2, libz-sys 1.1.29 |

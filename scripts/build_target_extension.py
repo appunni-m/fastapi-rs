@@ -9,10 +9,13 @@ import shlex
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 from pathlib import Path
 
 import tomllib
+import yaml
+from starlette_rs_source_identity import source_tree_sha256
 
 ROOT = Path(__file__).resolve().parents[1]
 FAULT_INJECTION_ROOT = ROOT / "target" / "fault-injection"
@@ -363,6 +366,228 @@ def _build_release_wheel(args: argparse.Namespace, starlette_rs_source: Path) ->
     return subprocess.run(check_command, cwd=ROOT, check=False).returncode
 
 
+def _copy_tracked_files(source_root: Path, destination: Path, selectors: tuple[str, ...]) -> None:
+    completed = subprocess.run(
+        ["git", "-C", str(source_root), "ls-files", "-z", "--", *selectors],
+        check=False,
+        capture_output=True,
+    )
+    if completed.returncode:
+        raise SystemExit(
+            completed.stderr.decode("utf-8", errors="replace").strip()
+            or f"cannot enumerate tracked source files under {source_root}"
+        )
+    entries = [Path(item.decode("utf-8")) for item in completed.stdout.split(b"\0") if item]
+    if not entries:
+        raise SystemExit(f"no tracked source files found under {source_root}: {selectors}")
+    for relative in entries:
+        if relative.is_absolute() or ".." in relative.parts:
+            raise SystemExit(f"unsafe source path for sdist staging: {relative}")
+        source = source_root / relative
+        if source.is_symlink() or not source.is_file():
+            raise SystemExit(f"sdist source must be a regular tracked file: {source}")
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+
+
+def _prepare_sdist_overlay(starlette_rs_source: Path, overlay_root: Path) -> None:
+    """Stage a portable Cargo workspace with the pinned Starlette-RS source."""
+    root_selectors = (
+        "Cargo.toml",
+        "Cargo.lock",
+        "README.md",
+        "LICENSE.md",
+        "THIRD_PARTY_NOTICES.md",
+        "metadata.yaml",
+        "pyproject.toml",
+        "fastapi-rs",
+        "fastapi-rs-py",
+    )
+    _copy_tracked_files(ROOT, overlay_root, root_selectors)
+
+    workspace_path = overlay_root / "Cargo.toml"
+    workspace_text = workspace_path.read_text(encoding="utf-8")
+    workspace_data = tomllib.loads(workspace_text)
+    dependency = workspace_data.get("workspace", {}).get("dependencies", {}).get("starlette-rs")
+    if not isinstance(dependency, dict) or not isinstance(dependency.get("path"), str):
+        raise SystemExit("Cargo.toml must declare starlette-rs as a workspace path dependency")
+    if "starlette-rs" not in workspace_data.get("workspace", {}).get("exclude", []):
+        workspace_header = "[workspace]\n"
+        if workspace_text.count(workspace_header) != 1:
+            raise SystemExit("Cargo.toml workspace header is ambiguous")
+        workspace_text = workspace_text.replace(
+            workspace_header,
+            workspace_header + 'exclude = ["starlette-rs"]\n',
+            1,
+        )
+    old_path = f"path = {json.dumps(dependency['path'])}"
+    if workspace_text.count(old_path) != 1:
+        raise SystemExit("Cargo.toml Starlette-RS dependency path is ambiguous")
+    portable_path = f"path = {json.dumps('starlette-rs/starlette-rs')}"
+    workspace_path.write_text(workspace_text.replace(old_path, portable_path, 1), encoding="utf-8")
+
+    starlette_root_selectors = (
+        "Cargo.toml",
+        "Cargo.lock",
+        "rust-toolchain.toml",
+        "README.md",
+        "LICENSE.md",
+        "THIRD_PARTY_NOTICES.md",
+        "starlette-rs",
+        "starlette-rs-py",
+        "examples",
+    )
+    vendor_root = overlay_root / "starlette-rs"
+    _copy_tracked_files(starlette_rs_source, vendor_root, starlette_root_selectors)
+
+    expected_digest = yaml.safe_load((overlay_root / "metadata.yaml").read_text(encoding="utf-8"))[
+        "starlette_rs"
+    ]["source_tree_sha256"]
+    actual_digest = source_tree_sha256(vendor_root, tracked_only=False)
+    if actual_digest != expected_digest:
+        raise SystemExit(
+            "staged Starlette-RS source digest mismatch: "
+            f"metadata pins {expected_digest}, staged source is {actual_digest}"
+        )
+
+
+def _commit_sdist_overlay(overlay_root: Path) -> None:
+    """Give Maturin's Git sdist generator a clean, temporary source snapshot."""
+    commands = (
+        ["git", "init", "--quiet"],
+        ["git", "add", "--all"],
+        [
+            "git",
+            "-c",
+            "user.name=FastAPI-RS source archive",
+            "-c",
+            "user.email=fastapi-rs-sdist@localhost",
+            "commit",
+            "--quiet",
+            "-m",
+            "Portable FastAPI-RS source archive",
+        ],
+    )
+    for command in commands:
+        completed = subprocess.run(
+            command,
+            cwd=overlay_root,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if completed.returncode:
+            raise SystemExit(
+                completed.stderr.strip()
+                or f"cannot prepare temporary source snapshot with {' '.join(command)}"
+            )
+
+
+def _extract_sdist(archive_path: Path, destination: Path) -> Path:
+    destination.mkdir(parents=True, exist_ok=True)
+    destination_root = destination.resolve()
+    with tarfile.open(archive_path, "r:gz") as archive:
+        for member in archive.getmembers():
+            member_path = (destination_root / member.name).resolve()
+            try:
+                member_path.relative_to(destination_root)
+            except ValueError as exc:
+                raise SystemExit(f"sdist path escapes extraction directory: {member.name}") from exc
+            if member.issym() or member.islnk() or not (member.isfile() or member.isdir()):
+                raise SystemExit(f"sdist contains an unsupported archive entry: {member.name}")
+        archive.extractall(destination_root, filter="data")
+    roots = [path for path in destination_root.iterdir() if path.is_dir()]
+    if len(roots) != 1:
+        raise SystemExit(
+            f"expected one top-level source tree in {archive_path}, found {len(roots)}"
+        )
+    return roots[0]
+
+
+def _build_release_sdist(args: argparse.Namespace, starlette_rs_source: Path) -> int:
+    """Build, inspect, and rebuild the Python wheel from a portable sdist."""
+    try:
+        from render_rust_target_dependency_inventory import validate_starlette_rs_revision
+
+        revision = validate_starlette_rs_revision(starlette_rs_source)
+    except (ImportError, RuntimeError, subprocess.CalledProcessError) as exc:
+        raise SystemExit(f"cannot verify the pinned Starlette-RS source: {exc}") from exc
+
+    if args.python is None or not args.python.is_file():
+        raise SystemExit("--python must name the prepared build-tools interpreter")
+    maturin_command = shlex.split(args.maturin)
+    if not maturin_command:
+        raise SystemExit("Maturin command must not be empty")
+
+    sdist_directory = args.out.resolve()
+    sdist_directory.mkdir(parents=True, exist_ok=True)
+    wheel_directory = args.wheel_out.resolve()
+    wheel_directory.mkdir(parents=True, exist_ok=True)
+    target_directory = Path(os.environ.get("CARGO_TARGET_DIR", ROOT / "target"))
+    target_directory = target_directory.resolve()
+    target_directory.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.TemporaryDirectory(prefix=".fastapi-rs-sdist-", dir=ROOT) as staged_name:
+        staged_root = Path(staged_name)
+        _prepare_sdist_overlay(starlette_rs_source, staged_root)
+        _commit_sdist_overlay(staged_root)
+        environment = os.environ.copy()
+        environment["PYO3_PYTHON"] = str(args.python.resolve())
+        environment["CARGO_TARGET_DIR"] = str(target_directory)
+        command = [*maturin_command, "sdist", "--out", str(sdist_directory)]
+        print(f"building portable source distribution against Starlette-RS {revision}")
+        completed = subprocess.run(command, cwd=staged_root, env=environment, check=False)
+        if completed.returncode:
+            return completed.returncode
+
+    archives = sorted(sdist_directory.glob("fastapi_rs-*.tar.gz"))
+    if len(archives) != 1:
+        raise SystemExit(
+            f"expected one FastAPI-RS sdist in {sdist_directory}, found {len(archives)}"
+        )
+    archive_path = archives[0]
+    check_command = [
+        sys.executable,
+        str(ROOT / "scripts/check_release_sdist.py"),
+        "--sdist",
+        str(archive_path),
+    ]
+    checked = subprocess.run(check_command, cwd=ROOT, check=False)
+    if checked.returncode:
+        return checked.returncode
+
+    with tempfile.TemporaryDirectory(prefix="fastapi-rs-sdist-build-") as extracted_name:
+        extracted_root = _extract_sdist(archive_path, Path(extracted_name))
+        command = [
+            *maturin_command,
+            "build",
+            "--profile",
+            "dev",
+            "--locked",
+            "--offline",
+            "--interpreter",
+            str(args.python.resolve()),
+            "--target-dir",
+            str(target_directory),
+            "--out",
+            str(wheel_directory),
+        ]
+        print(f"building wheel from extracted sdist {archive_path}")
+        completed = subprocess.run(command, cwd=extracted_root, env=environment, check=False)
+        if completed.returncode:
+            return completed.returncode
+
+    wheels = sorted(wheel_directory.glob("*.whl"))
+    if len(wheels) != 1:
+        raise SystemExit(f"expected one rebuilt wheel in {wheel_directory}, found {len(wheels)}")
+    return subprocess.run(
+        [sys.executable, str(ROOT / "scripts/check_release_wheel.py"), "--wheel", str(wheels[0])],
+        cwd=ROOT,
+        check=False,
+    ).returncode
+
+
 def _extension_suffix(target_python: Path) -> str:
     result = subprocess.run(
         [
@@ -494,16 +719,41 @@ def main() -> int:
         action="store_true",
         help="build and validate a non-editable wheel against the pinned Starlette-RS source",
     )
+    parser.add_argument(
+        "--release-sdist",
+        action="store_true",
+        help="build, inspect, and rebuild a wheel from a portable source distribution",
+    )
     parser.add_argument("--maturin", default="maturin", help="Maturin command (supports wrappers)")
     parser.add_argument(
         "--out", type=Path, default=ROOT / "target/wheels", help="release wheel output directory"
     )
     parser.add_argument(
+        "--wheel-out",
+        type=Path,
+        default=ROOT / "target/release-sdist-wheels",
+        help="rebuilt wheel output directory for --release-sdist",
+    )
+    parser.add_argument(
         "--starlette-rs-source", required=True, type=Path, help="selected Starlette-RS checkout"
     )
     args = parser.parse_args()
-    if sum((args.clippy, args.build_rust, args.release_wheel, args.fault_injection)) > 1:
-        parser.error("--clippy, --build-rust, --release-wheel, and --fault-injection are exclusive")
+    if (
+        sum(
+            (
+                args.clippy,
+                args.build_rust,
+                args.release_wheel,
+                args.release_sdist,
+                args.fault_injection,
+            )
+        )
+        > 1
+    ):
+        parser.error(
+            "--clippy, --build-rust, --release-wheel, --release-sdist, "
+            "and --fault-injection are exclusive"
+        )
     if args.fault_injection and args.python is None:
         parser.error("--fault-injection requires --python inside target/fault-injection/")
     starlette_rs_source = args.starlette_rs_source.resolve()
@@ -511,6 +761,8 @@ def main() -> int:
         raise SystemExit(f"Starlette-RS source directory does not exist: {starlette_rs_source}")
     if args.release_wheel:
         return _build_release_wheel(args, starlette_rs_source)
+    if args.release_sdist:
+        return _build_release_sdist(args, starlette_rs_source)
     cargo_command = shlex.split(args.cargo)
     if not cargo_command:
         raise SystemExit("Cargo command must not be empty")

@@ -1,18 +1,22 @@
 //! Verify the metadata-pinned Starlette-RS source before compiling FastAPI-RS.
 
+use sha2::{Digest, Sha256};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
 
-const STARLETTE_SOURCE_PATHS: [&str; 7] = [
+const STARLETTE_SOURCE_PATHS: [&str; 10] = [
     "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain.toml",
     "starlette-rs/Cargo.toml",
+    "starlette-rs/build.rs",
     "starlette-rs/src",
     "starlette-rs-py/Cargo.toml",
+    "starlette-rs-py/build.rs",
     "starlette-rs-py/src",
     "starlette-rs-py/python",
-    "starlette-rs-py/pyproject.toml",
 ];
 
 fn main() {
@@ -61,6 +65,12 @@ fn validate_starlette_rs_source() -> Result<(), String> {
     let canonical_source_root = source_root
         .canonicalize()
         .map_err(|error| format!("cannot resolve Starlette-RS repository root: {error}"))?;
+    for source_path in STARLETTE_SOURCE_PATHS {
+        println!(
+            "cargo:rerun-if-changed={}",
+            canonical_source_root.join(source_path).display()
+        );
+    }
 
     let expected_revision = pinned_starlette_rs_revision(
         &fs::read_to_string(&metadata_path)
@@ -75,8 +85,39 @@ fn validate_starlette_rs_source() -> Result<(), String> {
             "metadata.yaml has an invalid Starlette-RS commit pin: {expected_revision}"
         ));
     }
+    let metadata_text = fs::read_to_string(&metadata_path)
+        .map_err(|error| format!("cannot read {}: {error}", metadata_path.display()))?;
+    let expected_source_digest = pinned_starlette_rs_source_tree_sha256(&metadata_text)?;
+    if expected_source_digest.len() != 64
+        || !expected_source_digest
+            .bytes()
+            .all(|character| character.is_ascii_hexdigit() && !character.is_ascii_uppercase())
+    {
+        return Err(format!(
+            "metadata.yaml has an invalid Starlette-RS source-tree SHA-256: {expected_source_digest}"
+        ));
+    }
 
-    let repository_root = git_output(&canonical_source_root, &["rev-parse", "--show-toplevel"])?;
+    let repository_root = match git_output(
+        &canonical_source_root,
+        &["rev-parse", "--show-toplevel"],
+    ) {
+        Ok(repository_root) => repository_root,
+        Err(git_error) => {
+            let vendored_root = workspace_root
+                .join("starlette-rs")
+                .canonicalize()
+                .map_err(|error| format!("cannot resolve vendored Starlette-RS source: {error}"))?;
+            if canonical_source_root != vendored_root {
+                return Err(git_error);
+            }
+            verify_source_tree_digest(&canonical_source_root, &expected_source_digest, false)?;
+            println!(
+                "cargo:warning=FastAPI-RS verified vendored Starlette-RS source {expected_revision} by SHA-256"
+            );
+            return Ok(());
+        }
+    };
     let canonical_repository_root = PathBuf::from(repository_root)
         .canonicalize()
         .map_err(|error| format!("cannot resolve Starlette-RS Git root: {error}"))?;
@@ -88,12 +129,6 @@ fn validate_starlette_rs_source() -> Result<(), String> {
         ));
     }
 
-    for source_path in STARLETTE_SOURCE_PATHS {
-        println!(
-            "cargo:rerun-if-changed={}",
-            canonical_source_root.join(source_path).display()
-        );
-    }
     watch_git_identity_files(&canonical_source_root)?;
 
     let actual_revision = git_output(&canonical_source_root, &["rev-parse", "HEAD"])?;
@@ -112,6 +147,7 @@ fn validate_starlette_rs_source() -> Result<(), String> {
             "Starlette-RS implementation sources at {expected_revision} are dirty; normal FastAPI-RS builds require a clean pinned checkout:\n{source_changes}"
         ));
     }
+    verify_source_tree_digest(&canonical_source_root, &expected_source_digest, true)?;
 
     println!(
         "cargo:warning=FastAPI-RS verified Starlette-RS source {} at {expected_revision}",
@@ -162,6 +198,185 @@ fn pinned_starlette_rs_revision(metadata: &str) -> Result<String, String> {
         }
     }
     Err("metadata.yaml has no starlette_rs.commit pin".to_owned())
+}
+
+fn pinned_starlette_rs_source_tree_sha256(metadata: &str) -> Result<String, String> {
+    let mut in_starlette_rs = false;
+    for line in metadata.lines() {
+        if line == "starlette_rs:" {
+            in_starlette_rs = true;
+            continue;
+        }
+        if in_starlette_rs && !line.starts_with(char::is_whitespace) && !line.trim().is_empty() {
+            break;
+        }
+        if in_starlette_rs {
+            if let Some(value) = line.strip_prefix("  source_tree_sha256:") {
+                return Ok(value.trim().trim_matches('"').to_owned());
+            }
+        }
+    }
+    Err("metadata.yaml has no starlette_rs.source_tree_sha256 pin".to_owned())
+}
+
+fn verify_source_tree_digest(
+    source_root: &Path,
+    expected_digest: &str,
+    tracked_only: bool,
+) -> Result<(), String> {
+    let files = if tracked_only {
+        git_tracked_source_files(source_root)?
+    } else {
+        vendored_source_files(source_root)?
+    };
+    let mut hasher = Sha256::new();
+    for relative_path in files {
+        let path_text = relative_path
+            .to_str()
+            .ok_or_else(|| {
+                format!(
+                    "non-UTF-8 Starlette-RS source path: {}",
+                    relative_path.display()
+                )
+            })?
+            .replace('\\', "/");
+        hasher.update(path_text.as_bytes());
+        hasher.update([0]);
+        let contents = fs::read(source_root.join(&relative_path)).map_err(|error| {
+            format!(
+                "cannot read Starlette-RS source file {}: {error}",
+                source_root.join(&relative_path).display()
+            )
+        })?;
+        hasher.update(contents);
+        hasher.update([0]);
+    }
+    let actual_digest = hexadecimal_sha256(&hasher.finalize());
+    if actual_digest != expected_digest {
+        return Err(format!(
+            "metadata.yaml pins Starlette-RS source-tree SHA-256 {expected_digest}, but {} hashes to {actual_digest}",
+            source_root.display()
+        ));
+    }
+    Ok(())
+}
+
+fn hexadecimal_sha256(digest: &[u8]) -> String {
+    const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
+    let mut encoded = String::with_capacity(digest.len() * 2);
+    for byte in digest {
+        encoded.push(char::from(HEX_DIGITS[usize::from(byte >> 4)]));
+        encoded.push(char::from(HEX_DIGITS[usize::from(byte & 0x0f)]));
+    }
+    encoded
+}
+
+fn git_tracked_source_files(source_root: &Path) -> Result<Vec<PathBuf>, String> {
+    let mut arguments = vec!["ls-files", "-z", "--"];
+    arguments.extend(STARLETTE_SOURCE_PATHS);
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(source_root)
+        .args(arguments)
+        .output()
+        .map_err(|error| format!("cannot list Starlette-RS source files: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "git ls-files failed in {}: {}",
+            source_root.display(),
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+    let mut files = Vec::new();
+    for raw_path in output
+        .stdout
+        .split(|byte| *byte == 0)
+        .filter(|path| !path.is_empty())
+    {
+        let path = std::str::from_utf8(raw_path)
+            .map_err(|error| format!("git returned non-UTF-8 Starlette-RS path: {error}"))?;
+        let relative_path = PathBuf::from(path);
+        if relative_path.is_absolute() || relative_path.starts_with("..") {
+            return Err(format!("invalid tracked Starlette-RS source path: {path}"));
+        }
+        if fs::symlink_metadata(source_root.join(&relative_path))
+            .map_err(|error| format!("cannot inspect Starlette-RS source {path}: {error}"))?
+            .file_type()
+            .is_symlink()
+        {
+            return Err(format!(
+                "Starlette-RS source identity path is a symlink: {path}"
+            ));
+        }
+        files.push(relative_path);
+    }
+    files.sort_by_key(|path| path.to_string_lossy().replace('\\', "/"));
+    if files.is_empty() {
+        return Err("no tracked Starlette-RS source files were found".to_owned());
+    }
+    Ok(files)
+}
+
+fn vendored_source_files(source_root: &Path) -> Result<Vec<PathBuf>, String> {
+    let mut files = Vec::new();
+    for source_path in STARLETTE_SOURCE_PATHS {
+        collect_vendored_files(source_root, &source_root.join(source_path), &mut files)?;
+    }
+    files.sort_by_key(|path| path.to_string_lossy().replace('\\', "/"));
+    files.dedup();
+    if files.is_empty() {
+        return Err("no vendored Starlette-RS source files were found".to_owned());
+    }
+    Ok(files)
+}
+
+fn collect_vendored_files(
+    source_root: &Path,
+    current_path: &Path,
+    files: &mut Vec<PathBuf>,
+) -> Result<(), String> {
+    let metadata = fs::symlink_metadata(current_path)
+        .map_err(|error| format!("cannot inspect vendored Starlette-RS source: {error}"))?;
+    if metadata.file_type().is_symlink() {
+        return Err(format!(
+            "vendored Starlette-RS source contains a symlink: {}",
+            current_path.display()
+        ));
+    }
+    if metadata.is_file() {
+        files.push(
+            current_path
+                .strip_prefix(source_root)
+                .map_err(|error| format!("vendored Starlette-RS source escaped its root: {error}"))?
+                .to_path_buf(),
+        );
+        return Ok(());
+    }
+    if !metadata.is_dir() {
+        return Err(format!(
+            "vendored Starlette-RS source is not a file or directory: {}",
+            current_path.display()
+        ));
+    }
+    let mut entries = fs::read_dir(current_path)
+        .map_err(|error| format!("cannot read vendored Starlette-RS source: {error}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| format!("cannot read vendored Starlette-RS directory entry: {error}"))?;
+    entries.sort_by_key(|entry| entry.file_name());
+    for entry in entries {
+        let path = entry.path();
+        let name = entry.file_name();
+        let name = name.to_string_lossy();
+        if name == "__pycache__"
+            || name == "target"
+            || name.ends_with(".profraw")
+            || name.ends_with(".pyc")
+        {
+            continue;
+        }
+        collect_vendored_files(source_root, &path, files)?;
+    }
+    Ok(())
 }
 
 fn git_output(root: &Path, arguments: &[&str]) -> Result<String, String> {
