@@ -167,7 +167,43 @@ contents, including license-file metadata and notices, against the versions
 and native components actually shipped.
 Upstream tests, docs, examples, and branding must be reviewed separately.
 
-### Latest validated local wheel (2026-10-15)
+### Current local artifact evidence (2026-10-17)
+
+The following checks were run from clean FastAPI-RS commit
+`b1dae6577e18de4d7010b69d958631d364e0820a` against pinned Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338` on macOS arm64 with CPython
+3.12.13:
+
+- The optimized abi3 wheel at
+  `target/release-wheel-license-b1dae65/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
+  has SHA-256
+  `503f7feda2d22c0b045b28f26abe0f48fe4268fb563fefefc999ed6cdbe1ff64`.
+  The release-wheel validator and focused wheel notice check passed. The
+  archive contains the `fastapi` facade, one `fastapi_rs._core` extension,
+  `LICENSE.md`, `THIRD_PARTY_NOTICES.md`, and its SBOM. `otool -L` shows this
+  artifact links `/usr/lib/libz.1.dylib` version 1.2.12, system iconv, and
+  libSystem.
+- The source archive at
+  `target/release-sdist-license-b1dae65/fastapi_rs-0.1.0.tar.gz` has SHA-256
+  `655f2d58940a218238178fc0f0a7ba22687eb601d07ea2fd1afef3d94aad20c9`.
+  The focused sdist validator accepted all 201 members and verified the
+  vendored Starlette-RS source identity against the pin. It rejected no
+  machine-local paths, build outputs, or profiling files. Building from the
+  extracted archive produced a development-profile wheel that passed the
+  release-wheel validator and included both declared license files.
+- `make license-notices-check` and the offline target dependency/license
+  inventory check passed. The latter used the pinned clean Starlette-RS
+  checkout and `RUSTC_WRAPPER=` because the default sibling checkout is at a
+  different revision and the configured `sccache` wrapper is unavailable in
+  this sandbox.
+
+This evidence covers one local macOS arm64 build. It does not verify other
+platform artifacts or publishable Cargo archives. The extracted-sdist build
+used the development profile; no release-profile rebuild from the sdist was
+recorded. Contributor licensing authority and the release workflow also
+remain unresolved.
+
+### Previous artifact audit (2026-10-15)
 
 Built an arm64 CPython 3.12 abi3 wheel from FastAPI-RS commit
 `d23bc7eec67b2f447e2c29f2496dcf73e953030c` against the clean pinned
