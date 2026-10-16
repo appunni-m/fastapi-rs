@@ -5375,13 +5375,25 @@ reviewed_api_contract_overlay:
           start_line: 984
           end_line: 999
       supported_slice: >-
-        During initialization, FastAPI assigns `app.router` to a newly created
-        `routing.APIRouter`. The constructor wiring supplies the initial route
-        list, redirect setting, the app as dependency-overrides provider,
-        lifecycle handlers, and the listed route configuration values. This
-        scope covers only that initial attribute construction and wiring; later
-        mutation or replacement, route-inclusion semantics, routing behavior,
-        and ASGI dispatch are outside it.
+        During initialization, FastAPI assigns `app.router` to a stable
+        `routing.APIRouter` object sharing the app's routes and configuration.
+        The linked input-only workflow observes object identity, prefix,
+        redirect_slashes, strict_content_type, default_response_class,
+        dependencies, and shared route registration with documentation routes
+        disabled. Other constructor wiring and router behavior are outside this
+        reviewed slice.
+      fixture_refs:
+        - case_id: fastapi.application.router.identity-and-initial-settings
+          recipe_path: tests/fixtures/input-recipes/parity/application-router.yaml
+          observation_selectors: [http.status, http.body.bytes]
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes]
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::router
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The initial routes parameter and generic Starlette route objects are not integrated into the target router view. Generated documentation routes, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
     fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url:
       source_evidence:
         - path: fastapi/applications.py

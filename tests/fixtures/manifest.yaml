@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 30335695264b113444d59ae3d63317095a75d8ded0fd7505116225527a2ea8a2
+    sha256: ae2885a6dff58dbb5674d6d6090da83ff49a7cf6e301d889ba6eadd0649c6b92
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 6e901f37a3374499c95a5341d6d601feae45a97cfbeb94d58c0ffe6b22a09dfb
+    sha256: 6be2d41d9285445e104e877849898eb5c5a1bd168b616e3c7d637c2d93a4957f
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: d83d94bfa472a285f135d023a617f29c66a8bed6192bee3d57436ef118fd311b
+    sha256: 5886b5c4fe922d2f8ba8394dfae3938242fa1647623116bb873e48967d137481
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 639
-      cases: 2611
-      partial_source_mappings: 1881
+      workflows: 640
+      cases: 2612
+      partial_source_mappings: 1882
 
 contract_metadata:
   aliases:
@@ -1241,8 +1241,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
-    symbols_with_operation_fixture_refs: 254
-    operation_fixture_refs: 1939
+    symbols_with_operation_fixture_refs: 255
+    operation_fixture_refs: 1940
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -18338,6 +18338,18 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: application-router
+      input_path: tests/fixtures/inputs/parity/application-router.json
+      input_sha256: d340fba001a1bba260c03ddfcfd33b3820cfaace0731a1fd58ab4ac2d3a7b360
+      recipe_path: tests/fixtures/input-recipes/parity/application-router.yaml
+      recipe_sha256: 35bc9049e0dc5032e401e970a18a67a6eec2fa135632afd0614b6ccf33bed5d5
+      workload_path: tests/fixtures/workloads/application_router.py
+      workload_sha256: f88689b62e7f457288b678a611d101f87f4207c369e22a42bbd85ff1dd98e758
+      case_id: fastapi.application.router.identity-and-initial-settings
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -18359,8 +18371,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/224
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::router
+      known_gaps:
+      - The initial routes parameter and generic Starlette route objects are not integrated into the target
+        router view. Generated documentation routes, callbacks, startup and shutdown handlers, route_class
+        customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated
+        replacement behavior, and lifetime parity when a router outlives its app remain unverified.
   - id: fastapi.applications.FastAPI.state
     kind: field
     source_candidate_ref: /api_candidates/228

@@ -16,7 +16,7 @@ use pyo3::prelude::*;
 use pyo3::sync::PyOnceLock;
 use pyo3::types::{
     PyBool, PyBytes, PyDict, PyFrozenSet, PyInt, PyIterator, PyList, PyMapping, PyModule, PySet,
-    PyString, PyTuple, PyType,
+    PyString, PyTuple, PyType, PyWeakrefMethods, PyWeakrefReference,
 };
 use starlette_rs::{DetailedRouteMatch, NamedRouteTable, QueryParams, RouteTable};
 
@@ -1794,7 +1794,7 @@ impl PyApiRoute {
                 None,
             )?,
         )?;
-        let inner = scratch_router.bind(py).borrow().inner.clone_ref(py);
+        let inner = scratch_router.bind(py).borrow().inner_app(py)?;
         let response_model = if response_model.bind(py).is_none() {
             None
         } else {
@@ -2612,8 +2612,7 @@ fn api_route_dispatch_owner(
         provider
             .bind(py)
             .extract::<PyRef<'_, PyApiRouter>>()?
-            .inner
-            .clone_ref(py)
+            .inner_app(py)?
     } else {
         provider
             .bind(py)
@@ -3352,7 +3351,7 @@ struct ParameterOpenApiPlan {
     openapi_examples: Option<Py<PyAny>>,
 }
 
-#[pyclass(name = "FastAPI", module = "fastapi.applications", dict)]
+#[pyclass(name = "FastAPI", module = "fastapi.applications", dict, weakref)]
 pub(crate) struct PyFastApi {
     state: Py<PyAny>,
     debug: bool,
@@ -3404,6 +3403,7 @@ pub(crate) struct PyFastApi {
     websocket_routes: Vec<FastApiWebSocketRoute>,
     user_middleware: Vec<Py<PyAny>>,
     middleware_stack: Option<Py<PyAny>>,
+    router_view: Option<Py<PyAny>>,
 }
 
 struct OpenApiRouteSnapshot {
@@ -3544,7 +3544,8 @@ impl OpenApiAppSnapshot {
             .map(|(route, method)| OpenApiRouteSnapshot::from_route(py, route, method, false))
             .collect::<PyResult<Vec<_>>>()?;
         let webhook_router = app.webhooks.bind(py).extract::<PyRef<'_, PyApiRouter>>()?;
-        let webhook_app = webhook_router.inner.bind(py).borrow();
+        let webhook_inner = webhook_router.inner_app(py)?;
+        let webhook_app = webhook_inner.bind(py).borrow();
         let webhook_route_order =
             effective_route_order(py, &webhook_app, IncludedRouteCategory::Http)?;
         operations.extend(
@@ -3754,13 +3755,31 @@ struct PyRawWebSocketDecorator {
 
 #[pyclass(name = "APIRouter", module = "fastapi.routing")]
 pub(crate) struct PyApiRouter {
-    inner: Py<PyFastApi>,
+    inner: ApiRouterInner,
     prefix: String,
     tags: Vec<String>,
     deprecated: Option<bool>,
     include_in_schema: bool,
     dependencies: Vec<Py<PyAny>>,
     strict_content_type: Option<bool>,
+}
+
+enum ApiRouterInner {
+    Owned(Py<PyFastApi>),
+    FastApiWeak(Py<PyWeakrefReference>),
+}
+
+impl ApiRouterInner {
+    fn app(&self, py: Python<'_>) -> PyResult<Py<PyFastApi>> {
+        match self {
+            Self::Owned(app) => Ok(app.clone_ref(py)),
+            Self::FastApiWeak(reference) => reference
+                .bind(py)
+                .upgrade_as::<PyFastApi>()?
+                .map(Bound::unbind)
+                .ok_or_else(|| PyRuntimeError::new_err("FastAPI app no longer exists")),
+        }
+    }
 }
 
 struct RouterIncludePolicy<'policy> {
@@ -3911,7 +3930,7 @@ impl PyOperationRouteCallable {
                 route_include_in_schema && router.include_in_schema,
             )?;
             router_kwargs = Some(effective_kwargs.unbind());
-            router.inner.clone_ref(py).into_bound(py).into_any()
+            router.inner_app(py)?.into_bound(py).into_any()
         } else {
             instance
         };
@@ -4262,7 +4281,23 @@ impl PyFastApi {
             websocket_routes: Vec::new(),
             user_middleware,
             middleware_stack: None,
+            router_view: None,
         })
+    }
+
+    #[getter]
+    fn router(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        if let Some(router) = slf.bind(py).borrow().router_view.as_ref() {
+            return Ok(router.clone_ref(py));
+        }
+        let router = Py::new(py, PyApiRouter::from_fastapi_app(slf.bind(py))?)?.into_any();
+        slf.bind(py).borrow_mut().router_view = Some(router.clone_ref(py));
+        Ok(router)
+    }
+
+    #[setter]
+    fn set_router(&mut self, router: Py<PyAny>) {
+        self.router_view = Some(router);
     }
 
     #[getter]
@@ -5291,7 +5326,7 @@ impl PyFastApi {
         let include_responses = response_map_or_empty(py, responses)?;
         let include_response_class = default_response_class.into_choice(py)?;
         let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;
-        let source_inner = { router.bind(py).borrow().inner.clone_ref(py) };
+        let source_inner = { router.bind(py).borrow().inner_app(py)? };
         refresh_included_router_routes(py, &source_inner)?;
         let mut destination_guard = slf.bind(py).borrow_mut();
         let destination = &mut *destination_guard;
@@ -5322,7 +5357,7 @@ impl PyFastApi {
             .map(|dependency| dependency.clone_ref(py))
             .collect::<Vec<_>>();
         inherited_dependencies.extend(dependencies.unwrap_or_default());
-        let source = router.inner.bind(py).borrow();
+        let source = source_inner.bind(py).borrow();
         let route_position = destination.routes.len();
         let websocket_route_position = destination.websocket_routes.len();
         let frontend_route_position = destination.frontend_routes.len();
@@ -5339,7 +5374,7 @@ impl PyFastApi {
         merge_router_routes(
             py,
             destination,
-            &router.inner,
+            &source_inner,
             &source,
             &dependency_overrides_provider,
             RouterIncludePolicy {
@@ -6392,8 +6427,7 @@ impl PyFastApi {
             app.webhooks
                 .bind(py)
                 .extract::<PyRef<'_, PyApiRouter>>()?
-                .inner
-                .clone_ref(py)
+                .inner_app(py)?
         };
         refresh_included_router_routes(py, &webhook_app)?;
         materialize_included_response_fields(py, &webhook_app, None, None)?;
@@ -6737,6 +6771,31 @@ impl PyFastApi {
     }
 }
 
+impl PyApiRouter {
+    fn from_fastapi_app(app: &Bound<'_, PyFastApi>) -> PyResult<Self> {
+        let py = app.py();
+        let inner = ApiRouterInner::FastApiWeak(PyWeakrefReference::new(app.as_any())?.unbind());
+        let app = app.borrow();
+        Ok(Self {
+            inner,
+            prefix: String::new(),
+            tags: app.router_tags.clone(),
+            deprecated: app.router_deprecated,
+            include_in_schema: app.router_include_in_schema,
+            dependencies: app
+                .dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py))
+                .collect(),
+            strict_content_type: app.strict_content_type,
+        })
+    }
+
+    fn inner_app(&self, py: Python<'_>) -> PyResult<Py<PyFastApi>> {
+        self.inner.app(py)
+    }
+}
+
 #[pymethods]
 impl PyApiRouter {
     #[new]
@@ -6817,7 +6876,7 @@ impl PyApiRouter {
             inner.strict_content_type = strict_content_type;
         }
         Ok(Self {
-            inner,
+            inner: ApiRouterInner::Owned(inner),
             prefix: prefix.to_owned(),
             tags: router_tags,
             deprecated,
@@ -6833,23 +6892,60 @@ impl PyApiRouter {
     }
 
     #[getter]
-    fn default_response_class(&self, py: Python<'_>) -> Py<PyAny> {
-        self.inner
+    fn default_response_class(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        Ok(self
+            .inner_app(py)?
             .bind(py)
             .borrow()
             .default_response_class
-            .python_value(py)
+            .python_value(py))
     }
 
     #[setter]
-    fn set_default_response_class(&mut self, py: Python<'_>, value: Py<PyAny>) {
-        self.inner.bind(py).borrow_mut().default_response_class =
-            ResponseClassChoice::from_python(py, value);
+    fn set_default_response_class(&mut self, py: Python<'_>, value: Py<PyAny>) -> PyResult<()> {
+        self.inner_app(py)?
+            .bind(py)
+            .borrow_mut()
+            .default_response_class = ResponseClassChoice::from_python(py, value);
+        Ok(())
     }
 
     #[getter]
     fn routes(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
-        route_views(py, &self.inner.bind(py).borrow().routes)
+        let inner = self.inner_app(py)?;
+        route_views(py, &inner.bind(py).borrow().routes)
+    }
+
+    #[getter]
+    fn redirect_slashes(&self, py: Python<'_>) -> PyResult<bool> {
+        Ok(self.inner_app(py)?.bind(py).borrow().redirect_slashes)
+    }
+
+    #[setter]
+    fn set_redirect_slashes(&mut self, py: Python<'_>, redirect_slashes: bool) -> PyResult<()> {
+        self.inner_app(py)?.bind(py).borrow_mut().redirect_slashes = redirect_slashes;
+        Ok(())
+    }
+
+    #[getter]
+    fn dependencies(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
+        PyList::new(
+            py,
+            self.dependencies
+                .iter()
+                .map(|dependency| dependency.bind(py)),
+        )
+        .map(Bound::unbind)
+    }
+
+    #[getter]
+    fn deprecated(&self) -> Option<bool> {
+        self.deprecated
+    }
+
+    #[getter]
+    fn include_in_schema(&self) -> bool {
+        self.include_in_schema
     }
 
     #[getter]
@@ -6858,9 +6954,17 @@ impl PyApiRouter {
     }
 
     #[setter]
-    fn set_strict_content_type(&mut self, py: Python<'_>, strict_content_type: bool) {
+    fn set_strict_content_type(
+        &mut self,
+        py: Python<'_>,
+        strict_content_type: bool,
+    ) -> PyResult<()> {
         self.strict_content_type = Some(strict_content_type);
-        self.inner.bind(py).borrow_mut().strict_content_type = Some(strict_content_type);
+        self.inner_app(py)?
+            .bind(py)
+            .borrow_mut()
+            .strict_content_type = Some(strict_content_type);
+        Ok(())
     }
 
     #[pyo3(
@@ -6899,7 +7003,15 @@ impl PyApiRouter {
             .iter()
             .map(|method| method.extract::<String>())
             .collect::<PyResult<Vec<_>>>()?;
-        let inner = slf.bind(py).borrow().inner.clone_ref(py);
+        let (inner, is_fastapi_router) = {
+            let router = slf.bind(py).borrow();
+            (
+                router.inner_app(py)?,
+                matches!(router.inner, ApiRouterInner::FastApiWeak(_)),
+            )
+        };
+        let dependency_overrides_provider =
+            is_fastapi_router.then(|| inner.clone_ref(py).into_any());
         let decorator = PyFastApi::api_route(
             inner,
             py,
@@ -6914,7 +7026,7 @@ impl PyApiRouter {
         decorator
             .bind(py)
             .borrow_mut()
-            .dependency_overrides_provider = None;
+            .dependency_overrides_provider = dependency_overrides_provider;
         register_multi_method_api_route(
             py,
             decorator,
@@ -6932,7 +7044,7 @@ impl PyApiRouter {
         event_type: &str,
         handler: Py<PyAny>,
     ) -> PyResult<()> {
-        self.inner
+        self.inner_app(py)?
             .bind(py)
             .borrow()
             .lifespan
@@ -6941,7 +7053,7 @@ impl PyApiRouter {
 
     fn on_event(&self, py: Python<'_>, event_type: &str) -> PyResult<Py<PyAny>> {
         warn_on_event(py, false)?;
-        self.inner
+        self.inner_app(py)?
             .bind(py)
             .borrow()
             .lifespan
@@ -6959,7 +7071,8 @@ impl PyApiRouter {
     ) -> PyResult<()> {
         let path = normalize_frontend_path(path)?;
         let path = join_frontend_paths(&self.prefix, &path);
-        let mut inner = self.inner.bind(py).borrow_mut();
+        let inner_app = self.inner_app(py)?;
+        let mut inner = inner_app.bind(py).borrow_mut();
         add_frontend_route(&mut inner, py, &path, directory, fallback, check_dir, &[])
     }
 
@@ -6983,7 +7096,7 @@ impl PyApiRouter {
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
         let include_responses = response_map_or_empty(py, responses)?;
-        let source_inner = { router.bind(py).borrow().inner.clone_ref(py) };
+        let source_inner = { router.bind(py).borrow().inner_app(py)? };
         refresh_included_router_routes(py, &source_inner)?;
         let (
             inner,
@@ -6995,7 +7108,7 @@ impl PyApiRouter {
         ) = {
             let parent = slf.bind(py).borrow();
             (
-                parent.inner.clone_ref(py),
+                parent.inner_app(py)?,
                 parent.prefix.clone(),
                 parent.tags.clone(),
                 parent
@@ -7037,7 +7150,8 @@ impl PyApiRouter {
         let include_prefix = prefix.to_owned();
         let frontend_merge_prefix = format!("{parent_prefix}{include_prefix}");
         let router = router.bind(py).borrow();
-        if inner.as_ptr() == router.inner.as_ptr() {
+        let router_inner = router.inner_app(py)?;
+        if inner.as_ptr() == router_inner.as_ptr() {
             return Err(PyAssertionError::new_err(
                 "Cannot include the same APIRouter instance into itself. Did you mean to include a different router?",
             ));
@@ -7049,7 +7163,7 @@ impl PyApiRouter {
         inherited_dependencies.extend(dependencies.unwrap_or_default());
         let deprecated = combined_deprecated(deprecated, parent_deprecated);
         let include_in_schema = include_in_schema && parent_include_in_schema;
-        let source = router.inner.bind(py).borrow();
+        let source = router_inner.bind(py).borrow();
         let mut destination = inner.bind(py).borrow_mut();
         if source.lifespan.is_included_by(py, &destination.lifespan)? {
             return Err(PyAssertionError::new_err(
@@ -7072,7 +7186,7 @@ impl PyApiRouter {
         merge_router_routes(
             py,
             &mut destination,
-            &router.inner,
+            &router_inner,
             &source,
             &dependency_overrides_provider,
             RouterIncludePolicy {
@@ -7132,8 +7246,8 @@ impl PyApiRouter {
         name: &str,
         path_params: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Py<PyAny>> {
-        let url_path = self
-            .inner
+        let inner = self.inner_app(py)?;
+        let url_path = inner
             .bind(py)
             .call_method("url_path_for", (name,), path_params)?;
         prefix_url_path(py, url_path, &self.prefix)
@@ -7141,8 +7255,8 @@ impl PyApiRouter {
 
     fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
         if name == "generate_unique_id_function" {
-            return Ok(self
-                .inner
+            let inner = self.inner_app(py)?;
+            return Ok(inner
                 .bind(py)
                 .borrow()
                 .generate_unique_id_function
@@ -7169,7 +7283,7 @@ impl PyApiRouter {
                 "'APIRouter' object has no attribute '{name}'"
             )));
         }
-        Ok(self.inner.bind(py).getattr(name)?.unbind())
+        Ok(self.inner_app(py)?.bind(py).getattr(name)?.unbind())
     }
 }
 
@@ -8004,8 +8118,7 @@ fn effective_route_order(
                 .router
                 .bind(py)
                 .extract::<PyRef<'_, PyApiRouter>>()?
-                .inner
-                .clone_ref(py);
+                .inner_app(py)?;
             let source = source_router.bind(py).borrow();
             for source_index in effective_route_order(py, &source, category)? {
                 let destination_index = category
@@ -8134,8 +8247,7 @@ fn refresh_included_router_routes_inner(
             .router
             .bind(py)
             .extract::<PyRef<'_, PyApiRouter>>()?
-            .inner
-            .clone_ref(py);
+            .inner_app(py)?;
         refresh_included_router_routes_inner(py, &source_router, visited)?;
 
         let source = source_router.bind(py).borrow();
