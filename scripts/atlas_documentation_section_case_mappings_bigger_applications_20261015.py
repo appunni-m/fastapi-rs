@@ -320,7 +320,11 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
         (
             "The selected POST samples the included admin path and router dependency; the "
             "OpenAPI pointers sample the prefix-derived operation path, inherited tag, and "
-            "418 response declaration. The response body is user-code output."
+            "418 response declaration. The separate response-precedence case remains a "
+            "page-level supplemental contract probe: this heading documents included "
+            "responses but does not prescribe cross-level overwrite order, so that case is "
+            "not attributed as a behavior of this subsection. The response body is user-code "
+            "output."
         ),
         _ROUTING_RATIONALE
         + " FastAPI also projects included response declarations and tags into OpenAPI "
