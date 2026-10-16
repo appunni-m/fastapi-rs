@@ -464,7 +464,10 @@ def read_manifest() -> dict[str, Any]:
             "prepare_target": "parity-prepare-oracle-email-validation",
         },
         "templates": {
-            "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3",
+            "id": (
+                "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-"
+                "jinja2-3.1.6-markupsafe-3.0.3"
+            ),
             "base_profile": profile["id"],
             "lock": {
                 "path": "requirements/templates-cpython-3.12.13.lock",

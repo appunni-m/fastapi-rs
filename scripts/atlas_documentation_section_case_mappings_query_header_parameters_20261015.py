@@ -423,9 +423,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
         54,
         69,
         _P + "header-convert-underscores-documentation-20261017.yaml",
-        [
-            "fastapi.header.models.convert-underscores-false.field-name-review-20261017"
-        ],
+        ["fastapi.header.models.convert-underscores-false.field-name-review-20261017"],
         ["get-model-underscore-header"],
         _HTTP,
         (

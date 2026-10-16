@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 0aea2b9ccf69669718e36c7562c6a57abaffad87c472bd68e7e0f053884e6958
+    sha256: cc6ce003d7fbfef7dba86b06b7102364d6e0a1d30e37c6971e1bc56160ef2687
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: e5fa3874f3e52dae2ac6ef436d6bea4dd7202acd977bcf94b9397bbe58c9c546
+    sha256: fc6959b71b6b40601e0ea0f232679c27571915a456c936024006359b48d001e9
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 2b5e164d41f3533d6396e62cad36deb80f269ca1e00bf65479e8871c3f699e65
+    sha256: 264b10ae48588a8972f8a8d2cac3bd1869cf4872eb1d9fb6882928256912919c
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 654
-      cases: 2661
-      partial_source_mappings: 1900
+      workflows: 656
+      cases: 2663
+      partial_source_mappings: 1902
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2042
+    operation_fixture_refs: 2045
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -18801,6 +18801,21 @@ api_surface_contract:
       observation_selectors:
       - asgi.application_error.exception
       - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: strict-content-type-per-route-overrides
+      input_path: tests/fixtures/inputs/parity/strict-content-type-per-route-overrides.json
+      input_sha256: 303e1b5f5dc805fdc1b37c4a0ee0fa0addf0992c4867833f6af57445b725edc5
+      recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-per-route-overrides.yaml
+      recipe_sha256: b903f382467f34a40290573867c2496effb9a72488b273d248fbeab1d4373d90
+      workload_path: tests/fixtures/workloads/strict_content_type_route_overrides.py
+      workload_sha256: dcc5dd80045a5e81ac37260eea2beb71e82e6232a5242e29178133c6febf3ea8
+      case_id: fastapi.request.strict-content-type.per-route-overrides
+      observation_selectors:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
@@ -49954,6 +49969,18 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
+    - workflow_id: apiroute-strict-content-type-constructor
+      input_path: tests/fixtures/inputs/parity/apiroute-strict-content-type-constructor.json
+      input_sha256: df1cf690fad4610ea4f62bd09c6372191b72bc547dfb175072d84afcc7c76779
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-strict-content-type-constructor.yaml
+      recipe_sha256: b7b1b09a57168e5a964580b4c3057a97b19451e3b51401d80476bf1fe6b570cf
+      workload_path: tests/fixtures/workloads/strict_content_type_apiroute_constructor.py
+      workload_sha256: 304da5985e2ab8bb4265293e4e413d748185cc88216ae310ea94a76862112327
+      case_id: fastapi.routing.apiroute.constructor-strict-content-type-lax
+      probe_id: explicit-lax-constructor-option
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
       input_sha256: f4d5f11e7e5782c61af2fb0b525a4286691780c86fc87f1ed179d2d708acf36b
@@ -49997,6 +50024,16 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
       workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-common-options
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: apiroute-strict-content-type-constructor
+      input_path: tests/fixtures/inputs/parity/apiroute-strict-content-type-constructor.json
+      input_sha256: df1cf690fad4610ea4f62bd09c6372191b72bc547dfb175072d84afcc7c76779
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-strict-content-type-constructor.yaml
+      recipe_sha256: b7b1b09a57168e5a964580b4c3057a97b19451e3b51401d80476bf1fe6b570cf
+      workload_path: tests/fixtures/workloads/strict_content_type_apiroute_constructor.py
+      workload_sha256: 304da5985e2ab8bb4265293e4e413d748185cc88216ae310ea94a76862112327
+      case_id: fastapi.routing.apiroute.constructor-strict-content-type-lax
       observation_selectors:
       - python.call_outcome
     - workflow_id: apiroute-openapi-options
@@ -53469,6 +53506,21 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
       workload_sha256: a71c0b1bb18c0799731c8329c734536edec80de74dac9784f93a564b5457ae59
       case_id: fastapi.router-late-route-order.later-full-after-partial
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: strict-content-type-per-route-overrides
+      input_path: tests/fixtures/inputs/parity/strict-content-type-per-route-overrides.json
+      input_sha256: 303e1b5f5dc805fdc1b37c4a0ee0fa0addf0992c4867833f6af57445b725edc5
+      recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-per-route-overrides.yaml
+      recipe_sha256: b903f382467f34a40290573867c2496effb9a72488b273d248fbeab1d4373d90
+      workload_path: tests/fixtures/workloads/strict_content_type_route_overrides.py
+      workload_sha256: dcc5dd80045a5e81ac37260eea2beb71e82e6232a5242e29178133c6febf3ea8
+      case_id: fastapi.request.strict-content-type.per-route-overrides
       observation_selectors:
       - construction.exception_class
       - construction.exception_message

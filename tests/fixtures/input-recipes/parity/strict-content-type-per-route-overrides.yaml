@@ -1,0 +1,120 @@
+schema: fastapi-rs/python-asgi-workflow@13
+workload:
+  file: tests/fixtures/workloads/strict_content_type_route_overrides.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.request.strict-content-type.per-route-overrides
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: app-route-inherits-lax-policy
+        kind: http_request
+        scope: &scope
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /app/inherited
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: &json-body
+          - type: http.request
+            body: '{"value": 7}'
+            more_body: false
+        observations: &response-observation
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+      - action_id: app-add-api-route-inherits-lax-policy
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /app/add-inherited
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: *json-body
+        observations: *response-observation
+      - action_id: router-route-inherits-strict-policy
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /router/inherited
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: *json-body
+        observations: *response-observation
+      - action_id: router-add-api-route-explicitly-lax
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /router/add-lax
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: *json-body
+        observations: *response-observation
+      - action_id: router-add-api-route-explicitly-strict
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /router/add-strict
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: *json-body
+        observations: *response-observation
+    source_evidence:
+      - path: tests/test_strict_content_type_router_level.py
+        kind: upstream_test
+      - path: tests/test_strict_content_type_nested.py
+        kind: upstream_test
+    verification: parity

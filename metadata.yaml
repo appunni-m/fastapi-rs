@@ -3906,6 +3906,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.constructor-signature
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-common-options
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-strict-content-type-constructor.yaml
+          case_id: fastapi.routing.apiroute.constructor-strict-content-type-lax
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-explicit-none-response-model
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
@@ -3953,8 +3955,9 @@ reviewed_api_contract_overlay:
         through exact generated documents. It covers only these selected
         constructor options, including explicit `description` in the
         `standalone-apiroute-openapi-options` workflow and its exact generated
-        OpenAPI document; dependency injection, custom response classes,
-        response-model filters, and full standalone ASGI
+        OpenAPI document. The separate direct API constructor probe accepts an
+        explicit lax `strict_content_type` boolean. Dependency injection,
+        custom response classes, response-model filters, and full standalone ASGI
         behavior remain outside this direct constructor slice.
         A FastAPI-registered APIRoute retains the direct callbacks list and
         contributes its callback path item and custom response model to OpenAPI,
@@ -6452,12 +6455,16 @@ reviewed_api_contract_overlay:
         shutdown callbacks, async context managers, and sync/async generator
         lifespans. Successful nested execution and request-visible yielded
         state are covered; lifecycle error paths are not. The
-        `strict_content_type` option accepts an explicit boolean; omission
-        remains an inheritable default placeholder. The
-        `strict-content-type-router-level-upstream` workflow covers default,
-        lax, strict, and inherited behavior. Direct inspection of the
-        placeholder value and per-route
-        `add_api_route(strict_content_type=...)` remain outside this slice.
+        `strict_content_type` accepts explicit booleans on APIRoute and
+        APIRouter.add_api_route, and inherits the enclosing app/router policy
+        when omitted. The
+        `strict-content-type-router-level-upstream` workflow covers router
+        defaults and nested inheritance; `strict-content-type-per-route-overrides`
+        covers app inheritance and explicit strict/lax values through
+        APIRouter.add_api_route. The direct APIRoute constructor's
+        explicit lax option is checked by
+        `apiroute-strict-content-type-constructor`. Direct inspection of the
+        default placeholder remains outside this slice.
         FastAPI 0.141.1 also accepts inherited `routes`, `redirect_slashes`, and
         `default` constructor arguments. `routes` is explicitly deprecated in
         the source signature. The FastAPI constructor now snapshots the supplied
@@ -6735,6 +6742,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-route-order-parity.yaml
           case_id: fastapi.router-late-route-order.later-full-after-partial
           workload_path: tests/fixtures/workloads/router_late_route_order_parity.py
+        - recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-per-route-overrides.yaml
+          case_id: fastapi.request.strict-content-type.per-route-overrides
+          workload_path: tests/fixtures/workloads/strict_content_type_route_overrides.py
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -7388,6 +7398,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml
           case_id: fastapi.path-operation-configurations.tutorial003-explicit-description
         - *response_traversal_early_partial
+        - recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-per-route-overrides.yaml
+          case_id: fastapi.request.strict-content-type.per-route-overrides
+          workload_path: tests/fixtures/workloads/strict_content_type_route_overrides.py
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-

@@ -755,6 +755,46 @@
       ]
     },
     {
+      "id": "apiroute-strict-content-type-constructor",
+      "input_path": "tests/fixtures/inputs/parity/apiroute-strict-content-type-constructor.json",
+      "input_sha256": "df1cf690fad4610ea4f62bd09c6372191b72bc547dfb175072d84afcc7c76779",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apiroute-strict-content-type-constructor.yaml",
+      "recipe_sha256": "b7b1b09a57168e5a964580b4c3057a97b19451e3b51401d80476bf1fe6b570cf",
+      "case_ids": [
+        "fastapi.routing.apiroute.constructor-strict-content-type-lax"
+      ],
+      "workload_path": "tests/fixtures/workloads/strict_content_type_apiroute_constructor.py",
+      "workload_sha256": "304da5985e2ab8bb4265293e4e413d748185cc88216ae310ea94a76862112327",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-strict-content-type-lax",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-strict-content-type-lax",
+          "probe_id": "explicit-lax-constructor-option",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apiroute.constructor-strict-content-type-lax",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute"
+          ]
+        }
+      ]
+    },
+    {
       "id": "apirouter-constructor-starlette-route",
       "input_path": "tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json",
       "input_sha256": "74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02",
@@ -35076,6 +35116,28 @@
       ]
     },
     {
+      "id": "strict-content-type-per-route-overrides",
+      "input_path": "tests/fixtures/inputs/parity/strict-content-type-per-route-overrides.json",
+      "input_sha256": "303e1b5f5dc805fdc1b37c4a0ee0fa0addf0992c4867833f6af57445b725edc5",
+      "recipe_path": "tests/fixtures/input-recipes/parity/strict-content-type-per-route-overrides.yaml",
+      "recipe_sha256": "b903f382467f34a40290573867c2496effb9a72488b273d248fbeab1d4373d90",
+      "case_ids": [
+        "fastapi.request.strict-content-type.per-route-overrides"
+      ],
+      "workload_path": "tests/fixtures/workloads/strict_content_type_route_overrides.py",
+      "workload_sha256": "dcc5dd80045a5e81ac37260eea2beb71e82e6232a5242e29178133c6febf3ea8",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.request.strict-content-type.per-route-overrides",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_strict_content_type_nested.py",
+            "source:upstream-test:tests/test_strict_content_type_router_level.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "strict-content-type-router-level-upstream",
       "input_path": "tests/fixtures/inputs/parity/strict-content-type-router-level-upstream.json",
       "input_sha256": "9a68709f327a5046b61cfb7c75cfb1062bf956e8709b8fa87791bf92f19b5a15",
@@ -67098,6 +67160,36 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_strict_content_type_nested.py",
+      "fixture_id": "fastapi.test.test-strict-content-type-nested",
+      "workflow_id": "strict-content-type-per-route-overrides",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request.strict-content-type.per-route-overrides"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_strict_content_type_router_level.py",
+      "fixture_id": "fastapi.test.test-strict-content-type-router-level",
+      "workflow_id": "strict-content-type-per-route-overrides",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request.strict-content-type.per-route-overrides"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

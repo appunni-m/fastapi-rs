@@ -299,7 +299,8 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
         "templates",
     }:
         raise MetadataError(
-            "target runtime optional profiles must declare TestClient, EmailStr, multipart, and templates"
+            "target runtime optional profiles must declare TestClient, EmailStr, multipart, "
+            "and templates"
         )
     if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(optional_profiles):
         raise MetadataError("manifest target profiles differ from metadata.yaml")
@@ -354,7 +355,10 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
         raise MetadataError("EmailStr oracle profile differs from metadata.yaml authority")
     templates_oracle_profile = metadata.get("oracle_profile_extensions", {}).get("templates")
     manifest_templates_profile = manifest.get("oracle_profile_extensions", {}).get("templates")
-    if not isinstance(templates_oracle_profile, dict) or manifest_templates_profile != templates_oracle_profile:
+    if (
+        not isinstance(templates_oracle_profile, dict)
+        or manifest_templates_profile != templates_oracle_profile
+    ):
         raise MetadataError("templates oracle profile differs from metadata.yaml authority")
 
 

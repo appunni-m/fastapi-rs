@@ -1,0 +1,22 @@
+schema: fastapi-rs/python-api-workflow@8
+workload:
+  file: tests/fixtures/workloads/strict_content_type_apiroute_constructor.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.routing.apiroute.constructor-strict-content-type-lax
+    probes:
+      - probe_id: explicit-lax-constructor-option
+        public_callable:
+          module: fastapi.routing
+          attribute: APIRoute
+        argument_bundle: lax-strict-content-type-route
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+    source_evidence:
+      - path: fastapi/routing.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.routing.APIRoute
+        sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55

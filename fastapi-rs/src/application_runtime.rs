@@ -1296,6 +1296,49 @@ impl ResponseClassArgument {
     }
 }
 
+enum StrictContentTypeArgument {
+    Omitted,
+    Provided(Py<PyAny>),
+}
+
+impl FromPyObject<'_, '_> for StrictContentTypeArgument {
+    type Error = PyErr;
+
+    fn extract(value: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
+        Ok(Self::Provided(value.to_owned().unbind()))
+    }
+}
+
+impl StrictContentTypeArgument {
+    fn resolve(
+        &self,
+        py: Python<'_>,
+        inherited: Option<bool>,
+    ) -> PyResult<(Py<PyAny>, Option<bool>)> {
+        match self {
+            Self::Omitted => Ok((strict_content_type_python_value(py, inherited)?, inherited)),
+            Self::Provided(value) => {
+                let is_default = value
+                    .bind(py)
+                    .is_instance_of::<PyFastApiDefaultPlaceholder>();
+                if is_default {
+                    if let Some(inherited) = inherited {
+                        return Ok((
+                            strict_content_type_python_value(py, Some(inherited))?,
+                            Some(inherited),
+                        ));
+                    }
+                    let default_value = value.bind(py).getattr("value")?;
+                    let strict = default_value.is_truthy()?;
+                    return Ok((value.clone_ref(py), Some(strict)));
+                }
+                let strict = value.bind(py).is_truthy()?;
+                Ok((value.clone_ref(py), Some(strict)))
+            }
+        }
+    }
+}
+
 enum ResponseClassChoice {
     Default(Py<PyAny>),
     Explicit(Py<PyAny>),
@@ -1832,7 +1875,7 @@ struct PyRouteContextIterator {
 #[pymethods]
 impl PyApiRoute {
     #[new]
-    #[pyo3(signature = (path, endpoint, *, response_model = omitted_response_model(), status_code = None, tags = None, dependencies = None, summary = None, description = None, response_description = "Successful Response", responses = None, deprecated = None, name = None, methods = None, operation_id = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true, response_class = ResponseClassArgument::Omitted, dependency_overrides_provider = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    #[pyo3(signature = (path, endpoint, *, response_model = omitted_response_model(), status_code = None, tags = None, dependencies = None, summary = None, description = None, response_description = "Successful Response", responses = None, deprecated = None, name = None, methods = None, operation_id = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true, response_class = ResponseClassArgument::Omitted, dependency_overrides_provider = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = StrictContentTypeArgument::Omitted))]
     // lint-exception: PyO3 needs one Rust argument per APIRoute-compatible keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -1866,15 +1909,12 @@ impl PyApiRoute {
         callbacks: Option<Py<PyAny>>,
         openapi_extra: Option<Py<PyAny>>,
         generate_unique_id_function: GenerateUniqueIdArgument,
-        strict_content_type: Option<bool>,
+        strict_content_type: StrictContentTypeArgument,
     ) -> PyResult<Self> {
-        let unsupported_options = [
-            (
-                dependency_overrides_provider.is_some(),
-                "dependency_overrides_provider",
-            ),
-            (strict_content_type.is_some(), "strict_content_type"),
-        ];
+        let unsupported_options = [(
+            dependency_overrides_provider.is_some(),
+            "dependency_overrides_provider",
+        )];
         if let Some((_, option)) = unsupported_options
             .iter()
             .find(|(unsupported, _)| *unsupported)
@@ -1928,6 +1968,7 @@ impl PyApiRoute {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type,
                 response_description: Some(response_description.to_owned()),
                 description,
                 responses,
@@ -3454,6 +3495,7 @@ struct ResponseModelOptions {
     exclude_defaults: bool,
     exclude_none: bool,
     include_in_schema: bool,
+    strict_content_type: StrictContentTypeArgument,
     response_description: Option<String>,
     description: Option<String>,
     responses: Option<Py<PyAny>>,
@@ -4768,6 +4810,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -4836,6 +4879,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -4904,6 +4948,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -4972,6 +5017,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -5040,6 +5086,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -5108,6 +5155,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -5176,6 +5224,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -5244,6 +5293,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
@@ -5297,6 +5347,7 @@ impl PyFastApi {
                 exclude_defaults: false,
                 exclude_none: false,
                 include_in_schema,
+                strict_content_type: StrictContentTypeArgument::Omitted,
                 response_description: None,
                 description,
                 responses: None,
@@ -7350,8 +7401,8 @@ impl PyApiRouter {
     }
 
     #[pyo3(
-        signature = (path, endpoint, *, dependencies = None, description = None, methods = None, include_in_schema = true, name = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, deprecated = None, tags = None),
-        text_signature = "($self, path, endpoint, *, dependencies=None, description=None, methods=None, include_in_schema=True, name=None, callbacks=None, openapi_extra=None, generate_unique_id_function=None, deprecated=None, tags=None)"
+        signature = (path, endpoint, *, dependencies = None, description = None, methods = None, include_in_schema = true, name = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, deprecated = None, tags = None, strict_content_type = StrictContentTypeArgument::Omitted),
+        text_signature = "($self, path, endpoint, *, dependencies=None, description=None, methods=None, include_in_schema=True, name=None, callbacks=None, openapi_extra=None, generate_unique_id_function=None, deprecated=None, tags=None, strict_content_type=None)"
     )]
     // lint-exception: preserve the selected FastAPI.add_api_route keyword interface.
     #[allow(
@@ -7373,6 +7424,7 @@ impl PyApiRouter {
         generate_unique_id_function: GenerateUniqueIdArgument,
         deprecated: Option<bool>,
         tags: Option<Vec<String>>,
+        strict_content_type: StrictContentTypeArgument,
     ) -> PyResult<()> {
         let normalized_methods = PySet::empty(py)?;
         if let Some(methods) = methods {
@@ -7395,17 +7447,36 @@ impl PyApiRouter {
         };
         let dependency_overrides_provider =
             is_fastapi_router.then(|| inner.clone_ref(py).into_any());
-        let decorator = PyFastApi::api_route(
-            inner,
+        let decorator = operation_decorator(
+            inner.clone_ref(py),
             py,
             path,
-            dependencies,
-            description,
-            include_in_schema,
-            name,
-            callbacks,
-            openapi_extra,
-            generate_unique_id_function,
+            "GET",
+            Some(py.NotImplemented()),
+            None,
+            ResponseModelOptions {
+                include: None,
+                exclude: None,
+                by_alias: true,
+                exclude_unset: false,
+                exclude_defaults: false,
+                exclude_none: false,
+                include_in_schema,
+                strict_content_type,
+                response_description: None,
+                description,
+                responses: None,
+                callbacks,
+                summary: None,
+                operation_id: None,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
+                deprecated: None,
+                tags: None,
+                dependencies: dependencies.unwrap_or_default(),
+                response_class: ResponseClassChoice::from_python(py, default_response_class(py)?),
+                openapi_extra,
+                name,
+            },
         )?;
         decorator
             .bind(py)
@@ -8996,6 +9067,7 @@ struct PyOperationDecorator {
     response_model: Option<Py<PyAny>>,
     status_code: Option<u16>,
     include_in_schema: bool,
+    strict_content_type: StrictContentTypeArgument,
     response_model_include: Option<Py<PyAny>>,
     response_model_exclude: Option<Py<PyAny>>,
     response_model_by_alias: bool,
@@ -9344,6 +9416,7 @@ fn operation_decorator(
             response_model,
             status_code,
             include_in_schema: response_model_options.include_in_schema && router_include_in_schema,
+            strict_content_type: response_model_options.strict_content_type,
             response_model_include: response_model_options.include,
             response_model_exclude: response_model_options.exclude,
             response_model_by_alias: response_model_options.by_alias,
@@ -9469,8 +9542,10 @@ impl PyOperationDecorator {
             Some(response_model) => Some(response_model.clone_ref(py)),
             None => None,
         };
-        let strict_content_type = self.app.bind(py).borrow().strict_content_type;
-        let strict_content_type_value = strict_content_type_python_value(py, strict_content_type)?;
+        let inherited_strict_content_type = self.app.bind(py).borrow().strict_content_type;
+        let (strict_content_type_value, strict_content_type) = self
+            .strict_content_type
+            .resolve(py, inherited_strict_content_type)?;
         let (public_route, unique_id) = api_route_view_and_unique_id(
             py,
             ApiRouteViewConfig {
