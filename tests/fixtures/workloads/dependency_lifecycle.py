@@ -75,9 +75,7 @@ def create_app() -> FastAPI:
     ExplicitRequestResource = Annotated[
         dict[str, bool], Depends(scope_identity_resource, scope="request")
     ]
-    DefaultRequestResource = Annotated[
-        dict[str, bool], Depends(scope_identity_resource)
-    ]
+    DefaultRequestResource = Annotated[dict[str, bool], Depends(scope_identity_resource)]
 
     @app.get("/yield/scope-cache-identity")
     async def scope_cache_identity(

@@ -218,8 +218,8 @@ DOC_SECTION_CASE_MAPPINGS = {
         "scope_note": (
             "Only POST /exclude-unset action preserve-explicit-null-and-alias is selected, "
             "with http.status and http.body.bytes. The identity-checked FastAPI 0.141.1 "
-            "observation is HTTP 200 with body {\"label\":\"unset-card\",\"note\":null,"
-            "\"displayName\":\"Unset Alias\"}: this samples omission of defaulted state "
+            'observation is HTTP 200 with body {"label":"unset-card","note":null,'
+            '"displayName":"Unset Alias"}: this samples omission of defaulted state '
             "and retries while retaining the explicitly supplied nullable note and aliased "
             "displayName. It does not claim the tutorial GET example's response bytes, other "
             "exclude options, OpenAPI effects, or general Pydantic serialization."

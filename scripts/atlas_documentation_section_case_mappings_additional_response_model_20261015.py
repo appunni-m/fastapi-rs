@@ -1,6 +1,5 @@
 """Reviewed mapping for FastAPI's additional-response model section."""
 
-
 DOC_SECTION_CASE_MAPPINGS_ADDITIONAL_RESPONSE_MODEL_20261015 = {
     ("advanced/additional-responses.md", "additional-response-with-model"): {
         "heading": "Additional Response with `model` { #additional-response-with-model }",

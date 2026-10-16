@@ -74,9 +74,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
 
     if scenario == "custom-self-hosted":
         app = FastAPI(docs_url=None, redoc_url=None)
-        temporary_directory = tempfile.TemporaryDirectory(
-            prefix="fastapi-rs-docs-ui-assets-"
-        )
+        temporary_directory = tempfile.TemporaryDirectory(prefix="fastapi-rs-docs-ui-assets-")
         static_directory = Path(temporary_directory.name)
         for file_name, file_content in factory_input["static_files"].items():
             (static_directory / file_name).write_text(file_content, encoding="utf-8")

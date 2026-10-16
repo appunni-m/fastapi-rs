@@ -6351,17 +6351,23 @@ from atlas_documentation_page_case_links_fastapi_wave_l import (  # noqa: E402
 from atlas_documentation_section_case_mappings import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS,
 )
-from atlas_documentation_section_case_mappings_advanced_dependencies_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
-)
 from atlas_documentation_section_case_mappings_additional_response_model_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_ADDITIONAL_RESPONSE_MODEL_20261015,
+)
+from atlas_documentation_section_case_mappings_advanced_dependencies_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
 )
 from atlas_documentation_section_case_mappings_advanced_middleware_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
 )
+from atlas_documentation_section_case_mappings_advanced_testing_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015,
+)
 from atlas_documentation_section_case_mappings_async_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
+)
+from atlas_documentation_section_case_mappings_authentication_error_status_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_AUTHENTICATION_ERROR_STATUS_20261015,
 )
 from atlas_documentation_section_case_mappings_background_tasks_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015,
@@ -6378,62 +6384,53 @@ from atlas_documentation_section_case_mappings_body_nested_models_20261015 impor
 from atlas_documentation_section_case_mappings_body_wave_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015,
 )
-from atlas_documentation_section_case_mappings_custom_request_route_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
+from atlas_documentation_section_case_mappings_cookie_encoder_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015,
 )
 from atlas_documentation_section_case_mappings_cookie_params_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_COOKIE_PARAMS_20261015,
 )
-from atlas_documentation_section_case_mappings_cookie_encoder_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015,
-)
-from atlas_documentation_section_case_mappings_data_conversion_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_DATA_CONVERSION_20261015,
+from atlas_documentation_section_case_mappings_custom_request_route_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
 )
 from atlas_documentation_section_case_mappings_custom_response_wave_m import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M,
 )
+from atlas_documentation_section_case_mappings_data_conversion_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_DATA_CONVERSION_20261015,
+)
 from atlas_documentation_section_case_mappings_dependencies_with_yield_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015,
-)
-from atlas_documentation_section_case_mappings_dependency_overrides_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_OVERRIDES_20261015,
-)
-from atlas_documentation_section_case_mappings_jsonable_encoder_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_JSONABLE_ENCODER_20261015,
 )
 from atlas_documentation_section_case_mappings_dependency_declarations_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015,
 )
-from atlas_documentation_section_case_mappings_advanced_testing_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015,
+from atlas_documentation_section_case_mappings_dependency_overrides_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_OVERRIDES_20261015,
 )
-from atlas_documentation_section_case_mappings_authentication_error_status_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_AUTHENTICATION_ERROR_STATUS_20261015,
+from atlas_documentation_section_case_mappings_extra_form_fields_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015,
 )
-from atlas_documentation_section_case_mappings_reference_dependencies_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_REFERENCE_DEPENDENCIES_20261015,
-)
-from atlas_documentation_section_case_mappings_reference_api_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015,
+from atlas_documentation_section_case_mappings_fastapi_cli_entrypoint_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015,
 )
 from atlas_documentation_section_case_mappings_fastapi_wave_l import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_WAVE_L,
 )
-from atlas_documentation_section_case_mappings_form_parameters_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_FORM_PARAMETERS_20261015,
-)
-from atlas_documentation_section_case_mappings_request_forms_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015,
-)
 from atlas_documentation_section_case_mappings_first_steps_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
+)
+from atlas_documentation_section_case_mappings_form_parameters_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_FORM_PARAMETERS_20261015,
 )
 from atlas_documentation_section_case_mappings_frontend_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015,
 )
 from atlas_documentation_section_case_mappings_global_dependencies_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_GLOBAL_DEPENDENCIES_20261015,
+)
+from atlas_documentation_section_case_mappings_jsonable_encoder_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_JSONABLE_ENCODER_20261015,
 )
 from atlas_documentation_section_case_mappings_openapi_callbacks_webhooks_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_OPENAPI_CALLBACKS_WEBHOOKS_20261015,
@@ -6453,17 +6450,26 @@ from atlas_documentation_section_case_mappings_query_header_parameters_20261015 
 from atlas_documentation_section_case_mappings_query_params_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016,
 )
+from atlas_documentation_section_case_mappings_reference_api_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015,
+)
+from atlas_documentation_section_case_mappings_reference_dependencies_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_REFERENCE_DEPENDENCIES_20261015,
+)
 from atlas_documentation_section_case_mappings_request_body_core_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_REQUEST_BODY_CORE_20261015,
-)
-from atlas_documentation_section_case_mappings_response_reference_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015,
 )
 from atlas_documentation_section_case_mappings_request_files_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015,
 )
-from atlas_documentation_section_case_mappings_response_status_review_20261016 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016,
+from atlas_documentation_section_case_mappings_request_forms_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015,
+)
+from atlas_documentation_section_case_mappings_request_middleware_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015,
+)
+from atlas_documentation_section_case_mappings_request_object_directly_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_REQUEST_OBJECT_DIRECTLY_20261015,
 )
 from atlas_documentation_section_case_mappings_response_directly_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016,
@@ -6471,17 +6477,17 @@ from atlas_documentation_section_case_mappings_response_directly_1016 import (  
 from atlas_documentation_section_case_mappings_response_headers_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_HEADERS_1016,
 )
-from atlas_documentation_section_case_mappings_response_model_remaining_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
-)
 from atlas_documentation_section_case_mappings_response_model_defaults_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_DEFAULTS_20261015,
 )
-from atlas_documentation_section_case_mappings_request_object_directly_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_REQUEST_OBJECT_DIRECTLY_20261015,
+from atlas_documentation_section_case_mappings_response_model_remaining_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015,
 )
-from atlas_documentation_section_case_mappings_request_middleware_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015,
+from atlas_documentation_section_case_mappings_response_reference_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015,
+)
+from atlas_documentation_section_case_mappings_response_status_review_20261016 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016,
 )
 from atlas_documentation_section_case_mappings_security_intro_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015,
@@ -6501,11 +6507,11 @@ from atlas_documentation_section_case_mappings_sql_databases_20261015 import (  
 from atlas_documentation_section_case_mappings_streaming_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_STREAMING_20261015,
 )
-from atlas_documentation_section_case_mappings_strict_content_type_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_STRICT_CONTENT_TYPE_20261015,
-)
 from atlas_documentation_section_case_mappings_strict_cli_background_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015,
+)
+from atlas_documentation_section_case_mappings_strict_content_type_20261015 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_STRICT_CONTENT_TYPE_20261015,
 )
 from atlas_documentation_section_case_mappings_sub_applications_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_SUB_APPLICATIONS_20261015,
@@ -6515,12 +6521,6 @@ from atlas_documentation_section_case_mappings_ui_clients_20261015 import (  # n
 )
 from atlas_events_documentation_section_review_mappings_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
-)
-from atlas_documentation_section_case_mappings_extra_form_fields_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015,
-)
-from atlas_documentation_section_case_mappings_fastapi_cli_entrypoint_20261015 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015,
 )
 
 for _doc_path, _rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():

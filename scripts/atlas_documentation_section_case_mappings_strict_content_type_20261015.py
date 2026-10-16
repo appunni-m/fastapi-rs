@@ -2,23 +2,19 @@
 
 _PAGE = "advanced/strict-content-type.md"
 _RECIPE = (
-    "tests/fixtures/input-recipes/parity/"
-    "strict-content-type-documentation-example-independent.yaml"
+    "tests/fixtures/input-recipes/parity/strict-content-type-documentation-example-independent.yaml"
 )
 
 
 DOC_SECTION_CASE_MAPPINGS_STRICT_CONTENT_TYPE_20261015 = {
     (_PAGE, "allowing-requests-without-content-type"): {
         "heading": (
-            "Allowing Requests Without Content-Type "
-            "{ #allowing-requests-without-content-type }"
+            "Allowing Requests Without Content-Type { #allowing-requests-without-content-type }"
         ),
         "start_line": 76,
         "end_line": 88,
         "recipe_path": _RECIPE,
-        "case_ids": [
-            "fastapi.docs.strict-content-type.independent-legacy-no-content-type"
-        ],
+        "case_ids": ["fastapi.docs.strict-content-type.independent-legacy-no-content-type"],
         "action_ids": ["legacy-route-parses-untyped-json"],
         "observation_selectors": ["http.status", "http.body.bytes"],
         "scope_note": (

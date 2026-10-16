@@ -1,6 +1,5 @@
 """Reviewed mapping for FastAPI's jsonable encoder tutorial section."""
 
-
 DOC_SECTION_CASE_MAPPINGS_JSONABLE_ENCODER_20261015 = {
     ("tutorial/encoder.md", "using-the-jsonable-encoder"): {
         "heading": "Using the `jsonable_encoder` { #using-the-jsonable-encoder }",

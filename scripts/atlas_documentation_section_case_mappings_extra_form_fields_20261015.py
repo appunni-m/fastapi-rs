@@ -8,9 +8,7 @@ DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015 = {
         "recipe_path": (
             "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml"
         ),
-        "case_ids": [
-            "fastapi.docs-example-wave-f.request-form-models.extra-forbidden"
-        ],
+        "case_ids": ["fastapi.docs-example-wave-f.request-form-models.extra-forbidden"],
         "action_ids": ["strict-form-model-annotated"],
         "observation_selectors": ["http.body.bytes", "http.status"],
         "scope_note": (
@@ -34,7 +32,8 @@ DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015 = {
             "strict-form-model-annotated, which sends declared username/password fields "
             "and an independent `unexpected` field to the workload's matching "
             "StrictLoginForm configuration and Annotated route "
-            "(tests/fixtures/workloads/request_form_upload_source_review_independent.py:17-20,217-221). "
+            "(tests/fixtures/workloads/request_form_upload_source_review_independent.py:17-20,"
+            "217-221). "
             "That action observes recipe selectors `status` and `body`, projected here to "
             "`http.status` and `http.body.bytes`; the recipe contains no expected output. "
             "FastAPI 0.141.1 calls `request.form()` for Form bodies "

@@ -1,6 +1,5 @@
 """Reviewed section mapping for FastAPI dependency overrides documentation."""
 
-
 _RECIPE = "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml"
 
 

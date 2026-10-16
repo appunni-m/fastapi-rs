@@ -18,12 +18,8 @@ _CLIENT_TAGGED_RECIPE = (
 _CLIENT_IDS_RECIPE = (
     "tests/fixtures/input-recipes/parity/generate-clients-tutorial003-upstream.yaml"
 )
-_SWAGGER_DEFAULT_RECIPE = (
-    "tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml"
-)
-_SWAGGER_THEME_RECIPE = (
-    "tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml"
-)
+_SWAGGER_DEFAULT_RECIPE = "tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml"
+_SWAGGER_THEME_RECIPE = "tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml"
 _SWAGGER_OVERRIDE_RECIPE = (
     "tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml"
 )
@@ -612,9 +608,7 @@ DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015 = {
         114,
         177,
         _CLIENT_IDS_RECIPE,
-        [
-            "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
-        ],
+        ["fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"],
         ["openapi-operation-ids"],
         _OPENAPI_PATHS,
         (
@@ -629,9 +623,7 @@ DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015 = {
         122,
         133,
         _CLIENT_IDS_RECIPE,
-        [
-            "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
-        ],
+        ["fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"],
         ["openapi-operation-ids"],
         _OPENAPI_PATHS,
         (
@@ -647,9 +639,7 @@ DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015 = {
         134,
         141,
         _CLIENT_IDS_RECIPE,
-        [
-            "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
-        ],
+        ["fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"],
         ["openapi-operation-ids"],
         _OPENAPI_PATHS,
         (
@@ -665,9 +655,7 @@ DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015 = {
         142,
         165,
         _CLIENT_IDS_RECIPE,
-        [
-            "fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"
-        ],
+        ["fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids"],
         ["openapi-operation-ids"],
         _OPENAPI_PATHS,
         (

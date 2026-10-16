@@ -7,9 +7,7 @@ documentation mappings are input evidence, not parity results.
 """
 
 _STRICT_RECIPE = "tests/fixtures/input-recipes/parity/strict_content_type.yaml"
-_CLI_RECIPE = (
-    "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml"
-)
+_CLI_RECIPE = "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml"
 _BACKGROUND_RECIPE = "tests/fixtures/input-recipes/parity/docs-reference-http.yaml"
 
 

@@ -1,6 +1,5 @@
 """Reviewed section mapping for FastAPI's direct Request access tutorial."""
 
-
 DOC_SECTION_CASE_MAPPINGS_REQUEST_OBJECT_DIRECTLY_20261015 = {
     (
         "advanced/using-request-directly.md",

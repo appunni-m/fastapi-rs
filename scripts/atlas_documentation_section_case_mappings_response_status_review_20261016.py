@@ -32,8 +32,12 @@ _COOKIE_PARAMETER = "tests/fixtures/input-recipes/parity/responses-background-up
 _COOKIE_DIRECT = "tests/fixtures/input-recipes/parity/response-cookie-direct-wave.yaml"
 _STATUS_CHANGE = "tests/fixtures/input-recipes/parity/response-change-status-tutorial-review.yaml"
 _STATUS_POLICY = "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml"
-_ADDITIONAL_STATUS = "tests/fixtures/input-recipes/parity/additional-status-codes-tutorial-upstream.yaml"
-_STATUS_TUTORIAL = "tests/fixtures/input-recipes/parity/tutorial-response-status-code001-source-review.yaml"
+_ADDITIONAL_STATUS = (
+    "tests/fixtures/input-recipes/parity/additional-status-codes-tutorial-upstream.yaml"
+)
+_STATUS_TUTORIAL = (
+    "tests/fixtures/input-recipes/parity/tutorial-response-status-code001-source-review.yaml"
+)
 _RESPONSE_SURFACE = "tests/fixtures/input-recipes/parity/response-surface.yaml"
 _HTTP_RESPONSE = ["http.status", "http.headers.ordered", "http.body.bytes"]
 _STATUS_AND_BODY = ["http.status", "http.body.bytes"]

@@ -15,7 +15,7 @@ DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015 = {
         "observation_selectors": ["http.body.bytes", "http.status", "process.exit_code"],
         "scope_note": (
             "One isolated `fastapi dev` case reads `[tool.fastapi] entrypoint = "
-            "\"backend.main:app\"`, imports that app, and serves one GET `/probe` request. "
+            '"backend.main:app"`, imports that app, and serves one GET `/probe` request. '
             "The selectors cover process completion and that HTTP response. The nested "
             "command-option section, invalid configuration, explicit-entrypoint precedence, "
             "auto-discovery, terminal output, and reload behavior are outside this mapping."

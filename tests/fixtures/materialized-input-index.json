@@ -4431,7 +4431,7 @@
         "fastapi.dependencies.yield-scope-cache-normalization"
       ],
       "workload_path": "tests/fixtures/workloads/dependency_lifecycle.py",
-      "workload_sha256": "8e7f16a7b38bf8fe56d576075950c3a07e8382e7b52f14813852319d9541f353",
+      "workload_sha256": "b8114a3cb8be1ee24a8effc3602ffebe4768947b841eba83f988ee099003da9d",
       "case_contracts": [
         {
           "case_id": "fastapi.dependencies.cache-reuse",
@@ -8423,7 +8423,7 @@
         "fastapi.docs.ui-clients.automatic-docs-disabled"
       ],
       "workload_path": "tests/fixtures/workloads/docs_ui_clients_sections_20261015.py",
-      "workload_sha256": "6648fc91a3e17ca1910228bfe3eef26e1089cb209db982b397b0f654f2849663",
+      "workload_sha256": "c33a03f9af66b80a84b53148541e47e237b6e9ad19e0c140074abaff7ad9f113",
       "case_contracts": [
         {
           "case_id": "fastapi.docs.ui-clients.custom-cdn",
@@ -27937,7 +27937,7 @@
         "fastapi.router-late-route-order.nested-late-response-model"
       ],
       "workload_path": "tests/fixtures/workloads/router_late_route_order_parity.py",
-      "workload_sha256": "3c04ef7679a6929990d0ee1a6377e202ffda5f430c65dc9aa639ff063253eab9",
+      "workload_sha256": "f989beae71dbeaf5ad87212a5d3106ead8f46abde9de5579fb2c7ecbcaf101d1",
       "case_contracts": [
         {
           "case_id": "fastapi.router-late-route-order.static-before-catch-all",
@@ -27993,7 +27993,7 @@
         "fastapi.router-late-route-order.url-path-for-include-slot"
       ],
       "workload_path": "tests/fixtures/workloads/router_late_url_path_for_order.py",
-      "workload_sha256": "52d13d8b15ee2fa8586c30828b77e06ff6d1ae9e7c1c3c170d8b821bd72d9233",
+      "workload_sha256": "57e4cf977a05edb2b83790f4f42f3d5adda5adbf536b57916769119e37a73f82",
       "case_contracts": [
         {
           "case_id": "fastapi.router-late-route-order.url-path-for-include-slot",
@@ -33875,6 +33875,46 @@
           "requirement_refs": [
             "source:documented-page:how-to/configure-swagger-ui.md",
             "source:upstream-test:tests/test_tutorial/test_configure_swagger_ui/test_tutorial002.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "swagger-ui-oauth2-redirect-url",
+      "input_path": "tests/fixtures/inputs/parity/swagger-ui-oauth2-redirect-url.json",
+      "input_sha256": "82e00e28b73631e7da85ee9183983fca0933ff45f3d00bba57fac3e9ec0a5626",
+      "recipe_path": "tests/fixtures/input-recipes/parity/swagger-ui-oauth2-redirect-url.yaml",
+      "recipe_sha256": "8ead4e5751d7b9bec5de4169df2ad4b491e6ae3cc6c98d32d78b9710fad8a454",
+      "case_ids": [
+        "fastapi.application.swagger-ui-oauth2-redirect-url.default-value",
+        "fastapi.application.swagger-ui-oauth2-redirect-url.custom-value",
+        "fastapi.application.swagger-ui-oauth2-redirect-url.disabled"
+      ],
+      "workload_path": "tests/fixtures/workloads/application_swagger_ui_oauth2_redirect_url.py",
+      "workload_sha256": "1e315fc415b1086adb878762c6d8e7d8ef61c2cd39d5ad860e602728489e575d",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.application.swagger-ui-oauth2-redirect-url.default-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/custom-docs-ui-assets.md",
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.swagger-ui-oauth2-redirect-url.custom-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/custom-docs-ui-assets.md",
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.swagger-ui-oauth2-redirect-url.disabled",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/custom-docs-ui-assets.md",
+            "source:documented-page:tutorial/metadata.md"
           ]
         }
       ]
@@ -65502,6 +65542,44 @@
         "fastapi.docs-ui.swagger-parameters.nested-theme"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:how-to/custom-docs-ui-assets.md",
+      "fixture_id": "fastapi.docs.how-to-custom-docs-ui-assets",
+      "workflow_id": "swagger-ui-oauth2-redirect-url",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.swagger-ui-oauth2-redirect-url.custom-value",
+        "fastapi.application.swagger-ui-oauth2-redirect-url.default-value",
+        "fastapi.application.swagger-ui-oauth2-redirect-url.disabled"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/metadata.md",
+      "fixture_id": "fastapi.docs.tutorial-metadata",
+      "workflow_id": "swagger-ui-oauth2-redirect-url",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.swagger-ui-oauth2-redirect-url.custom-value",
+        "fastapi.application.swagger-ui-oauth2-redirect-url.default-value",
+        "fastapi.application.swagger-ui-oauth2-redirect-url.disabled"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "http.body.bytes",
         "http.status"
       ]

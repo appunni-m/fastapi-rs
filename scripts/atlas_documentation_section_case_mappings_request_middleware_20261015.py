@@ -5,7 +5,6 @@ expected outputs or parity-result claims. Generic ASGI behavior belongs to
 Starlette 1.6.0 / Starlette-RS; FastAPI 0.141.1 owns framework integration.
 """
 
-
 FASTAPI_PIN = {
     "version": "0.141.1",
     "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
@@ -61,12 +60,8 @@ def _excluded(heading, start, end, reason, rationale):
 
 _CORS = "tests/fixtures/input-recipes/parity/cors-tutorial-independent.yaml"
 _MIDDLEWARE = "tests/fixtures/input-recipes/parity/middleware.yaml"
-_MIDDLEWARE_ORDER = (
-    "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml"
-)
-_STATIC = (
-    "tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml"
-)
+_MIDDLEWARE_ORDER = "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml"
+_STATIC = "tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml"
 _STATIC_BOUNDARY = "tests/fixtures/input-recipes/parity/docs-static-files-mount-boundary.yaml"
 _OPENAPI_SCHEMA = "tests/fixtures/input-recipes/parity/docs-openapi-schema.yaml"
 _TYPES_FRONTEND = "tests/fixtures/input-recipes/parity/docs-types-frontend.yaml"
@@ -84,7 +79,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "ASGI responses without exercising browser policy enforcement."
         ),
         (
-            "The pinned page-level section is `../fastapi/docs/en/docs/tutorial/cors.md:1-89`. The CORS recipe "
+            "The pinned page-level section is "
+            "`../fastapi/docs/en/docs/tutorial/cors.md:1-89`. The CORS recipe "
             "records HTTP responses for literal Origin headers; it has no browser runtime or "
             "JavaScript frontend."
         ),
@@ -100,13 +96,15 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "comparison rules."
         ),
         (
-            "The pinned prose is at `../fastapi/docs/en/docs/tutorial/cors.md:5-16`. The independent "
-            "CORS workload sends literal origins in `tests/fixtures/workloads/cors_tutorial_independent.py:7-13`; its "
+            "The pinned prose is at "
+            "`../fastapi/docs/en/docs/tutorial/cors.md:5-16`. The independent "
+            "CORS workload sends literal origins in "
+            "`tests/fixtures/workloads/cors_tutorial_independent.py:7-13`; its "
             "selected responses are mapped in the CORS middleware and request subsections below."
         ),
     ),
     ("tutorial/cors.md", "wildcards"): _excluded(
-        'Wildcards { #wildcards }',
+        "Wildcards { #wildcards }",
         27,
         34,
         (
@@ -181,7 +179,6 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "and documentation links are not FastAPI runtime behavior."
         ),
     ),
-
     # Middleware tutorial: the input workflow probes decorator wiring and stacking.
     ("tutorial/middleware.md", "middleware"): _excluded(
         "Middleware { #middleware }",
@@ -224,7 +221,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "timing, or every `Request` property."
         ),
         (
-            "The pinned tutorial is `../fastapi/docs/en/docs/tutorial/middleware.md:22-50`. FastAPI "
+            "The pinned tutorial is "
+            "`../fastapi/docs/en/docs/tutorial/middleware.md:22-50`. FastAPI "
             "registers the decorator through `BaseHTTPMiddleware` at "
             "`fastapi/applications.py:4683-4727`; Starlette 1.6.0 supplies the generic "
             "HTTP middleware wrapper at `starlette/middleware/base.py:96-120`."
@@ -279,7 +277,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "or dependency/background-task timing."
         ),
         (
-            "The pinned order explanation is `../fastapi/docs/en/docs/tutorial/middleware.md:68-90`. "
+            "The pinned order explanation is "
+            "`../fastapi/docs/en/docs/tutorial/middleware.md:68-90`. "
             "Starlette inserts added middleware at the start of its user list and reverses the "
             "list while wrapping (`starlette/applications.py:63-83,104-108`); FastAPI "
             "middleware registration uses that generic stack through "
@@ -300,7 +299,6 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "warrant another workflow."
         ),
     ),
-
     # Static files and frontend mounting.
     ("tutorial/static-files.md", "static-files"): _workflow(
         "Static Files { #static-files }",
@@ -317,7 +315,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "route and fallback behavior."
         ),
         (
-            "The pinned page-level section is `../fastapi/docs/en/docs/tutorial/static-files.md:1-48`. FastAPI "
+            "The pinned page-level section is "
+            "`../fastapi/docs/en/docs/tutorial/static-files.md:1-48`. FastAPI "
             "re-exports Starlette StaticFiles (`fastapi/staticfiles.py:1`); Starlette 1.6.0 "
             "owns directory lookup and static response construction "
             "(`starlette/staticfiles.py:39-56,87-152`)."
@@ -345,9 +344,11 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "or URL reversal by mount name."
         ),
         (
-            "The pinned tutorial and import note are `../fastapi/docs/en/docs/tutorial/static-files.md:13-35`. "
+            "The pinned tutorial and import note are "
+            "`../fastapi/docs/en/docs/tutorial/static-files.md:13-35`. "
             "FastAPI directly re-exports `StaticFiles` (`fastapi/staticfiles.py:1`); "
-            "Starlette 1.6.0 owns its constructor and dispatch (`starlette/staticfiles.py:39-56,87-152`)."
+            "Starlette 1.6.0 owns its constructor and dispatch "
+            "(`starlette/staticfiles.py:39-56,87-152`)."
         ),
     ),
     ("tutorial/static-files.md", "what-is-mounting"): _workflow(
@@ -394,14 +395,14 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "body bytes. The mount name is configured but no URL reversal is observed."
         ),
         (
-            "The pinned parameter explanation is `../fastapi/docs/en/docs/tutorial/static-files.md:36-45`. "
+            "The pinned parameter explanation is "
+            "`../fastapi/docs/en/docs/tutorial/static-files.md:36-45`. "
             "The independent workload uses a temporary directory and mounts `StaticFiles` at "
             "`/assets` in `tests/fixtures/workloads/middleware_proxy_source_review.py:87-101`; "
             "generic file resolution and status behavior is Starlette-owned "
             "(`starlette/staticfiles.py:97-152`)."
         ),
     ),
-
     # Extra data types: one request/response and schema projection, with Pydantic as owner.
     ("tutorial/extra-data-types.md", "extra-data-types"): _excluded(
         "Extra Data Types { #extra-data-types }",
@@ -413,7 +414,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "typed request samples only the narrower `Other data types` and `Example` sections."
         ),
         (
-            "The pinned page-level section is `../fastapi/docs/en/docs/tutorial/extra-data-types.md:1-62`; the "
+            "The pinned page-level section is "
+            "`../fastapi/docs/en/docs/tutorial/extra-data-types.md:1-62`; the "
             "specific UUID/datetime/timedelta/time example is mapped below. FastAPI's request and "
             "response validation pipeline delegates type conversion and serialization to its "
             "Pydantic field (`fastapi/utils.py:58-77`, `fastapi/routing.py:301-341`)."
@@ -443,7 +445,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
         ),
         (
             "The pinned list is `../fastapi/docs/en/docs/tutorial/extra-data-types.md:20-53`; its "
-            "example declarations are `../fastapi/docs_src/extra_data_types/tutorial001_an_py310.py:1-28`. "
+            "example declarations are "
+            "`../fastapi/docs_src/extra_data_types/tutorial001_an_py310.py:1-28`. "
             "FastAPI analyzes endpoint fields and forms request-body arguments "
             "(`fastapi/dependencies/utils.py:381-535,951-998`) and validates/serializes "
             "through Pydantic-backed fields (`fastapi/routing.py:301-341`)."
@@ -474,10 +477,10 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "The pinned example and source include are at "
             "`../fastapi/docs/en/docs/tutorial/extra-data-types.md:54-62`; source code is "
             "`../fastapi/docs_src/extra_data_types/tutorial001_an_py310.py:1-28`. The independent "
-            "workload declares these types in `tests/fixtures/workloads/docs_openapi_schema.py:1-13,51-56`."
+            "workload declares these types in "
+            "`tests/fixtures/workloads/docs_openapi_schema.py:1-13,51-56`."
         ),
     ),
-
     # Python typing reference: only a successful, typed FastAPI path/query route is sampled.
     ("python-types.md", "python-types-intro"): _excluded(
         "Python Types Intro { #python-types-intro }",
@@ -547,7 +550,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
         (
             "The pinned examples are `../fastapi/docs/en/docs/python-types.md:105-118` and "
             "`../fastapi/docs_src/python_types/tutorial003_py310.py:1` / "
-            "`../fastapi/docs_src/python_types/tutorial004_py310.py:1-2`; no matching editor input exists."
+            "`../fastapi/docs_src/python_types/tutorial004_py310.py:1-2`; "
+            "no matching editor input exists."
         ),
     ),
     ("python-types.md", "declaring-types"): _excluded(
@@ -556,10 +560,12 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
         269,
         (
             "This parent section contains several distinct Python-type topics. The sampled FastAPI "
-            "parameter behavior is reviewed only in the child headings with matching feature evidence."
+            "parameter behavior is reviewed only in the child headings with "
+            "matching feature evidence."
         ),
         (
-            "The pinned parent span is `../fastapi/docs/en/docs/python-types.md:119-269`, including "
+            "The pinned parent span is "
+            "`../fastapi/docs/en/docs/python-types.md:119-269`, including "
             "Simple types through Classes as types. Pydantic models begin at the next sibling "
             "heading. The concrete parameter workflow is attached to "
             "its narrower Type Hints child sections."
@@ -614,7 +620,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "the selected input workflow uses the examples in this section."
         ),
         (
-            "The pinned section is `../fastapi/docs/en/docs/python-types.md:270-295`. Pydantic owns "
+            "The pinned section is "
+            "`../fastapi/docs/en/docs/python-types.md:270-295`. Pydantic owns "
             "model validation/serialization; no model behavior is claimed by the scalar route "
             "recipe linked in this sidecar."
         ),
@@ -676,7 +683,6 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "generation consumes the analyzed route fields."
         ),
     ),
-
     # Request/Response/UploadFile reference pages.
     ("reference/request.md", "@line:1"): _workflow(
         "`Request` class",
@@ -696,7 +702,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "The pinned page is `../fastapi/docs/en/docs/reference/request.md:1-19`. "
             "FastAPI exposes Request as a direct Starlette re-export "
             "(`fastapi/requests.py:1-2`, `fastapi/__init__.py:21`), recognizes "
-            "and injects it through dependency analysis (`fastapi/dependencies/utils.py:350-355,709-712`). "
+            "and injects it through dependency analysis "
+            "(`fastapi/dependencies/utils.py:350-355,709-712`). "
             "The workload reads and returns request data at "
             "`tests/fixtures/workloads/docs_reference_request.py:70-78`; generic Request "
             "semantics belong to Starlette 1.6.0."
@@ -728,7 +735,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "The pinned page is `../fastapi/docs/en/docs/reference/uploadfile.md:1-22`. FastAPI "
             "exports its UploadFile subclass from the root (`fastapi/__init__.py:9`) and "
             "declares its fields at `fastapi/datastructures.py:21-65`; FastAPI recognizes "
-            "UploadFile annotations as file fields at `fastapi/dependencies/utils.py:498-502,951-998`. "
+            "UploadFile annotations as file fields at "
+            "`fastapi/dependencies/utils.py:498-502,951-998`. "
             "The workload reads and returns upload metadata at "
             "`tests/fixtures/workloads/docs_reference_asgi.py:49-57`; multipart parsing and "
             "generic upload behavior belong to Starlette 1.6.0."

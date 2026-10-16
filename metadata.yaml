@@ -5407,8 +5407,28 @@ reviewed_api_contract_overlay:
         `/docs/oauth2-redirect`, and documents it for Swagger UI OAuth2. When
         OpenAPI and Swagger UI are enabled, `setup()` passes a truthy value to
         the Swagger UI configuration and registers the redirect route at that
-        value; a falsey value omits that route. Root-path adjustment, OAuth2
-        flows, and endpoint response behavior are outside this field scope.
+        value; a falsey value omits that route. The linked input-only workflow
+        reads the public attribute and observes default, custom, and disabled
+        redirect routes. Root-path adjustment, OAuth2 flows, post-construction
+        mutation, and endpoint response contents are outside this field scope.
+      fixture_refs:
+        - case_id: fastapi.application.swagger-ui-oauth2-redirect-url.default-value
+          recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-oauth2-redirect-url.yaml
+          observation_selectors: [http.status, http.body.json]
+        - case_id: fastapi.application.swagger-ui-oauth2-redirect-url.custom-value
+          recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-oauth2-redirect-url.yaml
+          observation_selectors: [http.status, http.body.json]
+        - case_id: fastapi.application.swagger-ui-oauth2-redirect-url.disabled
+          recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-oauth2-redirect-url.yaml
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::swagger_ui_oauth2_redirect_url
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Constructor-time default, custom path, and None values are covered with the public field read and route presence. Root-path adjustment, post-construction mutation, OAuth2 flow behavior, custom documentation parameters, and HTML response contents remain unverified.
     fastapi.applications.FastAPI.title:
       source_evidence:
         - path: fastapi/applications.py

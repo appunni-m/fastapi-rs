@@ -122,7 +122,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
     ),
     ("tutorial/security/index.md", "oauth-1"): _excluded(
-        'OAuth 1 { #oauth-1 }',
+        "OAuth 1 { #oauth-1 }",
         27,
         40,
         (

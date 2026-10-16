@@ -1,9 +1,7 @@
 """Reviewed mappings for the FastAPI request-form tutorial sections."""
 
 _DOCS_REQUEST_SCHEMA = "tests/fixtures/input-recipes/parity/docs-request-schema.yaml"
-_DOCS_FORM_FILE = (
-    "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml"
-)
+_DOCS_FORM_FILE = "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml"
 _REQUEST_MULTIPART = "tests/fixtures/input-recipes/parity/request-multipart.yaml"
 
 _HTTP = ["http.body.bytes", "http.headers.ordered", "http.status"]

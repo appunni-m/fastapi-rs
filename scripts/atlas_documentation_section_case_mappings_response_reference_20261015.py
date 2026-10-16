@@ -34,9 +34,7 @@ def _excluded(heading, start, end, reason, rationale):
     }
 
 
-_ADDITIONAL_OPENAPI = (
-    "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml"
-)
+_ADDITIONAL_OPENAPI = "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml"
 _STATUS_IDENTITY = "tests/fixtures/input-recipes/parity/status-module-identity.yaml"
 _RESPONSE_SURFACE = "tests/fixtures/input-recipes/parity/response-surface.yaml"
 _ROOT_ALIAS_IDENTITY = "tests/fixtures/input-recipes/parity/root-alias-identity.yaml"
@@ -84,7 +82,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
         ),
     ),
     ("advanced/additional-responses.md", "combine-predefined-responses-and-custom-ones"): _workflow(
-        "Combine predefined responses and custom ones { #combine-predefined-responses-and-custom-ones }",
+        "Combine predefined responses and custom ones "
+        "{ #combine-predefined-responses-and-custom-ones }",
         212,
         241,
         _ADDITIONAL_OPENAPI,
@@ -101,7 +100,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
         (
             "FastAPI consumes the route's resulting `responses` mapping and merges its entries "
             "into the OpenAPI operation (fastapi/openapi/utils.py:473-516). Python dictionary "
-            "unpacking in the source example (docs_src/additional_responses/tutorial004_py310.py:11-24) "
+            "unpacking in the source example "
+            "(docs_src/additional_responses/tutorial004_py310.py:11-24) "
             "is language behavior and is not claimed by this FastAPI route input."
         ),
     ),

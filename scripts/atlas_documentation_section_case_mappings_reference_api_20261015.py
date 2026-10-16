@@ -7,7 +7,6 @@ Starlette-RS behavior owner at
 (b4c8a65c85e1b0d251ca05874412811eaa3ac7b8).
 """
 
-
 _DOCS_REFERENCE_HTTP = "tests/fixtures/input-recipes/parity/docs-reference-http.yaml"
 _DOCS_REFERENCE_OPENAPI = "tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml"
 _DOCS_REFERENCE_ASGI = "tests/fixtures/input-recipes/parity/docs-reference-asgi.yaml"

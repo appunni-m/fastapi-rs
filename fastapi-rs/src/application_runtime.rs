@@ -4304,6 +4304,14 @@ impl PyFastApi {
     }
 
     #[getter]
+    fn swagger_ui_oauth2_redirect_url(&self, py: Python<'_>) -> Py<PyAny> {
+        self.swagger_ui_oauth2_redirect_url
+            .as_deref()
+            .map(|url| PyString::new(py, url).into_any().unbind())
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[getter]
     fn root_path(&self) -> &str {
         &self.root_path
     }

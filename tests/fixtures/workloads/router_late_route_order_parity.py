@@ -78,6 +78,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             await websocket.close()
 
     elif scenario == "direct-and-late-duplicate":
+
         @app.get("/registry/record", summary="Direct application registration")
         def read_application_record() -> dict[str, str]:
             return {"selected": "direct-application-route"}

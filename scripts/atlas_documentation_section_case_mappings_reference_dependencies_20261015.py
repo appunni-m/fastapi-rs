@@ -1,9 +1,6 @@
 """Reviewed section mappings for the FastAPI dependency API reference."""
 
-
-_TUTORIAL_RECIPE = (
-    "tests/fixtures/input-recipes/parity/dependency-tutorial-review-upstream.yaml"
-)
+_TUTORIAL_RECIPE = "tests/fixtures/input-recipes/parity/dependency-tutorial-review-upstream.yaml"
 _SECURITY_SCOPES_RECIPE = "tests/fixtures/input-recipes/parity/docs-security-scopes-1016.yaml"
 _HTTP = ["http.body.bytes", "http.headers.ordered", "http.status"]
 _OPENAPI_SECURITY = ["openapi.document", "openapi.paths", "openapi.security"]
