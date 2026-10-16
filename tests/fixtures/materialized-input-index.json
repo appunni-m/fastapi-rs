@@ -25343,17 +25343,25 @@
     {
       "id": "response-204-openapi",
       "input_path": "tests/fixtures/inputs/parity/response-204-openapi.json",
-      "input_sha256": "d87ccd4a2217571a42c9b6b8c29e8b407e6643091eb02dee2be153fd248dd9ec",
+      "input_sha256": "5cd3f0d71cf0a48f62c49d6eeb0d98a75ea4af2d6abeaf9bb9c82416061a1ac1",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-204-openapi.yaml",
-      "recipe_sha256": "e25a14d516ef599da395791ba14c436bb5460869efa9a9532cf0d8e55570d8d4",
+      "recipe_sha256": "904b12d3da99461766fe09ab9c0fa442cdd085935e4304cbfb7dd610216d5758",
       "case_ids": [
-        "fastapi.response.openapi-204-omits-content"
+        "fastapi.response.openapi-204-omits-content",
+        "fastapi.response.openapi-explicit-204-keeps-default-200"
       ],
       "workload_path": "tests/fixtures/workloads/response_204_openapi.py",
-      "workload_sha256": "4c1782284106664c421aa188f40c5241cb171704d42c27feb5867e8df568eece",
+      "workload_sha256": "6810a2a689bf3011ebb6f4ba87bd59b8fc184fd83879a9ed06725d3edf0971a5",
       "case_contracts": [
         {
           "case_id": "fastapi.response.openapi-204-omits-content",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_code_no_body.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response.openapi-explicit-204-keeps-default-200",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_response_code_no_body.py"
@@ -57311,9 +57319,10 @@
       "fixture_id": "fastapi.test.test-response-code-no-body",
       "workflow_id": "response-204-openapi",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.response.openapi-204-omits-content"
+        "fastapi.response.openapi-204-omits-content",
+        "fastapi.response.openapi-explicit-204-keeps-default-200"
       ],
       "observation_selectors": [
         "docs.response.status",

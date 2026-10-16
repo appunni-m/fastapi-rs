@@ -1044,7 +1044,7 @@ RESPONSE_OPENAPI_REVIEW_GAPS = {
     },
     "tests/test_response_code_no_body.py": {
         "test_openapi_schema": {
-            "reason": "The source full-document snapshot combines a 204 route with an explicit response class and a modeled 500 response. The bodyless runtime case does not observe those OpenAPI schema assertions.",
+            "reason": "The independent /b workflow now compares its explicit 204 and default 200 response entries. The source full-document snapshot for /a remains unmapped: explicit response class, modeled 500 response schema, generated 204 response, and component models are not compared together.",
             "supporting_sources": [
                 _source(
                     "tests/test_response_code_no_body.py",

@@ -10,4 +10,8 @@ def create_app() -> FastAPI:
     def empty_response() -> None:
         return None
 
+    @app.get("/b", responses={204: {"description": "No Content"}})
+    async def explicit_204_response():
+        return None
+
     return app
