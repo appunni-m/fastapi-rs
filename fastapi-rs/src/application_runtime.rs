@@ -2525,8 +2525,15 @@ fn new_route_context(
     .map(Py::into_any)
 }
 
-fn route_views(py: Python<'_>, routes: &[FastApiRoute]) -> PyResult<Py<PyList>> {
+fn route_views(
+    py: Python<'_>,
+    constructor_routes: &[Py<PyAny>],
+    routes: &[FastApiRoute],
+) -> PyResult<Py<PyList>> {
     let views = PyList::empty(py);
+    for route in constructor_routes {
+        views.append(route.bind(py))?;
+    }
     let mut seen_routes = HashSet::with_capacity(routes.len());
     for route in routes {
         let route_pointer = route.public_route.as_ptr() as usize;
@@ -3394,6 +3401,7 @@ pub(crate) struct PyFastApi {
     docs_router: RouteTable,
     docs_routes: Vec<FastApiDocsRoute>,
     named_routes: NamedRouteTable,
+    constructor_routes: Vec<Py<PyAny>>,
     routes: Vec<FastApiRoute>,
     router_includes: Vec<FastApiRouterInclude>,
     routes_version: AtomicU64,
@@ -4062,7 +4070,7 @@ impl PyFastApi {
     }
 
     #[new]
-    #[pyo3(signature = (*, debug = false, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (*, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -4071,6 +4079,7 @@ impl PyFastApi {
     fn new(
         py: Python<'_>,
         debug: bool,
+        routes: Option<Py<PyAny>>,
         title: &str,
         summary: Option<String>,
         description: &str,
@@ -4130,6 +4139,14 @@ impl PyFastApi {
             _ => PyList::empty(py).into_any().unbind(),
         };
         let openapi_tags = openapi_tags.unwrap_or_else(|| py.None());
+        let constructor_routes = match routes {
+            Some(routes) => py
+                .import("builtins")?
+                .getattr("list")?
+                .call1((routes,))?
+                .extract::<Vec<Py<PyAny>>>()?,
+            None => Vec::new(),
+        };
         if !openapi_prefix.is_empty() {
             py.import("logging")?
                 .getattr("getLogger")?
@@ -4271,6 +4288,7 @@ impl PyFastApi {
             docs_router,
             docs_routes,
             named_routes: NamedRouteTable::new(),
+            constructor_routes,
             routes: Vec::new(),
             router_includes: Vec::new(),
             routes_version: AtomicU64::new(0),
@@ -4405,7 +4423,7 @@ impl PyFastApi {
 
     #[getter]
     fn routes(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
-        route_views(py, &self.routes)
+        route_views(py, &self.constructor_routes, &self.routes)
     }
 
     #[getter]
@@ -6830,6 +6848,7 @@ impl PyApiRouter {
             PyFastApi::new(
                 py,
                 false,
+                None,
                 "FastAPI",
                 None,
                 "",
@@ -6917,7 +6936,8 @@ impl PyApiRouter {
     #[getter]
     fn routes(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
         let inner = self.inner_app(py)?;
-        route_views(py, &inner.bind(py).borrow().routes)
+        let inner = inner.bind(py).borrow();
+        route_views(py, &inner.constructor_routes, &inner.routes)
     }
 
     #[getter]
@@ -13507,6 +13527,49 @@ impl FastApiCall {
         }
     }
 
+    fn match_constructor_route(
+        &self,
+        py: Python<'_>,
+        scope: &Bound<'_, PyAny>,
+    ) -> PyResult<Option<(Py<PyAny>, Py<PyAny>)>> {
+        let routes = self
+            .app
+            .bind(py)
+            .borrow()
+            .constructor_routes
+            .iter()
+            .map(|route| route.clone_ref(py))
+            .collect::<Vec<_>>();
+        let full_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("FULL")?;
+
+        for route in routes {
+            let match_result = route.bind(py).call_method1("matches", (scope,))?;
+            if match_result.get_item(0)?.is(&full_match) {
+                return Ok(Some((route, match_result.get_item(1)?.unbind())));
+            }
+        }
+
+        Ok(None)
+    }
+
+    fn handle_constructor_route(
+        &mut self,
+        py: Python<'_>,
+        route: Py<PyAny>,
+        child_scope: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let scope = self.scope.bind(py);
+        scope.call_method1("update", (child_scope.bind(py),))?;
+        let awaitable = route
+            .bind(py)
+            .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
+        self.pending = Some(PendingAction::MountedApp);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
     fn dispatch_mounted_app(&mut self, py: Python<'_>) -> PyResult<Option<MachineAction>> {
         let mounted_routes = self
             .app
@@ -14003,6 +14066,9 @@ impl FastApiCall {
             .call1((scope,))?
             .extract::<String>()?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
+        if let Some((route, child_scope)) = self.match_constructor_route(py, scope)? {
+            return self.handle_constructor_route(py, route, child_scope);
+        }
         let (
             openapi_url,
             title,
@@ -14255,6 +14321,9 @@ impl FastApiCall {
         let scope = self.scope.bind(py);
         let path = parse_scope_string(scope, "path", "/")?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
+        if let Some((route, child_scope)) = self.match_constructor_route(py, scope)? {
+            return self.handle_constructor_route(py, route, child_scope);
+        }
         let match_result = self
             .app
             .bind(py)

@@ -596199,6 +596199,21 @@
           },
           {
             "case_ids": [
+              "fastapi.applications.constructor.starlette-route-dispatch"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.send.message_types",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml",
+            "workflow_id": "application-constructor-starlette-route"
+          },
+          {
+            "case_ids": [
               "fastapi.routing.generate-unique-id-callback-adds-route-method",
               "fastapi.routing.generate-unique-id-callback-clears-route-methods",
               "fastapi.routing.generate-unique-id-callback-removes-route-method",
@@ -732812,7 +732827,7 @@
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
-          "The projection does not establish route-tree or mount structure, generic or non-HTTP routes, custom route classes, other route options or fields, or built-in and docs routes; passing the projection to get_openapi also remains unestablished.",
+          "The projection includes generic route objects supplied directly to FastAPI, but does not establish route-tree or mount structure, generic routes added later or through included APIRouters, WebSocket dispatch parity, custom route classes, other route options or fields, or built-in and docs routes; passing the projection to get_openapi also remains unestablished.",
           "The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods, tags, and endpoint name for one GET route each; broader collection contents and configurations remain outside this partial contract."
         ],
         "rust_binding": "fastapi-rs/src/application_runtime.rs::PyFastApi::routes",
@@ -733147,7 +733162,7 @@
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
-          "The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; empty or multi-route list behavior, ordering, list identity or mutation, generic BaseRoute types, and other APIRouter route configurations remain outside this partial contract."
+          "The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation also projects generic routes supplied directly to FastAPI. Standalone APIRouter constructor routes, empty or multi-route list behavior, ordering, list identity or mutation, generic route inclusion, and other APIRouter route configurations remain outside this partial contract."
         ],
         "rust_binding": "fastapi-rs/src/application_runtime.rs::PyApiRouter::routes",
         "status": "partial-contract"

@@ -1374,6 +1374,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor.route-defaults
           workload_path: tests/fixtures/workloads/app_constructor_route_defaults.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml
+          case_id: fastapi.applications.constructor.starlette-route-dispatch
+          workload_path: tests/fixtures/workloads/application_constructor_starlette_route.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
         - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
           workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
@@ -5397,7 +5401,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The initial routes parameter and generic Starlette route objects are not integrated into the target router view. Generated documentation routes, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
+          - Direct FastAPI constructor routes are projected through the shared router and full matching generic routes dispatch before docs and API routes. The standalone APIRouter constructor still omits routes; generic partial matches, redirects, route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
     fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url:
       source_evidence:
         - path: fastapi/applications.py
@@ -6085,11 +6089,13 @@ reviewed_api_contract_overlay:
         `add_api_route(strict_content_type=...)` remain outside this slice.
         FastAPI 0.141.1 also accepts inherited `routes`, `redirect_slashes`, and
         `default` constructor arguments. `routes` is explicitly deprecated in
-        the source signature. The native binding currently omits those
-        arguments, so generic Starlette Route, Mount, and Host objects supplied
-        through `routes` are not represented or dispatched; mixed declaration
-        order and the documented include-prefix rules remain an open
-        compatibility requirement.
+        the source signature. The FastAPI constructor now snapshots the supplied
+        iterable and dispatches the first generic route with a full match; the
+        linked workflow covers one direct Starlette `Route` HTTP request. The
+        separate APIRouter constructor still omits `routes`. Generic partial
+        matches, slash redirects, arbitrary route families, mixed declaration
+        order with later registrations, and router inclusion/prefix behavior
+        remain open compatibility requirements.
         Five response-field-lifecycle inputs reach router construction/GET and
         application inclusion with fixed response models and omitted or concrete
         router/include/route response classes. They observe original versus
@@ -15051,7 +15057,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::routes
         known_gaps:
-          - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; empty or multi-route list behavior, ordering, list identity or mutation, generic BaseRoute types, and other APIRouter route configurations remain outside this partial contract.
+          - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation also projects generic routes supplied directly to FastAPI. Standalone APIRouter constructor routes, empty or multi-route list behavior, ordering, list identity or mutation, generic route inclusion, and other APIRouter route configurations remain outside this partial contract.
     fastapi.applications.FastAPI.add_middleware:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       canonical_operation_id: starlette.applications.Starlette.add_middleware
@@ -15236,7 +15242,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::routes
         known_gaps:
-          - The projection does not establish route-tree or mount structure, generic or non-HTTP routes, custom route classes, other route options or fields, or built-in and docs routes; passing the projection to get_openapi also remains unestablished.
+          - The projection includes generic route objects supplied directly to FastAPI, but does not establish route-tree or mount structure, generic routes added later or through included APIRouters, WebSocket dispatch parity, custom route classes, other route options or fields, or built-in and docs routes; passing the projection to get_openapi also remains unestablished.
           - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods, tags, and endpoint name for one GET route each; broader collection contents and configurations remain outside this partial contract.
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:

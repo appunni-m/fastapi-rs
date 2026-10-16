@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 69ade1d99571b4e5017912c73b3ddeeca442fb65f3ea90aa37d824a55f1cdeef
+    sha256: 1a39ca46ed65358e8b09ad0afe0350be6518269a4fdd845f4a99a00e21406285
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: eed8cb5ae888cf87e17bd0a81b9e0d26618dc6c69638660ddd2ba06abeaa58b6
+    sha256: 9822609f34915965d7900b6fdf30dbb1363f404b9bff36ad559e4af9cc5c6b72
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: a5b19fcf80f7459bbc06a506ec1ffe3df8944e2e5e90be709a4a70db61ad8391
+    sha256: 9cd3596fbd6f094bfbcfa7b558f892ae474f7800259971876feacafa7a29f5cd
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 641
-      cases: 2613
-      partial_source_mappings: 1883
+      workflows: 642
+      cases: 2614
+      partial_source_mappings: 1884
 
 contract_metadata:
   aliases:
@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 255
-    operation_fixture_refs: 1941
+    operation_fixture_refs: 1942
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -10268,6 +10268,19 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: application-constructor-starlette-route
+      input_path: tests/fixtures/inputs/parity/application-constructor-starlette-route.json
+      input_sha256: 0f7ccc070816a15b8e4f52b4f2acf36e7caec1067c6a6c1a99052dada7e39d62
+      recipe_path: tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml
+      recipe_sha256: db1f9bed0ab8a35f3288dc5d3100fae6988645fd43674bbd121284c862ee929b
+      workload_path: tests/fixtures/workloads/application_constructor_starlette_route.py
+      workload_sha256: d324a6c358d62adbec141176b9145c51cfc47b972c967d77fa4723c2ba5d97eb
+      case_id: fastapi.applications.constructor.starlette-route-dispatch
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: deprecated-openapi-prefix-tutorial-review
       input_path: tests/fixtures/inputs/parity/deprecated-openapi-prefix-tutorial-review.json
       input_sha256: e37f4c125296b0d667cbf4cea6bf724b2364f7bbe8aa3334852032c625428b9f
@@ -18391,10 +18404,12 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::router
       known_gaps:
-      - The initial routes parameter and generic Starlette route objects are not integrated into the target
-        router view. Generated documentation routes, callbacks, startup and shutdown handlers, route_class
-        customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated
-        replacement behavior, and lifetime parity when a router outlives its app remain unverified.
+      - Direct FastAPI constructor routes are projected through the shared router and full matching generic
+        routes dispatch before docs and API routes. The standalone APIRouter constructor still omits routes;
+        generic partial matches, redirects, route-family inclusion/prefix behavior, generated documentation-route
+        projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter
+        mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime
+        parity when a router outlives its app remain unverified.
   - id: fastapi.applications.FastAPI.state
     kind: field
     source_candidate_ref: /api_candidates/228
@@ -65006,9 +65021,10 @@ api_surface_contract:
         sibling_contract_gap_ref: *id033
       status: partial-contract
       known_gaps:
-      - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; empty or multi-route
-        list behavior, ordering, list identity or mutation, generic BaseRoute types, and other APIRouter
-        route configurations remain outside this partial contract.
+      - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation
+        also projects generic routes supplied directly to FastAPI. Standalone APIRouter constructor routes,
+        empty or multi-route list behavior, ordering, list identity or mutation, generic route inclusion,
+        and other APIRouter route configurations remain outside this partial contract.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::routes
   - id: fastapi.applications.FastAPI.add_middleware
     kind: inherited_method
@@ -65470,9 +65486,10 @@ api_surface_contract:
         canonical_operation_ref: *id038
       status: partial-contract
       known_gaps:
-      - The projection does not establish route-tree or mount structure, generic or non-HTTP routes, custom
-        route classes, other route options or fields, or built-in and docs routes; passing the projection
-        to get_openapi also remains unestablished.
+      - The projection includes generic route objects supplied directly to FastAPI, but does not establish
+        route-tree or mount structure, generic routes added later or through included APIRouters, WebSocket
+        dispatch parity, custom route classes, other route options or fields, or built-in and docs routes;
+        passing the projection to get_openapi also remains unestablished.
       - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods,
         tags, and endpoint name for one GET route each; broader collection contents and configurations
         remain outside this partial contract.

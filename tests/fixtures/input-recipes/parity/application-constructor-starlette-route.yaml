@@ -1,0 +1,38 @@
+# Scope is a Starlette Route supplied directly through FastAPI(routes=...).
+# This case does not exercise APIRouter.include_router.
+# Pinned source references:
+# - FastAPI 0.141.1 fastapi/applications.py:73-91 declares routes and :984-999
+#   passes routes to APIRouter; fastapi/routing.py:2532-2537 forwards routes
+#   to the Starlette Router constructor.
+# - Starlette 1.6.0 starlette/routing.py:684-691 matches and dispatches a full
+#   route match to route.handle; Route.handle calls the route app at :271-280.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/application_constructor_starlette_route.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.applications.constructor.starlette-route-dispatch
+  actions:
+  - action_id: get-constructor-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /constructor-route
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  source_evidence:
+  - path: tests/test_router_include_context.py
+    kind: upstream_test
