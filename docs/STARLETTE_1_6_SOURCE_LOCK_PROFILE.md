@@ -117,7 +117,7 @@ including direct roots and representative locked parent paths. The distribution
 link records the exact release version resolved by the pinned lock; the license
 link opens that exact release's PyPI JSON metadata. Purpose is drawn from the
 pinned project/source inventory and lock paths. Language labels and available wheel kinds come from the pinned Starlette-RS
-[locked-dependencies.csv snapshot for 2026-09-27](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/docs/locked-dependencies.csv),
+[locked-dependencies.csv snapshot for 2026-09-27](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/docs/locked-dependencies.csv),
 cross-checked against each exact-release PyPI record. Where native code was not
 established, the cell says so instead of inferring it from a platform wheel. This is a metadata inventory, not a review of archive license files or
 selected installed wheel binaries. In particular, PyPI metadata reports no
@@ -233,58 +233,67 @@ version from the runtime, `dev`, or `docs` groups.
 The linked FastAPI 0.141.1 source-lock row remains unchanged; its lock is not
 an input to this Starlette 1.6.0 profile.
 
-## Starlette-RS Python runtime and optional-extra closure at `b4c8a65`
+## Starlette-RS Python runtime and optional-extra closure at `4139a72`
 
 This record uses
-[`pyproject.toml`](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/pyproject.toml)
+[`pyproject.toml`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/pyproject.toml)
 and
-[`uv.lock`](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/uv.lock)
+[`uv.lock`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/uv.lock)
 from the pinned Starlette-RS checkout. The lock SHA-256 is
-`d22c9d41716bd556d4a8c1e144c63c14dfcff074f3ab4cbdba2ada1747df9b58`; it contains the editable
-`starlette-rs-py` root and 15 registry distributions. The project requires Python `>=3.10`;
+`26951717298e46e5c647688df1310f3a4c516d70b75620314dba5e04594ddb6b`; it contains the editable
+`starlette-rs-py` root and 17 registry distributions. The project requires Python `>=3.10`;
 its root version is dynamic and is not resolved in the editable lock record, so that
 distribution version is **not established by this lock**. The source commit is the package
 identity used here.
 
 `pyproject.toml` declares `anyio>=3.6.2,<5` and `typing-extensions>=4.12.0` as runtime
-roots. Its optional groups are `schemas = [pyyaml]`, `templates = [jinja2]`, and `testclient
-= [httpx>=0.27.0,<0.29.0, httpx2>=2.0.0]`. The lock resolves runtime to four external
-distributions; runtime plus `schemas` to five; runtime plus `templates` to six; runtime plus
-`testclient` to twelve; and all groups together to fifteen unique registry distributions.
-Group sets overlap through AnyIO, HTTP clients, and their shared transitive packages.
+roots. Its optional groups are `full = [itsdangerous, jinja2, python-multipart>=0.0.18,
+pyyaml, httpx>=0.27.0,<0.29.0, httpx2>=2.0.0]`, `schemas = [pyyaml]`,
+`templates = [jinja2]`, and `testclient = [httpx>=0.27.0,<0.29.0, httpx2>=2.0.0]`.
+The lock's reachable-record union resolves runtime to four external distributions; runtime
+plus `schemas` to five; runtime plus `templates` to six; runtime plus `testclient` to twelve;
+and runtime plus `full` to all 17 registry distributions. On ordinary platforms, the `full`
+extra installs 16 external distributions; the additional record is the WebAssembly-only
+`httpx2-jsfetch` dependency. The `full` extra includes the specialized optional features and
+adds `itsdangerous` and `python-multipart`. Group sets overlap through AnyIO, HTTP clients,
+and their shared transitive packages.
 Versions below come from the pinned lock; per-release metadata links document reported
 licenses and available Python/wheel metadata. Source call sites for the optional
 integrations are
-[`schemas.py`](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/starlette-rs-py/python/starlette/schemas.py),
-[`templating.py`](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/starlette-rs-py/python/starlette/templating.py),
+[`formparsers.py`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/starlette-rs-py/python/starlette/formparsers.py),
+[`sessions.py`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/starlette-rs-py/python/starlette/middleware/sessions.py),
+[`schemas.py`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/starlette-rs-py/python/starlette/schemas.py),
+[`templating.py`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/starlette-rs-py/python/starlette/templating.py),
 and
-[`testclient.py`](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/starlette-rs-py/python/starlette/testclient.py).
+[`testclient.py`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/starlette-rs-py/python/starlette/testclient.py).
 The source [`dependency
-inventory`](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/docs/DEPENDENCIES.md)
+inventory`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/docs/DEPENDENCIES.md)
 documents the intended client backend roles.
 
 | Distribution and locked version | Role in runtime/extra closure | Feature purpose; language/native component | Reported license metadata |
 | --- | --- | --- | --- |
-| [`starlette-rs-py` (editable; version dynamic)](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/pyproject.toml) | Source project root; not an external extra dependency. | Python package with Rust/PyO3 extension module (`starlette_rs_py._core`); Rust core is outside this Python-distribution closure. | [`BSD-3-Clause`](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/pyproject.toml) |
+| [`starlette-rs-py` (editable; version dynamic)](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/pyproject.toml) | Source project root; not an external extra dependency. | Python package with Rust/PyO3 extension module (`starlette_rs_py._core`); Rust core is outside this Python-distribution closure. | [`BSD-3-Clause`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/pyproject.toml) |
 | [anyio==4.15.1](https://pypi.org/project/anyio/4.15.1/) | runtime direct; testclient transitive via httpx and httpx2 | Async concurrency backend shared by the runtime and client transport; Python; universal wheel, native component not indicated | [MIT](https://pypi.org/pypi/anyio/4.15.1/json) |
-| [certifi==2026.7.22](https://pypi.org/project/certifi/2026.7.22/) | testclient transitive via httpx | Mozilla CA bundle used by the deprecated HTTPX compatibility backend; Python certificate data; universal wheel, native component not indicated | [MPL-2.0](https://pypi.org/pypi/certifi/2026.7.22/json) |
-| [exceptiongroup==1.3.1](https://pypi.org/project/exceptiongroup/1.3.1/) | runtime transitive via anyio; testclient shares that path (Python <3.11) | Backport used by AnyIO on Python versions without built-in exception groups; Python; universal wheel, no native component indicated | [MIT classifier; SPDX expression not reported](https://pypi.org/pypi/exceptiongroup/1.3.1/json) |
-| [h11==0.16.0](https://pypi.org/project/h11/0.16.0/) | testclient transitive via httpcore and httpcore2 | HTTP/1.1 protocol implementation for both client backends; Python; universal wheel, native component not indicated | [MIT](https://pypi.org/pypi/h11/0.16.0/json) |
-| [httpcore==1.0.9](https://pypi.org/project/httpcore/1.0.9/) | testclient transitive via httpx | Low-level transport for the deprecated HTTPX compatibility backend; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpcore/1.0.9/json) |
-| [httpcore2==2.13.1](https://pypi.org/project/httpcore2/2.13.1/) | testclient transitive via httpx2 | Low-level transport for the preferred HTTPX2 backend; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpcore2/2.13.1/json) |
-| [httpx==0.28.1](https://pypi.org/project/httpx/0.28.1/) | testclient direct optional dependency | Deprecated TestClient transport/backend compatibility; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpx/0.28.1/json) |
-| [httpx2==2.13.1](https://pypi.org/project/httpx2/2.13.1/) | testclient direct optional dependency | Preferred TestClient backend; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpx2/2.13.1/json) |
-| [httpx2-jsfetch==1.0](https://pypi.org/project/httpx2-jsfetch/1.0/) | testclient transitive via httpx2; lock marker Python >=3.12 and sys_platform == emscripten | Browser/Pyodide fetch transport adapter selected only under the lock marker; Python; universal wheel; browser JS API use is not a native component | [BSD-3-Clause](https://pypi.org/pypi/httpx2-jsfetch/1.0/json) |
-| [idna==3.20](https://pypi.org/project/idna/3.20/) | runtime transitive via anyio; testclient transitive via httpx and httpx2 | Internationalized domain-name encoding for async networking and HTTP clients; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/idna/3.20/json) |
-| [jinja2==3.1.6](https://pypi.org/project/jinja2/3.1.6/) | templates direct optional dependency | Jinja template environment and rendering for the templates extra; Python; universal wheel; uses MarkupSafe and may use its optional C speedup | [BSD license classifier; exact SPDX variant unknown](https://pypi.org/pypi/jinja2/3.1.6/json) |
-| [markupsafe==3.0.3](https://pypi.org/project/markupsafe/3.0.3/) | templates transitive via jinja2 | Escaping and markup-safe string operations for Jinja; Python with optional C speedup; wheel/source build variant can differ | [BSD-3-Clause](https://pypi.org/pypi/markupsafe/3.0.3/json) |
-| [pyyaml==6.0.3](https://pypi.org/project/PyYAML/6.0.3/) | schemas direct optional dependency | YAML docstring/schema parsing and OpenAPI schema responses; Python/Cython; optional LibYAML C extension; exact linked component is not established here | [MIT](https://pypi.org/pypi/pyyaml/6.0.3/json) |
-| [truststore==0.10.4](https://pypi.org/project/truststore/0.10.4/) | testclient transitive via httpx2 | HTTPX2 system certificate trust integration; Python; universal wheel, uses platform trust APIs; no bundled native component indicated | [MIT](https://pypi.org/pypi/truststore/0.10.4/json) |
+| [certifi==2026.7.22](https://pypi.org/project/certifi/2026.7.22/) | testclient/full transitive via httpx | Mozilla CA bundle used by the deprecated HTTPX compatibility backend; Python certificate data; universal wheel, native component not indicated | [MPL-2.0](https://pypi.org/pypi/certifi/2026.7.22/json) |
+| [exceptiongroup==1.3.1](https://pypi.org/project/exceptiongroup/1.3.1/) | runtime transitive via anyio; testclient/full share that path (Python <3.11) | Backport used by AnyIO on Python versions without built-in exception groups; Python; universal wheel, no native component indicated | [MIT classifier; SPDX expression not reported](https://pypi.org/pypi/exceptiongroup/1.3.1/json) |
+| [h11==0.16.0](https://pypi.org/project/h11/0.16.0/) | testclient/full transitive via httpcore and httpcore2 | HTTP/1.1 protocol implementation for both client backends; Python; universal wheel, native component not indicated | [MIT](https://pypi.org/pypi/h11/0.16.0/json) |
+| [httpcore==1.0.9](https://pypi.org/project/httpcore/1.0.9/) | testclient/full transitive via httpx | Low-level transport for the deprecated HTTPX compatibility backend; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpcore/1.0.9/json) |
+| [httpcore2==2.13.1](https://pypi.org/project/httpcore2/2.13.1/) | testclient/full transitive via httpx2 | Low-level transport for the preferred HTTPX2 backend; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpcore2/2.13.1/json) |
+| [httpx==0.28.1](https://pypi.org/project/httpx/0.28.1/) | testclient and full direct optional dependency | Deprecated TestClient transport/backend compatibility; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpx/0.28.1/json) |
+| [httpx2==2.13.1](https://pypi.org/project/httpx2/2.13.1/) | testclient and full direct optional dependency | Preferred TestClient backend; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/httpx2/2.13.1/json) |
+| [httpx2-jsfetch==1.0](https://pypi.org/project/httpx2-jsfetch/1.0/) | testclient/full transitive via httpx2; lock marker Python >=3.12 and sys_platform == emscripten | Browser/Pyodide fetch transport adapter selected only under the lock marker; Python; universal wheel; browser JS API use is not a native component | [BSD-3-Clause](https://pypi.org/pypi/httpx2-jsfetch/1.0/json) |
+| [idna==3.20](https://pypi.org/project/idna/3.20/) | runtime transitive via anyio; testclient/full transitive via httpx and httpx2 | Internationalized domain-name encoding for async networking and HTTP clients; Python; universal wheel, native component not indicated | [BSD-3-Clause](https://pypi.org/pypi/idna/3.20/json) |
+| [itsdangerous==2.2.0](https://pypi.org/project/itsdangerous/2.2.0/) | full direct optional dependency | Source-compatible signed-session dependency; Starlette-RS performs session signing and verification in Rust; Python, universal wheel, native component not indicated | [BSD License classifier; SPDX expression not reported](https://pypi.org/pypi/itsdangerous/2.2.0/json) |
+| [jinja2==3.1.6](https://pypi.org/project/jinja2/3.1.6/) | templates and full direct optional dependency | Jinja template environment and rendering; Python; universal wheel; uses MarkupSafe and may use its optional C speedup | [BSD license classifier; exact SPDX variant unknown](https://pypi.org/pypi/jinja2/3.1.6/json) |
+| [markupsafe==3.0.3](https://pypi.org/project/markupsafe/3.0.3/) | templates/full transitive via jinja2 | Escaping and markup-safe string operations for Jinja; Python with optional C speedup; wheel/source build variant can differ | [BSD-3-Clause](https://pypi.org/pypi/markupsafe/3.0.3/json) |
+| [python-multipart==0.0.32](https://pypi.org/project/python-multipart/0.0.32/) | full direct optional dependency (`>=0.0.18`) | Multipart form/upload compatibility import; Starlette-RS parses multipart bodies in Rust; Python, universal wheel, native component not indicated | [Apache-2.0](https://pypi.org/pypi/python-multipart/0.0.32/json) |
+| [pyyaml==6.0.3](https://pypi.org/project/PyYAML/6.0.3/) | schemas and full direct optional dependency | YAML docstring/schema parsing and OpenAPI schema responses; Python/Cython; optional LibYAML C extension; exact linked component is not established here | [MIT](https://pypi.org/pypi/pyyaml/6.0.3/json) |
+| [truststore==0.10.4](https://pypi.org/project/truststore/0.10.4/) | testclient/full transitive via httpx2 | HTTPX2 system certificate trust integration; Python; universal wheel, uses platform trust APIs; no bundled native component indicated | [MIT](https://pypi.org/pypi/truststore/0.10.4/json) |
 | [typing-extensions==4.16.0](https://pypi.org/project/typing-extensions/4.16.0/) | runtime direct; also a conditional AnyIO/HTTPX2 dependency (Python <3.15) | Typing backports required by the declared Python package runtime and client stack; Python; universal wheel, native component not indicated | [PSF-2.0](https://pypi.org/pypi/typing-extensions/4.16.0/json) |
 
 The WebAssembly-only `httpx2-jsfetch` edge is marker-conditional and must not be counted as
 installed on ordinary platforms. [`maturin==1.14.1` build-system
-requirement](https://github.com/appunni-m/starlette-rs/blob/b4c8a65c85e1b0d251ca05874412811eaa3ac7b8/pyproject.toml)
+requirement](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/pyproject.toml)
 is declared separately; it is not in `uv.lock` and is outside this runtime/extra closure.
 Its build-time transitive closure is therefore **unknown from this lock**. The upstream
 `uv.lock` does not contain license or implementation fields: package license claims above
