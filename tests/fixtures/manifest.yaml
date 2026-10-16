@@ -108,6 +108,17 @@ oracle_profile_extensions:
     prepare_target: parity-prepare-oracle-email-validation
 
 target_profile_extensions:
+  standard-multipart:
+    id: fastapi-rs-standard-multipart-cpython-3.12.13-python-multipart-0.0.32
+    base_profile: fastapi-rs-python-consumer
+    lock:
+      path: requirements/target-standard-multipart-cpython-3.12.13.lock
+      sha256: 3aee8269ac560768cc04dc8bb7ad6d55db75dd042f3a1a962fc5b8b3bfa853d6
+      profile: CPython 3.12.13 with python-multipart 0.0.32
+    added_packages:
+      python-multipart: 0.0.32
+    fastapi_extra: standard
+    prepare_target: parity-prepare-target-standard-multipart
   testclient:
     id: fastapi-rs-testclient-cpython-3.12.13-httpx-0.28.1
     base_profile: fastapi-rs-python-consumer
@@ -466,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 0ccb2226a81f04a3959d461070ecc0bf0cc4387923e111d8dedaf33f68c0569e
+    sha256: a3210d78d7dfd2043630030b1f347cb3959c56b5f61fda5e69b4621fe9fe85c4
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -502,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 94e1113a846510f1a6b645051f23048cc80946f9c4d68873e32db9e639e4d94b
+    sha256: 2d91ec1330decfe1f1dd21cbc0c49ac506ceeb9049d2e9c20cc47b57e79703ec
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -539,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: afd2e847c3c52f3a67171dc4b2c15ab82ecd3306ce745571990955a906160ec1
+    sha256: ecd1f9ea35bda9721541bf04a5b8c1d5d3b74dcbeef41a7ab7ce327cace958c8
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 634
-      cases: 2589
-      partial_source_mappings: 1873
+      workflows: 636
+      cases: 2599
+      partial_source_mappings: 1876
 
 contract_metadata:
   aliases:

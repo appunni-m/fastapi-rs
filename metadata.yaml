@@ -68,6 +68,19 @@ target_runtime:
       prepare_target: parity-prepare-target-testclient
       source_profile: FastAPI 0.141.1 standard extra with HTTPX fallback
       starlette_rs_profile: 1.6.0 test client with httpx2 absent
+    standard-multipart:
+      id: fastapi-rs-standard-multipart-cpython-3.12.13-python-multipart-0.0.32
+      base_profile: fastapi-rs-python-consumer
+      lock:
+        path: requirements/target-standard-multipart-cpython-3.12.13.lock
+        sha256: 3aee8269ac560768cc04dc8bb7ad6d55db75dd042f3a1a962fc5b8b3bfa853d6
+        profile: CPython 3.12.13 with python-multipart 0.0.32
+      added_packages:
+        python-multipart: 0.0.32
+      fastapi_extra: standard
+      prepare_target: parity-prepare-target-standard-multipart
+      source_profile: FastAPI 0.141.1 standard extra with multipart parsing enabled
+      starlette_rs_profile: 1.6.0 form parsing with python-multipart installed
     email-validation:
       id: fastapi-rs-email-validation-cpython-3.12.13-email-validator-2.3.0
       base_profile: fastapi-rs-python-consumer

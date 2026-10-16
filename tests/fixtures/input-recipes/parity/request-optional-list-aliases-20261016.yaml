@@ -1,0 +1,849 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/request_optional_list_aliases_20261016.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-optional-list-aliases.form.alias-selection
+  actions:
+  - action_id: direct-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '15'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p=hello&p=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: direct-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '27'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_alias=hello&p_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: model-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model-optional-list-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '15'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p=hello&p=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: model-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model-optional-list-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '27'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_alias=hello&p_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_list.py
+    kind: upstream_test
+- case_id: fastapi.request-optional-list-aliases.form.validation-alias-selection
+  actions:
+  - action_id: direct-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '15'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p=hello&p=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: direct-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '35'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_val_alias=hello&p_val_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: model-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model-optional-list-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '15'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p=hello&p=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: model-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model-optional-list-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '35'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_val_alias=hello&p_val_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_list.py
+    kind: upstream_test
+- case_id: fastapi.request-optional-list-aliases.form.alias-and-validation-alias-selection
+  actions:
+  - action_id: direct-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '15'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p=hello&p=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: direct-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '27'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_alias=hello&p_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: direct-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '35'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_val_alias=hello&p_val_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: model-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model-optional-list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '15'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p=hello&p=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: model-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model-optional-list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '27'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_alias=hello&p_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: model-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model-optional-list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '35'
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: p_val_alias=hello&p_val_alias=world
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_list.py
+    kind: upstream_test
+- case_id: fastapi.request-optional-list-aliases.file.alias-selection
+  actions:
+  - action_id: bytes-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-bytes-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: bytes-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-bytes-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: uploadfile-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-uploadfile-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: uploadfile-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-uploadfile-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional_list.py
+    kind: upstream_test
+- case_id: fastapi.request-optional-list-aliases.file.validation-alias-selection
+  actions:
+  - action_id: bytes-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-bytes-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: bytes-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-bytes-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: uploadfile-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-uploadfile-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: uploadfile-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-uploadfile-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional_list.py
+    kind: upstream_test
+- case_id: fastapi.request-optional-list-aliases.file.alias-and-validation-alias-selection
+  actions:
+  - action_id: bytes-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-bytes-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: bytes-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-bytes-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: bytes-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-bytes-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: uploadfile-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-uploadfile-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: uploadfile-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-uploadfile-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: uploadfile-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-list-uploadfile-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=OptionalListAliasBoundary
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"one.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--OptionalListAliasBoundary\r\nContent-Disposition: form-data; name=\"p_val_alias\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nworld\r\n--OptionalListAliasBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional_list.py
+    kind: upstream_test

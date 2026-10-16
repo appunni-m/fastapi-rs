@@ -288,8 +288,11 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
     if not isinstance(optional_profiles, dict) or set(optional_profiles) != {
         "testclient",
         "email-validation",
+        "standard-multipart",
     }:
-        raise MetadataError("target runtime optional profiles must declare TestClient and EmailStr")
+        raise MetadataError(
+            "target runtime optional profiles must declare TestClient, EmailStr, and multipart"
+        )
     if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(optional_profiles):
         raise MetadataError("manifest target profiles differ from metadata.yaml")
     for profile_name, profile in optional_profiles.items():

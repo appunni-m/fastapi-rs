@@ -1,0 +1,163 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/header_list_alias_validation_alias_20261016.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.header.list-alias-valid
+  actions:
+  - action_id: get-list-by-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/list-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - p_alias
+        - hello
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_list.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.header.list-validation-alias-valid
+  actions:
+  - action_id: get-list-by-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/list-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - p_val_alias
+        - hello
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_list.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.header.list-alias-validation-alias-declared-alias-rejected
+  actions:
+  - action_id: get-list-by-declared-alias-with-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - p_alias
+        - hello
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_list.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.header.list-alias-validation-alias-validation-alias-valid
+  actions:
+  - action_id: get-list-by-validation-alias-with-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/list-alias-and-validation-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - p_val_alias
+        - hello
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_list.py
+    kind: upstream_test

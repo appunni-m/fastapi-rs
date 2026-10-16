@@ -497,6 +497,18 @@ def read_manifest() -> dict[str, Any]:
     }:
         raise ContractError("manifest target must select Starlette-RS 0.1.0 for the 1.6.0 contract")
     expected_target_extensions = {
+        "standard-multipart": {
+            "id": "fastapi-rs-standard-multipart-cpython-3.12.13-python-multipart-0.0.32",
+            "base_profile": target["id"],
+            "lock": {
+                "path": "requirements/target-standard-multipart-cpython-3.12.13.lock",
+                "sha256": "3aee8269ac560768cc04dc8bb7ad6d55db75dd042f3a1a962fc5b8b3bfa853d6",
+                "profile": "CPython 3.12.13 with python-multipart 0.0.32",
+            },
+            "added_packages": {"python-multipart": "0.0.32"},
+            "fastapi_extra": "standard",
+            "prepare_target": "parity-prepare-target-standard-multipart",
+        },
         "testclient": {
             "id": "fastapi-rs-testclient-cpython-3.12.13-httpx-0.28.1",
             "base_profile": target["id"],

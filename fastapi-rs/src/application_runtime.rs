@@ -11956,6 +11956,15 @@ fn sequence_value_for_annotation<'py>(
     annotation: &Bound<'py, PyAny>,
     values: &Bound<'py, PyList>,
 ) -> PyResult<Bound<'py, PyAny>> {
+    let mut normalized_annotation = annotation.clone().unbind();
+    loop {
+        let (base, metadata) = annotation_parts(py, normalized_annotation)?;
+        normalized_annotation = base;
+        if metadata.is_empty() {
+            break;
+        }
+    }
+    let annotation = normalized_annotation.bind(py);
     let typing = py.import("typing")?;
     let origin = typing.getattr("get_origin")?.call1((annotation,))?;
     let types = py.import("types")?;
