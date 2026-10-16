@@ -34,9 +34,7 @@ class WithComputedField(BaseModel):
 
 
 def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> FastAPI:
-    app = FastAPI(
-        separate_input_output_schemas=factory_input["separate_input_output_schemas"]
-    )
+    app = FastAPI(separate_input_output_schemas=factory_input["separate_input_output_schemas"])
 
     @app.post("/items/", responses={402: {"model": Item}})
     def create_item(item: Item) -> Item:
