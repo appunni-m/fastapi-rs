@@ -808,14 +808,14 @@
     {
       "id": "app-constructor-route-defaults",
       "input_path": "tests/fixtures/inputs/parity/app-constructor-route-defaults.json",
-      "input_sha256": "428209dc6e96bf37da3e16893792f10f8705a512c9f011baa772a9a6424da0a4",
+      "input_sha256": "42ff24fd8c748afc050607798c2dee27da56c8b28577826306dbd695e89602ad",
       "recipe_path": "tests/fixtures/input-recipes/parity/app-constructor-route-defaults.yaml",
-      "recipe_sha256": "ddab8cb405bdd46e9b3f914c6be0dbd834a78aa808569c0c60dffcb07aa92fb1",
+      "recipe_sha256": "a10c0b5d1e37456c83defe4bd775a33b0c1aa3cfa4b69f4ec5fb2a58d1498a4b",
       "case_ids": [
         "fastapi.applications.constructor.route-defaults"
       ],
       "workload_path": "tests/fixtures/workloads/app_constructor_route_defaults.py",
-      "workload_sha256": "451b5a7ba0421f118f4cc2ed2a59412aa7c4308ae55b0036feb04f2e59fa5d28",
+      "workload_sha256": "ac49b137d8ac23bcbc2ab1eb09c0780a045229147989412133c72920a149c3ae",
       "case_contracts": [
         {
           "case_id": "fastapi.applications.constructor.route-defaults",
@@ -10124,14 +10124,14 @@
     {
       "id": "fastapi-constructor-debug",
       "input_path": "tests/fixtures/inputs/parity/fastapi-constructor-debug.json",
-      "input_sha256": "861b6aea5d8df1a3eab729038726375581fc2bab00b797ed695143d701fc87ce",
+      "input_sha256": "c59551c3292f0c69b97ed1401ccbd147f00dde2197a91c1d65c5c2c0b0e735e9",
       "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml",
-      "recipe_sha256": "2f2d6eb45a18ea7cdcc4794e6d08b4a5956131fd194f4d8cce42ad1c1a330b28",
+      "recipe_sha256": "81e1b5c85621410131bf79b06b87094eacfa68d31f1a63bf49f1d65088b74385",
       "case_ids": [
         "fastapi.applications.constructor-debug"
       ],
-      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
-      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
+      "workload_path": "tests/fixtures/workloads/fastapi_constructor_extra_api.py",
+      "workload_sha256": "1a0213df2762ae4cf990e3f52c509cdcfeb5046c8e5821651a118b267eb6a2f1",
       "api_definitions": [
         {
           "case_id": "fastapi.applications.constructor-debug",
@@ -10141,6 +10141,15 @@
         }
       ],
       "api_probes": [
+        {
+          "case_id": "fastapi.applications.constructor-debug",
+          "probe_id": "constructor-captures-extra-keywords",
+          "symbol_id": "fastapi.FastAPI",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
         {
           "case_id": "fastapi.applications.constructor-debug",
           "probe_id": "constructor-signature",

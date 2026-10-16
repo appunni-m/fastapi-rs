@@ -11,6 +11,7 @@ def create_app(factory_input: dict[str, Any], _event_trace: list[str]) -> FastAP
     app = FastAPI(
         deprecated=factory_input["deprecated"],
         include_in_schema=factory_input["include_in_schema"],
+        **factory_input["extra"],
     )
 
     @app.get("/default")
@@ -30,6 +31,7 @@ def create_app(factory_input: dict[str, Any], _event_trace: list[str]) -> FastAP
                 "deprecated": route.deprecated,
                 "include_in_schema": route.include_in_schema,
             },
+            "extra": app.extra,
         }
 
     return app

@@ -3487,6 +3487,7 @@ struct ParameterOpenApiPlan {
 #[pyclass(name = "FastAPI", module = "fastapi.applications", dict, weakref)]
 pub(crate) struct PyFastApi {
     state: Py<PyAny>,
+    extra: Py<PyAny>,
     debug: bool,
     route_scope_prefix: String,
     is_router_inner: bool,
@@ -4200,7 +4201,7 @@ impl PyFastApi {
     }
 
     #[new]
-    #[pyo3(signature = (*, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (*, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true, **extra))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -4244,6 +4245,7 @@ impl PyFastApi {
         strict_content_type: bool,
         deprecated: Option<bool>,
         include_in_schema: bool,
+        extra: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Self> {
         if openapi_url.is_some_and(|url| !url.is_empty()) && title.is_empty() {
             return Err(PyAssertionError::new_err(
@@ -4264,6 +4266,9 @@ impl PyFastApi {
             .getattr("State")?
             .call0()?
             .unbind();
+        let extra = extra
+            .map(|extra| extra.clone().into_any().unbind())
+            .unwrap_or_else(|| PyDict::new(py).into_any().unbind());
         let servers = match servers {
             Some(servers) if servers.bind(py).is_truthy()? => servers,
             _ => PyList::empty(py).into_any().unbind(),
@@ -4379,6 +4384,7 @@ impl PyFastApi {
         };
         let mut app = Self {
             state,
+            extra,
             debug,
             route_scope_prefix: String::new(),
             is_router_inner: false,
@@ -4457,6 +4463,16 @@ impl PyFastApi {
     #[getter]
     fn state(&self, py: Python<'_>) -> Py<PyAny> {
         self.state.clone_ref(py)
+    }
+
+    #[getter]
+    fn extra(&self, py: Python<'_>) -> Py<PyAny> {
+        self.extra.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_extra(&mut self, extra: Py<PyAny>) {
+        self.extra = extra;
     }
 
     #[getter]
@@ -7173,6 +7189,7 @@ impl PyApiRouter {
                 strict_content_type.unwrap_or(true),
                 deprecated,
                 include_in_schema,
+                None,
             )?,
         )?;
         {
