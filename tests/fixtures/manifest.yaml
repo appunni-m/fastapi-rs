@@ -466,7 +466,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 80ecf7af32a4348ee8d295e65b4511dd2c32196527f88cc3500104c0e6c67a70
+    sha256: 497df2cbe307c82d8854e7cea4bc0dec05e82277407f38868fe06bf30cbdcc26
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -502,7 +502,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 77afcd436a9782bc86a637a3b9736c50a48a8ac4051d5e74f521fa7516800cec
+    sha256: 4d7dcfb0d166a4853ebb463cc6399d5a6a9dd17a4f6434b1488e836826765eac
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -539,14 +539,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 7062fe07644a05d6cddd95fceee83e9e8067a4d7cc2331a8cc20798caf2a170b
+    sha256: 697a8ff1f20c2a9a1c2f927d8c34a1a6a9bbd8ff2560c364f126a8a2f8a5cf24
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 633
-      cases: 2587
-      partial_source_mappings: 1872
+      workflows: 634
+      cases: 2588
+      partial_source_mappings: 1873
 
 contract_metadata:
   aliases:
@@ -1231,7 +1231,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 149
     symbols_with_operation_fixture_refs: 252
-    operation_fixture_refs: 1923
+    operation_fixture_refs: 1927
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -8417,6 +8417,17 @@ api_surface_contract:
       - docs.response.status
       - http.body.bytes
       - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: route-description-registration-upstream
+      input_path: tests/fixtures/inputs/parity/route-description-registration-upstream.json
+      input_sha256: 30aa95441fc0bc5ccf1a06051ac932222b0fe62cf682718322e392fa3a6e7f64
+      recipe_path: tests/fixtures/input-recipes/parity/route-description-registration-upstream.yaml
+      recipe_sha256: 6584ec0f135220cc9e5688661297c59ca22c592fe4a54f6decfe4e2a0f06d490
+      workload_path: tests/fixtures/workloads/route_description_registration_upstream.py
+      workload_sha256: 1defa1416047146ee30339dd67aabd018d4d2c3af8934e6bd903c7aa6fea00ac
+      case_id: fastapi.route-description-registration.openapi
+      observation_selectors:
       - openapi.document
       - openapi.paths
     - workflow_id: openapi-validation-response
@@ -18027,6 +18038,19 @@ api_surface_contract:
       case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       observation_selectors:
       - python.signature
+    - workflow_id: path-operation-configurations-tutorial003-upstream
+      input_path: tests/fixtures/inputs/parity/path-operation-configurations-tutorial003-upstream.json
+      input_sha256: eb2dd7bafe6e93aebdb5b0ba64271a474ab7212040def16637945c3f4c02dcdd
+      recipe_path: tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml
+      recipe_sha256: aeacc6e865d668767b695b0a336fe906fe3fc77bf046138031ea4b7849200dbf
+      workload_path: tests/fixtures/workloads/path_operation_configurations_tutorial003_upstream.py
+      workload_sha256: dec8861f4fb2a70f1a118738e14ef803fbecf1395c91e55dc45b16be0f03cc6d
+      case_id: fastapi.path-operation-configurations.tutorial003-explicit-description
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: response-field-traversal
       input_path: tests/fixtures/inputs/parity/response-field-traversal.json
       input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
@@ -42013,7 +42037,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-common-options
       probe_id: configured-apiroute-openapi
       probe_kind: callable
@@ -42025,7 +42049,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-custom-response-class
       probe_id: plain-text-apiroute-openapi
       probe_kind: callable
@@ -42037,7 +42061,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-custom-unique-id
       probe_id: custom-unique-id-openapi-result
       probe_kind: callable
@@ -42049,7 +42073,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-explicit-none-response-model
       probe_id: disabled-response-model-openapi
       probe_kind: callable
@@ -42061,7 +42085,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-hidden-from-schema
       probe_id: hidden-apiroute-openapi-result
       probe_kind: callable
@@ -42073,7 +42097,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-openapi-options
       probe_id: configured-openapi-options-result
       probe_kind: callable
@@ -42085,7 +42109,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-response-model-filters
       probe_id: filtered-apiroute-openapi
       probe_kind: callable
@@ -42348,7 +42372,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-common-options
       observation_selectors:
       - python.attribute_value
@@ -42358,7 +42382,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-explicit-none-response-model
       observation_selectors:
       - python.attribute_value
@@ -42368,7 +42392,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-openapi-options
       observation_selectors:
       - python.attribute_value
@@ -42378,7 +42402,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-hidden-from-schema
       observation_selectors:
       - python.attribute_value
@@ -42388,7 +42412,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.openapi.get-openapi.standalone-apiroute-custom-unique-id
       observation_selectors:
       - python.attribute_value
@@ -48342,7 +48366,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-common-options
       probe_id: configured-apiroute-construction
       probe_kind: callable
@@ -48354,7 +48378,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-custom-response-class
       probe_id: plain-text-apiroute-construction
       probe_kind: callable
@@ -48366,7 +48390,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-custom-unique-id
       probe_id: custom-unique-id-route-construction
       probe_kind: callable
@@ -48378,7 +48402,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-explicit-none-response-model
       probe_id: disabled-response-model-construction
       probe_kind: callable
@@ -48390,7 +48414,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-hidden-from-schema
       probe_id: hidden-apiroute-construction
       probe_kind: callable
@@ -48402,7 +48426,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-openapi-options
       probe_id: configured-openapi-options-route
       probe_kind: callable
@@ -48414,7 +48438,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-response-model-filters
       probe_id: filtered-apiroute-construction
       probe_kind: callable
@@ -48461,7 +48485,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-common-options
       observation_selectors:
       - python.call_outcome
@@ -48471,7 +48495,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-explicit-none-response-model
       observation_selectors:
       - python.call_outcome
@@ -48481,7 +48505,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-openapi-options
       observation_selectors:
       - python.call_outcome
@@ -48491,7 +48515,17 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
+      case_id: fastapi.openapi.get-openapi.standalone-apiroute-openapi-options
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: apiroute-openapi-options
+      input_path: tests/fixtures/inputs/parity/apiroute-openapi-options.json
+      input_sha256: 0e9ee8eeceebb541f0e26e1e0818029140ce1aa87055cc5cbddd32c71b49e6ac
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+      recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
+      workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-hidden-from-schema
       observation_selectors:
       - python.call_outcome
@@ -48501,7 +48535,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
       recipe_sha256: cd3e2ca56f09638f8b3c52d7bd594bc220ae2a8f0037409b673562f60ad74608
       workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
-      workload_sha256: 4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911
+      workload_sha256: 901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee
       case_id: fastapi.routing.apiroute.constructor-custom-unique-id
       observation_selectors:
       - python.call_outcome
@@ -48771,9 +48805,9 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute
       known_gaps:
-      - Standalone construction supports the mapped common and selected OpenAPI-facing options; dependency
-        overrides, custom response classes, description, response-model filters beyond the sampled output
-        projection, strict content type, and callbacks remain unsupported or unverified.
+      - Standalone construction supports the mapped common and selected OpenAPI-facing options, including
+        explicit description; dependency overrides, custom response classes, response-model filters beyond
+        the sampled output projection, strict content type, and callbacks remain unsupported or unverified.
       - Standalone APIRoute dispatch is mapped only for the five selected HTTP cases; direct .app invocation,
         custom get_route_handler behavior, body inputs, dependency overrides and errors, validation errors,
         exception-handler integration, and WebSocket scopes remain unverified.
@@ -50451,6 +50485,19 @@ api_surface_contract:
       case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       observation_selectors:
       - python.signature
+    - workflow_id: path-operation-configurations-tutorial003-upstream
+      input_path: tests/fixtures/inputs/parity/path-operation-configurations-tutorial003-upstream.json
+      input_sha256: eb2dd7bafe6e93aebdb5b0ba64271a474ab7212040def16637945c3f4c02dcdd
+      recipe_path: tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml
+      recipe_sha256: aeacc6e865d668767b695b0a336fe906fe3fc77bf046138031ea4b7849200dbf
+      workload_path: tests/fixtures/workloads/path_operation_configurations_tutorial003_upstream.py
+      workload_sha256: dec8861f4fb2a70f1a118738e14ef803fbecf1395c91e55dc45b16be0f03cc6d
+      case_id: fastapi.path-operation-configurations.tutorial003-explicit-description
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: response-field-traversal
       input_path: tests/fixtures/inputs/parity/response-field-traversal.json
       input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655

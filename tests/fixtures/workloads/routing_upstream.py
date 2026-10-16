@@ -56,14 +56,20 @@ def create_app() -> FastAPI:
 
     app.include_router(empty_router, prefix="/prefix")
 
-    @app.api_route("/items/{item_id}", methods=["GET"])
+    @app.api_route(
+        "/items/{item_id}",
+        methods=["GET"],
+    )
     def get_item(item_id: str):
         return {"item_id": item_id}
 
     def get_unannotated_item(item_id: str):
         return {"item_id": item_id}
 
-    app.add_api_route("/items-unannotated/{item_id}", get_unannotated_item)
+    app.add_api_route(
+        "/items-unannotated/{item_id}",
+        get_unannotated_item,
+    )
 
     @app.delete("/items/{item_id}")
     def delete_item(item_id: str, item: Item):

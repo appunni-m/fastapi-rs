@@ -438,7 +438,7 @@
         "fastapi.openapi.get-openapi.standalone-apiroute-custom-unique-id"
       ],
       "workload_path": "tests/fixtures/workloads/apiroute_openapi_options.py",
-      "workload_sha256": "4a84973f30fb3cc0b28279bcd517eab6e2af35019cb8fe17119aab17dc79c911",
+      "workload_sha256": "901e94c06a005f130f17328c14912d657646b7700f83a172945daf10ff1dc9ee",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.get-openapi.standalone-apiroute-common-options",
@@ -17492,14 +17492,14 @@
     {
       "id": "path-operation-configurations-tutorial003-upstream",
       "input_path": "tests/fixtures/inputs/parity/path-operation-configurations-tutorial003-upstream.json",
-      "input_sha256": "8b275aa00eb2806d609ab2040db1cb05061e0f8455ea6416ca84a768a5cf1b32",
+      "input_sha256": "eb2dd7bafe6e93aebdb5b0ba64271a474ab7212040def16637945c3f4c02dcdd",
       "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml",
-      "recipe_sha256": "619c320c9be16db1c4eda2957704f084a32f8bd060f5297ecd31c477485170eb",
+      "recipe_sha256": "aeacc6e865d668767b695b0a336fe906fe3fc77bf046138031ea4b7849200dbf",
       "case_ids": [
         "fastapi.path-operation-configurations.tutorial003-explicit-description"
       ],
       "workload_path": "tests/fixtures/workloads/path_operation_configurations_tutorial003_upstream.py",
-      "workload_sha256": "53f32cad8503d93cf667f5f6d7fdf94323eac02e1c09d4b25fe89e35d9e72690",
+      "workload_sha256": "dec8861f4fb2a70f1a118738e14ef803fbecf1395c91e55dc45b16be0f03cc6d",
       "case_contracts": [
         {
           "case_id": "fastapi.path-operation-configurations.tutorial003-explicit-description",
@@ -27153,6 +27153,27 @@
       ]
     },
     {
+      "id": "route-description-registration-upstream",
+      "input_path": "tests/fixtures/inputs/parity/route-description-registration-upstream.json",
+      "input_sha256": "30aa95441fc0bc5ccf1a06051ac932222b0fe62cf682718322e392fa3a6e7f64",
+      "recipe_path": "tests/fixtures/input-recipes/parity/route-description-registration-upstream.yaml",
+      "recipe_sha256": "6584ec0f135220cc9e5688661297c59ca22c592fe4a54f6decfe4e2a0f06d490",
+      "case_ids": [
+        "fastapi.route-description-registration.openapi"
+      ],
+      "workload_path": "tests/fixtures/workloads/route_description_registration_upstream.py",
+      "workload_sha256": "1defa1416047146ee30339dd67aabd018d4d2c3af8934e6bd903c7aa6fea00ac",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.route-description-registration.openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_extra_routes.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "route-invocation-fault-contract",
       "input_path": "tests/fixtures/inputs/parity/route-invocation-fault-contract.json",
       "input_sha256": "efec763f628323b3c2f034c448244b39ab1f0d8440daa7c8b2c8d43731331833",
@@ -28136,7 +28157,7 @@
         "fastapi.test.test-extra-routes.test-openapi-schema"
       ],
       "workload_path": "tests/fixtures/workloads/routing_upstream.py",
-      "workload_sha256": "ed32b537cfb6ecabba0be373d101deab1a12206dce79fe34663411f3c9520587",
+      "workload_sha256": "0323a9a45f1b5b5ccad0e74b5b264706e61e27aec1e7a280a6af281eb43430a2",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-custom-route-class.test-get-path",
@@ -60125,6 +60146,20 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_extra_routes.py",
+      "fixture_id": "fastapi.test.test-extra-routes",
+      "workflow_id": "route-description-registration-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.route-description-registration.openapi"
+      ],
+      "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

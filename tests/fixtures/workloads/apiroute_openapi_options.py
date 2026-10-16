@@ -42,6 +42,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         openapi_extra={"x-fastapi-rs-probe": {"route": "configured"}},
         tags=["catalog"],
         summary="Create an item",
+        description="Description from a direct APIRoute.",
         name="create_item",
         methods=["post"],
     )
@@ -90,6 +91,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "openapi_extra": {"x-fastapi-rs-probe": {"route": "configured"}},
                 "tags": ["catalog"],
                 "summary": "Create an item",
+                "description": "Description from a direct APIRoute.",
                 "name": "create_item",
                 "methods": ["post"],
             },

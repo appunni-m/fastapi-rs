@@ -3723,6 +3723,8 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-openapi-options
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-openapi-options
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-hidden-from-schema
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-custom-unique-id
@@ -3757,8 +3759,10 @@ reviewed_api_contract_overlay:
         descriptions, additional responses, deprecation, explicit operation IDs,
         OpenAPI extensions, schema exclusion, and custom unique-ID callbacks
         through exact generated documents. It covers only these selected
-        constructor options; dependency injection, custom response classes,
-        description fields, response-model filters, and full standalone ASGI
+        constructor options, including explicit `description` in the
+        `standalone-apiroute-openapi-options` workflow and its exact generated
+        OpenAPI document; dependency injection, custom response classes,
+        response-model filters, and full standalone ASGI
         behavior remain outside this direct constructor slice.
         The input inspects FastAPI-registered APIRoute instances for one direct
         GET path operation and one GET operation included through nested
@@ -3791,7 +3795,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Standalone construction supports the mapped common and selected OpenAPI-facing options; dependency overrides, custom response classes, description, response-model filters beyond the sampled output projection, strict content type, and callbacks remain unsupported or unverified.
+          - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description; dependency overrides, custom response classes, response-model filters beyond the sampled output projection, strict content type, and callbacks remain unsupported or unverified.
           - Standalone APIRoute dispatch is mapped only for the five selected HTTP cases; direct .app invocation, custom get_route_handler behavior, body inputs, dependency overrides and errors, validation errors, exception-handler integration, and WebSocket scopes remain unverified.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
@@ -4522,7 +4526,9 @@ reviewed_api_contract_overlay:
         other constructor options and app lifecycle remain outside this slice. A separate
         input probes callback-visible defaults through the source's semi-internal direct
         `add_api_route` registration path; this does not classify that method as a public
-        FastAPI contract. The 13-case first ASGI slice also covers default app construction,
+        FastAPI contract. The focused route-description registration input compares
+        OpenAPI descriptions registered through `api_route` and direct `add_api_route`.
+        The 13-case first ASGI slice also covers default app construction,
         one POST registration, selected request handling, and the generated OpenAPI document;
         it does not cover general constructor options or app lifecycle.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
@@ -4541,6 +4547,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - *generate_unique_id_multi_methods
         - *generate_unique_id_app_add_api_route
+        - recipe_path: tests/fixtures/input-recipes/parity/route-description-registration-upstream.yaml
+          case_id: fastapi.route-description-registration.openapi
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -6098,6 +6106,8 @@ reviewed_api_contract_overlay:
         - *response_class_inherited_omitted
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
+        - recipe_path: tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml
+          case_id: fastapi.path-operation-configurations.tutorial003-explicit-description
         - *response_traversal_branch_retry
         - *response_traversal_parent_child
         - *response_traversal_early_full
@@ -6141,6 +6151,12 @@ reviewed_api_contract_overlay:
         The workflow registers the tenant GET path with decorator defaults and
         the shared GET path with only `name="read_shared_items"`. It does not
         exercise or establish the other GET decorator options.
+
+        `path-operation-configurations-tutorial003-upstream` compares an
+        explicit description on an included APIRouter GET, docstring fallback,
+        empty-string fallback to the docstring, and truncation at the first
+        form feed. The exact OpenAPI description is compared. Whitespace-only
+        explicit descriptions and other normalization inputs remain unproven.
 
         Registers a GET endpoint on a router for inclusion, including the
         sampled scalar query dependency, path parameters contributed by router
@@ -6856,6 +6872,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
+        - recipe_path: tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml
+          case_id: fastapi.path-operation-configurations.tutorial003-explicit-description
         - *response_traversal_early_partial
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
@@ -6864,7 +6882,10 @@ reviewed_api_contract_overlay:
         response pipeline. include_in_schema=False keeps the route dispatchable
         while omitting it from OpenAPI. An explicit non-empty `summary` is
         emitted as the operation summary in OpenAPI, as sampled by
-        `path-operation-post-summary-isolated`. Generated summaries, response
+        `path-operation-post-summary-isolated`. The focused configuration input
+        also compares explicit description and exact OpenAPI normalization,
+        including docstring fallback for an empty value and form-feed truncation.
+        Generated summaries, response
         customization beyond `response_description`, and other hooks remain
         outside this reviewed slice. An explicit non-empty `operation_id` is
         emitted at
