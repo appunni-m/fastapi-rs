@@ -71,6 +71,7 @@ PUBLIC_FASTAPI_EXPORTS = [
 # a direct import, never a wrapper or local implementation.
 REVIEWED_STARLETTE_REEXPORTS = {
     "fastapi/testclient.py": ("starlette.testclient", frozenset({"TestClient"})),
+    "fastapi/templating.py": ("starlette.templating", frozenset({"Jinja2Templates"})),
 }
 FORBIDDEN_CONTROL_FLOW = tuple(
     node_type

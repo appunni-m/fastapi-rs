@@ -145,7 +145,13 @@ def run_target(
             },
             allow_pydantic_model_defaults=workflow["schema"]
             in {api_worker.WORKFLOW_SCHEMA_V4_ID, api_worker.WORKFLOW_SCHEMA_V5_ID},
-            structural_signatures=(workflow["schema"] == api_worker.WORKFLOW_SCHEMA_V5_ID),
+            structural_signatures=workflow["schema"]
+            in {
+                api_worker.WORKFLOW_SCHEMA_V5_ID,
+                api_worker.WORKFLOW_SCHEMA_V6_ID,
+                api_worker.WORKFLOW_SCHEMA_V7_ID,
+                api_worker.WORKFLOW_SCHEMA_V8_ID,
+            },
         )
     )
     api_worker._validate_result_consistency(cases)

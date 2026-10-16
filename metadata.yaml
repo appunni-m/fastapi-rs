@@ -95,6 +95,20 @@ target_runtime:
       prepare_target: parity-prepare-target-email-validation
       source_profile: FastAPI 0.141.1 EmailStr validation dependency closure
       starlette_rs_profile: 1.6.0 core runtime
+    templates:
+      id: fastapi-rs-templates-cpython-3.12.13-jinja2-3.1.6-markupsafe-3.0.3
+      base_profile: fastapi-rs-python-consumer
+      lock:
+        path: requirements/templates-cpython-3.12.13.lock
+        sha256: eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0
+        profile: CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3
+      added_packages:
+        jinja2: 3.1.6
+        markupsafe: 3.0.3
+      fastapi_extra: templates
+      prepare_target: parity-prepare-target-templates
+      source_profile: FastAPI 0.141.1 with only Jinja2 and MarkupSafe; no standard extra
+      starlette_rs_profile: 1.6.0 templates integration
 
 oracle_profile_extensions:
   email-validation:
@@ -109,6 +123,18 @@ oracle_profile_extensions:
       email-validator: 2.3.0
     fastapi_extra: standard
     prepare_target: parity-prepare-oracle-email-validation
+  templates:
+    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3
+    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/templates-cpython-3.12.13.lock
+      sha256: eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0
+      profile: CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3
+    added_packages:
+      jinja2: 3.1.6
+      markupsafe: 3.0.3
+    fastapi_extra: null
+    prepare_target: parity-prepare-oracle-templates
 
 fastapi_cli_policy:
   command: fastapi
@@ -1110,6 +1136,12 @@ reviewed_api_contract_overlay:
     fastapi.testclient:
       workflow_id: fastapi-testclient-module-identity
       case_id: fastapi.testclient.module-identity
+      probe_id: module-identity
+      binding_count: 1
+      observation_selectors: [python.import_path, python.object_identity]
+    fastapi.templating:
+      workflow_id: fastapi-templating-alias-identity
+      case_id: fastapi.templating.module-and-alias-identity
       probe_id: module-identity
       binding_count: 1
       observation_selectors: [python.import_path, python.object_identity]
@@ -3328,13 +3360,15 @@ reviewed_api_contract_overlay:
           alias_spelling: Jinja2Templates
           local_name: Jinja2Templates
           target_path: starlette.templating.Jinja2Templates
+      observation_selectors: [python.binding_identity, python.signature]
       supported_slice: >-
         FastAPI 0.141.1 directly re-exports the Starlette Jinja2Templates class.
-        Its optional standard extras include Jinja2, which Starlette's
-        templating module requires at import time. This describes the pinned
-        FastAPI source alias and optional availability only; it establishes no
-        FastAPI-RS target identity or parity. Template rendering and response
-        behavior remain Starlette-RS-owned.
+        The FastAPI-RS templates extra pins only Jinja2 3.1.6 and MarkupSafe
+        3.0.3, and its paired templates profile observes the public module's
+        import identity, exact object identity with starlette.templating, and
+        the source-backed callable signature. The core profile keeps the
+        missing-Jinja2 import failure. Generic template rendering and response
+        behavior remain Starlette-RS-owned and are not claimed by this slice.
     fastapi.testclient.TestClient:
       source_evidence:
         - path: fastapi/testclient.py

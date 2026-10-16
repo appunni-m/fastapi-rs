@@ -99,6 +99,19 @@ also declares separate `schemas`, `templates`, and `testclient` extras; their
 use and support status are tracked independently from this FastAPI-RS profile.
 Their other optional package closures remain outside the target profiles and
 unresolved.
+
+FastAPI-RS also declares a `templates` optional runtime extra with exact
+requirements `Jinja2==3.1.6` and `MarkupSafe==3.0.3`. Its paired CPython
+3.12.13 profile is hash-locked in
+[`requirements/templates-cpython-3.12.13.lock`](../requirements/templates-cpython-3.12.13.lock);
+both packages are optional runtime dependencies installed separately from the
+FastAPI-RS wheel. Jinja2 is a Python template engine licensed under BSD-3-Clause
+([3.1.6 wheel metadata](https://pypi.org/pypi/Jinja2/3.1.6/json)); MarkupSafe
+provides escaping with Python code and an optional C speedup, and is BSD-3-Clause
+licensed ([3.0.3 wheel metadata](https://pypi.org/pypi/MarkupSafe/3.0.3/json)).
+The profile enables the `fastapi.templating.Jinja2Templates` alias. Its input
+workflow checks alias identity and signature; generic template rendering
+remains owned by Starlette-RS.
 `maturin==1.14.1` is pinned as the Python build backend, and its separate
 CPython 3.12.13 build-tool closure is hash-locked in
 [`requirements/build-tools-cpython-3.12.13.lock`](../requirements/build-tools-cpython-3.12.13.lock).

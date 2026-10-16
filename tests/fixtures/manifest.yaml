@@ -106,6 +106,18 @@ oracle_profile_extensions:
       email-validator: 2.3.0
     fastapi_extra: standard
     prepare_target: parity-prepare-oracle-email-validation
+  templates:
+    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3
+    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/templates-cpython-3.12.13.lock
+      sha256: eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0
+      profile: CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3
+    added_packages:
+      jinja2: 3.1.6
+      markupsafe: 3.0.3
+    fastapi_extra: null
+    prepare_target: parity-prepare-oracle-templates
 
 target_profile_extensions:
   standard-multipart:
@@ -145,6 +157,18 @@ target_profile_extensions:
       email-validator: 2.3.0
     fastapi_extra: standard
     prepare_target: parity-prepare-target-email-validation
+  templates:
+    id: fastapi-rs-templates-cpython-3.12.13-jinja2-3.1.6-markupsafe-3.0.3
+    base_profile: fastapi-rs-python-consumer
+    lock:
+      path: requirements/templates-cpython-3.12.13.lock
+      sha256: eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0
+      profile: CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3
+    added_packages:
+      jinja2: 3.1.6
+      markupsafe: 3.0.3
+    fastapi_extra: templates
+    prepare_target: parity-prepare-target-templates
 
 target:
   id: fastapi-rs-python-consumer
@@ -550,13 +574,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 69bfe8faf380e1b6630bb178d7c7ed2bb067400d0187351a6bc39c1ad7a9b88e
+    sha256: 2b5e164d41f3533d6396e62cad36deb80f269ca1e00bf65479e8871c3f699e65
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 652
-      cases: 2659
+      workflows: 654
+      cases: 2661
       partial_source_mappings: 1900
 
 contract_metadata:
@@ -1240,7 +1264,7 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 171
+    symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
     operation_fixture_refs: 2042
     symbols_with_identity_workflow_refs: 44
@@ -65434,11 +65458,65 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: &id038 []
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: fastapi-templating-alias-identity
+      input_path: tests/fixtures/inputs/parity/fastapi-templating-alias-identity.json
+      input_sha256: 6309660ea1728109b988c95b2a14d5c2dc43114d3a06d64b6f124b613a6567a9
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-alias-identity.yaml
+      recipe_sha256: db995a8b06e1f785a816dd33f3ba43f53b24377e6647a26f516e4602aa4193f5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.templating.module-and-alias-identity
+      probe_id: alias-identity
+      probe_kind: callable
+      observation_selectors:
+      - python.binding_identity
+    - workflow_id: fastapi-templating-alias-identity
+      input_path: tests/fixtures/inputs/parity/fastapi-templating-alias-identity.json
+      input_sha256: 6309660ea1728109b988c95b2a14d5c2dc43114d3a06d64b6f124b613a6567a9
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-alias-identity.yaml
+      recipe_sha256: db995a8b06e1f785a816dd33f3ba43f53b24377e6647a26f516e4602aa4193f5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.templating.module-and-alias-identity
+      probe_id: alias-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    - workflow_id: fastapi-templating-alias-identity
+      input_path: tests/fixtures/inputs/parity/fastapi-templating-alias-identity.json
+      input_sha256: 6309660ea1728109b988c95b2a14d5c2dc43114d3a06d64b6f124b613a6567a9
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-alias-identity.yaml
+      recipe_sha256: db995a8b06e1f785a816dd33f3ba43f53b24377e6647a26f516e4602aa4193f5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.templating.module-and-alias-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: &id039
+      - python.import_path
+      - python.object_identity
+    - workflow_id: fastapi-templating-core-import-failure
+      input_path: tests/fixtures/inputs/parity/fastapi-templating-core-import-failure.json
+      input_sha256: 4c100affca1ddb23f5c32eb89ddb423ef052984c265a6bf7108087bbb12fd8de
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-core-import-failure.yaml
+      recipe_sha256: dd546f804e26794966c2dac00c8c0e5d4abcbce3ae9531ba05625bca42429f4d
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.templating.core-import-failure
+      probe_id: templates-core-import
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - middleware-integrations
-    observation_selectors: []
+    observation_selectors:
+    - python.binding_identity
+    - python.call_outcome
+    - python.import_path
+    - python.object_identity
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.templating.Jinja2Templates/supported_slice
@@ -65484,7 +65562,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: &id039 []
+      observation_selectors: &id040 []
     input_workflow_refs:
     - workflow_id: fastapi-testclient-alias-identity
       input_path: tests/fixtures/inputs/parity/fastapi-testclient-alias-identity.json
@@ -65508,7 +65586,7 @@ api_surface_contract:
       case_id: fastapi.testclient.module-identity
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: &id040
+      observation_selectors: &id041
       - python.import_path
       - python.object_identity
     - workflow_id: fastapi-testclient-public-alias
@@ -65713,7 +65791,7 @@ api_surface_contract:
       case_id: fastapi.documented-module.websockets
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: &id041
+      observation_selectors: &id042
       - python.import_path
       - python.object_identity
     identity_workflow_refs:
@@ -66567,7 +66645,7 @@ api_surface_contract:
       - fastapi.staticfiles.StaticFiles
   - id: fastapi.templating
     target_kind: source_module
-    contract_state: documentation-and-runtime-linked; module-import-identity-and-behavior-pending
+    contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
     source_documented_target_ref: /documented_targets/66
     source_target_ref: /modules/43
     source_candidate_refs:
@@ -66593,6 +66671,21 @@ api_surface_contract:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.templating
       status: full-contract-not-established
+    module_identity_workflow_ref:
+      metadata_ref: /reviewed_api_contract_overlay/module_target_identity_refs/fastapi.templating
+      workflow_id: fastapi-templating-alias-identity
+      input_path: tests/fixtures/inputs/parity/fastapi-templating-alias-identity.json
+      input_sha256: 6309660ea1728109b988c95b2a14d5c2dc43114d3a06d64b6f124b613a6567a9
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-alias-identity.yaml
+      recipe_sha256: db995a8b06e1f785a816dd33f3ba43f53b24377e6647a26f516e4602aa4193f5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.templating.module-and-alias-identity
+      probe_id: module-identity
+      probe_kind: attribute
+      observation_selectors: *id039
+      symbol_ids:
+      - fastapi.templating.Jinja2Templates
   - id: fastapi.testclient
     target_kind: source_module
     contract_state: documentation-and-runtime-and-module-import-identity-linked; module-behavior-pending
@@ -66616,7 +66709,7 @@ api_surface_contract:
       mapping_status: excluded
       fixture_id: null
       fixture_design_ref: null
-      observation_selectors: *id039
+      observation_selectors: *id040
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.testclient
@@ -66633,7 +66726,7 @@ api_surface_contract:
       case_id: fastapi.testclient.module-identity
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: *id040
+      observation_selectors: *id041
       symbol_ids:
       - fastapi.testclient.TestClient
   - id: fastapi.websockets
@@ -66680,7 +66773,7 @@ api_surface_contract:
       case_id: fastapi.documented-module.websockets
       probe_id: module-identity
       probe_kind: attribute
-      observation_selectors: *id041
+      observation_selectors: *id042
       symbol_ids:
       - fastapi.websockets.WebSocket
       - fastapi.websockets.WebSocketDisconnect
@@ -66738,7 +66831,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id042
+    canonical_operation_ref: &id043
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66774,7 +66867,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id042
+        canonical_operation_ref: *id043
       status: partial-contract
       known_gaps:
       - Current parity covers basic registration and dispatch plus a method miss; argument and signature
@@ -66825,7 +66918,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id043
+    signature_source_ref: &id044
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -66837,7 +66930,7 @@ api_surface_contract:
       end_line: 102
       signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id044
+    sibling_contract_gap: &id045
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.host
       reason: The pinned Starlette-RS review classifies Starlette.host as supported, but the API source
@@ -66865,8 +66958,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id043
-        sibling_contract_gap_ref: *id044
+        signature_source_ref: *id044
+        sibling_contract_gap_ref: *id045
       status: partial-contract
       known_gaps:
       - Current parity covers one named subdomain dispatch; other host patterns, named host-route reversal,
@@ -66962,7 +67055,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id045
+    canonical_operation_ref: &id046
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -66998,7 +67091,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id045
+        canonical_operation_ref: *id046
       status: partial-contract
       known_gaps:
       - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing
@@ -67061,7 +67154,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id046
+    canonical_operation_ref: &id047
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -67097,7 +67190,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id046
+        canonical_operation_ref: *id047
       status: partial-contract
       known_gaps:
       - The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader
@@ -67150,7 +67243,7 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
-    attribute_source_ref: &id047
+    attribute_source_ref: &id048
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -67163,7 +67256,7 @@ api_surface_contract:
       end_line: 586
       assignment: self.routes = [] if routes is None else list(routes)
     attribute_contract_state: source-assignment-linked; sibling-accessor-missing
-    sibling_contract_gap: &id048
+    sibling_contract_gap: &id049
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.routing.Router.routes
       candidate_state: no_exact_row
@@ -67199,8 +67292,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-attribute-assignment-with-sibling-accessor-gap
-        attribute_source_ref: *id047
-        sibling_contract_gap_ref: *id048
+        attribute_source_ref: *id048
+        sibling_contract_gap_ref: *id049
       status: partial-contract
       known_gaps:
       - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation
@@ -67271,7 +67364,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id049
+    canonical_operation_ref: &id050
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -67307,7 +67400,7 @@ api_surface_contract:
       implementation_owner: starlette-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id049
+        canonical_operation_ref: *id050
       status: full-contract-not-established
   - id: fastapi.applications.FastAPI.add_exception_handler
     kind: inherited_method
@@ -67437,7 +67530,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id050
+    canonical_operation_ref: &id051
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -67473,7 +67566,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id050
+        canonical_operation_ref: *id051
       status: partial-contract
       known_gaps:
       - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
@@ -67539,7 +67632,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id051
+    signature_source_ref: &id052
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -67551,7 +67644,7 @@ api_surface_contract:
       end_line: 99
       signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id052
+    sibling_contract_gap: &id053
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.mount
       reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
@@ -67580,8 +67673,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id051
-        sibling_contract_gap_ref: *id052
+        signature_source_ref: *id052
+        sibling_contract_gap_ref: *id053
       status: partial-contract
       known_gaps:
       - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
@@ -67630,7 +67723,7 @@ api_surface_contract:
     - openapi-docs
     observation_selectors:
     - http.body.bytes
-    canonical_operation_ref: &id053
+    canonical_operation_ref: &id054
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -67666,7 +67759,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id053
+        canonical_operation_ref: *id054
       status: partial-contract
       known_gaps:
       - The projection includes generic route objects supplied directly to FastAPI, but does not establish

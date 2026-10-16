@@ -463,6 +463,18 @@ def read_manifest() -> dict[str, Any]:
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-oracle-email-validation",
         },
+        "templates": {
+            "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3",
+            "base_profile": profile["id"],
+            "lock": {
+                "path": "requirements/templates-cpython-3.12.13.lock",
+                "sha256": "eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0",
+                "profile": "CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3",
+            },
+            "added_packages": {"jinja2": "3.1.6", "markupsafe": "3.0.3"},
+            "fastapi_extra": None,
+            "prepare_target": "parity-prepare-oracle-templates",
+        },
     }
     if manifest.get("oracle_profile_extensions") != expected_extensions:
         raise ContractError(
@@ -537,6 +549,18 @@ def read_manifest() -> dict[str, Any]:
             "added_packages": {"dnspython": "2.8.0", "email-validator": "2.3.0"},
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-target-email-validation",
+        },
+        "templates": {
+            "id": "fastapi-rs-templates-cpython-3.12.13-jinja2-3.1.6-markupsafe-3.0.3",
+            "base_profile": target["id"],
+            "lock": {
+                "path": "requirements/templates-cpython-3.12.13.lock",
+                "sha256": "eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0",
+                "profile": "CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3",
+            },
+            "added_packages": {"jinja2": "3.1.6", "markupsafe": "3.0.3"},
+            "fastapi_extra": "templates",
+            "prepare_target": "parity-prepare-target-templates",
         },
     }
     if manifest.get("target_profile_extensions") != expected_target_extensions:

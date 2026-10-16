@@ -10248,6 +10248,105 @@
       ]
     },
     {
+      "id": "fastapi-templating-alias-identity",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-templating-alias-identity.json",
+      "input_sha256": "6309660ea1728109b988c95b2a14d5c2dc43114d3a06d64b6f124b613a6567a9",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-templating-alias-identity.yaml",
+      "recipe_sha256": "db995a8b06e1f785a816dd33f3ba43f53b24377e6647a26f516e4602aa4193f5",
+      "case_ids": [
+        "fastapi.templating.module-and-alias-identity"
+      ],
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.templating.module-and-alias-identity",
+          "symbol_id": "fastapi.templating.Jinja2Templates",
+          "path": "fastapi/templating.py",
+          "sha256": "e33b2e4d681c8dc11a8a7309140956ebe827b259ba020392d528a20d67e64319"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.templating.module-and-alias-identity",
+          "probe_id": "alias-identity",
+          "symbol_id": "fastapi.templating.Jinja2Templates",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.binding_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.templating.module-and-alias-identity",
+          "probe_id": "alias-signature",
+          "symbol_id": "fastapi.templating.Jinja2Templates",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.templating.module-and-alias-identity",
+          "probe_id": "module-identity",
+          "symbol_id": "fastapi.templating.Jinja2Templates",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.import_path",
+            "python.object_identity"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.templating.module-and-alias-identity",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.templating.Jinja2Templates"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fastapi-templating-core-import-failure",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-templating-core-import-failure.json",
+      "input_sha256": "4c100affca1ddb23f5c32eb89ddb423ef052984c265a6bf7108087bbb12fd8de",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-templating-core-import-failure.yaml",
+      "recipe_sha256": "dd546f804e26794966c2dac00c8c0e5d4abcbce3ae9531ba05625bca42429f4d",
+      "case_ids": [
+        "fastapi.templating.core-import-failure"
+      ],
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.templating.core-import-failure",
+          "symbol_id": "fastapi.templating.Jinja2Templates",
+          "path": "fastapi/templating.py",
+          "sha256": "e33b2e4d681c8dc11a8a7309140956ebe827b259ba020392d528a20d67e64319"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.templating.core-import-failure",
+          "probe_id": "templates-core-import",
+          "symbol_id": "fastapi.templating.Jinja2Templates",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.templating.core-import-failure",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.templating.Jinja2Templates"
+          ]
+        }
+      ]
+    },
+    {
       "id": "fastapi-testclient-alias-identity",
       "input_path": "tests/fixtures/inputs/parity/fastapi-testclient-alias-identity.json",
       "input_sha256": "22ed038d0c3fbac63348afec0ce3ba074a9c9f64de4ad6c0e3cee9fb302ae2cd",

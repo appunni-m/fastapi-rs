@@ -1,0 +1,22 @@
+schema: fastapi-rs/python-api-workflow@8
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.templating.core-import-failure
+    probes:
+      - probe_id: templates-core-import
+        public_callable:
+          module: fastapi.templating
+          attribute: Jinja2Templates
+        argument_bundle: unused
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+    source_evidence:
+      - path: fastapi/templating.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.templating.Jinja2Templates
+        sha256: e33b2e4d681c8dc11a8a7309140956ebe827b259ba020392d528a20d67e64319

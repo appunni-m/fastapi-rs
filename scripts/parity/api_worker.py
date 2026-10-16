@@ -767,7 +767,7 @@ def _validate_workflow_callables(
                     )
             if "public_module" in probe:
                 if (
-                    workflow.get("schema") != WORKFLOW_SCHEMA_V7_ID
+                    workflow.get("schema") not in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID}
                     or any(
                         key in probe
                         for key in (
@@ -782,7 +782,7 @@ def _validate_workflow_callables(
                     != {"python_import_path", "python_object_identity"}
                 ):
                     raise WorkerError(
-                        "module identity requires one v7 module probe with both identity "
+                        "module identity requires one v7 or v8 module probe with both identity "
                         "observations"
                     )
                 module_spec = probe["public_module"]
@@ -1451,7 +1451,13 @@ def run_oracle(
             },
             allow_pydantic_model_defaults=workflow["schema"]
             in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID},
-            structural_signatures=workflow["schema"] == WORKFLOW_SCHEMA_V5_ID,
+            structural_signatures=workflow["schema"]
+            in {
+                WORKFLOW_SCHEMA_V5_ID,
+                WORKFLOW_SCHEMA_V6_ID,
+                WORKFLOW_SCHEMA_V7_ID,
+                WORKFLOW_SCHEMA_V8_ID,
+            },
         )
     )
     _validate_result_consistency(cases)

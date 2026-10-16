@@ -24,6 +24,23 @@ target at runtime. Pydantic remains a separately pinned user-model/schema
 dependency; its Python model layer and native `pydantic-core` engine are
 distinct parts of that boundary.
 
+## Target optional runtime profile: templates
+
+The `templates` extra adds an optional runtime dependency closure for the
+`fastapi.templating.Jinja2Templates` alias. The base runtime lock remains free
+of Jinja2. The paired CPython 3.12.13 oracle and target profile uses the
+hash-locked requirements in
+[`requirements/templates-cpython-3.12.13.lock`](../requirements/templates-cpython-3.12.13.lock).
+
+| Package | Version and profile role | Purpose | Language and native components | License evidence |
+|---|---|---|---|---|
+| Jinja2 | `3.1.6`; direct optional runtime dependency in the `templates` extra | Required by Starlette's `Jinja2Templates` integration; FastAPI directly re-exports that class. | Python template engine; the locked distribution is a Python wheel. | BSD-3-Clause ([3.1.6 wheel metadata](https://pypi.org/pypi/Jinja2/3.1.6/json)). |
+| MarkupSafe | `3.0.3`; direct optional runtime dependency in the `templates` extra and part of Jinja2's runtime closure | Escapes template text and supplies the `Markup` type. | Python implementation with an optional CPython C speedup; selected wheel depends on platform. | BSD-3-Clause ([3.0.3 wheel metadata](https://pypi.org/pypi/MarkupSafe/3.0.3/json)). |
+
+The profile records the facade's import path, alias identity, and callable
+signature. Starlette-RS owns generic rendering behavior; this optional package
+closure does not implement it in FastAPI-RS.
+
 Dependency signature resolution also uses the pinned Pydantic 2.13.4 private
 `pydantic._internal._typing_extra.try_eval_type` helper through PyO3. It
 resolves string annotations from `inspect.signature` in the unwrapped

@@ -1,4 +1,4 @@
-"""Migrate active direct API signature recipes to structural workflow v5."""
+"""Migrate old direct API signature recipes and validate current workflow versions."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ RECIPE_ROOT = ROOT / "tests/fixtures/input-recipes/parity"
 OLD_SCHEMA = re.compile(r"^fastapi-rs/python-api-workflow@([1-4])$")
 SCHEMA_LINE = re.compile(r"(?m)^schema: fastapi-rs/python-api-workflow@[1-4]\s*$")
 NEW_SCHEMA = "fastapi-rs/python-api-workflow@5"
+CURRENT_SCHEMA = re.compile(r"^fastapi-rs/python-api-workflow@([5-8])$")
 
 
 def _contains_signature(value: Any) -> bool:
@@ -34,7 +35,7 @@ def _active_signature_recipes() -> list[Path]:
         if not isinstance(document, dict) or not _contains_signature(document):
             continue
         schema = document.get("schema")
-        if schema == NEW_SCHEMA:
+        if isinstance(schema, str) and CURRENT_SCHEMA.fullmatch(schema):
             continue
         if not isinstance(schema, str) or OLD_SCHEMA.fullmatch(schema) is None:
             relative_path = path.relative_to(ROOT)
@@ -59,7 +60,7 @@ def main() -> int:
             names = ", ".join(path.relative_to(ROOT).as_posix() for path in recipes)
             print(f"signature recipes require workflow v5 migration: {names}", file=sys.stderr)
             return 1
-        print("all active signature recipes use workflow v5")
+        print("all active signature recipes use supported workflow v5-v8")
         return 0
     for path in recipes:
         source = path.read_text(encoding="utf-8")

@@ -66,9 +66,16 @@ ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
         "email-validator": "2.3.0",
         "dnspython": "2.8.0",
     },
+    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3": {
+        "jinja2": "3.1.6",
+        "markupsafe": "3.0.3",
+    },
 }
 ORACLE_EXACT_PACKAGE_SET_PROFILE_IDS = frozenset(
-    {"fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0"}
+    {
+        "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
+        "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3",
+    }
 )
 ORACLE_BASE_PACKAGES = {
     "annotated-doc": "0.0.4",
