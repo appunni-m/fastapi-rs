@@ -5069,6 +5069,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
                         "http.status",
                         "openapi.document",
                         "openapi.paths",
+                        "openapi.request_schema",
                     ],
                 },
                 {
@@ -5081,6 +5082,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
                         "http.status",
                         "openapi.document",
                         "openapi.paths",
+                        "openapi.request_schema",
                     ],
                 },
                 {

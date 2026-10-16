@@ -496,6 +496,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "http.status",
             "openapi.document",
             "openapi.paths",
+            "openapi.request_schema",
         ],
         "FastAPI owns path-operation metadata, visibility, operation ID generation, custom OpenAPI fragments, and route request/response integration. The recipes sample named operations and schema nodes; the OpenAPI standard's interpretation and client tooling remain external contracts.",
         [
@@ -503,7 +504,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 f"tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial00{i}-upstream.yaml",
                 [f"fastapi.path-operation-advanced-configurations.tutorial00{i}"],
                 ["http.body.bytes", "http.status", "openapi.document"]
-                + (["openapi.paths"] if i != 3 else []),
+                + (["openapi.paths"] if i != 3 else [])
+                + (["openapi.request_schema"] if i == 7 else []),
                 "Page-linked route response and/or focused OpenAPI pointers for tutorial section "
                 + str(i)
                 + ".",

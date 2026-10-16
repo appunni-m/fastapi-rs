@@ -603,6 +603,7 @@ DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015 = {
             "http.status",
             "openapi.document",
             "openapi.paths",
+            "openapi.request_schema",
         ],
         (
             "This samples a YAML request media type, its declared schema, and "
