@@ -4257,6 +4257,11 @@ impl PyFastApi {
                 "A title must be provided for OpenAPI, e.g.: 'My API'",
             ));
         }
+        if openapi_url.is_some_and(|url| !url.is_empty()) && version.is_empty() {
+            return Err(PyAssertionError::new_err(
+                "A version must be provided for OpenAPI, e.g.: '2.1.0'",
+            ));
+        }
         let responses = response_map_or_empty(py, responses)?;
         let router_callbacks = match callbacks {
             Some(callbacks) if callbacks.bind(py).is_truthy()? => callbacks,

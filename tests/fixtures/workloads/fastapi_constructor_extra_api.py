@@ -13,4 +13,9 @@ def create_argument_bundles() -> Mapping[str, dict[str, object]]:
             "args": [],
             "kwargs": {"constructor_trace": "opaque-value"},
         },
+        "empty-version-openapi-enabled": {"args": [], "kwargs": {"version": ""}},
+        "empty-version-openapi-disabled": {
+            "args": [],
+            "kwargs": {"version": "", "openapi_url": None},
+        },
     }

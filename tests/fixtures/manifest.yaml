@@ -550,13 +550,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 91263f56d76b8e8f3c0f67eab7abfae4383836c75ea6a1de914fc2e800157dea
+    sha256: 2b71c4d03a4da6ebc5ddd078b5bdd324d8f03749761df6f6599d9c9d2d9ccbc6
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 650
-      cases: 2653
+      cases: 2655
       partial_source_mappings: 1891
 
 contract_metadata:
@@ -5053,11 +5053,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: fastapi-constructor-debug
       input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
-      input_sha256: c59551c3292f0c69b97ed1401ccbd147f00dde2197a91c1d65c5c2c0b0e735e9
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
-      recipe_sha256: 81e1b5c85621410131bf79b06b87094eacfa68d31f1a63bf49f1d65088b74385
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
       workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
-      workload_sha256: 1a0213df2762ae4cf990e3f52c509cdcfeb5046c8e5821651a118b267eb6a2f1
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
       case_id: fastapi.applications.constructor-debug
       probe_id: constructor-captures-extra-keywords
       probe_kind: callable
@@ -5065,11 +5065,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: fastapi-constructor-debug
       input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
-      input_sha256: c59551c3292f0c69b97ed1401ccbd147f00dde2197a91c1d65c5c2c0b0e735e9
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
-      recipe_sha256: 81e1b5c85621410131bf79b06b87094eacfa68d31f1a63bf49f1d65088b74385
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
       workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
-      workload_sha256: 1a0213df2762ae4cf990e3f52c509cdcfeb5046c8e5821651a118b267eb6a2f1
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
       case_id: fastapi.applications.constructor-debug
       probe_id: constructor-signature
       probe_kind: callable
@@ -5077,13 +5077,37 @@ api_surface_contract:
       - python.signature
     - workflow_id: fastapi-constructor-debug
       input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
-      input_sha256: c59551c3292f0c69b97ed1401ccbd147f00dde2197a91c1d65c5c2c0b0e735e9
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
-      recipe_sha256: 81e1b5c85621410131bf79b06b87094eacfa68d31f1a63bf49f1d65088b74385
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
       workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
-      workload_sha256: 1a0213df2762ae4cf990e3f52c509cdcfeb5046c8e5821651a118b267eb6a2f1
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
       case_id: fastapi.applications.constructor-debug
       probe_id: debug-keyword-construction
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: fastapi-constructor-debug
+      input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
+      workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
+      case_id: fastapi.applications.constructor-empty-version-allowed-when-openapi-disabled
+      probe_id: empty-version-with-openapi-disabled
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: fastapi-constructor-debug
+      input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
+      workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
+      case_id: fastapi.applications.constructor-empty-version-rejected
+      probe_id: empty-version-with-openapi-enabled
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
