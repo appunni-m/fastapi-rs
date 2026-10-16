@@ -328,7 +328,7 @@ _WEBHOOK_ROUTE_SEPARATION = _workflow(
         "request-event-identifier-as-inbound-path",
         "inspect-separate-path-and-webhook-collections",
     ],
-    ["http.status", "openapi.document", "openapi.paths"],
+    ["docs.response.status", "http.status", "openapi.document", "openapi.paths"],
     "Probe the named webhook identifier as an inbound URL and inspect its separate OpenAPI webhook entry and path collection.",
 )
 
