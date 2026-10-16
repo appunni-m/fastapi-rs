@@ -196,6 +196,11 @@ impl AwaitableStateMachine for FastApiLifespanEnter {
     fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
         match input {
             MachineResume::Error(error) => self.fail(py, error),
+            MachineResume::Value(value)
+                if matches!(&self.pending, Some(LifespanEnterPending::Cleanup { .. })) =>
+            {
+                self.advance(py, MachineResume::Value(value))
+            }
             input => self
                 .advance(py, input)
                 .or_else(|error| self.fail(py, error)),
@@ -227,7 +232,13 @@ impl FastApiLifespanEnter {
                     self.child_index += 1;
                     self.enter_child_context(py)
                 }
-                Some(LifespanEnterPending::Cleanup { original }) => Err(original),
+                Some(LifespanEnterPending::Cleanup { original }) => {
+                    if value.bind(py).is_truthy()? {
+                        Err(PyRuntimeError::new_err("generator didn't yield"))
+                    } else {
+                        Err(original)
+                    }
+                }
                 None => Err(PyRuntimeError::new_err(
                     "FastAPI lifespan context resumed without a pending operation",
                 )),

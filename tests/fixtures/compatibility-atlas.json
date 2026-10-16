@@ -595121,6 +595121,22 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
             "workflow_id": "router-events-lifespan-upstream"
+          },
+          {
+            "case_ids": [
+              "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.lifespan.application_errors",
+              "asgi.lifespan.event_order",
+              "asgi.lifespan.shutdown",
+              "asgi.lifespan.startup",
+              "asgi.lifespan.workload_trace"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml",
+            "workflow_id": "router-lifespan-startup-suppression"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
@@ -595219,7 +595235,7 @@
           }
         ],
         "reviewed_module_mapping": {
-          "rationale": "The lifespan recipe covers app and nested-router startup/shutdown callbacks, legacy on_event deprecation records, nested yielded-state merging, generator lifespans, and mounted-subapp exclusion. TestClient.app_state remains an explicit Starlette-RS-owned gap.",
+          "rationale": "The lifespan recipes cover app and nested-router startup/shutdown callbacks, legacy on_event deprecation records, nested yielded-state merging, generator lifespans, mounted-subapp exclusion, and one included-lifespan entry failure suppressed by an already-entered parent. TestClient.app_state remains an explicit Starlette-RS-owned gap.",
           "stimulus_notes": "Construct the app and nested routers from the input recipe, drive ASGI lifespan startup/request/shutdown, record callback order and request-visible lifespan state, and capture selected warnings from legacy on_event registration and actions. This does not claim TestClient.app_state.",
           "supporting_sources": [
             {

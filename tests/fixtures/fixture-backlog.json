@@ -335468,7 +335468,7 @@
                 "start_line": 233
               }
             ],
-            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml::fastapi.lifecycle.nested-lifespan-state (asgi_lifespan.event_order, asgi_lifespan.startup, asgi_lifespan.shutdown, asgi_lifespan.application_errors, asgi_lifespan.workload_trace, http_response.status, http_response.body, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml::fastapi.lifecycle.nested-lifespan-state (asgi_lifespan.event_order, asgi_lifespan.startup, asgi_lifespan.shutdown, asgi_lifespan.application_errors, asgi_lifespan.workload_trace, http_response.status, http_response.body, construction.outcome, construction.exception_class, construction.exception_message); tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml::fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent (asgi_lifespan.event_order, asgi_lifespan.startup, asgi_lifespan.shutdown, asgi_lifespan.application_errors, asgi_lifespan.workload_trace, http_response.status, http_response.body, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
           },
           "selector_evidence": [
             {
@@ -335499,7 +335499,7 @@
           "stimulus_design": [
             "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
           ],
-          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml::fastapi.lifecycle.nested-lifespan-state (asgi_lifespan.event_order, asgi_lifespan.startup, asgi_lifespan.shutdown, asgi_lifespan.application_errors, asgi_lifespan.workload_trace, http_response.status, http_response.body, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml::fastapi.lifecycle.nested-lifespan-state (asgi_lifespan.event_order, asgi_lifespan.startup, asgi_lifespan.shutdown, asgi_lifespan.application_errors, asgi_lifespan.workload_trace, http_response.status, http_response.body, construction.outcome, construction.exception_class, construction.exception_message); tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml::fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent (asgi_lifespan.event_order, asgi_lifespan.startup, asgi_lifespan.shutdown, asgi_lifespan.application_errors, asgi_lifespan.workload_trace, http_response.status, http_response.body, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
         },
         {
           "feature_evidence": [
@@ -336331,6 +336331,22 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
           "workflow_id": "router-events-lifespan-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "asgi.lifespan.application_errors",
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.shutdown",
+            "asgi.lifespan.startup",
+            "asgi.lifespan.workload_trace"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml",
+          "workflow_id": "router-lifespan-startup-suppression"
         }
       ],
       "input_only": true,

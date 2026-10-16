@@ -10189,7 +10189,7 @@
         "fastapi.lifecycle.lifespan-suppresses-legacy-events"
       ],
       "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
-      "workload_sha256": "d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0",
+      "workload_sha256": "332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00",
       "case_contracts": [
         {
           "case_id": "fastapi.lifecycle.lifespan-suppresses-legacy-events",
@@ -28777,7 +28777,7 @@
         "fastapi.lifecycle.add-event-handler-invalid-string"
       ],
       "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
-      "workload_sha256": "d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0",
+      "workload_sha256": "332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00",
       "case_contracts": [
         {
           "case_id": "fastapi.lifecycle.router-events-legacy",
@@ -29157,6 +29157,27 @@
           "requirement_refs": [
             "source:upstream-test:tests/test_router_include_context.py",
             "source:upstream-test:tests/test_ws_router.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "router-lifespan-startup-suppression",
+      "input_path": "tests/fixtures/inputs/parity/router-lifespan-startup-suppression.json",
+      "input_sha256": "095597610ad7cd8b11068863a5410179eb4a6cfdabf2a2b91d651504dd22749a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml",
+      "recipe_sha256": "14773cc3ddef879e083e066b6bbc69cc73176851a6fa2d74c4ff7516be11aaf1",
+      "case_ids": [
+        "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
+      "workload_sha256": "332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_events.py"
           ]
         }
       ]
@@ -62547,6 +62568,23 @@
         "websocket.close_reason",
         "websocket.event_order",
         "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_events.py",
+      "fixture_id": "fastapi.test.test-router-events",
+      "workflow_id": "router-lifespan-startup-suppression",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent"
+      ],
+      "observation_selectors": [
+        "asgi.lifespan.application_errors",
+        "asgi.lifespan.event_order",
+        "asgi.lifespan.shutdown",
+        "asgi.lifespan.startup",
+        "asgi.lifespan.workload_trace"
       ]
     },
     {

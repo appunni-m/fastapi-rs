@@ -37,6 +37,9 @@ def _lifespan_context(spec: Mapping[str, Any] | None, trace: list[str]) -> Any:
     startup_marker = spec.get("startup_marker")
     shutdown_marker = spec.get("shutdown_marker")
     yielded_state = spec.get("state")
+    startup_error = spec.get("startup_error")
+    suppress_startup_error = spec.get("suppress_startup_error", False)
+    suppressed_marker = spec.get("suppressed_marker")
 
     def record(marker: Any) -> None:
         if marker is not None:
@@ -48,8 +51,16 @@ def _lifespan_context(spec: Mapping[str, Any] | None, trace: list[str]) -> Any:
         async def context_manager(app: FastAPI | APIRouter) -> Any:
             del app
             record(startup_marker)
-            yield yielded_state
-            record(shutdown_marker)
+            if startup_error is not None:
+                raise ValueError(startup_error)
+            try:
+                yield yielded_state
+            except ValueError:
+                if not suppress_startup_error:
+                    raise
+                record(suppressed_marker)
+            finally:
+                record(shutdown_marker)
 
         return context_manager
 

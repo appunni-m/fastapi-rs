@@ -477,7 +477,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: b0bd686072a3116d30ff04f75771b44ecca070bea842ef88f126749dbfc150ec
+    sha256: b7bf1485d746718afe8a09b82164a283d7649f26482b63b821268862a01c7068
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -513,7 +513,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 74e18a24fdb3da3d01e9f2f6879ef351e3deff51e3af84630b382c74d39db95a
+    sha256: 40623734bed802cb382a7f680bcb75b900975f432436c350677107e573bce460
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,14 +550,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: a3967badb36476f15554d7e6beab5a744a197edd0b13079c72e3a22c2c89666f
+    sha256: cf71697db6dc5c3b787ba6084868b96bd69b0ed806bdde2ce2e54cf4df965c2e
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 649
-      cases: 2650
-      partial_source_mappings: 1889
+      workflows: 650
+      cases: 2651
+      partial_source_mappings: 1890
 
 contract_metadata:
   aliases:
@@ -1242,7 +1242,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 171
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2040
+    operation_fixture_refs: 2042
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1715,6 +1715,9 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
+      - The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message;
+        traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned
+        parity gap.
   - id: fastapi.BackgroundTasks
     kind: import_binding
     source_candidate_ref: /api_candidates/1
@@ -16020,7 +16023,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
       recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
-      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.nested-lifespan-state
       observation_selectors:
       - asgi.lifespan.application_errors
@@ -16039,7 +16042,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
       recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
-      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.parent-lifespan-state-override
       observation_selectors:
       - asgi.lifespan.application_errors
@@ -16052,6 +16055,23 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: router-lifespan-startup-suppression
+      input_path: tests/fixtures/inputs/parity/router-lifespan-startup-suppression.json
+      input_sha256: 095597610ad7cd8b11068863a5410179eb4a6cfdabf2a2b91d651504dd22749a
+      recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml
+      recipe_sha256: 14773cc3ddef879e083e066b6bbc69cc73176851a6fa2d74c4ff7516be11aaf1
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
+      case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: strict-content-type-router-level-upstream
       input_path: tests/fixtures/inputs/parity/strict-content-type-router-level-upstream.json
       input_sha256: 9a68709f327a5046b61cfb7c75cfb1062bf956e8709b8fa87791bf92f19b5a15
@@ -16661,6 +16681,9 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
+      - The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message;
+        traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned
+        parity gap.
   - id: fastapi.applications.FastAPI.middleware
     kind: method
     source_candidate_ref: /api_candidates/208
@@ -51518,7 +51541,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
       recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
-      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.parameter-event-handlers
       observation_selectors:
       - asgi.lifespan.application_errors
@@ -51537,7 +51560,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
       recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
-      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.add-event-handler-invalid-string
       observation_selectors:
       - construction.exception_class
@@ -52813,7 +52836,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
       recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
-      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.nested-lifespan-state
       observation_selectors:
       - asgi.lifespan.application_errors
@@ -52832,7 +52855,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
       recipe_sha256: 42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
-      workload_sha256: d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.parent-lifespan-state-override
       observation_selectors:
       - asgi.lifespan.application_errors
@@ -52845,6 +52868,23 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: router-lifespan-startup-suppression
+      input_path: tests/fixtures/inputs/parity/router-lifespan-startup-suppression.json
+      input_sha256: 095597610ad7cd8b11068863a5410179eb4a6cfdabf2a2b91d651504dd22749a
+      recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml
+      recipe_sha256: 14773cc3ddef879e083e066b6bbc69cc73176851a6fa2d74c4ff7516be11aaf1
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
+      case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: strict-content-type-router-level-upstream
       input_path: tests/fixtures/inputs/parity/strict-content-type-router-level-upstream.json
       input_sha256: 9a68709f327a5046b61cfb7c75cfb1062bf956e8709b8fa87791bf92f19b5a15
@@ -53040,6 +53080,9 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
+      - The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message;
+        traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned
+        parity gap.
   - id: fastapi.routing.APIRouter.on_event
     kind: method
     source_candidate_ref: /api_candidates/1125

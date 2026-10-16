@@ -414,7 +414,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_router_events.py": _module(
-        "The lifespan recipe covers app and nested-router startup/shutdown callbacks, legacy on_event deprecation records, nested yielded-state merging, generator lifespans, and mounted-subapp exclusion. TestClient.app_state remains an explicit Starlette-RS-owned gap.",
+        "The lifespan recipes cover app and nested-router startup/shutdown callbacks, legacy on_event deprecation records, nested yielded-state merging, generator lifespans, mounted-subapp exclusion, and one included-lifespan entry failure suppressed by an already-entered parent. TestClient.app_state remains an explicit Starlette-RS-owned gap.",
         {
             name: _review(
                 "tests/test_router_events.py",
@@ -440,7 +440,18 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
                         case_id,
                         _LIFESPAN,
-                    )
+                    ),
+                    *(
+                        [
+                            _case_link(
+                                "tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml",
+                                "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent",
+                                _LIFESPAN,
+                            )
+                        ]
+                        if name == "test_router_nested_lifespan_state"
+                        else []
+                    ),
                 ],
                 "Partial: direct ASGI lifespan and request observations do not test TestClient.app_state, which remains with the pinned Starlette-RS contract. The legacy on_event case captures construction warning records.",
                 (_LIFESPAN_MERGE,),

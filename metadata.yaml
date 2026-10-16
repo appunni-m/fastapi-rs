@@ -2025,9 +2025,13 @@ reviewed_api_contract_overlay:
         and sync/async generator lifespans through direct ASGI startup, request,
         and shutdown. Nested yielded state is merged with app values winning
         duplicate keys; empty and mixed yielded-state cases are included.
-        Startup/shutdown failure parity and combining an explicit lifespan with
-        legacy constructor callbacks are not established. The mounted-subapp
-        case confirms that the parent lifespan does not start the mounted app.
+        One included-router startup error suppressed by an already-entered app
+        lifespan is mapped. Exact `lifespan.startup.failed.message` traceback
+        text differs between Python Starlette and Starlette-RS; the parity case
+        keeps that observation exact and exposes the sibling-owned gap. Other
+        failure modes and combining an explicit lifespan with legacy constructor
+        callbacks are not established. The mounted-subapp case confirms that
+        the parent lifespan does not start the mounted app.
         TestClient.app_state remains outside this direct-ASGI workflow. The
         `strict_content_type` constructor option is also covered: the default
         rejects a JSON body without a content-type, while `False` parses that
@@ -2059,6 +2063,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+
+        The included-lifespan startup-suppression case compares the exact
+        `lifespan.startup.failed.message`; traceback formatting differs between
+        Python Starlette and Starlette-RS and remains a sibling-owned parity gap.
         Three additional-response-field lifecycle inputs observe saved-decorator
         attachment, original and two effective-context extra/primary core hooks,
         and second-extra ordinary user refusal/retry. They select the full warning,
@@ -5150,6 +5158,7 @@ reviewed_api_contract_overlay:
           - *response_field_history_gap
           - *response_field_traversal_gap
           - *response_field_traversal_history_gap
+          - "The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message; traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned parity gap."
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
@@ -5230,6 +5239,7 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.parent-lifespan-state-override}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml, case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent}
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override}
@@ -5380,6 +5390,11 @@ reviewed_api_contract_overlay:
         close metadata. The route-order workflow compares generic/API order,
         nested constructor prefixes, and HTTP partial-match fallback. Other
         BaseRoute families remain open.
+
+        The included-lifespan startup-suppression case observes cleanup after a
+        child startup error is suppressed by the parent. Exact
+        `lifespan.startup.failed.message` traceback formatting remains a
+        Starlette-RS-owned parity gap.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -5390,6 +5405,7 @@ reviewed_api_contract_overlay:
           - *response_field_history_gap
           - *response_field_traversal_gap
           - *response_field_traversal_history_gap
+          - "The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message; traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned parity gap."
     fastapi.applications.FastAPI.on_event:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::on_event
       source_evidence:
@@ -6125,9 +6141,14 @@ reviewed_api_contract_overlay:
         router-schema-policy-upstream. Synchronous scalar-query dependencies
         at router and include scopes are covered by router-dependencies-isolated.
         Nested router inclusion also composes the tested startup/shutdown
-        handlers and lifespan contexts. The source-defined self/transitive
-        inclusion guard is compared at construction; lifecycle failures and
-        other router-level options remain outside this slice. Strict content
+        handlers and lifespan contexts. One input maps an included lifespan
+        entry error suppressed by an already-entered parent context; it
+        observes the resulting failed startup and cleanup trace. Its exact
+        startup.failed message retains the traceback-format difference as an
+        explicit Starlette-RS-owned parity gap. Other lifecycle failure modes
+        and router-level options remain outside this slice. The
+        source-defined self/transitive inclusion guard is compared at
+        construction. Strict content
         type values from explicit child routers take precedence; omitted child
         values inherit the parent/include context, including across nested
         inclusions. `strict-content-type-router-level-upstream` covers lax
@@ -6228,6 +6249,7 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.parent-lifespan-state-override}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml, case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent}
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-self-include-construction}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-transitive-cycle-include-construction}
@@ -6249,6 +6271,7 @@ reviewed_api_contract_overlay:
         known_gaps:
           - *response_field_traversal_gap
           - *response_field_traversal_history_gap
+          - "The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message; traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned parity gap."
     fastapi.routing.APIRouter.frontend:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::frontend
       source_evidence:
