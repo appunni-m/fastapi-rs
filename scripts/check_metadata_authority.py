@@ -1169,6 +1169,8 @@ def validate() -> None:
     starlette_contract_id = (
         atlas.get("authorities", {}).get("starlette_rs", {}).get("current_contract_id")
     )
+    starlette_rs_manifest_path = artifact_path(metadata["starlette_rs"]["manifest"])
+    starlette_rs_manifest = load_yaml(starlette_rs_manifest_path)
     for binding_id, specification in operation_alias_specs.items():
         edge = operation_alias_edges.get(binding_id)
         projected = edge.get("starlette_rs_operation_aliases") if isinstance(edge, dict) else None
@@ -1213,6 +1215,192 @@ def validate() -> None:
             },
             {starlette_contract_id},
         )
+    surface_alias_specs = metadata.get("starlette_rs", {}).get("surface_aliases")
+    surface_gap_specs = metadata.get("starlette_rs", {}).get("surface_alias_gaps")
+    if not isinstance(surface_alias_specs, dict) or not surface_alias_specs:
+        raise MetadataError("metadata Starlette surface aliases must be a nonempty mapping")
+    if not isinstance(surface_gap_specs, dict) or not surface_gap_specs:
+        raise MetadataError("metadata Starlette surface alias gaps must be a nonempty mapping")
+    surface_alias_edges = {
+        edge.get("fastapi_binding"): edge
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict) and isinstance(edge.get("starlette_rs_surface_aliases"), dict)
+    }
+    require_equal(
+        "Starlette surface alias projection denominator",
+        set(surface_alias_edges),
+        set(surface_alias_specs),
+    )
+    starlette_surfaces = {
+        surface.get("id"): surface
+        for surface in starlette_rs_manifest.get("surfaces", [])
+        if isinstance(surface, dict) and isinstance(surface.get("id"), str)
+    }
+    for binding_id, specification in surface_alias_specs.items():
+        edge = surface_alias_edges.get(binding_id)
+        projected = edge.get("starlette_rs_surface_aliases") if isinstance(edge, dict) else None
+        if (
+            not isinstance(specification, dict)
+            or set(specification)
+            != {
+                "starlette_symbol",
+                "surface_id",
+            }
+            or not isinstance(projected, dict)
+        ):
+            raise MetadataError(
+                "atlas is missing a reviewed Starlette surface alias: " + binding_id
+            )
+        require_equal(
+            f"atlas Starlette surface alias {binding_id} relationship",
+            edge.get("relation"),
+            "direct_reexport",
+        )
+        surface_id = specification.get("surface_id")
+        require_equal(
+            f"atlas Starlette surface alias {binding_id} symbol",
+            projected.get("starlette_symbol"),
+            specification.get("starlette_symbol"),
+        )
+        require_equal(
+            f"atlas Starlette surface alias {binding_id} surface",
+            projected.get("surface_id"),
+            surface_id,
+        )
+        require_equal(
+            f"atlas Starlette surface alias {binding_id} resolution",
+            projected.get("resolution"),
+            "direct-reexport-surface-alias",
+        )
+        surface = starlette_surfaces.get(surface_id)
+        if surface is None:
+            raise MetadataError(
+                "Starlette surface alias references an undeclared surface: " + binding_id
+            )
+        expected_refs = []
+        for operation in surface.get("operations", []):
+            requirement_ids = [
+                requirement.get("id")
+                for requirement in operation.get("requirements", [])
+                if isinstance(requirement, dict)
+            ]
+            target_support = {}
+            for target in operation.get("targets", []):
+                support = target.get("support", {})
+                if isinstance(support, dict):
+                    target_support[target.get("target_id", "unknown")] = {
+                        "status": support.get("status", "unknown"),
+                        "reason": support.get("reason"),
+                        "missing_requirements": support.get("missing_requirements", []),
+                    }
+            expected_refs.append(
+                {
+                    "contract_id": starlette_contract_id,
+                    "surface_id": surface_id,
+                    "operation_id": operation.get("id"),
+                    "requirement_ids": requirement_ids,
+                    "target_support": target_support,
+                }
+            )
+        actual_refs = [
+            {
+                field: reference.get(field)
+                for field in (
+                    "contract_id",
+                    "surface_id",
+                    "operation_id",
+                    "requirement_ids",
+                    "target_support",
+                )
+            }
+            for reference in projected.get("target_operation_refs", [])
+            if isinstance(reference, dict)
+        ]
+        require_equal(
+            f"atlas Starlette surface alias {binding_id} operation projection",
+            actual_refs,
+            expected_refs,
+        )
+    surface_gap_edges = {
+        edge.get("fastapi_binding"): edge
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict) and isinstance(edge.get("starlette_rs_surface_gap"), dict)
+    }
+    require_equal(
+        "Starlette surface gap projection denominator",
+        set(surface_gap_edges),
+        set(surface_gap_specs),
+    )
+    expected_gap_dispositions = {
+        "surface-not-declared": "supported",
+        "private-internal": "private/internal",
+    }
+    for binding_id, specification in surface_gap_specs.items():
+        edge = surface_gap_edges.get(binding_id)
+        projected = edge.get("starlette_rs_surface_gap") if isinstance(edge, dict) else None
+        if (
+            not isinstance(specification, dict)
+            or set(specification)
+            != {
+                "state",
+                "scope_note",
+            }
+            or not isinstance(projected, dict)
+        ):
+            raise MetadataError("atlas is missing a reviewed Starlette surface gap: " + binding_id)
+        state = specification.get("state")
+        expected_disposition = expected_gap_dispositions.get(state)
+        symbol = edge.get("starlette_symbol")
+        require_equal(
+            f"atlas Starlette surface gap {binding_id} relationship",
+            edge.get("relation"),
+            "direct_reexport",
+        )
+        if symbol in starlette_surfaces or expected_disposition is None:
+            raise MetadataError(
+                "Starlette surface gap is inconsistent with target manifest: " + binding_id
+            )
+        review_dispositions = {
+            row.get("api_disposition")
+            for evidence in edge.get("starlette_rs_review_evidence", [])
+            for row in evidence.get("rows", [])
+            if isinstance(row, dict)
+        }
+        require_equal(
+            f"Starlette surface gap {binding_id} target disposition",
+            review_dispositions,
+            {expected_disposition},
+        )
+        require_equal(
+            f"atlas Starlette surface gap {binding_id} resolution",
+            projected.get("resolution"),
+            state,
+        )
+        require_equal(
+            f"atlas Starlette surface gap {binding_id} symbol",
+            projected.get("starlette_symbol"),
+            symbol,
+        )
+        require_equal(
+            f"atlas Starlette surface gap {binding_id} review disposition",
+            projected.get("review_disposition"),
+            expected_disposition,
+        )
+        require_equal(
+            f"atlas Starlette surface gap {binding_id} scope note",
+            projected.get("scope_note"),
+            specification.get("scope_note"),
+        )
+    direct_reexport_edges = {
+        edge.get("fastapi_binding")
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict) and edge.get("relation") == "direct_reexport"
+    }
+    require_equal(
+        "Starlette direct re-export crosswalk denominator",
+        set(operation_alias_specs) | set(surface_alias_specs) | set(surface_gap_specs),
+        direct_reexport_edges,
+    )
     reviewed_starlette_import_ids = {
         candidate.get("id")
         for candidate in candidates

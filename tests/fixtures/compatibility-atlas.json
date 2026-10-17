@@ -77263,6 +77263,8 @@
     "starlette_integration_edges": 133,
     "starlette_module_namespace_crosswalks": 1,
     "starlette_private_helper_behavior_crosswalks": 3,
+    "starlette_surface_alias_gaps": 3,
+    "starlette_surface_aliases": 26,
     "test_function_designs": 2117,
     "test_functions_in_excluded_modules": 87,
     "test_functions_with_individual_exclusion": 10,
@@ -736035,7 +736037,7 @@
         "symbol": "starlette.concurrency.iterate_in_threadpool"
       },
       "starlette_symbol": "starlette.concurrency.iterate_in_threadpool",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling operation contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.concurrency.run_in_threadpool",
@@ -736115,7 +736117,7 @@
         "symbol": "starlette.concurrency.run_in_threadpool"
       },
       "starlette_symbol": "starlette.concurrency.run_in_threadpool",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling operation contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.concurrency.run_until_first_complete",
@@ -736193,7 +736195,7 @@
         "symbol": "starlette.concurrency.run_until_first_complete"
       },
       "starlette_symbol": "starlette.concurrency.run_until_first_complete",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling operation contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.datastructures.Address",
@@ -736230,6 +736232,12 @@
           ]
         }
       ],
+      "starlette_rs_surface_gap": {
+        "resolution": "surface-not-declared",
+        "review_disposition": "supported",
+        "scope_note": "Starlette-RS reviews this symbol as supported, but its pinned manifest declares no Address surface or operation, so no target behavior contract can be linked yet.",
+        "starlette_symbol": "starlette.datastructures.Address"
+      },
       "starlette_source": {
         "line": 11,
         "path": "starlette/datastructures.py",
@@ -736237,7 +736245,7 @@
         "symbol": "starlette.datastructures.Address"
       },
       "starlette_symbol": "starlette.datastructures.Address",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface gap explicitly recorded; no FastAPI-RS parity claim"
     },
     {
       "fastapi_binding": "fastapi.datastructures.FormData",
@@ -736274,6 +736282,84 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.FormData",
+        "surface_id": "starlette.datastructures.FormData",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "multidict-lookups",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.FormData.multidict-lookups",
+              "starlette.datastructures.FormData.constructor-input-semantics",
+              "starlette.datastructures.FormData.generic-typing",
+              "starlette.datastructures.FormData.file-values",
+              "starlette.datastructures.FormData.close"
+            ],
+            "source_path": "starlette.datastructures.FormData.__init__, FormData.close, ImmutableMultiDict.getlist, keys, items, multi_items, and __getitem__",
+            "surface_id": "starlette.datastructures.FormData",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose the Python FormData multidict interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "close-lifecycle",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.FormData.close.dynamic-multi-items-order"
+            ],
+            "source_path": "starlette.datastructures.FormData.close and UploadFile.close",
+            "surface_id": "starlette.datastructures.FormData",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose the Python FormData interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "ownership-graph",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.FormData.ownership-graph.public-value-lifetime"
+            ],
+            "source_path": "starlette.datastructures.FormData.__init__ and public value access",
+            "surface_id": "starlette.datastructures.FormData",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python object identity, cyclic collection, user file lifetime, and Python finalizer threads have no equivalent Rust-native public consumer boundary.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 480,
         "path": "starlette/datastructures.py",
@@ -736281,7 +736367,7 @@
         "symbol": "starlette.datastructures.FormData"
       },
       "starlette_symbol": "starlette.datastructures.FormData",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.datastructures.Headers",
@@ -736323,6 +736409,72 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.Headers",
+        "surface_id": "starlette.datastructures.Headers",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.Headers.constructor.raw",
+              "starlette.datastructures.Headers.raw-list-input-alias-and-copy-view",
+              "starlette.datastructures.Headers.constructor.mapping",
+              "starlette.datastructures.Headers.case-insensitive-lookup",
+              "starlette.datastructures.Headers.duplicate-order-getlist-and-mapping-views",
+              "starlette.datastructures.Headers.equality-order-and-type",
+              "starlette.datastructures.Headers.representation",
+              "starlette.datastructures.Headers.constructor.scope-container-conversion",
+              "starlette.datastructures.Headers.mutablecopy-independent-duplicate-preserving-copy",
+              "starlette.datastructures.Headers.mutablecopy-retains-pair-tuple-identities"
+            ],
+            "source_path": "starlette.datastructures.Headers.__init__, Headers.__contains__, Headers.__getitem__, Headers.getlist, Headers.keys, Headers.values, Headers.items, Headers.__iter__, Headers.__len__, Headers.__eq__, Headers.__repr__, and Headers.mutablecopy",
+            "surface_id": "starlette.datastructures.Headers",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.datastructures.Headers.constructor.mapping",
+                  "starlette.datastructures.Headers.case-insensitive-lookup",
+                  "starlette.datastructures.Headers.representation",
+                  "starlette.datastructures.Headers.constructor.scope-container-conversion"
+                ],
+                "reason": "The Rust-native type provides byte-oriented collection primitives, but does not implement the complete Python constructor and consumer semantics represented by this operation.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "ownership-graph",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.Headers.ownership-graph.public-value-lifetime"
+            ],
+            "source_path": "starlette.datastructures.Headers.__init__ and public value access",
+            "surface_id": "starlette.datastructures.Headers",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python object identity, cyclic collection, user file lifetime, and Python finalizer threads have no equivalent Rust-native public consumer boundary.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 498,
         "path": "starlette/datastructures.py",
@@ -736330,7 +736482,7 @@
         "symbol": "starlette.datastructures.Headers"
       },
       "starlette_symbol": "starlette.datastructures.Headers",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.datastructures.QueryParams",
@@ -736367,6 +736519,41 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.QueryParams",
+        "surface_id": "starlette.datastructures.QueryParams",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "construction-and-mapping-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.QueryParams.constructor-string-and-percent-decoding",
+              "starlette.datastructures.QueryParams.constructor-bytes-and-latin1-decoding",
+              "starlette.datastructures.QueryParams.constructor-mapping-pairs-copy-and-keyword-merging",
+              "starlette.datastructures.QueryParams.immutable-multidict-lookup-and-iteration",
+              "starlette.datastructures.QueryParams.query-string-and-repr",
+              "starlette.datastructures.QueryParams.equality-order-insensitive"
+            ],
+            "source_path": "starlette.datastructures.QueryParams.__init__, QueryParams.__getitem__, QueryParams.__eq__, QueryParams.__str__, and QueryParams.__repr__",
+            "surface_id": "starlette.datastructures.QueryParams",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 376,
         "path": "starlette/datastructures.py",
@@ -736374,7 +736561,7 @@
         "symbol": "starlette.datastructures.QueryParams"
       },
       "starlette_symbol": "starlette.datastructures.QueryParams",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.datastructures.State",
@@ -736411,6 +736598,69 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.State",
+        "surface_id": "starlette.datastructures.State",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.State.constructor-retains-mapping",
+              "starlette.datastructures.State.attribute-set-get",
+              "starlette.datastructures.State.attribute-delete",
+              "starlette.datastructures.State.missing-attribute-error",
+              "starlette.datastructures.State.missing-attribute-message-format-protocol",
+              "starlette.datastructures.State.item-set-get",
+              "starlette.datastructures.State.item-to-attribute-alias",
+              "starlette.datastructures.State.item-delete",
+              "starlette.datastructures.State.missing-item-error",
+              "starlette.datastructures.State.iteration-and-length",
+              "starlette.datastructures.State.instance-dict",
+              "starlette.datastructures.State.default-constructor-isolation"
+            ],
+            "source_path": "starlette.datastructures.State.__init__, State.__setattr__, State.__getattr__, State.__delattr__, State.__getitem__, State.__setitem__, State.__delitem__, State.__iter__, and State.__len__",
+            "surface_id": "starlette.datastructures.State",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "State is the Python starlette.* compatibility wrapper contract and has no direct Rust-native object surface.",
+                "status": "out_of_scope"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "ownership-graph",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.State.ownership-graph.public-value-lifetime"
+            ],
+            "source_path": "starlette.datastructures.State.__init__ and public value access",
+            "surface_id": "starlette.datastructures.State",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python object identity, cyclic collection, user file lifetime, and Python finalizer threads have no equivalent Rust-native public consumer boundary.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 662,
         "path": "starlette/datastructures.py",
@@ -736418,7 +736668,7 @@
         "symbol": "starlette.datastructures.State"
       },
       "starlette_symbol": "starlette.datastructures.State",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.datastructures.URL",
@@ -736460,6 +736710,110 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.URL",
+        "surface_id": "starlette.datastructures.URL",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "scope-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.URL.scope-construction",
+              "starlette.datastructures.URL.invalid-host-fallback",
+              "starlette.datastructures.URL.authority-in-path-containment"
+            ],
+            "source_path": "starlette.datastructures.URL.__init__",
+            "surface_id": "starlette.datastructures.URL",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose the Python starlette.datastructures.URL compatibility facade.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "query-parameter-operations",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.URL.include_query_params",
+              "starlette.datastructures.URL.replace_query_params",
+              "starlette.datastructures.URL.remove_query_params"
+            ],
+            "source_path": "starlette.datastructures.URL.include_query_params, URL.replace_query_params, and URL.remove_query_params",
+            "surface_id": "starlette.datastructures.URL",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose the Python starlette.datastructures.URL compatibility facade.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "component-and-replacement-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.URL.component-construction",
+              "starlette.datastructures.URL.component-access",
+              "starlette.datastructures.URL.component-replacement",
+              "starlette.datastructures.URL.component-replacement.username-format-coercion",
+              "starlette.datastructures.URL.password-redaction"
+            ],
+            "source_path": "starlette.datastructures.URL.__init__, URL.components, URL.replace, and URL.__repr__",
+            "surface_id": "starlette.datastructures.URL",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python URL consumer contract declared for this operation.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "ownership-graph",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.datastructures.URL.ownership-graph.public-value-lifetime"
+            ],
+            "source_path": "starlette.datastructures.URL.__init__ and public value access",
+            "surface_id": "starlette.datastructures.URL",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python object identity, cyclic collection, user file lifetime, and Python finalizer threads have no equivalent Rust-native public consumer boundary.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 26,
         "path": "starlette/datastructures.py",
@@ -736467,7 +736821,7 @@
         "symbol": "starlette.datastructures.URL"
       },
       "starlette_symbol": "starlette.datastructures.URL",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.middleware.cors.CORSMiddleware",
@@ -736509,6 +736863,79 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.middleware.cors.CORSMiddleware",
+        "surface_id": "starlette.middleware.cors.CORSMiddleware",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__init__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.cors.CORSMiddleware.construct"
+            ],
+            "source_path": "starlette.middleware.cors.CORSMiddleware.__init__",
+            "surface_id": "starlette.middleware.cors.CORSMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__call__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.cors.CORSMiddleware.simple-wildcard-credential-reflection-vary-merge",
+              "starlette.middleware.cors.CORSMiddleware.credentialed-wildcard-origin-reflection-without-cookie",
+              "starlette.middleware.cors.CORSMiddleware.explicit-origin-match-reflects-and-varies",
+              "starlette.middleware.cors.CORSMiddleware.duplicate-request-header-first-value",
+              "starlette.middleware.cors.CORSMiddleware.tuple-response-start-header-normalization",
+              "starlette.middleware.cors.CORSMiddleware.preflight-wildcard-credential-private-network",
+              "starlette.middleware.cors.CORSMiddleware.preflight-denial-failure-order",
+              "starlette.middleware.cors.CORSMiddleware.private-network-access-denial",
+              "starlette.middleware.cors.CORSMiddleware.private-network-empty-header-denial",
+              "starlette.middleware.cors.CORSMiddleware.simple-denied-origin-preserves-app-response",
+              "starlette.middleware.cors.CORSMiddleware.reused-instance-origin-isolation",
+              "starlette.middleware.cors.CORSMiddleware.allow-all-except-credentials",
+              "starlette.middleware.cors.CORSMiddleware.regex-fullmatch-origin",
+              "starlette.middleware.cors.CORSMiddleware.missing-origin-passthrough",
+              "starlette.middleware.cors.CORSMiddleware.non-http-passthrough",
+              "starlette.middleware.cors.CORSMiddleware.wildcard-method-preflight-and-simple-passthrough",
+              "starlette.middleware.cors.CORSMiddleware.preflight-credentialed-wildcard-origin-reflection",
+              "starlette.middleware.cors.CORSMiddleware.private-network-access-allowed",
+              "starlette.middleware.cors.CORSMiddleware.wildcard-noncredentialed-vary-preserved",
+              "starlette.middleware.cors.CORSMiddleware.regex-origin-reflection",
+              "starlette.middleware.cors.CORSMiddleware.mutable-scope-mapping",
+              "starlette.middleware.cors.CORSMiddleware.method-lookup-before-header-and-origin-check"
+            ],
+            "source_path": "starlette.middleware.cors.CORSMiddleware.__call__",
+            "surface_id": "starlette.middleware.cors.CORSMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 13,
         "path": "starlette/middleware/cors.py",
@@ -736516,7 +736943,7 @@
         "symbol": "starlette.middleware.cors.CORSMiddleware"
       },
       "starlette_symbol": "starlette.middleware.cors.CORSMiddleware",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.middleware.gzip.GZipMiddleware",
@@ -736558,6 +736985,78 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.middleware.gzip.GZipMiddleware",
+        "surface_id": "starlette.middleware.gzip.GZipMiddleware",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__init__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.gzip.GZipMiddleware.construct"
+            ],
+            "source_path": "starlette.middleware.gzip.GZipMiddleware.__init__",
+            "surface_id": "starlette.middleware.gzip.GZipMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__call__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.gzip.GZipMiddleware.gzip-final-response",
+              "starlette.middleware.gzip.GZipMiddleware.compresslevel-c-int-overflow-deferred",
+              "starlette.middleware.gzip.GZipMiddleware.identity-client",
+              "starlette.middleware.gzip.GZipMiddleware.small-body-bypass",
+              "starlette.middleware.gzip.GZipMiddleware.excluded-content-type",
+              "starlette.middleware.gzip.GZipMiddleware.unicode-content-type-case-normalization",
+              "starlette.middleware.gzip.GZipMiddleware.streaming-chunks",
+              "starlette.middleware.gzip.GZipMiddleware.pathsend",
+              "starlette.middleware.gzip.GZipMiddleware.existing-encoding-stream-bypass",
+              "starlette.middleware.gzip.GZipMiddleware.partial-response-stream-bypass",
+              "starlette.middleware.gzip.GZipMiddleware.default-excluded-content-type",
+              "starlette.middleware.gzip.GZipMiddleware.default-allowed-content-type",
+              "starlette.middleware.gzip.GZipMiddleware.streaming-empty-chunk",
+              "starlette.middleware.gzip.GZipMiddleware.thread-minimum-size",
+              "starlette.middleware.gzip.GZipMiddleware.identity-streaming-response",
+              "starlette.middleware.gzip.GZipMiddleware.cleared-exclude-content-types",
+              "starlette.middleware.gzip.GZipMiddleware.identity-excluded-content-type",
+              "starlette.middleware.gzip.GZipMiddleware.raw-header-name-case-sensitivity",
+              "starlette.middleware.gzip.GZipMiddleware.mutable-scope-mapping",
+              "starlette.middleware.gzip.GZipMiddleware.message-type-python-equality",
+              "starlette.middleware.gzip.GZipMiddleware.non-http-scope-type-bypass"
+            ],
+            "source_path": "starlette.middleware.gzip.GZipMiddleware.__call__",
+            "surface_id": "starlette.middleware.gzip.GZipMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 42,
         "path": "starlette/middleware/gzip.py",
@@ -736565,7 +737064,7 @@
         "symbol": "starlette.middleware.gzip.GZipMiddleware"
       },
       "starlette_symbol": "starlette.middleware.gzip.GZipMiddleware",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware",
@@ -736607,6 +737106,62 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware",
+        "surface_id": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__init__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.construct"
+            ],
+            "source_path": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.__init__",
+            "surface_id": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__call__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.http-redirect-default-port",
+              "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.http-redirect-preserves-port-and-query",
+              "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.websocket-redirect",
+              "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.secure-scheme-pass-through",
+              "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.secure-websocket-pass-through"
+            ],
+            "source_path": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware.__call__",
+            "surface_id": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 4,
         "path": "starlette/middleware/httpsredirect.py",
@@ -736614,7 +737169,7 @@
         "symbol": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware"
       },
       "starlette_symbol": "starlette.middleware.httpsredirect.HTTPSRedirectMiddleware",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.middleware.Middleware",
@@ -736666,6 +737221,44 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.middleware.Middleware",
+        "surface_id": "starlette.middleware.Middleware",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "value-formatting",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.Middleware.repr",
+              "starlette.middleware.Middleware.iteration",
+              "starlette.middleware.Middleware.asgi-wrapper-eager-response",
+              "starlette.middleware.Middleware.asgi-wrapper.concurrent-request-state-isolation",
+              "starlette.middleware.Middleware.asgi-wrapper.pure-callable-shapes",
+              "starlette.middleware.Middleware.asgi-wrapper.receive-events",
+              "starlette.middleware.Middleware.asgi-wrapper.send-events",
+              "starlette.middleware.Middleware.asgi-wrapper.arbitrary-apps",
+              "starlette.middleware.Middleware.asgi-wrapper.exception-cancellation-cleanup"
+            ],
+            "source_path": "starlette.middleware.Middleware.__repr__ and Middleware.__iter__",
+            "surface_id": "starlette.middleware.Middleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose Starlette middleware configuration objects or Python representation protocols.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 19,
         "path": "starlette/middleware/__init__.py",
@@ -736673,7 +737266,7 @@
         "symbol": "starlette.middleware.Middleware"
       },
       "starlette_symbol": "starlette.middleware.Middleware",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.middleware.trustedhost.TrustedHostMiddleware",
@@ -736715,6 +737308,65 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.middleware.trustedhost.TrustedHostMiddleware",
+        "surface_id": "starlette.middleware.trustedhost.TrustedHostMiddleware",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__init__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.construct",
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.wildcard-validation-error"
+            ],
+            "source_path": "starlette.middleware.trustedhost.TrustedHostMiddleware.__init__",
+            "surface_id": "starlette.middleware.trustedhost.TrustedHostMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__call__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.exact-host-match",
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.domain-wildcard-match",
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.invalid-host-response",
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.www-redirect",
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.www-redirect-disabled",
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.default-allowed-hosts",
+              "starlette.middleware.trustedhost.TrustedHostMiddleware.non-http-scope-pass-through"
+            ],
+            "source_path": "starlette.middleware.trustedhost.TrustedHostMiddleware.__call__",
+            "surface_id": "starlette.middleware.trustedhost.TrustedHostMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 10,
         "path": "starlette/middleware/trustedhost.py",
@@ -736722,7 +737374,7 @@
         "symbol": "starlette.middleware.trustedhost.TrustedHostMiddleware"
       },
       "starlette_symbol": "starlette.middleware.trustedhost.TrustedHostMiddleware",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.middleware.wsgi.WSGIMiddleware",
@@ -736760,6 +737412,68 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.middleware.wsgi.WSGIMiddleware",
+        "surface_id": "starlette.middleware.wsgi.WSGIMiddleware",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__init__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.wsgi.WSGIMiddleware.construct"
+            ],
+            "source_path": "starlette.middleware.wsgi.WSGIMiddleware.__init__",
+            "surface_id": "starlette.middleware.wsgi.WSGIMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native target does not expose the Python WSGI callable or ASGI middleware boundary.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__call__",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.middleware.wsgi.WSGIMiddleware.request-body-buffering",
+              "starlette.middleware.wsgi.WSGIMiddleware.build-environ",
+              "starlette.middleware.wsgi.WSGIMiddleware.response-order",
+              "starlette.middleware.wsgi.WSGIMiddleware.worker-thread-boundary",
+              "starlette.middleware.wsgi.WSGIMiddleware.exception-before-start",
+              "starlette.middleware.wsgi.WSGIMiddleware.exc-info-rethrow",
+              "starlette.middleware.wsgi.WSGIMiddleware.sender-protocols.unbounded-response-queue",
+              "starlette.middleware.wsgi.WSGIMiddleware.sender-protocols.sender-task-context",
+              "starlette.middleware.wsgi.WSGIMiddleware.sender-protocols.send-error-propagation",
+              "starlette.middleware.wsgi.WSGIMiddleware.sender-protocols.dispatch-cancellation",
+              "starlette.middleware.wsgi.WSGIMiddleware.sender-protocols.callback-lifetime"
+            ],
+            "source_path": "starlette.middleware.wsgi.WSGIMiddleware.__call__",
+            "surface_id": "starlette.middleware.wsgi.WSGIMiddleware",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native target does not expose the Python WSGI callable or ASGI middleware boundary.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 75,
         "path": "starlette/middleware/wsgi.py",
@@ -736767,7 +737481,7 @@
         "symbol": "starlette.middleware.wsgi.WSGIMiddleware"
       },
       "starlette_symbol": "starlette.middleware.wsgi.WSGIMiddleware",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.requests.HTTPConnection",
@@ -736805,6 +737519,12 @@
           ]
         }
       ],
+      "starlette_rs_surface_gap": {
+        "resolution": "surface-not-declared",
+        "review_disposition": "supported",
+        "scope_note": "Starlette-RS reviews this symbol as supported, but its pinned manifest declares no HTTPConnection surface or operation, so no target behavior contract can be linked yet.",
+        "starlette_symbol": "starlette.requests.HTTPConnection"
+      },
       "starlette_source": {
         "line": 78,
         "path": "starlette/requests.py",
@@ -736812,7 +737532,7 @@
         "symbol": "starlette.requests.HTTPConnection"
       },
       "starlette_symbol": "starlette.requests.HTTPConnection",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface gap explicitly recorded; no FastAPI-RS parity claim"
     },
     {
       "fastapi_binding": "fastapi.requests.Request",
@@ -736890,6 +737610,432 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request",
+        "surface_id": "starlette.requests.Request",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_for",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.requests.Request.url_for.mount-app-root-path",
+              "starlette.requests.Request.url_for.router-provider",
+              "starlette.requests.Request.url_for.app-provider",
+              "starlette.requests.Request.url_for.missing-context"
+            ],
+            "source_path": "starlette.requests.Request.url_for",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not declare the Python named URL lookup interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "default-receive",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.default-empty-receive-runtime-error"
+            ],
+            "source_path": "starlette.requests.Request.__init__ and Request.receive",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python Request receive callback or its default.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "send-push-promise",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.send-push-promise.extension-event",
+              "starlette.request.send-push-promise.without-extension",
+              "starlette.request.send-push-promise.missing-send",
+              "starlette.request.send-push-promise.header-iteration-order"
+            ],
+            "source_path": "starlette.requests.Request.send_push_promise",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose the Python ASGI send callback boundary.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "is-disconnected",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.is-disconnected.detect-after-response",
+              "starlette.request.is-disconnected.cache-observed-disconnect",
+              "starlette.request.is-disconnected.cancel-pending-receive"
+            ],
+            "source_path": "starlette.requests.Request.is_disconnected",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose the Python Request callback facade.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "form",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.form.call-await-header-snapshot",
+              "starlette.request.form.urlencoded-fields",
+              "starlette.request.form.empty",
+              "starlette.request.form.parser-limits",
+              "starlette.request.form.arbitrary-precision-count-limits",
+              "starlette.request.form.context-manager-lifecycle",
+              "starlette.request.form.context-manager-exit-discards-close-result",
+              "starlette.request.form.context-manager-closes-upload-files",
+              "starlette.request.form.multipart-form-data",
+              "starlette.request.form.multipart-filename-path-normalization",
+              "starlette.request.form.multipart-upload-header-wire-order",
+              "starlette.request.form.multipart-header-duplicate-occurrences",
+              "starlette.request.form.multipart-no-filename",
+              "starlette.request.form.multipart-incremental-part-limits",
+              "starlette.request.form.multipart-input-errors",
+              "starlette.request.form.multipart-count-limits",
+              "starlette.request.form.multipart-charset-decoding",
+              "starlette.request.form.multipart-file-streaming",
+              "starlette.request.form.multipart-error-file-cleanup",
+              "starlette.request.form.multipart-large-file-rollover-worker",
+              "starlette.request.form.multipart-rollover-write-failure-size-state",
+              "starlette.request.form.multipart-rollover-event-loop-progress"
+            ],
+            "source_path": "starlette.requests.Request._get_form and Request.form",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose Python Request.form or its FormData return type.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "body-stream-json",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.body-cache-reuse",
+              "starlette.request.body-chunk-concatenation",
+              "starlette.request.stream-yields-original-body-object",
+              "starlette.request.body-stream-cache-replay",
+              "starlette.request.stream-then-body-consumed",
+              "starlette.request.stream-then-form-consumed",
+              "starlette.request.stream-then-json-consumed",
+              "starlette.request.stream-interleaved-iterators",
+              "starlette.request.stream-stops-after-shared-body-completion",
+              "starlette.request.json-body-cache",
+              "starlette.request.json-decode-error-cache",
+              "starlette.request.receive-optional-body-fields",
+              "starlette.request.stream-ignore-custom-receive-events",
+              "starlette.request.stream-ignore-custom-receive-event-between-body-chunks",
+              "starlette.request.stream-receive-message-type-lookup-order",
+              "starlette.request.concurrent-body-stream-consumption",
+              "starlette.request.stream-client-disconnect",
+              "starlette.request.body-disconnect-retry",
+              "starlette.request.body.receive-error-propagation",
+              "starlette.request.body.explicit-none-receive-call-error",
+              "starlette.request.body.retry-after-receive-error",
+              "starlette.request.body.truthiness-error-consumes-terminal-stream",
+              "starlette.request.body.retry-after-cancellation",
+              "starlette.request.stream.receive-error-propagation",
+              "starlette.request.stream.retry-after-receive-error",
+              "starlette.request.body.retry-after-stream-cancellation",
+              "starlette.request.stream-disconnect-retry",
+              "starlette.request.stream-close-recovers-remaining-body",
+              "starlette.request.stream-aclose-before-first-advance",
+              "starlette.request.stream-yields-truthy-body-object-without-byte-conversion"
+            ],
+            "source_path": "starlette.requests.Request.body, Request.stream, and Request.json",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose a Python Request object, Python ASGI receive callback, or Python JSON value boundary.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "client",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.client-address"
+            ],
+            "source_path": "starlette.requests.HTTPConnection.client",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python Request.client property.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "connection-properties",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.requests.Request.connection-properties.mapping-membership-protocol",
+              "starlette.requests.HTTPConnection.auth-user.present-null-scope-values",
+              "starlette.requests.HTTPConnection.auth.missing-scope-key",
+              "starlette.requests.HTTPConnection.user.missing-scope-key"
+            ],
+            "source_path": "starlette.requests.HTTPConnection.session, HTTPConnection.auth, and HTTPConnection.user",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose Request session, authentication, or user scope properties.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "header-cache-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.cookies.use-cached-headers-property",
+              "starlette.request.receive-callback-replacement",
+              "starlette.request.send-push-promise.use-cached-headers-property"
+            ],
+            "source_path": "starlette.requests.HTTPConnection.headers, Request.cookies, and Request.send_push_promise",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The public Rust-native API has request-header and cookie primitives but no Request scope replacement or ASGI send-promise consumer interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "cookie-cache-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.cookies-cache-semantics"
+            ],
+            "source_path": "starlette.requests.Request.cookies",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API has no Request object that retains a mutable ASGI scope and exposes a cached cookies dictionary.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "state-setdefault-readback",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.requests.Request.state.setdefault-readback"
+            ],
+            "source_path": "starlette.requests.Request.state",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose a Python Request.state view over an arbitrary ASGI scope mapping.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "scope-mapping",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.requests.Request.scope-mapping.minimal-http-scope",
+              "starlette.requests.Request.scope-mapping.object-identity",
+              "starlette.requests.Request.scope-mapping.instance-iter-override",
+              "starlette.requests.Request.scope-property.supplied-mapping"
+            ],
+            "source_path": "starlette.requests.HTTPConnection.__getitem__, HTTPConnection.__iter__, and HTTPConnection.__len__",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose a Python Request over an arbitrary mapping scope.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "scope-identity-hash-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.requests.Request.scope-identity-hash-sequence.mutable-scope-identity"
+            ],
+            "source_path": "starlette.requests.HTTPConnection.__eq__, HTTPConnection.__hash__, and Request.scope replacement",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python Request object or its mutable ASGI scope mapping.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "constructor-contract",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.requests.Request.constructor.scope-type-validation"
+            ],
+            "source_path": "starlette.requests.Request.__init__ and HTTPConnection.__init__",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python Request constructor over an arbitrary ASGI scope.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "callback-lifetime",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.request.callback-lifetime.public-cycle-collection"
+            ],
+            "source_path": "starlette.requests.Request.scope, Request.receive, Request.body, Request.stream, Request.json, and Request.form, Request.state, and Request.headers",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose a Python Request object, Python ASGI receive callback, or Python JSON value boundary.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "module-import-policy",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.requests.Request.module-import-policy.dependency-errors-and-selection"
+            ],
+            "source_path": "starlette.requests module import and public consumer",
+            "surface_id": "starlette.requests.Request",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python module dependency import policy belongs to the Python package consumer interface.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 212,
         "path": "starlette/requests.py",
@@ -736897,7 +738043,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.responses.FileResponse",
@@ -736940,6 +738086,113 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.FileResponse",
+        "surface_id": "starlette.responses.FileResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.FileResponse.asgi-call.get",
+              "starlette.responses.FileResponse.asgi-call.websocket-denial-response",
+              "starlette.responses.FileResponse.asgi-call.default-media-type",
+              "starlette.responses.FileResponse.asgi-call.set-media-type",
+              "starlette.responses.FileResponse.asgi-call.background-task",
+              "starlette.responses.FileResponse.asgi-call.directory-not-a-file-error",
+              "starlette.responses.FileResponse.asgi-call.missing-file-error",
+              "starlette.responses.FileResponse.asgi-call.multiple-calls",
+              "starlette.responses.FileResponse.asgi-call.mutable-path",
+              "starlette.responses.FileResponse.asgi-call.stateful-pathlike-stat-open",
+              "starlette.responses.FileResponse.asgi-call.mutable-status-code",
+              "starlette.responses.FileResponse.asgi-call.mutable-stat-result",
+              "starlette.responses.FileResponse.asgi-call.async-file-open-scheduling",
+              "starlette.responses.FileResponse.asgi-call.head",
+              "starlette.responses.FileResponse.asgi-call.method-upper-str-subclass",
+              "starlette.responses.FileResponse.asgi-call.pathsend",
+              "starlette.responses.FileResponse.asgi-call.range-206",
+              "starlette.responses.FileResponse.asgi-call.single-range-header-view-isolation",
+              "starlette.responses.FileResponse.asgi-call.multiple-range-header-view-isolation",
+              "starlette.responses.FileResponse.asgi-call.if-range-match",
+              "starlette.responses.FileResponse.asgi-call.if-range-last-modified-match",
+              "starlette.responses.FileResponse.asgi-call.if-range-mismatch",
+              "starlette.responses.FileResponse.asgi-call.malformed-range-400",
+              "starlette.responses.FileResponse.asgi-call.unsatisfiable-range-416",
+              "starlette.responses.FileResponse.asgi-call.signed-zero-range-end",
+              "starlette.responses.FileResponse.asgi-call.range-python-strip-c0-separators",
+              "starlette.responses.FileResponse.asgi-call.unicode-filename",
+              "starlette.responses.FileResponse.asgi-call.content-disposition-inline",
+              "starlette.responses.FileResponse.asgi-call.cookie-mutations",
+              "starlette.responses.FileResponse.asgi-call.range-suffix",
+              "starlette.responses.FileResponse.asgi-call.range-suffix-larger-than-file",
+              "starlette.responses.FileResponse.asgi-call.range-single-byte",
+              "starlette.responses.FileResponse.asgi-call.range-inverted-single-byte",
+              "starlette.responses.FileResponse.asgi-call.range-start-after-end",
+              "starlette.responses.FileResponse.asgi-call.range-empty-header",
+              "starlette.responses.FileResponse.asgi-call.range-bound-over-cpython-int-limit",
+              "starlette.responses.FileResponse.asgi-call.range-empty-parts",
+              "starlette.responses.FileResponse.asgi-call.range-non-numeric-ignored",
+              "starlette.responses.FileResponse.asgi-call.range-without-dash",
+              "starlette.responses.FileResponse.asgi-call.range-overlap-merge",
+              "starlette.responses.FileResponse.asgi-call.range-unsorted-insertion",
+              "starlette.responses.FileResponse.asgi-call.range-count-limit",
+              "starlette.responses.FileResponse.asgi-call.range-count-limit-exceeded",
+              "starlette.responses.FileResponse.asgi-call.range-max-ranges-override",
+              "starlette.responses.FileResponse.asgi-call.range-multipart-small-chunks",
+              "starlette.responses.FileResponse.asgi-call.range-missing-equals",
+              "starlette.responses.FileResponse.asgi-call.range-head-206",
+              "starlette.responses.FileResponse.asgi-call.range-head-multipart",
+              "starlette.responses.FileResponse.asgi-call.range-head-max",
+              "starlette.responses.FileResponse.asgi-call.multipart-short-read-loop",
+              "starlette.responses.FileResponse.asgi-call.zero-chunk-size-send-loop"
+            ],
+            "source_path": "starlette.responses.FileResponse.__call__",
+            "surface_id": "starlette.responses.FileResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.FileResponse.consumer-construction.public-render-and-asgi",
+              "starlette.responses.FileResponse.consumer-construction.scope-header-list-writeback",
+              "starlette.responses.FileResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.FileResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.FileResponse.consumer-construction.construction-thread-transfer",
+              "starlette.responses.FileResponse.consumer-construction.user-call-protocols"
+            ],
+            "source_path": "starlette.responses.FileResponse.__init__, __call__, inherited Response.init_headers and headers; public constructor hooks, attribute protocols and ASGI callbacks",
+            "surface_id": "starlette.responses.FileResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 294,
         "path": "starlette/responses.py",
@@ -736947,7 +738200,7 @@
         "symbol": "starlette.responses.FileResponse"
       },
       "starlette_symbol": "starlette.responses.FileResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.responses.HTMLResponse",
@@ -737010,6 +738263,43 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.HTMLResponse",
+        "surface_id": "starlette.responses.HTMLResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.HTMLResponse.consumer-construction.public-render-and-asgi",
+              "starlette.responses.HTMLResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.HTMLResponse.consumer-construction.body-and-header-protocols",
+              "starlette.responses.HTMLResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.HTMLResponse.consumer-construction.cookie-argument-protocols",
+              "starlette.responses.HTMLResponse.consumer-construction.cookie-owned-result-lifetimes",
+              "starlette.responses.HTMLResponse.consumer-construction.cookie-shared-translation-state",
+              "starlette.responses.HTMLResponse.consumer-construction.cookie-surrogate-encoding-order"
+            ],
+            "source_path": "starlette.responses.HTMLResponse.__init__, Response.render, JSONResponse.render, Response.__call__; public raw_headers, body, background and returned coroutine lifetime; constructor body length and header mapping/encoding protocols; Python attribute interception and public header-view access; public set_cookie/delete_cookie Python argument protocols; public cookie returned-value lifetime, translation state and surrogate encoding",
+            "surface_id": "starlette.responses.HTMLResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 171,
         "path": "starlette/responses.py",
@@ -737017,7 +738307,7 @@
         "symbol": "starlette.responses.HTMLResponse"
       },
       "starlette_symbol": "starlette.responses.HTMLResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.responses.JSONResponse",
@@ -737075,6 +738365,65 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.JSONResponse",
+        "surface_id": "starlette.responses.JSONResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.JSONResponse.asgi-call.none-content"
+            ],
+            "source_path": "starlette.responses.Response.__call__",
+            "surface_id": "starlette.responses.JSONResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.JSONResponse.consumer-construction.public-render-and-asgi",
+              "starlette.responses.JSONResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.JSONResponse.consumer-construction.body-and-header-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-argument-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-owned-result-lifetimes",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-shared-translation-state",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-surrogate-encoding-order"
+            ],
+            "source_path": "starlette.responses.JSONResponse.__init__, Response.render, JSONResponse.render, Response.__call__; public raw_headers, body, background and returned coroutine lifetime; constructor body length and header mapping/encoding protocols; Python attribute interception and public header-view access; public set_cookie/delete_cookie Python argument protocols; public cookie returned-value lifetime, translation state and surrogate encoding",
+            "surface_id": "starlette.responses.JSONResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 179,
         "path": "starlette/responses.py",
@@ -737082,7 +738431,7 @@
         "symbol": "starlette.responses.JSONResponse"
       },
       "starlette_symbol": "starlette.responses.JSONResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.responses.PlainTextResponse",
@@ -737160,6 +738509,43 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.PlainTextResponse",
+        "surface_id": "starlette.responses.PlainTextResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.PlainTextResponse.consumer-construction.public-render-and-asgi",
+              "starlette.responses.PlainTextResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.PlainTextResponse.consumer-construction.body-and-header-protocols",
+              "starlette.responses.PlainTextResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.PlainTextResponse.consumer-construction.cookie-argument-protocols",
+              "starlette.responses.PlainTextResponse.consumer-construction.cookie-owned-result-lifetimes",
+              "starlette.responses.PlainTextResponse.consumer-construction.cookie-shared-translation-state",
+              "starlette.responses.PlainTextResponse.consumer-construction.cookie-surrogate-encoding-order"
+            ],
+            "source_path": "starlette.responses.PlainTextResponse.__init__, Response.render, JSONResponse.render, Response.__call__; public raw_headers, body, background and returned coroutine lifetime; constructor body length and header mapping/encoding protocols; Python attribute interception and public header-view access; public set_cookie/delete_cookie Python argument protocols; public cookie returned-value lifetime, translation state and surrogate encoding",
+            "surface_id": "starlette.responses.PlainTextResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 175,
         "path": "starlette/responses.py",
@@ -737167,7 +738553,7 @@
         "symbol": "starlette.responses.PlainTextResponse"
       },
       "starlette_symbol": "starlette.responses.PlainTextResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.responses.RedirectResponse",
@@ -737220,6 +738606,64 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.RedirectResponse",
+        "surface_id": "starlette.responses.RedirectResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.RedirectResponse.asgi-call.default-relative-location",
+              "starlette.responses.RedirectResponse.asgi-call.quoted-unicode-location",
+              "starlette.responses.RedirectResponse.asgi-call.default-content-length",
+              "starlette.responses.RedirectResponse.asgi-call.case-insensitive-location-replacement",
+              "starlette.responses.RedirectResponse.asgi-call.cookie-mutations"
+            ],
+            "source_path": "starlette.responses.Response.__call__",
+            "surface_id": "starlette.responses.RedirectResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.RedirectResponse.consumer-construction.public-render-and-asgi",
+              "starlette.responses.RedirectResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.RedirectResponse.consumer-construction.attribute-and-header-cache-protocols"
+            ],
+            "source_path": "starlette.responses.RedirectResponse.__init__, __call__, inherited Response.init_headers and headers; public constructor hooks, attribute protocols and ASGI callbacks",
+            "surface_id": "starlette.responses.RedirectResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 202,
         "path": "starlette/responses.py",
@@ -737227,7 +738671,7 @@
         "symbol": "starlette.responses.RedirectResponse"
       },
       "starlette_symbol": "starlette.responses.RedirectResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.responses.Response",
@@ -737280,6 +738724,131 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.Response",
+        "surface_id": "starlette.responses.Response",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "typing-consumer",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.Response.python-typing-contract.mutable-mapping-scope"
+            ],
+            "source_path": "starlette.responses.Response.__call__, StreamingResponse.__call__, FileResponse.__call__; starlette.types.Scope",
+            "surface_id": "starlette.responses.Response",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python static typing metadata is part of the starlette.* facade contract; the Rust-native API has independent Rust signatures.",
+                "status": "out_of_scope"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.Response.asgi-call.text-content",
+              "starlette.responses.Response.asgi-call.bytes-content",
+              "starlette.responses.Response.asgi-call.empty-response",
+              "starlette.responses.Response.asgi-call.empty-204-response",
+              "starlette.responses.Response.asgi-call.non-empty-response",
+              "starlette.responses.Response.asgi-call.response-do-not-add-redundant-charset",
+              "starlette.responses.Response.asgi-call.populate-headers",
+              "starlette.responses.Response.asgi-call.status-304-content-length-suppression",
+              "starlette.responses.Response.asgi-call.render-override",
+              "starlette.responses.Response.asgi-call.memoryview-content",
+              "starlette.responses.Response.asgi-call.set-cookie-attributes",
+              "starlette.responses.Response.asgi-call.cookie-mutations",
+              "starlette.responses.Response.asgi-call.cookie-expiration-inputs",
+              "starlette.responses.Response.asgi-call.partitioned-cookie-version-error",
+              "starlette.responses.Response.asgi-call.mutable-header-assignment",
+              "starlette.responses.Response.asgi-call.headers-property-cache-and-raw-alias",
+              "starlette.responses.Response.asgi-call.background-async-task",
+              "starlette.responses.Response.asgi-call.background-task-cancellation",
+              "starlette.responses.Response.asgi-call.background-sync-task-cancellation",
+              "starlette.responses.Response.asgi-call.background-sync-task-cancellation-worker-error",
+              "starlette.responses.Response.asgi-call.background-sync-task-cancel-scope-worker-error",
+              "starlette.responses.Response.asgi-call.background-task-list-sync-cancellation",
+              "starlette.responses.Response.asgi-call.background-task-list-async-cancellation",
+              "starlette.responses.Response.asgi-call.background-task-list-sync-cancellation-worker-error-stops",
+              "starlette.responses.Response.asgi-call.background-sync-task",
+              "starlette.responses.Response.asgi-call.background-kwargs-mapping-expansion",
+              "starlette.responses.Response.asgi-call.background-kwargs-mapping-duplicate-key-error",
+              "starlette.responses.Response.asgi-call.background-task-order",
+              "starlette.responses.Response.asgi-call.background-tasks-subclass-dynamic-tasks-lookup",
+              "starlette.responses.Response.asgi-call.background-tasks-subclass-add-task-dynamic-lookup",
+              "starlette.responses.Response.asgi-call.background-task-failure-stops",
+              "starlette.responses.Response.asgi-call.background-task-late-failure-stops",
+              "starlette.responses.Response.asgi-call.background-task-cancellation-exception-propagates",
+              "starlette.responses.Response.asgi-call.background-task-add",
+              "starlette.responses.Response.asgi-call.background-task-sequence-constructor",
+              "starlette.responses.Response.asgi-call.background-callable-shapes",
+              "starlette.responses.Response.asgi-call.background-sync-noncallable-error",
+              "starlette.responses.Response.asgi-call.background-task-argument-expansion-precedes-kwargs-lookup",
+              "starlette.responses.Response.asgi-call.background-task-live-list-mutation",
+              "starlette.responses.Response.asgi-call.explicit-content-type-header"
+            ],
+            "source_path": "starlette.responses.Response.__call__",
+            "surface_id": "starlette.responses.Response",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.Response.consumer-construction.public-render-and-asgi",
+              "starlette.responses.Response.consumer-construction.documented-subclass-call-override",
+              "starlette.responses.Response.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.Response.consumer-construction.sync-background-contextvar-worker-propagation",
+              "starlette.responses.Response.consumer-construction.body-and-header-protocols",
+              "starlette.responses.Response.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.Response.consumer-construction.cookie-argument-protocols",
+              "starlette.responses.Response.consumer-construction.cookie-morsel-control-validation",
+              "starlette.responses.Response.consumer-construction.cookie-owned-result-lifetimes",
+              "starlette.responses.Response.consumer-construction.cookie-shared-translation-state",
+              "starlette.responses.Response.consumer-construction.cookie-surrogate-encoding-order",
+              "starlette.responses.Response.consumer-construction.user-call-protocols",
+              "starlette.responses.Response.consumer-construction.cookie-morsel-reserved-name-version-boundary"
+            ],
+            "source_path": "starlette.responses.Response.__init__, Response.render, JSONResponse.render, Response.__call__; public raw_headers, body, background and returned coroutine lifetime; constructor body length and header mapping/encoding protocols; Python attribute interception and public header-view access; public set_cookie/delete_cookie Python argument protocols; public cookie returned-value lifetime, translation state and surrogate encoding",
+            "surface_id": "starlette.responses.Response",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 27,
         "path": "starlette/responses.py",
@@ -737287,7 +738856,7 @@
         "symbol": "starlette.responses.Response"
       },
       "starlette_symbol": "starlette.responses.Response",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.responses.StreamingResponse",
@@ -737330,6 +738899,118 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.StreamingResponse",
+        "surface_id": "starlette.responses.StreamingResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.StreamingResponse.asgi-call.unknown-size-content",
+              "starlette.responses.StreamingResponse.asgi-call.empty-sync-chunk-framing",
+              "starlette.responses.StreamingResponse.asgi-call.known-size-content-length",
+              "starlette.responses.StreamingResponse.asgi-call.text-chunks",
+              "starlette.responses.StreamingResponse.asgi-call.mutable-status-code",
+              "starlette.responses.StreamingResponse.asgi-call.cookie-mutations",
+              "starlette.responses.StreamingResponse.asgi-call.binary-chunk",
+              "starlette.responses.StreamingResponse.asgi-call.async-iterator",
+              "starlette.responses.StreamingResponse.asgi-call.async-iterator-await-factory-stop",
+              "starlette.responses.StreamingResponse.asgi-call.awaitable-instance-special-method-lookup",
+              "starlette.responses.StreamingResponse.asgi-call.client-disconnect-oserror",
+              "starlette.responses.StreamingResponse.asgi-call.client-disconnect-start-send-oserror",
+              "starlette.responses.StreamingResponse.asgi-call.memoryview-chunks",
+              "starlette.responses.StreamingResponse.asgi-call.custom-async-iterable",
+              "starlette.responses.StreamingResponse.asgi-call.file-like-iterator"
+            ],
+            "source_path": "starlette.responses.StreamingResponse.__call__",
+            "surface_id": "starlette.responses.StreamingResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call-with-execution-trace",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.StreamingResponse.asgi-call.async-generator-background",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-disconnect-cancellation",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-stream-completes-first",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-send-oserror-propagation",
+              "starlette.responses.StreamingResponse.asgi-call.websocket-scope-background",
+              "starlette.responses.StreamingResponse.asgi-call.client-disconnect-final-send-oserror",
+              "starlette.responses.StreamingResponse.asgi-call.background-oserror-propagation",
+              "starlette.responses.StreamingResponse.asgi-call.send-backpressure",
+              "starlette.responses.StreamingResponse.asgi-call.caller-cancellation-during-send",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-caller-cancellation-during-receive"
+            ],
+            "source_path": "starlette.responses.StreamingResponse.__call__",
+            "surface_id": "starlette.responses.StreamingResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.responses.StreamingResponse.asgi-call.async-generator-background",
+                  "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-disconnect-cancellation",
+                  "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-stream-completes-first",
+                  "starlette.responses.StreamingResponse.asgi-call.websocket-scope-background",
+                  "starlette.responses.StreamingResponse.asgi-call.client-disconnect-final-send-oserror",
+                  "starlette.responses.StreamingResponse.asgi-call.send-backpressure",
+                  "starlette.responses.StreamingResponse.asgi-call.caller-cancellation-during-send",
+                  "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-caller-cancellation-during-receive"
+                ],
+                "reason": "Rust-native framing has no producer/background lifecycle trace or ASGI scope dispatch at this boundary.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.responses.StreamingResponse.consumer-construction.public-render-and-asgi",
+              "starlette.responses.StreamingResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.StreamingResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.StreamingResponse.consumer-construction.construction-thread-transfer",
+              "starlette.responses.StreamingResponse.consumer-construction.user-call-protocols",
+              "starlette.responses.StreamingResponse.consumer-construction.asynciterable-classification",
+              "starlette.responses.StreamingResponse.consumer-construction.async-iteration-special-method-lookup"
+            ],
+            "source_path": "starlette.responses.StreamingResponse.__init__, __call__, inherited Response.init_headers and headers; public constructor hooks, attribute protocols and ASGI callbacks",
+            "surface_id": "starlette.responses.StreamingResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 220,
         "path": "starlette/responses.py",
@@ -737337,7 +739018,7 @@
         "symbol": "starlette.responses.StreamingResponse"
       },
       "starlette_symbol": "starlette.responses.StreamingResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.routing.Mount",
@@ -737399,6 +739080,95 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.routing.Mount",
+        "surface_id": "starlette.routing.Mount",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "route-dispatch",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.routing.Mount.route-dispatch.scope-extension",
+              "starlette.routing.Mount.route-dispatch.empty-path-root-mount",
+              "starlette.routing.Mount.route-dispatch.miss",
+              "starlette.routing.Mount.route-dispatch.child-not-found",
+              "starlette.routing.Mount.route-dispatch.child-method-not-allowed",
+              "starlette.routing.Mount.route-dispatch.inherited-path-parameter-collision",
+              "starlette.routing.Mount.route-dispatch.nested-scope-composition",
+              "starlette.routing.Mount.route-dispatch.nested-mount-miss",
+              "starlette.routing.Mount.route-dispatch.max-body-size-override",
+              "starlette.routing.Mount.route-dispatch.local-middleware-stack-order"
+            ],
+            "source_path": "starlette.routing.BaseRoute.__call__",
+            "surface_id": "starlette.routing.Mount",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.routing.Mount.url_path_for.direct-path",
+              "starlette.routing.Mount.url_path_for.nested-route",
+              "starlette.routing.Mount.url_path_for.double-mount",
+              "starlette.routing.Mount.url_path_for.mismatch",
+              "starlette.routing.Mount.url_path_for.none-routes-app",
+              "starlette.routing.Mount.url_path_for.none-path-is-not-forwarded"
+            ],
+            "source_path": "starlette.routing.Mount.url_path_for",
+            "surface_id": "starlette.routing.Mount",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not declare the Python named URL lookup interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "value-formatting",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.routing.Mount.__repr__.unnamed",
+              "starlette.routing.Mount.__repr__.named"
+            ],
+            "source_path": "starlette.routing.Mount.__repr__",
+            "surface_id": "starlette.routing.Mount",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose Python Mount values or their Python object representation protocol.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 361,
         "path": "starlette/routing.py",
@@ -737406,7 +739176,7 @@
         "symbol": "starlette.routing.Mount"
       },
       "starlette_symbol": "starlette.routing.Mount",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.staticfiles.StaticFiles",
@@ -737463,6 +739233,199 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.staticfiles.StaticFiles",
+        "surface_id": "starlette.staticfiles.StaticFiles",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.staticfiles.StaticFiles.asgi-call.rooted-file-get",
+              "starlette.staticfiles.StaticFiles.asgi-call.file-response-subclass-override",
+              "starlette.staticfiles.StaticFiles.asgi-call.is-not-modified-subclass-override",
+              "starlette.staticfiles.StaticFiles.asgi-call.get-response-subclass-override",
+              "starlette.staticfiles.StaticFiles.asgi-call.get-directories-subclass-override",
+              "starlette.staticfiles.StaticFiles.asgi-call.not-found-get",
+              "starlette.staticfiles.StaticFiles.asgi-call.packages-truthiness-before-iteration",
+              "starlette.staticfiles.StaticFiles.asgi-call.scope-type-equality",
+              "starlette.staticfiles.StaticFiles.asgi-call.directory-root-404",
+              "starlette.staticfiles.StaticFiles.asgi-call.parent-traversal-rejected",
+              "starlette.staticfiles.StaticFiles.asgi-call.configured-root-symlink-traversal-rejected",
+              "starlette.staticfiles.StaticFiles.asgi-call.path-limit-overflow-preempts-later-root",
+              "starlette.staticfiles.StaticFiles.asgi-call.permission-denied-maps-401",
+              "starlette.staticfiles.StaticFiles.asgi-call.null-byte-path-maps-404",
+              "starlette.staticfiles.StaticFiles.asgi-call.file-as-directory-maps-404",
+              "starlette.staticfiles.StaticFiles.asgi-call.missing-subdirectory-maps-404",
+              "starlette.staticfiles.StaticFiles.asgi-call.method-not-allowed-post",
+              "starlette.staticfiles.StaticFiles.asgi-call.non-string-method",
+              "starlette.staticfiles.StaticFiles.asgi-call.head-file",
+              "starlette.staticfiles.StaticFiles.asgi-call.html-index-redirect",
+              "starlette.staticfiles.StaticFiles.asgi-call.root-path-prefix-html-index-redirect",
+              "starlette.staticfiles.StaticFiles.asgi-call.html-index-file",
+              "starlette.staticfiles.StaticFiles.asgi-call.secondary-lookup-error-propagation",
+              "starlette.staticfiles.StaticFiles.asgi-call.html-not-found-fallback",
+              "starlette.staticfiles.StaticFiles.asgi-call.html-directory-without-index-fallback",
+              "starlette.staticfiles.StaticFiles.asgi-call.html-directory-index-without-404-fallback",
+              "starlette.staticfiles.StaticFiles.asgi-call.html-only-files-no-index-or-404",
+              "starlette.staticfiles.StaticFiles.asgi-call.follow-symlink-file-served",
+              "starlette.staticfiles.StaticFiles.asgi-call.follow-symlink-directory-served",
+              "starlette.staticfiles.StaticFiles.asgi-call.follow-symlink-file-rejected",
+              "starlette.staticfiles.StaticFiles.asgi-call.follow-symlink-directory-rejected",
+              "starlette.staticfiles.StaticFiles.asgi-call.conditional-date-match",
+              "starlette.staticfiles.StaticFiles.asgi-call.last-modified-condition-order",
+              "starlette.staticfiles.StaticFiles.asgi-call.conditional-etag-match",
+              "starlette.staticfiles.StaticFiles.asgi-call.conditional-etag-mismatch",
+              "starlette.staticfiles.StaticFiles.asgi-call.conditional-weak-etag-list",
+              "starlette.staticfiles.StaticFiles.asgi-call.conditional-validator-precedence",
+              "starlette.staticfiles.StaticFiles.asgi-call.empty-if-none-match-falls-through-to-if-modified-since",
+              "starlette.staticfiles.StaticFiles.asgi-call.if-modified-since-numeric-timezone",
+              "starlette.staticfiles.StaticFiles.asgi-call.rust-explicit-package-roots",
+              "starlette.staticfiles.StaticFiles.asgi-call.package-static-assets",
+              "starlette.staticfiles.StaticFiles.asgi-call.deleted-file-conditional-html-fallback",
+              "starlette.staticfiles.StaticFiles.asgi-call.os-specific-path-normalization",
+              "starlette.staticfiles.StaticFiles.asgi-call.if-modified-since-named-timezone",
+              "starlette.staticfiles.StaticFiles.asgi-call.if-modified-since-omitted-timezone",
+              "starlette.staticfiles.StaticFiles.asgi-call.if-modified-since-trailing-rfc-comment",
+              "starlette.staticfiles.StaticFiles.asgi-call.if-modified-since-full-month",
+              "starlette.staticfiles.StaticFiles.asgi-call.if-modified-since-single-digit-time-fields",
+              "starlette.staticfiles.StaticFiles.asgi-call.mutable-scope-mapping",
+              "starlette.staticfiles.StaticFiles.asgi-call.surrogateescape-scope-path"
+            ],
+            "source_path": "starlette.staticfiles.StaticFiles.__init__, StaticFiles.get_directories, StaticFiles.__call__, StaticFiles.get_response, StaticFiles.file_response, and StaticFiles.is_not_modified",
+            "surface_id": "starlette.staticfiles.StaticFiles",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "lookup-path",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.staticfiles.StaticFiles.lookup-path.file-metadata",
+              "starlette.staticfiles.StaticFiles.lookup-path.surrogateescape-path",
+              "starlette.staticfiles.StaticFiles.lookup-path.directory-metadata",
+              "starlette.staticfiles.StaticFiles.lookup-path.absolute-path-rejected",
+              "starlette.staticfiles.StaticFiles.lookup-path.null-byte-error",
+              "starlette.staticfiles.StaticFiles.lookup-path.empty-roots-skip-nul-stat",
+              "starlette.staticfiles.StaticFiles.lookup-path.windows-invalid-name-error-propagation",
+              "starlette.staticfiles.StaticFiles.lookup-path.stateful-pathlike-root-resolution",
+              "starlette.staticfiles.StaticFiles.lookup-path.parent-traversal.follow-symlink-disabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.parent-traversal.follow-symlink-enabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.configured-root-symlink-traversal",
+              "starlette.staticfiles.StaticFiles.lookup-path.external-file-link.follow-symlink-disabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.external-file-link.follow-symlink-enabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.external-directory-link.follow-symlink-disabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.external-directory-link.follow-symlink-enabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.internal-file-link.follow-symlink-disabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.internal-file-link.follow-symlink-enabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.internal-directory-link.follow-symlink-disabled",
+              "starlette.staticfiles.StaticFiles.lookup-path.internal-directory-link.follow-symlink-enabled"
+            ],
+            "source_path": "starlette.staticfiles.StaticFiles.lookup_path",
+            "surface_id": "starlette.staticfiles.StaticFiles",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "configuration-check",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.staticfiles.StaticFiles.configuration-check.constructor-missing-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.constructor-not-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.constructor-pathlike-display",
+              "starlette.staticfiles.StaticFiles.configuration-check.lazy-missing-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.lazy-not-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.repeated-call-state-and-asgi-events"
+            ],
+            "source_path": "starlette.staticfiles.StaticFiles.__init__, StaticFiles.check_config, and StaticFiles.__call__",
+            "surface_id": "starlette.staticfiles.StaticFiles",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The native StaticFiles API has no Python config_checked attribute, so this observation is scoped to the documented Python-package instance contract.",
+                "status": "out_of_scope"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call-async-boundary",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.staticfiles.StaticFiles.asgi-call-async-boundary.lookup-path-thread-relation",
+              "starlette.staticfiles.StaticFiles.asgi-call-async-boundary.lookup-gate-start",
+              "starlette.staticfiles.StaticFiles.asgi-call-async-boundary.event-loop-progress",
+              "starlette.staticfiles.StaticFiles.asgi-call-async-boundary.asgi-response"
+            ],
+            "source_path": "starlette.staticfiles.StaticFiles.__call__",
+            "surface_id": "starlette.staticfiles.StaticFiles",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This operation observes Python event-loop progress and AnyIO worker scheduling, which are outside the synchronous Rust-native StaticFiles API.",
+                "status": "out_of_scope"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "get-response",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.staticfiles.StaticFiles.get-response.method-before-scope-path"
+            ],
+            "source_path": "starlette.staticfiles.StaticFiles.get_response",
+            "surface_id": "starlette.staticfiles.StaticFiles",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The native StaticFiles API receives method and scope_path as separate arguments and has no Python scope mapping whose key access order can be observed.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 37,
         "path": "starlette/staticfiles.py",
@@ -737470,7 +739433,7 @@
         "symbol": "starlette.staticfiles.StaticFiles"
       },
       "starlette_symbol": "starlette.staticfiles.StaticFiles",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.status",
@@ -737504,13 +739467,47 @@
           "scope": "external module namespace reference"
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.status",
+        "surface_id": "starlette.status",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "module-symbol-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.status.module-symbol-sequence.public-integer-constants",
+              "starlette.status.module-symbol-sequence.deprecated-aliases",
+              "starlette.status.module-symbol-sequence.deprecated-warning-callsite",
+              "starlette.status.module-symbol-sequence.unknown-attribute",
+              "starlette.status.module-symbol-sequence.directory-listing"
+            ],
+            "source_path": "starlette.status.__all__, __getattr__, and __dir__",
+            "surface_id": "starlette.status",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose the Python starlette.status module protocol.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "path": "starlette/status.py",
         "status": "module-surface",
         "symbol": "starlette.status"
       },
       "starlette_symbol": "starlette.status",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.templating.Jinja2Templates",
@@ -737557,6 +739554,128 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.templating.Jinja2Templates",
+        "surface_id": "starlette.templating.Jinja2Templates",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "template-response",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.templating.Jinja2Templates.constructor-directory-autoescape",
+              "starlette.templating.Jinja2Templates.constructor-directory-sequence",
+              "starlette.templating.Jinja2Templates.context-processors",
+              "starlette.templating.Jinja2Templates.url-for-global",
+              "starlette.templating._TemplateResponse.template-context-metadata",
+              "starlette.templating._TemplateResponse.debug-extension",
+              "starlette.templating.Jinja2Templates.TemplateResponse.deferred-response-call-lookup",
+              "starlette.templating.Jinja2Templates.TemplateResponse.base-response-init-lookup-after-render",
+              "starlette.templating.Jinja2Templates.TemplateResponse.context-update-lookup-before-processor-call"
+            ],
+            "source_path": "starlette.templating.Jinja2Templates.__init__, _setup_env_defaults, get_template, TemplateResponse, and _TemplateResponse.__call__",
+            "surface_id": "starlette.templating.Jinja2Templates",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native consumer surface does not yet expose this Python templating operation.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "template-public-workflow",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.templating.Jinja2Templates.template-public-workflow.construction",
+              "starlette.templating.Jinja2Templates.template-public-workflow.missing-configuration",
+              "starlette.templating.Jinja2Templates.template-public-workflow.conflicting-configuration",
+              "starlette.templating.Jinja2Templates.template-public-workflow.direct-render",
+              "starlette.templating.Jinja2Templates.template-public-workflow.preconfigured-url-for-global",
+              "starlette.templating.Jinja2Templates.template-public-workflow.default-autoescape",
+              "starlette.templating.Jinja2Templates.template-public-workflow.supplied-environment",
+              "starlette.templating.Jinja2Templates.template-public-workflow.context-processors",
+              "starlette.templating.Jinja2Templates.template-public-workflow.async-context-processors-unsupported",
+              "starlette.templating.Jinja2Templates.template-public-workflow.processor-exception-before-template-lookup",
+              "starlette.templating.Jinja2Templates.template-public-workflow.base-http-middleware",
+              "starlette.templating.Jinja2Templates.template-public-workflow.url-for",
+              "starlette.templating.Jinja2Templates.template-public-workflow.url-for-function-name",
+              "starlette.templating.Jinja2Templates.template-public-workflow.url-for-function-metadata",
+              "starlette.templating.Jinja2Templates.template-public-workflow.url-for-function-annotations",
+              "starlette.templating.Jinja2Templates.template-public-workflow.url-for-function-type",
+              "starlette.templating.Jinja2Templates.template-public-workflow.directory-sequence",
+              "starlette.templating.Jinja2Templates.template-public-workflow.client-debug-metadata",
+              "starlette.templating.Jinja2Templates.template-public-workflow.subclass-hook-dispatch"
+            ],
+            "source_path": "starlette.templating.Jinja2Templates.__init__, get_template, TemplateResponse; starlette.testclient.TestClient",
+            "surface_id": "starlette.templating.Jinja2Templates",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native consumer surface does not yet expose this Python templating operation.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "typing-consumer",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.templating.Jinja2Templates.python-typing-contract"
+            ],
+            "source_path": "starlette.templating.Jinja2Templates.get_template and Jinja2 Template.render typing contract",
+            "surface_id": "starlette.templating.Jinja2Templates",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python static typing metadata is part of the starlette.* facade contract; the Rust-native API has independent Rust signatures.",
+                "status": "out_of_scope"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "module-import-policy",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.templating.Jinja2Templates.module-import-policy.dependency-errors-and-selection"
+            ],
+            "source_path": "starlette.templating module import",
+            "surface_id": "starlette.templating.Jinja2Templates",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python module dependency import policy belongs to the Python package consumer interface.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 52,
         "path": "starlette/templating.py",
@@ -737564,7 +739683,7 @@
         "symbol": "starlette.templating.Jinja2Templates"
       },
       "starlette_symbol": "starlette.templating.Jinja2Templates",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.testclient.TestClient",
@@ -737626,6 +739745,273 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.testclient.TestClient",
+        "surface_id": "starlette.testclient.TestClient",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "request-response",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.testclient.TestClient.request-response.scope-projection",
+              "starlette.testclient.TestClient.request-response.request-message",
+              "starlette.testclient.TestClient.request-response.request-body-read-on-receive",
+              "starlette.testclient.TestClient.request-response.authentication-option",
+              "starlette.testclient.TestClient.request-response.multipart-file-upload",
+              "starlette.testclient.TestClient.request-response.response-and-debug",
+              "starlette.testclient.TestClient.request-response.response-body-buffer-protocol",
+              "starlette.testclient.TestClient.request-response.asgi-message-mutable-mapping",
+              "starlette.testclient.TestClient.request-response.template-response-debug-extension",
+              "starlette.testclient.TestClient.request-response.debug-info-key-membership-before-index",
+              "starlette.testclient.TestClient.request-response.follow-redirects-disabled",
+              "starlette.testclient.TestClient.request-response.follow-redirects-enabled",
+              "starlette.testclient.TestClient.request-response.response-history",
+              "starlette.testclient.TestClient.request-response.asgi2-callable",
+              "starlette.testclient.TestClient.request-response.asyncio-marked-asgi3-callable",
+              "starlette.testclient.TestClient.request-response.timeout-deprecation-warning",
+              "starlette.testclient.TestClient.request-response.exception-policy",
+              "starlette.testclient.TestClient.request-response.backend-setup-exception-policy",
+              "starlette.testclient.TestClient.request-response.non-string-asgi-message-before-exception",
+              "starlette.testclient.TestClient.request-response.normal-return-without-response",
+              "starlette.testclient.TestClient.request-response.exception-after-incomplete-response",
+              "starlette.testclient.TestClient.request-response.incomplete-response-without-exception",
+              "starlette.testclient.TestClient.request-response.exception-identity-and-chaining",
+              "starlette.testclient.TestClient.request-response.cors-global-error-enforcement",
+              "starlette.testclient.TestClient.request-response.routed-sync-endpoint-get",
+              "starlette.testclient.TestClient.request-response.routed-sync-endpoint-head",
+              "starlette.testclient.TestClient.request-response.routed-sync-endpoint-worker-thread",
+              "starlette.testclient.TestClient.request-response.routed-async-endpoint-partial",
+              "starlette.testclient.TestClient.request-response.nested-testclient-from-sync-endpoint",
+              "starlette.testclient.TestClient.request-response.base-url-path-prefix-merge",
+              "starlette.testclient.TestClient.request-response.application-debug-mutation",
+              "starlette.testclient.TestClient.request-response.debug-error-response",
+              "starlette.testclient.TestClient.request-response.starlette-trusted-host-middleware",
+              "starlette.testclient.TestClient.request-response.follow-up-request-sequence",
+              "starlette.testclient.TestClient.request-response.cookie-persistence-round-trip",
+              "starlette.testclient.TestClient.request-response.cookie-domain-matching",
+              "starlette.testclient.TestClient.request-response.mounted-static-files",
+              "starlette.testclient.TestClient.request-response.static-files-head-through-middleware",
+              "starlette.testclient.TestClient.request-response.static-files-relative-directory",
+              "starlette.testclient.TestClient.request-response.static-files-root-symlink-follow",
+              "starlette.testclient.TestClient.request-response.static-files-unhandled-os-error",
+              "starlette.testclient.TestClient.request-response.starlette-mount-method-registration",
+              "starlette.testclient.TestClient.request-response.mounted-router-url-sequence",
+              "starlette.testclient.TestClient.request-response.mounted-router-root-path",
+              "starlette.testclient.TestClient.request-response.router-middleware-response",
+              "starlette.testclient.TestClient.request-response.starlette-root-path-route-graph",
+              "starlette.testclient.TestClient.request-response.starlette-root-path-url-for",
+              "starlette.testclient.TestClient.request-response.router-protocol-switch-http-route",
+              "starlette.testclient.TestClient.request-response.starlette-root-path-url-for-trailing-slash",
+              "starlette.testclient.TestClient.request-response.starlette-host-routing",
+              "starlette.testclient.TestClient.request-response.starlette-host-method-registration",
+              "starlette.testclient.TestClient.request-response.request-url-string",
+              "starlette.testclient.TestClient.request-response.request-url-sequence",
+              "starlette.testclient.TestClient.request-response.request-url-components",
+              "starlette.testclient.TestClient.request-response.request-query-params-mapping",
+              "starlette.testclient.TestClient.request-response.query-params-option",
+              "starlette.testclient.TestClient.request-response.request-query-params-immutable-multidict",
+              "starlette.testclient.TestClient.request-response.request-headers-mapping",
+              "starlette.testclient.TestClient.request-response.request-headers-immutable-multidict",
+              "starlette.testclient.TestClient.request-response.request-raw-path-scope-preservation",
+              "starlette.testclient.TestClient.request-response.request-raw-path-query-omission",
+              "starlette.testclient.TestClient.request-response.request-json-failure-without-receive",
+              "starlette.testclient.TestClient.request-response.request-path-params-dictionary",
+              "starlette.testclient.TestClient.request-response.request-body-generator-buffering"
+            ],
+            "source_path": "starlette.testclient.TestClient",
+            "surface_id": "starlette.testclient.TestClient",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The separate Rust-native API does not expose the documented Python synchronous HTTPX TestClient interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "websocket-session",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.testclient.TestClient.websocket-session.scope-projection",
+              "starlette.testclient.TestClient.websocket-session.context-exit-default-close-after-client-close",
+              "starlette.testclient.TestClient.websocket-session.query-params-raw-path",
+              "starlette.testclient.TestClient.websocket-session.application-query-params",
+              "starlette.testclient.TestClient.websocket-session.application-url",
+              "starlette.testclient.TestClient.websocket-session.application-headers",
+              "starlette.testclient.TestClient.websocket-session.memory-stream-json-echo",
+              "starlette.testclient.TestClient.websocket-session.denial-response-unsupported-extension",
+              "starlette.testclient.TestClient.websocket-session.denial-response-duplicate-start",
+              "starlette.testclient.TestClient.websocket-session.router-protocol-switch",
+              "starlette.testclient.TestClient.websocket-session.router-websocket-route-match",
+              "starlette.testclient.TestClient.websocket-session.standalone-websocket-route-match",
+              "starlette.testclient.TestClient.websocket-session.standalone-websocket-route-miss",
+              "starlette.testclient.TestClient.websocket-session.router-miss-disconnect",
+              "starlette.testclient.TestClient.websocket-session.routed-async-endpoint-partial",
+              "starlette.testclient.TestClient.websocket-session.application-iter-text",
+              "starlette.testclient.TestClient.websocket-session.application-iter-bytes",
+              "starlette.testclient.TestClient.websocket-session.application-iter-json",
+              "starlette.testclient.TestClient.websocket-session.accept-handshake",
+              "starlette.testclient.TestClient.websocket-session.mutable-mapping-asgi-message",
+              "starlette.testclient.TestClient.websocket-session.session-context-reentry",
+              "starlette.testclient.TestClient.websocket-session.accepted-subprotocol-preserves-message-value",
+              "starlette.testclient.TestClient.websocket-session.extra-headers",
+              "starlette.testclient.TestClient.websocket-session.text-message-exchange",
+              "starlette.testclient.TestClient.websocket-session.text-object-preservation",
+              "starlette.testclient.TestClient.websocket-session.binary-message-exchange",
+              "starlette.testclient.TestClient.websocket-session.context-cleanup",
+              "starlette.testclient.TestClient.websocket-session.non-close-initial-message-session-entry",
+              "starlette.testclient.TestClient.websocket-session.denial-response-exception",
+              "starlette.testclient.TestClient.websocket-session.blocking-receive-progress",
+              "starlette.testclient.TestClient.websocket-session.disconnect-details",
+              "starlette.testclient.TestClient.websocket-session.client-close-code-reason",
+              "starlette.testclient.TestClient.websocket-session.application-close-code",
+              "starlette.testclient.TestClient.websocket-session.application-close-reason",
+              "starlette.testclient.TestClient.websocket-session.message-type-comparison-error-propagation",
+              "starlette.testclient.TestClient.websocket-session.close-triggered-cancellation",
+              "starlette.testclient.TestClient.websocket-session.portal-cleanup",
+              "starlette.testclient.TestClient.websocket-session.portal-exit-error-context",
+              "starlette.testclient.TestClient.websocket-session.exit-body-exception-context-chain",
+              "starlette.testclient.TestClient.websocket-session.application-exception-propagation",
+              "starlette.testclient.TestClient.websocket-session.error-propagation-independent-of-http-policy",
+              "starlette.testclient.TestClient.websocket-session.entry-cleanup-error-precedence",
+              "starlette.testclient.TestClient.websocket-session.app-error-closes-client-stream",
+              "starlette.testclient.TestClient.websocket-session.denial-body-app-error-context",
+              "starlette.testclient.TestClient.websocket-session.app-error-wins-cleanup-close-error",
+              "starlette.testclient.TestClient.websocket-session.duplicate-disconnect-error-propagation",
+              "starlette.testclient.TestClient.websocket-session.rejected-connection-disconnect",
+              "starlette.testclient.TestClient.websocket-session.send-json-text-frame",
+              "starlette.testclient.TestClient.websocket-session.send-json-binary-frame",
+              "starlette.testclient.TestClient.websocket-session.receive-json-text-frame",
+              "starlette.testclient.TestClient.websocket-session.receive-json-binary-frame",
+              "starlette.testclient.TestClient.websocket-session.raw-send-message",
+              "starlette.testclient.TestClient.websocket-session.raw-receive-message",
+              "starlette.testclient.TestClient.websocket-session.non-text-json-mode-falls-back-to-binary"
+            ],
+            "source_path": "starlette.testclient.TestClient.websocket_connect, WebSocketTestSession.send_text, receive_text, send_bytes, and receive_bytes",
+            "surface_id": "starlette.testclient.TestClient",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The separate Rust-native API does not expose the documented Python synchronous HTTPX TestClient WebSocket session interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "lifespan-context",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.testclient.TestClient.lifespan-context.startup-handshake",
+              "starlette.testclient.TestClient.lifespan-context.managed-request-portal-reuse",
+              "starlette.testclient.TestClient.lifespan-context.shutdown-handshake",
+              "starlette.testclient.TestClient.lifespan-context.transient-outside-context-requests",
+              "starlette.testclient.TestClient.lifespan-context.startup-error-propagation",
+              "starlette.testclient.TestClient.lifespan-context.startup-message-type-comparison-error",
+              "starlette.testclient.TestClient.lifespan-context.startup-cleanup-error-precedence",
+              "starlette.testclient.TestClient.lifespan-context.shutdown-error-propagation",
+              "starlette.testclient.TestClient.lifespan-context.http-lifespan-state",
+              "starlette.testclient.TestClient.lifespan-context.request-state-shallow-copy",
+              "starlette.testclient.TestClient.lifespan-context.app-state-separation",
+              "starlette.testclient.TestClient.lifespan-context.app-state-via-request-app",
+              "starlette.testclient.TestClient.lifespan-context.websocket-lifespan-state",
+              "starlette.testclient.TestClient.lifespan-context.request-state-generic-typing",
+              "starlette.testclient.TestClient.lifespan-context.websocket-state-generic-typing",
+              "starlette.testclient.TestClient.lifespan-context.application-callback-entry-exit",
+              "starlette.testclient.TestClient.lifespan-context.task-group-child-lifecycle",
+              "starlette.testclient.TestClient.lifespan-context.same-task-and-runvar-context-continuity",
+              "starlette.testclient.TestClient.lifespan-context.backend-loop-selection",
+              "starlette.testclient.TestClient.lifespan-context.router-lifespan-state",
+              "starlette.testclient.TestClient.lifespan-context.reentrant-context-entry",
+              "starlette.testclient.TestClient.lifespan-context.python-subclass-method-dispatch",
+              "starlette.testclient.TestClient.lifespan-context.exit-before-enter",
+              "starlette.testclient.TestClient.lifespan-context.shutdown-cleanup-error-precedence"
+            ],
+            "source_path": "starlette.testclient.TestClient.__enter__, TestClient.__exit__, TestClient.lifespan, TestClient.wait_startup, and TestClient.wait_shutdown",
+            "surface_id": "starlette.testclient.TestClient",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The separate Rust-native API does not expose the documented Python synchronous TestClient context-managed lifespan interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "public-client-workflow",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.testclient.TestClient.public-client-workflow.constructor-default-headers",
+              "starlette.testclient.TestClient.public-client-workflow.constructor-user-agent-override",
+              "starlette.testclient.TestClient.public-client-workflow.constructor-additional-header",
+              "starlette.testclient.TestClient.public-client-workflow.middleware-lifespan-startup-error",
+              "starlette.testclient.TestClient.public-client-workflow.portal-cleanup-after-startup-error",
+              "starlette.testclient.TestClient.public-client-workflow.router-managed-request-sequence",
+              "starlette.testclient.TestClient.public-client-workflow.custom-middleware-http-websocket-sequence",
+              "starlette.testclient.TestClient.public-client-workflow.traceback-retained-callback-cleanup",
+              "starlette.testclient.TestClient.public-client-workflow.managed-lifespan-cycle",
+              "starlette.testclient.TestClient.public-client-workflow.sync-worker-thread-context-propagation",
+              "starlette.testclient.TestClient.public-client-workflow.request-url-header-body-observation"
+            ],
+            "source_path": "starlette.testclient.TestClient.__init__, headers, __enter__, __exit__, and close; starlette.applications.Starlette; starlette.middleware.Middleware; starlette.routing.Router, Route, Mount, and WebSocketRoute; starlette.middleware.base.BaseHTTPMiddleware; starlette.responses.PlainTextResponse and StreamingResponse",
+            "surface_id": "starlette.testclient.TestClient",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native crate does not expose Python TestClient construction and context management.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "module-import-policy",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.testclient.TestClient.module-import-policy.dependency-errors-and-selection"
+            ],
+            "source_path": "starlette.testclient module import",
+            "surface_id": "starlette.testclient.TestClient",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python module dependency import policy belongs to the Python package consumer interface.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 375,
         "path": "starlette/testclient.py",
@@ -737633,7 +740019,7 @@
         "symbol": "starlette.testclient.TestClient"
       },
       "starlette_symbol": "starlette.testclient.TestClient",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.websockets.WebSocket",
@@ -737685,6 +740071,213 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.websockets.WebSocket",
+        "surface_id": "starlette.websockets.WebSocket",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "protocol-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.websocket.protocol.handshake-text-close",
+              "starlette.websocket.protocol.disconnect",
+              "starlette.websocket.protocol.invalid-transition",
+              "starlette.websocket.protocol.receive-after-disconnect",
+              "starlette.websocket.protocol.binary-exchange",
+              "starlette.websocket.protocol.send-oserror-disconnect",
+              "starlette.websocket.protocol.send-string-subclass-hash-error"
+            ],
+            "source_path": "starlette.websockets.WebSocket",
+            "surface_id": "starlette.websockets.WebSocket",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "state-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.websocket.state.handshake-text-close",
+              "starlette.websocket.state.disconnect",
+              "starlette.websocket.state.invalid-transition",
+              "starlette.websocket.state.receive-after-disconnect",
+              "starlette.websocket.state.binary-exchange",
+              "starlette.websocket.state.send-oserror-disconnect",
+              "starlette.websocket.state.accept-send-oserror-propagates",
+              "starlette.websocket.state.send-after-peer-disconnect",
+              "starlette.websocket.state.denial-response-start",
+              "starlette.websocket.state.denial-response-body-continuation",
+              "starlette.websocket.state.denial-response-body-final",
+              "starlette.websocket.state.denial-response-invalid-message",
+              "starlette.websocket.state.connected-send-invalid-type",
+              "starlette.websocket.state.connected-receive-invalid-type",
+              "starlette.websocket.state.send-non-string-event-type",
+              "starlette.websocket.state.send-unhashable-event-type",
+              "starlette.websocket.state.client-state-reset-invalid-receive",
+              "starlette.websocket.state.application-state-assignment",
+              "starlette.websocket.state.raw-client-state-assignment",
+              "starlette.websocket.state.accept-invalid-connect-event",
+              "starlette.websocket.state.invalid-message-repr-unicode-format-character"
+            ],
+            "source_path": "starlette.websockets.WebSocket",
+            "surface_id": "starlette.websockets.WebSocket",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "convenience-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.websocket.api.scope.mutable-mapping",
+              "starlette.websocket.api.accept.headers",
+              "starlette.websocket.api.accept.empty-headers",
+              "starlette.websocket.api.callback-descriptor.lookup-timing",
+              "starlette.websocket.api.iterator.receive-method-descriptor.lookup-timing",
+              "starlette.websocket.api.iterator.callback.stop-iteration-pep479",
+              "starlette.websocket.api.receive.text",
+              "starlette.websocket.api.receive.bytes",
+              "starlette.websocket.api.receive.raw",
+              "starlette.websocket.state.receive-callback-state-overwrite",
+              "starlette.websocket.api.receive.json.text",
+              "starlette.websocket.api.receive.json.binary",
+              "starlette.websocket.api.receive.json.invalid-mode",
+              "starlette.websocket.api.receive.json.mode-comparison-order",
+              "starlette.websocket.api.receive.text.before-accept",
+              "starlette.websocket.api.receive.bytes.before-accept",
+              "starlette.websocket.api.receive.json.before-accept",
+              "starlette.websocket.api.send.text",
+              "starlette.websocket.api.send.os-error.disconnect-details",
+              "starlette.websocket.api.send.bytes",
+              "starlette.websocket.api.send.json.text",
+              "starlette.websocket.api.send.json.binary",
+              "starlette.websocket.api.send.json.invalid-mode",
+              "starlette.websocket.api.disconnect.details",
+              "starlette.websocket.api.iter_text.async-for",
+              "starlette.websocket.api.iter_bytes.async-for",
+              "starlette.websocket.api.iter_json.async-for",
+              "starlette.websocket.api.iterator.protocol.surface",
+              "starlette.websocket.api.iterator.asend",
+              "starlette.websocket.api.iterator.athrow",
+              "starlette.websocket.api.iterator.aclose",
+              "starlette.websocket.api.denial-response.present",
+              "starlette.websocket.api.denial-response.streaming",
+              "starlette.websocket.api.denial-response.file",
+              "starlette.websocket.api.denial-response.absent",
+              "starlette.websocket.api.close.framing",
+              "starlette.websocket.api.close.duplicate",
+              "starlette.websocket.api.thread-transfer",
+              "starlette.websocket.api.send.json.serialization-before-mode-comparison"
+            ],
+            "source_path": "starlette.websockets.WebSocket",
+            "surface_id": "starlette.websockets.WebSocket",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python WebSocket convenience methods, iterators, ASGI callbacks, or Python exception values.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "constructor-contract",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.websockets.WebSocket.constructor.required-callables",
+              "starlette.websockets.WebSocket.constructor.scope-type-validation"
+            ],
+            "source_path": "starlette.websockets.WebSocket.__init__",
+            "surface_id": "starlette.websockets.WebSocket",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python WebSocket constructor or Python callback objects.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "scope-mapping",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.websockets.WebSocket.scope-mapping.minimal-websocket-scope",
+              "starlette.websockets.WebSocket.scope-mapping.object-identity",
+              "starlette.websockets.WebSocket.headers.case-insensitive-multidict"
+            ],
+            "source_path": "starlette.requests.HTTPConnection.__getitem__, __iter__, __len__, __eq__, and __hash__ inherited by starlette.websockets.WebSocket",
+            "surface_id": "starlette.websockets.WebSocket",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose a Python WebSocket Mapping interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "scope-identity-hash-sequence",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.websockets.WebSocket.scope-identity-hash-sequence.mutable-scope-identity"
+            ],
+            "source_path": "starlette.requests.HTTPConnection.__eq__ and __hash__ inherited by starlette.websockets.WebSocket across mutable scope changes",
+            "surface_id": "starlette.websockets.WebSocket",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python WebSocket object or its mutable ASGI scope mapping.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 24,
         "path": "starlette/websockets.py",
@@ -737692,7 +740285,7 @@
         "symbol": "starlette.websockets.WebSocket"
       },
       "starlette_symbol": "starlette.websockets.WebSocket",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.websockets.WebSocketDisconnect",
@@ -737729,6 +740322,41 @@
           ]
         }
       ],
+      "starlette_rs_surface_aliases": {
+        "resolution": "direct-reexport-surface-alias",
+        "scope_note": "FastAPI directly re-exports this Starlette symbol. The exact sibling surface, operations, requirements, and per-target states are linked; this source crosswalk does not claim FastAPI-RS parity.",
+        "starlette_symbol": "starlette.websockets.WebSocketDisconnect",
+        "surface_id": "starlette.websockets.WebSocketDisconnect",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "constructor-contract",
+            "relationship": "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+            "requirement_ids": [
+              "starlette.websockets.WebSocketDisconnect.constructor-contract.fields-and-args",
+              "starlette.websockets.WebSocketDisconnect.constructor-contract.falsey-reason",
+              "starlette.websockets.WebSocketDisconnect.constructor-contract.truthy-reason",
+              "starlette.websockets.WebSocketDisconnect.constructor-contract.reason-truthiness-error",
+              "starlette.websockets.WebSocketDisconnect.constructor-contract.code-value",
+              "starlette.websockets.WebSocketDisconnect.constructor-contract.signature-errors"
+            ],
+            "source_path": "starlette.websockets.WebSocketDisconnect.__init__",
+            "surface_id": "starlette.websockets.WebSocketDisconnect",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python WebSocketDisconnect class or Python exception construction semantics.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 18,
         "path": "starlette/websockets.py",
@@ -737736,7 +740364,7 @@
         "symbol": "starlette.websockets.WebSocketDisconnect"
       },
       "starlette_symbol": "starlette.websockets.WebSocketDisconnect",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface contract linked; FastAPI-RS parity proof pending"
     },
     {
       "fastapi_binding": "fastapi.websockets.WebSocketState",
@@ -737773,6 +740401,12 @@
           ]
         }
       ],
+      "starlette_rs_surface_gap": {
+        "resolution": "private-internal",
+        "review_disposition": "private/internal",
+        "scope_note": "Starlette-RS classifies this protocol-state enum as private/internal and declares no target surface; it remains visible as a FastAPI import edge without a supported contract claim.",
+        "starlette_symbol": "starlette.websockets.WebSocketState"
+      },
       "starlette_source": {
         "line": 11,
         "path": "starlette/websockets.py",
@@ -737780,7 +740414,7 @@
         "symbol": "starlette.websockets.WebSocketState"
       },
       "starlette_symbol": "starlette.websockets.WebSocketState",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; sibling surface gap explicitly recorded; no FastAPI-RS parity claim"
     },
     {
       "fastapi_binding": "fastapi.applications.ASGIApp",

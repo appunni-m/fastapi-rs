@@ -822,6 +822,104 @@ starlette_rs:
         name. This links delegated behavior requirements only; the FastAPI import
         path remains uncertain as a supported FastAPI API and has no FastAPI-RS
         parity proof.
+  surface_aliases:
+    fastapi.datastructures.FormData:
+      starlette_symbol: starlette.datastructures.FormData
+      surface_id: starlette.datastructures.FormData
+    fastapi.datastructures.Headers:
+      starlette_symbol: starlette.datastructures.Headers
+      surface_id: starlette.datastructures.Headers
+    fastapi.datastructures.QueryParams:
+      starlette_symbol: starlette.datastructures.QueryParams
+      surface_id: starlette.datastructures.QueryParams
+    fastapi.datastructures.State:
+      starlette_symbol: starlette.datastructures.State
+      surface_id: starlette.datastructures.State
+    fastapi.datastructures.URL:
+      starlette_symbol: starlette.datastructures.URL
+      surface_id: starlette.datastructures.URL
+    fastapi.middleware.cors.CORSMiddleware:
+      starlette_symbol: starlette.middleware.cors.CORSMiddleware
+      surface_id: starlette.middleware.cors.CORSMiddleware
+    fastapi.middleware.gzip.GZipMiddleware:
+      starlette_symbol: starlette.middleware.gzip.GZipMiddleware
+      surface_id: starlette.middleware.gzip.GZipMiddleware
+    fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware:
+      starlette_symbol: starlette.middleware.httpsredirect.HTTPSRedirectMiddleware
+      surface_id: starlette.middleware.httpsredirect.HTTPSRedirectMiddleware
+    fastapi.middleware.Middleware:
+      starlette_symbol: starlette.middleware.Middleware
+      surface_id: starlette.middleware.Middleware
+    fastapi.middleware.trustedhost.TrustedHostMiddleware:
+      starlette_symbol: starlette.middleware.trustedhost.TrustedHostMiddleware
+      surface_id: starlette.middleware.trustedhost.TrustedHostMiddleware
+    fastapi.middleware.wsgi.WSGIMiddleware:
+      starlette_symbol: starlette.middleware.wsgi.WSGIMiddleware
+      surface_id: starlette.middleware.wsgi.WSGIMiddleware
+    fastapi.requests.Request:
+      starlette_symbol: starlette.requests.Request
+      surface_id: starlette.requests.Request
+    fastapi.responses.FileResponse:
+      starlette_symbol: starlette.responses.FileResponse
+      surface_id: starlette.responses.FileResponse
+    fastapi.responses.HTMLResponse:
+      starlette_symbol: starlette.responses.HTMLResponse
+      surface_id: starlette.responses.HTMLResponse
+    fastapi.responses.JSONResponse:
+      starlette_symbol: starlette.responses.JSONResponse
+      surface_id: starlette.responses.JSONResponse
+    fastapi.responses.PlainTextResponse:
+      starlette_symbol: starlette.responses.PlainTextResponse
+      surface_id: starlette.responses.PlainTextResponse
+    fastapi.responses.RedirectResponse:
+      starlette_symbol: starlette.responses.RedirectResponse
+      surface_id: starlette.responses.RedirectResponse
+    fastapi.responses.Response:
+      starlette_symbol: starlette.responses.Response
+      surface_id: starlette.responses.Response
+    fastapi.responses.StreamingResponse:
+      starlette_symbol: starlette.responses.StreamingResponse
+      surface_id: starlette.responses.StreamingResponse
+    fastapi.routing.Mount:
+      starlette_symbol: starlette.routing.Mount
+      surface_id: starlette.routing.Mount
+    fastapi.staticfiles.StaticFiles:
+      starlette_symbol: starlette.staticfiles.StaticFiles
+      surface_id: starlette.staticfiles.StaticFiles
+    fastapi.status:
+      starlette_symbol: starlette.status
+      surface_id: starlette.status
+    fastapi.templating.Jinja2Templates:
+      starlette_symbol: starlette.templating.Jinja2Templates
+      surface_id: starlette.templating.Jinja2Templates
+    fastapi.testclient.TestClient:
+      starlette_symbol: starlette.testclient.TestClient
+      surface_id: starlette.testclient.TestClient
+    fastapi.websockets.WebSocket:
+      starlette_symbol: starlette.websockets.WebSocket
+      surface_id: starlette.websockets.WebSocket
+    fastapi.websockets.WebSocketDisconnect:
+      starlette_symbol: starlette.websockets.WebSocketDisconnect
+      surface_id: starlette.websockets.WebSocketDisconnect
+  surface_alias_gaps:
+    fastapi.datastructures.Address:
+      state: surface-not-declared
+      scope_note: >-
+        Starlette-RS reviews this symbol as supported, but its pinned manifest
+        declares no Address surface or operation, so no target behavior contract
+        can be linked yet.
+    fastapi.requests.HTTPConnection:
+      state: surface-not-declared
+      scope_note: >-
+        Starlette-RS reviews this symbol as supported, but its pinned manifest
+        declares no HTTPConnection surface or operation, so no target behavior
+        contract can be linked yet.
+    fastapi.websockets.WebSocketState:
+      state: private-internal
+      scope_note: >-
+        Starlette-RS classifies this protocol-state enum as private/internal and
+        declares no target surface; it remains visible as a FastAPI import edge
+        without a supported contract claim.
   behavior_crosswalks:
     fastapi.routing.get_route_path:
       kind: private-helper-behavior

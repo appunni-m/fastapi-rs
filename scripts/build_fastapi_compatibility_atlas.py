@@ -9398,6 +9398,127 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
 
     starlette_operation_aliases = load_starlette_operation_aliases()
 
+    def load_starlette_surface_aliases() -> tuple[
+        dict[str, dict[str, Any]], dict[str, dict[str, Any]]
+    ]:
+        """Expand direct FastAPI re-exports through sibling-owned manifest surfaces."""
+        aliases = project_metadata.get("starlette_rs", {}).get("surface_aliases")
+        gaps = project_metadata.get("starlette_rs", {}).get("surface_alias_gaps")
+        if not isinstance(aliases, dict) or not aliases:
+            raise AtlasError("metadata.yaml Starlette surface aliases must be a nonempty mapping")
+        if not isinstance(gaps, dict) or not gaps:
+            raise AtlasError(
+                "metadata.yaml Starlette surface alias gaps must be a nonempty mapping"
+            )
+        import_bindings = {
+            row.get("id"): row
+            for row in inventory.get("import_bindings", [])
+            if isinstance(row, dict) and isinstance(row.get("id"), str)
+        }
+        direct_reexports = {
+            row.get("id")
+            for row in inventory.get("import_bindings", [])
+            if isinstance(row, dict) and row.get("starlette_delegation") == "direct_reexport"
+        }
+        represented = set(aliases) | set(gaps) | set(starlette_operation_aliases)
+        if represented != direct_reexports:
+            raise AtlasError(
+                "Starlette-RS crosswalk overlays must cover each direct re-export exactly once"
+            )
+        surfaces = {
+            surface.get("id"): surface
+            for surface in (starlette_rs_manifest or {}).get("surfaces", [])
+            if isinstance(surface, dict) and isinstance(surface.get("id"), str)
+        }
+        resolved_aliases: dict[str, dict[str, Any]] = {}
+        for binding_id, entry in aliases.items():
+            if not isinstance(entry, dict) or set(entry) != {"starlette_symbol", "surface_id"}:
+                raise AtlasError("Starlette surface alias fields are unsupported: " + binding_id)
+            binding = import_bindings.get(binding_id)
+            symbol = entry.get("starlette_symbol")
+            surface_id = entry.get("surface_id")
+            surface = surfaces.get(surface_id)
+            if (
+                binding is None
+                or binding.get("starlette_delegation") != "direct_reexport"
+                or not isinstance(symbol, str)
+                or binding.get("target_path") != symbol
+                or not isinstance(surface_id, str)
+                or surface is None
+            ):
+                raise AtlasError("Starlette surface alias identity is invalid: " + binding_id)
+            target_operation_refs = []
+            operations = surface.get("operations")
+            if not isinstance(operations, list) or not operations:
+                raise AtlasError(
+                    "Starlette surface alias has no declared operations: " + binding_id
+                )
+            for operation in operations:
+                if not isinstance(operation, dict) or not isinstance(operation.get("id"), str):
+                    raise AtlasError("Starlette surface operation is malformed: " + binding_id)
+                requirement_ids = [
+                    requirement.get("id")
+                    for requirement in operation.get("requirements", [])
+                    if isinstance(requirement, dict) and isinstance(requirement.get("id"), str)
+                ]
+                target_operation_refs.append(
+                    starlette_contract_operation_ref(
+                        surface_id,
+                        operation["id"],
+                        requirement_ids,
+                        "complete sibling-owned surface linked by a FastAPI direct re-export; FastAPI-RS parity remains FastAPI-owned",
+                    )
+                )
+            resolved_aliases[binding_id] = {
+                "resolution": "direct-reexport-surface-alias",
+                "starlette_symbol": symbol,
+                "surface_id": surface_id,
+                "target_operation_refs": target_operation_refs,
+                "scope_note": (
+                    "FastAPI directly re-exports this Starlette symbol. The exact sibling "
+                    "surface, operations, requirements, and per-target states are linked; "
+                    "this source crosswalk does not claim FastAPI-RS parity."
+                ),
+            }
+
+        expected_gap_dispositions = {
+            "surface-not-declared": "supported",
+            "private-internal": "private/internal",
+        }
+        resolved_gaps: dict[str, dict[str, Any]] = {}
+        for binding_id, entry in gaps.items():
+            if not isinstance(entry, dict) or set(entry) != {"state", "scope_note"}:
+                raise AtlasError("Starlette surface gap fields are unsupported: " + binding_id)
+            binding = import_bindings.get(binding_id)
+            state = entry.get("state")
+            scope_note = entry.get("scope_note")
+            symbol = binding.get("target_path") if isinstance(binding, dict) else None
+            expected_disposition = expected_gap_dispositions.get(state)
+            review_rows = starlette_review_records.get(symbol, [])
+            dispositions = {row.get("api_disposition") for row in review_rows}
+            if (
+                binding is None
+                or binding.get("starlette_delegation") != "direct_reexport"
+                or not isinstance(symbol, str)
+                or (symbol in surfaces)
+                or expected_disposition is None
+                or dispositions != {expected_disposition}
+                or not isinstance(scope_note, str)
+                or not scope_note.strip()
+            ):
+                raise AtlasError(
+                    "Starlette surface gap identity or evidence is invalid: " + binding_id
+                )
+            resolved_gaps[binding_id] = {
+                "resolution": state,
+                "starlette_symbol": symbol,
+                "review_disposition": expected_disposition,
+                "scope_note": scope_note,
+            }
+        return resolved_aliases, resolved_gaps
+
+    starlette_surface_aliases, starlette_surface_alias_gaps = load_starlette_surface_aliases()
+
     def load_starlette_integration_operation_refs() -> dict[str, dict[str, Any]]:
         """Resolve exact FastAPI source uses to sibling-owned operations."""
         specifications = project_metadata.get("starlette_rs", {}).get("integration_operation_refs")
@@ -10222,6 +10343,40 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         + binding["id"]
                     )
                 edge["starlette_rs_operation_aliases"] = operation_alias
+                edge["status"] = (
+                    "source-mapped; sibling operation contract linked; "
+                    "FastAPI-RS parity proof pending"
+                )
+            surface_alias = starlette_surface_aliases.get(binding["id"])
+            if surface_alias is not None:
+                if (
+                    relation != "direct_reexport"
+                    or surface_alias["starlette_symbol"] != target_symbol
+                ):
+                    raise AtlasError(
+                        "Starlette surface alias target differs from direct import binding: "
+                        + binding["id"]
+                    )
+                edge["starlette_rs_surface_aliases"] = surface_alias
+                edge["status"] = (
+                    "source-mapped; sibling surface contract linked; "
+                    "FastAPI-RS parity proof pending"
+                )
+            surface_gap = starlette_surface_alias_gaps.get(binding["id"])
+            if surface_gap is not None:
+                if (
+                    relation != "direct_reexport"
+                    or surface_gap["starlette_symbol"] != target_symbol
+                ):
+                    raise AtlasError(
+                        "Starlette surface gap target differs from direct import binding: "
+                        + binding["id"]
+                    )
+                edge["starlette_rs_surface_gap"] = surface_gap
+                edge["status"] = (
+                    "source-mapped; sibling surface gap explicitly recorded; "
+                    "no FastAPI-RS parity claim"
+                )
             integration_operation_refs = starlette_integration_operation_refs.get(binding["id"])
             if integration_operation_refs is not None:
                 if integration_operation_refs["starlette_symbol"] != target_symbol:
@@ -10816,11 +10971,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             else {}
                         ),
                         **(
-                            {
-                                "function_case_mappings": reviewed_mapping[
-                                    "function_case_mappings"
-                                ]
-                            }
+                            {"function_case_mappings": reviewed_mapping["function_case_mappings"]}
                             if "function_case_mappings" in reviewed_mapping
                             else {}
                         ),
@@ -12793,6 +12944,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 Counter(record["classification"] for record in candidates.values())
             ),
             "starlette_integration_edges": len(starlette_edges),
+            "starlette_surface_aliases": len(starlette_surface_aliases),
+            "starlette_surface_alias_gaps": len(starlette_surface_alias_gaps),
             "starlette_behavior_crosswalks": sum(behavior_crosswalk_counts.values()),
             "starlette_private_helper_behavior_crosswalks": behavior_crosswalk_counts[
                 "private-helper-behavior"
@@ -13269,7 +13422,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## FastAPI to Starlette-RS ownership crosswalk",
             "",
-            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Three private-helper paths are linked to existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest; these references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
+            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Twenty-six direct re-exports link the complete sibling manifest surface; three remaining direct imports record a public-surface gap or a private/internal disposition. Three private-helper paths link existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest. These references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
             "",
             "| FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |",
             "|---:|---:|---:|---:|",
@@ -13284,11 +13437,13 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 len(unique_starlette_operations),
             ),
             "",
-            "| Direct FastAPI-Starlette source edges | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |",
-            "|---:|---:|---:|---:|",
-            "| %d | %d | %d | 0 |"
+            "| FastAPI-Starlette source edges | Direct re-exports linked to complete surfaces | Direct re-export gaps/private classifications | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |",
+            "|---:|---:|---:|---:|---:|---:|",
+            "| %d | %d | %d | %d | %d | 0 |"
             % (
                 atlas["counts"]["starlette_integration_edges"],
+                atlas["counts"]["starlette_surface_aliases"],
+                atlas["counts"]["starlette_surface_alias_gaps"],
                 atlas["counts"]["starlette_private_helper_behavior_crosswalks"],
                 atlas["counts"]["starlette_module_namespace_crosswalks"],
             ),
