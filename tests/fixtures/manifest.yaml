@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: ae06e62b2a0e6a3a81e4731e9d452a5b203d57c39bddc4667a3407ca6eb7e7b8
+    sha256: b525a7586d7c7d538565c34fe2973f3435dac5ddef4433376d718de0dc660976
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f4a8cb49235651dc9308516dd4c35161861fc2687ea86ac1de884aa214771e24
+    sha256: 75a43f7d21bc1bd1dce50562bffc4fd2c17b3e9c91610f5ca37d92a972f9429e
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: eb6d2e68e938eae1ea843ff48ea3f15cb5f88c0b8437b7ab986a6920ece6f20c
+    sha256: 02952e0cbd96e5ef26c70c56f1762262683801af5353171dfbd591af8d98d2b6
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 666
-      cases: 2698
-      partial_source_mappings: 1911
+      workflows: 667
+      cases: 2699
+      partial_source_mappings: 1913
 
 contract_metadata:
   aliases:
@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 277
-    operation_fixture_refs: 2115
+    operation_fixture_refs: 2117
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1319,6 +1319,7 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-apirouter
       fixture_design_ref: /fixture_designs/372
       observation_selectors: &id019
+      - asgi.send.message_types
       - docs.response.status
       - http.body.bytes
       - http.headers.ordered
@@ -19261,6 +19262,19 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: application-router-replacement
+      input_path: tests/fixtures/inputs/parity/application-router-replacement.json
+      input_sha256: fffe6bebf7c09c506af99c94f0111a3427f9b8b14d9b5c621a3ca4288cdc2372
+      recipe_path: tests/fixtures/input-recipes/parity/application-router-replacement.yaml
+      recipe_sha256: d5c046655fc9c0eff51937027b9224be93855908e227b59023a4e5f836ee4df4
+      workload_path: tests/fixtures/workloads/application_router_replacement.py
+      workload_sha256: 459bc1723754e0ed7bc041201015b6d353bbd5c5a4eb389f407141cb2237a16b
+      case_id: fastapi.application.router.replacement-before-first-call
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -19289,10 +19303,13 @@ api_surface_contract:
         routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query
         string. APIRouter constructor-route dispatch covers prefixed stock HTTP Routes, nested prefixes,
         include-slot order against API routes, and generic partial-match fallback. Mixed FastAPI add_route/API
-        order is covered in both directions. Other redirect combinations, route-family inclusion/prefix
-        behavior, generated documentation-route projection, callbacks, startup and shutdown handlers,
-        route_class customization, complete APIRouter mutation and inclusion semantics, router replacement
-        and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
+        order is covered in both directions. One prefixed GET registered through a replacement APIRouter
+        before the first ASGI call matches live source parity. Other redirect combinations, route-family
+        inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown
+        handlers, route_class customization, complete APIRouter mutation and inclusion semantics, app-level
+        registration/inclusion through a replacement, route listing/reversal after replacement, repeated
+        replacement, middleware/handler retention, replacement after first call, and lifetime parity when
+        a router outlives its app remain unverified.
   - id: fastapi.applications.FastAPI.state
     kind: field
     source_candidate_ref: /api_candidates/228
@@ -51995,6 +52012,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -52767,6 +52785,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -52876,6 +52895,7 @@ api_surface_contract:
     - websocket-lifecycle
     observation_selectors:
     - asgi.application_error.exception
+    - asgi.send.message_types
     - construction.exception_class
     - construction.exception_message
     - construction.outcome
@@ -53244,6 +53264,19 @@ api_surface_contract:
       observation_selectors:
       - openapi.document
       - openapi.paths
+    - workflow_id: application-router-replacement
+      input_path: tests/fixtures/inputs/parity/application-router-replacement.json
+      input_sha256: fffe6bebf7c09c506af99c94f0111a3427f9b8b14d9b5c621a3ca4288cdc2372
+      recipe_path: tests/fixtures/input-recipes/parity/application-router-replacement.yaml
+      recipe_sha256: d5c046655fc9c0eff51937027b9224be93855908e227b59023a4e5f836ee4df4
+      workload_path: tests/fixtures/workloads/application_router_replacement.py
+      workload_sha256: 459bc1723754e0ed7bc041201015b6d353bbd5c5a4eb389f407141cb2237a16b
+      case_id: fastapi.application.router.replacement-before-first-call
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: router-prefix-and-nested-composition-upstream
       input_path: tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json
       input_sha256: 5860fb0f04b62b28bd170ed337bf95b85cc308722dc139f14dfc29ac4ffb7fe2
@@ -53485,6 +53518,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -54154,6 +54188,7 @@ api_surface_contract:
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
     - asgi.lifespan.workload_trace
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -54239,6 +54274,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -54324,6 +54360,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -54474,6 +54511,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -54559,6 +54597,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -54758,6 +54797,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - http.body.bytes
     - http.headers.ordered
@@ -54922,6 +54962,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - docs.response.status
     - error.args
     - error.class

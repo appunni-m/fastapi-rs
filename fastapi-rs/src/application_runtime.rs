@@ -4295,7 +4295,7 @@ struct OpenApiCache {
 
 #[pyclass(name = "_FastAPIAsgiApp", module = "fastapi_rs._core")]
 struct PyFastApiAsgiApp {
-    app: Py<PyFastApi>,
+    router: Py<PyAny>,
 }
 
 #[pyclass(name = "_APIRouteAsgiApp", module = "fastapi_rs._core")]
@@ -4399,7 +4399,10 @@ impl PyFastApiAsgiApp {
         receive: Py<PyAny>,
         send: Py<PyAny>,
     ) -> PyResult<Py<PyAny>> {
-        fastapi_core_call(py, self.app.clone_ref(py), scope, receive, send)
+        self.router
+            .bind(py)
+            .call1((scope, receive, send))
+            .map(Bound::unbind)
     }
 }
 
@@ -7271,13 +7274,8 @@ impl PyFastApi {
             return Ok(cached);
         }
 
-        let mut stack = Py::new(
-            py,
-            PyFastApiAsgiApp {
-                app: slf.clone_ref(py),
-            },
-        )?
-        .into_any();
+        let router = Self::router(slf.clone_ref(py), py)?;
+        let mut stack = Py::new(py, PyFastApiAsgiApp { router })?.into_any();
         let exception_middleware = py
             .import("starlette.middleware.exceptions")?
             .getattr("ExceptionMiddleware")?;
@@ -7941,6 +7939,16 @@ impl PyApiRouter {
             dependencies: router_dependencies,
             strict_content_type,
         })
+    }
+
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        fastapi_core_call(py, self.inner_app(py)?, scope, receive, send)
     }
 
     #[getter]
@@ -10485,7 +10493,7 @@ impl PyOperationDecorator {
         };
         let route_matcher = if route_scope.is_some() {
             Some(single_api_route_matcher(
-                &self.path,
+                &scope_path,
                 &methods,
                 self.status_code,
             )?)

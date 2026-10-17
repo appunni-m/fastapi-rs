@@ -1110,6 +1110,28 @@
       ]
     },
     {
+      "id": "application-router-replacement",
+      "input_path": "tests/fixtures/inputs/parity/application-router-replacement.json",
+      "input_sha256": "fffe6bebf7c09c506af99c94f0111a3427f9b8b14d9b5c621a3ca4288cdc2372",
+      "recipe_path": "tests/fixtures/input-recipes/parity/application-router-replacement.yaml",
+      "recipe_sha256": "d5c046655fc9c0eff51937027b9224be93855908e227b59023a4e5f836ee4df4",
+      "case_ids": [
+        "fastapi.application.router.replacement-before-first-call"
+      ],
+      "workload_path": "tests/fixtures/workloads/application_router_replacement.py",
+      "workload_sha256": "459bc1723754e0ed7bc041201015b6d353bbd5c5a4eb389f407141cb2237a16b",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.application.router.replacement-before-first-call",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/apirouter.md",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "application-title",
       "input_path": "tests/fixtures/inputs/parity/application-title.json",
       "input_sha256": "b68090600fc45e29877dfa3dd6ebf9ae24b88cc4bbc31f78c2ce9ccbeb309e5a",
@@ -38326,6 +38348,38 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/apirouter.md",
+      "fixture_id": "fastapi.docs.reference-apirouter",
+      "workflow_id": "application-router-replacement",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.router.replacement-before-first-call"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "application-router-replacement",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.router.replacement-before-first-call"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

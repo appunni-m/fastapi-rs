@@ -1,0 +1,34 @@
+# FastAPI 0.141.1 assigns `self.router` at fastapi/applications.py:984-999,
+# and its ASGI call delegates to Starlette's cached stack at applications.py:1160-1163.
+# Starlette 1.6.0 builds that stack around the current router on first call
+# (applications.py:80-96); Router dispatches from its own route list.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/application_router_replacement.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.application.router.replacement-before-first-call
+  actions:
+  - action_id: get-route-from-replacement-router
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /replacement/probe
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/reference/apirouter.md, kind: upstream_documentation}

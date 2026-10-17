@@ -6380,6 +6380,8 @@ reviewed_api_contract_overlay:
           initializer: __init__
           start_line: 984
           end_line: 999
+        - {path: fastapi/applications.py, symbol: __call__}
+        - {path: fastapi/applications.py, symbol: get}
       supported_slice: >-
         During initialization, FastAPI assigns `app.router` to a stable
         `routing.APIRouter` object sharing the app's routes and configuration.
@@ -6388,14 +6390,20 @@ reviewed_api_contract_overlay:
         dependencies, and shared route registration with documentation routes
         disabled. A separate input-only constructor-route case observes a
         trailing-slash redirect from a generic Starlette `Route`, including
-        preservation of its query string. Other constructor wiring and router
-        behavior are outside this reviewed slice.
+        preservation of its query string. A prefixed replacement router
+        registered before the first ASGI call dispatches one GET route; later
+        replacement, router mutation and route listing/reversal, middleware
+        composition, and replacement-router docs/OpenAPI behavior remain
+        unverified.
       fixture_refs:
         - case_id: fastapi.application.router.identity-and-initial-settings
           recipe_path: tests/fixtures/input-recipes/parity/application-router.yaml
           observation_selectors: [http.status, http.body.bytes]
         - case_id: fastapi.applications.constructor.starlette-route-dispatch
           recipe_path: tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
+        - case_id: fastapi.application.router.replacement-before-first-call
+          recipe_path: tests/fixtures/input-recipes/parity/application-router-replacement.yaml
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.body.bytes]
@@ -6404,7 +6412,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Direct FastAPI constructor routes are projected through the shared router; full matching generic routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query string. APIRouter constructor-route dispatch covers prefixed stock HTTP Routes, nested prefixes, include-slot order against API routes, and generic partial-match fallback. Mixed FastAPI add_route/API order is covered in both directions. Other redirect combinations, route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, router replacement and repeated replacement behavior, and lifetime parity when a router outlives its app remain unverified.
+          - Direct FastAPI constructor routes are projected through the shared router; full matching generic routes dispatch before docs and API routes, and one trailing-slash redirect preserves its query string. APIRouter constructor-route dispatch covers prefixed stock HTTP Routes, nested prefixes, include-slot order against API routes, and generic partial-match fallback. Mixed FastAPI add_route/API order is covered in both directions. One prefixed GET registered through a replacement APIRouter before the first ASGI call matches live source parity. Other redirect combinations, route-family inclusion/prefix behavior, generated documentation-route projection, callbacks, startup and shutdown handlers, route_class customization, complete APIRouter mutation and inclusion semantics, app-level registration/inclusion through a replacement, route listing/reversal after replacement, repeated replacement, middleware/handler retention, replacement after first call, and lifetime parity when a router outlives its app remain unverified.
     fastapi.applications.FastAPI.swagger_ui_oauth2_redirect_url:
       source_evidence:
         - path: fastapi/applications.py
@@ -7451,6 +7459,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi-extra.deep-merge-and-router-inclusion
           workload_path: tests/fixtures/workloads/openapi_extra_deep_merge.py
           observation_selectors: [openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-router-replacement.yaml
+          case_id: fastapi.application.router.replacement-before-first-call
+          workload_path: tests/fixtures/workloads/application_router_replacement.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
