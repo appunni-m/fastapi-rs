@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: e7e3e79a0beec9ceb7888fa4dbfc04c47e39c9cb33354193c65199f0d623b563
+    sha256: 91741e5756c93cae1f4438704b1e7e905192742a0a7df04d8d4c9b626efe6f95
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 43bd46ba0f03565a21501c8484ced309da34544be4eec3901d2cc816a2267950
+    sha256: f4193b3665115be1598702765f5931f28edc27678dad43176dd8a294a4564555
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 33a996ddc6d0111174988288441055098b0dee7152326345630e2ba0096d95ed
+    sha256: 153fbc55ea69db1a2856ddb15398f4873ca5ddc49169542db086bff60f60708f
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 661
-      cases: 2681
-      partial_source_mappings: 1905
+      workflows: 662
+      cases: 2682
+      partial_source_mappings: 1907
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2073
+    operation_fixture_refs: 2074
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -19746,6 +19746,20 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: webhooks-reassignment
+      input_path: tests/fixtures/inputs/parity/webhooks-reassignment.json
+      input_sha256: 0974699c814b4bf8b19e1961bc3d0a2eafbffea71dc1d77dfff35b1764cea14e
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
+      recipe_sha256: 78d6114aae0246b13d26c7dcfec14a35f3694690140b70a0c6470d584e31bd31
+      workload_path: tests/fixtures/workloads/webhooks_reassignment.py
+      workload_sha256: 0417c9a07f8c30083d367902d90fcbb741dddbd2998c4476c204d52d7fee735b
+      case_id: fastapi.webhooks.router-reassignment-before-openapi
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -19795,8 +19809,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::webhooks
       known_gaps:
-      - The input covers explicit None, an empty list, and a supplied APIRouter; other falsey values,
-        reassignment, and all constructor error behavior remain unestablished.
+      - Reassignment after OpenAPI has already been materialized, other falsey constructor values, and
+        constructor error behavior remain unestablished.
   - id: fastapi.applications.FastAPI.websocket
     kind: method
     source_candidate_ref: /api_candidates/239

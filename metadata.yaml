@@ -6021,6 +6021,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
+          case_id: fastapi.webhooks.router-reassignment-before-openapi
+          workload_path: tests/fixtures/workloads/webhooks_reassignment.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
       documentation_contract_refs:
         - source_path: docs/en/docs/advanced/openapi-webhooks.md
           fixture_id: fastapi.docs.advanced-openapi-webhooks
@@ -6031,12 +6035,14 @@ reviewed_api_contract_overlay:
         selected probe observes object identity. Explicit `None` and an empty
         list fall back to an empty APIRouter, matching the source truthiness
         default. Router path operations are used for OpenAPI documentation and
-        remain absent from inbound app dispatch.
+        remain absent from inbound app dispatch. Reassignment before first
+        OpenAPI materialization exposes the replacement router and projects its
+        operations into the separate `/webhooks` map.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The input covers explicit None, an empty list, and a supplied APIRouter; other falsey values, reassignment, and all constructor error behavior remain unestablished.
+          - Reassignment after OpenAPI has already been materialized, other falsey constructor values, and constructor error behavior remain unestablished.
     fastapi.applications.FastAPI.openapi:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       source_evidence:
