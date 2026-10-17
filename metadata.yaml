@@ -3917,7 +3917,7 @@ reviewed_api_contract_overlay:
         validation, error handling, or all path-converter behavior for
         websocket_route.
     fastapi.routing.APIRoute:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute
+      rust_binding: fastapi-rs/src/application_runtime.rs::install_api_route_proxy
       source_evidence:
         - path: fastapi/routing.py
           symbol: APIRoute
@@ -3994,9 +3994,9 @@ reviewed_api_contract_overlay:
         contributes its callback path item and custom response model to OpenAPI,
         sampled by `additional-responses-custom-model-in-callback.openapi-schema`.
         Manually constructing a standalone APIRoute with callbacks is unverified.
-        The class hierarchy is compared for the one source-declared base
-        relationship `APIRoute` to `starlette.routing.Route`; this does not
-        establish other APIRoute behavior inherited from Starlette.
+        Identity-checked parity confirms the source-declared base relationship
+        `APIRoute` to `starlette.routing.Route`; this does not establish other
+        APIRoute behavior inherited from Starlette.
         The input inspects FastAPI-registered APIRoute instances for one direct
         GET path operation and one GET operation included through nested
         APIRouter instances. It compares only path, path_format, name, methods,

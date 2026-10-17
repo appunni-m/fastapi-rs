@@ -1318,10 +1318,10 @@ impl FromPyObject<'_, '_> for RouteClassArgument {
 }
 
 impl RouteClassArgument {
-    fn into_class(self, py: Python<'_>) -> Py<PyAny> {
+    fn into_class(self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         match self {
-            Self::Omitted => py.get_type::<PyApiRoute>().into_any().unbind(),
-            Self::Provided(route_class) => route_class,
+            Self::Omitted => Ok(api_route_type(py)?.unbind()),
+            Self::Provided(route_class) => Ok(route_class),
         }
     }
 }
@@ -1851,8 +1851,8 @@ impl ResponseModelValidator {
     }
 }
 
-#[pyclass(name = "APIRoute", module = "fastapi.routing", subclass)]
-struct PyApiRoute {
+#[pyclass(name = "_APIRouteState", module = "fastapi_rs._core")]
+struct PyApiRouteState {
     path: String,
     path_format: String,
     path_regex: Py<PyAny>,
@@ -1890,6 +1890,253 @@ struct PyApiRoute {
     cached_app: Option<Py<PyAny>>,
 }
 
+const API_ROUTE_STATE_ATTRIBUTE: &str = "_fastapi_rs_state";
+
+#[derive(Clone, Copy)]
+enum ApiRouteProxyMember {
+    Init,
+    GetAttr,
+    SetAttr,
+    Matches,
+    GetRouteHandler,
+    App,
+}
+
+#[pyclass(name = "_APIRouteProxyDescriptor", module = "fastapi_rs._core")]
+struct PyApiRouteProxyDescriptor {
+    member: ApiRouteProxyMember,
+}
+
+#[pyclass(name = "_BoundAPIRouteProxyMember", module = "fastapi_rs._core")]
+struct PyBoundApiRouteProxyMember {
+    instance: Py<PyAny>,
+    member: ApiRouteProxyMember,
+}
+
+fn api_route_type<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+    py.import("fastapi_rs._core")?.getattr("APIRoute")
+}
+
+fn api_route_state<'py>(route: &Bound<'py, PyAny>) -> PyResult<Bound<'py, PyAny>> {
+    route.getattr(API_ROUTE_STATE_ATTRIBUTE)
+}
+
+fn api_route_state_ref<'py>(route: &Bound<'py, PyAny>) -> PyResult<PyRef<'py, PyApiRouteState>> {
+    api_route_state(route)?.extract().map_err(Into::into)
+}
+
+fn api_route_state_mut<'py>(route: &Bound<'py, PyAny>) -> PyResult<PyRefMut<'py, PyApiRouteState>> {
+    api_route_state(route)?.extract().map_err(Into::into)
+}
+
+fn is_fastapi_api_route(py: Python<'_>, route: &Bound<'_, PyAny>) -> PyResult<bool> {
+    py.import("builtins")?
+        .getattr("isinstance")?
+        .call1((route, api_route_type(py)?))?
+        .is_truthy()
+}
+
+fn set_api_route_proxy_state(
+    py: Python<'_>,
+    route: &Bound<'_, PyAny>,
+    state: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    py.import("builtins")?
+        .getattr("object")?
+        .getattr("__setattr__")?
+        .call1((route, API_ROUTE_STATE_ATTRIBUTE, state))?;
+    Ok(())
+}
+
+fn new_api_route_proxy(py: Python<'_>, state: Py<PyAny>) -> PyResult<Py<PyAny>> {
+    let route_type = api_route_type(py)?;
+    let route = py
+        .import("builtins")?
+        .getattr("object")?
+        .getattr("__new__")?
+        .call1((&route_type, &route_type))?;
+    set_api_route_proxy_state(py, &route, state.bind(py))?;
+    Ok(route.unbind())
+}
+
+fn api_route_proxy_descriptor(py: Python<'_>, member: ApiRouteProxyMember) -> PyResult<Py<PyAny>> {
+    Py::new(py, PyApiRouteProxyDescriptor { member }).map(Py::into_any)
+}
+
+fn install_api_route_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult<()> {
+    let route_type = py.import("starlette.routing")?.getattr("Route")?;
+    let bases = PyTuple::new(py, [route_type])?;
+    let namespace = PyDict::new(py);
+    namespace.set_item("__module__", "fastapi.routing")?;
+    namespace.set_item("__qualname__", "APIRoute")?;
+    for (name, member) in [
+        ("__init__", ApiRouteProxyMember::Init),
+        ("__getattr__", ApiRouteProxyMember::GetAttr),
+        ("__setattr__", ApiRouteProxyMember::SetAttr),
+        ("matches", ApiRouteProxyMember::Matches),
+        ("get_route_handler", ApiRouteProxyMember::GetRouteHandler),
+        ("app", ApiRouteProxyMember::App),
+    ] {
+        namespace.set_item(name, api_route_proxy_descriptor(py, member)?)?;
+    }
+    let route_type = py
+        .import("builtins")?
+        .getattr("type")?
+        .call1(("APIRoute", bases, namespace))?;
+    module.add("APIRoute", route_type)?;
+    Ok(())
+}
+
+#[pymethods]
+impl PyApiRouteProxyDescriptor {
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        instance: &Bound<'_, PyAny>,
+        _owner: &Bound<'_, PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        if instance.is_none() {
+            return Ok(slf.into_any());
+        }
+        let member = slf.bind(py).borrow().member;
+        if matches!(member, ApiRouteProxyMember::App) {
+            let bound = Py::new(
+                py,
+                PyBoundApiRouteProxyMember {
+                    instance: instance.clone().unbind(),
+                    member,
+                },
+            )?;
+            return bound.bind(py).call0().map(Bound::unbind);
+        }
+        Py::new(
+            py,
+            PyBoundApiRouteProxyMember {
+                instance: instance.clone().unbind(),
+                member,
+            },
+        )
+        .map(Py::into_any)
+    }
+}
+
+fn require_proxy_arguments(
+    args: &Bound<'_, PyTuple>,
+    kwargs: Option<&Bound<'_, PyDict>>,
+    expected: usize,
+    method: &str,
+) -> PyResult<()> {
+    if args.len() == expected && kwargs.is_none_or(|kwargs| kwargs.len() == 0) {
+        return Ok(());
+    }
+    Err(PyTypeError::new_err(format!(
+        "{method} expected {expected} argument(s)"
+    )))
+}
+
+fn object_setattr(
+    py: Python<'_>,
+    instance: &Bound<'_, PyAny>,
+    name: &str,
+    value: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    py.import("builtins")?
+        .getattr("object")?
+        .getattr("__setattr__")?
+        .call1((instance, name, value))?;
+    Ok(())
+}
+
+#[pymethods]
+impl PyBoundApiRouteProxyMember {
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let instance = self.instance.bind(py);
+        match self.member {
+            ApiRouteProxyMember::Init => {
+                let state = py.get_type::<PyApiRouteState>().call(args, kwargs)?;
+                set_api_route_proxy_state(py, instance, &state)?;
+                Ok(py.None())
+            }
+            ApiRouteProxyMember::GetAttr => {
+                require_proxy_arguments(args, kwargs, 1, "APIRoute.__getattr__")?;
+                let name = args.get_item(0)?.extract::<String>()?;
+                api_route_state(instance)?
+                    .getattr(name.as_str())
+                    .map(Bound::unbind)
+            }
+            ApiRouteProxyMember::SetAttr => {
+                require_proxy_arguments(args, kwargs, 2, "APIRoute.__setattr__")?;
+                let name = args.get_item(0)?.extract::<String>()?;
+                let value = args.get_item(1)?;
+                if name == API_ROUTE_STATE_ATTRIBUTE {
+                    object_setattr(py, instance, &name, &value)?;
+                } else {
+                    let state = api_route_state(instance)?;
+                    if matches!(name.as_str(), "summary" | "methods") {
+                        state.setattr(name.as_str(), &value)?;
+                    } else {
+                        object_setattr(py, instance, &name, &value)?;
+                    }
+                }
+                Ok(py.None())
+            }
+            ApiRouteProxyMember::Matches => {
+                require_proxy_arguments(args, kwargs, 1, "APIRoute.matches")?;
+                let scope = args.get_item(0)?;
+                let result = py
+                    .import("starlette.routing")?
+                    .getattr("Route")?
+                    .getattr("matches")?
+                    .call1((instance, &scope))?;
+                let match_kind = result.get_item(0)?;
+                let child_scope = result.get_item(1)?;
+                let no_match = py
+                    .import("starlette.routing")?
+                    .getattr("Match")?
+                    .getattr("NONE")?;
+                if !match_kind.is(&no_match) {
+                    child_scope.set_item("route", instance)?;
+                }
+                Ok(result.unbind())
+            }
+            ApiRouteProxyMember::GetRouteHandler => {
+                require_proxy_arguments(args, kwargs, 0, "APIRoute.get_route_handler")?;
+                let route = route_for_current_effective_context(py, self.instance.clone_ref(py))?;
+                Py::new(py, PyFastApiRouteHandler { route }).map(Py::into_any)
+            }
+            ApiRouteProxyMember::App => {
+                require_proxy_arguments(args, kwargs, 0, "APIRoute.app")?;
+                let mut route = api_route_state_mut(instance)?;
+                if let Some(app) = route.cached_app.as_ref() {
+                    return Ok(app.clone_ref(py));
+                }
+                let (owner, route_index) = api_route_dispatch_owner(py, instance, &route)?;
+                let dependency_overrides_provider = route
+                    .dependency_overrides_provider
+                    .as_ref()
+                    .map(|provider| provider.clone_ref(py));
+                let app = Py::new(
+                    py,
+                    PyApiRouteAsgiApp {
+                        owner,
+                        route_index,
+                        dependency_overrides_provider,
+                    },
+                )?
+                .into_any();
+                route.cached_app = Some(app.clone_ref(py));
+                Ok(app)
+            }
+        }
+    }
+}
+
 #[pyclass(name = "RouteContext", module = "fastapi.routing")]
 struct PyRouteContext {
     original_route: Py<PyAny>,
@@ -1904,7 +2151,7 @@ struct PyRouteContextIterator {
 }
 
 #[pymethods]
-impl PyApiRoute {
+impl PyApiRouteState {
     fn get_route_handler(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
         let route = route_for_current_effective_context(py, slf.into_any())?;
         Py::new(py, PyFastApiRouteHandler { route }).map(|handler| handler.into_any())
@@ -2331,9 +2578,9 @@ impl PyApiRoute {
     }
 }
 
-fn clone_api_route(py: Python<'_>, route: &Py<PyAny>) -> PyResult<PyApiRoute> {
-    let route = route.bind(py).extract::<PyRef<'_, PyApiRoute>>()?;
-    Ok(PyApiRoute {
+fn clone_api_route(py: Python<'_>, route: &Py<PyAny>) -> PyResult<PyApiRouteState> {
+    let route = api_route_state_ref(route.bind(py))?;
+    Ok(PyApiRouteState {
         path: route.path.clone(),
         path_format: route.path_format.clone(),
         path_regex: route.path_regex.clone_ref(py),
@@ -2416,11 +2663,11 @@ impl PyRouteContext {
 }
 
 fn materialize_api_route_response_class(py: Python<'_>, route: &Py<PyAny>) -> PyResult<()> {
-    if !route.bind(py).is_instance_of::<PyApiRoute>() {
+    if !is_fastapi_api_route(py, route.bind(py))? {
         return Ok(());
     }
     let resolution = {
-        let route = route.bind(py).extract::<PyRef<'_, PyApiRoute>>()?;
+        let route = api_route_state_ref(route.bind(py))?;
         route
             .response_class_resolution
             .as_ref()
@@ -2431,7 +2678,7 @@ fn materialize_api_route_response_class(py: Python<'_>, route: &Py<PyAny>) -> Py
     };
     let response_class = resolution.resolve(py).python_value(py);
     let retired = {
-        let mut route = route.bind(py).extract::<PyRefMut<'_, PyApiRoute>>()?;
+        let mut route = api_route_state_mut(route.bind(py))?;
         if route.response_class_resolution.is_some() {
             Some((
                 std::mem::replace(&mut route.response_class, response_class),
@@ -2546,7 +2793,7 @@ fn new_api_route_view(
         let is_route_subclass = py
             .import("builtins")?
             .getattr("issubclass")?
-            .call1((route_class.bind(py), py.get_type::<PyApiRoute>()))?
+            .call1((route_class.bind(py), api_route_type(py)?))?
             .is_truthy()?;
         if !is_route_subclass {
             return Err(PyTypeError::new_err(
@@ -2616,7 +2863,7 @@ fn new_api_route_view(
         )?;
         kwargs.set_item("strict_content_type", config.strict_content_type.bind(py))?;
         let route = route_class.bind(py).call((config.path,), Some(&kwargs))?;
-        let mut route_state = route.extract::<PyRefMut<'_, PyApiRoute>>()?;
+        let mut route_state = api_route_state_mut(&route)?;
         route_state.response_class_resolution = config
             .response_class_resolution
             .map(ResponseClassResolution::clone_ref);
@@ -2634,9 +2881,9 @@ fn new_api_route_view(
     for tag in config.tags {
         tags.append(tag)?;
     }
-    Py::new(
+    let route_state = Py::new(
         py,
-        PyApiRoute {
+        PyApiRouteState {
             path: config.path.to_owned(),
             path_format: config.path_format.to_owned(),
             path_regex: config.path_regex.clone_ref(py),
@@ -2684,8 +2931,9 @@ fn new_api_route_view(
             standalone_route_index: None,
             cached_app: None,
         },
-    )
-    .map(Py::into_any)
+    )?
+    .into_any();
+    new_api_route_proxy(py, route_state)
 }
 
 fn python_string_set_items(set: &Bound<'_, PySet>) -> PyResult<Vec<String>> {
@@ -2787,10 +3035,7 @@ fn set_api_route_unique_id(
     route: &Py<PyAny>,
     unique_id: &Bound<'_, PyAny>,
 ) -> PyResult<()> {
-    route
-        .bind(py)
-        .extract::<PyRefMut<'_, PyApiRoute>>()?
-        .unique_id = Some(unique_id.clone().unbind());
+    api_route_state_mut(route.bind(py))?.unique_id = Some(unique_id.clone().unbind());
     Ok(())
 }
 
@@ -2799,10 +3044,7 @@ fn set_api_route_response_field(
     route: &Py<PyAny>,
     field: Option<&ResponseField>,
 ) -> PyResult<()> {
-    route
-        .bind(py)
-        .extract::<PyRefMut<'_, PyApiRoute>>()?
-        .response_field = field.map(|field| field.clone_ref(py));
+    api_route_state_mut(route.bind(py))?.response_field = field.map(|field| field.clone_ref(py));
     Ok(())
 }
 
@@ -2811,10 +3053,7 @@ fn set_api_route_openapi_snapshots(
     route: &Py<PyAny>,
     snapshots: Vec<OpenApiRouteSnapshot>,
 ) -> PyResult<()> {
-    route
-        .bind(py)
-        .extract::<PyRefMut<'_, PyApiRoute>>()?
-        .openapi_snapshots = snapshots;
+    api_route_state_mut(route.bind(py))?.openapi_snapshots = snapshots;
     Ok(())
 }
 
@@ -2922,7 +3161,7 @@ fn direct_openapi_route_index(
 fn api_route_dispatch_owner(
     py: Python<'_>,
     facade: &Bound<'_, PyAny>,
-    route: &PyApiRoute,
+    route: &PyApiRouteState,
 ) -> PyResult<(Py<PyFastApi>, usize)> {
     if let (Some(owner), Some(route_index)) = (
         route.standalone_owner.as_ref(),
@@ -2956,7 +3195,7 @@ fn custom_api_route_handler(
     py: Python<'_>,
     route: &Bound<'_, PyAny>,
 ) -> PyResult<Option<Py<PyAny>>> {
-    if route.get_type().is(py.get_type::<PyApiRoute>()) {
+    if route.get_type().is(&api_route_type(py)?) {
         return Ok(None);
     }
     route
@@ -3011,7 +3250,7 @@ fn custom_api_route_handler_in_effective_context(
     original_route: &Bound<'_, PyAny>,
     effective_context: &Bound<'_, PyAny>,
 ) -> PyResult<Option<Py<PyAny>>> {
-    if original_route.get_type().is(py.get_type::<PyApiRoute>()) {
+    if original_route.get_type().is(&api_route_type(py)?) {
         return Ok(None);
     }
     let context_guard = EffectiveRouteContextGuard::enter(effective_context);
@@ -3038,15 +3277,13 @@ fn direct_openapi_contexts(
                 context_ref.effective_route.clone_ref(py),
             )
         };
-        if !original_route.bind(py).is_instance_of::<PyApiRoute>()
-            || !effective_route.bind(py).is_instance_of::<PyApiRoute>()
+        if !is_fastapi_api_route(py, original_route.bind(py))?
+            || !is_fastapi_api_route(py, effective_route.bind(py))?
         {
             continue;
         }
         let (include_in_schema, provider) = {
-            let route = effective_route
-                .bind(py)
-                .extract::<PyRef<'_, PyApiRoute>>()?;
+            let route = api_route_state_ref(effective_route.bind(py))?;
             (
                 route.include_in_schema,
                 route
@@ -3077,7 +3314,7 @@ fn direct_openapi_contexts(
 fn apply_openapi_route_view(
     py: Python<'_>,
     snapshot: &mut OpenApiRouteSnapshot,
-    route: &PyApiRoute,
+    route: &PyApiRouteState,
     is_webhook: bool,
 ) -> PyResult<()> {
     snapshot.path_format.clone_from(&route.path_format);
@@ -3159,10 +3396,7 @@ pub(crate) fn direct_openapi_operations<'py>(
             continue;
         }
         let methods = {
-            let route = input
-                .effective_route
-                .bind(py)
-                .extract::<PyRef<'_, PyApiRoute>>()?;
+            let route = api_route_state_ref(input.effective_route.bind(py))?;
             python_string_set_items(route.methods.bind(py))?
         };
         if let (Some(owner), Some(index)) = (input.owner.as_ref(), input.owner_route_index) {
@@ -3174,18 +3408,12 @@ pub(crate) fn direct_openapi_operations<'py>(
             for method in &methods {
                 let mut snapshot =
                     OpenApiRouteSnapshot::from_route(py, route, method, input.is_webhook)?;
-                let route_view = input
-                    .effective_route
-                    .bind(py)
-                    .extract::<PyRef<'_, PyApiRoute>>()?;
+                let route_view = api_route_state_ref(input.effective_route.bind(py))?;
                 apply_openapi_route_view(py, &mut snapshot, &route_view, input.is_webhook)?;
                 snapshots.push(snapshot);
             }
         } else {
-            let route = input
-                .effective_route
-                .bind(py)
-                .extract::<PyRef<'_, PyApiRoute>>()?;
+            let route = api_route_state_ref(input.effective_route.bind(py))?;
             let template = route.openapi_snapshots.first();
             if template.is_none() && !methods.is_empty() {
                 return Err(PyNotImplementedError::new_err(
@@ -3496,7 +3724,7 @@ fn included_effective_api_route(py: Python<'_>, route_context: &Py<PyAny>) -> Py
         .bind(py)
         .extract::<PyRef<'_, PyRouteContext>>()?;
     let route = context.effective_route.clone_ref(py);
-    route.bind(py).extract::<PyRef<'_, PyApiRoute>>()?;
+    api_route_state_ref(route.bind(py))?;
     Ok(route)
 }
 
@@ -3671,9 +3899,7 @@ fn materialize_included_response_fields(
         };
         for (effective_route, response_class) in public_response_class_updates {
             let retired = {
-                let mut route = effective_route
-                    .bind(py)
-                    .extract::<PyRefMut<'_, PyApiRoute>>()?;
+                let mut route = api_route_state_mut(effective_route.bind(py))?;
                 (
                     std::mem::replace(&mut route.response_class, response_class),
                     route.response_class_resolution.take(),
@@ -4167,7 +4393,7 @@ impl PyApiRouteAsgiApp {
 impl PyFastApiRouteHandler {
     fn __call__(&self, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let route = self.route.bind(py);
-        let route_state = route.extract::<PyRef<'_, PyApiRoute>>()?;
+        let route_state = api_route_state_ref(route)?;
         let (owner, route_index) = api_route_dispatch_owner(py, route, &route_state)?;
         let dependency_overrides_provider = route_state
             .dependency_overrides_provider
@@ -4449,8 +4675,7 @@ fn install_route_operation_descriptors(
     let signature = signatures.build_signature(py, "operation")?;
     let fast_api_type = py.get_type::<PyFastApi>();
     let api_router_type = py.get_type::<PyApiRouter>();
-    py.get_type::<PyApiRoute>()
-        .setattr("__signature__", signatures.build_signature(py, "APIRoute")?)?;
+    api_route_type(py)?.setattr("__signature__", signatures.build_signature(py, "APIRoute")?)?;
     for name in [
         "get", "put", "post", "delete", "options", "head", "patch", "trace",
     ] {
@@ -7442,10 +7667,10 @@ fn openapi_callbacks(
     let mut definitions = Vec::new();
     for callback in callback_routes.bind(py).try_iter()? {
         let callback = callback?;
-        if !callback.is_instance_of::<PyApiRoute>() {
+        if !is_fastapi_api_route(py, &callback)? {
             continue;
         }
-        let callback_route = callback.extract::<PyRef<'_, PyApiRoute>>()?;
+        let callback_route = api_route_state_ref(&callback)?;
         let callback_name = callback_route.name.clone();
         let callback_path = callback_route.path.clone();
         let callback_path_format = callback_route.path_format.clone();
@@ -7532,11 +7757,10 @@ impl PyApiRouter {
         let py = app.py();
         let inner = ApiRouterInner::FastApiWeak(PyWeakrefReference::new(app.as_any())?.unbind());
         let app_state = app.borrow();
-        let route_class = app_state
-            .router_route_class
-            .as_ref()
-            .map(|route_class| route_class.clone_ref(py))
-            .unwrap_or_else(|| py.get_type::<PyApiRoute>().into_any().unbind());
+        let route_class = match app_state.router_route_class.as_ref() {
+            Some(route_class) => route_class.clone_ref(py),
+            None => api_route_type(py)?.unbind(),
+        };
         Ok(Self {
             inner,
             prefix: String::new(),
@@ -7586,10 +7810,10 @@ impl PyApiRouter {
         strict_content_type: Option<bool>,
     ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
-        let route_class = route_class.into_class(py);
-        let default_route_class = py.get_type::<PyApiRoute>();
-        let selected_route_class = (!route_class.bind(py).is(default_route_class.as_any()))
-            .then(|| route_class.clone_ref(py));
+        let route_class = route_class.into_class(py)?;
+        let default_route_class = api_route_type(py)?;
+        let selected_route_class =
+            (!route_class.bind(py).is(&default_route_class)).then(|| route_class.clone_ref(py));
         let router_tags = tags.unwrap_or_default();
         let router_dependencies = dependencies.unwrap_or_default();
         let router_callbacks = match callbacks {
@@ -7679,9 +7903,9 @@ impl PyApiRouter {
 
     #[setter]
     fn set_route_class(&mut self, py: Python<'_>, route_class: Py<PyAny>) -> PyResult<()> {
-        let default_route_class = py.get_type::<PyApiRoute>();
-        let selected_route_class = (!route_class.bind(py).is(default_route_class.as_any()))
-            .then(|| route_class.clone_ref(py));
+        let default_route_class = api_route_type(py)?;
+        let selected_route_class =
+            (!route_class.bind(py).is(&default_route_class)).then(|| route_class.clone_ref(py));
         self.inner_app(py)?.bind(py).borrow_mut().router_route_class = selected_route_class;
         self.route_class = route_class;
         Ok(())
@@ -8960,10 +9184,9 @@ fn merge_router_routes_from(
         )?;
         let original_route = source_route.original_route.clone_ref(py);
         let source_route_class = original_route.bind(py).get_type().unbind().into_any();
-        let route_class = (!source_route_class
-            .bind(py)
-            .is(py.get_type::<PyApiRoute>().as_any()))
-        .then_some(&source_route_class);
+        let public_route_type = api_route_type(py)?;
+        let route_class =
+            (!source_route_class.bind(py).is(&public_route_type)).then_some(&source_route_class);
         let effective_route = new_api_route_view(
             py,
             ApiRouteViewConfig {
@@ -9993,14 +10216,9 @@ impl PyOperationDecorator {
         let (strict_content_type_value, strict_content_type) = self
             .strict_content_type
             .resolve(py, inherited_strict_content_type)?;
+        let public_route_type = api_route_type(py)?;
         let route_class = match self.route_class_selection.as_ref() {
-            Some(route_class)
-                if route_class
-                    .bind(py)
-                    .is(py.get_type::<PyApiRoute>().as_any()) =>
-            {
-                None
-            }
+            Some(route_class) if route_class.bind(py).is(&public_route_type) => None,
             Some(route_class) => Some(route_class.clone_ref(py)),
             None => self
                 .app
@@ -17901,7 +18119,10 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyExceptionHandlerDecorator>()?;
     module.add_class::<PyFastApiCallNext>()?;
     module.add_class::<PyApiRouter>()?;
-    module.add_class::<PyApiRoute>()?;
+    module.add_class::<PyApiRouteState>()?;
+    module.add_class::<PyApiRouteProxyDescriptor>()?;
+    module.add_class::<PyBoundApiRouteProxyMember>()?;
+    install_api_route_proxy(module.py(), module)?;
     module.add_class::<PyRouteContext>()?;
     module.add_class::<PyRouteContextIterator>()?;
     module.add_class::<PyOperationDecorator>()?;
