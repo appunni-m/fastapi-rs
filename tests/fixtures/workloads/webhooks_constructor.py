@@ -35,6 +35,7 @@ def create_app() -> FastAPI:
         return {"accepted": True}
 
     hidden_app = FastAPI(webhooks=hidden_webhooks)
+    default_webhooks_app = FastAPI(webhooks=None)
 
     app = FastAPI(title="Stock Events", version="1.0", webhooks=webhooks)
     app.include_router(relative_routes, prefix="/v2")
@@ -47,6 +48,13 @@ def create_app() -> FastAPI:
     async def webhook_url():
         url = webhooks.url_path_for("stock_updated")
         return JSONResponse({"path": str(url), "protocol": url.protocol, "host": url.host})
+
+    @app.get("/_probe/none-webhook-default")
+    async def none_webhook_default():
+        return {
+            "is_router": isinstance(default_webhooks_app.webhooks, APIRouter),
+            "is_none": default_webhooks_app.webhooks is None,
+        }
 
     @app.get("/_probe/relative-router-url")
     async def relative_router_url():
