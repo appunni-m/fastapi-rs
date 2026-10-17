@@ -16,6 +16,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 def create_app() -> FastAPI:
     app = FastAPI()
     imported_exception_handlers = importlib.import_module("fastapi.exception_handlers")
+    imported_exceptions = importlib.import_module("fastapi.exceptions")
 
     @app.get("/root-modules")
     def root_modules() -> dict[str, object]:
@@ -23,6 +24,7 @@ def create_app() -> FastAPI:
             "datastructures",
             "encoders",
             "exception_handlers",
+            "exceptions",
             "middleware",
             "openapi",
             "requests",
@@ -34,6 +36,7 @@ def create_app() -> FastAPI:
         )
         return {
             **{name: hasattr(fastapi, name) for name in names},
+            "exceptions_module_identity": fastapi.exceptions is imported_exceptions,
             "exception_handlers_module_identity": (
                 fastapi.exception_handlers is imported_exception_handlers
             ),

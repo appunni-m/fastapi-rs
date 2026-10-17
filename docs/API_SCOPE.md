@@ -21,10 +21,10 @@ and 492 `test_*.py` modules. These are inventory inputs, **not** the number of
 manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
 large value/model sets. The atlas has 1,643 source API candidates, classified by
-the atlas as 480 supported, 1,110 private/internal, and 53 uncertain; the atlas
+the atlas as 479 supported, 1,110 private/internal, and 54 uncertain; the atlas
 separately classifies 13 inherited `APIRouter` candidates. The active manifest
-indexes the 480 source-supported direct public symbols plus 9 supported
-inherited operations (489 supported public API entries). This is the reviewed
+indexes the 479 source-supported direct public symbols plus 9 supported
+inherited operations (488 supported public API entries). This is the reviewed
 public-entry scope, not an implementation-support count. It records 226
 runtime-reflected signatures, one unavailable constructor signature for
 `Example` (`TypedDict(total=False)`), one module object with no call signature,
@@ -52,8 +52,8 @@ assignment candidates: the core profile reflects 1,640, with `templating` and
 `testclient` unavailable because their optional packages are absent; the
 standard plus `docs-tests` profile reflects 1,642. Both deliberately skip
 `fastapi.__main__`, whose import invokes the CLI. Runtime reflection also
-finds 21 extra module attributes on the `fastapi` root. Metadata classifies 11
-from documented import paths as supported and retains 10 as uncertain; those
+finds 21 extra module attributes on the `fastapi` root. Metadata classifies 12
+from documented import paths as supported and retains 9 as uncertain; those
 namespace observations are separate from source-defined symbol candidates.
 Reflection records importable module names, callable signatures, exact object
 identity aliases, deprecation metadata, and 49 Pydantic-generated OpenAPI model

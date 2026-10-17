@@ -14,6 +14,7 @@ const FASTAPI_PUBLIC_ROOT_MODULES: &[&str] = &[
     "datastructures",
     "encoders",
     "exception_handlers",
+    "exceptions",
     "middleware",
     "openapi",
     "requests",
