@@ -6380,6 +6380,9 @@ from atlas_documentation_section_case_mappings_additional_response_model_2026101
 from atlas_documentation_section_case_mappings_advanced_dependencies_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
 )
+from atlas_documentation_section_case_mappings_advanced_headings_20261018 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_HEADINGS_20261018,
+)
 from atlas_documentation_section_case_mappings_advanced_middleware_1016 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
 )
@@ -6412,6 +6415,9 @@ from atlas_documentation_section_case_mappings_cookie_encoder_20261015 import ( 
 )
 from atlas_documentation_section_case_mappings_cookie_params_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_COOKIE_PARAMS_20261015,
+)
+from atlas_documentation_section_case_mappings_core_headings_20261018 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018,
 )
 from atlas_documentation_section_case_mappings_custom_request_route_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
@@ -6451,6 +6457,9 @@ from atlas_documentation_section_case_mappings_frontend_20261015 import (  # noq
 )
 from atlas_documentation_section_case_mappings_global_dependencies_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_GLOBAL_DEPENDENCIES_20261015,
+)
+from atlas_documentation_section_case_mappings_integrations_headings_20261018 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_INTEGRATIONS_HEADINGS_20261018,
 )
 from atlas_documentation_section_case_mappings_jsonable_encoder_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_JSONABLE_ENCODER_20261015,
@@ -6583,6 +6592,7 @@ DOC_SECTION_CASE_MAPPINGS.update(DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_
 for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015,
+    DOC_SECTION_CASE_MAPPINGS_ADVANCED_HEADINGS_20261018,
     DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016,
     DOC_SECTION_CASE_MAPPINGS_ADDITIONAL_RESPONSE_MODEL_20261015,
     DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015,
@@ -6592,6 +6602,7 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015,
     DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015,
     DOC_SECTION_CASE_MAPPINGS_COOKIE_PARAMS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018,
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015,
     DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_OVERRIDES_20261015,
     DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
@@ -6603,6 +6614,7 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_FORM_PARAMETERS_20261015,
     DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015,
     DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015,
+    DOC_SECTION_CASE_MAPPINGS_INTEGRATIONS_HEADINGS_20261018,
     DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015,
     DOC_SECTION_CASE_MAPPINGS_GLOBAL_DEPENDENCIES_20261015,
     DOC_SECTION_CASE_MAPPINGS_JSONABLE_ENCODER_20261015,
@@ -7211,6 +7223,7 @@ def validate_doc_section_mapping_shape(
         "observation_selectors",
         "scope_note",
     }
+    reviewed_feature_fields = {"feature_ids"}
     exclusion_fields = {"exclusion_reason"}
     status = mapping.get("status", "workflow")
     errors = []
@@ -7228,7 +7241,9 @@ def validate_doc_section_mapping_shape(
                 f"{section_label} exclusion cannot include workflow fields: {mixed_fields}"
             )
     else:
-        allowed_fields = common_fields | workflow_fields | {"status", "rationale"}
+        allowed_fields = (
+            common_fields | workflow_fields | reviewed_feature_fields | {"status", "rationale"}
+        )
         required_fields = common_fields | (workflow_fields - {"action_ids"}) | {"rationale"}
         mixed_fields = sorted(exclusion_fields.intersection(mapping))
         if mixed_fields:
@@ -7253,6 +7268,16 @@ def validate_doc_section_mapping_shape(
             value = mapping.get(field)
             if not isinstance(value, str) or not value.strip():
                 errors.append(f"{section_label} {field} must be a nonempty string")
+        if "feature_ids" in mapping:
+            feature_ids = mapping["feature_ids"]
+            if (
+                not isinstance(feature_ids, list)
+                or not feature_ids
+                or any(not isinstance(item, str) or not item for item in feature_ids)
+            ):
+                errors.append(f"{section_label} feature_ids must be nonempty strings")
+            elif len(feature_ids) != len(set(feature_ids)):
+                errors.append(f"{section_label} feature_ids must be unique")
 
     return status, errors
 
@@ -11348,27 +11373,21 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             # so their source-backed sections can still be reviewed precisely.
             section_anchor = anchor_match.group(1) if anchor_match else f"@line:{heading['line']}"
             section_mapping_key = (rel, section_anchor)
+            reviewed_section_mapping = DOC_SECTION_CASE_MAPPINGS.get(section_mapping_key)
             if not section_evidence:
-                reviewed_section_mapping = (
-                    DOC_SECTION_CASE_MAPPINGS.get(section_mapping_key)
-                    if section_mapping_key is not None
-                    else None
-                )
                 if reviewed_section_mapping is not None:
-                    assert section_mapping_key is not None
                     reviewed_section_mapping_keys_seen.add(section_mapping_key)
                     section_label = f"docs/en/docs/{rel}#{section_mapping_key[1]} section mapping"
                     section_mapping_status, shape_errors = validate_doc_section_mapping_shape(
                         reviewed_section_mapping, section_label
                     )
                     documented_page_validation_errors.extend(shape_errors)
+                    if shape_errors:
+                        continue
                     if (
                         not isinstance(reviewed_section_mapping, dict)
-                        or section_mapping_status != "excluded"
+                        or section_mapping_status is None
                     ):
-                        documented_page_validation_errors.append(
-                            f"{section_label} has no feature evidence and must be an exclusion"
-                        )
                         continue
                     if (
                         reviewed_section_mapping.get("heading") != heading["text"]
@@ -11380,21 +11399,64 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         documented_page_validation_errors.append(
                             f"{section_label} heading or pinned source span has changed"
                         )
-                    documented_sections.append(
+                    if section_mapping_status == "excluded":
+                        if page_exclusion is not None:
+                            documented_page_validation_errors.append(
+                                f"{section_label} cannot add a section exclusion to an excluded page"
+                            )
+                        documented_sections.append(
+                            {
+                                "heading": heading["text"],
+                                "start_line": heading["line"],
+                                "end_line": end_line,
+                                "feature_ids": [],
+                                "feature_evidence": [],
+                                "observation_selectors": [],
+                                "selector_evidence": [],
+                                "review_status": "excluded",
+                                "independent_workflow_mappings": [],
+                                "exclusion_reason": reviewed_section_mapping.get(
+                                    "exclusion_reason"
+                                ),
+                                "review_rationale": reviewed_section_mapping.get("rationale"),
+                            }
+                        )
+                        continue
+                    if page_exclusion is not None:
+                        documented_page_validation_errors.append(
+                            f"{section_label} cannot override an excluded documentation page"
+                        )
+                        continue
+                    reviewed_feature_ids = reviewed_section_mapping.get("feature_ids")
+                    known_feature_ids = {feature["id"] for feature in FEATURES}
+                    if (
+                        not isinstance(reviewed_feature_ids, list)
+                        or not reviewed_feature_ids
+                        or any(
+                            not isinstance(feature_id, str) or feature_id not in known_feature_ids
+                            for feature_id in reviewed_feature_ids
+                        )
+                    ):
+                        documented_page_validation_errors.append(
+                            f"{section_label} no-signal workflow must name known feature_ids"
+                        )
+                        continue
+                    section_evidence = [
                         {
-                            "heading": heading["text"],
-                            "start_line": heading["line"],
-                            "end_line": end_line,
-                            "feature_ids": [],
-                            "feature_evidence": [],
-                            "observation_selectors": [],
-                            "selector_evidence": [],
-                            "review_status": "excluded",
-                            "independent_workflow_mappings": [],
-                            "exclusion_reason": reviewed_section_mapping.get("exclusion_reason"),
-                            "review_rationale": reviewed_section_mapping.get("rationale"),
+                            "feature_id": feature_id,
+                            "signals": [
+                                {
+                                    "term": "manually reviewed documentation section",
+                                    "source": "reviewed-doc-section",
+                                    "path": "docs/en/docs/" + rel,
+                                    "line": heading["line"],
+                                    "end_line": end_line,
+                                    "rationale": reviewed_section_mapping["rationale"],
+                                }
+                            ],
                         }
-                    )
+                        for feature_id in reviewed_feature_ids
+                    ]
                 elif page_exclusion is not None:
                     documented_sections.append(
                         {
@@ -11416,14 +11478,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "exclusion_inherited_from_page": True,
                         }
                     )
-                continue
+                    continue
+                else:
+                    continue
             section_feature_evidence.extend(section_evidence)
             section_features = [item["feature_id"] for item in section_evidence]
-            reviewed_section_mapping = (
-                DOC_SECTION_CASE_MAPPINGS.get(section_mapping_key)
-                if section_mapping_key is not None
-                else None
-            )
             section_workflow_mappings = []
             section_review_status = "pending"
             section_exclusion_reason = None
@@ -11985,7 +12044,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     unmapped_section_keys = set(DOC_SECTION_CASE_MAPPINGS) - reviewed_section_mapping_keys_seen
     if unmapped_section_keys:
         documented_page_validation_errors.extend(
-            "reviewed section mapping does not match a feature-evidence heading: "
+            "reviewed section mapping does not match a feature-evidence or explicitly reviewed heading: "
             f"docs/en/docs/{section_path} section key {anchor!r}"
             for section_path, anchor in sorted(unmapped_section_keys)
         )

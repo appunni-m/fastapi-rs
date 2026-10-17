@@ -1,0 +1,35 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/core_headings_fastapi_class_20261018.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.core-headings.fastapi-class-instance
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: class-and-instance-contract
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /class-contract
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
