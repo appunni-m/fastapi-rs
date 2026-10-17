@@ -4269,6 +4269,8 @@ pub(crate) struct PyFastApi {
     servers: Py<PyAny>,
     root_path: String,
     root_path_in_servers: bool,
+    docs_url: Option<String>,
+    redoc_url: Option<String>,
     swagger_ui_oauth2_redirect_url: Option<String>,
     swagger_ui_init_oauth: Option<Py<PyAny>>,
     swagger_ui_parameters: Option<Py<PyAny>>,
@@ -4301,7 +4303,7 @@ pub(crate) struct PyFastApi {
     mounted_routes: Vec<Py<PyAny>>,
     frontend_routes: Vec<FastApiFrontendRoute>,
     websocket_routes: Vec<FastApiWebSocketRoute>,
-    user_middleware: Vec<Py<PyAny>>,
+    user_middleware: Py<PyList>,
     middleware_stack: Option<Py<PyAny>>,
     router_view: Option<Py<PyAny>>,
 }
@@ -5084,8 +5086,9 @@ impl PyFastApi {
                 .import("builtins")?
                 .getattr("list")?
                 .call1((middleware,))?
-                .extract()?,
-            None => Vec::new(),
+                .cast_into::<PyList>()?
+                .unbind(),
+            None => PyList::empty(py).unbind(),
         };
         let state = py
             .import("starlette.datastructures")?
@@ -5233,6 +5236,8 @@ impl PyFastApi {
             servers,
             root_path,
             root_path_in_servers,
+            docs_url: docs_url.map(str::to_owned),
+            redoc_url: redoc_url.map(str::to_owned),
             swagger_ui_oauth2_redirect_url: swagger_ui_oauth2_redirect_url.map(str::to_owned),
             swagger_ui_init_oauth,
             swagger_ui_parameters,
@@ -5327,6 +5332,72 @@ impl PyFastApi {
     }
 
     #[getter]
+    fn summary(&self) -> Option<&str> {
+        self.summary.as_deref()
+    }
+
+    #[setter]
+    fn set_summary(&mut self, summary: Option<String>) {
+        self.summary = summary;
+    }
+
+    #[getter]
+    fn description(&self) -> &str {
+        &self.description
+    }
+
+    #[setter]
+    fn set_description(&mut self, description: String) {
+        self.description = description;
+    }
+
+    #[getter]
+    fn version(&self) -> &str {
+        &self.version
+    }
+
+    #[setter]
+    fn set_version(&mut self, version: String) {
+        self.version = version;
+    }
+
+    #[getter]
+    fn terms_of_service(&self) -> Option<&str> {
+        self.terms_of_service.as_deref()
+    }
+
+    #[setter]
+    fn set_terms_of_service(&mut self, terms_of_service: Option<String>) {
+        self.terms_of_service = terms_of_service;
+    }
+
+    #[getter]
+    fn contact(&self, py: Python<'_>) -> Py<PyAny> {
+        self.contact
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[setter]
+    fn set_contact(&mut self, contact: Option<Py<PyAny>>) {
+        self.contact = contact;
+    }
+
+    #[getter]
+    fn license_info(&self, py: Python<'_>) -> Py<PyAny> {
+        self.license_info
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[setter]
+    fn set_license_info(&mut self, license_info: Option<Py<PyAny>>) {
+        self.license_info = license_info;
+    }
+
+    #[getter]
     fn openapi_version(&self) -> &str {
         &self.openapi_version
     }
@@ -5354,6 +5425,11 @@ impl PyFastApi {
             .unwrap_or_else(|| py.None())
     }
 
+    #[setter]
+    fn set_openapi_url(&mut self, openapi_url: Option<String>) {
+        self.openapi_url = openapi_url;
+    }
+
     #[getter]
     fn servers(&self, py: Python<'_>) -> Py<PyAny> {
         self.servers.clone_ref(py)
@@ -5370,6 +5446,47 @@ impl PyFastApi {
             .as_deref()
             .map(|url| PyString::new(py, url).into_any().unbind())
             .unwrap_or_else(|| py.None())
+    }
+
+    #[setter]
+    fn set_swagger_ui_oauth2_redirect_url(
+        &mut self,
+        swagger_ui_oauth2_redirect_url: Option<String>,
+    ) {
+        self.swagger_ui_oauth2_redirect_url = swagger_ui_oauth2_redirect_url;
+    }
+
+    #[getter]
+    fn swagger_ui_parameters(&self, py: Python<'_>) -> Py<PyAny> {
+        self.swagger_ui_parameters
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[setter]
+    fn set_swagger_ui_parameters(&mut self, swagger_ui_parameters: Option<Py<PyAny>>) {
+        self.swagger_ui_parameters = swagger_ui_parameters;
+    }
+
+    #[getter]
+    fn docs_url(&self) -> Option<&str> {
+        self.docs_url.as_deref()
+    }
+
+    #[setter]
+    fn set_docs_url(&mut self, docs_url: Option<String>) {
+        self.docs_url = docs_url;
+    }
+
+    #[getter]
+    fn redoc_url(&self) -> Option<&str> {
+        self.redoc_url.as_deref()
+    }
+
+    #[setter]
+    fn set_redoc_url(&mut self, redoc_url: Option<String>) {
+        self.redoc_url = redoc_url;
     }
 
     #[getter]
@@ -5518,7 +5635,9 @@ impl PyFastApi {
         argument_values.extend(args.iter());
         let arguments = PyTuple::new(py, argument_values)?;
         let registration = middleware_type.call(&arguments, kwargs)?;
-        self.user_middleware.insert(0, registration.unbind());
+        self.user_middleware
+            .bind(py)
+            .call_method1("insert", (0, registration))?;
         Ok(())
     }
 
@@ -7487,8 +7606,9 @@ impl PyFastApi {
                     .as_ref()
                     .map(|stack| stack.clone_ref(py)),
                 app.user_middleware
+                    .bind(py)
                     .iter()
-                    .map(|registration| registration.clone_ref(py))
+                    .map(Bound::unbind)
                     .collect::<Vec<_>>(),
                 app.exception_handlers.clone_ref(py),
                 app.debug,

@@ -980,6 +980,35 @@
       ]
     },
     {
+      "id": "application-attributes",
+      "input_path": "tests/fixtures/inputs/parity/application-attributes.json",
+      "input_sha256": "abe9e2849ef00ed802b8ab57fe618e870a11b5835dcb5bac736238efb566bb11",
+      "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
+      "recipe_sha256": "30ed894c2112471041846c7728e038915a61f466d2faaf029a1e5650cada8975",
+      "case_ids": [
+        "fastapi.application.attributes.defaults",
+        "fastapi.application.attributes.configured"
+      ],
+      "workload_path": "tests/fixtures/workloads/application_attributes.py",
+      "workload_sha256": "b56ee89d7d608149fe87be1ba25a25ab7327d9b0bd05876fd03b0bd3de7aad7f",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.application.attributes.defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.configured",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "application-constructor-starlette-route",
       "input_path": "tests/fixtures/inputs/parity/application-constructor-starlette-route.json",
       "input_sha256": "a4f07d917d29d790a0d0dbb3be993d0c8f666f9212c3090fab5b7d7354a5bf2c",
@@ -38377,6 +38406,24 @@
         "fastapi.app-testing.main-b-default-header"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/metadata.md",
+      "fixture_id": "fastapi.docs.tutorial-metadata",
+      "workflow_id": "application-attributes",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.attributes.configured",
+        "fastapi.application.attributes.defaults"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "http.body.bytes",
         "http.status"
       ]

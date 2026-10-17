@@ -685,16 +685,16 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: 95fb20ae84c22967431aa68371e2b31831b5fc68648b2aa7ab6e54f446d6f49a
+  sha256: 8d13ca937a2ca6eb596e5677a92c3635bb802e1a045ea5ce66a9ecccb3939dca
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
     candidates: 183
-    supported: 21
+    supported: 30
     private_or_internal: 127
-    uncertain: 35
+    uncertain: 26
   candidate_ids_sha256: 0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd
 
 classification_atlas:
@@ -6563,6 +6563,268 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - Only the documented post-construction `3.0.2` mutation and generated `/openapi` value are observed; other values and OpenAPI feature compatibility remain unproven.
+    fastapi.applications.FastAPI.summary:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: summary
+          owner: FastAPI
+          initializer: __init__
+          start_line: 875
+          end_line: 875
+        - {path: docs/en/docs/tutorial/metadata.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `summary`, and the metadata tutorial lists
+        it as an OpenAPI field. The linked input-only cases compare its default
+        and configured public values from an ASGI endpoint. Post-construction
+        mutation and generated-schema behavior remain outside this field slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::summary
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+    fastapi.applications.FastAPI.description:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: description
+          owner: FastAPI
+          initializer: __init__
+          start_line: 876
+          end_line: 876
+        - {path: docs/en/docs/tutorial/metadata.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `description`, and the metadata tutorial
+        lists it as an OpenAPI field. The linked input-only cases compare its
+        default and configured public values from an ASGI endpoint.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::description
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+    fastapi.applications.FastAPI.version:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: version
+          owner: FastAPI
+          initializer: __init__
+          start_line: 877
+          end_line: 877
+        - {path: docs/en/docs/tutorial/metadata.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `version`, and the metadata tutorial lists
+        it as an OpenAPI field. The linked input-only cases compare its default
+        and configured public values from an ASGI endpoint.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::version
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+    fastapi.applications.FastAPI.terms_of_service:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: terms_of_service
+          owner: FastAPI
+          initializer: __init__
+          start_line: 878
+          end_line: 878
+        - {path: docs/en/docs/tutorial/metadata.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `terms_of_service`, and the metadata
+        tutorial lists it as an OpenAPI field. The linked input-only cases
+        compare its default and configured public values from an ASGI endpoint.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::terms_of_service
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+    fastapi.applications.FastAPI.contact:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: contact
+          owner: FastAPI
+          initializer: __init__
+          start_line: 879
+          end_line: 879
+        - {path: docs/en/docs/tutorial/metadata.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `contact`, and the metadata tutorial
+        documents its OpenAPI dictionary. The linked input-only cases compare
+        its default and configured public values from an ASGI endpoint.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::contact
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+    fastapi.applications.FastAPI.license_info:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: license_info
+          owner: FastAPI
+          initializer: __init__
+          start_line: 880
+          end_line: 880
+        - {path: docs/en/docs/tutorial/metadata.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `license_info`, and the metadata tutorial
+        documents its OpenAPI dictionary. The linked input-only cases compare
+        its default and configured public values from an ASGI endpoint.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::license_info
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+    fastapi.applications.FastAPI.docs_url:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: docs_url
+          owner: FastAPI
+          initializer: __init__
+          start_line: 884
+          end_line: 884
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `docs_url`; the linked input-only cases
+        compare the default and configured public field value from an ASGI
+        endpoint. Route registration and UI output remain outside this field
+        slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::docs_url
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and route registration behavior remain unverified.
+    fastapi.applications.FastAPI.redoc_url:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: redoc_url
+          owner: FastAPI
+          initializer: __init__
+          start_line: 885
+          end_line: 885
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `redoc_url`; the linked input-only cases
+        compare the default and configured public field value from an ASGI
+        endpoint. Route registration and UI output remain outside this field
+        slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::redoc_url
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and route registration behavior remain unverified.
+    fastapi.applications.FastAPI.swagger_ui_parameters:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: swagger_ui_parameters
+          owner: FastAPI
+          initializer: __init__
+          start_line: 888
+          end_line: 888
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.defaults
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.configured
+          observation_selectors: [http.status, http.body.json]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json]
+      supported_slice: >-
+        The pinned constructor stores `swagger_ui_parameters`; the linked
+        input-only cases compare default and configured public values from an
+        ASGI endpoint. Swagger UI option rendering remains outside this field
+        slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::swagger_ui_parameters
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Default and configured reads are covered; reassignment, deletion, and Swagger UI rendering remain unverified.
     fastapi.applications.FastAPI.state:
       source_evidence:
         - path: fastapi/applications.py
