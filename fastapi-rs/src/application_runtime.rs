@@ -7319,8 +7319,9 @@ impl PyFastApi {
         materialize_included_response_fields(py, app, None, None)?;
         let webhook_app = {
             let app = app.bind(py).borrow();
-            app.webhooks
-                .bind(py)
+            let webhooks = app.webhooks.bind(py);
+            let _routes = webhooks.getattr("routes")?;
+            webhooks
                 .extract::<PyRef<'_, PyApiRouter>>()?
                 .inner_app(py)?
         };

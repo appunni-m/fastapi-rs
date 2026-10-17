@@ -1485,6 +1485,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor.route-defaults
           workload_path: tests/fixtures/workloads/app_constructor_route_defaults.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+          case_id: fastapi.webhooks.truthy-non-router.openapi-error
+          workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml
           case_id: fastapi.applications.constructor.starlette-route-dispatch
           workload_path: tests/fixtures/workloads/application_constructor_starlette_route.py
@@ -6021,6 +6025,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+          case_id: fastapi.webhooks.truthy-non-router.openapi-error
+          workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
           case_id: fastapi.webhooks.router-reassignment-before-openapi
           workload_path: tests/fixtures/workloads/webhooks_reassignment.py
@@ -6043,12 +6051,14 @@ reviewed_api_contract_overlay:
         OpenAPI materialization exposes the replacement router and projects its
         operations into the separate `/webhooks` map. Reassignment after schema
         materialization changes the field but preserves the cached document while
-        the app's route version remains unchanged.
+        the app's route version remains unchanged. A truthy non-router value passes
+        through constructor assignment; requesting `/openapi.json` then raises when
+        OpenAPI reads its `routes` attribute, as sampled by the dedicated case.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Other falsey constructor values and constructor error behavior remain unestablished.
+          - Other falsey values and failures for truthy webhook objects beyond the selected plain object remain unestablished.
     fastapi.applications.FastAPI.openapi:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       source_evidence:
@@ -6212,6 +6222,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+          case_id: fastapi.webhooks.truthy-non-router.openapi-error
+          workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
           case_id: fastapi.webhooks.router-reassignment-before-openapi
           workload_path: tests/fixtures/workloads/webhooks_reassignment.py
@@ -6268,7 +6282,10 @@ reviewed_api_contract_overlay:
         serializes schema-object keys in a different order; raw OpenAPI bytes
         remain a parity gap. The linked webhook cases cover constructor-supplied
         and default routers, body/security schema emission, and separation from
-        inbound paths. Reassigning `app.webhooks` before first OpenAPI generation
+        inbound paths. The truthy non-router case compares exact construction
+        observations and the ASGI exception class and message for one plain
+        object; other object types remain unestablished. Reassigning
+        `app.webhooks` before first OpenAPI generation
         projects the replacement router, while reassignment after cache creation
         preserves the cached `/webhooks` map while the app route version is
         unchanged. A same-ID path/webhook pair emits the pinned duplicate

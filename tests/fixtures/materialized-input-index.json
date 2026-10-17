@@ -36481,6 +36481,27 @@
       ]
     },
     {
+      "id": "webhooks-truthy-non-router",
+      "input_path": "tests/fixtures/inputs/parity/webhooks-truthy-non-router.json",
+      "input_sha256": "13059f90762df679e199297a9d99bf24897ae612f9fd2c1c15656df6e17410ef",
+      "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml",
+      "recipe_sha256": "d747483bd62cc2d06d89b85819dd4e71a77b2f32cc19b7ed749d0790ea83eacf",
+      "case_ids": [
+        "fastapi.webhooks.truthy-non-router.openapi-error"
+      ],
+      "workload_path": "tests/fixtures/workloads/webhooks_truthy_non_router.py",
+      "workload_sha256": "63fc16cd8fb2841a45504bb626896e93a6caa4869fad1cce6bd404a7b389a45e",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.webhooks.truthy-non-router.openapi-error",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/openapi-webhooks.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "websocket-echo",
       "input_path": "tests/fixtures/inputs/parity/websocket-echo.json",
       "input_sha256": "4154af41b952f1a3da785c534f83a8700e0f22e237d970863a46255f851c28de",
@@ -68575,6 +68596,22 @@
         "http.status",
         "openapi.document",
         "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/openapi-webhooks.md",
+      "fixture_id": "fastapi.docs.advanced-openapi-webhooks",
+      "workflow_id": "webhooks-truthy-non-router",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.webhooks.truthy-non-router.openapi-error"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
       ]
     },
     {

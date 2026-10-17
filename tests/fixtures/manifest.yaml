@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 790882ebd975be5bc9ee7b66ea1fc6cc69a2c26d3cebfd9d53a2d68e9c6dbb1a
+    sha256: 103f1affea78d073df386cdc76f11707159aa6cd2538a49be7a47b665af5d3be
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: d950a89d0b52106e043d792edbca1b0111e469983bf877d8e84dd82f5882bdf6
+    sha256: a490b4e735122c9238b6a4165cb0c24ae0b33d5f8260ccaa74c194aab1e6a230
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 32b091e87c925bc8cfca5e9bdb7d2965d3330bdfc6e6efbcbf2d479d3e1a83e0
+    sha256: da798697781d9a0cfadeac266af3d270c72425a837f73f962c7d50d4fe5c7c07
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 662
-      cases: 2683
-      partial_source_mappings: 1907
+      workflows: 663
+      cases: 2684
+      partial_source_mappings: 1908
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2077
+    operation_fixture_refs: 2080
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -10375,6 +10375,19 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: webhooks-truthy-non-router
+      input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
+      input_sha256: 13059f90762df679e199297a9d99bf24897ae612f9fd2c1c15656df6e17410ef
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+      recipe_sha256: d747483bd62cc2d06d89b85819dd4e71a77b2f32cc19b7ed749d0790ea83eacf
+      workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+      workload_sha256: 63fc16cd8fb2841a45504bb626896e93a6caa4869fad1cce6bd404a7b389a45e
+      case_id: fastapi.webhooks.truthy-non-router.openapi-error
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: application-constructor-starlette-route
       input_path: tests/fixtures/inputs/parity/application-constructor-starlette-route.json
       input_sha256: a4f07d917d29d790a0d0dbb3be993d0c8f666f9212c3090fab5b7d7354a5bf2c
@@ -17809,6 +17822,19 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: webhooks-truthy-non-router
+      input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
+      input_sha256: 13059f90762df679e199297a9d99bf24897ae612f9fd2c1c15656df6e17410ef
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+      recipe_sha256: d747483bd62cc2d06d89b85819dd4e71a77b2f32cc19b7ed749d0790ea83eacf
+      workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+      workload_sha256: 63fc16cd8fb2841a45504bb626896e93a6caa4869fad1cce6bd404a7b389a45e
+      case_id: fastapi.webhooks.truthy-non-router.openapi-error
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: webhooks-reassignment
       input_path: tests/fixtures/inputs/parity/webhooks-reassignment.json
       input_sha256: ffd2f422d489dcb2b6787a515b1995e88fc878d577d65729ccc2a625ec261b7e
@@ -19732,6 +19758,7 @@ api_surface_contract:
       fixture_id: fastapi.docs.advanced-openapi-webhooks
       fixture_design_ref: /fixture_designs/345
       observation_selectors:
+      - asgi.application_error.exception
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
@@ -19774,6 +19801,19 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: webhooks-truthy-non-router
+      input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
+      input_sha256: 13059f90762df679e199297a9d99bf24897ae612f9fd2c1c15656df6e17410ef
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+      recipe_sha256: d747483bd62cc2d06d89b85819dd4e71a77b2f32cc19b7ed749d0790ea83eacf
+      workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+      workload_sha256: 63fc16cd8fb2841a45504bb626896e93a6caa4869fad1cce6bd404a7b389a45e
+      case_id: fastapi.webhooks.truthy-non-router.openapi-error
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: webhooks-reassignment
       input_path: tests/fixtures/inputs/parity/webhooks-reassignment.json
       input_sha256: ffd2f422d489dcb2b6787a515b1995e88fc878d577d65729ccc2a625ec261b7e
@@ -19813,6 +19853,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.lifespan.application_errors
     - asgi.lifespan.event_order
     - asgi.lifespan.shutdown
@@ -19851,7 +19892,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::webhooks
       known_gaps:
-      - Other falsey constructor values and constructor error behavior remain unestablished.
+      - Other falsey values and failures for truthy webhook objects beyond the selected plain object remain
+        unestablished.
   - id: fastapi.applications.FastAPI.websocket
     kind: method
     source_candidate_ref: /api_candidates/239

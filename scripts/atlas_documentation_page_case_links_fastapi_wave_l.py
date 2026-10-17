@@ -1,6 +1,23 @@
 """FastAPI page workflow links requiring independent source selectors."""
 
 DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L = {
+    "advanced/openapi-webhooks.md": [
+        {
+            "recipe_path": ("tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml"),
+            "case_ids": ["fastapi.webhooks.truthy-non-router.openapi-error"],
+            "observation_selectors": [
+                "asgi.application_error.exception",
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
+            ],
+            "scope_note": (
+                "The OpenAPI request uses the documented webhook application surface. The "
+                "selected plain-object failure is established by the pinned FastAPI source; "
+                "the documentation page itself does not specify arbitrary webhook values."
+            ),
+        },
+    ],
     "how-to/extending-openapi.md": [
         {
             "recipe_path": (

@@ -448,7 +448,16 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     ),
     "advanced/openapi-webhooks.md": _review(
         ["openapi-docs"],
-        ["docs.response.status", "http.status", "openapi.document", "openapi.security"],
+        [
+            "asgi.application_error.exception",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "docs.response.status",
+            "http.status",
+            "openapi.document",
+            "openapi.security",
+        ],
         "FastAPI's `webhooks` APIRouter is collected separately and emitted in the OpenAPI 3.1 document. The documented webhook declarations describe a remote caller-facing contract; they do not add inbound FastAPI dispatch routes or send webhook requests.",
         [
             _workflow(
@@ -456,7 +465,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 ["fastapi.webhooks.security.openapi-contract"],
                 ["docs.response.status", "http.status", "openapi.document", "openapi.security"],
                 "The OpenAPI endpoint is observed at webhook requestBody/security and HTTPBearer scheme pointers.",
-            )
+            ),
         ],
         "Partial: this is an OpenAPI-only case for one webhook operation/security scheme. It does not cover webhook delivery, all HTTP methods, multiple webhooks, response schemas, or docs-browser behavior.",
         [

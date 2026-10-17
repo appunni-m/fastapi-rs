@@ -44716,7 +44716,15 @@
       "candidate_selector_scope": {
         "contract_gate": "Partial: this is an OpenAPI-only case for one webhook operation/security scheme. It does not cover webhook delivery, all HTTP methods, multiple webhooks, response schemas, or docs-browser behavior.",
         "unobserved_reviewed_selector_claims": [],
-        "workflow_scope_notes": []
+        "workflow_scope_notes": [
+          {
+            "case_ids": [
+              "fastapi.webhooks.truthy-non-router.openapi-error"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml",
+            "scope_note": "The OpenAPI request uses the documented webhook application surface. The selected plain-object failure is established by the pinned FastAPI source; the documentation page itself does not specify arbitrary webhook values."
+          }
+        ]
       },
       "contract_gate": "Partial: this is an OpenAPI-only case for one webhook operation/security scheme. It does not cover webhook delivery, all HTTP methods, multiple webhooks, response schemas, or docs-browser behavior.",
       "documented_sections": [
@@ -45237,10 +45245,26 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-security.yaml",
           "workflow_id": "webhooks-security"
+        },
+        {
+          "case_ids": [
+            "fastapi.webhooks.truthy-non-router.openapi-error"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "asgi.application_error.exception",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml",
+          "workflow_id": "webhooks-truthy-non-router"
         }
       ],
       "input_only": true,
       "observation_selectors": [
+        "asgi.application_error.exception",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
@@ -45320,6 +45344,19 @@
               "openapi.security"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-security.yaml"
+          },
+          {
+            "case_ids": [
+              "fastapi.webhooks.truthy-non-router.openapi-error"
+            ],
+            "observation_selectors": [
+              "asgi.application_error.exception",
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml",
+            "scope_note": "The OpenAPI request uses the documented webhook application surface. The selected plain-object failure is established by the pinned FastAPI source; the documentation page itself does not specify arbitrary webhook values."
           }
         ]
       },
@@ -45341,6 +45378,7 @@
         {
           "feature_id": null,
           "schema_extension_required": [
+            "asgi.application_error.exception",
             "construction.exception_class",
             "construction.exception_message",
             "construction.outcome",
@@ -45349,6 +45387,7 @@
             "warnings.category_message"
           ],
           "selectors": [
+            "asgi.application_error.exception",
             "construction.exception_class",
             "construction.exception_message",
             "construction.outcome",
@@ -45421,7 +45460,15 @@
       "stimulus_design": [
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
       ],
-      "workflow_scope_notes": []
+      "workflow_scope_notes": [
+        {
+          "case_ids": [
+            "fastapi.webhooks.truthy-non-router.openapi-error"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml",
+          "scope_note": "The OpenAPI request uses the documented webhook application surface. The selected plain-object failure is established by the pinned FastAPI source; the documentation page itself does not specify arbitrary webhook values."
+        }
+      ]
     },
     {
       "candidate_observation_selectors": [
