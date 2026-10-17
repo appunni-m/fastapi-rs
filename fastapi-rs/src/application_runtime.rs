@@ -7781,8 +7781,8 @@ impl PyApiRouter {
     }
 
     #[pyo3(
-        signature = (path, endpoint, *, dependencies = None, description = None, methods = None, include_in_schema = true, name = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, deprecated = None, tags = None, strict_content_type = StrictContentTypeArgument::Omitted),
-        text_signature = "($self, path, endpoint, *, dependencies=None, description=None, methods=None, include_in_schema=True, name=None, callbacks=None, openapi_extra=None, generate_unique_id_function=None, deprecated=None, tags=None, strict_content_type=None)"
+        signature = (path, endpoint, *, dependencies = None, description = None, methods = None, include_in_schema = true, name = None, route_class_override = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, deprecated = None, tags = None, strict_content_type = StrictContentTypeArgument::Omitted),
+        text_signature = "($self, path, endpoint, *, dependencies=None, description=None, methods=None, include_in_schema=True, name=None, route_class_override=None, callbacks=None, openapi_extra=None, generate_unique_id_function=None, deprecated=None, tags=None, strict_content_type=None)"
     )]
     // lint-exception: preserve the selected FastAPI.add_api_route keyword interface.
     #[allow(
@@ -7799,6 +7799,7 @@ impl PyApiRouter {
         methods: Option<Py<PyAny>>,
         include_in_schema: bool,
         name: Option<String>,
+        route_class_override: Option<Py<PyAny>>,
         callbacks: Option<Py<PyAny>>,
         openapi_extra: Option<Py<PyAny>>,
         generate_unique_id_function: GenerateUniqueIdArgument,
@@ -7818,12 +7819,19 @@ impl PyApiRouter {
             .iter()
             .map(|method| method.extract::<String>())
             .collect::<PyResult<Vec<_>>>()?;
-        let (inner, is_fastapi_router) = {
+        let (inner, is_fastapi_router, configured_route_class) = {
             let router = slf.bind(py).borrow();
             (
                 router.inner_app(py)?,
                 matches!(router.inner, ApiRouterInner::FastApiWeak(_)),
+                router.route_class.clone_ref(py),
             )
+        };
+        let route_class_selection = match route_class_override {
+            Some(route_class_override) if route_class_override.bind(py).is_truthy()? => {
+                route_class_override
+            }
+            _ => configured_route_class,
         };
         let dependency_overrides_provider =
             is_fastapi_router.then(|| inner.clone_ref(py).into_any());
@@ -7858,6 +7866,7 @@ impl PyApiRouter {
                 name,
             },
         )?;
+        decorator.bind(py).borrow_mut().route_class_selection = Some(route_class_selection);
         decorator
             .bind(py)
             .borrow_mut()
@@ -9483,6 +9492,7 @@ fn refresh_included_router_routes_inner(
 struct PyOperationDecorator {
     app: Py<PyFastApi>,
     dependency_overrides_provider: Option<Py<PyAny>>,
+    route_class_selection: Option<Py<PyAny>>,
     path: String,
     method: String,
     callback_methods: Vec<String>,
@@ -9830,6 +9840,7 @@ fn operation_decorator(
         py,
         PyOperationDecorator {
             dependency_overrides_provider: Some(app.clone_ref(py).into_any()),
+            route_class_selection: None,
             app,
             path: path.to_owned(),
             method: method.to_owned(),
@@ -9982,13 +9993,23 @@ impl PyOperationDecorator {
         let (strict_content_type_value, strict_content_type) = self
             .strict_content_type
             .resolve(py, inherited_strict_content_type)?;
-        let route_class = self
-            .app
-            .bind(py)
-            .borrow()
-            .router_route_class
-            .as_ref()
-            .map(|route_class| route_class.clone_ref(py));
+        let route_class = match self.route_class_selection.as_ref() {
+            Some(route_class)
+                if route_class
+                    .bind(py)
+                    .is(py.get_type::<PyApiRoute>().as_any()) =>
+            {
+                None
+            }
+            Some(route_class) => Some(route_class.clone_ref(py)),
+            None => self
+                .app
+                .bind(py)
+                .borrow()
+                .router_route_class
+                .as_ref()
+                .map(|route_class| route_class.clone_ref(py)),
+        };
         let (public_route, unique_id, request_handler) = api_route_view_and_unique_id(
             py,
             ApiRouteViewConfig {

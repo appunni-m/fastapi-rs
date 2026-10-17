@@ -28691,6 +28691,27 @@
       ]
     },
     {
+      "id": "route-class-override",
+      "input_path": "tests/fixtures/inputs/parity/route-class-override.json",
+      "input_sha256": "e09a3410b127523ba19329ffc3c99723cee789a6cb08b55f12a8e2f08b69b6b9",
+      "recipe_path": "tests/fixtures/input-recipes/parity/route-class-override.yaml",
+      "recipe_sha256": "655b1d9dccaf82d4525e72a1c71f66a7e58d65b4a49aa8eae90b78675522770b",
+      "case_ids": [
+        "fastapi.routing.apirouter.add-api-route.route-class-override"
+      ],
+      "workload_path": "tests/fixtures/workloads/route_class_override.py",
+      "workload_sha256": "1e83547611583eb6d9dd863a9a8954d5cadd9d2d0147d97808bd7b9f14c57fd0",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.add-api-route.route-class-override",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_custom_route_class.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "route-dependency-response-status",
       "input_path": "tests/fixtures/inputs/parity/route-dependency-response-status.json",
       "input_sha256": "ced4919a85633607002fa775e92f33f683b5493ce9ae87ccf6f67cdaf7a740ad",
@@ -62264,6 +62285,21 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_custom_route_class.py",
+      "fixture_id": "fastapi.test.test-custom-route-class",
+      "workflow_id": "route-class-override",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.add-api-route.route-class-override"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

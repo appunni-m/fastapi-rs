@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 0278079a61d205c2e1701702994fbe1781d8a376b2ac1b7fedb4ad00fae787a7
+    sha256: a4520b63b010caa6405d53719c23573c92a85625bd7ffa81de2b7fb7803fd268
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 0564a3bc242296ffdee0a557a75c1b9b836b60b3667568b58e9e8af74b296f3e
+    sha256: 2d312d0e44798b1656ebb354d19defdad99592e09f465a7cb8598561eb8e2d8d
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 6e3d1b0452635f3c4cb8d87105d0e7ae902cf0ce4e53f33892b3736f5bc015e7
+    sha256: 7f25f297259ed7cb5895cf43beace6deb82949c59626ca1d0fded921123184b2
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 656
-      cases: 2672
-      partial_source_mappings: 1899
+      workflows: 657
+      cases: 2673
+      partial_source_mappings: 1900
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2064
+    operation_fixture_refs: 2065
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -51010,6 +51010,18 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/routing_upstream.py
       workload_sha256: 6502750dc7d0e5228f642aad119e2dac88a7f2a2b55469d644fd492eea741893
       case_id: fastapi.routing.apiroute.get-route-handler.falsey-status-code
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: route-class-override
+      input_path: tests/fixtures/inputs/parity/route-class-override.json
+      input_sha256: e09a3410b127523ba19329ffc3c99723cee789a6cb08b55f12a8e2f08b69b6b9
+      recipe_path: tests/fixtures/input-recipes/parity/route-class-override.yaml
+      recipe_sha256: 655b1d9dccaf82d4525e72a1c71f66a7e58d65b4a49aa8eae90b78675522770b
+      workload_path: tests/fixtures/workloads/route_class_override.py
+      workload_sha256: 1e83547611583eb6d9dd863a9a8954d5cadd9d2d0147d97808bd7b9f14c57fd0
+      case_id: fastapi.routing.apirouter.add-api-route.route-class-override
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered

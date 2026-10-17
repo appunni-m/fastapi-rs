@@ -662,9 +662,7 @@ def validate_materialized_input_index(
             if case.get("verification", "parity") == "fault-contract"
         }
         covered_cases = (
-            mapped_cases[workflow_id]
-            | api_definition_cases[workflow_id]
-            | fault_contract_cases
+            mapped_cases[workflow_id] | api_definition_cases[workflow_id] | fault_contract_cases
         )
         if covered_cases != cases.keys():
             _fail(

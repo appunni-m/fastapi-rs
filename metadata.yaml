@@ -4391,6 +4391,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.get-route-handler.falsey-status-code
           workload_path: tests/fixtures/workloads/routing_upstream.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/route-class-override.yaml
+          case_id: fastapi.routing.apirouter.add-api-route.route-class-override
+          workload_path: tests/fixtures/workloads/route_class_override.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       observation_selectors:
         - http.status
         - http.body.bytes
@@ -15389,10 +15393,11 @@ reviewed_api_contract_overlay:
         The Rust implementation selects and stores constructor-provided
         `route_class` values, and preserves selected route-class identity across
         nested inclusion. The identity fixture maps observations of configured
-        and registered subclasses for three routers. The source also selects a
-        truthy `route_class_override` before falling back to the stored class,
-        but the target does not expose that per-route argument. A separate
-        fixture maps the custom `get_route_handler` Request-to-Response wrapper
+        and registered subclasses for three routers. `APIRouter.add_api_route`
+        also selects a truthy per-route `route_class_override` before falling
+        back to the stored class. The dedicated input workflow observes both
+        selections through ASGI response headers and bodies. A separate fixture
+        maps the custom `get_route_handler` Request-to-Response wrapper
         behavior; identity-checked live parity matched all 16 cases in the
         `routing-upstream` workflow against FastAPI 0.141.1 and the pinned
         Starlette-RS commit. The recipes contain no frozen expected outputs.
