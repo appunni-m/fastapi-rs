@@ -7334,6 +7334,7 @@ def read_python_support(pyproject: Path, workflow: Path) -> dict[str, Any]:
         "source_refs": [
             "pyproject.toml:[project].requires-python",
             ".github/workflows/test.yml:python-version matrix",
+            ".python-version",
         ],
         "legacy_named_test_note": "test_typing_python39.py is a typing compatibility case; it does not override requires-python >=3.10.",
     }

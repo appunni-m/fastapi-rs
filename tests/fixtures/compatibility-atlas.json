@@ -75188,7 +75188,7 @@
       "candidate_kinds": [
         "import_binding"
       ],
-      "classification": "supported",
+      "classification": "uncertain",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": {
@@ -75212,7 +75212,7 @@
         "evidence_basis": [
           "documented"
         ],
-        "reason": "The pinned release note explicitly announces re-export of IncEx from Pydantic, and fastapi.types binds the exact IncEx alias to pydantic.main.IncEx. Classify fastapi.types.IncEx as supported; Pydantic remains the owner of the underlying type semantics and this is not a root export.",
+        "reason": "The pinned release note announces re-exporting IncEx from Pydantic, and fastapi.types binds that alias to pydantic.main.IncEx. However, the release note and docs do not establish fastapi.types.IncEx as a consumer-facing import path, and IncEx is not a root export. Keep this intentional but unresolved module-level exposure classified as uncertain.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 7,
@@ -75226,13 +75226,7 @@
       "kind": "import_binding",
       "local_name": "IncEx",
       "module": "fastapi.types",
-      "public_evidence": [
-        {
-          "kind": "reviewed_public_candidate_documentation_contract",
-          "line": 976,
-          "path": "docs/en/docs/release-notes.md"
-        }
-      ],
+      "public_evidence": [],
       "root_export": false,
       "source_evidence": [
         {
@@ -76859,11 +76853,11 @@
       "candidate_ids_sha256": "0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd",
       "recommendation_counts": {
         "private/internal": 127,
-        "supported": 22,
-        "uncertain": 34
+        "supported": 21,
+        "uncertain": 35
       }
     },
-    "sha256": "5dbc76a7a9381c27be5e542fe2510654c6c96a8ae07c17264709c2e24a66dba0",
+    "sha256": "95fb20ae84c22967431aa68371e2b31831b5fc68648b2aa7ab6e54f446d6f49a",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
@@ -77164,7 +77158,8 @@
       "source_python_version_pin": "3.11",
       "source_refs": [
         "pyproject.toml:[project].requires-python",
-        ".github/workflows/test.yml:python-version matrix"
+        ".github/workflows/test.yml:python-version matrix",
+        ".python-version"
       ],
       "test_workflow_free_threaded": true,
       "test_workflow_versions": [
@@ -77229,8 +77224,8 @@
     "api_candidates": 1643,
     "api_classifications": {
       "private/internal": 1110,
-      "supported": 480,
-      "uncertain": 53
+      "supported": 479,
+      "uncertain": 54
     },
     "documentation_headings_without_feature_signal": 495,
     "documentation_pages": 155,

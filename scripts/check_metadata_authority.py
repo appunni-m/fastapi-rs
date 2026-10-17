@@ -808,6 +808,11 @@ def validate() -> None:
         authority["python"]["oracle"],
         manifest["oracle_profile"]["python"],
     )
+    require_equal(
+        "oracle Python runtime version pin",
+        str(authority["python"]["oracle"]["version"]),
+        python_contract["oracle_runtime_version_pin"],
+    )
     oracle_packages = manifest["oracle_profile"]["packages"]
     for package, expected in (
         ("fastapi", fastapi["version"]),

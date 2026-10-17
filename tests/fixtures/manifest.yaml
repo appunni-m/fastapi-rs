@@ -34,7 +34,7 @@ selected_contracts:
     fastapi_declared_requirement: ">=0.46.0"
   python:
     package_requirement: ">=3.10"
-    source_version_pin: "3.12.13"
+    oracle_runtime_version_pin: "3.12.13"
     project_classifiers: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     upstream_test_workflow_versions: ["3.10", "3.12", "3.13", "3.14"]
     upstream_free_threaded_workflow: true
@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 282188aad96794d3a1da8d6921055915ace504a3f9b775571475d10307cacbde
+    sha256: 0278079a61d205c2e1701702994fbe1781d8a376b2ac1b7fedb4ad00fae787a7
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -512,9 +512,9 @@ source_artifacts:
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 392
       source_classifications:
-        supported: 480
+        supported: 479
         private_or_internal: 1110
-        uncertain: 53
+        uncertain: 54
       alias_records: 69
       source_deprecations: 21
       error_candidates: 42
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 5148d2b5120852574587aeec1c4801016a66d6050f8ca662989e2c1788cb9f15
+    sha256: 0564a3bc242296ffdee0a557a75c1b9b836b60b3667568b58e9e8af74b296f3e
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,7 +574,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 8aa55eba503b4418b9a3f55dbc60b2c4379d3e2c7c69f78647505cec67ca2e6d
+    sha256: 32b1e2bba34b9f03267157eb1ce917156d9888391c64644fa99eba5f881f530a
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1237,36 +1237,36 @@ api_surface_contract:
   - source_artifacts.runtime_api_surface_core.modules
   - source_artifacts.runtime_api_surface_standard.modules
   counts:
-    required_public_symbols: 480
+    required_public_symbols: 479
     required_inherited_operations: 9
-    required_public_api_candidates: 489
+    required_public_api_candidates: 488
     required_documented_module_targets: 13
     documented_source_module_targets: 13
     module_targets_with_documentation_refs: 13
     module_targets_with_supported_symbols: 13
     signature_contract_states:
       module-object-no-call-signature: 1
-      non-callable-surface: 246
+      non-callable-surface: 245
       runtime-signature-reflected: 226
       runtime-signature-unavailable: 1
       source-signature-recorded: 6
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      slice-described: 480
+      slice-described: 479
     implementation_owner_plans:
-      fastapi-rs: 449
+      fastapi-rs: 448
       starlette-rs: 31
     inherited_implementation_owner_plans:
       fastapi-rs: 8
       starlette-rs: 1
-    symbols_with_documented_feature_refs: 474
+    symbols_with_documented_feature_refs: 473
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
-    symbols_with_operation_fixture_refs: 267
-    operation_fixture_refs: 2065
+    symbols_with_operation_fixture_refs: 266
+    operation_fixture_refs: 2064
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1659,7 +1659,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -1783,7 +1783,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -2414,7 +2414,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -2632,7 +2632,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -4915,7 +4915,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -5392,7 +5392,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -5610,7 +5610,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -5818,7 +5818,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -5967,7 +5967,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -6166,7 +6166,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -6410,7 +6410,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7178,7 +7178,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7348,7 +7348,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7366,7 +7366,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7384,7 +7384,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7464,7 +7464,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7482,7 +7482,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7500,7 +7500,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7844,7 +7844,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -7935,7 +7935,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -8016,7 +8016,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -8034,7 +8034,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -8052,7 +8052,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -8128,7 +8128,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -8146,7 +8146,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -8164,7 +8164,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -8286,7 +8286,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -20184,7 +20184,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -20351,7 +20351,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -20419,7 +20419,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -20487,7 +20487,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -20555,7 +20555,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -20623,7 +20623,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -23318,7 +23318,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -23402,7 +23402,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -23486,7 +23486,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -23570,7 +23570,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -23647,7 +23647,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -44021,7 +44021,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -45780,7 +45780,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -46189,7 +46189,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -46310,7 +46310,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -46458,7 +46458,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -47625,7 +47625,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -47715,7 +47715,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -47806,7 +47806,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -47893,7 +47893,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -49228,7 +49228,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -49487,7 +49487,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -49574,7 +49574,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -49667,7 +49667,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -49756,7 +49756,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -65637,7 +65637,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -65708,7 +65708,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.http-reexports
@@ -65941,71 +65941,6 @@ api_surface_contract:
         - /api_candidates/1603
       status: full-contract-not-established
       rust_binding: null
-  - id: fastapi.types.IncEx
-    kind: import_binding
-    source_candidate_ref: /api_candidates/1610
-    source_inventory_refs:
-    - /import_bindings/631
-    source_signature_state: not-recorded
-    source_signature_refs: []
-    runtime_reflections:
-      core:
-        ref: /symbols/1607
-        status: reflected
-        object_identity: typing.Union
-        kind: value
-        signature_status: not-applicable
-      standard:
-        ref: /symbols/1609
-        object_identity: typing.Union
-        kind: value
-        signature_status: not-applicable
-    signature_contract_state: non-callable-surface
-    alias_refs: []
-    deprecation_refs: []
-    error_contract_refs: []
-    documentation_contract_refs:
-    - coverage_matrix_ref: /coverage_matrix/560
-      source_path: docs/en/docs/release-notes.md
-      mapping_status: excluded
-      fixture_id: null
-      fixture_design_ref: null
-      observation_selectors: *id002
-    input_workflow_refs: []
-    operation_fixture_refs:
-    - workflow_id: root-alias-identity
-      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
-      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
-      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
-      workload_path: tests/fixtures/workloads/root_alias_identity.py
-      workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
-      case_id: fastapi.types.inc-ex.pydantic-identity
-      observation_selectors:
-      - http.body.bytes
-      - http.status
-    identity_workflow_refs: []
-    feature_ids:
-    - response-serialization
-    observation_selectors:
-    - http.body.bytes
-    - http.status
-    operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.types.IncEx/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
-    target_binding:
-      target_profile: fastapi-rs-python-consumer
-      public_python_path: fastapi.types.IncEx
-      implementation_owner: fastapi-rs
-      implementation_owner_evidence:
-        kind: fastapi_owned_or_adapter
-        source_candidate_refs:
-        - /api_candidates/1610
-      status: partial-contract
-      rust_binding: fastapi-rs/src/application_runtime.rs::register
-      known_gaps:
-      - Pydantic owns IncEx semantics; this mapping only owns the FastAPI import path and object identity.
   - id: fastapi.utils.generate_operation_id_for_path
     kind: function
     source_candidate_ref: /api_candidates/1632
@@ -66117,7 +66052,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -66205,7 +66140,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports
@@ -66295,7 +66230,7 @@ api_surface_contract:
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
       recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-      recipe_sha256: 385a672f06c1e7911502b7edd215272e05e9d14ca9068d89dc4d27c48392e09c
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
       workload_path: tests/fixtures/workloads/root_alias_identity.py
       workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
       case_id: fastapi.root-alias-identity.websocket-reexports

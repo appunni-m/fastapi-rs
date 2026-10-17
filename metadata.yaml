@@ -684,16 +684,16 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: 5dbc76a7a9381c27be5e542fe2510654c6c96a8ae07c17264709c2e24a66dba0
+  sha256: 95fb20ae84c22967431aa68371e2b31831b5fc68648b2aa7ab6e54f446d6f49a
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
     candidates: 183
-    supported: 22
+    supported: 21
     private_or_internal: 127
-    uncertain: 34
+    uncertain: 35
   candidate_ids_sha256: 0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd
 
 classification_atlas:
@@ -4264,37 +4264,6 @@ reviewed_api_contract_overlay:
             included HTTP GET APIRoute are covered. Other route types,
             mutations, public construction, dataclass semantics, `.route`,
             and general forwarded-member behavior are not established.
-    fastapi.types.IncEx:
-      rust_binding: fastapi-rs/src/application_runtime.rs::register
-      target_binding:
-        implementation_owner: fastapi-rs
-        status: partial-contract
-        rust_binding: fastapi-rs/src/application_runtime.rs::register
-        known_gaps:
-          - Pydantic owns IncEx semantics; this mapping only owns the FastAPI import path and object identity.
-      source_evidence:
-        - path: fastapi/types.py
-          symbol: IncEx
-          kind: import-binding
-          line: 7
-          relative_level: 0
-          imported_module: pydantic.main
-          imported_name: IncEx
-          alias_spelling: IncEx
-          local_name: IncEx
-          target_path: pydantic.main.IncEx
-      fixture_refs:
-        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
-          case_id: fastapi.types.inc-ex.pydantic-identity
-          workload_path: tests/fixtures/workloads/root_alias_identity.py
-          observation_selectors: [http.status, http.body.bytes]
-      feature_ids: [response-serialization]
-      observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        `fastapi.types.IncEx` is the exact type alias re-exported from
-        `pydantic.main.IncEx`; the independent HTTP workflow compares that
-        identity relation. Pydantic owns the alias semantics, and FastAPI does
-        not export `IncEx` from the package root.
     fastapi.routing.APIRoute.get_route_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute::get_route_handler
       source_evidence:
