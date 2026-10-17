@@ -10920,7 +10920,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         unmatched_test_functions = [
             {"name": item["qualified_name"], "line": item["line"], "end_line": item["end_line"]}
             for item in test_functions
-            if not item["feature_ids"] and item["mapping_status"] != "excluded"
+            if not exclusion and not item["feature_ids"] and item["mapping_status"] != "excluded"
         ]
         excluded_test_functions = [
             {
