@@ -2136,6 +2136,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor.openapi-tags
           workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
           observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-lifespan-event-suppression-review-20261015.yaml
+          case_id: fastapi.lifecycle.lifespan-suppresses-legacy-events
+          workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, python.warnings, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.workload_trace, http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-schemas.yaml
           case_id: fastapi.openapi.openapi-separate-input-output-schemas.openapi-schema
           workload_path: tests/fixtures/workloads/openapi_schemas.py
@@ -2704,8 +2708,10 @@ reviewed_api_contract_overlay:
         failure outcome/type and underlying exception class/message; raw
         traceback frames are excluded because Starlette-RS owns their rendering.
         The input also compares final ASGI scope state. Other
-        failure modes and combining an explicit lifespan with legacy constructor
-        callbacks are not established. The mounted-subapp case confirms that
+        failure modes remain outside this slice. The
+        lifespan-suppresses-legacy-events input combines an explicit lifespan
+        with constructor startup/shutdown callbacks and legacy event decorators;
+        only the explicit lifespan markers run. The mounted-subapp case confirms that
         the parent lifespan does not start the mounted app.
         TestClient.app_state remains outside this direct-ASGI workflow. The
         `strict_content_type` constructor option is also covered: the default

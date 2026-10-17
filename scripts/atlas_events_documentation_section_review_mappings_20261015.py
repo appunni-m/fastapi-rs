@@ -110,10 +110,10 @@ CASE_ACTION_SCOPES = {
             "request": {"observed": _HTTP_SELECTORS, "fastapi_owned": ()},
         },
         "limit": (
-            "The input supplies both a FastAPI lifespan context and legacy app handlers and "
-            "compares callback markers plus registration warnings. The request is a separate "
-            "action after the complete lifespan action, so no request-gating or interleaving "
-            "claim is made."
+            "The input supplies a FastAPI lifespan context, constructor startup/shutdown "
+            "callbacks, and legacy app handlers, then compares lifecycle markers plus "
+            "registration warnings. The request is a separate action after the complete "
+            "lifespan action, so no request-gating or interleaving claim is made."
         ),
     },
 }

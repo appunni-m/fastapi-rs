@@ -574,7 +574,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 69919a1dddcd831c4daaf9b94b8bd12276a7b1dd847083a426a7a0f085662b14
+    sha256: eb6d2e68e938eae1ea843ff48ea3f15cb5f88c0b8437b7ab986a6920ece6f20c
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 277
-    operation_fixture_refs: 2114
+    operation_fixture_refs: 2115
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -10516,6 +10516,26 @@ api_surface_contract:
       - http.body.bytes
       - http.status
       - openapi.document
+    - workflow_id: fastapi-lifespan-event-suppression-review-20261015
+      input_path: tests/fixtures/inputs/parity/fastapi-lifespan-event-suppression-review-20261015.json
+      input_sha256: ca62088e2a91e8f6f75ef758edfcfcea17c5505a9c53972e8a3d3656308ab6a2
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-lifespan-event-suppression-review-20261015.yaml
+      recipe_sha256: eeb4298397aa74af5b447456d6a9e23e69f007935a228f187d3179f35f78fbe1
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
+      case_id: fastapi.lifecycle.lifespan-suppresses-legacy-events
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+      - python.warnings
     - workflow_id: openapi-schemas
       input_path: tests/fixtures/inputs/parity/openapi-schemas.json
       input_sha256: c186fb1790575eac45f6a8a76b310059a33603805f92af8651294b5b02a6925d
