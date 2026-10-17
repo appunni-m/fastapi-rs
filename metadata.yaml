@@ -966,7 +966,8 @@ starlette_rs:
             - starlette.exception-values.http-subclass-mutable-fields
       scope_note: >-
         These references cover the inherited HTTP exception value contract. FastAPI's
-        additional headers argument and exception-handler integration remain FastAPI-owned.
+        wrapper widens detail to Any and forwards the inherited headers argument;
+        its exception-handler integration remains FastAPI-owned.
     fastapi.exceptions.WebSocketException:
       starlette_symbol: starlette.exceptions.WebSocketException
       target_refs:
@@ -983,7 +984,6 @@ starlette_rs:
     fastapi.responses.ORJSONResponse:
       starlette_symbol: starlette.responses.JSONResponse
       target_refs:
-        - {surface_id: starlette.responses.JSONResponse, operation_id: asgi-call, requirement_scope: all}
         - surface_id: starlette.responses.JSONResponse
           operation_id: consumer-construction
           requirement_ids:
@@ -1001,7 +1001,6 @@ starlette_rs:
     fastapi.responses.UJSONResponse:
       starlette_symbol: starlette.responses.JSONResponse
       target_refs:
-        - {surface_id: starlette.responses.JSONResponse, operation_id: asgi-call, requirement_scope: all}
         - surface_id: starlette.responses.JSONResponse
           operation_id: consumer-construction
           requirement_ids:
@@ -1019,7 +1018,11 @@ starlette_rs:
     fastapi.routing.APIRoute:
       starlette_symbol: starlette.routing.Route
       target_refs:
-        - {surface_id: starlette.routing.Route, operation_id: __call__, requirement_scope: all}
+        - surface_id: starlette.routing.Route
+          operation_id: __call__
+          requirement_ids:
+            - starlette.routing.Route.__call__.standalone-match
+            - starlette.routing.Route.__call__.standalone-not-found
         - {surface_id: starlette.routing.Route, operation_id: url_path_for, requirement_scope: all}
         - {surface_id: starlette.routing.Route, operation_id: value-formatting, requirement_scope: all}
       scope_note: >-
@@ -1043,7 +1046,16 @@ starlette_rs:
     fastapi.routing.APIWebSocketRoute:
       starlette_symbol: starlette.routing.WebSocketRoute
       target_refs:
-        - {surface_id: starlette.routing.WebSocketRoute, operation_id: route-dispatch, requirement_scope: all}
+        - surface_id: starlette.routing.WebSocketRoute
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.WebSocketRoute.route-dispatch.matched-root-path
+            - starlette.routing.WebSocketRoute.route-dispatch.standalone-match
+            - starlette.routing.WebSocketRoute.route-dispatch.standalone-miss-close
+            - starlette.routing.WebSocketRoute.route-dispatch.http-scope-404
+            - starlette.routing.WebSocketRoute.route-dispatch.lone-surrogate-path
+            - starlette.routing.WebSocketRoute.route-dispatch.scope-type-python-equality
+            - starlette.routing.WebSocketRoute.route-dispatch.scope-type-lookup-error-propagation
         - {surface_id: starlette.routing.WebSocketRoute, operation_id: url_path_for, requirement_scope: all}
         - {surface_id: starlette.routing.WebSocketRoute, operation_id: value-formatting, requirement_scope: all}
       scope_note: >-
@@ -1108,10 +1120,19 @@ starlette_rs:
       target_refs:
         - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call, requirement_scope: all}
         - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call-with-execution-trace, requirement_scope: all}
-        - {surface_id: starlette.responses.StreamingResponse, operation_id: consumer-construction, requirement_scope: all}
+        - surface_id: starlette.responses.StreamingResponse
+          operation_id: consumer-construction
+          requirement_ids:
+            - starlette.responses.StreamingResponse.consumer-construction.live-asgi-state-and-lifetime
+            - starlette.responses.StreamingResponse.consumer-construction.attribute-and-header-cache-protocols
+            - starlette.responses.StreamingResponse.consumer-construction.construction-thread-transfer
+            - starlette.responses.StreamingResponse.consumer-construction.user-call-protocols
+            - starlette.responses.StreamingResponse.consumer-construction.asynciterable-classification
+            - starlette.responses.StreamingResponse.consumer-construction.async-iteration-special-method-lookup
       scope_note: >-
         EventSourceResponse adds no methods and inherits generic streaming mechanics.
-        Its SSE framing and default event-stream media type remain FastAPI-owned.
+        Its SSE framing and default event-stream media type remain FastAPI-owned;
+        the generic construction link omits the base StreamingResponse render requirement.
   behavior_crosswalks:
     fastapi.routing.get_route_path:
       kind: private-helper-behavior
