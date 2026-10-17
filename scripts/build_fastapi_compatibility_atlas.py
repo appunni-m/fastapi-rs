@@ -128,6 +128,8 @@ TEST_REVIEW_MAPPINGS = {
             "asgi.lifespan.shutdown",
             "asgi.lifespan.application_errors",
             "asgi.lifespan.workload_trace",
+            "asgi.lifespan.startup_contract",
+            "asgi.lifespan.scope_state",
             "http.status",
             "http.body.bytes",
             "python.warnings",

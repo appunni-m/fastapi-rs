@@ -39,6 +39,7 @@ WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow@10"
 WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow@11"
 WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow@12"
 WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow@13"
+WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow@14"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -51,6 +52,7 @@ RESULT_SCHEMA_V10_ID = "fastapi-rs/python-asgi-workflow-result@10"
 RESULT_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow-result@11"
 RESULT_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow-result@12"
 RESULT_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow-result@13"
+RESULT_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow-result@14"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -783,6 +785,7 @@ def _observe_lifespan(
     lifecycle_results: dict[str, dict[str, Any]],
     application_errors: list[dict[str, str]],
     workload_trace: list[str],
+    scope_state: dict[str, Any],
 ) -> list[dict[str, Any]]:
     event_order = [
         f"{event['stage']}:{event['direction']}:{event['type']}" for event in protocol_event_trace
@@ -795,6 +798,24 @@ def _observe_lifespan(
             values = {"event_order": event_order}
         elif selector in {"startup", "shutdown"}:
             values = {selector: copy.deepcopy(lifecycle_results[selector])}
+        elif selector == "startup_contract":
+            startup_error = next(
+                (
+                    {"class": error["class"], "message": error["message"]}
+                    for error in application_errors
+                    if error["stage"] == "startup"
+                ),
+                None,
+            )
+            values = {
+                "startup_contract": {
+                    "outcome": lifecycle_results["startup"]["outcome"],
+                    "response_type": lifecycle_results["startup"]["response_type"],
+                    "exception": startup_error,
+                }
+            }
+        elif selector == "scope_state":
+            values = {"scope_state": copy.deepcopy(scope_state)}
         elif selector == "application_errors":
             values = {"application_errors": copy.deepcopy(application_errors)}
         elif selector == "workload_trace":
@@ -1438,6 +1459,7 @@ async def _run_lifespan_action_v3(
                 lifecycle_results,
                 application_errors,
                 workload_trace,
+                scope["state"],
             ),
         },
         selected=capture_warnings,
@@ -1645,6 +1667,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
+        WORKFLOW_SCHEMA_V14_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1666,6 +1689,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
+        WORKFLOW_SCHEMA_V14_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1681,6 +1705,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
+        WORKFLOW_SCHEMA_V14_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1696,6 +1721,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
+                WORKFLOW_SCHEMA_V14_ID,
             }
             else []
         )
@@ -1710,11 +1736,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
+                WORKFLOW_SCHEMA_V14_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V13_ID
+            RESULT_SCHEMA_V14_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V14_ID
+            else RESULT_SCHEMA_V13_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V13_ID
             else RESULT_SCHEMA_V12_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V12_ID

@@ -1,11 +1,12 @@
 # FastAPI 0.141.1 input-only coverage for nested lifespan entry failure cleanup.
-schema: fastapi-rs/python-asgi-workflow@4
+schema: fastapi-rs/python-asgi-workflow@14
 workload:
   file: tests/fixtures/workloads/router_events_lifespan_upstream.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent
+  verification: parity
   factory_input:
     application:
       lifespan:
@@ -28,11 +29,13 @@ cases:
   - action_id: lifespan
     kind: lifespan
     events: [lifespan.startup, lifespan.shutdown]
+    initial_state: {probe: seeded-before-startup}
     observations:
     - {kind: asgi_lifespan, selector: event_order, comparison: ordered}
-    - {kind: asgi_lifespan, selector: startup, comparison: exact}
+    - {kind: asgi_lifespan, selector: startup_contract, comparison: exact}
     - {kind: asgi_lifespan, selector: shutdown, comparison: exact}
     - {kind: asgi_lifespan, selector: application_errors, comparison: exact}
     - {kind: asgi_lifespan, selector: workload_trace, comparison: ordered}
+    - {kind: asgi_lifespan, selector: scope_state, comparison: exact}
   source_evidence:
   - {path: tests/test_router_events.py, kind: upstream_test}

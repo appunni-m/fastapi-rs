@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 9c12baa900443766e0e8e87432ed0067d53be3b946a560e5ae32f9f1b2b660dc
+    sha256: 580334d82e0cd83e99566bf01b4ae150be6c13389b024baaf93d04b3b86485e7
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 51d0c471d026a5989ae3a0d934791491c2fc9480055054a3c34b0d9ed1aa8c75
+    sha256: 47bb2bf3ca6ca8f5203c2b5f5604b046455b177cc81316faf8b212c6564bb08c
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -546,10 +546,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 1030006d045844baea92b0c953c1f931dae9e72f60a6cbf632343fa98d5dce95
+    sha256: e215d0529bea6aa2f0d229c585eef733c7d1ba87211de4f856296a750eac0b71
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 53
+      selectors: 55
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -574,7 +574,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 1c84539ce163b2e7ccee16f6759130e4e0dd282256588419258f52bcfad245a3
+    sha256: 8754b15b1c51dc15843331cc7d42a94ee631d793514c25caee61d56aff980886
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -867,6 +867,21 @@ unresolved:
     coverage: >-
       Adds a strict parsed JSON response-body projection with a tagged exact
       base64 representation for response bodies that are not strict JSON.
+  python_asgi_workflow_v14:
+    state: reviewed-lifespan-state-and-startup-contract-observations; v2-v14-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@14
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v14.schema.json
+    schema_sha256: 37febc180673bbac4c44b6fe2cf7c69bfada6973c396134a936c623eda30d42d
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@14
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v14.schema.json
+    result_schema_sha256: 9f4a297734adba2c0141d084ddd53733be68ddd957e90d841030efc8cd11ccf7
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@15
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v15.schema.json
+    comparison_schema_sha256: c49071cbfae331fdedda556cff6272450b33edfa758d7d1ae241ea448c3b9f17
+    coverage: >-
+      Adds explicit final ASGI lifespan scope-state and startup-contract
+      observations; the latter compares status/type and exact application
+      exception details while excluding sibling-owned traceback frames.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1
@@ -1739,9 +1754,9 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
-      - The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message;
-        traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned
-        parity gap.
+      - The included-lifespan startup-contract selector compares exact failure outcome/type and underlying
+        exception class/message while excluding Starlette-RS-owned traceback frames; final ASGI scope
+        state and cleanup are compared.
   - id: fastapi.BackgroundTasks
     kind: import_binding
     source_candidate_ref: /api_candidates/1
@@ -16197,17 +16212,18 @@ api_surface_contract:
       - http.status
     - workflow_id: router-lifespan-startup-suppression
       input_path: tests/fixtures/inputs/parity/router-lifespan-startup-suppression.json
-      input_sha256: 095597610ad7cd8b11068863a5410179eb4a6cfdabf2a2b91d651504dd22749a
+      input_sha256: d6b260e38a38da3d9bb3bac65bb95f9759467389b65db22138e09658e9126291
       recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml
-      recipe_sha256: 14773cc3ddef879e083e066b6bbc69cc73176851a6fa2d74c4ff7516be11aaf1
+      recipe_sha256: 2be0e466bd9f97114edcde67c530affcdce8ddf87fddaf9838bd65bec9179fd9
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
       workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent
       observation_selectors:
       - asgi.lifespan.application_errors
       - asgi.lifespan.event_order
+      - asgi.lifespan.scope_state
       - asgi.lifespan.shutdown
-      - asgi.lifespan.startup
+      - asgi.lifespan.startup_contract
       - asgi.lifespan.workload_trace
       - construction.exception_class
       - construction.exception_message
@@ -16780,8 +16796,10 @@ api_surface_contract:
     - asgi.application_error.exception
     - asgi.lifespan.application_errors
     - asgi.lifespan.event_order
+    - asgi.lifespan.scope_state
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
+    - asgi.lifespan.startup_contract
     - asgi.lifespan.workload_trace
     - asgi.send.message_types
     - construction.exception_class
@@ -16845,9 +16863,9 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
-      - The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message;
-        traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned
-        parity gap.
+      - The included-lifespan startup-contract selector compares exact failure outcome/type and underlying
+        exception class/message while excluding Starlette-RS-owned traceback frames; final ASGI scope
+        state and cleanup are compared.
   - id: fastapi.applications.FastAPI.middleware
     kind: method
     source_candidate_ref: /api_candidates/208
@@ -53447,17 +53465,18 @@ api_surface_contract:
       - http.status
     - workflow_id: router-lifespan-startup-suppression
       input_path: tests/fixtures/inputs/parity/router-lifespan-startup-suppression.json
-      input_sha256: 095597610ad7cd8b11068863a5410179eb4a6cfdabf2a2b91d651504dd22749a
+      input_sha256: d6b260e38a38da3d9bb3bac65bb95f9759467389b65db22138e09658e9126291
       recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml
-      recipe_sha256: 14773cc3ddef879e083e066b6bbc69cc73176851a6fa2d74c4ff7516be11aaf1
+      recipe_sha256: 2be0e466bd9f97114edcde67c530affcdce8ddf87fddaf9838bd65bec9179fd9
       workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
       workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
       case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent
       observation_selectors:
       - asgi.lifespan.application_errors
       - asgi.lifespan.event_order
+      - asgi.lifespan.scope_state
       - asgi.lifespan.shutdown
-      - asgi.lifespan.startup
+      - asgi.lifespan.startup_contract
       - asgi.lifespan.workload_trace
       - construction.exception_class
       - construction.exception_message
@@ -53625,8 +53644,10 @@ api_surface_contract:
     - asgi.application_error.exception
     - asgi.lifespan.application_errors
     - asgi.lifespan.event_order
+    - asgi.lifespan.scope_state
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
+    - asgi.lifespan.startup_contract
     - asgi.lifespan.workload_trace
     - asgi.send.message_types
     - construction.exception_class
@@ -53669,9 +53690,9 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
-      - The included-lifespan startup-suppression case compares the exact lifespan.startup.failed.message;
-        traceback formatting differs between Python Starlette and Starlette-RS and remains a sibling-owned
-        parity gap.
+      - The included-lifespan startup-contract selector compares exact failure outcome/type and underlying
+        exception class/message while excluding Starlette-RS-owned traceback frames; final ASGI scope
+        state and cleanup are compared.
   - id: fastapi.routing.APIRouter.on_event
     kind: method
     source_candidate_ref: /api_candidates/1125
