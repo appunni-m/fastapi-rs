@@ -7411,11 +7411,11 @@ def source_ref_lookup(starlette_source: Path, symbol: str) -> dict[str, Any]:
         ref["status"] = "module-surface"
         return ref
     pattern = re.compile(
-        r"^\s*(?:async\s+)?(?:def|class)\s+"
+        r"^[ \t]*(?:async[ \t]+)?(?:def|class)[ \t]+"
         + re.escape(name)
-        + r"\b|^\s*"
+        + r"\b|^[ \t]*"
         + re.escape(name)
-        + r"\s*=",
+        + r"[ \t]*=",
         re.M,
     )
     text = path.read_text(encoding="utf-8", errors="replace")
