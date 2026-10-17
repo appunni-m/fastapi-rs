@@ -737192,22 +737192,53 @@
       "starlette_rs_integration_operation_refs": {
         "fastapi_source_uses": [
           {
+            "expression": "dependant.query_params, request.query_params",
+            "line": 685,
+            "path": "fastapi/dependencies/utils.py"
+          },
+          {
+            "expression": "value = values.getlist(alias)",
+            "line": 758,
+            "path": "fastapi/dependencies/utils.py"
+          },
+          {
+            "expression": "value = values.get(alias, None)",
+            "line": 760,
+            "path": "fastapi/dependencies/utils.py"
+          },
+          {
             "expression": "received_params: Mapping[str, Any] | QueryParams | Headers,",
             "line": 782,
             "path": "fastapi/dependencies/utils.py"
+          },
+          {
+            "expression": "for key in received_params.keys():",
+            "line": 830,
+            "path": "fastapi/dependencies/utils.py"
+          },
+          {
+            "expression": "value = received_params.getlist(key)",
+            "line": 833,
+            "path": "fastapi/dependencies/utils.py"
           }
         ],
-        "scope_note": "FastAPI accepts Starlette QueryParams in its dependency parameter extraction boundary. This is an ownership link only.",
+        "scope_note": "FastAPI passes request.query_params into dependency parameter extraction and consumes scalar lookup, repeated-value lookup, and key iteration through the shared immutable-multidict interface. The sibling requirement is limited to these consumed operations; this ownership link does not assert FastAPI-RS parity.",
         "starlette_symbol": "starlette.datastructures.QueryParams",
         "target_operation_refs": [
           {
             "contract_id": "starlette-1.6.0-full",
             "operation_id": "construction-and-mapping-sequence",
             "relationship": "exact generic Starlette operation used by FastAPI; FastAPI-RS parity remains FastAPI-owned",
-            "requirement_ids": [],
+            "requirement_ids": [
+              "starlette.datastructures.QueryParams.immutable-multidict-lookup-and-iteration"
+            ],
             "source_path": "starlette.datastructures.QueryParams.__init__, QueryParams.__getitem__, QueryParams.__eq__, QueryParams.__str__, and QueryParams.__repr__",
             "source_use_lines": [
-              782
+              685,
+              758,
+              760,
+              830,
+              833
             ],
             "surface_id": "starlette.datastructures.QueryParams",
             "target_support": {

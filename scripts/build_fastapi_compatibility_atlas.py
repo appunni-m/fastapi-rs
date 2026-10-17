@@ -4068,9 +4068,8 @@ for test_path, source_review in REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS.items():
         reason = exclusion["reason"]
         existing_reason = TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).get(function_name)
         if existing_reason is not None and existing_reason != reason:
-            raise AtlasError(
-                "conflicting request-parameter exclusion for %s::%s"
-                % (test_path, function_name)
+            raise ValueError(
+                "conflicting request-parameter exclusion for %s::%s" % (test_path, function_name)
             )
         TEST_FUNCTION_EXCLUSIONS[test_path][function_name] = reason
         exclusion_evidence = TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {})
@@ -9494,7 +9493,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             for reference in target_refs:
                 if (
                     not isinstance(reference, dict)
-                    or set(reference) != {"surface_id", "operation_id", "source_use_lines"}
+                    or set(reference)
+                    not in (
+                        {"surface_id", "operation_id", "source_use_lines"},
+                        {"surface_id", "operation_id", "requirement_ids", "source_use_lines"},
+                    )
                     or not isinstance(reference.get("surface_id"), str)
                     or not isinstance(reference.get("operation_id"), str)
                     or reference.get("operation_id") == "route-dispatch"
@@ -9502,6 +9505,19 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     or not reference["source_use_lines"]
                     or reference["source_use_lines"] != sorted(set(reference["source_use_lines"]))
                     or any(line not in source_lines for line in reference["source_use_lines"])
+                    or (
+                        "requirement_ids" in reference
+                        and (
+                            not isinstance(reference["requirement_ids"], list)
+                            or not reference["requirement_ids"]
+                            or any(
+                                not isinstance(requirement_id, str) or not requirement_id
+                                for requirement_id in reference["requirement_ids"]
+                            )
+                            or len(reference["requirement_ids"])
+                            != len(set(reference["requirement_ids"]))
+                        )
+                    )
                 ):
                     raise AtlasError(
                         "Starlette exact operation reference is malformed: " + fastapi_id
@@ -9509,7 +9525,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 operation_ref = starlette_contract_operation_ref(
                     reference["surface_id"],
                     reference["operation_id"],
-                    [],
+                    reference.get("requirement_ids", []),
                     "exact generic Starlette operation used by FastAPI; FastAPI-RS parity remains FastAPI-owned",
                 )
                 operation_ref["source_use_lines"] = reference["source_use_lines"]

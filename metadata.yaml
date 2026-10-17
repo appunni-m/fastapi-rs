@@ -985,12 +985,20 @@ starlette_rs:
     fastapi.dependencies.utils.QueryParams:
       starlette_symbol: starlette.datastructures.QueryParams
       fastapi_source_uses:
+        - {path: fastapi/dependencies/utils.py, line: 685, expression: "dependant.query_params, request.query_params"}
+        - {path: fastapi/dependencies/utils.py, line: 758, expression: "value = values.getlist(alias)"}
+        - {path: fastapi/dependencies/utils.py, line: 760, expression: "value = values.get(alias, None)"}
         - {path: fastapi/dependencies/utils.py, line: 782, expression: "received_params: Mapping[str, Any] | QueryParams | Headers,"}
+        - {path: fastapi/dependencies/utils.py, line: 830, expression: "for key in received_params.keys():"}
+        - {path: fastapi/dependencies/utils.py, line: 833, expression: "value = received_params.getlist(key)"}
       target_refs:
-        - {surface_id: starlette.datastructures.QueryParams, operation_id: construction-and-mapping-sequence, source_use_lines: [782]}
+        - {surface_id: starlette.datastructures.QueryParams, operation_id: construction-and-mapping-sequence, requirement_ids: [starlette.datastructures.QueryParams.immutable-multidict-lookup-and-iteration], source_use_lines: [685, 758, 760, 830, 833]}
       scope_note: >-
-        FastAPI accepts Starlette QueryParams in its dependency parameter extraction
-        boundary. This is an ownership link only.
+        FastAPI passes request.query_params into dependency parameter extraction
+        and consumes scalar lookup, repeated-value lookup, and key iteration
+        through the shared immutable-multidict interface. The sibling requirement
+        is limited to these consumed operations; this ownership link does not
+        assert FastAPI-RS parity.
     fastapi.routing.Response:
       starlette_symbol: starlette.responses.Response
       fastapi_source_uses:
