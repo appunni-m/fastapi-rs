@@ -5946,6 +5946,12 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
           case_id: fastapi.dependencies.override-resolution
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-scalar-header.yaml
+          case_id: fastapi.dependency-overrides.scalar-header.valid
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-scalar-header.yaml
+          case_id: fastapi.dependency-overrides.scalar-header.invalid
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-scalar-header.yaml
+          case_id: fastapi.dependency-overrides.scalar-header.missing
       documentation_contract_refs:
         - source_path: docs/en/docs/advanced/testing-dependencies.md
           fixture_id: fastapi.docs.advanced-testing-dependencies
@@ -5954,12 +5960,16 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         The input replaces one dependency through the documented app-level
         dictionary and observes the selected request's status and response
-        body. Other override-map uses and interactions remain outside this slice.
+        body. An independent input also observes an override adding a required
+        scalar integer Header, including its converted header name, valid
+        value, missing and invalid validation responses, and the fact that
+        failed validation prevents invocation. Other override-map uses and
+        input types remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The linked input covers one dependency override and its request result; other override-map use sites and dependency reanalysis interactions remain outside this slice.
+          - The linked inputs cover one ordinary override and one replacement signature adding a scalar Header; nested or other reanalysis interactions and replacement input types remain outside this slice.
     fastapi.applications.FastAPI.openapi_schema:
       source_evidence:
         - path: fastapi/applications.py

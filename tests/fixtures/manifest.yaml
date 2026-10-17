@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: a2ff7fd9a94c2d98bc051c08e825f6ec9f0c870b64344a7691ec7f526c3a0f1a
+    sha256: e7e3e79a0beec9ceb7888fa4dbfc04c47e39c9cb33354193c65199f0d623b563
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 661e9e47bfd6d34274d3b88666b28a8d2990f191a20f05f1835d509a798040a2
+    sha256: 43bd46ba0f03565a21501c8484ced309da34544be4eec3901d2cc816a2267950
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: ba5f3846894355b032b3cd392756f113661b4d3729d3a8a8d693938743be4719
+    sha256: 33a996ddc6d0111174988288441055098b0dee7152326345630e2ba0096d95ed
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 660
-      cases: 2678
-      partial_source_mappings: 1903
+      workflows: 661
+      cases: 2681
+      partial_source_mappings: 1905
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2070
+    operation_fixture_refs: 2073
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -12901,6 +12901,48 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: dependency-override-scalar-header
+      input_path: tests/fixtures/inputs/parity/dependency-override-scalar-header.json
+      input_sha256: 4072fb23f7905d407fd82cdebb99b544f9a2b44cd7a80708c596e68ee4fa1cd9
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-scalar-header.yaml
+      recipe_sha256: abfb1b7434f66a593fa8671669326eba659ebad38c1b6b1d1e88801a60541f19
+      workload_path: tests/fixtures/workloads/dependency_override_scalar_header.py
+      workload_sha256: 2b05246164781d2aed11a4ae632cabf870eeef4e3473774bdd212ef49ed51ede
+      case_id: fastapi.dependency-overrides.scalar-header.valid
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-scalar-header
+      input_path: tests/fixtures/inputs/parity/dependency-override-scalar-header.json
+      input_sha256: 4072fb23f7905d407fd82cdebb99b544f9a2b44cd7a80708c596e68ee4fa1cd9
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-scalar-header.yaml
+      recipe_sha256: abfb1b7434f66a593fa8671669326eba659ebad38c1b6b1d1e88801a60541f19
+      workload_path: tests/fixtures/workloads/dependency_override_scalar_header.py
+      workload_sha256: 2b05246164781d2aed11a4ae632cabf870eeef4e3473774bdd212ef49ed51ede
+      case_id: fastapi.dependency-overrides.scalar-header.invalid
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-scalar-header
+      input_path: tests/fixtures/inputs/parity/dependency-override-scalar-header.json
+      input_sha256: 4072fb23f7905d407fd82cdebb99b544f9a2b44cd7a80708c596e68ee4fa1cd9
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-scalar-header.yaml
+      recipe_sha256: abfb1b7434f66a593fa8671669326eba659ebad38c1b6b1d1e88801a60541f19
+      workload_path: tests/fixtures/workloads/dependency_override_scalar_header.py
+      workload_sha256: 2b05246164781d2aed11a4ae632cabf870eeef4e3473774bdd212ef49ed51ede
+      case_id: fastapi.dependency-overrides.scalar-header.missing
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -12950,8 +12992,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: null
       known_gaps:
-      - The linked input covers one dependency override and its request result; other override-map use
-        sites and dependency reanalysis interactions remain outside this slice.
+      - The linked inputs cover one ordinary override and one replacement signature adding a scalar Header;
+        nested or other reanalysis interactions and replacement input types remain outside this slice.
   - id: fastapi.applications.FastAPI.exception_handler
     kind: method
     source_candidate_ref: /api_candidates/200

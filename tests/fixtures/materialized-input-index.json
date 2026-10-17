@@ -5234,6 +5234,46 @@
       ]
     },
     {
+      "id": "dependency-override-scalar-header",
+      "input_path": "tests/fixtures/inputs/parity/dependency-override-scalar-header.json",
+      "input_sha256": "4072fb23f7905d407fd82cdebb99b544f9a2b44cd7a80708c596e68ee4fa1cd9",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-scalar-header.yaml",
+      "recipe_sha256": "abfb1b7434f66a593fa8671669326eba659ebad38c1b6b1d1e88801a60541f19",
+      "case_ids": [
+        "fastapi.dependency-overrides.scalar-header.valid",
+        "fastapi.dependency-overrides.scalar-header.invalid",
+        "fastapi.dependency-overrides.scalar-header.missing"
+      ],
+      "workload_path": "tests/fixtures/workloads/dependency_override_scalar_header.py",
+      "workload_sha256": "2b05246164781d2aed11a4ae632cabf870eeef4e3473774bdd212ef49ed51ede",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.dependency-overrides.scalar-header.valid",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py",
+            "source:upstream-test:tests/test_request_params/test_header/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.scalar-header.invalid",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py",
+            "source:upstream-test:tests/test_request_params/test_header/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.scalar-header.missing",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py",
+            "source:upstream-test:tests/test_request_params/test_header/test_required_str.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "dependency-override-signature-reanalysis",
       "input_path": "tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json",
       "input_sha256": "7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3",
@@ -42072,6 +42112,38 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.override-mixed-sync-async-direct-order-request-local"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-override-scalar-header",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.scalar-header.invalid",
+        "fastapi.dependency-overrides.scalar-header.missing",
+        "fastapi.dependency-overrides.scalar-header.valid"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_header/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-header-test-required-str",
+      "workflow_id": "dependency-override-scalar-header",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.scalar-header.invalid",
+        "fastapi.dependency-overrides.scalar-header.missing",
+        "fastapi.dependency-overrides.scalar-header.valid"
       ],
       "observation_selectors": [
         "http.body.bytes",

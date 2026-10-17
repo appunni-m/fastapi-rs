@@ -11494,6 +11494,20 @@ impl CallablePlan {
                 } else {
                     Some(header_values)
                 }
+            } else if source == InputSource::Header {
+                let connection = context.request.or(context.websocket).ok_or_else(|| {
+                    PyRuntimeError::new_err(
+                        "header parameter requires an HTTP or WebSocket connection",
+                    )
+                })?;
+                let header_value = connection
+                    .getattr("headers")?
+                    .call_method1("get", (alias,))?;
+                if header_value.is_none() {
+                    None
+                } else {
+                    Some(header_value)
+                }
             } else {
                 context.inputs.get_item(&parameter.name)?
             };
