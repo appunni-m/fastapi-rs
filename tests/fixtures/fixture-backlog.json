@@ -4023,6 +4023,7 @@
       "feature_ids": [
         "app-routing",
         "openapi-docs",
+        "request-body",
         "request-validation"
       ],
       "id": "fastapi.docs-example.body-tutorial001-py310",
@@ -4062,6 +4063,13 @@
           ]
         },
         {
+          "feature_id": "request-body",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
           "feature_id": "request-validation",
           "selectors": [
             "http.body.bytes",
@@ -4090,6 +4098,7 @@
       "stimulus_design": [
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Declare body parameters and media types, submit independent request bodies, and inspect validation or OpenAPI projections.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "stimulus_design_notes": "The FastAPI 0.141.1 example accepts a typed model body with two required and two optional fields, then returns that model. The independent catalog cases exercise a complete body and the required-fields-only form on another route, observing response status and body only; they do not claim the source field names, exact values, validation boundaries, or OpenAPI document."
@@ -4098,6 +4107,7 @@
       "feature_ids": [
         "app-routing",
         "openapi-docs",
+        "request-body",
         "request-validation"
       ],
       "id": "fastapi.docs-example.body-tutorial002-py310",
@@ -4137,6 +4147,13 @@
           ]
         },
         {
+          "feature_id": "request-body",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
           "feature_id": "request-validation",
           "selectors": [
             "http.body.bytes",
@@ -4165,6 +4182,7 @@
       "stimulus_design": [
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Declare body parameters and media types, submit independent request bodies, and inspect validation or OpenAPI projections.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "stimulus_design_notes": "The FastAPI 0.141.1 example binds a model body, dumps its fields, and conditionally adds a computed response field when the optional tax value is supplied. The independent quote cases sample both optional-value branches with another model and route, observing status/body only. The arithmetic is application-owned and is not claimed as FastAPI behavior; source field names, values, and OpenAPI are also outside this mapping."
@@ -4173,6 +4191,7 @@
       "feature_ids": [
         "app-routing",
         "openapi-docs",
+        "request-body",
         "request-validation"
       ],
       "id": "fastapi.docs-example.body-tutorial003-py310",
@@ -4211,6 +4230,13 @@
           ]
         },
         {
+          "feature_id": "request-body",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
           "feature_id": "request-validation",
           "selectors": [
             "http.body.bytes",
@@ -4239,6 +4265,7 @@
       "stimulus_design": [
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Declare body parameters and media types, submit independent request bodies, and inspect validation or OpenAPI projections.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "stimulus_design_notes": "The documented model requires name and price, permits optional description and tax, and the PUT handler returns the submitted model fields. The linked complete record case exercises that documented request and response; boundary probes are not mapped as direct examples."
@@ -4247,6 +4274,7 @@
       "feature_ids": [
         "app-routing",
         "openapi-docs",
+        "request-body",
         "request-validation"
       ],
       "id": "fastapi.docs-example.body-tutorial004-py310",
@@ -4286,6 +4314,13 @@
           ]
         },
         {
+          "feature_id": "request-body",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
           "feature_id": "request-validation",
           "selectors": [
             "http.body.bytes",
@@ -4314,6 +4349,7 @@
       "stimulus_design": [
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Declare body parameters and media types, submit independent request bodies, and inspect validation or OpenAPI projections.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "stimulus_design_notes": "The FastAPI 0.141.1 example binds an integer path parameter, a Pydantic request body, and an optional query value. The independent revision cases exercise those three request inputs with and without the optional query value, observing response status/body only. The route's result assembly is application-owned; exact source names, values, and OpenAPI are outside this mapping."
@@ -87655,6 +87691,15 @@
           ]
         },
         {
+          "feature_id": "request-body",
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "validation.error_class",
+            "validation.error_details"
+          ]
+        },
+        {
           "feature_id": "request-validation",
           "selectors": [
             "http.body.bytes",
@@ -88679,6 +88724,7 @@
       "feature_ids": [
         "app-routing",
         "openapi-docs",
+        "request-body",
         "request-validation"
       ],
       "id": "fastapi.docs.tutorial-body",
@@ -88975,6 +89021,15 @@
           ]
         },
         {
+          "feature_id": "request-body",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.request_schema"
+          ]
+        },
+        {
           "feature_id": "request-validation",
           "selectors": [
             "http.body.bytes",
@@ -89100,6 +89155,7 @@
       "stimulus_design": [
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Declare body parameters and media types, submit independent request bodies, and inspect validation or OpenAPI projections.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "workflow_scope_notes": []

@@ -2084,7 +2084,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     },
     "tutorial/body.md": {
         "replace_features": True,
-        "feature_ids": ["app-routing", "openapi-docs", "request-validation"],
+        "feature_ids": [
+            "app-routing",
+            "openapi-docs",
+            "request-body",
+            "request-validation",
+        ],
         "observation_selectors": [
             "http.body.bytes",
             "http.headers.ordered",

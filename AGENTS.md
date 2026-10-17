@@ -18,8 +18,9 @@
   and value conversion. Enforce with `make python-facade-check`.
 - For Rust changes, forbid unsafe and blanket lint suppressions; run
   `make fmt clippy` and static contract checks. Keep zero unit tests; never run
-  pytest, unittest, or Cargo test. Verify with live identity-checked parity
-  and static contract checks.
+  pytest, unittest, or Cargo test. Run only checks required for the changed
+  contract; require focused identity-checked parity for behavior changes and
+  don't repeat broad suites for unrelated edits.
 - Map recursive dependencies by feature, purpose, version, native/language
   parts, license, and runtime/optional/build/dev role. Author parity recipes as
   YAML under `tests/fixtures/input-recipes/`; include no expected outputs.
