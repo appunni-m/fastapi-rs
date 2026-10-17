@@ -560,7 +560,7 @@ enum ParameterSource {
     BackgroundTasks,
     SecurityScopes,
     Dependency {
-        plan: Box<CallablePlan>,
+        plan: Arc<CallablePlan>,
         use_cache: Py<PyAny>,
         scope: Option<String>,
         security_scopes: Vec<String>,
@@ -640,7 +640,7 @@ impl ParameterSource {
                 security_scopes,
                 bind_value,
             } => Self::Dependency {
-                plan: Box::new(plan.clone_ref(py)),
+                plan: Arc::clone(plan),
                 use_cache: use_cache.clone_ref(py),
                 scope: scope.clone(),
                 security_scopes: security_scopes.clone(),
@@ -729,7 +729,11 @@ impl CallablePlan {
         }
     }
 
-    fn inherit_oauth_scopes(&mut self, parent_scopes: &[String], own_scopes: &[String]) {
+    fn inherit_oauth_scopes(
+        &mut self,
+        parent_scopes: &[String],
+        own_scopes: &[String],
+    ) -> PyResult<()> {
         self.own_oauth_scopes = own_scopes.to_vec();
         self.oauth_scopes = parent_scopes.to_vec();
         for scope in own_scopes {
@@ -744,9 +748,16 @@ impl CallablePlan {
                 ..
             } = &mut parameter.source
             {
-                plan.inherit_oauth_scopes(&self.oauth_scopes, security_scopes);
+                Arc::get_mut(plan)
+                    .ok_or_else(|| {
+                        PyRuntimeError::new_err(
+                            "dependency plan is shared during scope inheritance",
+                        )
+                    })?
+                    .inherit_oauth_scopes(&self.oauth_scopes, security_scopes)?;
             }
         }
+        Ok(())
     }
 
     fn uses_oauth_scopes(&self) -> bool {
@@ -814,7 +825,7 @@ impl CallablePlan {
         )?;
         // The replacement receives the original edge's effective scopes as
         // inherited scopes; its outer cache identity still belongs to that edge.
-        plan.inherit_oauth_scopes(&self.oauth_scopes, &[]);
+        plan.inherit_oauth_scopes(&self.oauth_scopes, &[])?;
         Ok(Some(plan))
     }
 }
@@ -10815,7 +10826,7 @@ impl CallablePlan {
             oauth_scopes: Vec::new(),
             is_security_scheme,
         };
-        plan.inherit_oauth_scopes(&[], &[]);
+        plan.inherit_oauth_scopes(&[], &[])?;
         Ok(plan)
     }
 
@@ -10850,7 +10861,13 @@ impl CallablePlan {
                     "router dependencies must be Depends declarations",
                 ));
             };
-            plan.inherit_oauth_scopes(&self.oauth_scopes, &security_scopes);
+            Arc::get_mut(&mut plan)
+                .ok_or_else(|| {
+                    PyRuntimeError::new_err(
+                        "new dependency plan is shared during scope inheritance",
+                    )
+                })?
+                .inherit_oauth_scopes(&self.oauth_scopes, &security_scopes)?;
             parameters.push(CallableParameter {
                 name: String::new(),
                 annotation,
@@ -12305,7 +12322,7 @@ fn parameter_source(
         let path_names = path_parameters.to_vec();
         return CallablePlan::build(py, dependency, &path_names, scope.clone()).map(|plan| {
             ParameterSource::Dependency {
-                plan: Box::new(plan),
+                plan: Arc::new(plan),
                 use_cache,
                 scope,
                 security_scopes,
