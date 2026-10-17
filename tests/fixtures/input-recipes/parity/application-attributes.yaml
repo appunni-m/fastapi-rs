@@ -70,3 +70,20 @@ cases:
     receive_events: *attributes-empty-request
     observations: *attributes-json-response
   source_evidence: *attributes-source-evidence
+
+- case_id: fastapi.application.attributes.summary-mutation-before-openapi
+  verification: parity
+  factory_input:
+    summary: Initial summary
+    _summary_after_init: Updated summary
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-mutated-summary-before-openapi
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  source_evidence: *attributes-source-evidence
