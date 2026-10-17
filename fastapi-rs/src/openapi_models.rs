@@ -130,7 +130,7 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
             } => {
                 let model = create_model(py, &namespace, name, base, fields, *extra_allow)?;
                 namespace.set_item(name, &model)?;
-                models.push(model.unbind());
+                models.push((*name, model.unbind()));
             }
             GraphDefinition::Enum { name, members } => {
                 namespace.set_item(name, create_enum(py, name, members)?)?;
@@ -147,7 +147,7 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
                     .getattr("create_model")?
                     .call(("Schema",), Some(options))?;
                 namespace.set_item("Schema", &model)?;
-                models.push(model.unbind());
+                models.push(("Schema", model.unbind()));
             }
             GraphDefinition::Example(fields) => {
                 namespace.set_item("Example", create_example(py, &namespace, fields)?)?;
@@ -157,7 +157,13 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
 
     let options = PyDict::new(py);
     options.set_item("_types_namespace", &namespace)?;
-    for model in models {
+    for (name, model) in models {
+        // FastAPI 0.141.1 leaves MediaType incomplete after import because it
+        // was declared against the not-yet-rebuilt Schema. Pydantic therefore
+        // exposes only **extra_data in its captured constructor signature.
+        if name == "MediaType" {
+            continue;
+        }
         model
             .bind(py)
             .call_method("model_rebuild", (), Some(&options))?;

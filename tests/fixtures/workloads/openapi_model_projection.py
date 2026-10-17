@@ -117,12 +117,52 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [],
             "kwargs": {"explode": "sometimes"},
         },
+        "media-type": {
+            "args": [],
+            "kwargs": {
+                "schema": {
+                    "type": "string",
+                    "title": "Media type schema",
+                    "x-schema-source": "input-defined",
+                },
+                "example": {"kind": "pet", "name": "Momo"},
+                "examples": {
+                    "pet": {
+                        "summary": "Example pet",
+                        "value": {"kind": "pet", "name": "Momo"},
+                        "x-example-source": "input-defined",
+                    },
+                    "shared": {"$ref": "#/components/examples/shared"},
+                },
+                "encoding": {
+                    "application/json": {
+                        "contentType": "application/json",
+                        "headers": {
+                            "Trace-Id": {
+                                "description": "Request tracing identifier",
+                                "required": True,
+                            },
+                            "Common": {"$ref": "#/components/headers/Common"},
+                        },
+                        "style": "form",
+                        "explode": True,
+                        "allowReserved": False,
+                    }
+                },
+                "x-media-type-source": "input-defined",
+            },
+        },
+        "media-type-defaults": {"args": [], "kwargs": {}},
+        "media-type-invalid-schema": {
+            "args": [],
+            "kwargs": {"schema": 1},
+        },
         "contact": {
             "args": [],
             "kwargs": {
                 "name": "Field Guide team",
                 "url": "https://example.test/contact",
-                "email": "api@example.test",
+                "email": "api@example.com",
                 "x-contact-source": "input-defined",
             },
         },
