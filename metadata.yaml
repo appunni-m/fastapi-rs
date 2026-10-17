@@ -4601,6 +4601,10 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
           observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+          case_id: fastapi.openapi.get-openapi.unusual-endpoint-name-summary
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
           case_id: fastapi.openapi.get-openapi.standalone-apiroute
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
           observation_selectors: [python.attribute_value]
@@ -4664,7 +4668,9 @@ reviewed_api_contract_overlay:
         native, static GET APIRoutes with distinct paths and names containing
         only lowercase ASCII letters, the default summary, operation ID, response class,
         and empty dependency/parameter plans produce their default operation
-        documents. Static GET routes with a primary response model also emit
+        documents. One additional route name containing uppercase letters,
+        underscores, and digit segments exercises FastAPI's default summary
+        title casing. Static GET routes with a primary response model also emit
         its shared or split response schema according to the flag. Route-level
         tags are preserved for supported operations. Standalone APIRoute fixtures
         additionally map methods, name, tags, summary, status_code, and response_model
@@ -4685,7 +4691,6 @@ reviewed_api_contract_overlay:
         known_gaps:
           - Generic Starlette routes are skipped as in FastAPI. Full traversal of arbitrary included route trees and custom route classes remains outside the direct-call fixtures; the compared included-router case passes prefiltered RouteContext values.
           - Callbacks, custom route operation IDs, duplicate-ID warning parity, custom response metadata, and broad combinations of route options remain outside the direct-call fixtures.
-          - Default summary generation for endpoint names containing characters outside lowercase ASCII letters can differ from FastAPI title casing, including underscores and digit transitions.
           - The linked fixtures cover empty routes, metadata options, simple static GET routes, primary response-model schemas in both modes, RouteContext security and request schemas, a simple webhook registered for GET, and mutations to methods and additional responses; other method/webhook combinations, invalid arguments, metadata validation errors, and remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:

@@ -15,6 +15,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
     router = APIRouter()
     tagged_router = APIRouter()
     webhook_router = APIRouter()
+    unusual_name_router = APIRouter()
 
     @router.get("/items")
     def items():
@@ -28,6 +29,10 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         return {"accepted": True}
 
     webhook_router.add_api_route("stock-updated", stock_updated, methods=["GET"])
+
+    @unusual_name_router.get("/http2-status")
+    def get_HTTP2_v2_status():
+        return {"status": "ok"}
 
     return {
         "single-route": {
@@ -53,6 +58,14 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "version": "1.0.0",
                 "routes": router.routes,
                 "webhooks": webhook_router.routes,
+            },
+        },
+        "unusual-endpoint-name": {
+            "args": [],
+            "kwargs": {
+                "title": "Endpoint Summary Case Probe",
+                "version": "1.0.0",
+                "routes": unusual_name_router.routes,
             },
         },
         "standalone-route": {
