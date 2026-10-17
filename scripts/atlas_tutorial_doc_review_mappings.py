@@ -2180,20 +2180,64 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         ],
         "observation_selectors": [
             "http.status",
-            "http.headers.ordered",
-            "http.body.json",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
+            "http.body.bytes",
             "python.import_path",
             "python.object_identity",
         ],
         "rationale": (
-            "The tutorial's FastAPI-specific surface is its TestClient import convenience plus "
-            "the FastAPI app/routes being exercised. TestClient request mechanics are explicitly "
-            "Starlette/HTTPX-owned; jsonable_encoder is a cross-reference rather than an encoder "
-            "case."
+            "The tutorial's TestClient and HTTPX mechanics are Starlette 1.6.0/client-owned. "
+            "Its FastAPI application examples and import convenience are linked to exact "
+            "input-only direct-ASGI/API cases below; those observations cover route status and "
+            "response bytes plus TestClient import path and object identity, not client mechanics."
         ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
+                "case_ids": ["fastapi.application-testing.read-main"],
+                "action_ids": ["read-main"],
+                "observation_selectors": ["http.status", "http.body.bytes"],
+                "scope_note": (
+                    "Maps the tutorial's basic FastAPI root-route example; it does not claim "
+                    "TestClient transport behavior."
+                ),
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/app-testing-main-b-upstream-wave.yaml",
+                "case_ids": [
+                    "fastapi.app-testing.main-b-default-header",
+                    "fastapi.app-testing.main-b-annotated-header",
+                ],
+                "action_ids": [
+                    "create-existing-item-conflict",
+                    "create-new-item",
+                    "create-item-invalid-token",
+                    "read-missing-item",
+                    "read-existing-item",
+                    "read-item-invalid-token",
+                    "read-item-with-required-token-absent",
+                    "create-item-with-required-field-absent",
+                ],
+                "observation_selectors": ["http.status", "http.body.bytes"],
+                "scope_note": (
+                    "Maps the extended example's successful routes, invalid tokens, missing "
+                    "item, conflict, missing header, and invalid request body for both Header "
+                    "declaration styles. OpenAPI and TestClient request mechanics are outside "
+                    "this mapping."
+                ),
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-testclient-module-identity.yaml",
+                "case_ids": ["fastapi.testclient.module-identity"],
+                "observation_selectors": [
+                    "python.import_path",
+                    "python.object_identity",
+                ],
+                "scope_note": (
+                    "Maps the tutorial's FastAPI TestClient import and its identity-preserving "
+                    "Starlette re-export, not TestClient request behavior."
+                ),
+            },
+        ],
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/testing.md",

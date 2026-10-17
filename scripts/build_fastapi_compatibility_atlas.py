@@ -4170,7 +4170,7 @@ DOC_EXCLUSION_OVERRIDES = {
     "reference/testclient.md": "The reference exposes Starlette 1.6.0 TestClient; import paths remain in the FastAPI API manifest and client/lifespan behavior belongs to Starlette-RS.",
     "release-notes.md": "Release notes span multiple historical versions and do not define one behavior of pinned FastAPI 0.141.1.",
     "translations.md": "Translation content does not define an independently observable FastAPI runtime behavior.",
-    "tutorial/testing.md": "The tutorial's TestClient and HTTPX behavior belongs to the Starlette 1.6.0/client contracts; FastAPI route behavior is covered by direct ASGI workflows.",
+    "tutorial/testing.md": "TestClient, HTTPX request construction, and pytest execution are outside FastAPI's behavior contract. The FastAPI root and extended route examples are linked to exact input-only direct-ASGI cases, with status/body-byte selectors; the FastAPI TestClient re-export is linked to import-path and object-identity observations. These links do not claim TestClient transport parity.",
     "virtual-environments.md": "Python environment creation and package installation guidance is contributor/setup tooling, not FastAPI runtime behavior.",
 }
 
