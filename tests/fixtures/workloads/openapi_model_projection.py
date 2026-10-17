@@ -94,6 +94,29 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [],
             "kwargs": {"ref": "#/components/schemas/FieldGuide"},
         },
+        "encoding": {
+            "args": [],
+            "kwargs": {
+                "contentType": "application/json",
+                "headers": {
+                    "Trace-Id": {
+                        "description": "Request tracing identifier",
+                        "required": True,
+                        "x-header-source": "input-defined",
+                    },
+                    "Common": {"$ref": "#/components/headers/Common"},
+                },
+                "style": "form",
+                "explode": True,
+                "allowReserved": False,
+                "x-encoding-source": "input-defined",
+            },
+        },
+        "encoding-defaults": {"args": [], "kwargs": {}},
+        "encoding-invalid-explode": {
+            "args": [],
+            "kwargs": {"explode": "sometimes"},
+        },
         "contact": {
             "args": [],
             "kwargs": {

@@ -12867,6 +12867,7 @@ reviewed_api_contract_overlay:
         full schema behavior are not claimed.
 
     fastapi.openapi.models.Encoding:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -12874,10 +12875,27 @@ reviewed_api_contract_overlay:
           start_line: 228
           end_line: 233
       supported_slice: >-
-        Source model declaration only: Encoding inherits BaseModelWithConfig and declares
-        allowReserved, contentType, explode, headers, style. No direct constructor/model_result
-        case is row-linked; Pydantic signature generation, validation/coercion, extras,
-        serialization, and JSON Schema behavior remain outside this source-only slice.
+        Direct inputs compare the Encoding constructor signature, all-None defaults, populated
+        fields including nested Header and Reference header values, extra retention, and one
+        invalid boolean outcome. Broader coercion, validation boundaries, and schema behavior
+        remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.invalid-explode
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Only the declared constructor signature, default projection, one nested Header/Reference projection, and one invalid boolean value are compared; other coercions, validation boundaries, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
 
     fastapi.openapi.models.Encoding.allowReserved:
       source_evidence:
@@ -12887,8 +12905,16 @@ reviewed_api_contract_overlay:
           start_line: 228
           end_line: 233
       supported_slice: >-
-        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Annotation bool | None and default None: direct input compares the default, False input,
+        and output in the populated model dump. Other coercion and validation boundaries remain
+        unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Encoding.contentType:
       source_evidence:
@@ -12898,8 +12924,15 @@ reviewed_api_contract_overlay:
           start_line: 228
           end_line: 233
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Annotation str | None and default None: direct input compares omission and the populated
+        contentType value in model_dump. Other coercion and validation boundaries remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Encoding.explode:
       source_evidence:
@@ -12909,8 +12942,17 @@ reviewed_api_contract_overlay:
           start_line: 228
           end_line: 233
       supported_slice: >-
-        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Annotation bool | None and default None: direct inputs compare the default, True output,
+        and one invalid string outcome. Other coercion and validation boundaries remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.model-result
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.invalid-explode
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Encoding.headers:
       source_evidence:
@@ -12920,9 +12962,16 @@ reviewed_api_contract_overlay:
           start_line: 228
           end_line: 233
       supported_slice: >-
-        Declared field only: annotation dict[str, Union["Header", Reference]] | None; default
-        None. Pydantic validation/coercion, default omission, alias parsing/dump, errors, and
-        full schema behavior are not claimed.
+        Annotation dict[str, Union["Header", Reference]] | None and default None: direct inputs
+        compare omission plus one nested Header and one nested Reference value in model_dump.
+        Other validation and coercion boundaries remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Encoding.style:
       source_evidence:
@@ -12932,8 +12981,15 @@ reviewed_api_contract_overlay:
           start_line: 228
           end_line: 233
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Annotation str | None and default None: direct input compares omission and the populated
+        style value in model_dump. Other coercion and validation boundaries remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.default-values
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.encoding.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Example:
       source_evidence:
