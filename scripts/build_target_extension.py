@@ -563,7 +563,7 @@ def _build_release_sdist(args: argparse.Namespace, starlette_rs_source: Path) ->
             *maturin_command,
             "build",
             "--profile",
-            "dev",
+            "release",
             "--locked",
             "--offline",
             "--interpreter",

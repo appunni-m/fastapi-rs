@@ -182,7 +182,31 @@ contents, including license-file metadata and notices, against the versions
 and native components actually shipped.
 Upstream tests, docs, examples, and branding must be reviewed separately.
 
-### Current local artifact evidence (2026-10-17)
+### Current-head release-profile archive evidence (2026-10-17)
+
+Built and inspected a portable source archive from FastAPI-RS target sources
+at commit `ccaf89c19c9e4b66b3da692b5ab599806c9a45f7`, against pinned
+Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`, on macOS arm64 with
+CPython 3.12.13:
+
+- `target/release-sdist-current-ccaf89c/fastapi_rs-0.1.0.tar.gz` has SHA-256
+  `a7d8d648a3cc4df82a1792d106c3357a01eb6235f4341ab87774cb47a5c8cb70`.
+  The source-archive validator accepted all 202 members and verified the
+  vendored Starlette-RS source tree digest
+  `da4acf9c64ae8df8a9bde0976d1777f5b36d67a6af45c443b0d0f617cad10f48`.
+- Built from the extracted archive with Cargo `release` profile using locked,
+  offline dependencies. The release-wheel validator passed for
+  `target/release-sdist-release-wheel-current-ccaf89c/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`,
+  SHA-256
+  `f4facca840f6a0f16f2fde362805e9044089489e5ca7029da39671edbb66e615`.
+  The archive contains the `fastapi` facade, one native extension, both
+  declared license files, and its SBOM.
+
+This verifies one local macOS arm64 source-archive release build. It does not
+verify other platform artifacts, publishable Cargo archives, a release
+workflow, or contributor licensing authority.
+
+### Earlier local artifact evidence (2026-10-17)
 
 The following checks were run from clean FastAPI-RS commit
 `b1dae6577e18de4d7010b69d958631d364e0820a` against pinned Starlette-RS
@@ -220,10 +244,10 @@ The following checks were run from clean FastAPI-RS commit
   confirms one local arm64 artifact only; other platform support remains
   unverified.
 
-This evidence covers one local macOS arm64 build. It does not verify other
-platform artifacts or publishable Cargo archives. The extracted-sdist build
-used the development profile; no release-profile rebuild from the sdist was
-recorded. Contributor licensing authority and the release workflow also
+This earlier evidence covers one local macOS arm64 build. Its extracted-sdist
+wheel used the development profile; the current-head release-profile result is
+recorded above. It does not verify other platform artifacts or publishable
+Cargo archives. Contributor licensing authority and the release workflow also
 remain unresolved.
 
 ### Previous artifact audit (2026-10-15)
