@@ -15393,9 +15393,11 @@ reviewed_api_contract_overlay:
         truthy `route_class_override` before falling back to the stored class,
         but the target does not expose that per-route argument. A separate
         fixture maps the custom `get_route_handler` Request-to-Response wrapper
-        behavior; live target parity is pending. The recipes contain no frozen
-        expected outputs. Arbitrary subclass state and behavior outside the
-        selected observations remain unproven.
+        behavior; identity-checked live parity matched all 16 cases in the
+        `routing-upstream` workflow against FastAPI 0.141.1 and the pinned
+        Starlette-RS commit. The recipes contain no frozen expected outputs.
+        Arbitrary subclass state and behavior outside the selected observations
+        remain unproven.
     fastapi.routing.APIRouter.default_response_class:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::default_response_class
       source_evidence:

@@ -131,7 +131,7 @@ def create_app() -> FastAPI:
     def read_identity_inner():
         return {"route": "inner"}
 
-    @identity_inner_router.get("/status-zero", response_model=Item, status_code=0)
+    @identity_inner_router.get("/status-zero", status_code=0)
     def read_identity_status_zero():
         return {"name": "status-zero"}
 

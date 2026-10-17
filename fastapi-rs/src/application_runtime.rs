@@ -5598,8 +5598,8 @@ impl PyFastApi {
     }
 
     #[pyo3(
-        signature = (path, *, dependencies = None, description = None, include_in_schema = true, name = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted),
-        text_signature = "($self, path, *, dependencies=None, description=None, include_in_schema=True, name=None, callbacks=None, openapi_extra=None, generate_unique_id_function=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, tags = None, dependencies = None, summary = None, description = None, response_description = "Successful Response", responses = None, deprecated = None, methods = None, operation_id = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true, response_class = ResponseClassArgument::Omitted, name = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted),
+        text_signature = "($self, path, *, response_model=None, status_code=None, tags=None, dependencies=None, summary=None, description=None, response_description='Successful Response', responses=None, deprecated=None, methods=None, operation_id=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, include_in_schema=True, response_class=None, name=None, openapi_extra=None, generate_unique_id_function=None)"
     )]
     // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
     #[allow(
@@ -5610,45 +5610,79 @@ impl PyFastApi {
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
+        response_model: Option<Py<PyAny>>,
+        status_code: Option<u16>,
+        tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
+        summary: Option<String>,
         description: Option<String>,
+        response_description: &str,
+        responses: Option<Py<PyAny>>,
+        deprecated: Option<bool>,
+        methods: Option<Py<PyAny>>,
+        operation_id: Option<String>,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
         include_in_schema: bool,
+        response_class: ResponseClassArgument,
         name: Option<String>,
-        callbacks: Option<Py<PyAny>>,
         openapi_extra: Option<Py<PyAny>>,
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<Py<PyOperationDecorator>> {
-        operation_decorator(
+        let normalized_methods = PySet::empty(py)?;
+        if let Some(methods) = methods {
+            for method in methods.bind(py).try_iter()? {
+                normalized_methods.add(method?.call_method0("upper")?)?;
+            }
+        } else {
+            normalized_methods.add("GET")?;
+        }
+        let callback_methods = normalized_methods
+            .iter()
+            .map(|method| method.extract::<String>())
+            .collect::<PyResult<Vec<_>>>()?;
+        let method = callback_methods.first().cloned().unwrap_or_default();
+        let decorator = operation_decorator(
             slf,
             py,
             path,
-            "GET",
-            Some(py.NotImplemented()),
-            None,
+            &method,
+            response_model,
+            status_code,
             ResponseModelOptions {
-                include: None,
-                exclude: None,
-                by_alias: true,
-                exclude_unset: false,
-                exclude_defaults: false,
-                exclude_none: false,
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
                 include_in_schema,
                 strict_content_type: StrictContentTypeArgument::Omitted,
-                response_description: None,
+                response_class: response_class.into_choice(py)?,
+                response_description: Some(response_description.to_owned()),
+                responses,
+                summary,
                 description,
-                responses: None,
-                callbacks,
-                summary: None,
-                operation_id: None,
-                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
-                deprecated: None,
-                tags: None,
+                operation_id,
+                deprecated,
+                tags,
                 dependencies: dependencies.unwrap_or_default(),
-                response_class: ResponseClassChoice::from_python(py, default_response_class(py)?),
+                callbacks: None,
                 openapi_extra,
+                generate_unique_id_function: generate_unique_id_function.into_choice(py)?,
                 name,
             },
-        )
+        )?;
+        {
+            let mut decorator = decorator.bind(py).borrow_mut();
+            decorator.method = method;
+            decorator.callback_methods = callback_methods;
+        }
+        Ok(decorator)
     }
 
     #[pyo3(
@@ -5692,14 +5726,30 @@ impl PyFastApi {
             slf,
             py,
             path,
+            Some(py.NotImplemented()),
+            None,
+            None,
             dependencies,
+            None,
             description,
+            "Successful Response",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            true,
+            false,
+            false,
+            false,
             include_in_schema,
+            ResponseClassArgument::Omitted,
             name,
-            callbacks,
             openapi_extra,
             generate_unique_id_function,
         )?;
+        decorator.bind(py).borrow_mut().callbacks = callbacks;
         register_multi_method_api_route(
             py,
             decorator,
@@ -14842,6 +14892,39 @@ fn fastapi_route_core_call(
     )
 }
 
+fn is_async_custom_route_handler(py: Python<'_>, handler: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let partial_type = py.import("functools")?.getattr("partial")?;
+    let mut callable = handler.clone();
+    while callable.is_instance(&partial_type)? {
+        callable = callable.getattr("func")?;
+    }
+
+    let version = py.import("sys")?.getattr("version_info")?;
+    let major = version.get_item(0)?.extract::<u8>()?;
+    let minor = version.get_item(1)?.extract::<u8>()?;
+    let inspector = if major > 3 || (major == 3 && minor >= 13) {
+        py.import("inspect")?
+    } else {
+        py.import("asyncio")?
+    };
+    let iscoroutinefunction = inspector.getattr("iscoroutinefunction")?;
+    if iscoroutinefunction.call1((&callable,))?.extract::<bool>()? {
+        return Ok(true);
+    }
+
+    if !py
+        .import("builtins")?
+        .getattr("callable")?
+        .call1((&callable,))?
+        .extract::<bool>()?
+    {
+        return Ok(false);
+    }
+    iscoroutinefunction
+        .call1((callable.getattr("__call__")?,))?
+        .extract::<bool>()
+}
+
 struct FastApiCall {
     app: Py<PyFastApi>,
     route_dependency_overrides_provider: Option<Py<PyAny>>,
@@ -15778,11 +15861,7 @@ impl FastApiCall {
         self.request = Some(request.clone().unbind());
         if let Some(request_handler) = request_handler {
             self.pending = Some(PendingAction::CustomRouteHandler);
-            let is_async_callable = py
-                .import("starlette._utils")?
-                .getattr("is_async_callable")?
-                .call1((request_handler.bind(py),))?
-                .extract::<bool>()?;
+            let is_async_callable = is_async_custom_route_handler(py, request_handler.bind(py))?;
             let awaitable = if is_async_callable {
                 request_handler.bind(py).call1((&request,))?
             } else {
