@@ -574,7 +574,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: b71a4a57985a48c369ec754a88f31cf91d051f6ad883ad932249ccfa0d3c784f
+    sha256: d0e4e9ff0d6c2237b507776a18585f89717ea6690da124d742d14f71a5d7c378
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -10653,11 +10653,11 @@ api_surface_contract:
       - http.status
     - workflow_id: webhooks-constructor
       input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
-      input_sha256: 5620480b12aab10ecb83f454c5356cae47d86044fa3e8bc2d4df4af58310a9f7
+      input_sha256: 8c12ed49b9d9882e4bd422a3c082ece2d84caace6f5132043104bedba302f939
       recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
-      recipe_sha256: ca7c736dc47839ae1115f4014693236d552d3c8f30180cc4b2f6d78d76582173
+      recipe_sha256: c4cfc40433bbbf54260a97b35ac4f1c4df4dea0c5b151d7231ed6ef0b981afce
       workload_path: tests/fixtures/workloads/webhooks_constructor.py
-      workload_sha256: 8083401ed56fe1238b177d4420b5c5b6357cb41700e24c95a8d1a70574cddc78
+      workload_sha256: aa5f9251029cb67a211c12687cb3b8e879342db096ec23f26cd34251e904aca7
       case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
       observation_selectors:
       - docs.response.status
@@ -16390,11 +16390,11 @@ api_surface_contract:
       - http.status
     - workflow_id: webhooks-constructor
       input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
-      input_sha256: 5620480b12aab10ecb83f454c5356cae47d86044fa3e8bc2d4df4af58310a9f7
+      input_sha256: 8c12ed49b9d9882e4bd422a3c082ece2d84caace6f5132043104bedba302f939
       recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
-      recipe_sha256: ca7c736dc47839ae1115f4014693236d552d3c8f30180cc4b2f6d78d76582173
+      recipe_sha256: c4cfc40433bbbf54260a97b35ac4f1c4df4dea0c5b151d7231ed6ef0b981afce
       workload_path: tests/fixtures/workloads/webhooks_constructor.py
-      workload_sha256: 8083401ed56fe1238b177d4420b5c5b6357cb41700e24c95a8d1a70574cddc78
+      workload_sha256: aa5f9251029cb67a211c12687cb3b8e879342db096ec23f26cd34251e904aca7
       case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
       observation_selectors:
       - docs.response.status
@@ -17722,11 +17722,11 @@ api_surface_contract:
       - openapi.paths
     - workflow_id: webhooks-constructor
       input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
-      input_sha256: 5620480b12aab10ecb83f454c5356cae47d86044fa3e8bc2d4df4af58310a9f7
+      input_sha256: 8c12ed49b9d9882e4bd422a3c082ece2d84caace6f5132043104bedba302f939
       recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
-      recipe_sha256: ca7c736dc47839ae1115f4014693236d552d3c8f30180cc4b2f6d78d76582173
+      recipe_sha256: c4cfc40433bbbf54260a97b35ac4f1c4df4dea0c5b151d7231ed6ef0b981afce
       workload_path: tests/fixtures/workloads/webhooks_constructor.py
-      workload_sha256: 8083401ed56fe1238b177d4420b5c5b6357cb41700e24c95a8d1a70574cddc78
+      workload_sha256: aa5f9251029cb67a211c12687cb3b8e879342db096ec23f26cd34251e904aca7
       case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
       observation_selectors:
       - docs.response.status
@@ -19659,11 +19659,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: webhooks-constructor
       input_path: tests/fixtures/inputs/parity/webhooks-constructor.json
-      input_sha256: 5620480b12aab10ecb83f454c5356cae47d86044fa3e8bc2d4df4af58310a9f7
+      input_sha256: 8c12ed49b9d9882e4bd422a3c082ece2d84caace6f5132043104bedba302f939
       recipe_path: tests/fixtures/input-recipes/parity/webhooks-constructor.yaml
-      recipe_sha256: ca7c736dc47839ae1115f4014693236d552d3c8f30180cc4b2f6d78d76582173
+      recipe_sha256: c4cfc40433bbbf54260a97b35ac4f1c4df4dea0c5b151d7231ed6ef0b981afce
       workload_path: tests/fixtures/workloads/webhooks_constructor.py
-      workload_sha256: 8083401ed56fe1238b177d4420b5c5b6357cb41700e24c95a8d1a70574cddc78
+      workload_sha256: aa5f9251029cb67a211c12687cb3b8e879342db096ec23f26cd34251e904aca7
       case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
       observation_selectors:
       - docs.response.status
@@ -19721,8 +19721,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::webhooks
       known_gaps:
-      - The input covers explicit None and a supplied APIRouter; falsey custom router values, reassignment,
-        and all constructor error behavior remain unestablished.
+      - The input covers explicit None, an empty list, and a supplied APIRouter; other falsey values,
+        reassignment, and all constructor error behavior remain unestablished.
   - id: fastapi.applications.FastAPI.websocket
     kind: method
     source_candidate_ref: /api_candidates/239

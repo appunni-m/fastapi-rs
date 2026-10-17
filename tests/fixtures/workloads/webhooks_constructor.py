@@ -36,6 +36,7 @@ def create_app() -> FastAPI:
 
     hidden_app = FastAPI(webhooks=hidden_webhooks)
     default_webhooks_app = FastAPI(webhooks=None)
+    falsey_webhooks_app = FastAPI(webhooks=[])
 
     app = FastAPI(title="Stock Events", version="1.0", webhooks=webhooks)
     app.include_router(relative_routes, prefix="/v2")
@@ -54,6 +55,13 @@ def create_app() -> FastAPI:
         return {
             "is_router": isinstance(default_webhooks_app.webhooks, APIRouter),
             "is_none": default_webhooks_app.webhooks is None,
+        }
+
+    @app.get("/_probe/falsey-webhook-default")
+    async def falsey_webhook_default():
+        return {
+            "is_router": isinstance(falsey_webhooks_app.webhooks, APIRouter),
+            "is_none": falsey_webhooks_app.webhooks is None,
         }
 
     @app.get("/_probe/relative-router-url")

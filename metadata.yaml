@@ -5972,15 +5972,15 @@ reviewed_api_contract_overlay:
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         Construction preserves the provided APIRouter on `app.webhooks`, and the
-        selected probe observes object identity. Explicit `None` falls back to
-        an empty APIRouter, matching the source truthiness default. Router path
-        operations are used for OpenAPI documentation and remain absent from
-        inbound app dispatch.
+        selected probe observes object identity. Explicit `None` and an empty
+        list fall back to an empty APIRouter, matching the source truthiness
+        default. Router path operations are used for OpenAPI documentation and
+        remain absent from inbound app dispatch.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The input covers explicit None and a supplied APIRouter; falsey custom router values, reassignment, and all constructor error behavior remain unestablished.
+          - The input covers explicit None, an empty list, and a supplied APIRouter; other falsey values, reassignment, and all constructor error behavior remain unestablished.
     fastapi.applications.FastAPI.openapi:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       source_evidence:
