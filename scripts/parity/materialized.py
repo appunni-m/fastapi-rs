@@ -526,6 +526,11 @@ def validate_materialized_input_index(
                 "fault"
             ) != case.get("fault"):
                 _fail(f"indexed fault point/contract differs from workflow: {case_id}")
+            if expected_mode == "fault-contract":
+                fault = case["fault"]
+                requirements_by_case[(workflow_id, case_id)].add(
+                    f"fault-contract:{fault['point']}#{fault['contract']}"
+                )
         workflow_contracts[workflow_id] = indexed_contracts
         for definition in workflow_ref.get("api_definitions", []):
             requirements_by_case[(workflow_id, definition["case_id"])].add(
@@ -586,6 +591,16 @@ def validate_materialized_input_index(
         case_ids = set(mapping["case_ids"])
         if not case_ids <= cases.keys():
             _fail(f"mapping references unknown workflow cases: {source_id}")
+        fault_case_ids = sorted(
+            case_id
+            for case_id in case_ids
+            if cases[case_id].get("verification", "parity") == "fault-contract"
+        )
+        if fault_case_ids:
+            _fail(
+                "target-only fault-contract cases cannot count as source parity mappings: "
+                f"{source_id} -> {fault_case_ids}"
+            )
         mapped_cases[workflow_id].update(case_ids)
         for case_id in case_ids:
             requirements_by_case[(workflow_id, case_id)].add(f"source:{source_id}")
@@ -641,7 +656,16 @@ def validate_materialized_input_index(
             expected_requirements = sorted(requirements_by_case[(workflow_id, case_id)])
             if contract["requirement_refs"] != expected_requirements:
                 _fail(f"indexed requirement references differ from source mappings: {case_id}")
-        covered_cases = mapped_cases[workflow_id] | api_definition_cases[workflow_id]
+        fault_contract_cases = {
+            case_id
+            for case_id, case in cases.items()
+            if case.get("verification", "parity") == "fault-contract"
+        }
+        covered_cases = (
+            mapped_cases[workflow_id]
+            | api_definition_cases[workflow_id]
+            | fault_contract_cases
+        )
         if covered_cases != cases.keys():
             _fail(
                 f"workflow contains cases without source mappings or API definitions: {workflow_id}"

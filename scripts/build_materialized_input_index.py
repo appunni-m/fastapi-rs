@@ -502,6 +502,11 @@ def build_index() -> dict[str, Any]:
                     )
         reviewed_doc_observed_selectors: dict[str, set[str]] = {}
         for case in workflow["cases"]:
+            # Target-only injected failures are valuable fault-contract
+            # evidence, but cannot substantiate parity against the pinned
+            # FastAPI source. Keep their source citations as context only.
+            if case.get("verification", "parity") == "fault-contract":
+                continue
             candidates: list[tuple[str, set[str]]] = []
             for evidence in case["source_evidence"]:
                 source_id = _source_item_id(evidence, coverage_by_path)
@@ -624,6 +629,16 @@ def build_index() -> dict[str, Any]:
                     "reviewed documentation page link references unknown cases: "
                     f"{page_rel} -> {missing_cases}"
                 )
+            fault_case_ids = sorted(
+                case_id
+                for case_id in case_ids
+                if cases_by_id[case_id].get("verification", "parity") == "fault-contract"
+            )
+            if fault_case_ids:
+                raise ContractError(
+                    "reviewed documentation parity mapping contains target-only fault cases: "
+                    f"{page_rel} -> {fault_case_ids}"
+                )
             declared = set(row["observation_selectors"])
             observed: set[str] = set()
             for case_id in case_ids:
@@ -695,6 +710,12 @@ def build_index() -> dict[str, Any]:
                 f"source:{mapping['source_item_id']}"
             )
     for workflow_id, workflow_ref in workflow_rows.items():
+        for case in workflow_documents[workflow_id]["cases"]:
+            if case.get("verification", "parity") == "fault-contract":
+                fault = case["fault"]
+                requirements_by_case[(workflow_id, case["case_id"])].add(
+                    f"fault-contract:{fault['point']}#{fault['contract']}"
+                )
         for definition in workflow_ref.get("api_definitions", []):
             requirements_by_case[(workflow_id, definition["case_id"])].add(
                 f"api:{definition['symbol_id']}"

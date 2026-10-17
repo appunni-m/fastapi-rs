@@ -2336,7 +2336,7 @@
           "case_id": "fastapi.fault-contract.body-form-parse.arbitrary-error-400",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_tutorial/test_request_forms/test_tutorial001.py"
+            "fault-contract:http.request.form_parse.before#http-body-form-parse-error-returns-400"
           ],
           "fault": {
             "point": "http.request.form_parse.before",
@@ -2410,7 +2410,7 @@
           "case_id": "fastapi.fault-contract.body-json-decode.arbitrary-error-400",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_tutorial/test_body/test_tutorial001.py"
+            "fault-contract:http.request.json_decode.before#http-body-json-decode-error-returns-400"
           ],
           "fault": {
             "point": "http.request.json_decode.before",
@@ -4606,8 +4606,7 @@
           "case_id": "fastapi.fault-contract.dependencies.dynamic-cache-policy.yield-cleanup",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:documented-page:reference/dependencies.md",
-            "source:documented-page:tutorial/dependencies/dependencies-with-yield.md"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-cleans-dependencies"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -5160,8 +5159,7 @@
           "case_id": "fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:documented-page:advanced/testing-dependencies.md",
-            "source:documented-page:tutorial/dependencies/dependencies-with-yield.md"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-cleans-dependencies"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -5302,8 +5300,7 @@
           "case_id": "fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_dependency_contextmanager.py",
-            "source:upstream-test:tests/test_dependency_overrides.py"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-cleans-dependencies"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -5512,8 +5509,7 @@
           "case_id": "fastapi.fault-contract.dependency-records.public-protocol.scoped-yield-cleanup",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:documented-page:reference/dependencies.md",
-            "source:upstream-test:tests/test_dependency_contextmanager.py"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-cleans-dependencies"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -5692,7 +5688,7 @@
           "case_id": "fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_dependency_contextmanager.py"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-cleans-dependencies"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -11080,7 +11076,7 @@
           "case_id": "fastapi.fault-contract.frontend-static-lookup.permission-error-401",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_frontend.py"
+            "fault-contract:http.frontend.lookup.permission-error#frontend-static-lookup-permission-denied-401"
           ],
           "fault": {
             "point": "http.frontend.lookup.permission-error",
@@ -11091,7 +11087,7 @@
           "case_id": "fastapi.fault-contract.frontend-static-lookup.value-error-404",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_frontend.py"
+            "fault-contract:http.frontend.lookup.value-error#frontend-static-lookup-value-error-404"
           ],
           "fault": {
             "point": "http.frontend.lookup.value-error",
@@ -11102,7 +11098,7 @@
           "case_id": "fastapi.fault-contract.frontend-static-lookup.name-too-long-404",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_frontend.py"
+            "fault-contract:http.frontend.lookup.name-too-long#frontend-static-lookup-name-too-long-404"
           ],
           "fault": {
             "point": "http.frontend.lookup.name-too-long",
@@ -11113,7 +11109,7 @@
           "case_id": "fastapi.fault-contract.frontend-static-lookup.os-error-propagates",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_frontend.py"
+            "fault-contract:http.frontend.lookup.os-error#frontend-static-lookup-os-error-propagates"
           ],
           "fault": {
             "point": "http.frontend.lookup.os-error",
@@ -14366,7 +14362,7 @@
           "case_id": "fastapi.fault-contract.openapi.cache-publication-error-retry-full-document",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_tutorial/test_extending_openapi/test_tutorial001.py"
+            "fault-contract:openapi.cache.publish.before#openapi-cache-publication-error-returns-500-and-retries-full-document"
           ],
           "fault": {
             "point": "openapi.cache.publish.before",
@@ -28755,7 +28751,7 @@
           "case_id": "fastapi.fault-contract.route-invocation.recovery",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_exception_handlers.py"
+            "fault-contract:http.route.invoke.before#http-route-invocation-error-and-recovery"
           ],
           "fault": {
             "point": "http.route.invoke.before",
@@ -28766,7 +28762,7 @@
           "case_id": "fastapi.fault-contract.route-invocation.dependency-cleanup",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_dependency_contextmanager.py"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-cleans-dependencies"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -28800,7 +28796,7 @@
           "case_id": "fastapi.fault-contract.route-invocation.function-request-cleanup-order",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_dependency_yield_scope.py"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-orders-function-and-request-dependency-cleanup"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -32504,8 +32500,7 @@
           "case_id": "fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup",
           "verification": "fault-contract",
           "requirement_refs": [
-            "source:upstream-test:tests/test_dependency_contextmanager.py",
-            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+            "fault-contract:http.route.invoke.after_dependencies.before#http-route-invocation-error-cleans-dependencies"
           ],
           "fault": {
             "point": "http.route.invoke.after_dependencies.before",
@@ -39487,20 +39482,6 @@
       ]
     },
     {
-      "source_item_id": "upstream-test:tests/test_tutorial/test_request_forms/test_tutorial001.py",
-      "fixture_id": "fastapi.test.test-tutorial-test-request-forms-test-tutorial001",
-      "workflow_id": "body-form-parse-fault-contract",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.fault-contract.body-form-parse.arbitrary-error-400"
-      ],
-      "observation_selectors": [
-        "http.body.bytes",
-        "http.status"
-      ]
-    },
-    {
       "source_item_id": "documented-example:docs_src/body_multiple_params/tutorial004_an_py310.py",
       "fixture_id": "fastapi.docs-example.body-multiple-params-tutorial004-an-py310",
       "workflow_id": "body-gt-zero",
@@ -39541,20 +39522,6 @@
         "fastapi.body.gt-zero.annotated-zero-rejected",
         "fastapi.body.gt-zero.positive-integer",
         "fastapi.body.gt-zero.zero-rejected"
-      ],
-      "observation_selectors": [
-        "http.body.bytes",
-        "http.status"
-      ]
-    },
-    {
-      "source_item_id": "upstream-test:tests/test_tutorial/test_body/test_tutorial001.py",
-      "fixture_id": "fastapi.test.test-tutorial-test-body-test-tutorial001",
-      "workflow_id": "body-json-decode-fault-contract",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.fault-contract.body-json-decode.arbitrary-error-400"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -41266,7 +41233,7 @@
       "fixture_id": "fastapi.docs.reference-dependencies",
       "workflow_id": "dependency-dynamic-cache-policy",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 13 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 12 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.dynamic-cache-policy.bool-error-yield-cleanup",
         "fastapi.dependencies.dynamic-cache-policy.failed-edge-later-sibling",
@@ -41279,12 +41246,9 @@
         "fastapi.dependencies.dynamic-cache-policy.parameterless-route-policy-ignored",
         "fastapi.dependencies.dynamic-cache-policy.parameterless-router-policy-ignored",
         "fastapi.dependencies.dynamic-cache-policy.raw-capture",
-        "fastapi.dependencies.dynamic-cache-policy.sync-false-first-insertion",
-        "fastapi.fault-contract.dependencies.dynamic-cache-policy.yield-cleanup"
+        "fastapi.dependencies.dynamic-cache-policy.sync-false-first-insertion"
       ],
       "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
@@ -41298,15 +41262,12 @@
       "fixture_id": "fastapi.docs.tutorial-dependencies-dependencies-with-yield",
       "workflow_id": "dependency-dynamic-cache-policy",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.dynamic-cache-policy.bool-error-yield-cleanup",
-        "fastapi.dependencies.dynamic-cache-policy.len-error-yield-cleanup",
-        "fastapi.fault-contract.dependencies.dynamic-cache-policy.yield-cleanup"
+        "fastapi.dependencies.dynamic-cache-policy.len-error-yield-cleanup"
       ],
       "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
@@ -41838,7 +41799,7 @@
       "fixture_id": "fastapi.docs.advanced-testing-dependencies",
       "workflow_id": "dependency-override-cache-policy-mutation",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 19 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 18 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.override-policy-mutation.awaited-provider-removal",
         "fastapi.dependencies.override-policy-mutation.awaited-provider-replacement",
@@ -41857,12 +41818,9 @@
         "fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache",
         "fastapi.dependencies.override-policy-mutation.sync-provider-removal",
         "fastapi.dependencies.override-policy-mutation.sync-provider-replacement",
-        "fastapi.dependencies.override-policy-mutation.sync-to-coroutine",
-        "fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup"
+        "fastapi.dependencies.override-policy-mutation.sync-to-coroutine"
       ],
       "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
@@ -41875,16 +41833,13 @@
       "fixture_id": "fastapi.docs.tutorial-dependencies-dependencies-with-yield",
       "workflow_id": "dependency-override-cache-policy-mutation",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.override-policy-mutation.late-yield-replacement",
         "fastapi.dependencies.override-policy-mutation.mutation-error-cleanup-and-recovery",
-        "fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup",
-        "fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup"
+        "fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup"
       ],
       "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
@@ -42012,16 +41967,13 @@
       "fixture_id": "fastapi.test.test-dependency-contextmanager",
       "workflow_id": "dependency-override-signature-reanalysis",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child",
         "fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
-        "fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child",
-        "fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup"
+        "fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child"
       ],
       "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
         "http.body.bytes",
         "http.status"
       ]
@@ -42031,7 +41983,7 @@
       "fixture_id": "fastapi.test.test-dependency-overrides",
       "workflow_id": "dependency-override-signature-reanalysis",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 9 case(s); observes asgi.send.message_types, http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child",
         "fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
@@ -42040,11 +41992,9 @@
         "fastapi.dependency-overrides.signature-reanalysis.sync-empty-map",
         "fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child",
         "fastapi.dependency-overrides.signature-reanalysis.sync-self-map",
-        "fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map",
-        "fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup"
+        "fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map"
       ],
       "observation_selectors": [
-        "asgi.send.message_types",
         "http.body.bytes",
         "http.status",
         "openapi.paths"
@@ -42137,7 +42087,7 @@
       "fixture_id": "fastapi.docs.reference-dependencies",
       "workflow_id": "dependency-record-public-protocol",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 14 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 13 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts",
         "fastapi.dependency-records.public-protocol.arbitrary-field-values",
@@ -42151,12 +42101,9 @@
         "fastapi.dependency-records.public-protocol.hash-and-shallow-scopes",
         "fastapi.dependency-records.public-protocol.inherited-subclasses",
         "fastapi.dependency-records.public-protocol.repr-and-equality",
-        "fastapi.dependency-records.public-protocol.signatures-and-annotations",
-        "fastapi.fault-contract.dependency-records.public-protocol.scoped-yield-cleanup"
+        "fastapi.dependency-records.public-protocol.signatures-and-annotations"
       ],
       "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
@@ -42273,22 +42220,6 @@
         "fastapi.dependency-records.public-protocol.cache-use-cache"
       ],
       "observation_selectors": [
-        "http.body.bytes",
-        "http.status"
-      ]
-    },
-    {
-      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
-      "fixture_id": "fastapi.test.test-dependency-contextmanager",
-      "workflow_id": "dependency-record-public-protocol",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.fault-contract.dependency-records.public-protocol.scoped-yield-cleanup"
-      ],
-      "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
         "http.body.bytes",
         "http.status"
       ]
@@ -42442,13 +42373,12 @@
       "fixture_id": "fastapi.test.test-dependency-contextmanager",
       "workflow_id": "dependency-sync-parent-nested-async",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.sync-async-deeper-alternation",
         "fastapi.dependencies.sync-parent-async-yield-cleanup",
         "fastapi.dependencies.sync-parent-async-yield-endpoint-error-cleanup",
-        "fastapi.dependencies.sync-parent-nested-async-query",
-        "fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup"
+        "fastapi.dependencies.sync-parent-nested-async-query"
       ],
       "observation_selectors": [
         "asgi.application_error.exception",
@@ -48217,26 +48147,6 @@
       ]
     },
     {
-      "source_item_id": "upstream-test:tests/test_frontend.py",
-      "fixture_id": "fastapi.test.test-frontend",
-      "workflow_id": "frontend-static-lookup-fault-contract",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.fault-contract.frontend-static-lookup.name-too-long-404",
-        "fastapi.fault-contract.frontend-static-lookup.os-error-propagates",
-        "fastapi.fault-contract.frontend-static-lookup.permission-error-401",
-        "fastapi.fault-contract.frontend-static-lookup.value-error-404"
-      ],
-      "observation_selectors": [
-        "asgi.application_error.exception",
-        "construction.exception_class",
-        "construction.exception_message",
-        "construction.outcome",
-        "http.status"
-      ]
-    },
-    {
       "source_item_id": "documented-example:docs_src/generate_clients/tutorial001_py310.py",
       "fixture_id": "fastapi.docs-example.generate-clients-tutorial001-py310",
       "workflow_id": "generate-clients-tutorial001-upstream",
@@ -51206,23 +51116,6 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
-      ]
-    },
-    {
-      "source_item_id": "upstream-test:tests/test_tutorial/test_extending_openapi/test_tutorial001.py",
-      "fixture_id": "fastapi.test.test-tutorial-test-extending-openapi-test-tutorial001",
-      "workflow_id": "openapi-cache-publication-fault-contract",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.status, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.fault-contract.openapi.cache-publication-error-retry-full-document"
-      ],
-      "observation_selectors": [
-        "asgi.send.message_types",
-        "docs.response.body.bytes",
-        "docs.response.status",
-        "http.body.bytes",
-        "http.status"
       ]
     },
     {
@@ -62433,44 +62326,13 @@
       ]
     },
     {
-      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
-      "fixture_id": "fastapi.test.test-dependency-contextmanager",
-      "workflow_id": "route-invocation-fault-contract",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.fault-contract.route-invocation.dependency-cleanup"
-      ],
-      "observation_selectors": [
-        "asgi.application_error.exception",
-        "asgi.send.message_types",
-        "http.body.bytes",
-        "http.status"
-      ]
-    },
-    {
-      "source_item_id": "upstream-test:tests/test_exception_handlers.py",
-      "fixture_id": "fastapi.test.test-exception-handlers",
-      "workflow_id": "route-invocation-fault-contract",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.fault-contract.route-invocation.recovery"
-      ],
-      "observation_selectors": [
-        "asgi.send.message_types",
-        "http.status"
-      ]
-    },
-    {
       "source_item_id": "upstream-test:tests/test_dependency_yield_scope.py",
       "fixture_id": "fastapi.test.test-dependency-yield-scope",
       "workflow_id": "route-invocation-function-scope-cleanup-fault-contract",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.dependencies.function-request-cleanup-on-unhandled-error",
-        "fastapi.fault-contract.route-invocation.function-request-cleanup-order"
+        "fastapi.dependencies.function-request-cleanup-on-unhandled-error"
       ],
       "observation_selectors": [
         "asgi.send.message_types",
@@ -64983,13 +64845,11 @@
       "fixture_id": "fastapi.test.test-dependency-contextmanager",
       "workflow_id": "security-oauth2-authcode-fault-contract",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup",
         "fastapi.security.oauth2-authorization-code-bearer.yield-dependency-cleanup"
       ],
       "observation_selectors": [
-        "asgi.application_error.exception",
         "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
@@ -65001,9 +64861,8 @@
       "fixture_id": "fastapi.test.test-security-oauth2-authorization-code-bearer",
       "workflow_id": "security-oauth2-authcode-fault-contract",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup",
         "fastapi.security.oauth2-authorization-code-bearer.yield-dependency-cleanup"
       ],
       "observation_selectors": [
