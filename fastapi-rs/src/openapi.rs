@@ -198,6 +198,7 @@ pub(crate) fn openapi_document(
     operations: &[OpenApiOperation],
     root_path: Option<&str>,
     shared_definitions: Option<&Py<PyDict>>,
+    include_validation_error_schemas: bool,
 ) -> PyResult<Py<PyAny>> {
     let encoder_options = JsonableEncoderOptions::new(JsonableEncoderInput {
         include: None,
@@ -564,12 +565,14 @@ pub(crate) fn openapi_document(
             && !responses.contains("default")?
         {
             responses.set_item("422", validation_response(py)?)?;
-            schemas
-                .entry("HTTPValidationError".to_owned())
-                .or_insert(http_validation_error_schema(py)?.unbind().into_any());
-            schemas
-                .entry("ValidationError".to_owned())
-                .or_insert(validation_error_schema(py)?.unbind().into_any());
+            if include_validation_error_schemas {
+                schemas
+                    .entry("HTTPValidationError".to_owned())
+                    .or_insert(http_validation_error_schema(py)?.unbind().into_any());
+                schemas
+                    .entry("ValidationError".to_owned())
+                    .or_insert(validation_error_schema(py)?.unbind().into_any());
+            }
         }
 
         operation_document.set_item("responses", responses)?;
@@ -747,6 +750,7 @@ impl GetOpenApiCallable {
             &operations,
             None,
             Some(&response_definitions),
+            true,
         )
     }
 }

@@ -3945,6 +3945,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.constructor-explicit-none-response-model
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.routing.apiroute.constructor-openapi-options
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-callbacks-direct.yaml
+          case_id: fastapi.routing.apiroute.constructor-callbacks
+          workload_path: tests/fixtures/workloads/apiroute_callbacks_direct.py
+          observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-callbacks-direct.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-callbacks
+          workload_path: tests/fixtures/workloads/apiroute_callbacks_direct.py
+          observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-operations.yaml
           case_id: fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema
           workload_path: tests/fixtures/workloads/openapi_operations.py
@@ -4001,7 +4009,12 @@ reviewed_api_contract_overlay:
         A FastAPI-registered APIRoute retains the direct callbacks list and
         contributes its callback path item and custom response model to OpenAPI,
         sampled by `additional-responses-custom-model-in-callback.openapi-schema`.
-        Manually constructing a standalone APIRoute with callbacks is unverified.
+        `apiroute-callbacks-direct` also compares standalone construction and
+        `get_openapi` for one callback APIRoute with a Pydantic request/response
+        model. Exact parity includes its callback operation, request body, and
+        422 reference; the parent document contains the callback model schema
+        without callback-local validation error component schemas, matching the
+        pinned source. Other callback route combinations remain unverified.
         Identity-checked parity confirms the source-declared base relationship
         `APIRoute` to `starlette.routing.Route`; this does not establish other
         APIRoute behavior inherited from Starlette.
@@ -4040,7 +4053,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description and one provider-backed dependency override; custom response classes, response-model filters beyond the sampled output projection, strict content type, and callbacks on a manually constructed route remain unverified.
+          - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description, one provider-backed dependency override, and one callback route; custom response classes, response-model filters beyond the sampled output projection, strict-content-type behavior, and other callback combinations remain unverified.
           - Standalone APIRoute dispatch is mapped only for the six selected HTTP cases; other provider shapes and override errors, direct .app invocation, body inputs, validation errors, exception-handler integration, and WebSocket scopes remain unverified.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
@@ -4682,6 +4695,10 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apiroute-openapi-options.yaml
           case_id: fastapi.openapi.get-openapi.standalone-apiroute-custom-unique-id
           workload_path: tests/fixtures/workloads/apiroute_openapi_options.py
+          observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-callbacks-direct.yaml
+          case_id: fastapi.openapi.get-openapi.standalone-apiroute-callbacks
+          workload_path: tests/fixtures/workloads/apiroute_callbacks_direct.py
           observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-multi-route.yaml
           case_id: fastapi.openapi.get-openapi.two-static-get-routes

@@ -7354,6 +7354,7 @@ impl PyFastApi {
             &operations,
             root_path,
             Some(&response_definitions),
+            true,
         )
     }
 
@@ -7749,6 +7750,9 @@ fn openapi_callbacks(
             &operations,
             None,
             Some(&callback_definitions),
+            // FastAPI keeps callback-local automatic validation definitions out
+            // of the parent document while retaining the callback's 422 ref.
+            false,
         )?;
         let callback_document = callback_document.bind(py).cast::<PyDict>()?;
         let paths = callback_document
