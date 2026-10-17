@@ -2018,6 +2018,230 @@ fn install_api_route_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyRe
     Ok(())
 }
 
+const FASTAPI_PROXY_STATE_ATTRIBUTE: &str = "_fastapi_rs_state";
+
+#[pyclass(name = "_FastAPIProxyDescriptor", module = "fastapi_rs._core")]
+struct PyFastApiProxyDescriptor {
+    member: String,
+}
+
+#[pyclass(name = "_FastAPIProxyPropertyDescriptor", module = "fastapi_rs._core")]
+struct PyFastApiProxyPropertyDescriptor {
+    member: String,
+}
+
+#[pyclass(name = "_BoundFastAPIProxyMember", module = "fastapi_rs._core")]
+struct PyBoundFastApiProxyMember {
+    instance: Py<PyAny>,
+    member: String,
+}
+
+fn fastapi_proxy_state<'py>(instance: &Bound<'py, PyAny>) -> PyResult<Bound<'py, PyAny>> {
+    instance
+        .py()
+        .import("builtins")?
+        .getattr("object")?
+        .getattr("__getattribute__")?
+        .call1((instance, FASTAPI_PROXY_STATE_ATTRIBUTE))
+}
+
+fn fastapi_state_from_object(instance: &Bound<'_, PyAny>) -> PyResult<Py<PyFastApi>> {
+    if let Ok(state) = instance.extract::<Py<PyFastApi>>() {
+        return Ok(state);
+    }
+    fastapi_proxy_state(instance)?
+        .extract::<Py<PyFastApi>>()
+        .map_err(Into::into)
+}
+
+fn fastapi_public_instance(py: Python<'_>, app: &Py<PyFastApi>) -> PyResult<Py<PyAny>> {
+    let public_instance = app
+        .bind(py)
+        .borrow()
+        .public_instance
+        .as_ref()
+        .map(|reference| reference.clone_ref(py));
+    if let Some(reference) = public_instance {
+        let instance = reference.bind(py).call0()?;
+        if !instance.is_none() {
+            return Ok(instance.unbind());
+        }
+    }
+    Ok(app.clone_ref(py).into_any())
+}
+
+fn fastapi_proxy_descriptor(py: Python<'_>, member: &str) -> PyResult<Py<PyAny>> {
+    Py::new(
+        py,
+        PyFastApiProxyDescriptor {
+            member: member.to_owned(),
+        },
+    )
+    .map(Py::into_any)
+}
+
+fn fastapi_proxy_property_descriptor(py: Python<'_>, member: &str) -> PyResult<Py<PyAny>> {
+    Py::new(
+        py,
+        PyFastApiProxyPropertyDescriptor {
+            member: member.to_owned(),
+        },
+    )
+    .map(Py::into_any)
+}
+
+fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult<()> {
+    module.add_class::<PyFastApiProxyDescriptor>()?;
+    module.add_class::<PyFastApiProxyPropertyDescriptor>()?;
+    module.add_class::<PyBoundFastApiProxyMember>()?;
+
+    let native_type = py.get_type::<PyFastApi>();
+    let native_members = native_type.getattr("__dict__")?;
+    let property_type = py.import("builtins")?.getattr("property")?;
+    let namespace = PyDict::new(py);
+    namespace.set_item("__module__", "fastapi.applications")?;
+    namespace.set_item("__qualname__", "FastAPI")?;
+    if let Ok(doc) = native_type.getattr("__doc__") {
+        if !doc.is_none() {
+            namespace.set_item("__doc__", doc)?;
+        }
+    }
+    namespace.set_item("__init__", fastapi_proxy_descriptor(py, "__init__")?)?;
+    namespace.set_item("__getattr__", fastapi_proxy_descriptor(py, "__getattr__")?)?;
+
+    for item in native_members.call_method0("items")?.try_iter()? {
+        let item = item?.cast_into::<PyTuple>()?;
+        let key = item.get_item(0)?;
+        let value = item.get_item(1)?;
+        let Ok(member) = key.extract::<String>() else {
+            continue;
+        };
+        if matches!(
+            member.as_str(),
+            "__new__"
+                | "__init__"
+                | "__module__"
+                | "__qualname__"
+                | "__doc__"
+                | "__dict__"
+                | "__weakref__"
+                | "__signature__"
+                | "__annotations__"
+        ) {
+            continue;
+        }
+        if member.starts_with("__") && member != "__call__" {
+            continue;
+        }
+        let descriptor = if value.is_instance(&property_type)? || value.hasattr("__set__")? {
+            fastapi_proxy_property_descriptor(py, &member)?
+        } else {
+            fastapi_proxy_descriptor(py, &member)?
+        };
+        namespace.set_item(member, descriptor)?;
+    }
+
+    let starlette = py.import("starlette.applications")?.getattr("Starlette")?;
+    let bases = PyTuple::new(py, [starlette])?;
+    let proxy_type = py
+        .import("builtins")?
+        .getattr("type")?
+        .call1(("FastAPI", bases, namespace))?;
+    if let Ok(signature) = native_type.getattr("__signature__") {
+        proxy_type.setattr("__signature__", signature)?;
+    }
+    if let Ok(annotations) = native_type.getattr("__annotations__") {
+        if !annotations.is_none() {
+            proxy_type.setattr("__annotations__", annotations)?;
+        }
+    }
+    module.add("FastAPI", proxy_type)?;
+    Ok(())
+}
+
+#[pymethods]
+impl PyFastApiProxyDescriptor {
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        instance: &Bound<'_, PyAny>,
+        _owner: &Bound<'_, PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        if instance.is_none() {
+            return Ok(slf.into_any());
+        }
+        let member = slf.bind(py).borrow().member.clone();
+        if matches!(member.as_str(), "__init__" | "__getattr__") {
+            return Py::new(
+                py,
+                PyBoundFastApiProxyMember {
+                    instance: instance.clone().unbind(),
+                    member,
+                },
+            )
+            .map(Py::into_any);
+        }
+        fastapi_proxy_state(instance)?
+            .getattr(member)
+            .map(Bound::unbind)
+    }
+}
+
+#[pymethods]
+impl PyFastApiProxyPropertyDescriptor {
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        instance: &Bound<'_, PyAny>,
+        _owner: &Bound<'_, PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        if instance.is_none() {
+            return Ok(slf.into_any());
+        }
+        let member = slf.bind(py).borrow().member.clone();
+        fastapi_proxy_state(instance)?
+            .getattr(member)
+            .map(Bound::unbind)
+    }
+
+    fn __set__(&self, instance: &Bound<'_, PyAny>, value: &Bound<'_, PyAny>) -> PyResult<()> {
+        let member = self.member.as_str();
+        fastapi_proxy_state(instance)?.setattr(member, value)?;
+        Ok(())
+    }
+}
+
+#[pymethods]
+impl PyBoundFastApiProxyMember {
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let instance = self.instance.bind(py);
+        match self.member.as_str() {
+            "__init__" => {
+                let state = py.get_type::<PyFastApi>().call(args, kwargs)?;
+                let weakref = PyWeakrefReference::new(instance)?;
+                object_setattr(py, instance, FASTAPI_PROXY_STATE_ATTRIBUTE, &state)?;
+                state.extract::<PyRefMut<'_, PyFastApi>>()?.public_instance =
+                    Some(weakref.unbind());
+                Ok(py.None())
+            }
+            "__getattr__" => {
+                require_proxy_arguments(args, kwargs, 1, "FastAPI.__getattr__")?;
+                let name = args.get_item(0)?.extract::<String>()?;
+                fastapi_proxy_state(instance)?
+                    .getattr(name)
+                    .map(Bound::unbind)
+            }
+            _ => Err(PyTypeError::new_err("invalid FastAPI proxy member")),
+        }
+    }
+}
+
 #[pymethods]
 impl PyApiRouteProxyDescriptor {
     fn __get__(
@@ -3211,9 +3435,7 @@ fn api_route_dispatch_owner(
             .extract::<PyRef<'_, PyApiRouter>>()?
             .inner_app(py)?
     } else {
-        provider
-            .bind(py)
-            .extract::<Py<PyFastApi>>()
+        fastapi_state_from_object(provider.bind(py))
             .map_err(|_| PyAttributeError::new_err("'APIRoute' has no dispatch owner"))?
     };
     let route_index = direct_openapi_route_index(&owner, facade, facade).ok_or_else(|| {
@@ -3325,9 +3547,7 @@ fn direct_openapi_contexts(
         };
         let owner = provider
             .as_ref()
-            .filter(|provider| provider.bind(py).is_instance_of::<PyFastApi>())
-            .map(|provider| provider.bind(py).extract::<Py<PyFastApi>>())
-            .transpose()?;
+            .and_then(|provider| fastapi_state_from_object(provider.bind(py)).ok());
         let owner_route_index = owner.as_ref().and_then(|owner| {
             direct_openapi_route_index(owner, context.bind(py), effective_route.bind(py))
         });
@@ -4027,6 +4247,7 @@ struct ParameterOpenApiPlan {
 
 #[pyclass(name = "FastAPI", module = "fastapi.applications", dict, weakref)]
 pub(crate) struct PyFastApi {
+    public_instance: Option<Py<PyWeakrefReference>>,
     state: Py<PyAny>,
     extra: Py<PyAny>,
     debug: bool,
@@ -4990,6 +5211,7 @@ impl PyFastApi {
             .into_any(),
         };
         let mut app = Self {
+            public_instance: None,
             state,
             extra,
             debug,
@@ -6264,7 +6486,7 @@ impl PyFastApi {
             ..frontend_route_position + source.frontend_routes.len())
             .collect::<Vec<_>>();
         let strict_content_type = destination.strict_content_type;
-        let dependency_overrides_provider = slf.clone_ref(py).into_any();
+        let dependency_overrides_provider = fastapi_public_instance(py, &slf)?;
         merge_router_routes(
             py,
             destination,
@@ -6503,7 +6725,9 @@ impl PyFastApi {
         if !root_path.is_empty() {
             scope.bind(py).set_item("root_path", root_path)?;
         }
-        scope.bind(py).set_item("app", slf.clone_ref(py))?;
+        scope
+            .bind(py)
+            .set_item("app", fastapi_public_instance(py, &slf)?)?;
         Self::middleware_stack_for(slf, py)?
             .bind(py)
             .call1((scope, receive, send))
@@ -8117,8 +8341,11 @@ impl PyApiRouter {
             }
             _ => configured_route_class,
         };
-        let dependency_overrides_provider =
-            is_fastapi_router.then(|| inner.clone_ref(py).into_any());
+        let dependency_overrides_provider = if is_fastapi_router {
+            Some(fastapi_public_instance(py, &inner)?)
+        } else {
+            None
+        };
         let decorator = operation_decorator(
             inner.clone_ref(py),
             py,
@@ -8324,7 +8551,7 @@ impl PyApiRouter {
         let source_frontend_route_indexes = (frontend_route_position
             ..frontend_route_position + source.frontend_routes.len())
             .collect::<Vec<_>>();
-        let dependency_overrides_provider = inner.clone_ref(py).into_any();
+        let dependency_overrides_provider = fastapi_public_instance(py, &inner)?;
         merge_router_routes(
             py,
             &mut destination,
@@ -9873,7 +10100,7 @@ fn refresh_included_router_routes_inner(
                 destination,
             )
         };
-        let dependency_overrides_provider = app.clone_ref(py).into_any();
+        let dependency_overrides_provider = fastapi_public_instance(py, app)?;
         // Route vectors keep stable append-only ids. A separate order
         // projection places late registrations back at this include slot.
         merge_router_routes_from(
@@ -10278,7 +10505,7 @@ fn operation_decorator(
     Py::new(
         py,
         PyOperationDecorator {
-            dependency_overrides_provider: Some(app.clone_ref(py).into_any()),
+            dependency_overrides_provider: Some(fastapi_public_instance(py, &app)?),
             route_class_selection: None,
             app,
             path: path.to_owned(),
@@ -18537,5 +18764,6 @@ fn install_exception_handler_metadata(
 
 /// Install source-derived Python introspection signatures after native API types register.
 pub(crate) fn register_signatures(module: &Bound<'_, PyModule>) -> PyResult<()> {
-    install_route_operation_descriptors(module.py(), module)
+    install_route_operation_descriptors(module.py(), module)?;
+    install_fastapi_proxy(module.py(), module)
 }
