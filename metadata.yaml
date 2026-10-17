@@ -5242,10 +5242,14 @@ reviewed_api_contract_overlay:
         non-empty string description per key are preserved by
         FastAPI.include_router in path-operation-other-verbs-responses.
         Router/include-level response maps, other dependency forms, OpenAPI
-        callback objects, other WebSocket inclusion behavior, enum tags, and
-        other constructor or inclusion options remain outside the reviewed
-        slice. Lifecycle callbacks and lifespan contexts are sampled by the
-        dedicated direct-ASGI workflow, including nested router state merging.
+        callback objects, other WebSocket inclusion behavior, and enum tags
+        supplied through route decorators, APIRoute/APIRouter constructors, or
+        APIRouter.include_router remain outside the reviewed slice. A plain
+        string-valued Enum supplied to FastAPI.include_router is covered only
+        for the emitted OpenAPI operation tag. Other constructor or inclusion
+        options remain outside the reviewed slice. Lifecycle callbacks and
+        lifespan contexts are sampled by the dedicated direct-ASGI workflow,
+        including nested router state merging.
         Five response-field-lifecycle inputs reach router construction/GET and
         application inclusion with fixed response models and omitted or concrete
         router/include/route response classes. They observe original versus
@@ -5354,6 +5358,9 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/router_included_request_response_models.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml, case_id: fastapi.routing.iter-route-contexts.nested-included}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset}
+        - recipe_path: tests/fixtures/input-recipes/parity/router-enum-app-tag.yaml
+          case_id: fastapi.applications.include-router.enum-tag-openapi
+          workload_path: tests/fixtures/workloads/router_enum_app_tag.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
@@ -5438,7 +5445,11 @@ reviewed_api_contract_overlay:
         The callback include parameter is covered by
         `atlas-pending-callbacks-source-wave`, which observes the merged callback
         routes in an OpenAPI operation. Other unused include options remain
-        outside this slice. The included Starlette Mount and Host cases compare
+        outside this slice. A plain string-valued Enum in the app-level
+        `tags` argument is normalized to its value and emitted on the included
+        operation in `router-enum-app-tag`; route-level Enum tags, router
+        constructor tags, and APIRouter include tags remain outside this slice.
+        The included Starlette Mount and Host cases compare
         prefixed HTTP dispatch and named URL reversal only; WebSocket dispatch
         through those route families, route-name collisions, and other prefix
         combinations remain unestablished.

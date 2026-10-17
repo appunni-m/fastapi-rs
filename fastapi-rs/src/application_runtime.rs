@@ -1256,6 +1256,26 @@ enum FastApiGeneratorKind {
     Async,
 }
 
+struct FastApiTag(String);
+
+impl FromPyObject<'_, '_> for FastApiTag {
+    type Error = PyErr;
+
+    fn extract(value: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
+        if value.is_instance_of::<PyString>() {
+            return value.extract::<String>().map(Self);
+        }
+
+        let py = value.py();
+        let enum_type = py.import("enum")?.getattr("Enum")?;
+        if value.is_instance(&enum_type)? {
+            return value.getattr("value")?.extract::<String>().map(Self);
+        }
+
+        value.extract::<String>().map(Self)
+    }
+}
+
 impl FastApiGeneratorKind {
     const fn is_generator(self) -> bool {
         !matches!(self, Self::None)
@@ -6152,7 +6172,7 @@ impl PyFastApi {
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
-        tags: Option<Vec<String>>,
+        tags: Option<Vec<FastApiTag>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         responses: Option<Py<PyAny>>,
         deprecated: Option<bool>,
@@ -6161,6 +6181,8 @@ impl PyFastApi {
         callbacks: Option<Py<PyAny>>,
         generate_unique_id_function: GenerateUniqueIdArgument,
     ) -> PyResult<()> {
+        let tags: Option<Vec<String>> =
+            tags.map(|tags| tags.into_iter().map(|tag| tag.0).collect());
         let include_responses = response_map_or_empty(py, responses)?;
         let include_response_class = default_response_class.into_choice(py)?;
         let include_generate_unique_id_function = generate_unique_id_function.into_choice(py)?;

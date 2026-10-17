@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 618adbbfaf19a785b8f0c2e989d785e2860d6d68b0f7bc0fc45b6ac9e7b485f7
+    sha256: ac3a0bcafc878288716fff1c96ec101762d46434e55432f82f1cafafecbfeb74
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 21fc778e723e625b5075a36d12d62e4ceb0279fa1aede9a3c2a955a8f0b50208
+    sha256: 037a662749e8a6dd5b98ca40d5257bcc815f0abe06497624bbc359e5dbd6359f
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 6a4df73e368b13b0c036c8731d8299d599f59f2922cdbfaaa23261996b138c76
+    sha256: ebff19d8101345b711711bb5829044d2bdfff5291bf2f7c7499c0b3d36b1e449
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 658
-      cases: 2675
-      partial_source_mappings: 1901
+      workflows: 659
+      cases: 2676
+      partial_source_mappings: 1902
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2067
+    operation_fixture_refs: 2068
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -16030,6 +16030,24 @@ api_surface_contract:
       - docs.response.status
       - http.body.bytes
       - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-enum-app-tag
+      input_path: tests/fixtures/inputs/parity/router-enum-app-tag.json
+      input_sha256: 87f104b874daa25e06d7acb8ccb372505b5dbb833e2b3dc784b6b59216002233
+      recipe_path: tests/fixtures/input-recipes/parity/router-enum-app-tag.yaml
+      recipe_sha256: dcf984b286b63b15b50f7655bca1d9f23fef6fe1c32100316758caba0cb41a35
+      workload_path: tests/fixtures/workloads/router_enum_app_tag.py
+      workload_sha256: 308146462d86619681242ee52b9f4b14245cbe7b0e41d56bfecd93677c6dde78
+      case_id: fastapi.applications.include-router.enum-tag-openapi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.body.json
       - http.status
       - openapi.document
       - openapi.paths

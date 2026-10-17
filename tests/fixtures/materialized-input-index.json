@@ -29140,6 +29140,27 @@
       ]
     },
     {
+      "id": "router-enum-app-tag",
+      "input_path": "tests/fixtures/inputs/parity/router-enum-app-tag.json",
+      "input_sha256": "87f104b874daa25e06d7acb8ccb372505b5dbb833e2b3dc784b6b59216002233",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-enum-app-tag.yaml",
+      "recipe_sha256": "dcf984b286b63b15b50f7655bca1d9f23fef6fe1c32100316758caba0cb41a35",
+      "case_ids": [
+        "fastapi.applications.include-router.enum-tag-openapi"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_enum_app_tag.py",
+      "workload_sha256": "308146462d86619681242ee52b9f4b14245cbe7b0e41d56bfecd93677c6dde78",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.applications.include-router.enum-tag-openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_path_operation_configurations/test_tutorial002b.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "router-events-lifespan-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-events-lifespan-upstream.json",
       "input_sha256": "3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf",
@@ -62664,6 +62685,24 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_operation_configurations/test_tutorial002b.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-operation-configurations-test-tutorial002b",
+      "workflow_id": "router-enum-app-tag",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.body.json, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.include-router.enum-tag-openapi"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {
