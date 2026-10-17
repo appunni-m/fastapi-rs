@@ -9534,6 +9534,19 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "fastapi.dependencies.utils.QueryParams",
             "fastapi.routing.Response",
             "fastapi.routing.StreamingResponse",
+            "fastapi.routing.routing",
+            "fastapi.applications.State",
+            "fastapi.applications.Middleware",
+            "fastapi.applications.BaseHTTPMiddleware",
+            "fastapi.applications.ServerErrorMiddleware",
+            "fastapi.applications.ExceptionMiddleware",
+            "fastapi.routing.URL",
+            "fastapi.routing.URLPath",
+            "fastapi.routing.JSONResponse",
+            "fastapi.routing.PlainTextResponse",
+            "fastapi.routing.RedirectResponse",
+            "fastapi.routing.WebSocket",
+            "fastapi.routing.HTTPException",
         }
         if not isinstance(specifications, dict) or set(specifications) != expected_ids:
             raise AtlasError(
@@ -9627,7 +9640,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     )
                     or not isinstance(reference.get("surface_id"), str)
                     or not isinstance(reference.get("operation_id"), str)
-                    or reference.get("operation_id") == "route-dispatch"
+                    or (
+                        reference.get("operation_id") == "route-dispatch"
+                        and fastapi_id != "fastapi.routing.routing"
+                    )
                     or not isinstance(reference.get("source_use_lines"), list)
                     or not reference["source_use_lines"]
                     or reference["source_use_lines"] != sorted(set(reference["source_use_lines"]))

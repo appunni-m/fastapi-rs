@@ -1032,17 +1032,26 @@ starlette_rs:
     fastapi.routing.APIRouter:
       starlette_symbol: starlette.routing.Router
       target_refs:
-        - {surface_id: starlette.routing.Router, operation_id: registration-sequence, requirement_scope: all}
-        - {surface_id: starlette.routing.Router, operation_id: url_path_for, requirement_scope: all}
         - surface_id: starlette.routing.Router
+          operation_id: registration-sequence
+          requirement_ids:
+            - starlette.routing.Router.add_route.registration
+            - starlette.routing.Router.add_websocket_route.registration
+        - {surface_id: starlette.routing.Router, operation_id: url_path_for, requirement_scope: all}
+        - surface_id: starlette.routing.Mount
           operation_id: route-dispatch
           requirement_ids:
-            - starlette.routing.Router.route-dispatch.base-route-subclass-matches
-            - starlette.routing.Router.route-dispatch.instance-matches-override
+            - starlette.routing.Mount.route-dispatch.scope-extension
+            - starlette.routing.Mount.route-dispatch.nested-scope-composition
+        - surface_id: starlette.routing.WebSocketRoute
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.WebSocketRoute.route-dispatch.matched-root-path
       scope_note: >-
-        Router registration, reverse lookup, and polymorphic dispatch links cover the
-        delegated base behavior. FastAPI's route matching, include_router composition,
-        and request solving remain FastAPI-owned.
+        Reverse lookup is inherited; registration links cover the two base append
+        operations called by FastAPI overrides. Mount and WebSocketRoute links cover
+        composed generic route objects. FastAPI owns Router dispatch, route copying,
+        prefix transformations, include_router composition, and request solving.
     fastapi.routing.APIWebSocketRoute:
       starlette_symbol: starlette.routing.WebSocketRoute
       target_refs:
@@ -1246,20 +1255,249 @@ starlette_rs:
         FastAPI delegates its ASGI entrypoint to the inherited Starlette application
         call. The link preserves the generic application boundary and makes no
         FastAPI-RS parity claim.
+    fastapi.applications.State:
+      starlette_symbol: starlette.datastructures.State
+      fastapi_source_uses:
+        - {path: fastapi/applications.py, line: 966, expression: "] = State()"}
+      target_refs:
+        - surface_id: starlette.datastructures.State
+          operation_id: consumer-sequence
+          requirement_ids: [starlette.datastructures.State.attribute-set-get]
+          source_use_lines: [966]
+      scope_note: >-
+        FastAPI creates its inherited app.state value with Starlette State. The
+        selected requirement covers attribute assignment and retrieval; Starlette
+        State remains the generic owner.
+    fastapi.applications.Middleware:
+      starlette_symbol: starlette.middleware.Middleware
+      fastapi_source_uses:
+        - {path: fastapi/applications.py, line: 1034, expression: "[Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)]"}
+        - {path: fastapi/applications.py, line: 1037, expression: "Middleware("}
+        - {path: fastapi/applications.py, line: 1061, expression: "Middleware(AsyncExitStackMiddleware)"}
+        - {path: fastapi/applications.py, line: 1066, expression: "for cls, args, kwargs in reversed(middleware):"}
+      target_refs:
+        - surface_id: starlette.middleware.Middleware
+          operation_id: value-formatting
+          requirement_ids: [starlette.middleware.Middleware.iteration]
+          source_use_lines: [1066]
+      scope_note: >-
+        FastAPI builds Starlette Middleware records and unpacks them while composing
+        its custom stack. The selected link covers generic record iteration only;
+        FastAPI's middleware order and AsyncExitStack placement remain FastAPI-owned.
+    fastapi.applications.BaseHTTPMiddleware:
+      starlette_symbol: starlette.middleware.base.BaseHTTPMiddleware
+      fastapi_source_uses:
+        - {path: fastapi/applications.py, line: 4724, expression: "self.add_middleware(BaseHTTPMiddleware, dispatch=func)"}
+        - {path: fastapi/applications.py, line: 1067, expression: "app = cls(app, *args, **kwargs)"}
+      target_refs:
+        - {surface_id: starlette.middleware.base.BaseHTTPMiddleware, operation_id: base-http-workflow, source_use_lines: [1067, 4724]}
+      scope_note: >-
+        The documented FastAPI middleware decorator installs Starlette
+        BaseHTTPMiddleware. This operation link records generic ownership only;
+        current FastAPI recipes do not select a BaseHTTPMiddleware requirement or
+        establish middleware-internal parity.
+    fastapi.applications.ServerErrorMiddleware:
+      starlette_symbol: starlette.middleware.errors.ServerErrorMiddleware
+      fastapi_source_uses:
+        - {path: fastapi/applications.py, line: 1034, expression: "Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)"}
+        - {path: fastapi/applications.py, line: 1067, expression: "app = cls(app, *args, **kwargs)"}
+      target_refs:
+        - {surface_id: starlette.middleware.errors.ServerErrorMiddleware, operation_id: __init__, source_use_lines: [1034, 1067]}
+      scope_note: >-
+        FastAPI includes the generic ServerErrorMiddleware component in its custom
+        stack and supplies handler/debug configuration. This is an ownership link;
+        stack order and FastAPI exception integration remain FastAPI-owned.
+    fastapi.applications.ExceptionMiddleware:
+      starlette_symbol: starlette.middleware.exceptions.ExceptionMiddleware
+      fastapi_source_uses:
+        - {path: fastapi/applications.py, line: 1038, expression: "ExceptionMiddleware,"}
+        - {path: fastapi/applications.py, line: 1067, expression: "app = cls(app, *args, **kwargs)"}
+      target_refs:
+        - {surface_id: starlette.middleware.exceptions.ExceptionMiddleware, operation_id: __init__, source_use_lines: [1038, 1067]}
+      scope_note: >-
+        FastAPI installs Starlette ExceptionMiddleware with its filtered handler map.
+        This is an ownership link; FastAPI's handler selection, stack order, and
+        dependency exit-stack behavior remain FastAPI-owned.
     fastapi.routing.Request:
       starlette_symbol: starlette.requests.Request
       fastapi_source_uses:
         - {path: fastapi/routing.py, line: 135, expression: "request = Request(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 2038, expression: "request = Request(scope)"}
+        - {path: fastapi/routing.py, line: 2226, expression: "request = Request(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 408, expression: "file_stack = request.scope.get(\"fastapi_middleware_astack\")"}
+        - {path: fastapi/routing.py, line: 422, expression: "mount_path = request.scope.get(\"root_path\", \"\").rstrip(\"/\")"}
+        - {path: fastapi/routing.py, line: 423, expression: "endpoint_ctx[\"path\"] = f\"{request.method} {mount_path}{dependant.path}\""}
         - {path: fastapi/routing.py, line: 430, expression: "body = await request.form()"}
         - {path: fastapi/routing.py, line: 433, expression: "body_bytes = await request.body()"}
+        - {path: fastapi/routing.py, line: 436, expression: "content_type_value = request.headers.get(\"content-type\")"}
         - {path: fastapi/routing.py, line: 439, expression: "json_body = await request.json()"}
         - {path: fastapi/routing.py, line: 446, expression: "json_body = await request.json()"}
       target_refs:
+        - {surface_id: starlette.requests.Request, operation_id: constructor-contract, source_use_lines: [135, 2038, 2226]}
+        - surface_id: starlette.requests.Request
+          operation_id: scope-mapping
+          requirement_ids: [starlette.requests.Request.scope-property.supplied-mapping]
+          source_use_lines: [408, 422, 423]
+        - {surface_id: starlette.requests.Request, operation_id: header-cache-sequence, source_use_lines: [436]}
         - {surface_id: starlette.requests.Request, operation_id: form, source_use_lines: [135, 430]}
         - {surface_id: starlette.requests.Request, operation_id: body-stream-json, source_use_lines: [135, 433, 439, 446]}
       scope_note: >-
-        These links cover FastAPI's routed request construction and body/form parsing
-        calls only. Other Request conveniences remain without an exact operation link.
+        These links cover FastAPI's Request construction, consumed scope mapping,
+        header-property access, and body/form parsing. The sibling contract has no
+        standalone method-property requirement; the request.method read remains
+        visible in the source-use inventory without a requirement claim.
+    fastapi.routing.URL:
+      starlette_symbol: starlette.datastructures.URL
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 1956, expression: "url = URL(scope=scope)"}
+        - {path: fastapi/routing.py, line: 1957, expression: "url = url.replace(path=url.path + \"/\")"}
+        - {path: fastapi/routing.py, line: 2756, expression: "redirect_url = URL(scope=redirect_scope)"}
+      target_refs:
+        - surface_id: starlette.datastructures.URL
+          operation_id: scope-construction
+          requirement_ids: [starlette.datastructures.URL.scope-construction]
+          source_use_lines: [1956, 2756]
+        - surface_id: starlette.datastructures.URL
+          operation_id: component-and-replacement-sequence
+          requirement_ids: [starlette.datastructures.URL.component-replacement]
+          source_use_lines: [1957]
+      scope_note: >-
+        FastAPI constructs Starlette URLs from ASGI scopes and adjusts a path for
+        frontend directory redirects. The links cover those generic URL operations;
+        FastAPI's frontend selection and redirect policy remain FastAPI-owned.
+    fastapi.routing.routing:
+      starlette_symbol: starlette.routing
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 1510, expression: "return self.starlette_route.matches(scope)"}
+        - {path: fastapi/routing.py, line: 1531, expression: "return self.starlette_route.url_path_for(name, **path_params)"}
+        - {path: fastapi/routing.py, line: 1667, expression: "starlette_route: BaseRoute = routing.Route("}
+        - {path: fastapi/routing.py, line: 1692, expression: "if isinstance(route, routing.WebSocketRoute):"}
+        - {path: fastapi/routing.py, line: 1693, expression: "starlette_route = routing.WebSocketRoute("}
+        - {path: fastapi/routing.py, line: 1700, expression: "if isinstance(route, routing.Mount):"}
+        - {path: fastapi/routing.py, line: 1701, expression: "starlette_route = copy.copy(route)"}
+        - {path: fastapi/routing.py, line: 1702, expression: "starlette_route.path = self.include_context.path_for(route).rstrip(\"/\")"}
+        - {path: fastapi/routing.py, line: 1712, expression: "if isinstance(route, routing.Host):"}
+        - {path: fastapi/routing.py, line: 1714, expression: "prefixed_app: ASGIApp = routing.Router("}
+        - {path: fastapi/routing.py, line: 1715, expression: "routes=[routing.Mount(self.include_context.prefix, app=route.app)]"}
+        - {path: fastapi/routing.py, line: 1719, expression: "starlette_route = routing.Host("}
+        - {path: fastapi/routing.py, line: 1753, expression: "match, child_scope = candidate.matches(scope)"}
+        - {path: fastapi/routing.py, line: 1802, expression: "await route.handle(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 2731, expression: "match, child_scope = route.matches(scope)"}
+        - {path: fastapi/routing.py, line: 2734, expression: "await route.handle(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 2742, expression: "await route.handle(scope, receive, send)"}
+      target_refs:
+        - {surface_id: starlette.routing.Route, operation_id: __init__, source_use_lines: [1667]}
+        - {surface_id: starlette.routing.Route, operation_id: url_path_for, source_use_lines: [1531]}
+        - {surface_id: starlette.routing.WebSocketRoute, operation_id: url_path_for, source_use_lines: [1531]}
+        - {surface_id: starlette.routing.Mount, operation_id: url_path_for, source_use_lines: [1531]}
+        - {surface_id: starlette.routing.Host, operation_id: url_path_for, source_use_lines: [1531]}
+        - surface_id: starlette.routing.Mount
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.Mount.route-dispatch.scope-extension
+            - starlette.routing.Mount.route-dispatch.nested-scope-composition
+          source_use_lines: [1510, 1700, 1701, 1702, 1753, 1802, 2731, 2734, 2742]
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.Router.route-dispatch.mount-route-dispatch
+          source_use_lines: [1714, 1715, 1802]
+        - surface_id: starlette.routing.WebSocketRoute
+          operation_id: route-dispatch
+          source_use_lines: [1510, 1692, 1693, 1753, 1802, 2731, 2734]
+      scope_note: >-
+        FastAPI clones generic Route, WebSocketRoute, Mount, and Host instances and
+        delegates reverse lookup to those objects. The links cover Mount dispatch and
+        the nested Router/Mount used by prefixed Host routes. FastAPI owns its route
+        matching loop; its direct generic Route/Host .matches and .handle calls are
+        intentionally unmapped because Starlette-RS has no exact operation for those
+        calls, and the loop is not Starlette Router.app. Route copying, prefix rewrites,
+        include composition, route order, redirect policy, and fallback handling remain
+        FastAPI-owned.
+    fastapi.routing.URLPath:
+      starlette_symbol: starlette.datastructures.URLPath
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 1541, expression: "return URLPath(path=path, protocol=\"http\")"}
+      target_refs:
+        - {surface_id: starlette.datastructures.URLPath, operation_id: constructor-sequence, source_use_lines: [1541]}
+      scope_note: >-
+        FastAPI constructs a positive HTTP URLPath for reverse routing. The target
+        operation link records ownership; its only selected sibling requirement
+        tests invalid protocol input, so no requirement is claimed for this valid
+        constructor call.
+    fastapi.routing.JSONResponse:
+      starlette_symbol: starlette.responses.JSONResponse
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 379, expression: "response_class: type[Response] | DefaultPlaceholder = Default(JSONResponse),"}
+        - {path: fastapi/routing.py, line: 747, expression: "response = actual_response_class(content, **response_args)"}
+      target_refs:
+        - surface_id: starlette.responses.JSONResponse
+          operation_id: consumer-construction
+          requirement_ids: [starlette.responses.JSONResponse.consumer-construction.public-render-and-asgi]
+          source_use_lines: [379, 747]
+      scope_note: >-
+        FastAPI uses generic Starlette JSONResponse as the default route response
+        class. This link covers its public construction/render contract; custom
+        response-class selection and FastAPI serialization remain FastAPI-owned.
+    fastapi.routing.PlainTextResponse:
+      starlette_symbol: starlette.responses.PlainTextResponse
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 1269, expression: "response = PlainTextResponse("}
+      target_refs:
+        - surface_id: starlette.responses.PlainTextResponse
+          operation_id: consumer-construction
+          requirement_ids: [starlette.responses.PlainTextResponse.consumer-construction.public-render-and-asgi]
+          source_use_lines: [1269]
+      scope_note: >-
+        FastAPI uses Starlette PlainTextResponse for its generic route method-miss
+        response. The link covers generic response construction/rendering, while
+        route selection remains FastAPI-owned.
+    fastapi.routing.RedirectResponse:
+      starlette_symbol: starlette.responses.RedirectResponse
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 1958, expression: "return RedirectResponse(url=url)"}
+        - {path: fastapi/routing.py, line: 2757, expression: "response = RedirectResponse(url=str(redirect_url))"}
+      target_refs:
+        - surface_id: starlette.responses.RedirectResponse
+          operation_id: consumer-construction
+          requirement_ids: [starlette.responses.RedirectResponse.consumer-construction.public-render-and-asgi]
+          source_use_lines: [1958, 2757]
+      scope_note: >-
+        FastAPI constructs generic redirects for frontend directory and slash
+        handling. The link covers RedirectResponse construction/rendering; the
+        redirect conditions and URL selection remain FastAPI-owned.
+    fastapi.routing.WebSocket:
+      starlette_symbol: starlette.websockets.WebSocket
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 174, expression: "session = WebSocket(scope, receive=receive, send=send)"}
+      target_refs:
+        - surface_id: starlette.websockets.WebSocket
+          operation_id: constructor-contract
+          requirement_ids: [starlette.websockets.WebSocket.constructor.required-callables]
+          source_use_lines: [174]
+      scope_note: >-
+        FastAPI constructs the Starlette WebSocket protocol object before its
+        dependency-aware endpoint handling. This links required callback inputs;
+        WebSocket endpoint and dependency behavior remain FastAPI-owned.
+    fastapi.routing.HTTPException:
+      starlette_symbol: starlette.exceptions.HTTPException
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 470, expression: "http_error = HTTPException("}
+        - {path: fastapi/routing.py, line: 1268, expression: "raise HTTPException(status_code=405, headers=headers)"}
+        - {path: fastapi/routing.py, line: 1949, expression: "raise HTTPException(status_code=405)"}
+        - {path: fastapi/routing.py, line: 1950, expression: "raise HTTPException(status_code=404)"}
+        - {path: fastapi/routing.py, line: 1972, expression: "raise HTTPException(status_code=404)"}
+        - {path: fastapi/routing.py, line: 1978, expression: "raise HTTPException(status_code=401) from None"}
+        - {path: fastapi/routing.py, line: 1981, expression: "raise HTTPException(status_code=404) from None"}
+        - {path: fastapi/routing.py, line: 1984, expression: "raise HTTPException(status_code=404) from None"}
+        - {path: fastapi/routing.py, line: 2190, expression: "raise HTTPException(status_code=404)"}
+      target_refs:
+        - {surface_id: starlette.exceptions, operation_id: value-formatting, source_use_lines: [470, 1268, 1949, 1950, 1972, 1978, 1981, 1984, 2190]}
+      scope_note: >-
+        FastAPI routing raises the canonical Starlette HTTPException for parse,
+        method, frontend, and route-miss failures. The operation link records the
+        generic exception value owner; FastAPI response-handler integration is
+        tracked separately.
     fastapi.routing.FormData:
       starlette_symbol: starlette.datastructures.FormData
       fastapi_source_uses:
@@ -1316,8 +1554,20 @@ starlette_rs:
       fastapi_source_uses:
         - {path: fastapi/routing.py, line: 145, expression: "await response(scope, receive, send)"}
         - {path: fastapi/routing.py, line: 741, expression: "response = Response("}
+        - {path: fastapi/routing.py, line: 750, expression: "response.headers.raw.extend(solved_result.response.headers.raw)"}
       target_refs:
-        - {surface_id: starlette.responses.Response, operation_id: asgi-call, source_use_lines: [145, 741]}
+        - surface_id: starlette.responses.Response
+          operation_id: asgi-call
+          requirement_ids: [starlette.responses.Response.asgi-call.bytes-content]
+          source_use_lines: [145, 741]
+        - surface_id: starlette.responses.Response
+          operation_id: asgi-call
+          requirement_ids: [starlette.responses.Response.asgi-call.headers-property-cache-and-raw-alias]
+          source_use_lines: [145, 750]
+        - surface_id: starlette.responses.Response
+          operation_id: consumer-construction
+          requirement_ids: [starlette.responses.Response.consumer-construction.public-render-and-asgi]
+          source_use_lines: [741]
       scope_note: >-
         FastAPI constructs a generic Response in its route wrapper and invokes the
         resulting ASGI response. FastAPI-specific response serialization remains
@@ -1330,6 +1580,10 @@ starlette_rs:
         - {path: fastapi/routing.py, line: 677, expression: "response = StreamingResponse("}
       target_refs:
         - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call, source_use_lines: [145, 638, 677]}
+        - surface_id: starlette.responses.StreamingResponse
+          operation_id: consumer-construction
+          requirement_ids: [starlette.responses.StreamingResponse.consumer-construction.public-render-and-asgi]
+          source_use_lines: [638, 677]
       scope_note: >-
         FastAPI constructs Starlette streaming responses in its route wrapper and
         invokes the resulting ASGI response. This is an ownership link only.
