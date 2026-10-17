@@ -1489,6 +1489,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.truthy-non-router.openapi-error
           workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+          case_id: fastapi.webhooks.truthiness-error.constructor-fails
+          workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/application-constructor-starlette-route.yaml
           case_id: fastapi.applications.constructor.starlette-route-dispatch
           workload_path: tests/fixtures/workloads/application_constructor_starlette_route.py
@@ -6029,6 +6033,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.truthy-non-router.openapi-error
           workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+          case_id: fastapi.webhooks.truthiness-error.constructor-fails
+          workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
           case_id: fastapi.webhooks.router-reassignment-before-openapi
           workload_path: tests/fixtures/workloads/webhooks_reassignment.py
@@ -6054,6 +6062,8 @@ reviewed_api_contract_overlay:
         the app's route version remains unchanged. A truthy non-router value passes
         through constructor assignment; requesting `/openapi.json` then raises when
         OpenAPI reads its `routes` attribute, as sampled by the dedicated case.
+        A webhook value whose `__bool__` raises is also observed to propagate the
+        exception during construction.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -6226,6 +6236,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.truthy-non-router.openapi-error
           workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+          case_id: fastapi.webhooks.truthiness-error.constructor-fails
+          workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
           case_id: fastapi.webhooks.router-reassignment-before-openapi
           workload_path: tests/fixtures/workloads/webhooks_reassignment.py

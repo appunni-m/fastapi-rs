@@ -32,3 +32,13 @@ cases:
     - {kind: application_error, selector: exception, comparison: exact}
   source_evidence:
   - {path: docs/en/docs/advanced/openapi-webhooks.md, kind: upstream_documentation}
+- case_id: fastapi.webhooks.truthiness-error.constructor-fails
+  factory_input: {truthiness_error: true}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  verification: parity
+  actions: []
+  source_evidence:
+  - {path: docs/en/docs/advanced/openapi-webhooks.md, kind: upstream_documentation}

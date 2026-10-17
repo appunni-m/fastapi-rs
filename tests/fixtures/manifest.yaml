@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 103f1affea78d073df386cdc76f11707159aa6cd2538a49be7a47b665af5d3be
+    sha256: 4dc4007bdc71421b2ab9fb3285fec73ca171c54c1d3ee9cc708011b3591d7f55
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: a490b4e735122c9238b6a4165cb0c24ae0b33d5f8260ccaa74c194aab1e6a230
+    sha256: f5df09af1f9ab69063511049d75d8252cde0f294bfc09003423f9196bfecdd3c
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,13 +574,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: da798697781d9a0cfadeac266af3d270c72425a837f73f962c7d50d4fe5c7c07
+    sha256: 64db0950fc000c0fc0fcfbbd9ce6f59e146e0bc650af552787fe91e8ca7c5d7d
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 663
-      cases: 2684
+      cases: 2685
       partial_source_mappings: 1908
 
 contract_metadata:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2080
+    operation_fixture_refs: 2083
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -10377,14 +10377,26 @@ api_surface_contract:
       - openapi.paths
     - workflow_id: webhooks-truthy-non-router
       input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
-      input_sha256: 13059f90762df679e199297a9d99bf24897ae612f9fd2c1c15656df6e17410ef
+      input_sha256: dc9d46ae474baca3c375f40711010791c83a9dbfe69fb7fc853df3aa74da7e6e
       recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
-      recipe_sha256: d747483bd62cc2d06d89b85819dd4e71a77b2f32cc19b7ed749d0790ea83eacf
+      recipe_sha256: ae58b47d8347ef9f08ab845f5b1f50d0dce711545f3c26b7d77e21c01838ede1
       workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
-      workload_sha256: 63fc16cd8fb2841a45504bb626896e93a6caa4869fad1cce6bd404a7b389a45e
+      workload_sha256: f55bfaa69fb8ab74811ca104de695b98e8d3acbb7fc148f3ad7296af1da7c57e
       case_id: fastapi.webhooks.truthy-non-router.openapi-error
       observation_selectors:
       - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: webhooks-truthy-non-router
+      input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
+      input_sha256: dc9d46ae474baca3c375f40711010791c83a9dbfe69fb7fc853df3aa74da7e6e
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+      recipe_sha256: ae58b47d8347ef9f08ab845f5b1f50d0dce711545f3c26b7d77e21c01838ede1
+      workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+      workload_sha256: f55bfaa69fb8ab74811ca104de695b98e8d3acbb7fc148f3ad7296af1da7c57e
+      case_id: fastapi.webhooks.truthiness-error.constructor-fails
+      observation_selectors:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
@@ -17824,14 +17836,26 @@ api_surface_contract:
       - openapi.paths
     - workflow_id: webhooks-truthy-non-router
       input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
-      input_sha256: 13059f90762df679e199297a9d99bf24897ae612f9fd2c1c15656df6e17410ef
+      input_sha256: dc9d46ae474baca3c375f40711010791c83a9dbfe69fb7fc853df3aa74da7e6e
       recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
-      recipe_sha256: d747483bd62cc2d06d89b85819dd4e71a77b2f32cc19b7ed749d0790ea83eacf
+      recipe_sha256: ae58b47d8347ef9f08ab845f5b1f50d0dce711545f3c26b7d77e21c01838ede1
       workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
-      workload_sha256: 63fc16cd8fb2841a45504bb626896e93a6caa4869fad1cce6bd404a7b389a45e
+      workload_sha256: f55bfaa69fb8ab74811ca104de695b98e8d3acbb7fc148f3ad7296af1da7c57e
       case_id: fastapi.webhooks.truthy-non-router.openapi-error
       observation_selectors:
       - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: webhooks-truthy-non-router
+      input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
+      input_sha256: dc9d46ae474baca3c375f40711010791c83a9dbfe69fb7fc853df3aa74da7e6e
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+      recipe_sha256: ae58b47d8347ef9f08ab845f5b1f50d0dce711545f3c26b7d77e21c01838ede1
+      workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+      workload_sha256: f55bfaa69fb8ab74811ca104de695b98e8d3acbb7fc148f3ad7296af1da7c57e
+      case_id: fastapi.webhooks.truthiness-error.constructor-fails
+      observation_selectors:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
@@ -19803,14 +19827,26 @@ api_surface_contract:
       - openapi.paths
     - workflow_id: webhooks-truthy-non-router
       input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
-      input_sha256: 13059f90762df679e199297a9d99bf24897ae612f9fd2c1c15656df6e17410ef
+      input_sha256: dc9d46ae474baca3c375f40711010791c83a9dbfe69fb7fc853df3aa74da7e6e
       recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
-      recipe_sha256: d747483bd62cc2d06d89b85819dd4e71a77b2f32cc19b7ed749d0790ea83eacf
+      recipe_sha256: ae58b47d8347ef9f08ab845f5b1f50d0dce711545f3c26b7d77e21c01838ede1
       workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
-      workload_sha256: 63fc16cd8fb2841a45504bb626896e93a6caa4869fad1cce6bd404a7b389a45e
+      workload_sha256: f55bfaa69fb8ab74811ca104de695b98e8d3acbb7fc148f3ad7296af1da7c57e
       case_id: fastapi.webhooks.truthy-non-router.openapi-error
       observation_selectors:
       - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: webhooks-truthy-non-router
+      input_path: tests/fixtures/inputs/parity/webhooks-truthy-non-router.json
+      input_sha256: dc9d46ae474baca3c375f40711010791c83a9dbfe69fb7fc853df3aa74da7e6e
+      recipe_path: tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml
+      recipe_sha256: ae58b47d8347ef9f08ab845f5b1f50d0dce711545f3c26b7d77e21c01838ede1
+      workload_path: tests/fixtures/workloads/webhooks_truthy_non_router.py
+      workload_sha256: f55bfaa69fb8ab74811ca104de695b98e8d3acbb7fc148f3ad7296af1da7c57e
+      case_id: fastapi.webhooks.truthiness-error.constructor-fails
+      observation_selectors:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
