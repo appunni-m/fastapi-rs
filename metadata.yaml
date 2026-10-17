@@ -913,7 +913,9 @@ starlette_rs:
       scope_note: >-
         Starlette-RS reviews this symbol as supported, but its pinned manifest
         declares no HTTPConnection surface or operation, so no target behavior
-        contract can be linked yet.
+        contract can be linked yet. FastAPI also uses the imported type at
+        fastapi/dependencies/utils.py:359 and :481 to classify injected connection
+        parameters; that parameter-selection behavior remains FastAPI-owned.
     fastapi.websockets.WebSocketState:
       state: private-internal
       scope_note: >-
@@ -1370,24 +1372,61 @@ starlette_rs:
       fastapi_source_uses:
         - {path: fastapi/routing.py, line: 1510, expression: "return self.starlette_route.matches(scope)"}
         - {path: fastapi/routing.py, line: 1531, expression: "return self.starlette_route.url_path_for(name, **path_params)"}
+        - {path: fastapi/routing.py, line: 813, expression: "self.name = get_name(endpoint) if name is None else name"}
+        - {path: fastapi/routing.py, line: 815, expression: "self.path_regex, self.path_format, self.param_convertors = compile_path(path)"}
+        - {path: fastapi/routing.py, line: 1017, expression: "route.name = get_name(endpoint) if name is None else name"}
+        - {path: fastapi/routing.py, line: 1018, expression: "route.path_regex, route.path_format, route.param_convertors = compile_path(path)"}
         - {path: fastapi/routing.py, line: 1667, expression: "starlette_route: BaseRoute = routing.Route("}
         - {path: fastapi/routing.py, line: 1692, expression: "if isinstance(route, routing.WebSocketRoute):"}
         - {path: fastapi/routing.py, line: 1693, expression: "starlette_route = routing.WebSocketRoute("}
         - {path: fastapi/routing.py, line: 1700, expression: "if isinstance(route, routing.Mount):"}
         - {path: fastapi/routing.py, line: 1701, expression: "starlette_route = copy.copy(route)"}
         - {path: fastapi/routing.py, line: 1702, expression: "starlette_route.path = self.include_context.path_for(route).rstrip(\"/\")"}
+        - {path: fastapi/routing.py, line: 1707, expression: ") = compile_path(starlette_route.path + \"/{path:path}\")"}
         - {path: fastapi/routing.py, line: 1712, expression: "if isinstance(route, routing.Host):"}
         - {path: fastapi/routing.py, line: 1714, expression: "prefixed_app: ASGIApp = routing.Router("}
         - {path: fastapi/routing.py, line: 1715, expression: "routes=[routing.Mount(self.include_context.prefix, app=route.app)]"}
         - {path: fastapi/routing.py, line: 1719, expression: "starlette_route = routing.Host("}
         - {path: fastapi/routing.py, line: 1753, expression: "match, child_scope = candidate.matches(scope)"}
+        - {path: fastapi/routing.py, line: 1815, expression: "except routing.NoMatchFound:"}
+        - {path: fastapi/routing.py, line: 1817, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 1536, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 1537, expression: "path, remaining_params = routing.replace_params("}
+        - {path: fastapi/routing.py, line: 2100, expression: "raise NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 2210, expression: "raise NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 834, expression: "match, child_scope = super().matches(scope)"}
+        - {path: fastapi/routing.py, line: 835, expression: "if match != Match.NONE:"}
         - {path: fastapi/routing.py, line: 1802, expression: "await route.handle(scope, receive, send)"}
         - {path: fastapi/routing.py, line: 2731, expression: "match, child_scope = route.matches(scope)"}
         - {path: fastapi/routing.py, line: 2734, expression: "await route.handle(scope, receive, send)"}
         - {path: fastapi/routing.py, line: 2742, expression: "await route.handle(scope, receive, send)"}
       target_refs:
         - {surface_id: starlette.routing.Route, operation_id: __init__, source_use_lines: [1667]}
+        - surface_id: starlette.routing.Route
+          operation_id: __init__
+          requirement_ids:
+            - starlette.routing.Route.endpoint-name.function
+            - starlette.routing.Route.endpoint-name.method
+            - starlette.routing.Route.endpoint-name.classmethod
+            - starlette.routing.Route.endpoint-name.staticmethod
+            - starlette.routing.Route.endpoint-name.object
+            - starlette.routing.Route.endpoint-name.lambda
+          source_use_lines: [813, 1017]
+        - {surface_id: starlette.routing.Route, operation_id: __init__, source_use_lines: [815, 1018]}
         - {surface_id: starlette.routing.Route, operation_id: url_path_for, source_use_lines: [1531]}
+        - surface_id: starlette.routing.Route
+          operation_id: url_path_for
+          requirement_ids:
+            - starlette.routing.Route.url_path_for.parameter-mismatch
+            - starlette.routing.Route.url_path_for.str-converter
+            - starlette.routing.Route.url_path_for.int-converter
+            - starlette.routing.Route.url_path_for.float-converter
+            - starlette.routing.Route.url_path_for.path-converter
+            - starlette.routing.Route.url_path_for.uuid-converter
+            - starlette.routing.Route.url_path_for.datetime-converter
+            - starlette.routing.Route.url_path_for.converter-error
+            - starlette.routing.Route.url_path_for.custom-converter-override
+          source_use_lines: [1536, 1537]
         - {surface_id: starlette.routing.WebSocketRoute, operation_id: url_path_for, source_use_lines: [1531]}
         - {surface_id: starlette.routing.Mount, operation_id: url_path_for, source_use_lines: [1531]}
         - {surface_id: starlette.routing.Host, operation_id: url_path_for, source_use_lines: [1531]}
@@ -1396,15 +1435,20 @@ starlette_rs:
           requirement_ids:
             - starlette.routing.Mount.route-dispatch.scope-extension
             - starlette.routing.Mount.route-dispatch.nested-scope-composition
-          source_use_lines: [1510, 1700, 1701, 1702, 1753, 1802, 2731, 2734, 2742]
+          source_use_lines: [1510, 1700, 1701, 1702, 1707, 1753, 1802, 2731, 2734, 2742]
         - surface_id: starlette.routing.Router
           operation_id: route-dispatch
           requirement_ids:
             - starlette.routing.Router.route-dispatch.mount-route-dispatch
           source_use_lines: [1714, 1715, 1802]
+        - surface_id: starlette.routing.Router
+          operation_id: url_path_for
+          requirement_ids: [starlette.routing.Router.url_path_for.mismatch]
+          source_use_lines: [1815, 1817, 2100, 2210]
         - surface_id: starlette.routing.WebSocketRoute
           operation_id: route-dispatch
-          source_use_lines: [1510, 1692, 1693, 1753, 1802, 2731, 2734]
+          requirement_ids: [starlette.routing.WebSocketRoute.route-dispatch.matched-root-path]
+          source_use_lines: [834, 835, 1510, 1692, 1693, 1753, 1802, 2731, 2734]
       scope_note: >-
         FastAPI clones generic Route, WebSocketRoute, Mount, and Host instances and
         delegates reverse lookup to those objects. The links cover Mount dispatch and
@@ -1413,7 +1457,12 @@ starlette_rs:
         intentionally unmapped because Starlette-RS has no exact operation for those
         calls, and the loop is not Starlette Router.app. Route copying, prefix rewrites,
         include composition, route order, redirect policy, and fallback handling remain
-        FastAPI-owned.
+        FastAPI-owned. The get_name, compile_path, replace_params, and NoMatchFound
+        references are direct uses of Starlette routing helpers by FastAPI-owned route
+        classes; the constructor, URL-generation, Mount, and WebSocketRoute links record
+        the closest exact generic operations. Starlette-RS declares no standalone
+        operations for the private helpers, and FastAPI's candidate selection and
+        fallback behavior remain FastAPI-owned.
     fastapi.routing.URLPath:
       starlette_symbol: starlette.datastructures.URLPath
       fastapi_source_uses:
@@ -1531,7 +1580,12 @@ starlette_rs:
         - {surface_id: starlette.datastructures.Headers, operation_id: consumer-sequence, source_use_lines: [756, 782, 811, 832]}
       scope_note: >-
         FastAPI recognizes Headers as a dependency input and delegates generic
-        sequence/mapping behavior to Starlette. This is an ownership link only.
+        sequence/mapping behavior to Starlette. FastAPI also checks the
+        ImmutableMultiDict base type alongside Headers at source lines 756 and 832;
+        the selected sibling requirement covers Headers operations only, while
+        FastAPI's type-discriminator and parameter-grouping branches remain owned
+        here because the sibling contract has no exact ImmutableMultiDict
+        discriminator operation.
     fastapi.dependencies.utils.QueryParams:
       starlette_symbol: starlette.datastructures.QueryParams
       fastapi_source_uses:
