@@ -438,6 +438,7 @@ def _mapping_for_test_module(
     )
     if not selectors:
         raise ValueError(f"workflow cases for {test_path} expose no selectors")
+    function_case_mappings = _path_test_function_case_mappings(test_path)
     contract_gate = (
         _BODY_MEDIA_TYPE_PARITY_GATE
         if test_path == "tests/test_request_body_parameters_media_type.py"
@@ -455,6 +456,7 @@ def _mapping_for_test_module(
             for name, reason in sorted(function_exclusions.items())
         ],
         "workflow_cases": workflow_cases,
+        **({"function_case_mappings": function_case_mappings} if function_case_mappings else {}),
         "observation_selectors": selectors,
         "fastapi_implementation_sources": list(_FASTAPI_IMPLEMENTATION_SOURCES),
         "pydantic_ownership_boundary": _PYDANTIC_BOUNDARY,
@@ -462,6 +464,98 @@ def _mapping_for_test_module(
         "starlette_contract_sources": list(_STARLETTE_CONTRACT_SOURCES),
         "contract_gate": contract_gate,
     }
+
+
+def _path_test_function_case_mappings(test_path: str) -> list[dict[str, Any]]:
+    """Join each pinned path test to its exact independent request stimulus."""
+    if test_path != "tests/test_path.py":
+        return []
+
+    recipe_paths = {
+        "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+        "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+    }
+    cases_by_request: dict[tuple[str, str], dict[str, Any]] = {}
+    selected_cases = [
+        (case_id, row)
+        for case_id, row in _RECIPE_CASE_INDEX.items()
+        if row["recipe_path"] in recipe_paths
+    ]
+    for case_id, row in selected_cases:
+        actions = row["case"].get("actions", [])
+        requests = [action for action in actions if action.get("kind") == "http_request"]
+        if len(requests) != 1:
+            raise ValueError(f"expected one request action in {case_id}")
+        scope = requests[0].get("scope", {})
+        request_key = (scope.get("method"), scope.get("path"))
+        if not all(isinstance(value, str) and value for value in request_key):
+            raise ValueError(f"expected literal method and path in {case_id}")
+        if request_key in cases_by_request:
+            raise ValueError(f"duplicate path-test fixture request: {request_key}")
+        cases_by_request[request_key] = {"case_id": case_id, **row}
+
+    source_path = FASTAPI_ROOT / test_path
+    tree = ast.parse(source_path.read_text(encoding="utf-8"))
+    function_case_mappings = []
+    used_case_ids: set[str] = set()
+    for node in tree.body:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or not node.name.startswith(
+            "test_"
+        ):
+            continue
+        calls = [
+            call
+            for call in ast.walk(node)
+            if isinstance(call, ast.Call)
+            and isinstance(call.func, ast.Attribute)
+            and isinstance(call.func.value, ast.Name)
+            and call.func.value.id == "client"
+            and call.func.attr in {"get", "post", "put", "patch", "delete", "options", "head"}
+        ]
+        if len(calls) != 1 or not calls[0].args:
+            raise ValueError(f"expected one literal client request in {test_path}::{node.name}")
+        path_arg = calls[0].args[0]
+        if not isinstance(path_arg, ast.Constant) or not isinstance(path_arg.value, str):
+            raise ValueError(f"expected literal request path in {test_path}::{node.name}")
+        request_key = (calls[0].func.attr.upper(), path_arg.value)
+        case = cases_by_request.get(request_key)
+        if case is None:
+            raise ValueError(
+                f"no independent input matches {test_path}::{node.name} request {request_key}"
+            )
+        case_id = case["case_id"]
+        if case_id in used_case_ids:
+            raise ValueError(f"multiple path tests map to fixture case {case_id}")
+        used_case_ids.add(case_id)
+        function_case_mappings.append(
+            {
+                "source_function": node.name,
+                "source_evidence": _source(
+                    test_path,
+                    node.lineno,
+                    node.end_lineno or node.lineno,
+                    f"pinned FastAPI 0.141.1 test function {node.name}",
+                ),
+                "request": {"method": request_key[0], "path": request_key[1]},
+                "recipe_path": case["recipe_path"],
+                "case_id": case_id,
+                "mapping_basis": "exact method and literal request path",
+                "mapping_scope": "request_stimulus_only",
+                "observation_selectors": case["observation_selectors"],
+                "scope_note": (
+                    "This link establishes request-stimulus identity; it does not claim "
+                    "that fixture selectors reproduce the upstream function's assertions."
+                ),
+            }
+        )
+
+    if len(used_case_ids) != len(cases_by_request):
+        unmatched = sorted(set(cases_by_request) - {
+            (row["request"]["method"], row["request"]["path"])
+            for row in function_case_mappings
+        })
+        raise ValueError(f"path-test input cases without exact test-function links: {unmatched}")
+    return function_case_mappings
 
 
 def _source_exclusion(test_path: str, reason: str) -> dict[str, Any]:

@@ -566673,6 +566673,1658 @@
         ],
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+          "function_case_mappings": [
+            {
+              "case_id": "fastapi.path-matching.source-input-001",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/text"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 11,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_text_get",
+                "start_line": 8
+              },
+              "source_function": "test_text_get"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-002",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/nonexistent"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 17,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_nonexistent",
+                "start_line": 14
+              },
+              "source_function": "test_nonexistent"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-003",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/foobar"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 23,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_foobar",
+                "start_line": 20
+              },
+              "source_function": "test_path_foobar"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-004",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/str/foobar"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 29,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_str_foobar",
+                "start_line": 26
+              },
+              "source_function": "test_path_str_foobar"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-005",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/str/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 35,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_str_42",
+                "start_line": 32
+              },
+              "source_function": "test_path_str_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-006",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/str/True"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 41,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_str_True",
+                "start_line": 38
+              },
+              "source_function": "test_path_str_True"
+            },
+            {
+              "case_id": "fastapi.path-validation.test-path.integer.invalid-text",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/int/foobar"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 56,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_int_foobar",
+                "start_line": 44
+              },
+              "source_function": "test_path_int_foobar"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-007",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/int/True"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 71,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_int_True",
+                "start_line": 59
+              },
+              "source_function": "test_path_int_True"
+            },
+            {
+              "case_id": "fastapi.path-validation.test-path.integer.valid",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/int/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 77,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_int_42",
+                "start_line": 74
+              },
+              "source_function": "test_path_int_42"
+            },
+            {
+              "case_id": "fastapi.path-validation.test-path.integer.invalid-decimal",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/int/42.5"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 92,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_int_42_5",
+                "start_line": 80
+              },
+              "source_function": "test_path_int_42_5"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-008",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/float/foobar"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 107,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_float_foobar",
+                "start_line": 95
+              },
+              "source_function": "test_path_float_foobar"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-009",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/float/True"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 122,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_float_True",
+                "start_line": 110
+              },
+              "source_function": "test_path_float_True"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-010",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/float/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 128,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_float_42",
+                "start_line": 125
+              },
+              "source_function": "test_path_float_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-011",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/float/42.5"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 134,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_float_42_5",
+                "start_line": 131
+              },
+              "source_function": "test_path_float_42_5"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-012",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/foobar"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 149,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_foobar",
+                "start_line": 137
+              },
+              "source_function": "test_path_bool_foobar"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-013",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/True"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 155,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_True",
+                "start_line": 152
+              },
+              "source_function": "test_path_bool_True"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-014",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 170,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_42",
+                "start_line": 158
+              },
+              "source_function": "test_path_bool_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-015",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/42.5"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 185,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_42_5",
+                "start_line": 173
+              },
+              "source_function": "test_path_bool_42_5"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-016",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/1"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 191,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_1",
+                "start_line": 188
+              },
+              "source_function": "test_path_bool_1"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-017",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/0"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 197,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_0",
+                "start_line": 194
+              },
+              "source_function": "test_path_bool_0"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-018",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/true"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 203,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_true",
+                "start_line": 200
+              },
+              "source_function": "test_path_bool_true"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-019",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/False"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 209,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_False",
+                "start_line": 206
+              },
+              "source_function": "test_path_bool_False"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-020",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/bool/false"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 215,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_bool_false",
+                "start_line": 212
+              },
+              "source_function": "test_path_bool_false"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-021",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param/foo"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 221,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_foo",
+                "start_line": 218
+              },
+              "source_function": "test_path_param_foo"
+            },
+            {
+              "case_id": "fastapi.path-validation.test-path.min-length.valid",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-minlength/foo"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 227,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_minlength_foo",
+                "start_line": 224
+              },
+              "source_function": "test_path_param_minlength_foo"
+            },
+            {
+              "case_id": "fastapi.path-validation.test-path.min-length.invalid",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-minlength/fo"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 243,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_minlength_fo",
+                "start_line": 230
+              },
+              "source_function": "test_path_param_minlength_fo"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-022",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-maxlength/foo"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 249,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_maxlength_foo",
+                "start_line": 246
+              },
+              "source_function": "test_path_param_maxlength_foo"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-023",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-maxlength/foobar"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 265,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_maxlength_foobar",
+                "start_line": 252
+              },
+              "source_function": "test_path_param_maxlength_foobar"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-024",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-min_maxlength/foo"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 271,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_min_maxlength_foo",
+                "start_line": 268
+              },
+              "source_function": "test_path_param_min_maxlength_foo"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-025",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-min_maxlength/foobar"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 287,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_min_maxlength_foobar",
+                "start_line": 274
+              },
+              "source_function": "test_path_param_min_maxlength_foobar"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-026",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-min_maxlength/f"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 303,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_min_maxlength_f",
+                "start_line": 290
+              },
+              "source_function": "test_path_param_min_maxlength_f"
+            },
+            {
+              "case_id": "fastapi.path-validation.test-path.numeric-gt.valid",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-gt/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 309,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_gt_42",
+                "start_line": 306
+              },
+              "source_function": "test_path_param_gt_42"
+            },
+            {
+              "case_id": "fastapi.path-validation.test-path.numeric-gt.invalid",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-gt/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 325,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_gt_2",
+                "start_line": 312
+              },
+              "source_function": "test_path_param_gt_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-027",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-gt0/0.05"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 331,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_gt0_0_05",
+                "start_line": 328
+              },
+              "source_function": "test_path_param_gt0_0_05"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-028",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-gt0/0"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 347,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_gt0_0",
+                "start_line": 334
+              },
+              "source_function": "test_path_param_gt0_0"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-029",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-ge/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 353,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_ge_42",
+                "start_line": 350
+              },
+              "source_function": "test_path_param_ge_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-030",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-ge/3"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 359,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_ge_3",
+                "start_line": 356
+              },
+              "source_function": "test_path_param_ge_3"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-031",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-ge/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 375,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_ge_2",
+                "start_line": 362
+              },
+              "source_function": "test_path_param_ge_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-032",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 391,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_42",
+                "start_line": 378
+              },
+              "source_function": "test_path_param_lt_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-033",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 397,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_2",
+                "start_line": 394
+              },
+              "source_function": "test_path_param_lt_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-034",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt0/-1"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 403,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt0__1",
+                "start_line": 400
+              },
+              "source_function": "test_path_param_lt0__1"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-035",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt0/0"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 419,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt0_0",
+                "start_line": 406
+              },
+              "source_function": "test_path_param_lt0_0"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-036",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 435,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_42",
+                "start_line": 422
+              },
+              "source_function": "test_path_param_le_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-037",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le/3"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 441,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_3",
+                "start_line": 438
+              },
+              "source_function": "test_path_param_le_3"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-038",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 447,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_2",
+                "start_line": 444
+              },
+              "source_function": "test_path_param_le_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-039",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-gt/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 453,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_gt_2",
+                "start_line": 450
+              },
+              "source_function": "test_path_param_lt_gt_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-040",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-gt/4"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 469,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_gt_4",
+                "start_line": 456
+              },
+              "source_function": "test_path_param_lt_gt_4"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-041",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-gt/0"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 485,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_gt_0",
+                "start_line": 472
+              },
+              "source_function": "test_path_param_lt_gt_0"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-042",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 491,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_2",
+                "start_line": 488
+              },
+              "source_function": "test_path_param_le_ge_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-043",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge/1"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 496,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_1",
+                "start_line": 494
+              },
+              "source_function": "test_path_param_le_ge_1"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-044",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge/3"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 502,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_3",
+                "start_line": 499
+              },
+              "source_function": "test_path_param_le_ge_3"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-045",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge/4"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 518,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_4",
+                "start_line": 505
+              },
+              "source_function": "test_path_param_le_ge_4"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-046",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-int/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 524,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_int_2",
+                "start_line": 521
+              },
+              "source_function": "test_path_param_lt_int_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-047",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-int/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 540,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_int_42",
+                "start_line": 527
+              },
+              "source_function": "test_path_param_lt_int_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-048",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-int/2.7"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 555,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_int_2_7",
+                "start_line": 543
+              },
+              "source_function": "test_path_param_lt_int_2_7"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-049",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-gt-int/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 561,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_gt_int_42",
+                "start_line": 558
+              },
+              "source_function": "test_path_param_gt_int_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-050",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-gt-int/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 577,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_gt_int_2",
+                "start_line": 564
+              },
+              "source_function": "test_path_param_gt_int_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-051",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-gt-int/2.7"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 592,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_gt_int_2_7",
+                "start_line": 580
+              },
+              "source_function": "test_path_param_gt_int_2_7"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-052",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-int/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 608,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_int_42",
+                "start_line": 595
+              },
+              "source_function": "test_path_param_le_int_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-053",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-int/3"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 614,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_int_3",
+                "start_line": 611
+              },
+              "source_function": "test_path_param_le_int_3"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-054",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-int/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 620,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_int_2",
+                "start_line": 617
+              },
+              "source_function": "test_path_param_le_int_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-055",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-int/2.7"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 635,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_int_2_7",
+                "start_line": 623
+              },
+              "source_function": "test_path_param_le_int_2_7"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-056",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-ge-int/42"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 641,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_ge_int_42",
+                "start_line": 638
+              },
+              "source_function": "test_path_param_ge_int_42"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-057",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-ge-int/3"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 647,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_ge_int_3",
+                "start_line": 644
+              },
+              "source_function": "test_path_param_ge_int_3"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-058",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-ge-int/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 663,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_ge_int_2",
+                "start_line": 650
+              },
+              "source_function": "test_path_param_ge_int_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-059",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-ge-int/2.7"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 678,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_ge_int_2_7",
+                "start_line": 666
+              },
+              "source_function": "test_path_param_ge_int_2_7"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-060",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-gt-int/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 684,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_gt_int_2",
+                "start_line": 681
+              },
+              "source_function": "test_path_param_lt_gt_int_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-061",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-gt-int/4"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 700,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_gt_int_4",
+                "start_line": 687
+              },
+              "source_function": "test_path_param_lt_gt_int_4"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-062",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-gt-int/0"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 716,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_gt_int_0",
+                "start_line": 703
+              },
+              "source_function": "test_path_param_lt_gt_int_0"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-063",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-lt-gt-int/2.7"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 731,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_lt_gt_int_2_7",
+                "start_line": 719
+              },
+              "source_function": "test_path_param_lt_gt_int_2_7"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-064",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge-int/2"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 737,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_int_2",
+                "start_line": 734
+              },
+              "source_function": "test_path_param_le_ge_int_2"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-065",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge-int/1"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 743,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_int_1",
+                "start_line": 740
+              },
+              "source_function": "test_path_param_le_ge_int_1"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-066",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge-int/3"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 749,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_int_3",
+                "start_line": 746
+              },
+              "source_function": "test_path_param_le_ge_int_3"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-067",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge-int/4"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 765,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_int_4",
+                "start_line": 752
+              },
+              "source_function": "test_path_param_le_ge_int_4"
+            },
+            {
+              "case_id": "fastapi.path-matching.source-input-068",
+              "mapping_basis": "exact method and literal request path",
+              "mapping_scope": "request_stimulus_only",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-test-input-review.yaml",
+              "request": {
+                "method": "GET",
+                "path": "/path/param-le-ge-int/2.7"
+              },
+              "scope_note": "This link establishes request-stimulus identity; it does not claim that fixture selectors reproduce the upstream function's assertions.",
+              "source_evidence": {
+                "end_line": 780,
+                "path": "tests/test_path.py",
+                "role": "pinned FastAPI 0.141.1 test function test_path_param_le_ge_int_2_7",
+                "start_line": 768
+              },
+              "source_function": "test_path_param_le_ge_int_2_7"
+            }
+          ],
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
           "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/body-surface.yaml::fastapi.path.ge-le-lower-bound-invalid (actions: dispatch; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/body-surface.yaml::fastapi.path.ge-le-upper-bound-invalid (actions: dispatch; selectors: http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-001 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-002 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-003 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-004 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-005 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-006 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-007 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-008 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-009 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-010 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-011 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-012 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-013 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-014 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-015 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-016 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-017 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-018 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-019 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-020 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-021 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-022 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-023 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-024 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-025 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-026 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-027 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-028 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-029 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-030 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-031 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-032 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-033 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-034 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-035 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-036 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-037 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-038 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-039 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-040 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-041 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-042 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-043 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-044 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-045 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-046 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-047 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-048 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-049 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-050 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-051 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-052 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-053 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-054 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-055 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-056 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-057 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-058 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-059 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-060 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-061 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-062 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-063 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-064 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-065 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-066 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-067 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-test-input-review.yaml::fastapi.path-matching.source-input-068 (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml::fastapi.path-validation.test-path.integer.valid (actions: parse-valid-integer; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml::fastapi.path-validation.test-path.integer.invalid-text (actions: reject-non-integer-text; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml::fastapi.path-validation.test-path.integer.invalid-decimal (actions: reject-decimal-as-integer; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml::fastapi.path-validation.test-path.min-length.valid (actions: accept-minimum-length-path; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml::fastapi.path-validation.test-path.min-length.invalid (actions: reject-short-path-string; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml::fastapi.path-validation.test-path.numeric-gt.valid (actions: accept-value-above-exclusive-bound; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml::fastapi.path-validation.test-path.numeric-gt.invalid (actions: reject-value-below-exclusive-bound; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
           "supporting_sources": [

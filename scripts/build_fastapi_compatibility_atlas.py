@@ -4113,6 +4113,12 @@ for test_path, source_review in REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS.items():
         }
         if link not in workflow_links:
             workflow_links.append(link)
+    function_case_mappings = source_review.get("function_case_mappings", [])
+    if function_case_mappings:
+        function_case_links = reviewed.setdefault("function_case_mappings", [])
+        for mapping in function_case_mappings:
+            if mapping not in function_case_links:
+                function_case_links.append(mapping)
     reviewed["supporting_sources"] = _append_unique_review_sources(
         reviewed.get("supporting_sources", []),
         [
@@ -10807,6 +10813,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         **(
                             {"workflow_cases": reviewed_mapping["workflow_cases"]}
                             if "workflow_cases" in reviewed_mapping
+                            else {}
+                        ),
+                        **(
+                            {
+                                "function_case_mappings": reviewed_mapping[
+                                    "function_case_mappings"
+                                ]
+                            }
+                            if "function_case_mappings" in reviewed_mapping
                             else {}
                         ),
                         **(
