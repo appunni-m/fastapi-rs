@@ -77263,7 +77263,7 @@
     "starlette_integration_edges": 133,
     "starlette_module_namespace_crosswalks": 1,
     "starlette_private_helper_behavior_crosswalks": 3,
-    "test_function_designs": 2122,
+    "test_function_designs": 2117,
     "test_functions_in_excluded_modules": 87,
     "test_functions_with_individual_exclusion": 10,
     "test_functions_with_inherited_module_exclusion": 77,
@@ -564473,7 +564473,118 @@
       "id": "upstream-test:tests/test_params_repr.py",
       "kind": "upstream_test_module",
       "mapping_evidence": {
-        "excluded_test_functions": [],
+        "excluded_test_functions": [
+          {
+            "end_line": 13,
+            "line": 12,
+            "name": "test_param_repr_str",
+            "reason": "Direct construction and repr of fastapi.params.Param is outside the reviewed public contract; Param is classified private/internal.",
+            "source_evidence": [
+              {
+                "end_line": 13,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream test function",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 12
+              },
+              {
+                "end_line": 13,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_param_repr_str",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 12
+              }
+            ]
+          },
+          {
+            "end_line": 17,
+            "line": 16,
+            "name": "test_param_repr_none",
+            "reason": "Direct construction and repr of fastapi.params.Param is outside the reviewed public contract; Param is classified private/internal.",
+            "source_evidence": [
+              {
+                "end_line": 17,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream test function",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 16
+              },
+              {
+                "end_line": 17,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_param_repr_none",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 16
+              }
+            ]
+          },
+          {
+            "end_line": 21,
+            "line": 20,
+            "name": "test_param_repr_ellipsis",
+            "reason": "Direct construction and repr of fastapi.params.Param is outside the reviewed public contract; Param is classified private/internal.",
+            "source_evidence": [
+              {
+                "end_line": 21,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream test function",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 20
+              },
+              {
+                "end_line": 21,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_param_repr_ellipsis",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 20
+              }
+            ]
+          },
+          {
+            "end_line": 25,
+            "line": 24,
+            "name": "test_param_repr_number",
+            "reason": "Direct construction and repr of fastapi.params.Param is outside the reviewed public contract; Param is classified private/internal.",
+            "source_evidence": [
+              {
+                "end_line": 25,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream test function",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 24
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_param_repr_number",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 24
+              }
+            ]
+          },
+          {
+            "end_line": 29,
+            "line": 28,
+            "name": "test_param_repr_list",
+            "reason": "Direct construction and repr of fastapi.params.Param is outside the reviewed public contract; Param is classified private/internal.",
+            "source_evidence": [
+              {
+                "end_line": 29,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream test function",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 28
+              },
+              {
+                "end_line": 29,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_param_repr_list",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 28
+              }
+            ]
+          }
+        ],
         "independent_workflow_mappings": [
           {
             "case_ids": [
@@ -564491,46 +564602,6 @@
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
         "matched_test_functions": [
-          {
-            "case_id": "fastapi.test.test-params-repr.test-param-repr-str",
-            "end_line": 13,
-            "line": 12,
-            "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "contract_gated_source_candidate",
-            "name": "test_param_repr_str"
-          },
-          {
-            "case_id": "fastapi.test.test-params-repr.test-param-repr-none",
-            "end_line": 17,
-            "line": 16,
-            "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "contract_gated_source_candidate",
-            "name": "test_param_repr_none"
-          },
-          {
-            "case_id": "fastapi.test.test-params-repr.test-param-repr-ellipsis",
-            "end_line": 21,
-            "line": 20,
-            "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "contract_gated_source_candidate",
-            "name": "test_param_repr_ellipsis"
-          },
-          {
-            "case_id": "fastapi.test.test-params-repr.test-param-repr-number",
-            "end_line": 25,
-            "line": 24,
-            "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "contract_gated_source_candidate",
-            "name": "test_param_repr_number"
-          },
-          {
-            "case_id": "fastapi.test.test-params-repr.test-param-repr-list",
-            "end_line": 29,
-            "line": 28,
-            "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "contract_gated_source_candidate",
-            "name": "test_param_repr_list"
-          },
           {
             "case_id": "fastapi.test.test-params-repr.test-path-repr",
             "end_line": 34,

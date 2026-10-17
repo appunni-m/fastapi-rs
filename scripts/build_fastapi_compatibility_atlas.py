@@ -4063,6 +4063,22 @@ for test_path, source_review in REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS.items():
         continue
 
     REQUEST_PARAMETER_SOURCE_REVIEW_MAPPINGS[test_path] = source_review
+    for exclusion in source_review.get("excluded_test_functions", []):
+        function_name = exclusion["name"]
+        reason = exclusion["reason"]
+        existing_reason = TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).get(function_name)
+        if existing_reason is not None and existing_reason != reason:
+            raise AtlasError(
+                "conflicting request-parameter exclusion for %s::%s"
+                % (test_path, function_name)
+            )
+        TEST_FUNCTION_EXCLUSIONS[test_path][function_name] = reason
+        exclusion_evidence = TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {})
+        source_span = exclusion["source_span"]
+        spans = exclusion_evidence.setdefault(function_name, [])
+        if source_span not in spans:
+            spans.append(source_span)
+
     workflow_notes = [
         "%s::%s (actions: %s; selectors: %s)"
         % (
