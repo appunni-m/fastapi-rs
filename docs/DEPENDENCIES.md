@@ -63,6 +63,23 @@ Starlette-RS owns TestClient behavior; the extra supplies its HTTPX client
 dependency. This package closure does not implement the FastAPI application or
 server-side HTTP stack.
 
+## Hash-locked parity profiles: multipart and email validation
+
+These profiles add packages for selected parity workflows. They are not
+published FastAPI-RS extras: `pyproject.toml` currently declares only
+`testclient` and `templates`. The target locks are
+[`target-standard-multipart`](../requirements/target-standard-multipart-cpython-3.12.13.lock)
+and [`email-validation`](../requirements/email-validation-cpython-3.12.13.lock);
+the latter is shared by the source oracle and target. The FastAPI source oracle
+uses its own `standard` extra for multipart workflows, while the target profile
+installs only the multipart package needed by those cases.
+
+| Package | Version and profile role | Purpose | Language and native components | License evidence |
+|---|---|---|---|---|
+| python-multipart | `0.0.32`; direct dependency in the `standard-multipart` target parity profile | Supplies the multipart parser used by Starlette-RS request form parsing. | Python package; no native component in the locked wheel. | Apache-2.0 ([0.0.32 wheel metadata](https://pypi.org/pypi/python-multipart/0.0.32/json)). |
+| email-validator | `2.3.0`; direct dependency in the `email-validation` parity profiles | Enables Pydantic `EmailStr` validation used by FastAPI models. | Python validation library; no native component in the locked wheel. | Unlicense ([2.3.0 wheel metadata](https://pypi.org/pypi/email-validator/2.3.0/json)). |
+| dnspython | `2.8.0`; transitive dependency of `email-validator` in the `email-validation` profiles | Supports optional DNS deliverability checks; the selected syntax acceptance/rejection cases do not exercise DNS queries. | Python DNS toolkit; no native component in the locked wheel. | ISC ([2.8.0 wheel metadata](https://pypi.org/pypi/dnspython/2.8.0/json)). |
+
 Dependency signature resolution also uses the pinned Pydantic 2.13.4 private
 `pydantic._internal._typing_extra.try_eval_type` helper through PyO3. It
 resolves string annotations from `inspect.signature` in the unwrapped
