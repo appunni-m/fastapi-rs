@@ -36430,17 +36430,26 @@
     {
       "id": "webhooks-reassignment",
       "input_path": "tests/fixtures/inputs/parity/webhooks-reassignment.json",
-      "input_sha256": "0974699c814b4bf8b19e1961bc3d0a2eafbffea71dc1d77dfff35b1764cea14e",
+      "input_sha256": "ffd2f422d489dcb2b6787a515b1995e88fc878d577d65729ccc2a625ec261b7e",
       "recipe_path": "tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml",
-      "recipe_sha256": "78d6114aae0246b13d26c7dcfec14a35f3694690140b70a0c6470d584e31bd31",
+      "recipe_sha256": "6a0fef34848bc0801bf27054129fab5b9868ed1ff8d0bacd3c49124267f9c285",
       "case_ids": [
-        "fastapi.webhooks.router-reassignment-before-openapi"
+        "fastapi.webhooks.router-reassignment-before-openapi",
+        "fastapi.webhooks.router-reassignment-after-openapi-cache"
       ],
       "workload_path": "tests/fixtures/workloads/webhooks_reassignment.py",
-      "workload_sha256": "0417c9a07f8c30083d367902d90fcbb741dddbd2998c4476c204d52d7fee735b",
+      "workload_sha256": "a73fb9dc7cac724ad993e491e0b622d80208e902a38d8345ccc1186b8882570d",
       "case_contracts": [
         {
           "case_id": "fastapi.webhooks.router-reassignment-before-openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/openapi-webhooks.md",
+            "source:upstream-test:tests/test_webhooks_security.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.webhooks.router-reassignment-after-openapi-cache",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:advanced/openapi-webhooks.md",
@@ -68505,8 +68514,9 @@
       "fixture_id": "fastapi.docs.advanced-openapi-webhooks",
       "workflow_id": "webhooks-reassignment",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.webhooks.router-reassignment-after-openapi-cache",
         "fastapi.webhooks.router-reassignment-before-openapi"
       ],
       "observation_selectors": [
@@ -68522,8 +68532,9 @@
       "fixture_id": "fastapi.test.test-webhooks-security",
       "workflow_id": "webhooks-reassignment",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.webhooks.router-reassignment-after-openapi-cache",
         "fastapi.webhooks.router-reassignment-before-openapi"
       ],
       "observation_selectors": [

@@ -6025,6 +6025,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.router-reassignment-before-openapi
           workload_path: tests/fixtures/workloads/webhooks_reassignment.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
+          case_id: fastapi.webhooks.router-reassignment-after-openapi-cache
+          workload_path: tests/fixtures/workloads/webhooks_reassignment.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
       documentation_contract_refs:
         - source_path: docs/en/docs/advanced/openapi-webhooks.md
           fixture_id: fastapi.docs.advanced-openapi-webhooks
@@ -6037,12 +6041,14 @@ reviewed_api_contract_overlay:
         default. Router path operations are used for OpenAPI documentation and
         remain absent from inbound app dispatch. Reassignment before first
         OpenAPI materialization exposes the replacement router and projects its
-        operations into the separate `/webhooks` map.
+        operations into the separate `/webhooks` map. Reassignment after schema
+        materialization changes the field but preserves the cached document while
+        the app's route version remains unchanged.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Reassignment after OpenAPI has already been materialized, other falsey constructor values, and constructor error behavior remain unestablished.
+          - Other falsey constructor values and constructor error behavior remain unestablished.
     fastapi.applications.FastAPI.openapi:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       source_evidence:
@@ -6206,6 +6212,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.constructor-router.openapi-and-route-separation
           workload_path: tests/fixtures/workloads/webhooks_constructor.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
+          case_id: fastapi.webhooks.router-reassignment-before-openapi
+          workload_path: tests/fixtures/workloads/webhooks_reassignment.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/webhooks-reassignment.yaml
+          case_id: fastapi.webhooks.router-reassignment-after-openapi-cache
+          workload_path: tests/fixtures/workloads/webhooks_reassignment.py
+          observation_selectors: [http.status, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/webhooks-duplicate-operation-id.yaml
           case_id: fastapi.webhooks.openapi.duplicate-operation-id-warning
           workload_path: tests/fixtures/workloads/webhooks_duplicate_operation_id.py
@@ -6233,7 +6247,7 @@ reviewed_api_contract_overlay:
         it, as covered by openapi-cache-root-path. Assigning custom
         openapi_schema values, per-instance replacement of the openapi method,
         late mutation of already-included routers, callback declarations on
-        path operations, webhook mutation after OpenAPI caching, and complete
+        path operations, and complete
         OpenAPI parity remain outside this slice. The root-path fixture selects
         configured-prefix fallback and precedence, ASGI scope propagation,
         mutable `root_path` and `root_path_in_servers` attributes, and automatic
@@ -6254,7 +6268,10 @@ reviewed_api_contract_overlay:
         serializes schema-object keys in a different order; raw OpenAPI bytes
         remain a parity gap. The linked webhook cases cover constructor-supplied
         and default routers, body/security schema emission, and separation from
-        inbound paths. A same-ID path/webhook pair emits the pinned duplicate
+        inbound paths. Reassigning `app.webhooks` before first OpenAPI generation
+        projects the replacement router, while reassignment after cache creation
+        preserves the cached `/webhooks` map while the app route version is
+        unchanged. A same-ID path/webhook pair emits the pinned duplicate
         operation warning while retaining each operation in its separate map.
         The separate-schema cases compare the constructor setting for ordinary
         and computed-field response models.
