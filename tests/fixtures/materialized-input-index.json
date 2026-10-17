@@ -10437,6 +10437,57 @@
       ]
     },
     {
+      "id": "fastapi-mount-websocket",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-mount-websocket.json",
+      "input_sha256": "830584ef94ef0cbeec2110dbee14fab428ed09573d787d9dc5f0a65977bd2bdb",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml",
+      "recipe_sha256": "6257672ff9a17a83ba076b80075d7c24aceeeecc8136b828fccdd668e5383230",
+      "case_ids": [
+        "fastapi.mount.http-registration-order",
+        "fastapi.mount.websocket-registration-order"
+      ],
+      "workload_path": "tests/fixtures/workloads/fastapi_mount_websocket.py",
+      "workload_sha256": "8015f9f8338d2286d53da60334925515c68628ac9f5a2ecb2027ce7bf262501a",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.mount.http-registration-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/sub-applications.md",
+            "source:upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.mount.websocket-registration-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fastapi-mount-websocket-router",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-mount-websocket-router.json",
+      "input_sha256": "124c24eaa16b9fca3855eba49ff8b2be7264751d7e1d2c4ad2b5d887dd2a9063",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket-router.yaml",
+      "recipe_sha256": "c5ef4baf2cdc38a52de565516e6568984261b262e93cd06a2e732d9de4bc7169",
+      "case_ids": [
+        "fastapi.mount.websocket-included-router-order"
+      ],
+      "workload_path": "tests/fixtures/workloads/fastapi_mount_websocket_router.py",
+      "workload_sha256": "a0e357d7d238732b42c35ac476de596e421972b4b3177db3a7910d3913a90b3a",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.mount.websocket-included-router-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "fastapi-templating-alias-identity",
       "input_path": "tests/fixtures/inputs/parity/fastapi-templating-alias-identity.json",
       "input_sha256": "6309660ea1728109b988c95b2a14d5c2dc43114d3a06d64b6f124b613a6567a9",
@@ -47719,6 +47770,52 @@
         "http.body.bytes",
         "http.status",
         "python.warnings"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/sub-applications.md",
+      "fixture_id": "fastapi.docs.advanced-sub-applications",
+      "workflow_id": "fastapi-mount-websocket",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.mount.http-registration-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-sub-applications-test-tutorial001",
+      "workflow_id": "fastapi-mount-websocket",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.mount.http-registration-order",
+        "fastapi.mount.websocket-registration-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-sub-applications-test-tutorial001",
+      "workflow_id": "fastapi-mount-websocket-router",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.mount.websocket-included-router-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

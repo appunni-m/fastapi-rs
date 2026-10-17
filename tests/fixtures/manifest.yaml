@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 517a73cefae6e28f77c390074c8b325ac73462e895b792f896df226af0a1ec45
+    sha256: 9c12baa900443766e0e8e87432ed0067d53be3b946a560e5ae32f9f1b2b660dc
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f5df09af1f9ab69063511049d75d8252cde0f294bfc09003423f9196bfecdd3c
+    sha256: 51d0c471d026a5989ae3a0d934791491c2fc9480055054a3c34b0d9ed1aa8c75
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 9172010018e34d34cbd9a08ec9fe35d5155d80538cf4260291e76f07031e174d
+    sha256: 1c84539ce163b2e7ccee16f6759130e4e0dd282256588419258f52bcfad245a3
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 664
-      cases: 2687
-      partial_source_mappings: 1908
+      workflows: 666
+      cases: 2690
+      partial_source_mappings: 1911
 
 contract_metadata:
   aliases:
@@ -68033,6 +68033,10 @@ api_surface_contract:
       case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
       workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
       observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -68040,6 +68044,10 @@ api_surface_contract:
       case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
       workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
       observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -68047,6 +68055,10 @@ api_surface_contract:
       case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
       workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
       observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -68054,6 +68066,10 @@ api_surface_contract:
       case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
       workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
       observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -68061,6 +68077,10 @@ api_surface_contract:
       case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
       workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
       observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -68185,6 +68205,34 @@ api_surface_contract:
       required_text:
       - these lifespan events (startup and shutdown) will only be executed for the main application
       - Sub Applications - Mounts
+    - path: starlette/routing.py
+      kind: source-definition
+      source_authority: Starlette 1.6.0
+      owner: Router
+      symbol: app
+      start_line: 672
+      end_line: 720
+    - path: starlette/routing.py
+      kind: source-definition
+      source_authority: Starlette 1.6.0
+      owner: Router
+      symbol: mount
+      start_line: 725
+      end_line: 727
+    - path: starlette/routing.py
+      kind: source-definition
+      source_authority: Starlette 1.6.0
+      owner: Mount
+      symbol: matches
+      start_line: 394
+      end_line: 425
+    - path: starlette/routing.py
+      kind: source-definition
+      source_authority: Starlette 1.6.0
+      owner: Mount
+      symbol: handle
+      start_line: 454
+      end_line: 455
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/489
       source_path: docs/en/docs/advanced/sub-applications.md
@@ -68210,6 +68258,33 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml
+      case_id: fastapi.mount.http-registration-order
+      workload_path: tests/fixtures/workloads/fastapi_mount_websocket.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml
+      case_id: fastapi.mount.websocket-registration-order
+      workload_path: tests/fixtures/workloads/fastapi_mount_websocket.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - websocket.close_code
+      - websocket.event_order
+      - websocket.messages
+    - recipe_path: tests/fixtures/input-recipes/parity/fastapi-mount-websocket-router.yaml
+      case_id: fastapi.mount.websocket-included-router-order
+      workload_path: tests/fixtures/workloads/fastapi_mount_websocket_router.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - websocket.close_code
+      - websocket.event_order
+      - websocket.messages
     feature_ids:
     - app-routing
     - openapi-docs
@@ -68217,6 +68292,9 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - websocket.close_code
+    - websocket.event_order
+    - websocket.messages
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_source_ref: &id052
       repository: starlette
@@ -68263,9 +68341,7 @@ api_surface_contract:
         sibling_contract_gap_ref: *id053
       status: partial-contract
       known_gaps:
-      - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
-      - WebSocket Mount dispatch is not implemented.
-      - Named-mount reverse URL lookup is not implemented.
+      - Named-mount reverse URL lookup has no focused identity-checked input and receipt.
   - id: fastapi.applications.FastAPI.routes
     kind: inherited_property
     exposure: inherited-from-starlette

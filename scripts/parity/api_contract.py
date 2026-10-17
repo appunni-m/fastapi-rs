@@ -1058,6 +1058,7 @@ def _validate_inherited_fixture_reference(
     *,
     expected_doc_paths: set[str],
     expected_selectors: list[str],
+    known_selectors: set[str],
     operation_id: str,
     inherited_kind: str,
 ) -> dict[str, Any]:
@@ -1065,6 +1066,28 @@ def _validate_inherited_fixture_reference(
     case_id = fixture_reference.get("case_id")
     if not isinstance(recipe_path, str) or not isinstance(case_id, str):
         raise ContractError(f"inherited API fixture reference is incomplete: {operation_id}")
+    fixture_selectors = fixture_reference.get("observation_selectors", expected_selectors)
+    if (
+        not isinstance(fixture_selectors, list)
+        or not fixture_selectors
+        or any(not isinstance(selector, str) or not selector for selector in fixture_selectors)
+        or not set(fixture_selectors) <= known_selectors
+    ):
+        raise ContractError(
+            f"inherited API fixture selectors are invalid: {operation_id}: {recipe_path}::{case_id}"
+        )
+    fixture_doc_paths = fixture_reference.get(
+        "documentation_source_paths", sorted(expected_doc_paths)
+    )
+    if (
+        not isinstance(fixture_doc_paths, list)
+        or any(not isinstance(path, str) or not path for path in fixture_doc_paths)
+        or not set(fixture_doc_paths) <= expected_doc_paths
+    ):
+        raise ContractError(
+            f"inherited API fixture documentation paths are invalid or outside the operation "
+            f"contract: {operation_id}: {recipe_path}::{case_id}"
+        )
     recipe = (PROJECT_ROOT / recipe_path).resolve()
     input_root = (PROJECT_ROOT / "tests/fixtures/input-recipes").resolve()
     if input_root not in recipe.parents or not recipe.is_file():
@@ -1088,7 +1111,7 @@ def _validate_inherited_fixture_reference(
         for evidence in case.get("source_evidence", [])
         if isinstance(evidence, dict)
     }
-    if not expected_doc_paths <= case_doc_paths:
+    if not set(fixture_doc_paths) <= case_doc_paths:
         raise ContractError(
             f"inherited API fixture lacks its reviewed documentation evidence: {recipe_path}"
         )
@@ -1196,6 +1219,25 @@ def _validate_inherited_fixture_reference(
         and observation.get("kind") == "asgi_send"
         and isinstance(observation.get("selector"), str)
     )
+    observed_short_selectors.update(
+        "websocket." + observation["selector"]
+        for action in case.get("actions", [])
+        if isinstance(action, dict)
+        for observation in action.get("observations", [])
+        if isinstance(observation, dict)
+        and observation.get("kind") == "websocket"
+        and isinstance(observation.get("selector"), str)
+    )
+    construction_observation = case.get("construction_observation")
+    if (
+        isinstance(construction_observation, dict)
+        and construction_observation.get("kind") == "construction"
+    ):
+        observed_short_selectors.update(
+            "construction." + selector
+            for selector in construction_observation.get("selectors", [])
+            if isinstance(selector, str)
+        )
     selector_aliases = {
         "http.status": "status",
         "http.headers.ordered": "headers",
@@ -1203,7 +1245,7 @@ def _validate_inherited_fixture_reference(
     }
     missing_selectors = [
         selector
-        for selector in expected_selectors
+        for selector in fixture_selectors
         if selector_aliases.get(selector, selector) not in observed_short_selectors
     ]
     if missing_selectors:
@@ -1215,7 +1257,7 @@ def _validate_inherited_fixture_reference(
         "recipe_path": recipe_path,
         "case_id": case_id,
         "workload_path": workload_path,
-        "observation_selectors": sorted(expected_selectors),
+        "observation_selectors": sorted(fixture_selectors),
     }
 
 
@@ -3159,6 +3201,7 @@ def build_api_surface_contract(
                     fixture_reference,
                     expected_doc_paths=documentation_paths,
                     expected_selectors=operation_selectors,
+                    known_selectors=known_selectors,
                     operation_id=operation_id,
                     inherited_kind=inherited_kind,
                 )

@@ -1,0 +1,195 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/fastapi_mount_websocket.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.mount.http-registration-order
+  actions:
+  - action_id: mount-before-native-http
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /mounted-first/http
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: native-http-before-mount
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /native-first/http
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/sub-applications.md
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_sub_applications/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.mount.websocket-registration-order
+  actions:
+  - action_id: mounted-http-control
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /mounted-first/http
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: mount-before-native-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /mounted-first/socket
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: probe
+    - type: websocket.disconnect
+      code: 1000
+      reason: probe complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: native-websocket-before-mount
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /native-first/socket
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: probe
+    - type: websocket.disconnect
+      code: 1000
+      reason: probe complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_sub_applications/test_tutorial001.py
+    kind: upstream_test

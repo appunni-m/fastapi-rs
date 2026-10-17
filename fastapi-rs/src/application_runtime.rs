@@ -3546,14 +3546,20 @@ struct FastApiRouterInclude {
 }
 
 #[derive(Clone, Copy)]
-enum HttpDispatchEntry {
+enum RouteDispatchEntry {
     ApiRoute(usize),
+    ApiWebSocketRoute(usize),
     MountedRoute(usize),
     RouterInclude(usize),
 }
 
 enum HttpDispatchCandidate {
     ApiRoute(usize),
+    StarletteRoute(Py<PyAny>),
+}
+
+enum WebSocketDispatchCandidate {
+    ApiWebSocketRoute(usize),
     StarletteRoute(Py<PyAny>),
 }
 
@@ -4067,7 +4073,7 @@ pub(crate) struct PyFastApi {
     named_routes: NamedRouteTable,
     constructor_routes: Vec<Py<PyAny>>,
     routes: Vec<FastApiRoute>,
-    http_dispatch_order: Vec<HttpDispatchEntry>,
+    route_dispatch_order: Vec<RouteDispatchEntry>,
     router_includes: Vec<FastApiRouterInclude>,
     routes_version: AtomicU64,
     openapi_cache: Mutex<OpenApiCache>,
@@ -5027,7 +5033,7 @@ impl PyFastApi {
             named_routes: NamedRouteTable::new(),
             constructor_routes,
             routes: Vec::new(),
-            http_dispatch_order: Vec::new(),
+            route_dispatch_order: Vec::new(),
             router_includes: Vec::new(),
             routes_version: AtomicU64::new(0),
             openapi_cache: Mutex::new(OpenApiCache {
@@ -6033,8 +6039,8 @@ impl PyFastApi {
         let mount = mount_type.call((path, app.bind(py)), Some(&kwargs))?;
         let route_index = self.mounted_routes.len();
         self.mounted_routes.push(mount.unbind());
-        self.http_dispatch_order
-            .push(HttpDispatchEntry::MountedRoute(route_index));
+        self.route_dispatch_order
+            .push(RouteDispatchEntry::MountedRoute(route_index));
         Ok(())
     }
 
@@ -6060,8 +6066,8 @@ impl PyFastApi {
         let route_object = route_type.call((path, route.bind(py)), Some(&kwargs))?;
         let route_index = self.mounted_routes.len();
         self.mounted_routes.push(route_object.unbind());
-        self.http_dispatch_order
-            .push(HttpDispatchEntry::MountedRoute(route_index));
+        self.route_dispatch_order
+            .push(RouteDispatchEntry::MountedRoute(route_index));
         Ok(())
     }
 
@@ -6081,8 +6087,8 @@ impl PyFastApi {
         let route = host_type.call((host, app.bind(py)), Some(&kwargs))?;
         let route_index = self.mounted_routes.len();
         self.mounted_routes.push(route.unbind());
-        self.http_dispatch_order
-            .push(HttpDispatchEntry::MountedRoute(route_index));
+        self.route_dispatch_order
+            .push(RouteDispatchEntry::MountedRoute(route_index));
         Ok(())
     }
 
@@ -6155,7 +6161,11 @@ impl PyFastApi {
         endpoint: Py<PyAny>,
         name: Option<String>,
     ) -> PyResult<()> {
-        add_raw_websocket_route(self, py, path, endpoint.bind(py), name.as_deref())
+        add_raw_websocket_route(self, py, path, endpoint.bind(py), name.as_deref())?;
+        let route_index = self.websocket_routes.len() - 1;
+        self.route_dispatch_order
+            .push(RouteDispatchEntry::ApiWebSocketRoute(route_index));
+        Ok(())
     }
 
     #[pyo3(signature = (path, endpoint, name = None, *, dependencies = None))]
@@ -6304,8 +6314,8 @@ impl PyFastApi {
         });
         let include_index = destination.router_includes.len() - 1;
         destination
-            .http_dispatch_order
-            .push(HttpDispatchEntry::RouterInclude(include_index));
+            .route_dispatch_order
+            .push(RouteDispatchEntry::RouterInclude(include_index));
         destination.lifespan.include_router(py, &source.lifespan)?;
         destination.bump_routes_version();
         drop(source);
@@ -8359,8 +8369,8 @@ impl PyApiRouter {
         });
         let include_index = destination.router_includes.len() - 1;
         destination
-            .http_dispatch_order
-            .push(HttpDispatchEntry::RouterInclude(include_index));
+            .route_dispatch_order
+            .push(RouteDispatchEntry::RouterInclude(include_index));
         destination.lifespan.include_router(py, &source.lifespan)?;
         drop(source);
         drop(router);
@@ -8954,6 +8964,23 @@ fn prefix_starlette_route(
     }
 
     let is_instance = py.import("builtins")?.getattr("isinstance")?;
+    let websocket_route_type = routing.getattr("WebSocketRoute")?;
+    if is_instance
+        .call1((route, &websocket_route_type))?
+        .is_truthy()?
+    {
+        let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("name", route.getattr("name")?)?;
+        let rebuilt =
+            websocket_route_type.call((path, route.getattr("endpoint")?), Some(&kwargs))?;
+        let copied = py.import("copy")?.call_method1("copy", (route,))?;
+        for attribute in ["path", "path_regex", "path_format", "param_convertors"] {
+            copied.setattr(attribute, rebuilt.getattr(attribute)?)?;
+        }
+        return Ok(Some(copied.unbind()));
+    }
+
     let mount_type = routing.getattr("Mount")?;
     if is_instance.call1((route, &mount_type))?.is_truthy()? {
         let path = format!("{prefix}{}", route.getattr("path")?.extract::<String>()?);
@@ -9036,7 +9063,7 @@ fn collect_http_dispatch_candidates(
                 .iter()
                 .map(|route| route.clone_ref(py))
                 .collect::<Vec<_>>(),
-            app.http_dispatch_order.clone(),
+            app.route_dispatch_order.clone(),
             includes,
         )
     };
@@ -9052,7 +9079,7 @@ fn collect_http_dispatch_candidates(
 
     for entry in dispatch_order {
         match entry {
-            HttpDispatchEntry::ApiRoute(route_index) => {
+            RouteDispatchEntry::ApiRoute(route_index) => {
                 if route_index >= app.bind(py).borrow().routes.len() {
                     return Err(PyRuntimeError::new_err(
                         "HTTP dispatch references a missing FastAPI route",
@@ -9060,7 +9087,8 @@ fn collect_http_dispatch_candidates(
                 }
                 candidates.push(HttpDispatchCandidate::ApiRoute(route_index));
             }
-            HttpDispatchEntry::MountedRoute(route_index) => {
+            RouteDispatchEntry::ApiWebSocketRoute(_) => {}
+            RouteDispatchEntry::MountedRoute(route_index) => {
                 let route = mounted_routes.get(route_index).ok_or_else(|| {
                     PyRuntimeError::new_err("HTTP dispatch references a missing Starlette route")
                 })?;
@@ -9070,7 +9098,7 @@ fn collect_http_dispatch_candidates(
                     candidates.push(HttpDispatchCandidate::StarletteRoute(route));
                 }
             }
-            HttpDispatchEntry::RouterInclude(include_index) => {
+            RouteDispatchEntry::RouterInclude(include_index) => {
                 let (router, include_prefix, source_route_indexes) =
                     includes.get(include_index).ok_or_else(|| {
                         PyRuntimeError::new_err("HTTP dispatch references a missing router include")
@@ -9100,6 +9128,128 @@ fn collect_http_dispatch_candidates(
                         }
                         HttpDispatchCandidate::StarletteRoute(route) => {
                             candidates.push(HttpDispatchCandidate::StarletteRoute(route));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    visiting.remove(&app_identity);
+    Ok(candidates)
+}
+
+fn collect_websocket_dispatch_candidates(
+    py: Python<'_>,
+    app: &Py<PyFastApi>,
+    include_constructor_routes: bool,
+    prefix: &str,
+    visiting: &mut HashSet<usize>,
+) -> PyResult<Vec<WebSocketDispatchCandidate>> {
+    let app_identity = app.as_ptr() as usize;
+    if !visiting.insert(app_identity) {
+        return Err(PyRuntimeError::new_err(
+            "recursive APIRouter inclusion encountered during WebSocket dispatch",
+        ));
+    }
+
+    let (constructor_routes, mounted_routes, dispatch_order, includes) = {
+        let app = app.bind(py).borrow();
+        let includes = app
+            .router_includes
+            .iter()
+            .map(|include| {
+                (
+                    include.router.clone_ref(py),
+                    include.merge_prefix.clone(),
+                    include.source_websocket_route_indexes.clone(),
+                )
+            })
+            .collect::<Vec<_>>();
+        (
+            app.constructor_routes
+                .iter()
+                .map(|route| route.clone_ref(py))
+                .collect::<Vec<_>>(),
+            app.mounted_routes
+                .iter()
+                .map(|route| route.clone_ref(py))
+                .collect::<Vec<_>>(),
+            app.route_dispatch_order.clone(),
+            includes,
+        )
+    };
+
+    let mut candidates = Vec::new();
+    if include_constructor_routes {
+        for route in constructor_routes {
+            if let Some(route) = prefix_starlette_route(py, route.bind(py), prefix)? {
+                candidates.push(WebSocketDispatchCandidate::StarletteRoute(route));
+            }
+        }
+    }
+
+    for entry in dispatch_order {
+        match entry {
+            RouteDispatchEntry::ApiRoute(_) => {}
+            RouteDispatchEntry::ApiWebSocketRoute(route_index) => {
+                if route_index >= app.bind(py).borrow().websocket_routes.len() {
+                    return Err(PyRuntimeError::new_err(
+                        "WebSocket dispatch references a missing FastAPI route",
+                    ));
+                }
+                candidates.push(WebSocketDispatchCandidate::ApiWebSocketRoute(route_index));
+            }
+            RouteDispatchEntry::MountedRoute(route_index) => {
+                let route = mounted_routes.get(route_index).ok_or_else(|| {
+                    PyRuntimeError::new_err(
+                        "WebSocket dispatch references a missing Starlette route",
+                    )
+                })?;
+                if prefix.is_empty() {
+                    candidates.push(WebSocketDispatchCandidate::StarletteRoute(
+                        route.clone_ref(py),
+                    ));
+                } else if let Some(route) = prefix_starlette_route(py, route.bind(py), prefix)? {
+                    candidates.push(WebSocketDispatchCandidate::StarletteRoute(route));
+                }
+            }
+            RouteDispatchEntry::RouterInclude(include_index) => {
+                let (router, include_prefix, source_websocket_route_indexes) =
+                    includes.get(include_index).ok_or_else(|| {
+                        PyRuntimeError::new_err(
+                            "WebSocket dispatch references a missing router include",
+                        )
+                    })?;
+                let source_app = router
+                    .bind(py)
+                    .extract::<PyRef<'_, PyApiRouter>>()?
+                    .inner_app(py)?;
+                let nested_prefix = format!("{prefix}{include_prefix}");
+                let nested = collect_websocket_dispatch_candidates(
+                    py,
+                    &source_app,
+                    true,
+                    &nested_prefix,
+                    visiting,
+                )?;
+                for candidate in nested {
+                    match candidate {
+                        WebSocketDispatchCandidate::ApiWebSocketRoute(source_index) => {
+                            let destination_index = source_websocket_route_indexes
+                                .get(source_index)
+                                .copied()
+                                .ok_or_else(|| {
+                                    PyRuntimeError::new_err(
+                                        "included WebSocket route mapping was lost",
+                                    )
+                                })?;
+                            candidates.push(WebSocketDispatchCandidate::ApiWebSocketRoute(
+                                destination_index,
+                            ));
+                        }
+                        WebSocketDispatchCandidate::StarletteRoute(route) => {
+                            candidates.push(WebSocketDispatchCandidate::StarletteRoute(route));
                         }
                     }
                 }
@@ -10430,8 +10580,8 @@ impl PyOperationDecorator {
         set_api_route_openapi_snapshots(py, &route.public_route, openapi_snapshots)?;
         app.routes.push(route);
         let route_index = app.routes.len() - 1;
-        app.http_dispatch_order
-            .push(HttpDispatchEntry::ApiRoute(route_index));
+        app.route_dispatch_order
+            .push(RouteDispatchEntry::ApiRoute(route_index));
         app.bump_routes_version();
         Ok(endpoint)
     }
@@ -10485,6 +10635,9 @@ impl PyWebSocketDecorator {
             plan: Some(plan),
             raw: false,
         });
+        let route_index = app.websocket_routes.len() - 1;
+        app.route_dispatch_order
+            .push(RouteDispatchEntry::ApiWebSocketRoute(route_index));
         app.bump_routes_version();
         Ok(endpoint)
     }
@@ -10501,6 +10654,9 @@ impl PyRawWebSocketDecorator {
             endpoint.bind(py),
             self.name.as_deref(),
         )?;
+        let route_index = app.websocket_routes.len() - 1;
+        app.route_dispatch_order
+            .push(RouteDispatchEntry::ApiWebSocketRoute(route_index));
         Ok(endpoint)
     }
 }
@@ -16471,19 +16627,88 @@ impl FastApiCall {
         if let Some(matched) = constructor_matches.full {
             return self.handle_constructor_route(py, matched.route, matched.child_scope);
         }
-        let match_result = self
+        let selected_api_route = match self
             .app
             .bind(py)
             .borrow()
             .websocket_router
-            .matches(&path, &root_path, "GET");
-        let FastApiOperationMatch::Matched {
-            operation_index,
-            path_params,
-        } = match_result
-        else {
-            return self.close_unmatched_websocket(py);
+            .matches(&path, &root_path, "GET")
+        {
+            FastApiOperationMatch::Matched {
+                operation_index,
+                path_params,
+            } => Some((operation_index, path_params)),
+            FastApiOperationMatch::MethodNotAllowed { .. } | FastApiOperationMatch::NotFound => {
+                None
+            }
         };
+        let candidates =
+            collect_websocket_dispatch_candidates(py, &self.app, false, "", &mut HashSet::new())?;
+        let full_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("FULL")?;
+        let partial_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("PARTIAL")?;
+        let mut earlier_fallback = constructor_matches
+            .partial
+            .map(|matched| (matched.route, matched.child_scope));
+
+        for candidate in candidates {
+            match candidate {
+                WebSocketDispatchCandidate::ApiWebSocketRoute(route_index) => {
+                    if let Some((selected_index, path_params)) = &selected_api_route {
+                        if *selected_index == route_index {
+                            return self.begin_fastapi_websocket_route(
+                                py,
+                                route_index,
+                                &path,
+                                &root_path,
+                                path_params.clone(),
+                            );
+                        }
+                    }
+                }
+                WebSocketDispatchCandidate::StarletteRoute(route) => {
+                    let match_result = route.bind(py).call_method1("matches", (scope,))?;
+                    let route_match = match_result.get_item(0)?;
+                    let child_scope = match_result.get_item(1)?.unbind();
+                    if route_match.is(&partial_match) && earlier_fallback.is_none() {
+                        earlier_fallback = Some((route.clone_ref(py), child_scope.clone_ref(py)));
+                    }
+                    if route_match.is(&full_match) {
+                        return self.handle_constructor_route(py, route, child_scope);
+                    }
+                }
+            }
+        }
+
+        if let Some((route, child_scope)) = earlier_fallback {
+            return self.handle_constructor_route(py, route, child_scope);
+        }
+        if selected_api_route.is_some() {
+            return Err(PyRuntimeError::new_err(
+                "selected FastAPI WebSocket route is missing from dispatch order",
+            ));
+        }
+        self.close_unmatched_websocket(py)
+    }
+
+    fn begin_fastapi_websocket_route(
+        &mut self,
+        py: Python<'_>,
+        operation_index: usize,
+        path: &str,
+        root_path: &str,
+        path_params: Vec<(String, String)>,
+    ) -> PyResult<MachineAction> {
+        let scope = self.scope.bind(py);
+        let full_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("FULL")?;
         let (raw_route, route_scope) = {
             let app = self.app.bind(py).borrow();
             let route = app.websocket_routes.get(operation_index).ok_or_else(|| {
@@ -16492,20 +16717,15 @@ impl FastApiCall {
             (route.raw, route.route_scope.clone_ref(py))
         };
         if raw_route {
-            let full_match = py
-                .import("starlette.routing")?
-                .getattr("Match")?
-                .getattr("FULL")?;
             let match_result = route_scope.bind(py).call_method1("matches", (scope,))?;
             if !match_result.get_item(0)?.is(&full_match) {
                 return self.close_unmatched_websocket(py);
             }
-            scope.call_method1("update", (match_result.get_item(1)?,))?;
-            let awaitable = route_scope
-                .bind(py)
-                .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
-            self.pending = Some(PendingAction::MountedApp);
-            return Ok(MachineAction::Await(awaitable.unbind()));
+            return self.handle_constructor_route(
+                py,
+                route_scope,
+                match_result.get_item(1)?.unbind(),
+            );
         }
         self.websocket_route_index = Some(operation_index);
         self.injected_response = Some(fastapi_response_state(py)?);
@@ -16544,7 +16764,7 @@ impl FastApiCall {
             }
             scope.set_item("path_params", native_path_params)?;
             app.websocket_router
-                .resolve_inputs(&path, &root_path, "GET", &query, headers, &[])
+                .resolve_inputs(path, root_path, "GET", &query, headers, &[])
         };
         let websocket_type = py.import("starlette.websockets")?.getattr("WebSocket")?;
         self.websocket = Some(

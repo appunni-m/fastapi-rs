@@ -16609,6 +16609,10 @@ reviewed_api_contract_overlay:
           required_text:
             - "these lifespan events (startup and shutdown) will only be executed for the main application"
             - "Sub Applications - Mounts"
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: app, start_line: 672, end_line: 720}
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: mount, start_line: 725, end_line: 727}
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Mount, symbol: matches, start_line: 394, end_line: 425}
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Mount, symbol: handle, start_line: 454, end_line: 455}
       signature_source:
         repository: starlette
         path: starlette/applications.py
@@ -16627,9 +16631,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
-          - WebSocket Mount dispatch is not implemented.
-          - Named-mount reverse URL lookup is not implemented.
+          - Named-mount reverse URL lookup has no focused identity-checked input and receipt.
       documentation_contract_refs:
         - source_path: docs/en/docs/advanced/sub-applications.md
           fixture_id: fastapi.docs.advanced-sub-applications
@@ -16637,10 +16639,34 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
           case_id: fastapi.docs.sub-applications.mount-and-own-openapi
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+          documentation_source_paths: [docs/en/docs/advanced/sub-applications.md]
         - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
           case_id: fastapi.docs.sub-applications.built-in-routes-root-path
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+          documentation_source_paths: [docs/en/docs/advanced/sub-applications.md]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml
+          case_id: fastapi.mount.http-registration-order
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+          documentation_source_paths: [docs/en/docs/advanced/sub-applications.md]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml
+          case_id: fastapi.mount.websocket-registration-order
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code]
+          documentation_source_paths: []
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-mount-websocket-router.yaml
+          case_id: fastapi.mount.websocket-included-router-order
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code]
+          documentation_source_paths: []
       feature_ids: [app-routing]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code]
+      supported_slice: >-
+        Identity-checked input-only parity passed for two HTTP/WebSocket route
+        order cases and one included-router WebSocket case against FastAPI
+        0.141.1, Starlette 1.6.0, and Starlette-RS 4139a72449bf. The cases
+        compare HTTP status/headers/body and WebSocket event order/messages/close
+        code for a mounted FastAPI child alongside direct and included routes.
+        Named-mount reverse lookup and other Mount options remain outside this
+        slice.
     fastapi.applications.FastAPI.routes:
       kind: inherited_property
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI

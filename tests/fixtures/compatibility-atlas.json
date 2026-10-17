@@ -296037,6 +296037,20 @@
           },
           {
             "case_ids": [
+              "fastapi.mount.http-registration-order"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml",
+            "workflow_id": "fastapi-mount-websocket"
+          },
+          {
+            "case_ids": [
               "fastapi.docs.sub-applications.built-in-routes-root-path",
               "fastapi.docs.sub-applications.mount-and-own-openapi",
               "fastapi.docs.sub-applications.route-list-after-mount"
@@ -720216,6 +720230,35 @@
           },
           {
             "case_ids": [
+              "fastapi.mount.http-registration-order",
+              "fastapi.mount.websocket-registration-order"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml",
+            "workflow_id": "fastapi-mount-websocket"
+          },
+          {
+            "case_ids": [
+              "fastapi.mount.websocket-included-router-order"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket-router.yaml",
+            "workflow_id": "fastapi-mount-websocket-router"
+          },
+          {
+            "case_ids": [
               "fastapi.docs.sub-applications.built-in-routes-root-path",
               "fastapi.docs.sub-applications.mount-and-own-openapi",
               "fastapi.docs.sub-applications.route-list-after-mount"
@@ -735402,11 +735445,65 @@
       "fixture_refs": [
         {
           "case_id": "fastapi.docs.sub-applications.mount-and-own-openapi",
+          "documentation_source_paths": [
+            "docs/en/docs/advanced/sub-applications.md"
+          ],
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes"
+          ],
           "recipe_path": "tests/fixtures/input-recipes/parity/sub_applications.yaml"
         },
         {
           "case_id": "fastapi.docs.sub-applications.built-in-routes-root-path",
+          "documentation_source_paths": [
+            "docs/en/docs/advanced/sub-applications.md"
+          ],
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes"
+          ],
           "recipe_path": "tests/fixtures/input-recipes/parity/sub_applications.yaml"
+        },
+        {
+          "case_id": "fastapi.mount.http-registration-order",
+          "documentation_source_paths": [
+            "docs/en/docs/advanced/sub-applications.md"
+          ],
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml"
+        },
+        {
+          "case_id": "fastapi.mount.websocket-registration-order",
+          "documentation_source_paths": [],
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "websocket.event_order",
+            "websocket.messages",
+            "websocket.close_code"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket.yaml"
+        },
+        {
+          "case_id": "fastapi.mount.websocket-included-router-order",
+          "documentation_source_paths": [],
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "websocket.event_order",
+            "websocket.messages",
+            "websocket.close_code"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-mount-websocket-router.yaml"
         }
       ],
       "id": "fastapi.applications.FastAPI.mount",
@@ -735414,7 +735511,10 @@
       "observation_selectors": [
         "http.status",
         "http.headers.ordered",
-        "http.body.bytes"
+        "http.body.bytes",
+        "websocket.event_order",
+        "websocket.messages",
+        "websocket.close_code"
       ],
       "reviewed_overlay_ref": "/reviewed_api_contract_overlay/inherited_operations/fastapi.applications.FastAPI.mount",
       "sibling_contract_gap": {
@@ -735456,14 +735556,48 @@
             "Sub Applications - Mounts"
           ],
           "start_line": 163
+        },
+        {
+          "end_line": 720,
+          "kind": "source-definition",
+          "owner": "Router",
+          "path": "starlette/routing.py",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 672,
+          "symbol": "app"
+        },
+        {
+          "end_line": 727,
+          "kind": "source-definition",
+          "owner": "Router",
+          "path": "starlette/routing.py",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 725,
+          "symbol": "mount"
+        },
+        {
+          "end_line": 425,
+          "kind": "source-definition",
+          "owner": "Mount",
+          "path": "starlette/routing.py",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 394,
+          "symbol": "matches"
+        },
+        {
+          "end_line": 455,
+          "kind": "source-definition",
+          "owner": "Mount",
+          "path": "starlette/routing.py",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 454,
+          "symbol": "handle"
         }
       ],
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
-          "Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.",
-          "WebSocket Mount dispatch is not implemented.",
-          "Named-mount reverse URL lookup is not implemented."
+          "Named-mount reverse URL lookup has no focused identity-checked input and receipt."
         ],
         "status": "partial-contract"
       }
