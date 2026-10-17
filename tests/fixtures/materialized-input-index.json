@@ -755,6 +755,27 @@
       ]
     },
     {
+      "id": "apiroute-starlette-route-inheritance",
+      "input_path": "tests/fixtures/inputs/parity/apiroute-starlette-route-inheritance.json",
+      "input_sha256": "f90ea92e7f085357bcb6db369a44351337ca2b0d2133f4a210ba0ff51ab46842",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apiroute-starlette-route-inheritance.yaml",
+      "recipe_sha256": "7d6c5630ea775562c82f91dd766475261d89c01b740e50d78da893df023f3286",
+      "case_ids": [
+        "fastapi.routing.apiroute.starlette-route-inheritance"
+      ],
+      "workload_path": "tests/fixtures/workloads/routing_upstream.py",
+      "workload_sha256": "2b36f24d026547d3d77a38acabe51f96240d680f26d4f419764e8ab9723d59d8",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apiroute.starlette-route-inheritance",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_custom_route_class.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "apiroute-strict-content-type-constructor",
       "input_path": "tests/fixtures/inputs/parity/apiroute-strict-content-type-constructor.json",
       "input_sha256": "df1cf690fad4610ea4f62bd09c6372191b72bc547dfb175072d84afcc7c76779",
@@ -29796,7 +29817,7 @@
         "fastapi.test.test-extra-routes.test-openapi-schema"
       ],
       "workload_path": "tests/fixtures/workloads/routing_upstream.py",
-      "workload_sha256": "6502750dc7d0e5228f642aad119e2dac88a7f2a2b55469d644fd492eea741893",
+      "workload_sha256": "2b36f24d026547d3d77a38acabe51f96240d680f26d4f419764e8ab9723d59d8",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-custom-route-class.test-get-path",
@@ -37628,6 +37649,20 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_custom_route_class.py",
+      "fixture_id": "fastapi.test.test-custom-route-class",
+      "workflow_id": "apiroute-starlette-route-inheritance",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.starlette-route-inheritance"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

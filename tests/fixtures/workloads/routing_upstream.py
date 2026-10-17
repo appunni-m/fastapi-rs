@@ -8,6 +8,7 @@ from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from pydantic import BaseModel
+from starlette.routing import Route
 
 
 class Item(BaseModel):
@@ -150,6 +151,7 @@ def create_app() -> FastAPI:
     @app.get("/route-class-identities")
     def route_class_identities() -> dict[str, object]:
         return {
+            "apiroute_is_starlette_route_subclass": issubclass(APIRoute, Route),
             "outer": _route_class_observation(identity_outer_router, RouteA),
             "middle": _route_class_observation(identity_middle_router, RouteB),
             "inner": _route_class_observation(identity_inner_router, RouteC),

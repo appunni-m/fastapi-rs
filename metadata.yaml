@@ -3967,6 +3967,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute-state.direct
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.iter-route-contexts.nested-included
+        - recipe_path: tests/fixtures/input-recipes/parity/apiroute-starlette-route-inheritance.yaml
+          case_id: fastapi.routing.apiroute.starlette-route-inheritance
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.body.bytes]
         - *generate_unique_id_callback_methods
         - *generate_unique_id_callback_methods_empty
         - *generate_unique_id_callback_methods_remove
@@ -3990,6 +3994,9 @@ reviewed_api_contract_overlay:
         contributes its callback path item and custom response model to OpenAPI,
         sampled by `additional-responses-custom-model-in-callback.openapi-schema`.
         Manually constructing a standalone APIRoute with callbacks is unverified.
+        The class hierarchy is compared for the one source-declared base
+        relationship `APIRoute` to `starlette.routing.Route`; this does not
+        establish other APIRoute behavior inherited from Starlette.
         The input inspects FastAPI-registered APIRoute instances for one direct
         GET path operation and one GET operation included through nested
         APIRouter instances. It compares only path, path_format, name, methods,
