@@ -77268,7 +77268,7 @@
     "starlette_integration_edges": 133,
     "starlette_module_namespace_crosswalks": 1,
     "starlette_private_helper_behavior_crosswalks": 3,
-    "test_function_designs": 2121,
+    "test_function_designs": 2122,
     "test_functions_in_excluded_modules": 87,
     "test_functions_with_individual_exclusion": 10,
     "test_functions_with_inherited_module_exclusion": 77,
@@ -324748,6 +324748,21 @@
           },
           {
             "case_ids": [
+              "fastapi.routing.apiroute.get-route-handler.custom-subclass-nested-wrapper",
+              "fastapi.routing.apiroute.get-route-handler.synchronous-custom-handler"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+            "workflow_id": "routing-upstream"
+          },
+          {
+            "case_ids": [
               "fastapi.source-wave-b.custom-request.request-subclass",
               "fastapi.source-wave-b.custom-request.uncompressed-json",
               "fastapi.source-wave-b.custom-route.validation-context"
@@ -531035,7 +531050,8 @@
       "exclusion_reason": null,
       "feature_ids": [
         "app-routing",
-        "openapi-docs"
+        "openapi-docs",
+        "response-serialization"
       ],
       "fixture_id": "fastapi.test.test-custom-route-class",
       "id": "upstream-test:tests/test_custom_route_class.py",
@@ -531062,62 +531078,12 @@
                   "start_line": 290
                 }
               ]
-            },
-            {
-              "name": "test_route_classes",
-              "reason": "The route-context workflow records the built-in APIRoute projection and original-route identity, but this function exercises three user-defined APIRoute subclasses selected through APIRouter.route_class. Custom-class registration, subclass state, and nested subclass preservation remain outside the reviewed slice.",
-              "source_evidence": [
-                {
-                  "end_line": 67,
-                  "path": "tests/test_custom_route_class.py",
-                  "role": "pinned FastAPI test stimulus and asserted behavior for this exact function",
-                  "sha256": "06dfb50b75acb9e4d608b994eb7ec320eb3ffbd3ba06e5b42ab1c32b2be831fc",
-                  "start_line": 64
-                },
-                {
-                  "end_line": 1159,
-                  "path": "fastapi/routing.py",
-                  "role": "APIRoute is the FastAPI route class extended by the test's custom classes",
-                  "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                  "start_line": 1126
-                }
-              ]
             }
           ],
           "module": null,
           "scope": "app/dependency wave disposition; does not exclude behavior from the merged FastAPI contract"
         },
-        "excluded_test_functions": [
-          {
-            "end_line": 67,
-            "line": 64,
-            "name": "test_route_classes",
-            "reason": "The route-context workflow records the built-in APIRoute projection and original-route identity, but this function exercises three user-defined APIRoute subclasses selected through APIRouter.route_class. Custom-class registration, subclass state, and nested subclass preservation remain outside the reviewed slice.",
-            "source_evidence": [
-              {
-                "end_line": 67,
-                "path": "tests/test_custom_route_class.py",
-                "role": "upstream test function",
-                "sha256": "06dfb50b75acb9e4d608b994eb7ec320eb3ffbd3ba06e5b42ab1c32b2be831fc",
-                "start_line": 64
-              },
-              {
-                "end_line": 67,
-                "path": "tests/test_custom_route_class.py",
-                "role": "pinned FastAPI 0.141.1 test function test_route_classes and its assertions",
-                "sha256": "06dfb50b75acb9e4d608b994eb7ec320eb3ffbd3ba06e5b42ab1c32b2be831fc",
-                "start_line": 64
-              },
-              {
-                "end_line": 44,
-                "path": "tests/test_custom_route_class.py",
-                "role": "custom APIRoute subclasses, nested routers, route declarations, and include prefixes",
-                "sha256": "06dfb50b75acb9e4d608b994eb7ec320eb3ffbd3ba06e5b42ab1c32b2be831fc",
-                "start_line": 10
-              }
-            ]
-          }
-        ],
+        "excluded_test_functions": [],
         "independent_workflow_mappings": [
           {
             "case_ids": [
@@ -531134,10 +531100,13 @@
           },
           {
             "case_ids": [
+              "fastapi.routing.apiroute.get-route-handler.custom-subclass-nested-wrapper",
+              "fastapi.routing.apiroute.get-route-handler.synchronous-custom-handler",
               "fastapi.test.test-custom-route-class.test-get-path",
-              "fastapi.test.test-custom-route-class.test-openapi-schema"
+              "fastapi.test.test-custom-route-class.test-openapi-schema",
+              "fastapi.test.test-custom-route-class.test-route-classes"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
@@ -531161,6 +531130,14 @@
             "name": "test_get_path"
           },
           {
+            "case_id": "fastapi.test.test-custom-route-class.test-route-classes",
+            "end_line": 67,
+            "line": 64,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_route_classes"
+          },
+          {
             "case_id": "fastapi.test.test-custom-route-class.test-openapi-schema",
             "end_line": 116,
             "line": 70,
@@ -531172,7 +531149,7 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "The route-class workflow covers nested APIRouter inclusion and request dispatch through custom APIRoute subclasses; direct Python class-introspection and OpenAPI snapshots are excluded below.",
+          "rationale": "Independent inputs cover nested route-class dispatch, runtime APIRoute subclass identity, and the selected custom-handler response wrapper; the complete OpenAPI snapshot remains outside this wave.",
           "supporting_sources": []
         },
         "source_module_path": "tests/test_custom_route_class.py",
@@ -531185,12 +531162,16 @@
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
+        "http.body.json",
+        "http.cookies",
         "http.headers.ordered",
         "http.status",
         "openapi.document",
         "openapi.paths",
         "python.pydantic_model_result",
-        "route.match"
+        "response.background_effects",
+        "route.match",
+        "validation.error_class"
       ],
       "review_reason": "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow.",
       "review_status": "reviewed_partial",
@@ -531214,6 +531195,18 @@
             "docs.response.headers",
             "docs.response.body.bytes",
             "http.body.bytes"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.cookies",
+            "http.body.bytes",
+            "http.body.json",
+            "response.background_effects",
+            "validation.error_class"
           ]
         }
       ],
@@ -531385,11 +531378,62 @@
           "ownership_boundary": "FastAPI-owned with a generic ASGI outer boundary",
           "scope_note": "OpenAPI generation, schema projection, and FastAPI docs endpoints are outside the current Starlette-RS slice; only the generic Starlette ASGI dispatch envelope is referenced.",
           "status": "linked-to-current-contract-slice"
+        },
+        {
+          "contract_id": "starlette-1.6.0-full",
+          "feature_id": "response-serialization",
+          "manifest_path": "tests/fixtures/manifest.yaml",
+          "manifest_sha256": "86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029",
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-full",
+              "operation_id": "__call__",
+              "relationship": "shared response dispatch boundary",
+              "requirement_ids": [
+                "starlette.asgi.get-hello.dispatch"
+              ],
+              "source_path": "starlette.applications.Starlette.__call__",
+              "surface_id": "starlette.applications.Starlette",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.compatibility.full-public-surface",
+                    "starlette.asgi.scope-mutation",
+                    "starlette.asgi.streaming",
+                    "starlette.asgi.python-callables",
+                    "starlette.asgi.http-exception.default-406-detail",
+                    "starlette.asgi.http-exception.no-content-204",
+                    "starlette.asgi.http-exception.not-modified-304",
+                    "starlette.asgi.http-exception.headers-200",
+                    "starlette.asgi.server-error.default-response",
+                    "starlette.asgi.server-error.status-500-handler",
+                    "starlette.asgi.server-error.exception-handler",
+                    "starlette.asgi.server-error.special-key-order",
+                    "starlette.asgi.server-error.debug-traceback",
+                    "starlette.asgi.server-error.response-started",
+                    "starlette.asgi.server-error.background-task-failure",
+                    "starlette.asgi.server-error.handled-http-exception-500"
+                  ],
+                  "reason": "The Rust-native API renders explicit exception details but does not expose the Python HTTPException constructor and its standard-library status-phrase defaults.",
+                  "status": "partial"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "shared response dispatch boundary",
+          "scope_note": "The linked operation covers generic Starlette ASGI dispatch; response-model filtering, validation, and serialization remain FastAPI-RS behavior.",
+          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
         "wsgi-static-files-templates-schemas-configuration-testclient"
       ]
     },
@@ -589924,6 +589968,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/route-dependency-response-status.yaml",
             "workflow_id": "route-dependency-response-status"
+          },
+          {
+            "case_ids": [
+              "fastapi.routing.apiroute.get-route-handler.falsey-status-code"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+            "workflow_id": "routing-upstream"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",

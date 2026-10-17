@@ -302,14 +302,14 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_custom_route_class.py": _module(
-        "The route-class workflow covers nested APIRouter inclusion and request dispatch through custom APIRoute subclasses; direct Python class-introspection and OpenAPI snapshots are excluded below.",
+        "Independent inputs cover nested route-class dispatch, runtime APIRoute subclass identity, and the selected custom-handler response wrapper; the complete OpenAPI snapshot remains outside this wave.",
         {
             "test_get_path": _review(
                 "tests/test_custom_route_class.py",
                 "test_get_path",
                 ["app-routing"],
-                ["http.status", "http.body.json"],
-                "Three nested routers preserve their route declarations and dispatch to the endpoint registered at each prefix depth.",
+                ["http.status", "http.headers.ordered", "http.body.bytes"],
+                "Three nested routers dispatch to their endpoints. The outer router uses a custom APIRoute subclass that adds a response header; middle and inner routers use their default class.",
                 [
                     _case_link(
                         "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
@@ -317,9 +317,25 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         _HTTP_FULL,
                     )
                 ],
-                "Partial: the workflow recreates nested route-class dispatch with independent route names and values. It does not establish public APIRoute object identity or full OpenAPI behavior; generic path matching belongs to Starlette-RS.",
+                "Partial: the workflow maps route-class dispatch across three nested route prefixes. It does not establish public subclass identity or every APIRoute subclass behavior; generic path matching belongs to Starlette-RS.",
                 (_ROUTER_INCLUDE,),
-            )
+            ),
+            "test_route_classes": _review(
+                "tests/test_custom_route_class.py",
+                "test_route_classes",
+                ["app-routing"],
+                ["http.status", "http.body.bytes"],
+                "A public request returns runtime-derived configured-class and registered-route identity observations for three custom APIRoute subclasses across nested APIRouter inclusion.",
+                [
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+                        "fastapi.test.test-custom-route-class.test-route-classes",
+                        _HTTP_BODY_STATUS,
+                    )
+                ],
+                "Partial: the input maps the three selected isinstance and identity relationships from this function; it does not claim arbitrary subclass state, route_class_override behavior, or every route-class option.",
+                (_ROUTER_INCLUDE,),
+            ),
         },
     ),
     "tests/test_empty_router.py": _module(
@@ -1470,19 +1486,6 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
         )
     },
     "tests/test_custom_route_class.py": {
-        "test_route_classes": _function_exclusion(
-            "tests/test_custom_route_class.py",
-            "test_route_classes",
-            "The route-context workflow records the built-in APIRoute projection and original-route identity, but this function exercises three user-defined APIRoute subclasses selected through APIRouter.route_class. Custom-class registration, subclass state, and nested subclass preservation remain outside the reviewed slice.",
-            (
-                _source(
-                    "fastapi/routing.py",
-                    1126,
-                    1159,
-                    "APIRoute is the FastAPI route class extended by the test's custom classes",
-                ),
-            ),
-        ),
         "test_openapi_schema": _function_exclusion(
             "tests/test_custom_route_class.py",
             "test_openapi_schema",

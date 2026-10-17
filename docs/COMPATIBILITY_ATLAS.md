@@ -52,7 +52,7 @@ Section records refine the page inventory and include feature-signal candidates 
 
 Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 333 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
-Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 452 distinct upstream test modules, 105 documentation pages, and 333 exact documentation Python examples linked to workflows; all 1904 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
+Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 452 distinct upstream test modules, 105 documentation pages, and 333 exact documentation Python examples linked to workflows; all 1906 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
 
 `mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. Documentation pages and section records have separate denominators. A reviewed section carries its own case, action, and selector links; pending sections remain discovery leads.
 
@@ -60,7 +60,7 @@ Candidate function and section records carry source path/SHA evidence, exact who
 
 For the 87 executable functions in excluded test modules, the atlas now records 10 function-specific exclusions and 77 functions that inherit an explicit module-level exclusion, each with the exact pinned-source function span. An inherited disposition locates the function and preserves the module rationale; it is not a separate function review or a parity case.
 
-`make parity-validate` checks 1643 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 53 declared observation selectors. It also validates 890 input-only design records, including 2121 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 656 input-only workflows, 2668 cases, and 1904 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1643 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 53 declared observation selectors. It also validates 890 input-only design records, including 2122 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 656 input-only workflows, 2672 cases, and 1906 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -609,7 +609,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `router-schema-policy-upstream` | 1 | 2 | [`tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml`](../tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml) | [`tests/fixtures/workloads/router_schema_policy_upstream.py`](../tests/fixtures/workloads/router_schema_policy_upstream.py) |
 | `router-tag-inheritance-upstream` | 1 | 2 | [`tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml`](../tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml) | [`tests/fixtures/workloads/router_tag_inheritance_upstream.py`](../tests/fixtures/workloads/router_tag_inheritance_upstream.py) |
 | `routing-surface` | 6 | 5 | [`tests/fixtures/input-recipes/parity/routing-surface.yaml`](../tests/fixtures/input-recipes/parity/routing-surface.yaml) | [`tests/fixtures/workloads/routing_surface.py`](../tests/fixtures/workloads/routing_surface.py) |
-| `routing-upstream` | 12 | 4 | [`tests/fixtures/input-recipes/parity/routing-upstream.yaml`](../tests/fixtures/input-recipes/parity/routing-upstream.yaml) | [`tests/fixtures/workloads/routing_upstream.py`](../tests/fixtures/workloads/routing_upstream.py) |
+| `routing-upstream` | 16 | 6 | [`tests/fixtures/input-recipes/parity/routing-upstream.yaml`](../tests/fixtures/input-recipes/parity/routing-upstream.yaml) | [`tests/fixtures/workloads/routing_upstream.py`](../tests/fixtures/workloads/routing_upstream.py) |
 | `same-named-body-routes-upstream` | 4 | 1 | [`tests/fixtures/input-recipes/parity/same-named-body-routes-upstream.yaml`](../tests/fixtures/input-recipes/parity/same-named-body-routes-upstream.yaml) | [`tests/fixtures/workloads/same_named_body_routes.py`](../tests/fixtures/workloads/same_named_body_routes.py) |
 | `schema-extensions` | 6 | 4 | [`tests/fixtures/input-recipes/parity/schema-extensions.yaml`](../tests/fixtures/input-recipes/parity/schema-extensions.yaml) | [`tests/fixtures/workloads/schema_extensions.py`](../tests/fixtures/workloads/schema_extensions.py) |
 | `schema-extra-examples-upstream` | 5 | 14 | [`tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml`](../tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml) | [`tests/fixtures/workloads/schema_extra_examples_upstream.py`](../tests/fixtures/workloads/schema_extra_examples_upstream.py) |
@@ -731,7 +731,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 
 | FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |
 |---:|---:|---:|---:|
-| 925 | 2529 | 367 | 26 |
+| 925 | 2530 | 367 | 26 |
 
 | Direct FastAPI-Starlette source edges | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |
 |---:|---:|---:|---:|

@@ -70511,6 +70511,21 @@
         },
         {
           "case_ids": [
+            "fastapi.routing.apiroute.get-route-handler.custom-subclass-nested-wrapper",
+            "fastapi.routing.apiroute.get-route-handler.synchronous-custom-handler"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+          "workflow_id": "routing-upstream"
+        },
+        {
+          "case_ids": [
             "fastapi.source-wave-b.custom-request.request-subclass",
             "fastapi.source-wave-b.custom-request.uncompressed-json",
             "fastapi.source-wave-b.custom-route.validation-context"
@@ -157196,21 +157211,49 @@
                   "term": "curated source review"
                 }
               ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 61,
+                  "line": 58,
+                  "path": "tests/test_custom_route_class.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 61,
+                  "line": 50,
+                  "path": "tests/test_custom_route_class.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 44,
+                  "line": 10,
+                  "path": "tests/test_custom_route_class.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "app-routing"
+            "app-routing",
+            "response-serialization"
           ],
           "id": "fastapi.test.test-custom-route-class.test-get-path",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
             "http.body.bytes",
+            "http.headers.ordered",
             "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: The source checks status and parsed JSON, while the workflow compares raw response bytes. It does not claim APIRoute Python class identity, custom response-header behavior, or generic Starlette matching.",
-            "rationale": "The three independent requests dispatch through the root and two nested router prefixes. The workload supplies its own custom route subclass and route values; only status and response-body behavior are mapped here.",
+            "contract_gate": "Partial: The source checks status and parsed JSON, while the workflow compares raw response bytes and ordered headers. It does not claim generic Starlette path matching or complete APIRoute subclass behavior; the separate input maps selected Request-to-Response wrapper behavior.",
+            "rationale": "Three independent requests dispatch through the root and two nested router prefixes. The outer router's selected custom APIRoute class adds its response header, while the middle and inner routers use their default classes.",
             "source_evidence": [
               {
                 "end_line": 61,
@@ -157241,6 +157284,15 @@
               "feature_id": "app-routing",
               "selectors": [
                 "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
                 "http.status"
               ]
             }
@@ -157248,6 +157300,75 @@
           "source_end_line": 61,
           "source_function": "test_get_path",
           "source_line": 58,
+          "stimulus_design": [
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+          ],
+          "stimulus_design_notes": "The linked YAML recipes specify inputs and selected observations only; their independently authored workloads store no expected outputs."
+        },
+        {
+          "feature_evidence": [
+            {
+              "feature_id": "app-routing",
+              "signals": [
+                {
+                  "line": 2,
+                  "source": "content",
+                  "term": "router"
+                }
+              ]
+            }
+          ],
+          "feature_ids": [
+            "app-routing"
+          ],
+          "id": "fastapi.test.test-custom-route-class.test-route-classes",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "contract_gated_source_candidate",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "reviewed_mapping": {
+            "contract_gate": "Partial: This maps the three selected subclass identity relationships from the upstream function; it does not claim arbitrary subclass state, route_class_override behavior, or every route-class option.",
+            "rationale": "An independently authored request returns runtime-derived class names and identity checks for each router.route_class and each registered route across the root and two nested APIRouter inclusions.",
+            "source_evidence": [
+              {
+                "end_line": 67,
+                "path": "tests/test_custom_route_class.py",
+                "role": "upstream test function",
+                "sha256": "06dfb50b75acb9e4d608b994eb7ec320eb3ffbd3ba06e5b42ab1c32b2be831fc",
+                "start_line": 64
+              },
+              {
+                "end_line": 67,
+                "path": "tests/test_custom_route_class.py",
+                "role": "pinned FastAPI 0.141.1 test function test_route_classes and its assertions",
+                "sha256": "06dfb50b75acb9e4d608b994eb7ec320eb3ffbd3ba06e5b42ab1c32b2be831fc",
+                "start_line": 64
+              },
+              {
+                "end_line": 44,
+                "path": "tests/test_custom_route_class.py",
+                "role": "custom APIRoute subclasses, nested routers, route declarations, and include prefixes",
+                "sha256": "06dfb50b75acb9e4d608b994eb7ec320eb3ffbd3ba06e5b42ab1c32b2be831fc",
+                "start_line": 10
+              }
+            ],
+            "stimulus_notes": "The linked YAML recipes specify inputs and selected observations only; their independently authored workloads store no expected outputs."
+          },
+          "selector_evidence": [
+            {
+              "feature_id": "app-routing",
+              "selectors": [
+                "http.body.bytes",
+                "http.status"
+              ]
+            }
+          ],
+          "source_end_line": 67,
+          "source_function": "test_route_classes",
+          "source_line": 64,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
@@ -157324,7 +157445,8 @@
       ],
       "feature_ids": [
         "app-routing",
-        "openapi-docs"
+        "openapi-docs",
+        "response-serialization"
       ],
       "id": "fastapi.test.test-custom-route-class",
       "independent_workflow_mappings": [
@@ -157343,10 +157465,13 @@
         },
         {
           "case_ids": [
+            "fastapi.routing.apiroute.get-route-handler.custom-subclass-nested-wrapper",
+            "fastapi.routing.apiroute.get-route-handler.synchronous-custom-handler",
             "fastapi.test.test-custom-route-class.test-get-path",
-            "fastapi.test.test-custom-route-class.test-openapi-schema"
+            "fastapi.test.test-custom-route-class.test-openapi-schema",
+            "fastapi.test.test-custom-route-class.test-route-classes"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "http.body.bytes",
@@ -157365,12 +157490,16 @@
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
+        "http.body.json",
+        "http.cookies",
         "http.headers.ordered",
         "http.status",
         "openapi.document",
         "openapi.paths",
         "python.pydantic_model_result",
-        "route.match"
+        "response.background_effects",
+        "route.match",
+        "validation.error_class"
       ],
       "selector_evidence": [
         {
@@ -157393,6 +157522,18 @@
             "docs.response.body.bytes",
             "http.body.bytes"
           ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.cookies",
+            "http.body.bytes",
+            "http.body.json",
+            "response.background_effects",
+            "validation.error_class"
+          ]
         }
       ],
       "source_evidence": {
@@ -157404,11 +157545,13 @@
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
         "wsgi-static-files-templates-schemas-configuration-testclient"
       ],
       "stimulus_design": [
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ],
       "stimulus_design_notes": null
     },
@@ -321701,6 +321844,20 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/route-dependency-response-status.yaml",
           "workflow_id": "route-dependency-response-status"
+        },
+        {
+          "case_ids": [
+            "fastapi.routing.apiroute.get-route-handler.falsey-status-code"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+          "workflow_id": "routing-upstream"
         }
       ],
       "input_only": true,

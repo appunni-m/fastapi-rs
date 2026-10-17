@@ -108,6 +108,162 @@ cases:
   source_evidence:
   - path: tests/test_custom_route_class.py
     kind: upstream_test
+- case_id: fastapi.test.test-custom-route-class.test-route-classes
+  actions:
+  - action_id: nested-route-class-identities
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /route-class-identities
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_custom_route_class.py
+    kind: upstream_test
+- case_id: fastapi.routing.apiroute.get-route-handler.custom-subclass-nested-wrapper
+  actions:
+  - action_id: outer-request-response-wrapper
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /identity
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  - action_id: middle-request-response-wrapper
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /identity/b
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  - action_id: inner-request-response-wrapper
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /identity/b/c
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/how-to/custom-request-and-route.md
+    kind: upstream_documentation
+  - path: tests/test_custom_route_class.py
+    kind: upstream_test
+- case_id: fastapi.routing.apiroute.get-route-handler.synchronous-custom-handler
+  actions:
+  - action_id: dispatch-sync-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /sync-handler/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/how-to/custom-request-and-route.md
+    kind: upstream_documentation
+  - path: tests/test_custom_route_class.py
+    kind: upstream_test
+- case_id: fastapi.routing.apiroute.get-route-handler.falsey-status-code
+  actions:
+  - action_id: dispatch-zero-status-response-model
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /identity/status-zero
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_response_change_status_code.py
+    kind: upstream_test
 - case_id: fastapi.test.test-custom-route-class.test-openapi-schema
   actions:
   - action_id: schema

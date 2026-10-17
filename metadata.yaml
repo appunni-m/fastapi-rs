@@ -4017,7 +4017,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description and one provider-backed dependency override; custom response classes, response-model filters beyond the sampled output projection, strict content type, and callbacks on a manually constructed route remain unverified.
-          - Standalone APIRoute dispatch is mapped only for the six selected HTTP cases; other provider shapes and override errors, direct .app invocation, custom get_route_handler behavior, body inputs, validation errors, exception-handler integration, and WebSocket scopes remain unverified.
+          - Standalone APIRoute dispatch is mapped only for the six selected HTTP cases; other provider shapes and override errors, direct .app invocation, body inputs, validation errors, exception-handler integration, and WebSocket scopes remain unverified.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
       source_evidence:
@@ -4296,14 +4296,39 @@ reviewed_api_contract_overlay:
         identity relation. Pydantic owns the alias semantics, and FastAPI does
         not export `IncEx` from the package root.
     fastapi.routing.APIRoute.get_route_handler:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute::get_route_handler
       source_evidence:
-        - {path: fastapi/routing.py, symbol: get_route_handler}
+        - path: fastapi/routing.py
+          symbol: __init__
+          owner: APIRoute
+          kind: source-use
+          start_line: 1223
+          end_line: 1223
+        - path: fastapi/routing.py
+          symbol: get_route_handler
+          owner: APIRoute
+          kind: source-definition
+          start_line: 1225
+          end_line: 1249
         - {path: fastapi/routing.py, symbol: get_request_handler}
+        - {path: tests/test_custom_route_class.py, symbol: test_get_path}
+        - path: docs/en/docs/how-to/custom-request-and-route.md
+          kind: documentation-text
+          start_line: 49
+          end_line: 73
+          required_text:
+            - "This method returns a function. And that function is what will receive a request and return a response."
+            - "The only thing the function returned by `GzipRequest.get_route_handler` does differently is convert the `Request` to a `GzipRequest`."
         - {path: tests/test_strict_content_type_app_level.py}
         - {path: tests/test_strict_content_type_router_level.py}
         - {path: tests/test_strict_content_type_nested.py}
         - {path: docs/en/docs/advanced/strict-content-type.md}
-      feature_ids: [request-validation, response-serialization]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The selected custom route wrapper maps Request-to-Response behavior across nested router inclusion. Direct standalone calls, alternate response classes, body-validation failures, exception-handler integration, arbitrary wrapper state, and route-class overrides remain unverified; live target parity is pending.
+      feature_ids: [app-routing, request-validation, response-serialization]
       fixture_refs:
         - &first_asgi_valid
           recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
@@ -4385,9 +4410,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.routing.apiroute.get-route-handler.custom-subclass-nested-wrapper
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.routing.apiroute.get-route-handler.synchronous-custom-handler
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.routing.apiroute.get-route-handler.falsey-status-code
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       observation_selectors:
         - http.status
         - http.body.bytes
+        - http.headers.ordered
         - asgi.application_error.exception
         - validation.error_class
         - validation.error_details
@@ -4399,10 +4437,19 @@ reviewed_api_contract_overlay:
         `application/*+json`, including parameters; other types remain raw
         bytes. The strict app, router, and nested inheritance cases are
         exercised by `strict-content-type-router-level-upstream`. The 11 routed
-        POST cases in `first-asgi-request` exercise selected default handler behavior
-        through the public app path. FastAPI-RS does not expose a binding for
-        `APIRoute.get_route_handler`; direct calls, subclass overrides, route mutation,
-        and custom route classes remain outside the target slice.
+        POST cases in `first-asgi-request` exercise selected default handler
+        behavior through the public app path. A custom route-class input maps
+        `get_route_handler` overrides that receive a Request, await the base
+        Request-to-Response handler, and add response headers derived from the
+        registered class and request path across three nested routers. The
+        companion identity input observes configured and registered route
+        classes and their identity at all three inclusion levels. Additional
+        inputs cover a synchronous custom handler, fresh FastAPI dependency
+        stacks when incoming scope keys are prepopulated, and a falsey status
+        code with response-model serialization. Target parity for these
+        custom-handler behaviors remains pending. Direct standalone calls,
+        arbitrary wrapper behavior, route mutation, and unselected route-class
+        behavior remain unproven.
     fastapi.encoders.jsonable_encoder:
       supported_slice: >-
         Direct-call behavior is bounded to the listed encoder recipes: signature, recursive
@@ -15319,6 +15366,7 @@ reviewed_api_contract_overlay:
           - The private class equality and truthiness methods are outside this supported field contract.
 
     fastapi.routing.APIRouter.route_class:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::route_class
       source_evidence:
         - path: fastapi/routing.py
           kind: source-definition
@@ -15345,13 +15393,40 @@ reviewed_api_contract_overlay:
           required_text:
             - "You can also set the `route_class` parameter of an `APIRouter`:"
             - In this example, the *path operations* under the `router` will use the custom `TimedRoute` class
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.test.test-custom-route-class.test-route-classes
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.test.test-custom-route-class.test-get-path
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.routing.apiroute.get-route-handler.custom-subclass-nested-wrapper
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.routing.apiroute.get-route-handler.synchronous-custom-handler
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/routing-upstream.yaml
+          case_id: fastapi.routing.apiroute.get-route-handler.falsey-status-code
+          workload_path: tests/fixtures/workloads/routing_upstream.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        The constructor declares `route_class` as `type[APIRoute]` with default
-        `APIRoute` and stores it on the router. When adding an API route, the
-        source selects a truthy `route_class_override` or falls back to the
-        stored class, then instantiates the selected class. The docs describe
-        using this parameter for a router's path operations. Custom route-class
-        internals and the broader APIRoute contract are outside this field scope.
+        The Rust implementation selects and stores constructor-provided
+        `route_class` values, and preserves selected route-class identity across
+        nested inclusion. The identity fixture maps observations of configured
+        and registered subclasses for three routers. The source also selects a
+        truthy `route_class_override` before falling back to the stored class,
+        but the target does not expose that per-route argument. A separate
+        fixture maps the custom `get_route_handler` Request-to-Response wrapper
+        behavior; live target parity is pending. The recipes contain no frozen
+        expected outputs. Arbitrary subclass state and behavior outside the
+        selected observations remain unproven.
     fastapi.routing.APIRouter.default_response_class:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::default_response_class
       source_evidence:

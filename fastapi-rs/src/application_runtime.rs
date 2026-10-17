@@ -79,6 +79,12 @@ const ORJSON_RESPONSE_DOC: &str = concat!(
     "    separately, e.g. `pip install orjson`.\n",
     "    "
 );
+const FASTAPI_INNER_ASTACK_SCOPE_KEY: &str = "fastapi_inner_astack";
+const FASTAPI_FUNCTION_ASTACK_SCOPE_KEY: &str = "fastapi_function_astack";
+
+thread_local! {
+    static EFFECTIVE_ROUTE_CONTEXT: RefCell<Option<Py<PyAny>>> = const { RefCell::new(None) };
+}
 const ORJSON_RESPONSE_MISSING_ASSERTION: &str = "orjson must be installed to use ORJSONResponse";
 
 #[derive(Clone, Copy)]
@@ -1298,6 +1304,28 @@ impl ResponseClassArgument {
     }
 }
 
+enum RouteClassArgument {
+    Omitted,
+    Provided(Py<PyAny>),
+}
+
+impl FromPyObject<'_, '_> for RouteClassArgument {
+    type Error = PyErr;
+
+    fn extract(value: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
+        Ok(Self::Provided(value.to_owned().unbind()))
+    }
+}
+
+impl RouteClassArgument {
+    fn into_class(self, py: Python<'_>) -> Py<PyAny> {
+        match self {
+            Self::Omitted => py.get_type::<PyApiRoute>().into_any().unbind(),
+            Self::Provided(route_class) => route_class,
+        }
+    }
+}
+
 enum StrictContentTypeArgument {
     Omitted,
     Provided(Py<PyAny>),
@@ -1563,6 +1591,7 @@ struct FastApiRoute {
     endpoint_is_coroutine: bool,
     original_route: Py<PyAny>,
     public_route: Py<PyAny>,
+    request_handler: Option<Py<PyAny>>,
     effective_route_context: Option<Py<PyAny>>,
     response_model: Option<Py<PyAny>>,
     response_field: ResponseFieldState,
@@ -1822,7 +1851,7 @@ impl ResponseModelValidator {
     }
 }
 
-#[pyclass(name = "APIRoute", module = "fastapi.routing")]
+#[pyclass(name = "APIRoute", module = "fastapi.routing", subclass)]
 struct PyApiRoute {
     path: String,
     path_format: String,
@@ -1876,6 +1905,11 @@ struct PyRouteContextIterator {
 
 #[pymethods]
 impl PyApiRoute {
+    fn get_route_handler(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let route = route_for_current_effective_context(py, slf.into_any())?;
+        Py::new(py, PyFastApiRouteHandler { route }).map(|handler| handler.into_any())
+    }
+
     #[new]
     #[pyo3(signature = (path, endpoint, *, response_model = omitted_response_model(), status_code = None, tags = None, dependencies = None, summary = None, description = None, response_description = "Successful Response", responses = None, deprecated = None, name = None, methods = None, operation_id = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true, response_class = ResponseClassArgument::Omitted, dependency_overrides_provider = None, callbacks = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = StrictContentTypeArgument::Omitted))]
     // lint-exception: PyO3 needs one Rust argument per APIRoute-compatible keyword.
@@ -1928,6 +1962,7 @@ impl PyApiRoute {
                 None,
                 None,
                 None,
+                RouteClassArgument::Omitted,
                 None,
                 None,
                 None,
@@ -1940,6 +1975,20 @@ impl PyApiRoute {
         let inner = scratch_router.bind(py).borrow().inner_app(py)?;
         let response_model = if response_model.bind(py).is_none() {
             None
+        } else if response_model
+            .bind(py)
+            .is_instance_of::<PyFastApiDefaultPlaceholder>()
+        {
+            let value = response_model
+                .bind(py)
+                .extract::<PyRef<'_, PyFastApiDefaultPlaceholder>>()?
+                .value
+                .clone_ref(py);
+            if value.bind(py).is_none() {
+                Some(py.NotImplemented())
+            } else {
+                Some(value)
+            }
         } else {
             Some(response_model)
         };
@@ -2454,6 +2503,7 @@ impl PyRouteContextIterator {
 }
 
 struct ApiRouteViewConfig<'a> {
+    route_class: Option<&'a Py<PyAny>>,
     path: &'a str,
     path_format: &'a str,
     path_regex: &'a Py<PyAny>,
@@ -2482,6 +2532,9 @@ struct ApiRouteViewConfig<'a> {
     callbacks: Option<&'a Py<PyAny>>,
     strict_content_type: &'a Py<PyAny>,
     stream_item_type: Option<&'a Py<PyAny>>,
+    response_model: Option<&'a Py<PyAny>>,
+    status_code: Option<u16>,
+    dependencies: &'a [Py<PyAny>],
 }
 
 fn new_api_route_view(
@@ -2489,6 +2542,94 @@ fn new_api_route_view(
     config: ApiRouteViewConfig<'_>,
     endpoint: Py<PyAny>,
 ) -> PyResult<Py<PyAny>> {
+    if let Some(route_class) = config.route_class {
+        let is_route_subclass = py
+            .import("builtins")?
+            .getattr("issubclass")?
+            .call1((route_class.bind(py), py.get_type::<PyApiRoute>()))?
+            .is_truthy()?;
+        if !is_route_subclass {
+            return Err(PyTypeError::new_err(
+                "route_class must be a subclass of APIRoute",
+            ));
+        }
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("endpoint", endpoint.bind(py))?;
+        match config.response_model {
+            Some(response_model) if response_model.bind(py).is(py.NotImplemented()) => {
+                let default_response_model = default_placeholder(py, py.None())?;
+                kwargs.set_item("response_model", default_response_model.bind(py))?;
+            }
+            Some(response_model) => kwargs.set_item("response_model", response_model.bind(py))?,
+            None => kwargs.set_item("response_model", py.None())?,
+        }
+        kwargs.set_item("status_code", config.status_code)?;
+        kwargs.set_item("tags", PyList::new(py, config.tags)?)?;
+        kwargs.set_item(
+            "dependencies",
+            PyList::new(py, config.dependencies.iter().map(|value| value.bind(py)))?,
+        )?;
+        kwargs.set_item("summary", config.summary)?;
+        kwargs.set_item("description", config.description)?;
+        kwargs.set_item("response_description", config.response_description)?;
+        kwargs.set_item("responses", config.responses.bind(py))?;
+        kwargs.set_item("deprecated", config.deprecated)?;
+        kwargs.set_item("name", config.name)?;
+        kwargs.set_item(
+            "methods",
+            PySet::new(py, config.methods.iter().map(String::as_str))?,
+        )?;
+        kwargs.set_item("operation_id", config.operation_id)?;
+        for (name, value) in [
+            ("response_model_include", config.response_model_include),
+            ("response_model_exclude", config.response_model_exclude),
+            ("openapi_extra", config.openapi_extra),
+            (
+                "dependency_overrides_provider",
+                config.dependency_overrides_provider,
+            ),
+            ("callbacks", config.callbacks),
+        ] {
+            match value {
+                Some(value) => kwargs.set_item(name, value.bind(py))?,
+                None => kwargs.set_item(name, py.None())?,
+            }
+        }
+        kwargs.set_item("response_model_by_alias", config.response_model_by_alias)?;
+        kwargs.set_item(
+            "response_model_exclude_unset",
+            config.response_model_exclude_unset,
+        )?;
+        kwargs.set_item(
+            "response_model_exclude_defaults",
+            config.response_model_exclude_defaults,
+        )?;
+        kwargs.set_item(
+            "response_model_exclude_none",
+            config.response_model_exclude_none,
+        )?;
+        kwargs.set_item("include_in_schema", config.include_in_schema)?;
+        kwargs.set_item("response_class", config.response_class.python_value(py))?;
+        kwargs.set_item(
+            "generate_unique_id_function",
+            config.generate_unique_id_function.python_value(py),
+        )?;
+        kwargs.set_item("strict_content_type", config.strict_content_type.bind(py))?;
+        let route = route_class.bind(py).call((config.path,), Some(&kwargs))?;
+        let mut route_state = route.extract::<PyRefMut<'_, PyApiRoute>>()?;
+        route_state.response_class_resolution = config
+            .response_class_resolution
+            .map(ResponseClassResolution::clone_ref);
+        route_state.stream_item_type = config.stream_item_type.map(|value| value.clone_ref(py));
+        route_state.response_field = None;
+        route_state.openapi_snapshots.clear();
+        route_state.standalone_owner = None;
+        route_state.standalone_route_index = None;
+        route_state.cached_app = None;
+        drop(route_state);
+        return Ok(route.unbind());
+    }
+
     let tags = PyList::empty(py);
     for tag in config.tags {
         tags.append(tag)?;
@@ -2572,6 +2713,8 @@ fn generated_unique_id(
         .map(Bound::unbind)
 }
 
+type ApiRouteViewRegistration = (Py<PyAny>, Py<PyAny>, Option<Py<PyAny>>);
+
 fn api_route_view_and_unique_id(
     py: Python<'_>,
     config: ApiRouteViewConfig<'_>,
@@ -2579,7 +2722,7 @@ fn api_route_view_and_unique_id(
     generate_unique_id_function: &GenerateUniqueIdChoice,
     operation_id: Option<&str>,
     cache: Option<&Rc<RefCell<OperationRouteRegistrationCache>>>,
-) -> PyResult<(Py<PyAny>, Py<PyAny>)> {
+) -> PyResult<ApiRouteViewRegistration> {
     if let Some(cache) = cache {
         let cached = {
             let cache = cache.borrow();
@@ -2587,7 +2730,16 @@ fn api_route_view_and_unique_id(
                 .public_route
                 .as_ref()
                 .zip(cache.unique_id.as_ref())
-                .map(|(route, unique_id)| (route.clone_ref(py), unique_id.clone_ref(py)))
+                .map(|(route, unique_id)| {
+                    (
+                        route.clone_ref(py),
+                        unique_id.clone_ref(py),
+                        cache
+                            .request_handler
+                            .as_ref()
+                            .map(|handler| handler.clone_ref(py)),
+                    )
+                })
         };
         if let Some(cached) = cached {
             return Ok(cached);
@@ -2595,6 +2747,7 @@ fn api_route_view_and_unique_id(
     }
 
     let public_route = new_api_route_view(py, config, endpoint)?;
+    let request_handler = custom_api_route_handler(py, public_route.bind(py))?;
     let unique_id =
         generated_unique_id(py, generate_unique_id_function, &public_route, operation_id)?;
     set_api_route_unique_id(py, &public_route, unique_id.bind(py))?;
@@ -2602,8 +2755,11 @@ fn api_route_view_and_unique_id(
         let mut cache = cache.borrow_mut();
         cache.public_route = Some(public_route.clone_ref(py));
         cache.unique_id = Some(unique_id.clone_ref(py));
+        cache.request_handler = request_handler
+            .as_ref()
+            .map(|handler| handler.clone_ref(py));
     }
-    Ok((public_route, unique_id))
+    Ok((public_route, unique_id, request_handler))
 }
 
 fn api_route_callback_summary_tags(
@@ -2750,7 +2906,15 @@ fn direct_openapi_route_index(
                     .as_ref()
                     .is_some_and(|route_context| {
                         let pointer = route_context.as_ptr() as usize;
-                        pointer == context_pointer || pointer == effective_pointer
+                        pointer == context_pointer
+                            || pointer == effective_pointer
+                            || route_context
+                                .bind(context.py())
+                                .extract::<PyRef<'_, PyRouteContext>>()
+                                .is_ok_and(|route_context| {
+                                    route_context.effective_route.as_ptr() as usize
+                                        == effective_pointer
+                                })
                     })
         })
 }
@@ -2786,6 +2950,74 @@ fn api_route_dispatch_owner(
         PyAttributeError::new_err("'APIRoute' is not registered with its dispatch owner")
     })?;
     Ok((owner, route_index))
+}
+
+fn custom_api_route_handler(
+    py: Python<'_>,
+    route: &Bound<'_, PyAny>,
+) -> PyResult<Option<Py<PyAny>>> {
+    if route.get_type().is(py.get_type::<PyApiRoute>()) {
+        return Ok(None);
+    }
+    route
+        .call_method0("get_route_handler")
+        .map(Bound::unbind)
+        .map(Some)
+}
+
+struct EffectiveRouteContextGuard {
+    previous: Option<Py<PyAny>>,
+}
+
+impl EffectiveRouteContextGuard {
+    fn enter(context: &Bound<'_, PyAny>) -> Self {
+        let context = Some(context.clone().unbind());
+        let previous = EFFECTIVE_ROUTE_CONTEXT
+            .with(|current| std::mem::replace(&mut *current.borrow_mut(), context));
+        Self { previous }
+    }
+}
+
+impl Drop for EffectiveRouteContextGuard {
+    fn drop(&mut self) {
+        EFFECTIVE_ROUTE_CONTEXT.with(|current| {
+            *current.borrow_mut() = self.previous.take();
+        });
+    }
+}
+
+fn route_for_current_effective_context(py: Python<'_>, route: Py<PyAny>) -> PyResult<Py<PyAny>> {
+    let context = EFFECTIVE_ROUTE_CONTEXT.with(|current| {
+        current
+            .borrow()
+            .as_ref()
+            .map(|context| context.clone_ref(py))
+    });
+    let Some(context) = context else {
+        return Ok(route);
+    };
+    let Ok(context) = context.bind(py).extract::<PyRef<'_, PyRouteContext>>() else {
+        return Ok(route);
+    };
+    if context.original_route.as_ptr() == route.as_ptr() {
+        Ok(context.effective_route.clone_ref(py))
+    } else {
+        Ok(route)
+    }
+}
+
+fn custom_api_route_handler_in_effective_context(
+    py: Python<'_>,
+    original_route: &Bound<'_, PyAny>,
+    effective_context: &Bound<'_, PyAny>,
+) -> PyResult<Option<Py<PyAny>>> {
+    if original_route.get_type().is(py.get_type::<PyApiRoute>()) {
+        return Ok(None);
+    }
+    let context_guard = EffectiveRouteContextGuard::enter(effective_context);
+    let result = original_route.call_method0("get_route_handler");
+    drop(context_guard);
+    result.map(Bound::unbind).map(Some)
 }
 
 fn direct_openapi_contexts(
@@ -3540,6 +3772,7 @@ pub(crate) struct PyFastApi {
     router_tags: Vec<String>,
     router_dependencies: Vec<Py<PyAny>>,
     router_callbacks: Py<PyAny>,
+    router_route_class: Option<Py<PyAny>>,
     router_deprecated: Option<bool>,
     router_include_in_schema: bool,
     title: String,
@@ -3809,6 +4042,21 @@ struct PyApiRouteAsgiApp {
     dependency_overrides_provider: Option<Py<PyAny>>,
 }
 
+#[pyclass(name = "_FastAPIRouteHandler", module = "fastapi_rs._core")]
+struct PyFastApiRouteHandler {
+    route: Py<PyAny>,
+}
+
+#[pyclass(
+    name = "_FastAPIRequestCleanup",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct PyFastApiRequestCleanup {
+    records: RefCell<Vec<RouteHandlerCleanupRecord>>,
+    previous_scope_value: Option<Py<PyAny>>,
+}
+
 #[pyclass(name = "_MiddlewareDecorator", module = "fastapi_rs._core")]
 struct PyMiddlewareDecorator {
     app: Py<PyFastApi>,
@@ -3916,6 +4164,35 @@ impl PyApiRouteAsgiApp {
 }
 
 #[pymethods]
+impl PyFastApiRouteHandler {
+    fn __call__(&self, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let route = self.route.bind(py);
+        let route_state = route.extract::<PyRef<'_, PyApiRoute>>()?;
+        let (owner, route_index) = api_route_dispatch_owner(py, route, &route_state)?;
+        let dependency_overrides_provider = route_state
+            .dependency_overrides_provider
+            .as_ref()
+            .map(|provider| provider.clone_ref(py));
+        drop(route_state);
+        let request = request.bind(py);
+        let scope = request.getattr("scope")?.unbind();
+        let receive = request.getattr("_receive")?.unbind();
+        into_python_awaitable(
+            py,
+            FastApiCall::new(
+                owner,
+                scope,
+                receive,
+                py.None(),
+                Some(route_index),
+                dependency_overrides_provider,
+                Some(request.clone().unbind()),
+            ),
+        )
+    }
+}
+
+#[pymethods]
 impl PyMiddlewareDecorator {
     fn __call__(&self, py: Python<'_>, dispatch: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let middleware_class = py.get_type::<PyFastApiHttpMiddleware>();
@@ -3947,6 +4224,7 @@ struct PyRawWebSocketDecorator {
 pub(crate) struct PyApiRouter {
     inner: ApiRouterInner,
     prefix: String,
+    route_class: Py<PyAny>,
     tags: Vec<String>,
     deprecated: Option<bool>,
     include_in_schema: bool,
@@ -4434,6 +4712,7 @@ impl PyFastApi {
                     None,
                     None,
                     None,
+                    RouteClassArgument::Omitted,
                     None,
                     None,
                     None,
@@ -4454,6 +4733,7 @@ impl PyFastApi {
             router_tags: Vec::new(),
             router_dependencies: Vec::new(),
             router_callbacks,
+            router_route_class: None,
             router_deprecated: deprecated,
             router_include_in_schema: include_in_schema,
             title: title.to_owned(),
@@ -7201,19 +7481,25 @@ impl PyApiRouter {
     fn from_fastapi_app(app: &Bound<'_, PyFastApi>) -> PyResult<Self> {
         let py = app.py();
         let inner = ApiRouterInner::FastApiWeak(PyWeakrefReference::new(app.as_any())?.unbind());
-        let app = app.borrow();
+        let app_state = app.borrow();
+        let route_class = app_state
+            .router_route_class
+            .as_ref()
+            .map(|route_class| route_class.clone_ref(py))
+            .unwrap_or_else(|| py.get_type::<PyApiRoute>().into_any().unbind());
         Ok(Self {
             inner,
             prefix: String::new(),
-            tags: app.router_tags.clone(),
-            deprecated: app.router_deprecated,
-            include_in_schema: app.router_include_in_schema,
-            dependencies: app
+            route_class,
+            tags: app_state.router_tags.clone(),
+            deprecated: app_state.router_deprecated,
+            include_in_schema: app_state.router_include_in_schema,
+            dependencies: app_state
                 .dependencies
                 .iter()
                 .map(|dependency| dependency.clone_ref(py))
                 .collect(),
-            strict_content_type: app.strict_content_type,
+            strict_content_type: app_state.strict_content_type,
         })
     }
 
@@ -7225,7 +7511,7 @@ impl PyApiRouter {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, routes = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, routes = None, route_class = RouteClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -7240,6 +7526,7 @@ impl PyApiRouter {
         responses: Option<Py<PyAny>>,
         callbacks: Option<Py<PyAny>>,
         routes: Option<Py<PyAny>>,
+        route_class: RouteClassArgument,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
         lifespan: Option<Py<PyAny>>,
@@ -7249,6 +7536,10 @@ impl PyApiRouter {
         strict_content_type: Option<bool>,
     ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
+        let route_class = route_class.into_class(py);
+        let default_route_class = py.get_type::<PyApiRoute>();
+        let selected_route_class = (!route_class.bind(py).is(default_route_class.as_any()))
+            .then(|| route_class.clone_ref(py));
         let router_tags = tags.unwrap_or_default();
         let router_dependencies = dependencies.unwrap_or_default();
         let router_callbacks = match callbacks {
@@ -7309,6 +7600,7 @@ impl PyApiRouter {
                 .map(|dependency| dependency.clone_ref(py))
                 .collect();
             inner.router_callbacks = router_callbacks.clone_ref(py);
+            inner.router_route_class = selected_route_class;
             inner.router_deprecated = deprecated;
             inner.router_include_in_schema = include_in_schema;
             inner.strict_content_type = strict_content_type;
@@ -7316,6 +7608,7 @@ impl PyApiRouter {
         Ok(Self {
             inner: ApiRouterInner::Owned(inner),
             prefix: prefix.to_owned(),
+            route_class,
             tags: router_tags,
             deprecated,
             include_in_schema,
@@ -7327,6 +7620,21 @@ impl PyApiRouter {
     #[getter]
     fn prefix(&self) -> &str {
         &self.prefix
+    }
+
+    #[getter]
+    fn route_class(&self, py: Python<'_>) -> Py<PyAny> {
+        self.route_class.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_route_class(&mut self, py: Python<'_>, route_class: Py<PyAny>) -> PyResult<()> {
+        let default_route_class = py.get_type::<PyApiRoute>();
+        let selected_route_class = (!route_class.bind(py).is(default_route_class.as_any()))
+            .then(|| route_class.clone_ref(py));
+        self.inner_app(py)?.bind(py).borrow_mut().router_route_class = selected_route_class;
+        self.route_class = route_class;
+        Ok(())
     }
 
     #[getter]
@@ -8592,9 +8900,15 @@ fn merge_router_routes_from(
                 .or(inherited_strict_content_type),
         )?;
         let original_route = source_route.original_route.clone_ref(py);
+        let source_route_class = original_route.bind(py).get_type().unbind().into_any();
+        let route_class = (!source_route_class
+            .bind(py)
+            .is(py.get_type::<PyApiRoute>().as_any()))
+        .then_some(&source_route_class);
         let effective_route = new_api_route_view(
             py,
             ApiRouteViewConfig {
+                route_class,
                 path: &path,
                 path_format: &path_format,
                 path_regex: &path_regex,
@@ -8623,6 +8937,9 @@ fn merge_router_routes_from(
                 callbacks: Some(&callbacks),
                 strict_content_type: &strict_content_type,
                 stream_item_type: source_route.stream_item_type.as_ref(),
+                response_model: source_route.response_model.as_ref(),
+                status_code: source_route.status_code,
+                dependencies: &source_route.router_dependencies,
             },
             source_route.endpoint.clone_ref(py),
         )?;
@@ -8722,6 +9039,7 @@ fn merge_router_routes_from(
             endpoint_is_coroutine: source_route.endpoint_is_coroutine,
             original_route,
             public_route: effective_route_context.clone_ref(py),
+            request_handler: None,
             effective_route_context: Some(effective_route_context),
             response_model: source_route
                 .response_model
@@ -9149,6 +9467,7 @@ struct PyOperationDecorator {
 struct OperationRouteRegistrationCache {
     public_route: Option<Py<PyAny>>,
     unique_id: Option<Py<PyAny>>,
+    request_handler: Option<Py<PyAny>>,
 }
 
 fn register_multi_method_api_route(
@@ -9613,9 +9932,17 @@ impl PyOperationDecorator {
         let (strict_content_type_value, strict_content_type) = self
             .strict_content_type
             .resolve(py, inherited_strict_content_type)?;
-        let (public_route, unique_id) = api_route_view_and_unique_id(
+        let route_class = self
+            .app
+            .bind(py)
+            .borrow()
+            .router_route_class
+            .as_ref()
+            .map(|route_class| route_class.clone_ref(py));
+        let (public_route, unique_id, request_handler) = api_route_view_and_unique_id(
             py,
             ApiRouteViewConfig {
+                route_class: route_class.as_ref(),
                 path: &scope_path,
                 path_format: &path_format,
                 path_regex: &path_regex,
@@ -9644,6 +9971,9 @@ impl PyOperationDecorator {
                 callbacks: Some(&callbacks),
                 strict_content_type: &strict_content_type_value,
                 stream_item_type: None,
+                response_model: self.response_model.as_ref(),
+                status_code: self.status_code,
+                dependencies: &route_dependencies,
             },
             endpoint.clone_ref(py),
             &self.generate_unique_id_function,
@@ -9723,6 +10053,7 @@ impl PyOperationDecorator {
             endpoint_is_coroutine,
             original_route: public_route.clone_ref(py),
             public_route,
+            request_handler,
             effective_route_context: None,
             response_model,
             response_field: ResponseFieldState::Ready(RouteResponseFields {
@@ -10976,6 +11307,42 @@ fn new_dependency_exit_stack(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .getattr("AsyncExitStack")?
         .call0()
         .map(Bound::unbind)
+}
+
+fn route_handler_exit_stack(
+    py: Python<'_>,
+    scope: &Bound<'_, PyAny>,
+    key: &str,
+) -> PyResult<Py<PyAny>> {
+    if scope
+        .call_method1("__contains__", (key,))?
+        .extract::<bool>()?
+    {
+        return scope.get_item(key).map(Bound::unbind);
+    }
+    let stack = new_dependency_exit_stack(py)?;
+    scope.set_item(key, stack.bind(py))?;
+    Ok(stack)
+}
+
+fn route_handler_exit_stacks(
+    py: Python<'_>,
+    scope: &Bound<'_, PyAny>,
+) -> PyResult<(Py<PyAny>, Py<PyAny>)> {
+    let request_stack = route_handler_exit_stack(py, scope, FASTAPI_INNER_ASTACK_SCOPE_KEY)?;
+    let function_stack = route_handler_exit_stack(py, scope, FASTAPI_FUNCTION_ASTACK_SCOPE_KEY)?;
+    Ok((request_stack, function_stack))
+}
+
+fn reset_route_handler_exit_stacks(
+    py: Python<'_>,
+    scope: &Bound<'_, PyAny>,
+) -> PyResult<(Py<PyAny>, Py<PyAny>)> {
+    let request_stack = new_dependency_exit_stack(py)?;
+    let function_stack = new_dependency_exit_stack(py)?;
+    scope.set_item(FASTAPI_INNER_ASTACK_SCOPE_KEY, request_stack.bind(py))?;
+    scope.set_item(FASTAPI_FUNCTION_ASTACK_SCOPE_KEY, function_stack.bind(py))?;
+    Ok((request_stack, function_stack))
 }
 
 fn dependency_exit_with_error(
@@ -13676,6 +14043,10 @@ fn injected_response_status(response: Option<&Bound<'_, PyAny>>) -> PyResult<Opt
     Ok(Some(status_code.unbind()))
 }
 
+fn response_status_override(status_code: Option<u16>) -> Option<u16> {
+    status_code.filter(|status_code| *status_code != 0)
+}
+
 fn merge_injected_response_state(
     py: Python<'_>,
     response: &Bound<'_, PyAny>,
@@ -13810,6 +14181,10 @@ enum PendingAction {
     FrontendAsgiResponse,
     RouteInvocation,
     Endpoint,
+    CustomRouteHandler,
+    RouteHandlerFunctionCleanupBeforeResponse,
+    RouteHandlerRequestCleanupAfterResponse,
+    RouteHandlerCleanupAfterError(PyErr),
     ResponseValidation(Box<ResponseValidationState>),
     DependencyGraph(Box<DependencyExecutionGraph>),
     ReturnedResponse,
@@ -13846,6 +14221,301 @@ struct ConstructorRouteMatches {
 enum FunctionCloseContinuation {
     ReturnedResponse(Py<PyAny>),
     SendStart(Option<Py<PyAny>>),
+}
+
+#[derive(Clone, Copy)]
+enum RouteHandlerCleanupBoundary {
+    Function,
+    Request,
+    Form,
+}
+
+struct RouteHandlerCleanupRecord {
+    function_exit_stack: Py<PyAny>,
+    request_exit_stack: Py<PyAny>,
+    form_request: Option<Py<PyAny>>,
+    function_closed: bool,
+    request_closed: bool,
+    form_closed: bool,
+}
+
+enum RouteHandlerCleanupMode {
+    FunctionSuccess,
+    RequestSuccess,
+    Error(PyErr),
+}
+
+#[derive(Clone, Copy)]
+enum RouteHandlerCleanupPending {
+    FunctionExit,
+    RequestExit,
+    FormClose,
+}
+
+struct RouteHandlerCleanupCall {
+    cleanup: Py<PyFastApiRequestCleanup>,
+    mode: RouteHandlerCleanupMode,
+    pending: Option<RouteHandlerCleanupPending>,
+    current_error: Option<PyErr>,
+    phase: RouteHandlerCleanupBoundary,
+    index: usize,
+    active_record_index: Option<usize>,
+}
+
+const ROUTE_HANDLER_CLEANUPS_SCOPE_KEY: &str = "_fastapi_rs_route_handler_cleanups";
+
+impl RouteHandlerCleanupCall {
+    fn new(
+        cleanup: Py<PyFastApiRequestCleanup>,
+        mode: RouteHandlerCleanupMode,
+        py: Python<'_>,
+    ) -> Self {
+        let record_count = cleanup.bind(py).borrow().records.borrow().len();
+        let current_error = match &mode {
+            RouteHandlerCleanupMode::Error(error) => Some(error.clone_ref(py)),
+            RouteHandlerCleanupMode::FunctionSuccess | RouteHandlerCleanupMode::RequestSuccess => {
+                None
+            }
+        };
+        let phase = match &mode {
+            RouteHandlerCleanupMode::RequestSuccess => RouteHandlerCleanupBoundary::Request,
+            RouteHandlerCleanupMode::FunctionSuccess | RouteHandlerCleanupMode::Error(_) => {
+                RouteHandlerCleanupBoundary::Function
+            }
+        };
+        Self {
+            cleanup,
+            mode,
+            pending: None,
+            current_error,
+            phase,
+            index: record_count,
+            active_record_index: None,
+        }
+    }
+
+    fn advance(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        loop {
+            let (record_count, next_action) = {
+                let cleanup = self.cleanup.bind(py).borrow();
+                let mut records = cleanup.records.borrow_mut();
+                let record_count = records.len();
+                let mut next_action = None;
+                while self.index > 0 {
+                    self.index -= 1;
+                    let record = &mut records[self.index];
+                    let action = match self.phase {
+                        RouteHandlerCleanupBoundary::Function if !record.function_closed => {
+                            record.function_closed = true;
+                            Some((
+                                RouteHandlerCleanupPending::FunctionExit,
+                                record.function_exit_stack.clone_ref(py),
+                            ))
+                        }
+                        RouteHandlerCleanupBoundary::Request if !record.request_closed => {
+                            record.request_closed = true;
+                            Some((
+                                RouteHandlerCleanupPending::RequestExit,
+                                record.request_exit_stack.clone_ref(py),
+                            ))
+                        }
+                        _ => None,
+                    };
+                    if action.is_some() {
+                        self.active_record_index = Some(self.index);
+                        next_action = action;
+                        break;
+                    }
+                }
+                (record_count, next_action)
+            };
+
+            if let Some((pending, exit_stack)) = next_action {
+                self.pending = Some(pending);
+                let awaitable = match self.current_error.as_ref() {
+                    Some(error) => dependency_exit_with_error(py, &exit_stack, error)?,
+                    None => exit_stack.bind(py).call_method0("aclose")?.unbind(),
+                };
+                return Ok(MachineAction::Await(awaitable));
+            }
+
+            match self.phase {
+                RouteHandlerCleanupBoundary::Function => {
+                    if matches!(&self.mode, RouteHandlerCleanupMode::FunctionSuccess) {
+                        return Ok(MachineAction::Complete(py.None()));
+                    }
+                    self.phase = RouteHandlerCleanupBoundary::Request;
+                    self.index = record_count;
+                }
+                RouteHandlerCleanupBoundary::Request => {
+                    self.phase = RouteHandlerCleanupBoundary::Form;
+                    self.index = record_count;
+                }
+                RouteHandlerCleanupBoundary::Form => {
+                    let form_request = {
+                        let cleanup = self.cleanup.bind(py).borrow();
+                        let mut records = cleanup.records.borrow_mut();
+                        let mut request = None;
+                        while self.index > 0 {
+                            self.index -= 1;
+                            let record = &mut records[self.index];
+                            if !record.form_closed {
+                                record.form_closed = true;
+                                if let Some(form_request) = record.form_request.as_ref() {
+                                    self.active_record_index = Some(self.index);
+                                    request = Some(form_request.clone_ref(py));
+                                    break;
+                                }
+                            }
+                        }
+                        request
+                    };
+                    if let Some(form_request) = form_request {
+                        self.pending = Some(RouteHandlerCleanupPending::FormClose);
+                        return form_request
+                            .bind(py)
+                            .call_method0("close")
+                            .map(Bound::unbind)
+                            .map(MachineAction::Await);
+                    }
+                    if let Some(error) = self.current_error.take() {
+                        return Err(error);
+                    }
+                    return Ok(MachineAction::Complete(py.None()));
+                }
+            }
+        }
+    }
+
+    fn exit_stack_resumed(
+        &mut self,
+        py: Python<'_>,
+        result: &Bound<'_, PyAny>,
+        boundary: RouteHandlerCleanupPending,
+    ) -> PyResult<MachineAction> {
+        if self.current_error.is_some() && result.is_truthy()? {
+            self.current_error = Some(match boundary {
+                RouteHandlerCleanupPending::FunctionExit => {
+                    PyTypeError::new_err("'NoneType' object is not callable")
+                }
+                RouteHandlerCleanupPending::RequestExit => fastapi_error(concat!(
+                    "Response not awaited. There's a high chance that the ",
+                    "application code is raising an exception and a dependency with yield ",
+                    "has a block with a bare except, or a block with except Exception, ",
+                    "and is not raising the exception again. Read more about it in the ",
+                    "docs: https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield-and-except"
+                )),
+                RouteHandlerCleanupPending::FormClose => {
+                    return Err(PyRuntimeError::new_err(
+                        "form cleanup cannot suppress a route handler exception",
+                    ));
+                }
+            });
+        }
+        self.advance(py)
+    }
+
+    fn retry_active_cleanup(&mut self, py: Python<'_>, pending: RouteHandlerCleanupPending) {
+        let Some(record_index) = self.active_record_index.take() else {
+            return;
+        };
+        let cleanup = self.cleanup.bind(py).borrow();
+        let mut records = cleanup.records.borrow_mut();
+        if let Some(record) = records.get_mut(record_index) {
+            match pending {
+                RouteHandlerCleanupPending::FunctionExit => record.function_closed = false,
+                RouteHandlerCleanupPending::RequestExit => record.request_closed = false,
+                RouteHandlerCleanupPending::FormClose => record.form_closed = false,
+            }
+        }
+        self.index = record_index + 1;
+    }
+}
+
+impl AwaitableStateMachine for RouteHandlerCleanupCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => self.advance(py),
+            MachineResume::Value(value) => match self.pending.take() {
+                Some(
+                    pending @ (RouteHandlerCleanupPending::FunctionExit
+                    | RouteHandlerCleanupPending::RequestExit),
+                ) => {
+                    self.active_record_index = None;
+                    self.exit_stack_resumed(py, value.bind(py), pending)
+                }
+                Some(RouteHandlerCleanupPending::FormClose) => {
+                    self.active_record_index = None;
+                    self.advance(py)
+                }
+                None => Err(PyRuntimeError::new_err(
+                    "route handler cleanup resumed without a pending operation",
+                )),
+            },
+            MachineResume::Error(error) => {
+                self.current_error = Some(error.clone_ref(py));
+                match self.pending.take() {
+                    Some(pending @ RouteHandlerCleanupPending::FunctionExit)
+                        if matches!(self.mode, RouteHandlerCleanupMode::FunctionSuccess) =>
+                    {
+                        self.retry_active_cleanup(py, pending);
+                        Err(error)
+                    }
+                    Some(
+                        pending @ (RouteHandlerCleanupPending::FunctionExit
+                        | RouteHandlerCleanupPending::RequestExit
+                        | RouteHandlerCleanupPending::FormClose),
+                    ) => {
+                        self.retry_active_cleanup(py, pending);
+                        self.advance(py)
+                    }
+                    None => Err(error),
+                }
+            }
+        }
+    }
+}
+
+fn append_route_handler_cleanup(
+    py: Python<'_>,
+    scope: &Bound<'_, PyAny>,
+    record: RouteHandlerCleanupRecord,
+) -> PyResult<()> {
+    let has_cleanup_key = scope
+        .call_method1("__contains__", (ROUTE_HANDLER_CLEANUPS_SCOPE_KEY,))?
+        .extract::<bool>()?;
+    let cleanup = match has_cleanup_key {
+        true => {
+            let existing = scope.get_item(ROUTE_HANDLER_CLEANUPS_SCOPE_KEY)?;
+            match existing.extract::<Py<PyFastApiRequestCleanup>>() {
+                Ok(cleanup) => cleanup,
+                Err(_) => {
+                    let cleanup = Py::new(
+                        py,
+                        PyFastApiRequestCleanup {
+                            records: RefCell::new(Vec::new()),
+                            previous_scope_value: Some(existing.unbind()),
+                        },
+                    )?;
+                    scope.set_item(ROUTE_HANDLER_CLEANUPS_SCOPE_KEY, &cleanup)?;
+                    cleanup
+                }
+            }
+        }
+        false => {
+            let cleanup = Py::new(
+                py,
+                PyFastApiRequestCleanup {
+                    records: RefCell::new(Vec::new()),
+                    previous_scope_value: None,
+                },
+            )?;
+            scope.set_item(ROUTE_HANDLER_CLEANUPS_SCOPE_KEY, &cleanup)?;
+            cleanup
+        }
+    };
+    cleanup.bind(py).borrow().records.borrow_mut().push(record);
+    Ok(())
 }
 
 #[derive(Clone, Copy)]
@@ -14143,7 +14813,10 @@ fn fastapi_core_call(
     receive: Py<PyAny>,
     send: Py<PyAny>,
 ) -> PyResult<Py<PyAny>> {
-    into_python_awaitable(py, FastApiCall::new(app, scope, receive, send, None, None))
+    into_python_awaitable(
+        py,
+        FastApiCall::new(app, scope, receive, send, None, None, None),
+    )
 }
 
 fn fastapi_route_core_call(
@@ -14164,6 +14837,7 @@ fn fastapi_route_core_call(
             send,
             Some(route_index),
             dependency_overrides_provider,
+            None,
         ),
     )
 }
@@ -14176,6 +14850,9 @@ struct FastApiCall {
     send: Py<PyAny>,
     route_index: Option<usize>,
     forced_route_index: Option<usize>,
+    route_handler_response: bool,
+    provided_request: Option<Py<PyAny>>,
+    route_handler_cleanup: Option<Py<PyFastApiRequestCleanup>>,
     frontend_route_index: Option<usize>,
     frontend_path: Option<String>,
     frontend_response_status_override: Option<u16>,
@@ -14207,7 +14884,9 @@ impl FastApiCall {
         send: Py<PyAny>,
         forced_route_index: Option<usize>,
         route_dependency_overrides_provider: Option<Py<PyAny>>,
+        provided_request: Option<Py<PyAny>>,
     ) -> Self {
+        let route_handler_response = provided_request.is_some();
         Self {
             app,
             route_dependency_overrides_provider,
@@ -14216,6 +14895,9 @@ impl FastApiCall {
             send,
             route_index: None,
             forced_route_index,
+            route_handler_response,
+            provided_request,
+            route_handler_cleanup: None,
             frontend_route_index: None,
             frontend_path: None,
             frontend_response_status_override: None,
@@ -14303,10 +14985,125 @@ impl FastApiCall {
         py: Python<'_>,
         response: &Bound<'_, PyAny>,
     ) -> PyResult<MachineAction> {
+        if self.route_handler_response {
+            self.defer_route_handler_cleanup(py)?;
+            return Ok(MachineAction::Complete(response.clone().unbind()));
+        }
         self.close_function_dependency_stack_before_response(
             py,
             FunctionCloseContinuation::ReturnedResponse(response.clone().unbind()),
         )
+    }
+
+    fn defer_route_handler_cleanup(&mut self, py: Python<'_>) -> PyResult<()> {
+        let (function_exit_stack, request_exit_stack) =
+            if let Some(invocation) = self.invocation.as_mut() {
+                invocation.function_dependency_exit_stack_closed = true;
+                invocation.dependency_exit_stack_closed = true;
+                (
+                    invocation.function_dependency_exit_stack.clone_ref(py),
+                    invocation.dependency_exit_stack.clone_ref(py),
+                )
+            } else {
+                let (request_stack, function_stack) =
+                    route_handler_exit_stacks(py, self.scope.bind(py))?;
+                (function_stack, request_stack)
+            };
+        append_route_handler_cleanup(
+            py,
+            self.scope.bind(py),
+            RouteHandlerCleanupRecord {
+                function_exit_stack,
+                request_exit_stack,
+                form_request: self
+                    .form_request
+                    .as_ref()
+                    .map(|request| request.clone_ref(py)),
+                function_closed: false,
+                request_closed: false,
+                form_closed: false,
+            },
+        )
+    }
+
+    fn take_route_handler_cleanup(
+        &mut self,
+        py: Python<'_>,
+    ) -> PyResult<Option<Py<PyFastApiRequestCleanup>>> {
+        if self.route_handler_cleanup.is_some() {
+            return Ok(self.route_handler_cleanup.take());
+        }
+        let scope = self.scope.bind(py);
+        if !scope
+            .call_method1("__contains__", (ROUTE_HANDLER_CLEANUPS_SCOPE_KEY,))?
+            .extract::<bool>()?
+        {
+            return Ok(None);
+        }
+        let cleanup = scope.get_item(ROUTE_HANDLER_CLEANUPS_SCOPE_KEY)?;
+        let cleanup = cleanup.extract::<Py<PyFastApiRequestCleanup>>()?;
+        let previous_scope_value = cleanup
+            .bind(py)
+            .borrow()
+            .previous_scope_value
+            .as_ref()
+            .map(|value| value.clone_ref(py));
+        if let Some(previous_scope_value) = previous_scope_value {
+            scope.set_item(ROUTE_HANDLER_CLEANUPS_SCOPE_KEY, previous_scope_value)?;
+        } else {
+            scope.del_item(ROUTE_HANDLER_CLEANUPS_SCOPE_KEY)?;
+        }
+        Ok(Some(cleanup))
+    }
+
+    fn begin_custom_route_response(
+        &mut self,
+        py: Python<'_>,
+        response: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let cleanup = match self.take_route_handler_cleanup(py)? {
+            Some(cleanup) => cleanup,
+            None => {
+                self.defer_route_handler_cleanup(py)?;
+                self.take_route_handler_cleanup(py)?.ok_or_else(|| {
+                    PyRuntimeError::new_err("route handler response cleanup was lost")
+                })?
+            }
+        };
+        self.route_handler_cleanup = Some(cleanup.clone_ref(py));
+        self.function_close_continuation =
+            Some(FunctionCloseContinuation::ReturnedResponse(response));
+        self.pending = Some(PendingAction::RouteHandlerFunctionCleanupBeforeResponse);
+        let awaitable = into_python_awaitable(
+            py,
+            RouteHandlerCleanupCall::new(cleanup, RouteHandlerCleanupMode::FunctionSuccess, py),
+        )?;
+        Ok(MachineAction::Await(awaitable))
+    }
+
+    fn begin_route_handler_cleanup_error(
+        &mut self,
+        py: Python<'_>,
+        error: PyErr,
+        ensure_scope_cleanup: bool,
+    ) -> PyResult<MachineAction> {
+        let cleanup = match self.take_route_handler_cleanup(py)? {
+            Some(cleanup) => cleanup,
+            None if ensure_scope_cleanup => {
+                self.defer_route_handler_cleanup(py)?;
+                self.take_route_handler_cleanup(py)?.ok_or_else(|| {
+                    PyRuntimeError::new_err("route handler error cleanup was lost")
+                })?
+            }
+            None => return self.route_exception(py, error),
+        };
+        let original_error = error.clone_ref(py);
+        self.pending = Some(PendingAction::RouteHandlerCleanupAfterError(original_error));
+        let awaitable = into_python_awaitable(
+            py,
+            RouteHandlerCleanupCall::new(cleanup, RouteHandlerCleanupMode::Error(error), py),
+        )?;
+        Ok(MachineAction::Await(awaitable))
     }
 
     fn start_returned_response_after_function_close(
@@ -14884,10 +15681,18 @@ impl FastApiCall {
         };
         self.route_index = Some(route_index);
         self.injected_response = Some(fastapi_response_state(py)?);
-        let request = py
-            .import("starlette.requests")?
-            .getattr("Request")?
-            .call1((scope, self.receive.bind(py), self.send.bind(py)))?;
+        let _exit_stacks = if self.provided_request.is_some() {
+            route_handler_exit_stacks(py, scope)?
+        } else {
+            reset_route_handler_exit_stacks(py, scope)?
+        };
+        let request = match self.provided_request.as_ref() {
+            Some(request) => request.bind(py).clone(),
+            None => py
+                .import("starlette.requests")?
+                .getattr("Request")?
+                .call1((scope, self.receive.bind(py), self.send.bind(py)))?,
+        };
         scope.set_item("starlette._exception_request", &request)?;
         self.request = Some(request.unbind());
 
@@ -14909,7 +15714,7 @@ impl FastApiCall {
         self.route_index = Some(route_index);
         self.path_params = path_params;
         self.injected_response = Some(fastapi_response_state(py)?);
-        let (route_scope, effective_route_context) = {
+        let (route_scope, effective_route_context, original_route, request_handler) = {
             let app = self.app.bind(py).borrow();
             let route = app
                 .routes
@@ -14927,7 +15732,20 @@ impl FastApiCall {
                     .effective_route_context
                     .as_ref()
                     .map(|context| context.clone_ref(py)),
+                route.original_route.clone_ref(py),
+                route
+                    .request_handler
+                    .as_ref()
+                    .map(|handler| handler.clone_ref(py)),
             )
+        };
+        let request_handler = match effective_route_context.as_ref() {
+            Some(context) => custom_api_route_handler_in_effective_context(
+                py,
+                original_route.bind(py),
+                context.bind(py),
+            )?,
+            None => request_handler,
         };
         let scope = self.scope.bind(py);
         scope.set_item("route", route_scope)?;
@@ -14953,10 +15771,27 @@ impl FastApiCall {
             }
         }
         scope.set_item("path_params", converted_path_params)?;
+        let _exit_stacks = reset_route_handler_exit_stacks(py, scope)?;
         let request_type = py.import("starlette.requests")?.getattr("Request")?;
         let request = request_type.call1((scope, self.receive.bind(py), self.send.bind(py)))?;
         scope.set_item("starlette._exception_request", &request)?;
-        self.request = Some(request.unbind());
+        self.request = Some(request.clone().unbind());
+        if let Some(request_handler) = request_handler {
+            self.pending = Some(PendingAction::CustomRouteHandler);
+            let is_async_callable = py
+                .import("starlette._utils")?
+                .getattr("is_async_callable")?
+                .call1((request_handler.bind(py),))?
+                .extract::<bool>()?;
+            let awaitable = if is_async_callable {
+                request_handler.bind(py).call1((&request,))?
+            } else {
+                py.import("starlette.concurrency")?
+                    .getattr("run_in_threadpool")?
+                    .call1((request_handler.bind(py), &request))?
+            };
+            return Ok(MachineAction::Await(awaitable.unbind()));
+        }
         let (has_form_inputs, has_body_inputs) = {
             let app = self.app.bind(py).borrow();
             let route = app
@@ -15617,6 +16452,8 @@ impl FastApiCall {
             }
             Err(InputDecodeError::Other(error)) => return Err(error),
         };
+        let (dependency_exit_stack, function_dependency_exit_stack) =
+            route_handler_exit_stacks(py, scope)?;
         self.invocation = Some(RequestInvocation {
             inputs: decoded.values,
             query_params,
@@ -15626,9 +16463,9 @@ impl FastApiCall {
             dependency_cache: HashMap::new(),
             prepared_dependency_values: HashMap::new(),
             dependency_override_cursor: 0,
-            dependency_exit_stack: new_dependency_exit_stack(py)?,
+            dependency_exit_stack,
             dependency_exit_stack_closed: false,
-            function_dependency_exit_stack: new_dependency_exit_stack(py)?,
+            function_dependency_exit_stack,
             function_dependency_exit_stack_closed: false,
             background_tasks: None,
         });
@@ -15721,6 +16558,8 @@ impl FastApiCall {
             let query_params = self.form_query_params.take().ok_or_else(|| {
                 PyRuntimeError::new_err("form query parameters were not retained")
             })?;
+            let (dependency_exit_stack, function_dependency_exit_stack) =
+                route_handler_exit_stacks(py, self.scope.bind(py))?;
             self.invocation = Some(RequestInvocation {
                 inputs,
                 query_params,
@@ -15730,9 +16569,9 @@ impl FastApiCall {
                 dependency_cache: HashMap::new(),
                 prepared_dependency_values: HashMap::new(),
                 dependency_override_cursor: 0,
-                dependency_exit_stack: new_dependency_exit_stack(py)?,
+                dependency_exit_stack,
                 dependency_exit_stack_closed: false,
-                function_dependency_exit_stack: new_dependency_exit_stack(py)?,
+                function_dependency_exit_stack,
                 function_dependency_exit_stack_closed: false,
                 background_tasks: None,
             });
@@ -16169,7 +17008,7 @@ impl FastApiCall {
             };
             let kwargs = PyDict::new(py);
             kwargs.set_item("content", stream.bind(py))?;
-            if let Some(status_code) = status_code {
+            if let Some(status_code) = response_status_override(status_code) {
                 kwargs.set_item("status_code", status_code)?;
             }
             let background_tasks = self.request_background_tasks(py);
@@ -16323,12 +17162,19 @@ impl FastApiCall {
                     Some(state.serialization_kwargs.bind(py)),
                 )?
                 .extract::<Vec<u8>>()?;
-            self.response_status = state.status_code.unwrap_or(200);
+            self.response_status = response_status_override(state.status_code).unwrap_or(200);
             self.response_body = if state.status_code == Some(204) {
                 Vec::new()
             } else {
                 body
             };
+            if self.route_handler_response {
+                return self.finish_serialized_body_response(
+                    py,
+                    &self.response_body.clone(),
+                    state.status_code,
+                );
+            }
             return self.send_start_with_injected_response_headers(py);
         }
         state
@@ -16347,6 +17193,38 @@ impl FastApiCall {
         self.finish_serialized_response(py, response_value, state.response_class, state.status_code)
     }
 
+    fn finish_serialized_body_response(
+        &mut self,
+        py: Python<'_>,
+        body: &[u8],
+        status_code: Option<u16>,
+    ) -> PyResult<MachineAction> {
+        let injected_response = self
+            .injected_response
+            .as_ref()
+            .map(|response| response.bind(py));
+        let kwargs = PyDict::new(py);
+        if let Some(status_code) = response_status_override(status_code) {
+            kwargs.set_item("status_code", status_code)?;
+        }
+        kwargs.set_item("media_type", "application/json")?;
+        let background_tasks = self.request_background_tasks(py);
+        kwargs.set_item(
+            "background",
+            background_tasks.as_ref().map(|tasks| tasks.bind(py)),
+        )?;
+        let response = py
+            .import("starlette.responses")?
+            .getattr("Response")?
+            .call((PyBytes::new(py, body),), Some(&kwargs))?;
+        let response_status_code = response.getattr("status_code")?.extract::<i64>()?;
+        if response_status_code < 200 || matches!(response_status_code, 204 | 205 | 304) {
+            response.setattr("body", PyBytes::new(py, b""))?;
+        }
+        merge_injected_response_state(py, &response, injected_response)?;
+        self.start_returned_response(py, &response)
+    }
+
     fn finish_serialized_response(
         &mut self,
         py: Python<'_>,
@@ -16362,7 +17240,7 @@ impl FastApiCall {
         // including explicit None. Placeholder provenance does not skip that call.
         let response_class = response_class.actual(py)?;
         let kwargs = PyDict::new(py);
-        if let Some(status_code) = status_code {
+        if let Some(status_code) = response_status_override(status_code) {
             kwargs.set_item("status_code", status_code)?;
         }
         let background_tasks = self.request_background_tasks(py);
@@ -16472,6 +17350,15 @@ impl FastApiCall {
             body.set_item("detail", "There was an error parsing the body")?;
         }
         self.response_status = 400;
+        if self.route_handler_response {
+            let kwargs = PyDict::new(py);
+            kwargs.set_item("status_code", 400)?;
+            let response = py
+                .import("starlette.responses")?
+                .getattr("JSONResponse")?
+                .call((body,), Some(&kwargs))?;
+            return self.start_returned_response(py, &response);
+        }
         self.response_body = json_bytes(py, &body)?;
         self.send_start(py)
     }
@@ -16484,6 +17371,9 @@ impl FastApiCall {
     }
 
     fn route_exception(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
+        if self.route_handler_response {
+            return Err(error);
+        }
         let function_exit_stack = self.invocation.as_mut().and_then(|invocation| {
             if invocation.function_dependency_exit_stack_closed {
                 None
@@ -16566,6 +17456,15 @@ impl FastApiCall {
     }
 
     fn close_form_after_response(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        if let Some(cleanup) = self.route_handler_cleanup.as_ref() {
+            let cleanup = cleanup.clone_ref(py);
+            self.pending = Some(PendingAction::RouteHandlerRequestCleanupAfterResponse);
+            let awaitable = into_python_awaitable(
+                py,
+                RouteHandlerCleanupCall::new(cleanup, RouteHandlerCleanupMode::RequestSuccess, py),
+            )?;
+            return Ok(MachineAction::Await(awaitable));
+        }
         let function_exit_stack = self.invocation.as_mut().and_then(|invocation| {
             if invocation.function_dependency_exit_stack_closed {
                 None
@@ -16652,6 +17551,23 @@ impl FastApiCall {
                 Some(PendingAction::FrontendResponse) => self.finish_frontend_response(py, value),
                 Some(PendingAction::FrontendAsgiResponse) => self.close_form_after_response(py),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
+                Some(PendingAction::CustomRouteHandler) => {
+                    self.begin_custom_route_response(py, value)
+                }
+                Some(PendingAction::RouteHandlerFunctionCleanupBeforeResponse) => {
+                    let continuation =
+                        self.function_close_continuation.take().ok_or_else(|| {
+                            PyRuntimeError::new_err(
+                                "route handler function cleanup resumed without a response",
+                            )
+                        })?;
+                    self.resume_function_close_continuation(py, continuation)
+                }
+                Some(PendingAction::RouteHandlerRequestCleanupAfterResponse) => {
+                    self.route_handler_cleanup = None;
+                    Ok(MachineAction::Complete(py.None()))
+                }
+                Some(PendingAction::RouteHandlerCleanupAfterError(error)) => Err(error),
                 Some(PendingAction::ResponseValidation(state)) => {
                     let outcome = value.bind(py).cast::<PyTuple>()?;
                     let validated = outcome.get_item(0)?.unbind();
@@ -16733,7 +17649,6 @@ impl FastApiCall {
                     | PendingAction::RouteInvocation
                     | PendingAction::Endpoint
                     | PendingAction::ResponseValidation(_)
-                    | PendingAction::ReturnedResponse
                     | PendingAction::FrontendConfig
                     | PendingAction::FrontendAsgiResponse
                     | PendingAction::FunctionDependencyCloseBeforeResponse
@@ -16743,6 +17658,17 @@ impl FastApiCall {
                     | PendingAction::BackgroundTasks
                     | PendingAction::DependencyGraph(_),
                 ) => self.route_exception(py, error),
+                Some(PendingAction::ReturnedResponse) => {
+                    self.begin_route_handler_cleanup_error(py, error, false)
+                }
+                Some(PendingAction::CustomRouteHandler) => {
+                    self.begin_route_handler_cleanup_error(py, error, true)
+                }
+                Some(
+                    PendingAction::RouteHandlerFunctionCleanupBeforeResponse
+                    | PendingAction::RouteHandlerRequestCleanupAfterResponse,
+                ) => self.begin_route_handler_cleanup_error(py, error, false),
+                Some(PendingAction::RouteHandlerCleanupAfterError(_)) => Err(error),
                 Some(PendingAction::FrontendResponse) => self.frontend_response_failed(py, error),
                 Some(PendingAction::FunctionDependencyCloseAfterError(_)) => {
                     self.route_exception(py, error)
@@ -16762,6 +17688,13 @@ impl FastApiCall {
 impl AwaitableStateMachine for FastApiCall {
     fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
         match self.resume_inner(py, input) {
+            Err(error) if self.route_handler_response => {
+                self.defer_route_handler_cleanup(py)?;
+                Err(error)
+            }
+            Err(error) if self.route_handler_cleanup.is_some() => {
+                self.begin_route_handler_cleanup_error(py, error, false)
+            }
             Err(error) if self.dependency_stacks_open() => self.route_exception(py, error),
             Err(error) if matches!(self.pending, Some(PendingAction::RouteInvocation)) => {
                 match self.route_exception(py, error) {
@@ -16819,6 +17752,8 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyFastApiAsgiApp>()?;
     module.add_class::<PyApiRouteAsgiApp>()?;
+    module.add_class::<PyFastApiRouteHandler>()?;
+    module.add_class::<PyFastApiRequestCleanup>()?;
     module.add_class::<PyMiddlewareDecorator>()?;
     module.add_class::<PyFastApiHttpMiddleware>()?;
     module.add_class::<PyFastApiCachedReceiveDescriptor>()?;

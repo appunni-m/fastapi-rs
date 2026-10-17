@@ -200,18 +200,44 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                             _ROUTING_UPSTREAM,
                             "fastapi.test.test-custom-route-class.test-get-path",
                             ["outer", "middle", "inner"],
-                            _HTTP_BODY_SELECTORS,
+                            ["http.status", "http.headers.ordered", "http.body.bytes"],
                         )
                     ],
                     rationale=(
-                        "The three independent requests dispatch through the root and two nested "
-                        "router prefixes. The workload supplies its own custom route subclass and "
-                        "route values; only status and response-body behavior are mapped here."
+                        "Three independent requests dispatch through the root and two nested "
+                        "router prefixes. The outer router's selected custom APIRoute class adds "
+                        "its response header, while the middle and inner routers use their "
+                        "default classes."
                     ),
                     contract_gate=(
                         "The source checks status and parsed JSON, while the workflow compares "
-                        "raw response bytes. It does not claim APIRoute Python class identity, "
-                        "custom response-header behavior, or generic Starlette matching."
+                        "raw response bytes and ordered headers. It does not claim generic "
+                        "Starlette path matching or complete APIRoute subclass behavior; the "
+                        "separate input maps selected Request-to-Response wrapper behavior."
+                    ),
+                    feature_ids=["app-routing", "response-serialization"],
+                    supporting_sources=(_CUSTOM_ROUTE_SETUP,),
+                ),
+                "test_route_classes": _mapping(
+                    "tests/test_custom_route_class.py",
+                    "test_route_classes",
+                    workflows=[
+                        _workflow(
+                            _ROUTING_UPSTREAM,
+                            "fastapi.test.test-custom-route-class.test-route-classes",
+                            ["nested-route-class-identities"],
+                            ["http.status", "http.body.bytes"],
+                        )
+                    ],
+                    rationale=(
+                        "An independently authored request returns runtime-derived class names "
+                        "and identity checks for each router.route_class and each registered "
+                        "route across the root and two nested APIRouter inclusions."
+                    ),
+                    contract_gate=(
+                        "This maps the three selected subclass identity relationships from the "
+                        "upstream function; it does not claim arbitrary subclass state, "
+                        "route_class_override behavior, or every route-class option."
                     ),
                     supporting_sources=(_CUSTOM_ROUTE_SETUP,),
                 ),
@@ -237,21 +263,6 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     ),
                     feature_ids=["openapi-docs"],
                     supporting_sources=(_CUSTOM_ROUTE_SETUP,),
-                ),
-            },
-            "exclusions": {
-                "test_route_classes": _exclusion(
-                    "tests/test_custom_route_class.py",
-                    "test_route_classes",
-                    (
-                        "The route-context workflow records the built-in APIRoute projection and "
-                        "original-route identity, but this function exercises three user-defined "
-                        "APIRoute subclasses selected through APIRouter.route_class. Custom-class "
-                        "registration, subclass state, and nested subclass preservation remain "
-                        "outside the reviewed slice."
-                    ),
-                    supporting_sources=(_CUSTOM_ROUTE_SETUP,),
-                    owner="APIRoute subclass and custom route-class support",
                 ),
             },
         },

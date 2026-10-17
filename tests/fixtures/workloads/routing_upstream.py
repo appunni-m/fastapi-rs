@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, FastAPI
+from contextlib import AsyncExitStack
+
+from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from pydantic import BaseModel
@@ -23,6 +25,71 @@ class TaggedRoute(APIRoute):
             return response
 
         return tagged_handler
+
+
+class RequestResponseRoute(APIRoute):
+    def get_route_handler(self):
+        original = super().get_route_handler()
+        route_class_name = type(self).__name__
+
+        async def observed_handler(request: Request):
+            response = await original(request)
+            response.headers["x-observed-route-class"] = route_class_name
+            response.headers["x-observed-request-path"] = request.url.path
+            response.headers["x-fastapi-inner-astack"] = str(
+                isinstance(request.scope.get("fastapi_inner_astack"), AsyncExitStack)
+            ).lower()
+            response.headers["x-fastapi-function-astack"] = str(
+                isinstance(request.scope.get("fastapi_function_astack"), AsyncExitStack)
+            ).lower()
+            return response
+
+        return observed_handler
+
+
+class SyncResponseRoute(APIRoute):
+    def get_route_handler(self):
+        def sync_handler(request: Request):
+            return JSONResponse({"handler": "sync", "path": request.url.path})
+
+        return sync_handler
+
+
+class SeedDependencyStackScope:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and scope["path"] == "/identity":
+            scope["fastapi_inner_astack"] = object()
+            scope["fastapi_function_astack"] = object()
+        await self.app(scope, receive, send)
+
+
+class RouteA(RequestResponseRoute):
+    pass
+
+
+class RouteB(RequestResponseRoute):
+    pass
+
+
+class RouteC(RequestResponseRoute):
+    pass
+
+
+def _route_class_observation(
+    router: APIRouter,
+    route_class: type[APIRoute],
+) -> dict[str, object]:
+    route = router.routes[0]
+    return {
+        "configured_class": router.route_class.__name__,
+        "configured_class_identity": router.route_class is route_class,
+        "route_class": type(route).__name__,
+        "route_class_identity": type(route) is route_class,
+        "route_isinstance": isinstance(route, route_class),
+    }
 
 
 def create_app() -> FastAPI:
@@ -47,6 +114,46 @@ def create_app() -> FastAPI:
     middle_router.include_router(inner_router, prefix="/c")
     outer_router.include_router(middle_router, prefix="/b")
     app.include_router(outer_router, prefix="/a")
+
+    identity_outer_router = APIRouter(route_class=RouteA)
+    identity_middle_router = APIRouter(route_class=RouteB)
+    identity_inner_router = APIRouter(route_class=RouteC)
+
+    @identity_outer_router.get("/")
+    def read_identity_outer():
+        return {"route": "outer"}
+
+    @identity_middle_router.get("/")
+    def read_identity_middle():
+        return {"route": "middle"}
+
+    @identity_inner_router.get("/")
+    def read_identity_inner():
+        return {"route": "inner"}
+
+    @identity_inner_router.get("/status-zero", response_model=Item, status_code=0)
+    def read_identity_status_zero():
+        return {"name": "status-zero"}
+
+    identity_middle_router.include_router(identity_inner_router, prefix="/c")
+    identity_outer_router.include_router(identity_middle_router, prefix="/b")
+    app.include_router(identity_outer_router, prefix="/identity")
+
+    sync_router = APIRouter(route_class=SyncResponseRoute)
+
+    @sync_router.get("/")
+    def sync_route_endpoint():
+        return {"handler": "endpoint"}
+
+    app.include_router(sync_router, prefix="/sync-handler")
+
+    @app.get("/route-class-identities")
+    def route_class_identities() -> dict[str, object]:
+        return {
+            "outer": _route_class_observation(identity_outer_router, RouteA),
+            "middle": _route_class_observation(identity_middle_router, RouteB),
+            "inner": _route_class_observation(identity_inner_router, RouteC),
+        }
 
     empty_router = APIRouter()
 
@@ -98,4 +205,5 @@ def create_app() -> FastAPI:
         return {"segment": segment, "user_id": user_id}
 
     app.include_router(template_router, prefix="/{segment}")
+    app.add_middleware(SeedDependencyStackScope)
     return app
