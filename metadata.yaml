@@ -5311,6 +5311,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for}
+        - {path: tests/test_empty_router.py, symbol: test_include_empty}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_with_no_token}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_foo_token_jessica}
@@ -5361,6 +5362,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-enum-app-tag.yaml
           case_id: fastapi.applications.include-router.enum-tag-openapi
           workload_path: tests/fixtures/workloads/router_enum_app_tag.py
+        - recipe_path: tests/fixtures/input-recipes/parity/empty-path-router-include-construction.yaml
+          case_id: fastapi.routing.empty-path-router-include-construction
+          workload_path: tests/fixtures/workloads/empty_path_router_include_construction.py
         - {recipe_path: tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml, case_id: fastapi.test.test-router-include-context.test-router-schema-policy-inheritance}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
@@ -5449,6 +5453,10 @@ reviewed_api_contract_overlay:
         `tags` argument is normalized to its value and emitted on the included
         operation in `router-enum-app-tag`; route-level Enum tags, router
         constructor tags, and APIRouter include tags remain outside this slice.
+        An included APIRouter route with an empty path and empty include prefix
+        raises `FastAPIError` with the pinned construction message, observed by
+        `empty-path-router-include-construction`; that input does not establish
+        prefixed empty-path dispatch.
         The included Starlette Mount and Host cases compare
         prefixed HTTP dispatch and named URL reversal only; WebSocket dispatch
         through those route families, route-name collisions, and other prefix
@@ -6245,6 +6253,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
+        - {path: tests/test_empty_router.py, symbol: test_include_empty}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
@@ -6283,6 +6292,9 @@ reviewed_api_contract_overlay:
         `deprecated` and `include_in_schema` inheritance are also covered by
         router-schema-policy-upstream. Synchronous scalar-query dependencies
         at router and include scopes are covered by router-dependencies-isolated.
+        Including a route with an empty path and empty include prefix raises the
+        pinned `FastAPIError` at construction. The direct nested-router entry
+        point is sampled by `apirouter-empty-path-include-construction`.
         Nested router inclusion also composes the tested startup/shutdown
         handlers and lifespan contexts. One input maps an included lifespan
         entry error suppressed by an already-entered parent context; it
@@ -6398,6 +6410,9 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-self-include-construction}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-transitive-cycle-include-construction}
+        - recipe_path: tests/fixtures/input-recipes/parity/empty-path-router-include-construction.yaml
+          case_id: fastapi.routing.apirouter-empty-path-include-construction
+          workload_path: tests/fixtures/workloads/empty_path_router_include_construction.py
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override}
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-websocket-frontend-source-review.yaml

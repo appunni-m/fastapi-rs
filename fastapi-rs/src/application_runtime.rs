@@ -6194,6 +6194,10 @@ impl PyFastApi {
             inherited_callback_values(py, &router_callbacks, callbacks.as_ref())?;
         let source_inner = { router.bind(py).borrow().inner_app(py)? };
         refresh_included_router_routes(py, &source_inner)?;
+        {
+            let source = source_inner.bind(py).borrow();
+            validate_empty_path_router_include(&source.routes, prefix)?;
+        }
         let mut destination_guard = slf.bind(py).borrow_mut();
         let destination = &mut *destination_guard;
         let parent_responses = route_response_declarations(py, Some(&destination.responses))?;
@@ -8256,6 +8260,10 @@ impl PyApiRouter {
                 "Cannot include the same APIRouter instance into itself. Did you mean to include a different router?",
             ));
         }
+        {
+            let source = router_inner.bind(py).borrow();
+            validate_empty_path_router_include(&source.routes, prefix)?;
+        }
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let mut inherited_tags = parent_tags;
         inherited_tags.extend(tags.unwrap_or_default());
@@ -8409,6 +8417,18 @@ fn validate_router_prefix(prefix: &str) -> PyResult<()> {
         return Err(PyAssertionError::new_err(
             "A path prefix must not end with '/', as the routes will start with '/'",
         ));
+    }
+    Ok(())
+}
+
+fn validate_empty_path_router_include(routes: &[FastApiRoute], prefix: &str) -> PyResult<()> {
+    if prefix.is_empty() {
+        if let Some(route) = routes.iter().find(|route| route.path.is_empty()) {
+            return Err(fastapi_error(&format!(
+                "Prefix and path cannot be both empty (path operation: {})",
+                route.name
+            )));
+        }
     }
     Ok(())
 }

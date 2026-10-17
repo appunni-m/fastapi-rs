@@ -9496,6 +9496,35 @@
       ]
     },
     {
+      "id": "empty-path-router-include-construction",
+      "input_path": "tests/fixtures/inputs/parity/empty-path-router-include-construction.json",
+      "input_sha256": "36db0d6c8ccc407f0c8371d5f2460c1a11c9044a7837aaf151e34194626387b2",
+      "recipe_path": "tests/fixtures/input-recipes/parity/empty-path-router-include-construction.yaml",
+      "recipe_sha256": "b004eaad24c08cdf6a5e5c05f78fcb9b1168a116be5baa9559945cf4e944bf80",
+      "case_ids": [
+        "fastapi.routing.empty-path-router-include-construction",
+        "fastapi.routing.apirouter-empty-path-include-construction"
+      ],
+      "workload_path": "tests/fixtures/workloads/empty_path_router_include_construction.py",
+      "workload_sha256": "5696dc35f4294f15f210e2e2048442f00e54731f520c335c289d889fc530ffe3",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.empty-path-router-include-construction",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_empty_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apirouter-empty-path-include-construction",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_empty_router.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "empty-router-include-construction-upstream",
       "input_path": "tests/fixtures/inputs/parity/empty-router-include-construction-upstream.json",
       "input_sha256": "ebad99943827a91eb853951e805275fbc5253f41fb682d350880f71c90c04f2f",
@@ -46938,6 +46967,22 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_empty_router.py",
+      "fixture_id": "fastapi.test.test-empty-router",
+      "workflow_id": "empty-path-router-include-construction",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter-empty-path-include-construction",
+        "fastapi.routing.empty-path-router-include-construction"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
       ]
     },
     {

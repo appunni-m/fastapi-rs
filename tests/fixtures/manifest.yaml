@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: ac3a0bcafc878288716fff1c96ec101762d46434e55432f82f1cafafecbfeb74
+    sha256: a2ff7fd9a94c2d98bc051c08e825f6ec9f0c870b64344a7691ec7f526c3a0f1a
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 037a662749e8a6dd5b98ca40d5257bcc815f0abe06497624bbc359e5dbd6359f
+    sha256: 661e9e47bfd6d34274d3b88666b28a8d2990f191a20f05f1835d509a798040a2
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: ebff19d8101345b711711bb5829044d2bdfff5291bf2f7c7499c0b3d36b1e449
+    sha256: ba5f3846894355b032b3cd392756f113661b4d3729d3a8a8d693938743be4719
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 659
-      cases: 2676
-      partial_source_mappings: 1902
+      workflows: 660
+      cases: 2678
+      partial_source_mappings: 1903
 
 contract_metadata:
   aliases:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2068
+    operation_fixture_refs: 2070
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -16051,6 +16051,18 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: empty-path-router-include-construction
+      input_path: tests/fixtures/inputs/parity/empty-path-router-include-construction.json
+      input_sha256: 36db0d6c8ccc407f0c8371d5f2460c1a11c9044a7837aaf151e34194626387b2
+      recipe_path: tests/fixtures/input-recipes/parity/empty-path-router-include-construction.yaml
+      recipe_sha256: b004eaad24c08cdf6a5e5c05f78fcb9b1168a116be5baa9559945cf4e944bf80
+      workload_path: tests/fixtures/workloads/empty_path_router_include_construction.py
+      workload_sha256: 5696dc35f4294f15f210e2e2048442f00e54731f520c335c289d889fc530ffe3
+      case_id: fastapi.routing.empty-path-router-include-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: router-schema-policy-upstream
       input_path: tests/fixtures/inputs/parity/router-schema-policy-upstream.json
       input_sha256: 7d21a3af12fb47c79318df1ccc865c74273aafb45a451bf108a7ba40f6ef7718
@@ -53252,6 +53264,18 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/router_circular_self_include_upstream.py
       workload_sha256: d04aef8c4abdb9619af4a11c1c1aeef9b9b040317e12e6778302362754b9ba5f
       case_id: fastapi.routing.router-transitive-cycle-include-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: empty-path-router-include-construction
+      input_path: tests/fixtures/inputs/parity/empty-path-router-include-construction.json
+      input_sha256: 36db0d6c8ccc407f0c8371d5f2460c1a11c9044a7837aaf151e34194626387b2
+      recipe_path: tests/fixtures/input-recipes/parity/empty-path-router-include-construction.yaml
+      recipe_sha256: b004eaad24c08cdf6a5e5c05f78fcb9b1168a116be5baa9559945cf4e944bf80
+      workload_path: tests/fixtures/workloads/empty_path_router_include_construction.py
+      workload_sha256: 5696dc35f4294f15f210e2e2048442f00e54731f520c335c289d889fc530ffe3
+      case_id: fastapi.routing.apirouter-empty-path-include-construction
       observation_selectors:
       - construction.exception_class
       - construction.exception_message
