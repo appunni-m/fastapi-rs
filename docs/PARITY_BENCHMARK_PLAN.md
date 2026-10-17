@@ -52,18 +52,25 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-The current first-slice valid-request baseline is
-[`docs/benchmarks/2026-10-17-fc27ab5.md`](benchmarks/2026-10-17-fc27ab5.md).
-Its ignored receipt
+The current complete direct-ASGI suite is
+[`docs/benchmarks/2026-10-17-9a4ffe9.md`](benchmarks/2026-10-17-9a4ffe9.md).
+It completed 7/7 declared workloads with 45/45 selected parity observations
+passing on FastAPI-RS `9a4ffe9114345dc26e3576610a4adce80d6d2e1b`, the pinned
+Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`, and manifest SHA-256
+`b6affa30e49850ef948e2d11e2116f1f85a0da8ff82287aafdde689b37b539fc`. Suite
+receipt `benchmark-results/suite-20261017T141404Z-b55c85fb-87bb-4dab-be98-3de35d31b6d4.json`
+(SHA-256 `da9478738f7c486a1f003889cc65e3ef6210176403708c85a1a0192c0a0e8c53`)
+is current for those seven workloads only. It does not establish full FastAPI
+parity or a global speedup.
+
+The previous one-workload valid-request baseline
+[`docs/benchmarks/2026-10-17-fc27ab5.md`](benchmarks/2026-10-17-fc27ab5.md)
+binds FastAPI-RS `fc27ab530be20fbac83f093db467c9129609bf5d`; its ignored receipt
 `benchmark-results/20261016T194410Z-e9800f2f-7fd6-4af4-a3e2-4a6e8b1cf764.json`
 (SHA-256
 `98e6d3df02d04c38000df6b9fe87783e7b14c17003107f39f9774e9282d753c7`)
-binds FastAPI-RS `fc27ab5` and pinned Starlette-RS
-`4139a72449bf5751e8902fb1c7175ee7f191d338`; its live 13-case parity gate
-passed 13/13. On this one direct-ASGI workload, FastAPI-RS median latency was
-1.133x FastAPI and p95 latency was 0.454x; sequential request-loop throughput
-was 6,111 requests/second versus 4,447. These mixed observations describe this
-valid request only. The Starlette control is contextual and is not subtracted.
+passed 13/13 parity observations against the pinned Starlette-RS source. It is
+historical now. The Starlette control is contextual and is not subtracted.
 
 The preceding one-workload baseline
 [`docs/benchmarks/2026-10-16-a1a619e.md`](benchmarks/2026-10-16-a1a619e.md)
@@ -82,15 +89,12 @@ The previous one-workload receipt
 binds FastAPI-RS `6bb19bc`; it is historical and is superseded by the current
 receipt above.
 
-The latest complete seven-workload suite available in local ignored output is
+The preceding seven-workload suite
 `benchmark-results/stale/suite-20261016T023943Z-4f961fd7-3d5f-45f9-84c0-4d7815a9e522.json`
 (SHA-256
-`e62b11c6604e5c7d76ac3269156d1db72e2da35088906c0bc89f292c1f584909`). It
-completed 7/7 workloads with 45/45 selected parity comparisons passing and
-used the pinned Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`.
-It binds FastAPI-RS `2c3e94d6`, so it is historical evidence for an earlier
-target revision, not current suite-contract evidence. The current one-workload
-baseline above does not replace a fresh seven-workload suite.
+`e62b11c6604e5c7d76ac3269156d1db72e2da35088906c0bc89f292c1f584909`)
+binds FastAPI-RS `2c3e94d6`; it is historical and is superseded by the current
+suite above.
 
 A newer one-workload TestClient receipt,
 `benchmark-results/testclient/7aa89e37-44f6-4b88-878d-0b09e04fb971.json`
@@ -116,9 +120,9 @@ oracle; comparison receipt
 `parity-results/comparisons/bd7fa5a5-86c2-4ad9-9445-0688df0e2256.json`
 binds manifest SHA-256
 `d808858a9fd54ded33b713a8b1fa31db3c9cf17e0fcbfc6d07dd3815e88b8b1c`.
-The fresh 2026-10-16 receipt in the evidence-freshness section supersedes this
-historical result for the valid-request workload only; broader parity remains
-incomplete.
+The current 2026-10-17 seven-workload suite in the evidence-freshness section
+supersedes this historical result for the valid-request workload only; broader
+parity remains incomplete.
 
 Direct Python API workflows use isolated source and target workers, a versioned
 result schema, and exact comparison. The 2026-10-14 receipt below contains one
