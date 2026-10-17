@@ -30,7 +30,7 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
     async def nested_failure(
         state: Annotated[dict[str, str], Depends(child_dependency)],
     ) -> None:
-        assert state["phase"] == "active"
+        event_trace.append(f"endpoint-phase:{state['phase']}")
         event_trace.append("endpoint-raise")
         raise RuntimeError("endpoint failed")
 

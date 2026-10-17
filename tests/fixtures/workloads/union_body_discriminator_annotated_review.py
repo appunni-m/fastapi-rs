@@ -17,7 +17,6 @@ class Dog(BaseModel):
 
 
 def get_pet_type(value):
-    assert isinstance(value, dict)
     return value.get("pet_type", "")
 
 

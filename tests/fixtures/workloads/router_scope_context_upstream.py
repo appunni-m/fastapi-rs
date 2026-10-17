@@ -11,7 +11,6 @@ def create_app() -> FastAPI:
     @router.get("/items")
     def read_items(request: Request):
         fastapi_scope = request.scope.get("fastapi")
-        assert isinstance(fastapi_scope, dict)
         return {
             "has_context": "effective_route_context" in fastapi_scope,
             "path": fastapi_scope["effective_route_context"].path,

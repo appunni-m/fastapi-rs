@@ -212,6 +212,7 @@ class _WorkloadSourceVisitor(ast.NodeVisitor):
         self.function_stack: list[str] = []
         self.findings: list[tuple[int, str]] = []
         self.source_test_bodies = source_test_bodies
+        self.assertion_aliases: set[str] = set()
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         self._visit_function(node)
@@ -243,13 +244,12 @@ class _WorkloadSourceVisitor(ast.NodeVisitor):
         self.function_stack.pop()
 
     def visit_Assert(self, node: ast.Assert) -> None:
-        if not self.function_stack or any(name.startswith("test_") for name in self.function_stack):
-            self.findings.append(
-                (
-                    node.lineno,
-                    "assert statement in module scope or a test-named function",
-                )
+        self.findings.append(
+            (
+                node.lineno,
+                "assert statement in parity workload",
             )
+        )
         self.generic_visit(node)
 
     def visit_Import(self, node: ast.Import) -> None:
@@ -260,11 +260,21 @@ class _WorkloadSourceVisitor(ast.NodeVisitor):
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         if node.module is not None:
             self._check_import(node.module, node.lineno)
+        for alias in node.names:
+            if _is_assertion_method(alias.name):
+                local_name = alias.asname or alias.name
+                self.assertion_aliases.add(local_name)
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> None:
-        if isinstance(node.func, ast.Attribute) and _is_assertion_method(node.func.attr):
-            self.findings.append((node.lineno, f"test assertion method: {node.func.attr}"))
+        if isinstance(node.func, ast.Attribute):
+            name = node.func.attr
+        elif isinstance(node.func, ast.Name):
+            name = node.func.id
+        else:
+            name = None
+        if name is not None and (_is_assertion_method(name) or name in self.assertion_aliases):
+            self.findings.append((node.lineno, f"assertion helper call: {name}"))
         self.generic_visit(node)
 
     def visit_Name(self, node: ast.Name) -> None:

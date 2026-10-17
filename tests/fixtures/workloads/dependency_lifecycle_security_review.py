@@ -107,11 +107,10 @@ def create_app() -> FastAPI:
         first: RequestSession,
         second: RequestSession,
     ):
-        assert first is second
         named = Session("named-request")
         events.append("named-request:open")
         try:
-            yield named, second
+            yield named, second, first is second
         finally:
             named.open = False
             events.append("named-request:close")
@@ -130,11 +129,17 @@ def create_app() -> FastAPI:
 
     @app.get("/yield/nested-request")
     def nested_request(
-        sessions: Annotated[tuple[Session, Session], Depends(named_request_sessions)],
+        sessions: Annotated[tuple[Session, Session, bool], Depends(named_request_sessions)],
     ) -> StreamingResponse:
-        named, session = sessions
+        named, session, same_dependency_instance = sessions
         return StreamingResponse(
-            _stream_json({"named_open": named.open, "session_open": session.open}),
+            _stream_json(
+                {
+                    "named_open": named.open,
+                    "session_open": session.open,
+                    "same_dependency_instance": same_dependency_instance,
+                }
+            ),
             media_type="application/json",
         )
 
@@ -189,11 +194,10 @@ def create_app() -> FastAPI:
         first: WebSocketRequestSession,
         second: WebSocketRequestSession,
     ):
-        assert first is second
         named = Session("websocket-named-request")
         events.append("websocket-named-request:open")
         try:
-            yield named, second
+            yield named, second, first is second
         finally:
             named.open = False
             events.append("websocket-named-request:close")
@@ -227,11 +231,19 @@ def create_app() -> FastAPI:
     @app.websocket("/ws/sub")
     async def websocket_sub(
         websocket: WebSocket,
-        sessions: Annotated[tuple[Session, Session], Depends(websocket_named_request_sessions)],
+        sessions: Annotated[
+            tuple[Session, Session, bool], Depends(websocket_named_request_sessions)
+        ],
     ) -> None:
-        named, session = sessions
+        named, session, same_dependency_instance = sessions
         await websocket.accept()
-        await websocket.send_json({"named_open": named.open, "session_open": session.open})
+        await websocket.send_json(
+            {
+                "named_open": named.open,
+                "session_open": session.open,
+                "same_dependency_instance": same_dependency_instance,
+            }
+        )
         await websocket.close()
 
     @app.websocket("/ws/named-function")
