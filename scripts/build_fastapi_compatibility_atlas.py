@@ -11330,6 +11330,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     }
                 )
         page_feature_evidence = feature_match_evidence(rel, "")
+        page_exclusion = docs_exclusion(rel)
         documented_sections = []
         section_feature_evidence = []
         for position, heading in enumerate(headings):
@@ -11394,6 +11395,27 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "review_rationale": reviewed_section_mapping.get("rationale"),
                         }
                     )
+                elif page_exclusion is not None:
+                    documented_sections.append(
+                        {
+                            "heading": heading["text"],
+                            "start_line": heading["line"],
+                            "end_line": end_line,
+                            "feature_ids": [],
+                            "feature_evidence": [],
+                            "observation_selectors": [],
+                            "selector_evidence": [],
+                            "review_status": "excluded",
+                            "independent_workflow_mappings": [],
+                            "exclusion_reason": page_exclusion,
+                            "review_rationale": (
+                                "Inherits the pinned page-level exclusion because the entire "
+                                "documentation page is outside this runtime contract: "
+                                + page_exclusion
+                            ),
+                            "exclusion_inherited_from_page": True,
+                        }
+                    )
                 continue
             section_feature_evidence.extend(section_evidence)
             section_features = [item["feature_id"] for item in section_evidence]
@@ -11406,7 +11428,6 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             section_review_status = "pending"
             section_exclusion_reason = None
             section_review_rationale = None
-            page_exclusion = docs_exclusion(rel)
             if page_exclusion:
                 section_review_status = "excluded"
                 section_exclusion_reason = page_exclusion
@@ -13182,6 +13203,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 if item["kind"] == "documented_feature_page"
                 for section in item["mapping_evidence"].get("documented_sections", [])
             ),
+            "documentation_headings_inheriting_page_exclusion": sum(
+                section.get("exclusion_inherited_from_page") is True
+                for item in coverage_items
+                if item["kind"] == "documented_feature_page"
+                for section in item["mapping_evidence"].get("documented_sections", [])
+            ),
             "documentation_headings_without_feature_signal": sum(
                 item["mapping_evidence"].get("headings_indexed", 0)
                 - len(item["mapping_evidence"].get("documented_sections", []))
@@ -13463,19 +13490,21 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 counts["documentation_sections_pending_behavior_review"],
                 counts["documentation_sections_excluded"],
             ),
-            "| Headings without feature signal or explicit section review | %d | — | — | — | — |"
+            "| In-scope headings without feature signal or explicit section review | %d | — | — | — | — |"
             % counts["documentation_headings_without_feature_signal"],
             "",
             "Section records refine the page inventory and include feature-signal candidates "
             "and explicitly reviewed headings. Of %d records, %d have reviewed independent "
             "case links, %d remain pending review, and %d have explicit exclusions at page "
-            "or section level. Another %d Markdown headings have neither a feature signal "
-            "nor an explicit section review and remain outside this section inventory."
+            "or section level. The generator records %d no-signal headings under excluded "
+            "pages with inherited page-level reasons. Another %d headings on in-scope pages "
+            "have neither a feature signal nor a section review and remain in the review backlog."
             % (
                 counts["documentation_section_candidates"],
                 counts["documentation_sections_with_reviewed_partial_mapping"],
                 counts["documentation_sections_pending_behavior_review"],
                 counts["documentation_sections_excluded"],
+                counts["documentation_headings_inheriting_page_exclusion"],
                 counts["documentation_headings_without_feature_signal"],
             ),
             "",

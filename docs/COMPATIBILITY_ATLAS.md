@@ -45,10 +45,10 @@ The single `tests/fixtures/manifest.yaml` indexes 479 source-supported symbols a
 | Upstream `test_*.py` modules | 492 | 452 | 452 | 0 | 40 |
 | User-facing documentation pages | 155 | 105 | 105 | 0 | 50 |
 | Documentation Python files (examples + support initializers) | 461 | 333 | 333 | 0 | 128 |
-| Documentation sections (discovered or explicitly reviewed) | 1583 | 532 | 532 | 0 | 1051 |
-| Headings without feature signal or explicit section review | 495 | — | — | — | — |
+| Documentation sections (discovered or explicitly reviewed) | 2022 | 532 | 532 | 0 | 1490 |
+| In-scope headings without feature signal or explicit section review | 56 | — | — | — | — |
 
-Section records refine the page inventory and include feature-signal candidates and explicitly reviewed headings. Of 1583 records, 532 have reviewed independent case links, 0 remain pending review, and 1051 have explicit exclusions at page or section level. Another 495 Markdown headings have neither a feature signal nor an explicit section review and remain outside this section inventory.
+Section records refine the page inventory and include feature-signal candidates and explicitly reviewed headings. Of 2022 records, 532 have reviewed independent case links, 0 remain pending review, and 1490 have explicit exclusions at page or section level. The generator records 439 no-signal headings under excluded pages with inherited page-level reasons. Another 56 headings on in-scope pages have neither a feature signal nor a section review and remain in the review backlog.
 
 Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 333 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
