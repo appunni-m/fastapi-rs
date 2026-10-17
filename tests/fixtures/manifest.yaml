@@ -55033,8 +55033,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1440
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
+      known_gaps:
+      - Live identity-checked parity covers only one direct and one nested included HTTP GET APIRoute.
+        Other route types, WebSocket and webhook routes, invalid or custom iterables, preserved input
+        RouteContext objects, dynamic mutation, and general forwarded members remain unverified; `RouteContext.route`
+        remains uncertain.
   - id: fastapi.security.APIKeyCookie
     kind: import_binding
     source_candidate_ref: /api_candidates/1459

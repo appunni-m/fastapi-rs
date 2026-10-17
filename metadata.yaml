@@ -4057,6 +4057,17 @@ reviewed_api_contract_overlay:
         mutation, custom route classes, RouteContext construction or general
         forwarding behavior, and unobserved context fields remain outside this
         slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
+        known_gaps:
+          - >-
+            Live identity-checked parity covers only one direct and one nested
+            included HTTP GET APIRoute. Other route types, WebSocket and webhook
+            routes, invalid or custom iterables, preserved input RouteContext
+            objects, dynamic mutation, and general forwarded members remain
+            unverified; `RouteContext.route` remains uncertain.
     fastapi.routing.RouteContext:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       target_binding:
