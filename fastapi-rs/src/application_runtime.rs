@@ -15992,6 +15992,9 @@ impl FastApiCall {
             return self.dispatch_http_fallback(py, fallback).map(Some);
         }
 
+        // FastAPI constructs included response fields while scanning, including
+        // on a full miss. This completes before slash-redirect probing.
+        materialize_included_response_fields(py, &self.app, None, None)?;
         Ok(None)
     }
 
