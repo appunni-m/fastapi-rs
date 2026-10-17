@@ -12197,12 +12197,13 @@
     {
       "id": "http-digest-auth-upstream",
       "input_path": "tests/fixtures/inputs/parity/http-digest-auth-upstream.json",
-      "input_sha256": "42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d",
+      "input_sha256": "8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc",
       "recipe_path": "tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml",
-      "recipe_sha256": "9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de",
+      "recipe_sha256": "27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d",
       "case_ids": [
         "fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials",
-        "fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials"
+        "fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials",
+        "fastapi.test.test-security-http-digest-description.scheme-only-header"
       ],
       "workload_path": "tests/fixtures/workloads/http_digest_auth_upstream.py",
       "workload_sha256": "91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d",
@@ -12216,6 +12217,13 @@
         },
         {
           "case_id": "fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest_description.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-security-http-digest-description.scheme-only-header",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_security_http_digest_description.py"
@@ -49210,8 +49218,9 @@
       "fixture_id": "fastapi.test.test-security-http-digest-description",
       "workflow_id": "http-digest-auth-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.test.test-security-http-digest-description.scheme-only-header",
         "fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials",
         "fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials"
       ],

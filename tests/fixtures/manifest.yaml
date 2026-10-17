@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 5c3908834201417f53768d3062ef7c5fae044be2aeb9f5cc90717a251eebb26a
+    sha256: 618adbbfaf19a785b8f0c2e989d785e2860d6d68b0f7bc0fc45b6ac9e7b485f7
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 13f76f0441db646e8e29f8de7fcb5c64ce33eb8be9fa5b04629cac40ea9471c1
+    sha256: 21fc778e723e625b5075a36d12d62e4ceb0279fa1aede9a3c2a955a8f0b50208
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,13 +574,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 5eb148070862f58c87e3550f0378ad1d1363113484bc11ced6cf3c11ea0e15e7
+    sha256: 6a4df73e368b13b0c036c8731d8299d599f59f2922cdbfaaa23261996b138c76
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 658
-      cases: 2674
+      cases: 2675
       partial_source_mappings: 1901
 
 contract_metadata:
@@ -1266,7 +1266,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 266
-    operation_fixture_refs: 2066
+    operation_fixture_refs: 2067
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -56382,9 +56382,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -56394,12 +56394,24 @@ api_surface_contract:
       - http.status
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.scheme-only-header
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -59871,9 +59883,9 @@ api_surface_contract:
       - http.status
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -61142,9 +61154,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -61154,9 +61166,9 @@ api_surface_contract:
       - http.status
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
@@ -61239,9 +61251,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -61251,9 +61263,9 @@ api_surface_contract:
       - http.status
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
@@ -61338,9 +61350,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -61350,9 +61362,9 @@ api_surface_contract:
       - http.status
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
-      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      input_sha256: 8a9534778cbe412e5128cf9634fd36bb06fcd4598dde56689f68b5347c032fbc
       recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
-      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      recipe_sha256: 27fa087a256e53627fc4cb8db9ae9c026a229af4788b6da7c13c4549387d1c9d
       workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
       workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
       case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials

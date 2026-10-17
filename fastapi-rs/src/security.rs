@@ -1684,10 +1684,8 @@ impl AwaitableStateMachine for HttpDigestCall {
         let authorization = headers.call_method1("get", ("Authorization",))?;
         let authorization_is_present = authorization.is_truthy()?;
         let (scheme, credentials) = authorization_parts(&authorization)?;
-        let is_digest = authorization_is_present
-            && !scheme.is_empty()
-            && !credentials.is_empty()
-            && scheme.to_lowercase() == "digest";
+        let is_digest =
+            authorization_is_present && !scheme.is_empty() && scheme.to_lowercase() == "digest";
 
         if !is_digest {
             if security.getattr("auto_error")?.is_truthy()? {

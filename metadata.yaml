@@ -9563,6 +9563,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.scheme-only-header
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-digest
       feature_ids: [dependency-security, public-api-errors]
@@ -9634,8 +9636,10 @@ reviewed_api_contract_overlay:
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         The selected workflow verifies missing-credential and wrong-scheme
-        Digest challenge responses. Successful extraction, scheme-case
-        variants, and optional credential behavior remain unverified.
+        Digest challenge responses, plus successful extraction from a
+        scheme-only header with an empty credential parameter. Successful
+        nonempty extraction, scheme-case variants, and optional credential
+        behavior remain unverified.
     fastapi.security.HTTPBasicCredentials:
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       source_evidence:
