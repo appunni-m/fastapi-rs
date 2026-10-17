@@ -920,6 +920,198 @@ starlette_rs:
         Starlette-RS classifies this protocol-state enum as private/internal and
         declares no target surface; it remains visible as a FastAPI import edge
         without a supported contract claim.
+  subclass_contract_refs:
+    fastapi.applications.FastAPI:
+      starlette_symbol: starlette.applications.Starlette
+      target_refs:
+        - {surface_id: starlette.applications.Starlette, operation_id: add_middleware, requirement_scope: all}
+        - {surface_id: starlette.applications.Starlette, operation_id: add_exception_handler, requirement_scope: all}
+        - {surface_id: starlette.applications.Starlette, operation_id: add_route, requirement_scope: all}
+        - {surface_id: starlette.applications.Starlette, operation_id: url_path_for, requirement_scope: all}
+        - {surface_id: starlette.applications.Starlette, operation_id: routes, requirement_scope: all}
+      scope_note: >-
+        FastAPI inherits these Starlette methods and route accessors. Its constructor,
+        router registration decorators, include_router workflow, and overridden
+        middleware stack remain FastAPI-owned; __call__ has a separate exact source link.
+    fastapi.background.BackgroundTasks:
+      starlette_symbol: starlette.background.BackgroundTasks
+      target_refs:
+        - {surface_id: starlette.background, operation_id: attribute-operations, requirement_scope: all}
+        - surface_id: starlette.responses.Response
+          operation_id: asgi-call
+          requirement_ids:
+            - starlette.responses.Response.asgi-call.background-tasks-subclass-add-task-dynamic-lookup
+      scope_note: >-
+        The target links the inherited task-list attribute contract and Response's
+        generic dynamic add_task lookup. FastAPI's dependency aggregation and task
+        registration API remain FastAPI-owned.
+    fastapi.datastructures.UploadFile:
+      starlette_symbol: starlette.datastructures.UploadFile
+      target_refs:
+        - {surface_id: starlette.datastructures.UploadFile, operation_id: file-operations, requirement_scope: all}
+        - {surface_id: starlette.datastructures.UploadFile, operation_id: ownership-graph, requirement_scope: all}
+      scope_note: >-
+        The generic upload file methods delegate to the Starlette base. FastAPI's
+        Pydantic schema hooks and validation integration remain FastAPI-owned.
+    fastapi.exceptions.HTTPException:
+      starlette_symbol: starlette.exceptions.HTTPException
+      target_refs:
+        - surface_id: starlette.exceptions
+          operation_id: value-formatting
+          requirement_ids:
+            - starlette.exception-values.http-default-detail
+            - starlette.exception-values.http-str
+            - starlette.exception-values.http-repr
+            - starlette.exception-values.http-invalid-status
+            - starlette.exception-values.http-subclass-mutable-fields
+      scope_note: >-
+        These references cover the inherited HTTP exception value contract. FastAPI's
+        additional headers argument and exception-handler integration remain FastAPI-owned.
+    fastapi.exceptions.WebSocketException:
+      starlette_symbol: starlette.exceptions.WebSocketException
+      target_refs:
+        - surface_id: starlette.exceptions
+          operation_id: value-formatting
+          requirement_ids:
+            - starlette.exception-values.websocket-reason-default
+            - starlette.exception-values.websocket-str
+            - starlette.exception-values.websocket-repr
+            - starlette.exception-values.websocket-subclass-mutable-fields
+      scope_note: >-
+        These references cover the inherited WebSocket exception value contract.
+        FastAPI's dependency-aware endpoint and close handling remain FastAPI-owned.
+    fastapi.responses.ORJSONResponse:
+      starlette_symbol: starlette.responses.JSONResponse
+      target_refs:
+        - {surface_id: starlette.responses.JSONResponse, operation_id: asgi-call, requirement_scope: all}
+        - surface_id: starlette.responses.JSONResponse
+          operation_id: consumer-construction
+          requirement_ids:
+            - starlette.responses.JSONResponse.consumer-construction.live-asgi-state-and-lifetime
+            - starlette.responses.JSONResponse.consumer-construction.body-and-header-protocols
+            - starlette.responses.JSONResponse.consumer-construction.attribute-and-header-cache-protocols
+            - starlette.responses.JSONResponse.consumer-construction.cookie-argument-protocols
+            - starlette.responses.JSONResponse.consumer-construction.cookie-owned-result-lifetimes
+            - starlette.responses.JSONResponse.consumer-construction.cookie-shared-translation-state
+            - starlette.responses.JSONResponse.consumer-construction.cookie-surrogate-encoding-order
+      scope_note: >-
+        Generic JSONResponse construction and ASGI behavior are linked. The
+        public-render-and-asgi requirement is omitted because FastAPI overrides
+        render with orjson-specific serialization.
+    fastapi.responses.UJSONResponse:
+      starlette_symbol: starlette.responses.JSONResponse
+      target_refs:
+        - {surface_id: starlette.responses.JSONResponse, operation_id: asgi-call, requirement_scope: all}
+        - surface_id: starlette.responses.JSONResponse
+          operation_id: consumer-construction
+          requirement_ids:
+            - starlette.responses.JSONResponse.consumer-construction.live-asgi-state-and-lifetime
+            - starlette.responses.JSONResponse.consumer-construction.body-and-header-protocols
+            - starlette.responses.JSONResponse.consumer-construction.attribute-and-header-cache-protocols
+            - starlette.responses.JSONResponse.consumer-construction.cookie-argument-protocols
+            - starlette.responses.JSONResponse.consumer-construction.cookie-owned-result-lifetimes
+            - starlette.responses.JSONResponse.consumer-construction.cookie-shared-translation-state
+            - starlette.responses.JSONResponse.consumer-construction.cookie-surrogate-encoding-order
+      scope_note: >-
+        Generic JSONResponse construction and ASGI behavior are linked. The
+        public-render-and-asgi requirement is omitted because FastAPI overrides
+        render with ujson-specific serialization.
+    fastapi.routing.APIRoute:
+      starlette_symbol: starlette.routing.Route
+      target_refs:
+        - {surface_id: starlette.routing.Route, operation_id: __call__, requirement_scope: all}
+        - {surface_id: starlette.routing.Route, operation_id: url_path_for, requirement_scope: all}
+        - {surface_id: starlette.routing.Route, operation_id: value-formatting, requirement_scope: all}
+      scope_note: >-
+        The inherited Route ASGI call, reverse lookup, and formatting contract is
+        linked. FastAPI overrides construction, matching, and handling while calling
+        the base match and handle methods; validation and endpoint behavior stay FastAPI-owned.
+    fastapi.routing.APIRouter:
+      starlette_symbol: starlette.routing.Router
+      target_refs:
+        - {surface_id: starlette.routing.Router, operation_id: registration-sequence, requirement_scope: all}
+        - {surface_id: starlette.routing.Router, operation_id: url_path_for, requirement_scope: all}
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.Router.route-dispatch.base-route-subclass-matches
+            - starlette.routing.Router.route-dispatch.instance-matches-override
+      scope_note: >-
+        Router registration, reverse lookup, and polymorphic dispatch links cover the
+        delegated base behavior. FastAPI's route matching, include_router composition,
+        and request solving remain FastAPI-owned.
+    fastapi.routing.APIWebSocketRoute:
+      starlette_symbol: starlette.routing.WebSocketRoute
+      target_refs:
+        - {surface_id: starlette.routing.WebSocketRoute, operation_id: route-dispatch, requirement_scope: all}
+        - {surface_id: starlette.routing.WebSocketRoute, operation_id: url_path_for, requirement_scope: all}
+        - {surface_id: starlette.routing.WebSocketRoute, operation_id: value-formatting, requirement_scope: all}
+      scope_note: >-
+        FastAPI calls the base WebSocket matcher and inherits its ASGI dispatch,
+        reverse lookup, and formatting. Dependency-aware endpoint execution is FastAPI-owned.
+    fastapi.routing._FrontendRoute:
+      starlette_symbol: starlette.routing.BaseRoute
+      target_refs:
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.Router.route-dispatch.base-route-subclass-matches
+            - starlette.routing.Router.route-dispatch.instance-matches-override
+        - {surface_id: starlette.routing.Router, operation_id: url_path_for, requirement_scope: all}
+      scope_note: >-
+        BaseRoute is reviewed private/internal and has no independent target surface.
+        These Router requirements cover its custom matcher and reverse-lookup extension points;
+        the FastAPI frontend route remains private and FastAPI-owned.
+    fastapi.routing._FrontendRouteGroup:
+      starlette_symbol: starlette.routing.BaseRoute
+      target_refs:
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.Router.route-dispatch.base-route-subclass-matches
+            - starlette.routing.Router.route-dispatch.instance-matches-override
+        - {surface_id: starlette.routing.Router, operation_id: url_path_for, requirement_scope: all}
+      scope_note: >-
+        BaseRoute is reviewed private/internal and has no independent target surface.
+        These Router requirements cover its custom matcher and reverse-lookup extension points;
+        the FastAPI frontend group remains private and FastAPI-owned.
+    fastapi.routing._FrontendStaticFiles:
+      starlette_symbol: starlette.staticfiles.StaticFiles
+      target_refs:
+        - surface_id: starlette.staticfiles.StaticFiles
+          operation_id: asgi-call
+          requirement_ids:
+            - starlette.staticfiles.StaticFiles.asgi-call.file-response-subclass-override
+            - starlette.staticfiles.StaticFiles.asgi-call.is-not-modified-subclass-override
+            - starlette.staticfiles.StaticFiles.asgi-call.get-response-subclass-override
+            - starlette.staticfiles.StaticFiles.asgi-call.get-directories-subclass-override
+        - {surface_id: starlette.staticfiles.StaticFiles, operation_id: configuration-check, requirement_scope: all}
+      scope_note: >-
+        The generic StaticFiles app dispatches through FastAPI's frontend overrides
+        and retains the base configuration checks. Frontend path mapping and asset
+        selection remain FastAPI-owned.
+    fastapi.routing._IncludedRouter:
+      starlette_symbol: starlette.routing.BaseRoute
+      target_refs:
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.Router.route-dispatch.base-route-subclass-matches
+            - starlette.routing.Router.route-dispatch.instance-matches-override
+        - {surface_id: starlette.routing.Router, operation_id: url_path_for, requirement_scope: all}
+      scope_note: >-
+        BaseRoute is reviewed private/internal and has no independent target surface.
+        These Router requirements cover its custom matcher and reverse-lookup extension points;
+        included-router context and route expansion remain FastAPI-owned.
+    fastapi.sse.EventSourceResponse:
+      starlette_symbol: starlette.responses.StreamingResponse
+      target_refs:
+        - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call, requirement_scope: all}
+        - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call-with-execution-trace, requirement_scope: all}
+        - {surface_id: starlette.responses.StreamingResponse, operation_id: consumer-construction, requirement_scope: all}
+      scope_note: >-
+        EventSourceResponse adds no methods and inherits generic streaming mechanics.
+        Its SSE framing and default event-stream media type remain FastAPI-owned.
   behavior_crosswalks:
     fastapi.routing.get_route_path:
       kind: private-helper-behavior

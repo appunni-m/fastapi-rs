@@ -1401,6 +1401,142 @@ def validate() -> None:
         set(operation_alias_specs) | set(surface_alias_specs) | set(surface_gap_specs),
         direct_reexport_edges,
     )
+    subclass_contract_specs = metadata.get("starlette_rs", {}).get("subclass_contract_refs")
+    if not isinstance(subclass_contract_specs, dict) or not subclass_contract_specs:
+        raise MetadataError("metadata Starlette subclass contract refs must be a nonempty mapping")
+    subclass_contract_edges = {
+        edge.get("fastapi_binding"): edge
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict)
+        and isinstance(edge.get("starlette_rs_subclass_contract_refs"), dict)
+    }
+    subclass_edge_ids = {
+        edge.get("fastapi_binding")
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict) and edge.get("relation") == "subclass_edge"
+    }
+    require_equal(
+        "Starlette subclass contract projection denominator",
+        set(subclass_contract_edges),
+        set(subclass_contract_specs),
+    )
+    require_equal(
+        "Starlette subclass contract coverage",
+        set(subclass_contract_specs),
+        subclass_edge_ids,
+    )
+    for class_id, specification in subclass_contract_specs.items():
+        edge = subclass_contract_edges.get(class_id)
+        projected = (
+            edge.get("starlette_rs_subclass_contract_refs") if isinstance(edge, dict) else None
+        )
+        if (
+            not isinstance(specification, dict)
+            or set(specification)
+            != {
+                "starlette_symbol",
+                "target_refs",
+                "scope_note",
+            }
+            or not isinstance(projected, dict)
+        ):
+            raise MetadataError(
+                "atlas is missing a reviewed Starlette subclass contract: " + class_id
+            )
+        require_equal(
+            f"atlas Starlette subclass {class_id} relationship",
+            edge.get("relation"),
+            "subclass_edge",
+        )
+        for field in ("starlette_symbol", "scope_note"):
+            require_equal(
+                f"atlas Starlette subclass {class_id} {field}",
+                projected.get(field),
+                specification.get(field),
+            )
+        require_equal(
+            f"atlas Starlette subclass {class_id} resolution",
+            projected.get("resolution"),
+            "subclass-contract-operation-links",
+        )
+        expected_refs = []
+        for reference in specification["target_refs"]:
+            if not isinstance(reference, dict):
+                raise MetadataError("Starlette subclass target reference is malformed: " + class_id)
+            surface_id = reference.get("surface_id")
+            operation_id = reference.get("operation_id")
+            surface = starlette_surfaces.get(surface_id)
+            if not isinstance(surface, dict):
+                raise MetadataError("Starlette subclass target surface is undeclared: " + class_id)
+            operation = next(
+                (
+                    item
+                    for item in surface.get("operations", [])
+                    if isinstance(item, dict) and item.get("id") == operation_id
+                ),
+                None,
+            )
+            if not isinstance(surface_id, str) or operation is None:
+                raise MetadataError(
+                    "Starlette subclass target operation is undeclared: " + class_id
+                )
+            if set(reference) == {"surface_id", "operation_id", "requirement_scope"}:
+                if reference.get("requirement_scope") != "all":
+                    raise MetadataError(
+                        "Starlette subclass requirement scope is invalid: " + class_id
+                    )
+                requirement_ids = [
+                    requirement.get("id")
+                    for requirement in operation.get("requirements", [])
+                    if isinstance(requirement, dict)
+                ]
+            elif set(reference) == {"surface_id", "operation_id", "requirement_ids"}:
+                requirement_ids = reference.get("requirement_ids")
+                if not isinstance(requirement_ids, list) or not requirement_ids:
+                    raise MetadataError(
+                        "Starlette subclass requirement selection is empty: " + class_id
+                    )
+            else:
+                raise MetadataError(
+                    "Starlette subclass reference fields are unsupported: " + class_id
+                )
+            target_support = {}
+            for target in operation.get("targets", []):
+                support = target.get("support", {})
+                if isinstance(support, dict):
+                    target_support[target.get("target_id", "unknown")] = {
+                        "status": support.get("status", "unknown"),
+                        "reason": support.get("reason"),
+                        "missing_requirements": support.get("missing_requirements", []),
+                    }
+            expected_refs.append(
+                {
+                    "contract_id": starlette_contract_id,
+                    "surface_id": surface_id,
+                    "operation_id": operation_id,
+                    "requirement_ids": requirement_ids,
+                    "target_support": target_support,
+                }
+            )
+        actual_refs = [
+            {
+                field: reference.get(field)
+                for field in (
+                    "contract_id",
+                    "surface_id",
+                    "operation_id",
+                    "requirement_ids",
+                    "target_support",
+                )
+            }
+            for reference in projected.get("target_operation_refs", [])
+            if isinstance(reference, dict)
+        ]
+        require_equal(
+            f"atlas Starlette subclass {class_id} operation projection",
+            actual_refs,
+            expected_refs,
+        )
     reviewed_starlette_import_ids = {
         candidate.get("id")
         for candidate in candidates

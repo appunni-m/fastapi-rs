@@ -735,15 +735,15 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 
 ## FastAPI to Starlette-RS ownership crosswalk
 
-The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Twenty-six direct re-exports link the complete sibling manifest surface; three remaining direct imports record a public-surface gap or a private/internal disposition. Three private-helper paths link existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest. These references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.
+The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Twenty-six direct re-exports link complete sibling surfaces; three direct imports record a public-surface gap or private/internal disposition. All fifteen subclass edges link selected generic base operations and requirements, while FastAPI overrides remain FastAPI-owned. Three private-helper paths link existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest. These references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.
 
 | FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |
 |---:|---:|---:|---:|
 | 925 | 2530 | 372 | 26 |
 
-| FastAPI-Starlette source edges | Direct re-exports linked to complete surfaces | Direct re-export gaps/private classifications | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |
-|---:|---:|---:|---:|---:|---:|
-| 133 | 26 | 3 | 3 | 1 | 0 |
+| FastAPI-Starlette source edges | Direct re-exports linked to complete surfaces | Direct re-export gaps/private classifications | Subclass edges with base operation links | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |
+|---:|---:|---:|---:|---:|---:|---:|
+| 133 | 26 | 3 | 15 | 3 | 1 | 0 |
 
 The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 4139a72449bf5751e8902fb1c7175ee7f191d338 (pinned, clean Starlette-RS checkout).
 

@@ -77263,6 +77263,7 @@
     "starlette_integration_edges": 133,
     "starlette_module_namespace_crosswalks": 1,
     "starlette_private_helper_behavior_crosswalks": 3,
+    "starlette_subclass_contract_refs": 15,
     "starlette_surface_alias_gaps": 3,
     "starlette_surface_aliases": 26,
     "test_function_designs": 2117,
@@ -746007,6 +746008,132 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "FastAPI inherits these Starlette methods and route accessors. Its constructor, router registration decorators, include_router workflow, and overridden middleware stack remain FastAPI-owned; __call__ has a separate exact source link.",
+        "starlette_symbol": "starlette.applications.Starlette",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "add_middleware",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.applications.Starlette.add_middleware.positional-order-and-cache",
+              "starlette.applications.Starlette.add_middleware.factory-keyword-arguments",
+              "starlette.applications.Starlette.add_middleware.after-start-error",
+              "starlette.applications.Starlette.add_middleware.per-application-stack-cache",
+              "starlette.applications.Starlette.add_middleware.middleware-boundary-order",
+              "starlette.applications.Starlette.add_middleware.middleware-boundary-success-order"
+            ],
+            "source_path": "starlette.applications.Starlette.add_middleware",
+            "surface_id": "starlette.applications.Starlette",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native application API does not declare the Python Starlette.add_middleware method.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "add_exception_handler",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.applications.Starlette.add_exception_handler.registration-and-stack-snapshot"
+            ],
+            "source_path": "starlette.applications.Starlette.add_exception_handler",
+            "surface_id": "starlette.applications.Starlette",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native application API does not declare the Python Starlette.add_exception_handler method.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "add_route",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.applications.Starlette.add_route.success-dispatch",
+              "starlette.applications.Starlette.add_route.method-miss-405"
+            ],
+            "source_path": "starlette.applications.Starlette.add_route",
+            "surface_id": "starlette.applications.Starlette",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API builds route tables at application construction and does not expose the Python Starlette.add_route compatibility method.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.applications.Starlette.url_path_for.forwarder",
+              "starlette.applications.Starlette.url_path_for.mount-routes-with-middleware",
+              "starlette.applications.Starlette.url_path_for.mount-asgi-app-route-with-middleware-no-match",
+              "starlette.applications.Starlette.url_path_for.double-mount"
+            ],
+            "source_path": "starlette.applications.Starlette.url_path_for",
+            "surface_id": "starlette.applications.Starlette",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not declare the Python Starlette URL forwarding method.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "routes",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.applications.Starlette.routes.route-order-and-shape"
+            ],
+            "source_path": "starlette.applications.Starlette.routes",
+            "surface_id": "starlette.applications.Starlette",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose Python Starlette route objects or the Starlette.routes compatibility property.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 20,
         "path": "starlette/applications.py",
@@ -746014,7 +746141,7 @@
         "symbol": "starlette.applications.Starlette"
       },
       "starlette_symbol": "starlette.applications.Starlette",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.background.BackgroundTasks",
@@ -746057,6 +746184,59 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "The target links the inherited task-list attribute contract and Response's generic dynamic add_task lookup. FastAPI's dependency aggregation and task registration API remain FastAPI-owned.",
+        "starlette_symbol": "starlette.background.BackgroundTasks",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "attribute-operations",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.background.BackgroundTask.attribute-operations.mutable-attribute-deletion",
+              "starlette.background.BackgroundTasks.attribute-operations.inherited-attribute-lookup-and-deletion",
+              "starlette.background.BackgroundTasks.attribute-operations.tasks-attribute-deletion-and-reassignment"
+            ],
+            "source_path": "starlette.background.BackgroundTask and BackgroundTasks public attributes",
+            "surface_id": "starlette.background",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "These are Python compatibility types; the Rust-native API remains distinct from the starlette.* compatibility surface.",
+                "status": "out_of_scope"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.Response.asgi-call.background-tasks-subclass-add-task-dynamic-lookup"
+            ],
+            "source_path": "starlette.responses.Response.__call__",
+            "surface_id": "starlette.responses.Response",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 26,
         "path": "starlette/background.py",
@@ -746064,7 +746244,7 @@
         "symbol": "starlette.background.BackgroundTasks"
       },
       "starlette_symbol": "starlette.background.BackgroundTasks",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.datastructures.UploadFile",
@@ -746101,6 +746281,61 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "The generic upload file methods delegate to the Starlette base. FastAPI's Pydantic schema hooks and validation integration remain FastAPI-owned.",
+        "starlette_symbol": "starlette.datastructures.UploadFile",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "file-operations",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.datastructures.UploadFile.file-operations",
+              "starlette.datastructures.UploadFile.spooled-file-rollover",
+              "starlette.datastructures.UploadFile.threadpool-boundary",
+              "starlette.datastructures.UploadFile.rolled-write-error-propagation",
+              "starlette.datastructures.UploadFile.constructor-and-representation"
+            ],
+            "source_path": "starlette.datastructures.UploadFile.__init__, content_type, _in_memory, _will_roll, write, read, seek, close, and __repr__",
+            "surface_id": "starlette.datastructures.UploadFile",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python UploadFile class.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "ownership-graph",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.datastructures.UploadFile.ownership-graph.public-value-lifetime"
+            ],
+            "source_path": "starlette.datastructures.UploadFile.__init__, UploadFile.write/read/seek/close, and public value access",
+            "surface_id": "starlette.datastructures.UploadFile",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "Python object identity, cyclic collection, user file lifetime, and Python finalizer threads have no equivalent Rust-native public consumer boundary.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 410,
         "path": "starlette/datastructures.py",
@@ -746108,7 +746343,7 @@
         "symbol": "starlette.datastructures.UploadFile"
       },
       "starlette_symbol": "starlette.datastructures.UploadFile",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.exceptions.HTTPException",
@@ -746157,6 +746392,39 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "These references cover the inherited HTTP exception value contract. FastAPI's additional headers argument and exception-handler integration remain FastAPI-owned.",
+        "starlette_symbol": "starlette.exceptions.HTTPException",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "value-formatting",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.exception-values.http-default-detail",
+              "starlette.exception-values.http-str",
+              "starlette.exception-values.http-repr",
+              "starlette.exception-values.http-invalid-status",
+              "starlette.exception-values.http-subclass-mutable-fields"
+            ],
+            "source_path": "starlette.exceptions.HTTPException and starlette.exceptions.WebSocketException",
+            "surface_id": "starlette.exceptions",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python Starlette exception classes or their CPython representation and exception-construction behavior.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 7,
         "path": "starlette/exceptions.py",
@@ -746164,7 +746432,7 @@
         "symbol": "starlette.exceptions.HTTPException"
       },
       "starlette_symbol": "starlette.exceptions.HTTPException",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.exceptions.WebSocketException",
@@ -746203,6 +746471,38 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "These references cover the inherited WebSocket exception value contract. FastAPI's dependency-aware endpoint and close handling remain FastAPI-owned.",
+        "starlette_symbol": "starlette.exceptions.WebSocketException",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "value-formatting",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.exception-values.websocket-reason-default",
+              "starlette.exception-values.websocket-str",
+              "starlette.exception-values.websocket-repr",
+              "starlette.exception-values.websocket-subclass-mutable-fields"
+            ],
+            "source_path": "starlette.exceptions.HTTPException and starlette.exceptions.WebSocketException",
+            "surface_id": "starlette.exceptions",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose the Python Starlette exception classes or their CPython representation and exception-construction behavior.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 23,
         "path": "starlette/exceptions.py",
@@ -746210,7 +746510,7 @@
         "symbol": "starlette.exceptions.WebSocketException"
       },
       "starlette_symbol": "starlette.exceptions.WebSocketException",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.responses.ORJSONResponse",
@@ -746268,6 +746568,63 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "Generic JSONResponse construction and ASGI behavior are linked. The public-render-and-asgi requirement is omitted because FastAPI overrides render with orjson-specific serialization.",
+        "starlette_symbol": "starlette.responses.JSONResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.JSONResponse.asgi-call.none-content"
+            ],
+            "source_path": "starlette.responses.Response.__call__",
+            "surface_id": "starlette.responses.JSONResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.JSONResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.JSONResponse.consumer-construction.body-and-header-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-argument-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-owned-result-lifetimes",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-shared-translation-state",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-surrogate-encoding-order"
+            ],
+            "source_path": "starlette.responses.JSONResponse.__init__, Response.render, JSONResponse.render, Response.__call__; public raw_headers, body, background and returned coroutine lifetime; constructor body length and header mapping/encoding protocols; Python attribute interception and public header-view access; public set_cookie/delete_cookie Python argument protocols; public cookie returned-value lifetime, translation state and surrogate encoding",
+            "surface_id": "starlette.responses.JSONResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 181,
         "path": "starlette/responses.py",
@@ -746275,7 +746632,7 @@
         "symbol": "starlette.responses.JSONResponse"
       },
       "starlette_symbol": "starlette.responses.JSONResponse",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.responses.UJSONResponse",
@@ -746333,6 +746690,63 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "Generic JSONResponse construction and ASGI behavior are linked. The public-render-and-asgi requirement is omitted because FastAPI overrides render with ujson-specific serialization.",
+        "starlette_symbol": "starlette.responses.JSONResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.JSONResponse.asgi-call.none-content"
+            ],
+            "source_path": "starlette.responses.Response.__call__",
+            "surface_id": "starlette.responses.JSONResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.JSONResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.JSONResponse.consumer-construction.body-and-header-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-argument-protocols",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-owned-result-lifetimes",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-shared-translation-state",
+              "starlette.responses.JSONResponse.consumer-construction.cookie-surrogate-encoding-order"
+            ],
+            "source_path": "starlette.responses.JSONResponse.__init__, Response.render, JSONResponse.render, Response.__call__; public raw_headers, body, background and returned coroutine lifetime; constructor body length and header mapping/encoding protocols; Python attribute interception and public header-view access; public set_cookie/delete_cookie Python argument protocols; public cookie returned-value lifetime, translation state and surrogate encoding",
+            "surface_id": "starlette.responses.JSONResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 181,
         "path": "starlette/responses.py",
@@ -746340,7 +746754,7 @@
         "symbol": "starlette.responses.JSONResponse"
       },
       "starlette_symbol": "starlette.responses.JSONResponse",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.routing.APIRoute",
@@ -746442,6 +746856,97 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "The inherited Route ASGI call, reverse lookup, and formatting contract is linked. FastAPI overrides construction, matching, and handling while calling the base match and handle methods; validation and endpoint behavior stay FastAPI-owned.",
+        "starlette_symbol": "starlette.routing.Route",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "__call__",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Route.__call__.standalone-match",
+              "starlette.routing.Route.__call__.standalone-not-found",
+              "starlette.routing.Route.route-dispatch.local-middleware-stack-order"
+            ],
+            "source_path": "starlette.routing.BaseRoute.__call__",
+            "surface_id": "starlette.routing.Route",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not expose a Python BaseRoute ASGI-call boundary.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Route.url_path_for.static-path",
+              "starlette.routing.Route.url_path_for.str-converter",
+              "starlette.routing.Route.url_path_for.int-converter",
+              "starlette.routing.Route.url_path_for.float-converter",
+              "starlette.routing.Route.url_path_for.path-converter",
+              "starlette.routing.Route.url_path_for.uuid-converter",
+              "starlette.routing.Route.url_path_for.parameter-mismatch",
+              "starlette.routing.Route.url_path_for.converter-error",
+              "starlette.routing.Route.url_path_for.custom-converter-override",
+              "starlette.routing.Route.url_path_for.datetime-converter",
+              "starlette.routing.Route.url_path_for.lone-surrogate-path"
+            ],
+            "source_path": "starlette.routing.Route.url_path_for",
+            "surface_id": "starlette.routing.Route",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Route.url_path_for.converter-error",
+                  "starlette.routing.Route.url_path_for.custom-converter-override",
+                  "starlette.routing.Route.url_path_for.datetime-converter"
+                ],
+                "reason": "The Rust-native NamedRoute supports static paths, built-in converter paths, and exact parameter-name mismatch. Python custom converters, datetime values, and Python AssertionError mapping for converter failures remain unsupported.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "value-formatting",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Route.__repr__.with-inferred-methods",
+              "starlette.routing.Route.__repr__.class-endpoint-no-methods",
+              "starlette.routing.Route.__repr__.lone-surrogate-path"
+            ],
+            "source_path": "starlette.routing.Route.__repr__",
+            "surface_id": "starlette.routing.Route",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose Python Route values or their Python object representation protocol.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 197,
         "path": "starlette/routing.py",
@@ -746449,7 +746954,7 @@
         "symbol": "starlette.routing.Route"
       },
       "starlette_symbol": "starlette.routing.Route",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.routing.APIRouter",
@@ -746491,6 +746996,110 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "Router registration, reverse lookup, and polymorphic dispatch links cover the delegated base behavior. FastAPI's route matching, include_router composition, and request solving remain FastAPI-owned.",
+        "starlette_symbol": "starlette.routing.Router",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "registration-sequence",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.add_route.registration",
+              "starlette.routing.Router.add_websocket_route.registration",
+              "starlette.routing.Router.registration-sequence.reverse-lookup-miss"
+            ],
+            "source_path": "starlette.routing.Router.add_route and starlette.routing.Router.add_websocket_route",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API exposes route tables constructed from Rust route values, not Python Router.add_route or add_websocket_route compatibility methods.",
+                "status": "out_of_scope"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.url_path_for.first-success",
+              "starlette.routing.Router.url_path_for.mismatch",
+              "starlette.routing.Router.url_path_for.converter-error-propagation",
+              "starlette.routing.Router.url_path_for.mount-lookup-success",
+              "starlette.routing.Router.url_path_for.host-mount-nested-lookup",
+              "starlette.routing.Router.url_path_for.partial-mount-host-prefix-parameters",
+              "starlette.routing.Router.url_path_for.mount-path-parameter-forwarding",
+              "starlette.routing.Router.url_path_for.prefix-formatting-error-stops-fallback"
+            ],
+            "source_path": "starlette.routing.Router.url_path_for",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.url_path_for.outside-rust-native-built-in-route-subset",
+                  "starlette.routing.Router.url_path_for.native-error-mapping"
+                ],
+                "reason": "Rust-native NamedRouter supports ordered reverse lookup across nested built-in HTTP and WebSocket routes, Mounts, and Hosts, including partial Mount and Host prefixes. Parameter values are preformatted strings. Python custom converters and full Python exception-class/message compatibility remain unsupported.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "route-dispatch",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.route-dispatch.base-route-subclass-matches",
+              "starlette.routing.Router.route-dispatch.instance-matches-override"
+            ],
+            "source_path": "starlette.routing.Router.app",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.route-dispatch.python-callable-endpoint",
+                  "starlette.routing.Router.route-dispatch.custom-converter-override",
+                  "starlette.routing.Router.route-dispatch.mount-child-router-live-route-add",
+                  "starlette.routing.Router.route-dispatch.live-route-path-mutation-keeps-compiled-pattern",
+                  "starlette.routing.Router.route-dispatch.mount-route-dispatch",
+                  "starlette.routing.Router.route-dispatch.mount-prefix-boundary-miss",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-asgi-class",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-async-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-path-parameter",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-non-verb-helper-rejected",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-sync-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-head-get-fallback",
+                  "starlette.routing.Router.route-dispatch.max-body-size",
+                  "starlette.routing.Router.route-dispatch.default-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.base-route-subclass-matches"
+                ],
+                "reason": "The Rust target supports ordered built-in route selection, fixed response projection, live method mutation, and live route-list append. Its RouteTable API has no mutable Python Route.path object; it also does not invoke arbitrary Python endpoints, expose Python scope mutation or typed path_params, support Python-registered URL convertors, or dispatch Mount routes.",
+                "status": "partial"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 573,
         "path": "starlette/routing.py",
@@ -746498,7 +747107,7 @@
         "symbol": "starlette.routing.Router"
       },
       "starlette_symbol": "starlette.routing.Router",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.routing.APIWebSocketRoute",
@@ -746560,6 +747169,88 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "FastAPI calls the base WebSocket matcher and inherits its ASGI dispatch, reverse lookup, and formatting. Dependency-aware endpoint execution is FastAPI-owned.",
+        "starlette_symbol": "starlette.routing.WebSocketRoute",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "route-dispatch",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.WebSocketRoute.route-dispatch.matched-root-path",
+              "starlette.routing.WebSocketRoute.route-dispatch.standalone-match",
+              "starlette.routing.WebSocketRoute.route-dispatch.standalone-miss-close",
+              "starlette.routing.WebSocketRoute.route-dispatch.router-miss-close",
+              "starlette.routing.WebSocketRoute.route-dispatch.http-scope-404",
+              "starlette.routing.WebSocketRoute.route-dispatch.middleware-accept-header",
+              "starlette.routing.WebSocketRoute.route-dispatch.middleware-exception-order",
+              "starlette.routing.WebSocketRoute.route-dispatch.lone-surrogate-path",
+              "starlette.routing.WebSocketRoute.route-dispatch.scope-type-python-equality",
+              "starlette.routing.WebSocketRoute.route-dispatch.scope-type-lookup-error-propagation"
+            ],
+            "source_path": "starlette.routing.WebSocketRoute",
+            "surface_id": "starlette.routing.WebSocketRoute",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API exposes WebSocket protocol state but does not implement Python route dispatch.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.WebSocketRoute.url_path_for.protocol"
+            ],
+            "source_path": "starlette.routing.WebSocketRoute.url_path_for",
+            "surface_id": "starlette.routing.WebSocketRoute",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native public API does not declare the Python named URL lookup interface.",
+                "status": "unimplemented"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "value-formatting",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.WebSocketRoute.__repr__.function-endpoint"
+            ],
+            "source_path": "starlette.routing.WebSocketRoute.__repr__",
+            "surface_id": "starlette.routing.WebSocketRoute",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The Rust-native API does not expose Python WebSocketRoute values or their Python object representation protocol.",
+                "status": "unimplemented"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 297,
         "path": "starlette/routing.py",
@@ -746567,7 +747258,7 @@
         "symbol": "starlette.routing.WebSocketRoute"
       },
       "starlette_symbol": "starlette.routing.WebSocketRoute",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.routing._FrontendRoute",
@@ -746604,6 +747295,86 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "BaseRoute is reviewed private/internal and has no independent target surface. These Router requirements cover its custom matcher and reverse-lookup extension points; the FastAPI frontend route remains private and FastAPI-owned.",
+        "starlette_symbol": "starlette.routing.BaseRoute",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "route-dispatch",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.route-dispatch.base-route-subclass-matches",
+              "starlette.routing.Router.route-dispatch.instance-matches-override"
+            ],
+            "source_path": "starlette.routing.Router.app",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.route-dispatch.python-callable-endpoint",
+                  "starlette.routing.Router.route-dispatch.custom-converter-override",
+                  "starlette.routing.Router.route-dispatch.mount-child-router-live-route-add",
+                  "starlette.routing.Router.route-dispatch.live-route-path-mutation-keeps-compiled-pattern",
+                  "starlette.routing.Router.route-dispatch.mount-route-dispatch",
+                  "starlette.routing.Router.route-dispatch.mount-prefix-boundary-miss",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-asgi-class",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-async-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-path-parameter",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-non-verb-helper-rejected",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-sync-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-head-get-fallback",
+                  "starlette.routing.Router.route-dispatch.max-body-size",
+                  "starlette.routing.Router.route-dispatch.default-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.base-route-subclass-matches"
+                ],
+                "reason": "The Rust target supports ordered built-in route selection, fixed response projection, live method mutation, and live route-list append. Its RouteTable API has no mutable Python Route.path object; it also does not invoke arbitrary Python endpoints, expose Python scope mutation or typed path_params, support Python-registered URL convertors, or dispatch Mount routes.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.url_path_for.first-success",
+              "starlette.routing.Router.url_path_for.mismatch",
+              "starlette.routing.Router.url_path_for.converter-error-propagation",
+              "starlette.routing.Router.url_path_for.mount-lookup-success",
+              "starlette.routing.Router.url_path_for.host-mount-nested-lookup",
+              "starlette.routing.Router.url_path_for.partial-mount-host-prefix-parameters",
+              "starlette.routing.Router.url_path_for.mount-path-parameter-forwarding",
+              "starlette.routing.Router.url_path_for.prefix-formatting-error-stops-fallback"
+            ],
+            "source_path": "starlette.routing.Router.url_path_for",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.url_path_for.outside-rust-native-built-in-route-subset",
+                  "starlette.routing.Router.url_path_for.native-error-mapping"
+                ],
+                "reason": "Rust-native NamedRouter supports ordered reverse lookup across nested built-in HTTP and WebSocket routes, Mounts, and Hosts, including partial Mount and Host prefixes. Parameter values are preformatted strings. Python custom converters and full Python exception-class/message compatibility remain unsupported.",
+                "status": "partial"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 167,
         "path": "starlette/routing.py",
@@ -746611,7 +747382,7 @@
         "symbol": "starlette.routing.BaseRoute"
       },
       "starlette_symbol": "starlette.routing.BaseRoute",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.routing._FrontendRouteGroup",
@@ -746648,6 +747419,86 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "BaseRoute is reviewed private/internal and has no independent target surface. These Router requirements cover its custom matcher and reverse-lookup extension points; the FastAPI frontend group remains private and FastAPI-owned.",
+        "starlette_symbol": "starlette.routing.BaseRoute",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "route-dispatch",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.route-dispatch.base-route-subclass-matches",
+              "starlette.routing.Router.route-dispatch.instance-matches-override"
+            ],
+            "source_path": "starlette.routing.Router.app",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.route-dispatch.python-callable-endpoint",
+                  "starlette.routing.Router.route-dispatch.custom-converter-override",
+                  "starlette.routing.Router.route-dispatch.mount-child-router-live-route-add",
+                  "starlette.routing.Router.route-dispatch.live-route-path-mutation-keeps-compiled-pattern",
+                  "starlette.routing.Router.route-dispatch.mount-route-dispatch",
+                  "starlette.routing.Router.route-dispatch.mount-prefix-boundary-miss",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-asgi-class",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-async-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-path-parameter",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-non-verb-helper-rejected",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-sync-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-head-get-fallback",
+                  "starlette.routing.Router.route-dispatch.max-body-size",
+                  "starlette.routing.Router.route-dispatch.default-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.base-route-subclass-matches"
+                ],
+                "reason": "The Rust target supports ordered built-in route selection, fixed response projection, live method mutation, and live route-list append. Its RouteTable API has no mutable Python Route.path object; it also does not invoke arbitrary Python endpoints, expose Python scope mutation or typed path_params, support Python-registered URL convertors, or dispatch Mount routes.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.url_path_for.first-success",
+              "starlette.routing.Router.url_path_for.mismatch",
+              "starlette.routing.Router.url_path_for.converter-error-propagation",
+              "starlette.routing.Router.url_path_for.mount-lookup-success",
+              "starlette.routing.Router.url_path_for.host-mount-nested-lookup",
+              "starlette.routing.Router.url_path_for.partial-mount-host-prefix-parameters",
+              "starlette.routing.Router.url_path_for.mount-path-parameter-forwarding",
+              "starlette.routing.Router.url_path_for.prefix-formatting-error-stops-fallback"
+            ],
+            "source_path": "starlette.routing.Router.url_path_for",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.url_path_for.outside-rust-native-built-in-route-subset",
+                  "starlette.routing.Router.url_path_for.native-error-mapping"
+                ],
+                "reason": "Rust-native NamedRouter supports ordered reverse lookup across nested built-in HTTP and WebSocket routes, Mounts, and Hosts, including partial Mount and Host prefixes. Parameter values are preformatted strings. Python custom converters and full Python exception-class/message compatibility remain unsupported.",
+                "status": "partial"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 167,
         "path": "starlette/routing.py",
@@ -746655,7 +747506,7 @@
         "symbol": "starlette.routing.BaseRoute"
       },
       "starlette_symbol": "starlette.routing.BaseRoute",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.routing._FrontendStaticFiles",
@@ -746712,6 +747563,65 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "The generic StaticFiles app dispatches through FastAPI's frontend overrides and retains the base configuration checks. Frontend path mapping and asset selection remain FastAPI-owned.",
+        "starlette_symbol": "starlette.staticfiles.StaticFiles",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.staticfiles.StaticFiles.asgi-call.file-response-subclass-override",
+              "starlette.staticfiles.StaticFiles.asgi-call.is-not-modified-subclass-override",
+              "starlette.staticfiles.StaticFiles.asgi-call.get-response-subclass-override",
+              "starlette.staticfiles.StaticFiles.asgi-call.get-directories-subclass-override"
+            ],
+            "source_path": "starlette.staticfiles.StaticFiles.__init__, StaticFiles.get_directories, StaticFiles.__call__, StaticFiles.get_response, StaticFiles.file_response, and StaticFiles.is_not_modified",
+            "surface_id": "starlette.staticfiles.StaticFiles",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "configuration-check",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.staticfiles.StaticFiles.configuration-check.constructor-missing-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.constructor-not-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.constructor-pathlike-display",
+              "starlette.staticfiles.StaticFiles.configuration-check.lazy-missing-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.lazy-not-directory",
+              "starlette.staticfiles.StaticFiles.configuration-check.repeated-call-state-and-asgi-events"
+            ],
+            "source_path": "starlette.staticfiles.StaticFiles.__init__, StaticFiles.check_config, and StaticFiles.__call__",
+            "surface_id": "starlette.staticfiles.StaticFiles",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "The native StaticFiles API has no Python config_checked attribute, so this observation is scoped to the documented Python-package instance contract.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 39,
         "path": "starlette/staticfiles.py",
@@ -746719,7 +747629,7 @@
         "symbol": "starlette.staticfiles.StaticFiles"
       },
       "starlette_symbol": "starlette.staticfiles.StaticFiles",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.routing._IncludedRouter",
@@ -746756,6 +747666,86 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "BaseRoute is reviewed private/internal and has no independent target surface. These Router requirements cover its custom matcher and reverse-lookup extension points; included-router context and route expansion remain FastAPI-owned.",
+        "starlette_symbol": "starlette.routing.BaseRoute",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "route-dispatch",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.route-dispatch.base-route-subclass-matches",
+              "starlette.routing.Router.route-dispatch.instance-matches-override"
+            ],
+            "source_path": "starlette.routing.Router.app",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.route-dispatch.python-callable-endpoint",
+                  "starlette.routing.Router.route-dispatch.custom-converter-override",
+                  "starlette.routing.Router.route-dispatch.mount-child-router-live-route-add",
+                  "starlette.routing.Router.route-dispatch.live-route-path-mutation-keeps-compiled-pattern",
+                  "starlette.routing.Router.route-dispatch.mount-route-dispatch",
+                  "starlette.routing.Router.route-dispatch.mount-prefix-boundary-miss",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-asgi-class",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-async-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-path-parameter",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-non-verb-helper-rejected",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-sync-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-method-handler",
+                  "starlette.routing.Router.route-dispatch.http-endpoint-head-get-fallback",
+                  "starlette.routing.Router.route-dispatch.max-body-size",
+                  "starlette.routing.Router.route-dispatch.default-method-not-allowed",
+                  "starlette.routing.Router.route-dispatch.base-route-subclass-matches"
+                ],
+                "reason": "The Rust target supports ordered built-in route selection, fixed response projection, live method mutation, and live route-list append. Its RouteTable API has no mutable Python Route.path object; it also does not invoke arbitrary Python endpoints, expose Python scope mutation or typed path_params, support Python-registered URL convertors, or dispatch Mount routes.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "url_path_for",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.routing.Router.url_path_for.first-success",
+              "starlette.routing.Router.url_path_for.mismatch",
+              "starlette.routing.Router.url_path_for.converter-error-propagation",
+              "starlette.routing.Router.url_path_for.mount-lookup-success",
+              "starlette.routing.Router.url_path_for.host-mount-nested-lookup",
+              "starlette.routing.Router.url_path_for.partial-mount-host-prefix-parameters",
+              "starlette.routing.Router.url_path_for.mount-path-parameter-forwarding",
+              "starlette.routing.Router.url_path_for.prefix-formatting-error-stops-fallback"
+            ],
+            "source_path": "starlette.routing.Router.url_path_for",
+            "surface_id": "starlette.routing.Router",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.routing.Router.url_path_for.outside-rust-native-built-in-route-subset",
+                  "starlette.routing.Router.url_path_for.native-error-mapping"
+                ],
+                "reason": "Rust-native NamedRouter supports ordered reverse lookup across nested built-in HTTP and WebSocket routes, Mounts, and Hosts, including partial Mount and Host prefixes. Parameter values are preformatted strings. Python custom converters and full Python exception-class/message compatibility remain unsupported.",
+                "status": "partial"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 167,
         "path": "starlette/routing.py",
@@ -746763,7 +747753,7 @@
         "symbol": "starlette.routing.BaseRoute"
       },
       "starlette_symbol": "starlette.routing.BaseRoute",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     },
     {
       "fastapi_binding": "fastapi.sse.EventSourceResponse",
@@ -746806,6 +747796,117 @@
           ]
         }
       ],
+      "starlette_rs_subclass_contract_refs": {
+        "resolution": "subclass-contract-operation-links",
+        "scope_note": "EventSourceResponse adds no methods and inherits generic streaming mechanics. Its SSE framing and default event-stream media type remain FastAPI-owned.",
+        "starlette_symbol": "starlette.responses.StreamingResponse",
+        "target_operation_refs": [
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.StreamingResponse.asgi-call.unknown-size-content",
+              "starlette.responses.StreamingResponse.asgi-call.empty-sync-chunk-framing",
+              "starlette.responses.StreamingResponse.asgi-call.known-size-content-length",
+              "starlette.responses.StreamingResponse.asgi-call.text-chunks",
+              "starlette.responses.StreamingResponse.asgi-call.mutable-status-code",
+              "starlette.responses.StreamingResponse.asgi-call.cookie-mutations",
+              "starlette.responses.StreamingResponse.asgi-call.binary-chunk",
+              "starlette.responses.StreamingResponse.asgi-call.async-iterator",
+              "starlette.responses.StreamingResponse.asgi-call.async-iterator-await-factory-stop",
+              "starlette.responses.StreamingResponse.asgi-call.awaitable-instance-special-method-lookup",
+              "starlette.responses.StreamingResponse.asgi-call.client-disconnect-oserror",
+              "starlette.responses.StreamingResponse.asgi-call.client-disconnect-start-send-oserror",
+              "starlette.responses.StreamingResponse.asgi-call.memoryview-chunks",
+              "starlette.responses.StreamingResponse.asgi-call.custom-async-iterable",
+              "starlette.responses.StreamingResponse.asgi-call.file-like-iterator"
+            ],
+            "source_path": "starlette.responses.StreamingResponse.__call__",
+            "surface_id": "starlette.responses.StreamingResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "asgi-call-with-execution-trace",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.StreamingResponse.asgi-call.async-generator-background",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-disconnect-cancellation",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-stream-completes-first",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-send-oserror-propagation",
+              "starlette.responses.StreamingResponse.asgi-call.websocket-scope-background",
+              "starlette.responses.StreamingResponse.asgi-call.client-disconnect-final-send-oserror",
+              "starlette.responses.StreamingResponse.asgi-call.background-oserror-propagation",
+              "starlette.responses.StreamingResponse.asgi-call.send-backpressure",
+              "starlette.responses.StreamingResponse.asgi-call.caller-cancellation-during-send",
+              "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-caller-cancellation-during-receive"
+            ],
+            "source_path": "starlette.responses.StreamingResponse.__call__",
+            "surface_id": "starlette.responses.StreamingResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [
+                  "starlette.responses.StreamingResponse.asgi-call.async-generator-background",
+                  "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-disconnect-cancellation",
+                  "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-stream-completes-first",
+                  "starlette.responses.StreamingResponse.asgi-call.websocket-scope-background",
+                  "starlette.responses.StreamingResponse.asgi-call.client-disconnect-final-send-oserror",
+                  "starlette.responses.StreamingResponse.asgi-call.send-backpressure",
+                  "starlette.responses.StreamingResponse.asgi-call.caller-cancellation-during-send",
+                  "starlette.responses.StreamingResponse.asgi-call.pre-asgi24-caller-cancellation-during-receive"
+                ],
+                "reason": "Rust-native framing has no producer/background lifecycle trace or ASGI scope dispatch at this boundary.",
+                "status": "partial"
+              }
+            }
+          },
+          {
+            "contract_id": "starlette-1.6.0-full",
+            "operation_id": "consumer-construction",
+            "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
+            "requirement_ids": [
+              "starlette.responses.StreamingResponse.consumer-construction.public-render-and-asgi",
+              "starlette.responses.StreamingResponse.consumer-construction.live-asgi-state-and-lifetime",
+              "starlette.responses.StreamingResponse.consumer-construction.attribute-and-header-cache-protocols",
+              "starlette.responses.StreamingResponse.consumer-construction.construction-thread-transfer",
+              "starlette.responses.StreamingResponse.consumer-construction.user-call-protocols",
+              "starlette.responses.StreamingResponse.consumer-construction.asynciterable-classification",
+              "starlette.responses.StreamingResponse.consumer-construction.async-iteration-special-method-lookup"
+            ],
+            "source_path": "starlette.responses.StreamingResponse.__init__, __call__, inherited Response.init_headers and headers; public constructor hooks, attribute protocols and ASGI callbacks",
+            "surface_id": "starlette.responses.StreamingResponse",
+            "target_support": {
+              "python-package": {
+                "missing_requirements": [],
+                "reason": null,
+                "status": "supported"
+              },
+              "rust-native": {
+                "missing_requirements": [],
+                "reason": "This workflow observes Python subclass rendering, class defaults, Python values, user exception identity, and mutable Python response attributes. Native response construction remains covered through the existing native ASGI operation.",
+                "status": "out_of_scope"
+              }
+            }
+          }
+        ]
+      },
       "starlette_source": {
         "line": 222,
         "path": "starlette/responses.py",
@@ -746813,7 +747914,7 @@
         "symbol": "starlette.responses.StreamingResponse"
       },
       "starlette_symbol": "starlette.responses.StreamingResponse",
-      "status": "source-mapped; inheritance contract must be verified through FastAPI"
+      "status": "source-mapped; sibling base operations linked; FastAPI-specific behavior remains separately owned"
     }
   ],
   "unmatched_documentation_examples": [],

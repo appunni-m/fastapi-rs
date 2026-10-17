@@ -9667,6 +9667,109 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
 
     starlette_integration_operation_refs = load_starlette_integration_operation_refs()
 
+    def load_starlette_subclass_contract_refs() -> dict[str, dict[str, Any]]:
+        """Resolve inherited FastAPI behavior through exact sibling operations."""
+        specifications = project_metadata.get("starlette_rs", {}).get("subclass_contract_refs")
+        base_edges = {
+            row.get("class_id"): row
+            for row in inventory.get("delegated_scope", {})
+            .get("starlette", {})
+            .get("base_edges", [])
+            if isinstance(row, dict) and isinstance(row.get("class_id"), str)
+        }
+        if not isinstance(specifications, dict) or set(specifications) != set(base_edges):
+            raise AtlasError(
+                "Starlette subclass contract refs must cover the exact base-edge inventory"
+            )
+        resolved: dict[str, dict[str, Any]] = {}
+        for class_id, specification in specifications.items():
+            if not isinstance(specification, dict) or set(specification) != {
+                "starlette_symbol",
+                "target_refs",
+                "scope_note",
+            }:
+                raise AtlasError("Starlette subclass contract fields are unsupported: " + class_id)
+            symbol = specification.get("starlette_symbol")
+            target_refs = specification.get("target_refs")
+            scope_note = specification.get("scope_note")
+            base = base_edges[class_id]
+            if (
+                not isinstance(symbol, str)
+                or symbol != base.get("base")
+                or not isinstance(target_refs, list)
+                or not target_refs
+                or not isinstance(scope_note, str)
+                or not scope_note.strip()
+            ):
+                raise AtlasError("Starlette subclass contract identity is invalid: " + class_id)
+            operation_refs = []
+            for reference in target_refs:
+                if not isinstance(reference, dict):
+                    raise AtlasError(
+                        "Starlette subclass target reference is malformed: " + class_id
+                    )
+                if set(reference) == {
+                    "surface_id",
+                    "operation_id",
+                    "requirement_scope",
+                }:
+                    surface_id = reference.get("surface_id")
+                    operation_id = reference.get("operation_id")
+                    operation_entry = starlette_rs_operations.get((surface_id, operation_id))
+                    if reference.get("requirement_scope") != "all" or operation_entry is None:
+                        raise AtlasError(
+                            "Starlette full-operation subclass reference is invalid: " + class_id
+                        )
+                    _, operation = operation_entry
+                    requirement_ids = [
+                        requirement.get("id")
+                        for requirement in operation.get("requirements", [])
+                        if isinstance(requirement, dict) and isinstance(requirement.get("id"), str)
+                    ]
+                elif set(reference) == {
+                    "surface_id",
+                    "operation_id",
+                    "requirement_ids",
+                }:
+                    surface_id = reference.get("surface_id")
+                    operation_id = reference.get("operation_id")
+                    requirement_ids = reference.get("requirement_ids")
+                    if (
+                        not isinstance(requirement_ids, list)
+                        or not requirement_ids
+                        or any(not isinstance(value, str) or not value for value in requirement_ids)
+                        or len(requirement_ids) != len(set(requirement_ids))
+                    ):
+                        raise AtlasError(
+                            "Starlette selected subclass requirements are invalid: " + class_id
+                        )
+                else:
+                    raise AtlasError(
+                        "Starlette subclass target reference fields are unsupported: " + class_id
+                    )
+                if not isinstance(surface_id, str) or not isinstance(operation_id, str):
+                    raise AtlasError(
+                        "Starlette subclass operation identity is invalid: " + class_id
+                    )
+                operation_refs.append(
+                    starlette_contract_operation_ref(
+                        surface_id,
+                        operation_id,
+                        requirement_ids,
+                        "generic Starlette base behavior linked through a FastAPI subclass; "
+                        "FastAPI-owned overrides and FastAPI-RS parity remain separate",
+                    )
+                )
+            resolved[class_id] = {
+                "resolution": "subclass-contract-operation-links",
+                "starlette_symbol": symbol,
+                "target_operation_refs": operation_refs,
+                "scope_note": scope_note,
+            }
+        return resolved
+
+    starlette_subclass_contract_refs = load_starlette_subclass_contract_refs()
+
     def has_middleware_registration_source(coverage_item: dict[str, Any]) -> bool:
         source_path = coverage_item.get("source_path")
         if not isinstance(source_path, str):
@@ -10406,6 +10509,16 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "starlette_rs_review_evidence": target_review_evidence,
             "status": "source-mapped; inheritance contract must be verified through FastAPI",
         }
+        subclass_contract_refs = starlette_subclass_contract_refs.get(edge["class_id"])
+        if subclass_contract_refs is None or subclass_contract_refs["starlette_symbol"] != symbol:
+            raise AtlasError(
+                "Starlette subclass contract target differs from base edge: " + edge["class_id"]
+            )
+        subclass_edge["starlette_rs_subclass_contract_refs"] = subclass_contract_refs
+        subclass_edge["status"] = (
+            "source-mapped; sibling base operations linked; "
+            "FastAPI-specific behavior remains separately owned"
+        )
         integration_operation_refs = starlette_integration_operation_refs.get(
             edge["class_id"] + ".__call__"
         )
@@ -12946,6 +13059,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "starlette_integration_edges": len(starlette_edges),
             "starlette_surface_aliases": len(starlette_surface_aliases),
             "starlette_surface_alias_gaps": len(starlette_surface_alias_gaps),
+            "starlette_subclass_contract_refs": len(starlette_subclass_contract_refs),
             "starlette_behavior_crosswalks": sum(behavior_crosswalk_counts.values()),
             "starlette_private_helper_behavior_crosswalks": behavior_crosswalk_counts[
                 "private-helper-behavior"
@@ -13422,7 +13536,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## FastAPI to Starlette-RS ownership crosswalk",
             "",
-            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Twenty-six direct re-exports link the complete sibling manifest surface; three remaining direct imports record a public-surface gap or a private/internal disposition. Three private-helper paths link existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest. These references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
+            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Twenty-six direct re-exports link complete sibling surfaces; three direct imports record a public-surface gap or private/internal disposition. All fifteen subclass edges link selected generic base operations and requirements, while FastAPI overrides remain FastAPI-owned. Three private-helper paths link existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest. These references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
             "",
             "| FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |",
             "|---:|---:|---:|---:|",
@@ -13437,13 +13551,14 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 len(unique_starlette_operations),
             ),
             "",
-            "| FastAPI-Starlette source edges | Direct re-exports linked to complete surfaces | Direct re-export gaps/private classifications | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |",
-            "|---:|---:|---:|---:|---:|---:|",
-            "| %d | %d | %d | %d | %d | 0 |"
+            "| FastAPI-Starlette source edges | Direct re-exports linked to complete surfaces | Direct re-export gaps/private classifications | Subclass edges with base operation links | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |",
+            "|---:|---:|---:|---:|---:|---:|---:|",
+            "| %d | %d | %d | %d | %d | %d | 0 |"
             % (
                 atlas["counts"]["starlette_integration_edges"],
                 atlas["counts"]["starlette_surface_aliases"],
                 atlas["counts"]["starlette_surface_alias_gaps"],
+                atlas["counts"]["starlette_subclass_contract_refs"],
                 atlas["counts"]["starlette_private_helper_behavior_crosswalks"],
                 atlas["counts"]["starlette_module_namespace_crosswalks"],
             ),
