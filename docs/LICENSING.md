@@ -182,6 +182,42 @@ contents, including license-file metadata and notices, against the versions
 and native components actually shipped.
 Upstream tests, docs, examples, and branding must be reviewed separately.
 
+### Current-head source-archive evidence (2026-10-18)
+
+Built from FastAPI-RS commit `adae40eeb7258b6fca6021370171d1cbd715c7bf`
+against pinned Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338` on macOS arm64 with CPython
+3.12.13 and Maturin 1.14.1:
+
+- `target/release-sdist-adae40e/fastapi_rs-0.1.0.tar.gz` has SHA-256
+  `0b61809e8b951e51f0418571c5c083a78293e0eaf26e83b513fc349affb60336`
+  and is 1,096,021 bytes. The sdist validator accepted all 202 members,
+  verified the vendored Starlette-RS source digest
+  `da4acf9c64ae8df8a9bde0976d1777f5b36d67a6af45c443b0d0f617cad10f48`,
+  and found no machine-local paths, build outputs, or profiling files.
+- A release-profile wheel rebuilt from the extracted source archive passed the
+  release-wheel validator:
+  `target/release-sdist-wheel-adae40e/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`,
+  SHA-256
+  `ceee5feb3838dab4cd7fb9cc37a33662a2e2e099ad8a3366f420b2e331f2abcb`,
+  1,479,718 bytes. It contains the `fastapi` facade, one native extension,
+  both declared license files, and the SBOM. The focused wheel notice check
+  passed.
+- `otool -L` shows this wheel links `/usr/lib/libz.1.dylib` version 1.2.12,
+  `/usr/lib/libiconv.2.dylib`, and `/usr/lib/libSystem.B.dylib`.
+- `make license-notices-check` passed for the pinned FastAPI and Starlette-RS
+  sources. The `make release-sdist` wrapper stopped during tool preparation
+  because uv could not write its default cache; the direct release-sdist
+  builder succeeded with the pre-existing CPython 3.12.13/Maturin 1.14.1
+  environment. The build-tools lock was not re-synced during this run.
+
+This is local artifact evidence for macOS arm64 only. Other platform builds,
+Cargo crate verification/publication, a release workflow, and contributor
+licensing authority remain unresolved. Offline `cargo package` cannot verify
+`fastapi-rs` until its `starlette-rs` 0.1.0 dependency is available from the
+registry; whether the Cargo crates are intended public artifacts still needs a
+maintainer decision.
+
 ### Current-head release-profile archive evidence (2026-10-17)
 
 Built and inspected a portable source archive from FastAPI-RS target sources
