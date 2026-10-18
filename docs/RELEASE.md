@@ -130,13 +130,29 @@ separate hosted site is selected and configured.
 
 ## Current readiness snapshot
 
-The local 0.1.0 artifact checks were built from clean main `bfbfe69`; the
-wheel was macOS arm64 only. The source archive, rebuilt abi3 wheel, Cargo
-archive, and license checks passed, and rustdoc built from the extracted
-Cargo archive against the exact pinned Starlette-RS source. These artifacts
-precede this release-guide change and must be rebuilt from the final release
-commit. The checks do not establish cross-platform support or public registry
-installability. The required Starlette-RS registry packages were not publicly
-resolvable during this preparation, project-name ownership still needs
-confirmation, and a release/publishing workflow is not configured. FastAPI-RS
-compatibility remains incomplete as described in the README.
+Local 0.1.0 artifacts were rebuilt from clean main `b5987b4` on 2026-10-19
+against Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`:
+
+- The sdist validator accepted 202 files; SHA-256:
+  `02cc2f2918aad87672ea5e120a881db7024013e9e9ba2309483d6380105168da`.
+- The extracted sdist rebuilt and passed the wheel validator for the
+  `cp310-abi3-macosx_11_0_arm64` wheel; SHA-256:
+  `00fd5b43216a767a397b4d370b1f22526358f21a621a46c970670aeefc9af64b`.
+- Cargo packaged and verified 32 files (259.1 KiB compressed) in an isolated
+  copy with a local patch to the exact pinned Starlette-RS source; SHA-256:
+  `aa6caf1c9cdfb0d9e52688f7a417165d09c3f19cf7d18374ce67e8e9c8f2a62c`.
+- Twine metadata checks, `make license-artifact-check`, and rustdoc with
+  warnings denied from the extracted Cargo archive passed.
+
+These checks prove local artifact construction only. The wheel evidence covers
+macOS arm64; other wheel platforms remain unverified. Current registry queries
+found no published `fastapi-rs` or `starlette-rs` 0.1.0 crate, and PyPI returned
+404 for `fastapi-rs` and `starlette-rs-py`. Those responses do not establish
+project-name ownership or availability. Verify ownership in the maintainer
+accounts and publish the Starlette-RS dependencies before attempting the
+FastAPI-RS artifacts. No registry upload, tag, GitHub release, or documentation
+deployment has occurred. Project docs remain repository Markdown, with the
+Rust API reference built by docs.rs after crate publication; there is no
+separate static-site workflow. FastAPI-RS compatibility remains incomplete:
+497 public API target dispositions are unresolved, as described in the README
+and compatibility atlas.
