@@ -23308,6 +23308,59 @@
       ]
     },
     {
+      "id": "query-param-models-dependency",
+      "input_path": "tests/fixtures/inputs/parity/query-param-models-dependency.json",
+      "input_sha256": "6fc6b0edd88f910054fdd8f9f19a39bd59a0b320cbb2afb5ab16342f62332b2e",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml",
+      "recipe_sha256": "287d58cd19d207803295a2bc15cd01c8f0ea4b3570c839fa390f36f24e774405",
+      "case_ids": [
+        "fastapi.query-param-models-dependency.repeated-list",
+        "fastapi.query-param-models-dependency.defaults",
+        "fastapi.query-param-models-dependency.validation-error",
+        "fastapi.query-param-models-dependency.openapi"
+      ],
+      "workload_path": "tests/fixtures/workloads/query_param_models_dependency.py",
+      "workload_sha256": "d61f9d3b2364e60f65eea4148cd3c5e59b94782dbb960a1a197ea566c6aee135",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.query-param-models-dependency.repeated-list",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/dependencies/classes-as-dependencies.md",
+            "source:documented-page:tutorial/query-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_query_param_models/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.query-param-models-dependency.defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/dependencies/classes-as-dependencies.md",
+            "source:documented-page:tutorial/query-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_query_param_models/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.query-param-models-dependency.validation-error",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/dependencies/classes-as-dependencies.md",
+            "source:documented-page:tutorial/query-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_query_param_models/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.query-param-models-dependency.openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/dependencies/classes-as-dependencies.md",
+            "source:documented-page:tutorial/query-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_query_param_models/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "query-params-str-validations-doc-examples",
       "input_path": "tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json",
       "input_sha256": "a24a675678fe05a6b2b2380905ece8b953555fe84b9d964d1d542568a9834338",
@@ -56733,6 +56786,66 @@
         "fastapi.query-param-models.grouped-repeated-list",
         "fastapi.query-param-models.grouped-validation-invalid",
         "fastapi.query-param-models.openapi-query-parameters"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/dependencies/classes-as-dependencies.md",
+      "fixture_id": "fastapi.docs.tutorial-dependencies-classes-as-dependencies",
+      "workflow_id": "query-param-models-dependency",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query-param-models-dependency.defaults",
+        "fastapi.query-param-models-dependency.openapi",
+        "fastapi.query-param-models-dependency.repeated-list",
+        "fastapi.query-param-models-dependency.validation-error"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/query-param-models.md",
+      "fixture_id": "fastapi.docs.tutorial-query-param-models",
+      "workflow_id": "query-param-models-dependency",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query-param-models-dependency.defaults",
+        "fastapi.query-param-models-dependency.openapi",
+        "fastapi.query-param-models-dependency.repeated-list",
+        "fastapi.query-param-models-dependency.validation-error"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_query_param_models/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-query-param-models-test-tutorial001",
+      "workflow_id": "query-param-models-dependency",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query-param-models-dependency.defaults",
+        "fastapi.query-param-models-dependency.openapi",
+        "fastapi.query-param-models-dependency.repeated-list",
+        "fastapi.query-param-models-dependency.validation-error"
       ],
       "observation_selectors": [
         "docs.response.status",

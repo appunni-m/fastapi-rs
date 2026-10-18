@@ -3359,6 +3359,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/param_functions.py, symbol: Query}
         - {path: fastapi/params.py, symbol: Query}
         - {path: fastapi/dependencies/utils.py, symbol: request_params_to_args}
+        - {path: fastapi/dependencies/utils.py, symbol: get_dependant}
         - {path: fastapi/openapi/utils.py, symbol: _get_openapi_operation_parameters}
         - {path: fastapi/_compat/v2.py, symbol: get_model_fields}
         - {path: docs/en/docs/tutorial/query-param-models.md}
@@ -3448,6 +3449,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.query-param-models.grouped-validation-invalid
         - recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
           case_id: fastapi.query-param-models.openapi-query-parameters
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.repeated-list
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.validation-error
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.openapi
         - recipe_path: tests/fixtures/input-recipes/parity/query-param-model-tutorial-edges.yaml
           case_id: fastapi.request-parameter-model-tutorial.query-001-extra-ignore
         - recipe_path: tests/fixtures/input-recipes/parity/request-parameter-model-tutorial-edges.yaml
@@ -3518,9 +3527,13 @@ reviewed_api_contract_overlay:
         keys as model extras under ignore, forbid, and allow policies, then
         validates the assembled model once. For these dependency-free routes,
         OpenAPI expands the model into fields with aliases, requiredness,
-        defaults, and constraints. Nested BaseModel, dict, and dataclass fields;
+        defaults, and constraints. Additional identity-checked cases cover a
+        single Query(BaseModel) parameter on a callable used through Depends,
+        including repeated values, defaults, validation errors, and OpenAPI
+        parameters. Nested BaseModel, dict, and dataclass fields;
         custom model schema config; multiple query parameters alongside a model;
-        default-factory OpenAPI schemas; empty explicit aliases; non-string
+        default-factory OpenAPI schemas beyond the sequence-field schema in the
+        Depends workflow; empty explicit aliases; non-string
         AliasPath or AliasChoices validation aliases; and BaseModel parameters
         from Header() or Cookie() remain outside this reviewed slice.
     fastapi.Request:
@@ -8962,6 +8975,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/dependencies/utils.py, symbol: _get_signature}
         - {path: fastapi/dependencies/utils.py, symbol: get_typed_signature}
         - {path: fastapi/dependencies/utils.py, symbol: get_typed_annotation}
+        - {path: fastapi/dependencies/utils.py, symbol: request_params_to_args}
         - {path: fastapi/_compat/v2.py, symbol: evaluate_forwardref}
         - {path: fastapi/param_functions.py, symbol: Depends}
         - {path: fastapi/params.py, symbol: Depends}
@@ -9021,6 +9035,7 @@ reviewed_api_contract_overlay:
           start_line: 169
           end_line: 179
         - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
+        - {path: docs/en/docs/tutorial/dependencies/classes-as-dependencies.md}
         - path: tests/test_dependency_cache.py
           symbol: test_sub_counter
           kind: source-definition
@@ -9103,6 +9118,14 @@ reviewed_api_contract_overlay:
         - *generator_await_await_noniterator_error
         - *generator_await_async_bridge_error
         - *generator_await_ordinary_iterator_error
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.repeated-list
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.validation-error
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models-dependency.yaml
+          case_id: fastapi.query-param-models-dependency.openapi
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
