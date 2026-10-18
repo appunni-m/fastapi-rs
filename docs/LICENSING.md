@@ -4,20 +4,23 @@
 
 FastAPI-RS currently declares **MIT** for its independently written code. The
 license text is in [`LICENSE.md`](../LICENSE.md), and MIT is declared in the
-Cargo workspace and Python package metadata. Both Cargo crates package that
-file via `license-file`. Before publication, maintainers must confirm that the
-copyright holders can license the code and that contributor terms authorize
-the contributions. Describe the project as a source-informed independent
-implementation, not as clean-room: the compatibility work deliberately
-inspects pinned upstream sources. MIT applies only to original project code;
-it does not relicense FastAPI, Starlette, Pydantic, or third-party material.
+Cargo workspace and Python package metadata. The maintainer has confirmed
+authority to license all original FastAPI-RS contributions under MIT. The
+public artifacts are the Python wheel and the `fastapi-rs` Cargo crate;
+`fastapi-rs-py` is an internal binding crate and is marked `publish = false`.
+Describe the project as a source-informed independent implementation, not as
+clean-room: the compatibility work deliberately inspects pinned upstream
+sources. MIT applies only to original project code; it does not relicense
+FastAPI, Starlette, Pydantic, or third-party material.
 
 ## Upstream and dependency material
 
-- FastAPI 0.141.1 is MIT-licensed. Its implementation modules are not copied
-  into this repository. The repository does include selected signature and
-  annotation metadata from the pinned source; the applicable notice and file
-  list are in [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
+- FastAPI 0.141.1 is MIT-licensed. Its upstream notice credits original author
+  Sebastián Ramírez with Copyright (c) 2018. Its implementation modules are not
+  copied into this repository. The repository does include selected signature
+  and annotation metadata from the pinned source; its complete MIT notice,
+  including the required copyright and permission notice, is in
+  [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
 - The selected Starlette compatibility contract is 1.6.0 (BSD-3-Clause).
   Starlette-RS is a separate BSD-3-Clause project and remains a distinct
   dependency. Its complete BSD-3-Clause notice is reproduced in
@@ -155,13 +158,13 @@ repository, and rejects universal `any` wheel tags and the unverified
 Cargo license-source union is in `THIRD_PARTY_NOTICES.md`, this byte comparison
 covers those texts too.
 `make license-artifact-check RELEASE_NOTICE_WHEEL=<wheel-path>`
-also requires the already-built `fastapi-rs-<version>.crate` and
-`fastapi-rs-py-<version>.crate` under `RELEASE_CRATE_DIR` and checks their
-root-level license and notice bytes. These checks establish file presence and
-identity for the supplied artifacts only. They do not establish the selected
-zlib backend or host-system license set for every target, that the checked
-artifacts are the intended release build, or that any contributor/rightsholder
-has granted rights to distribute the project.
+also requires the already-built public `fastapi-rs-<version>.crate` under
+`RELEASE_CRATE_DIR` and checks its root-level license and notice bytes. These
+checks establish file presence and identity for the supplied artifacts only.
+They do not establish the selected zlib backend or host-system license set
+for every target, or that the checked artifacts are the intended release
+build. The maintainer has separately confirmed authority to distribute all
+original project contributions under MIT.
 
 ## Release gate
 
@@ -212,11 +215,25 @@ against pinned Starlette-RS
   environment. The build-tools lock was not re-synced during this run.
 
 This is local artifact evidence for macOS arm64 only. Other platform builds,
-Cargo crate verification/publication, a release workflow, and contributor
-licensing authority remain unresolved. Offline `cargo package` cannot verify
-`fastapi-rs` until its `starlette-rs` 0.1.0 dependency is available from the
-registry; whether the Cargo crates are intended public artifacts still needs a
-maintainer decision.
+Cargo crate verification/publication, and a release workflow remain
+unresolved. The maintainer has since confirmed MIT licensing authority and
+selected the Python wheel plus `fastapi-rs` Cargo crate as public artifacts.
+Offline `cargo package` cannot verify `fastapi-rs` until its `starlette-rs`
+0.1.0 dependency is available from the registry. The current core build script
+also assumes the monorepo's parent `Cargo.toml`, `metadata.yaml`, and pinned
+Starlette-RS checkout; it must support the packaged registry source before
+the public crate can build for consumers.
+
+### First-publication blockers
+
+The first public release is not ready. `starlette-rs` 0.1.0 must be available
+on crates.io before the core crate can resolve its Rust dependency, and
+`starlette-rs-py` 0.1.0 must be available on PyPI before consumers can resolve
+the wheel's runtime dependency. Make `fastapi-rs/build.rs` work from the
+published crate archive without monorepo-only files, then package and build
+the core crate from its `.crate` archive. Rebuild and validate the wheel and
+source distribution from the final clean release commit, and verify the
+declared platform matrix before publishing.
 
 ### Current-head release-profile archive evidence (2026-10-17)
 

@@ -348,6 +348,11 @@ def _sync_source_notices(fastapi_source: Path, starlette_rs_source: Path) -> Non
             "`fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.141.1 "
             "at the\n"
             f"source commit `{fastapi_commit}` recorded in that file.\n\n"
+            "Source: [FastAPI 0.141.1 LICENSE](https://github.com/fastapi/fastapi/blob/"
+            f"{fastapi_commit}/LICENSE).\n\n"
+            "FastAPI's original author and MIT copyright holder is Sebastián Ramírez\n"
+            "(Copyright (c) 2018). The complete upstream MIT notice, including its\n"
+            "required copyright and permission notice, follows.\n\n"
             f"{BEGIN_FASTAPI}\n"
             f"{fastapi_license.decode('utf-8')}"
             f"{END_FASTAPI}\n"
@@ -445,6 +450,19 @@ def _manifest_identity(package_name: str) -> tuple[str, Path]:
     return f"{package_name}-{version}", package_root
 
 
+def _publishable_package_names() -> tuple[str, ...]:
+    publishable: list[str] = []
+    for package_name in PACKAGE_NAMES:
+        package_root = ROOT / package_name
+        manifest = tomllib.loads((package_root / "Cargo.toml").read_text(encoding="utf-8"))
+        package = manifest.get("package")
+        if not isinstance(package, dict):
+            raise SystemExit(f"{package_root / 'Cargo.toml'} must contain package metadata")
+        if package.get("publish", True) is not False:
+            publishable.append(package_name)
+    return tuple(publishable)
+
+
 def _check_crate_archive(package_name: str, archive_path: Path) -> None:
     directory_name, _ = _manifest_identity(package_name)
     try:
@@ -514,7 +532,7 @@ def main() -> int:
     parser.add_argument(
         "--require-all-crates",
         action="store_true",
-        help="require exactly one archive for each configured Cargo package",
+        help="require exactly one archive for each Cargo package not marked publish=false",
     )
     args = parser.parse_args()
     if args.sync:
@@ -529,8 +547,12 @@ def main() -> int:
     parsed_crates = [_parse_crate(value) for value in args.crate]
     if len({name for name, _ in parsed_crates}) != len(parsed_crates):
         raise SystemExit("each Cargo package may be specified only once")
-    if args.require_all_crates and set(name for name, _ in parsed_crates) != set(PACKAGE_NAMES):
-        raise SystemExit(f"--require-all-crates needs exactly {list(PACKAGE_NAMES)}")
+    publishable_packages = set(_publishable_package_names())
+    if args.require_all_crates and set(name for name, _ in parsed_crates) != publishable_packages:
+        raise SystemExit(
+            "--require-all-crates needs exactly the publishable Cargo packages "
+            f"{sorted(publishable_packages)}"
+        )
     for package_name, archive_path in parsed_crates:
         _check_crate_archive(package_name, archive_path)
     if args.wheel is None and not parsed_crates:

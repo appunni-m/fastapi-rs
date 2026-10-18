@@ -100,7 +100,7 @@ help: ## Show common development commands
 	  '  make dependency-inventory-check Check the pinned target dependency/license report' \
 	  '  make license-notices-update Sync pinned source, Cargo crate, and conditional zlib notices' \
 	  '  make license-notices-check Check source notices and Cargo package mirrors' \
-	  '  make license-artifact-check Check wheel and both Cargo archive license files' \
+	  '  make license-artifact-check Check wheel and public Cargo archive license files' \
 	  '  make pydantic-core-inventory-update Regenerate the pinned Pydantic Core native dependency report' \
 	  '  make pydantic-core-inventory-check Check the pinned Pydantic Core native dependency report' \
 	  '  make dependency-graph-update Regenerate FastAPI lock-derived dependency edges and surfaces' \
@@ -164,7 +164,7 @@ license-notices-check: ## Check pinned notices, Cargo source texts, and package 
 
 license-artifact-check: license-notices-check ## Check already-built wheel and Cargo archive license contents
 	@test -n "$(RELEASE_NOTICE_WHEEL)" || { printf '%s\n' 'set RELEASE_NOTICE_WHEEL to the already-built release wheel'; exit 2; }
-	$(PYTHON) scripts/check_release_notices.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)" --wheel "$(RELEASE_NOTICE_WHEEL)" --crate "fastapi-rs=$(RELEASE_CRATE_DIR)/fastapi-rs-$(RELEASE_VERSION).crate" --crate "fastapi-rs-py=$(RELEASE_CRATE_DIR)/fastapi-rs-py-$(RELEASE_VERSION).crate" --require-all-crates
+	$(PYTHON) scripts/check_release_notices.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)" --wheel "$(RELEASE_NOTICE_WHEEL)" --crate "fastapi-rs=$(RELEASE_CRATE_DIR)/fastapi-rs-$(RELEASE_VERSION).crate" --require-all-crates
 
 format: developer-tools-prepare ## Apply Rust formatting
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py

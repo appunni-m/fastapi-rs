@@ -4,11 +4,13 @@ FastAPI-RS's original code is licensed under MIT; see [`LICENSE.md`](LICENSE.md)
 This repository does not include FastAPI implementation source or wholesale
 Starlette modules. `fastapi-rs/src/route_signature.json` does include
 FastAPI 0.141.1 signature metadata and annotation text copied from its pinned
-source; its MIT notice is reproduced below. Starlette-RS includes separately
-licensed Starlette-derived adaptations; its BSD-3-Clause notice is also
-reproduced below. The target runtime must not install or import the original
-FastAPI package. The versioned source trees are compatibility authorities, not
-included implementation source trees in this distribution.
+source. FastAPI's original author and MIT copyright holder is Sebastián
+Ramírez (Copyright (c) 2018); the complete upstream MIT notice, including its
+required copyright and permission notice, is reproduced below. Starlette-RS
+includes separately licensed Starlette-derived adaptations; its BSD-3-Clause
+notice is also reproduced below. The target runtime must not install or import
+the original FastAPI package. The versioned source trees are compatibility
+authorities, not included implementation source trees in this distribution.
 
 ## Dependencies
 
@@ -4857,6 +4859,12 @@ The route and parameter-factory signature metadata and annotation text in
 `fastapi-rs/src/route_signature.json` and
 `fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.141.1 at the
 source commit `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` recorded in that file.
+
+Source: [FastAPI 0.141.1 LICENSE](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/LICENSE).
+
+FastAPI's original author and MIT copyright holder is Sebastián Ramírez
+(Copyright (c) 2018). The complete upstream MIT notice, including its
+required copyright and permission notice, follows.
 
 <!-- BEGIN PINNED FASTAPI LICENSE -->
 The MIT License (MIT)
