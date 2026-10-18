@@ -6314,24 +6314,34 @@ reviewed_api_contract_overlay:
     fastapi.FastAPI:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
+            The linked constructor workflow covers the exact signature, debug=True construction,
+            capture of extra keyword arguments, and empty-version behavior with OpenAPI enabled or
+            disabled; other constructor options and error branches remain unproven.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
+            Application routing, lifecycle, middleware, dependency resolution, serialization, and
+            OpenAPI behavior outside the linked cases are not established by this constructor slice.
           - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Comparison receipts are generated under ignored parity-results and are not committed;
+            regenerate an identity-checked comparison for any durable release claim.
+        rust_binding: "fastapi-rs/src/application_runtime.rs::PyFastApi::new"
       supported_slice: >-
-        Root export identity only: `fastapi.FastAPI` is the `fastapi.applications.FastAPI`
-        class.
+        The root export resolves to `fastapi.applications.FastAPI`. The linked direct API workflow
+        compares the exact constructor signature, debug=True construction, extra-keyword capture,
+        and empty-version validation with OpenAPI enabled and disabled. Other constructor options
+        and application behavior are outside this bounded slice.
       source_evidence:
         - {path: fastapi/__init__.py}
         - {path: fastapi/applications.py, symbol: FastAPI}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+          case_id: fastapi.applications.constructor-debug
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+          case_id: fastapi.applications.constructor-empty-version-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+          case_id: fastapi.applications.constructor-empty-version-allowed-when-openapi-disabled
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
           case_id: fastapi.openapi-extra.full-document-merge-add-override
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml

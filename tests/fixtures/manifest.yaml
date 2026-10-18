@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 173
     symbols_with_operation_fixture_refs: 291
-    operation_fixture_refs: 2195
+    operation_fixture_refs: 2198
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5286,6 +5286,37 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: fastapi-constructor-debug
+      input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
+      workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
+      case_id: fastapi.applications.constructor-debug
+      observation_selectors:
+      - python.call_outcome
+      - python.signature
+    - workflow_id: fastapi-constructor-debug
+      input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
+      workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
+      case_id: fastapi.applications.constructor-empty-version-rejected
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: fastapi-constructor-debug
+      input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
+      input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+      recipe_sha256: eecbb1405dd243f590d1799a09ee2e6d36ce60394e08e0f7e2544b56065b451b
+      workload_path: tests/fixtures/workloads/fastapi_constructor_extra_api.py
+      workload_sha256: 703d35e1bde9af72a3041e416a7f7db4220cdf31e8d5c9ba7904b6afb0197fee
+      case_id: fastapi.applications.constructor-empty-version-allowed-when-openapi-disabled
+      observation_selectors:
+      - python.call_outcome
     - workflow_id: openapi-extra-deep-merge-full-document-review
       input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
       input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
@@ -5593,15 +5624,16 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/5
         - /api_candidates/186
-      status: unresolved
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       known_gaps:
-      - Input/workflow references exist, but no exact implementation binding or current comparison result
-        establishes this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The linked constructor workflow covers the exact signature, debug=True construction, capture of
+        extra keyword arguments, and empty-version behavior with OpenAPI enabled or disabled; other constructor
+        options and error branches remain unproven.
+      - Application routing, lifecycle, middleware, dependency resolution, serialization, and OpenAPI
+        behavior outside the linked cases are not established by this constructor slice.
+      - Comparison receipts are generated under ignored parity-results and are not committed; regenerate
+        an identity-checked comparison for any durable release claim.
   - id: fastapi.File
     kind: import_binding
     source_candidate_ref: /api_candidates/6
