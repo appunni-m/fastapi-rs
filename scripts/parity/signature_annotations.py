@@ -155,6 +155,49 @@ def _annotation(value: Any, project_value: Callable[[Any], Any], *, depth: int) 
             "contravariant": value.__contravariant__,
             "infer_variance": getattr(value, "__infer_variance__", None),
         }
+    param_spec_args_type = getattr(typing, "ParamSpecArgs", None)
+    if param_spec_args_type is not None and type(value) is param_spec_args_type:
+        parameter = typing.get_origin(value)
+        if not isinstance(parameter, typing.ParamSpec):
+            raise SignatureAnnotationError("ParamSpec args annotation has no ParamSpec origin")
+        return {
+            "kind": "parameter_spec_args",
+            "python_type": _type_name(value),
+            "parameter": _annotation(parameter, project_value, depth=depth + 1),
+        }
+    param_spec_kwargs_type = getattr(typing, "ParamSpecKwargs", None)
+    if param_spec_kwargs_type is not None and type(value) is param_spec_kwargs_type:
+        parameter = typing.get_origin(value)
+        if not isinstance(parameter, typing.ParamSpec):
+            raise SignatureAnnotationError("ParamSpec kwargs annotation has no ParamSpec origin")
+        return {
+            "kind": "parameter_spec_kwargs",
+            "python_type": _type_name(value),
+            "parameter": _annotation(parameter, project_value, depth=depth + 1),
+        }
+    if isinstance(value, typing.ParamSpec):
+        typing_extensions = importlib.import_module("typing_extensions")
+        missing_default = object()
+        default = getattr(value, "__default__", missing_default)
+        no_default = getattr(typing, "NoDefault", None) or getattr(
+            typing_extensions, "NoDefault", None
+        )
+        has_default = default is not missing_default and default is not no_default
+        default_projection = (
+            _annotation(default, project_value, depth=depth + 1) if has_default else None
+        )
+        return {
+            "kind": "parameter_spec",
+            "python_type": _type_name(value),
+            "name": value.__name__,
+            "module": value.__module__,
+            "bound": _annotation(value.__bound__, project_value, depth=depth + 1),
+            "covariant": value.__covariant__,
+            "contravariant": value.__contravariant__,
+            "infer_variance": getattr(value, "__infer_variance__", None),
+            "has_default": has_default,
+            "default": default_projection,
+        }
     origin = typing.get_origin(value)
     if origin is typing.Annotated:
         base, *metadata = typing.get_args(value)

@@ -296,6 +296,9 @@
         },
         {
           "$ref": "#/$defs/bindingIdentityObservation"
+        },
+        {
+          "$ref": "#/$defs/bindingDistinctObservation"
         }
       ]
     },
@@ -473,7 +476,10 @@
                 "minItems": 1,
                 "maxItems": 1,
                 "contains": {
-                  "$ref": "#/$defs/bindingIdentityObservation"
+                  "anyOf": [
+                    {"$ref": "#/$defs/bindingIdentityObservation"},
+                    {"$ref": "#/$defs/bindingDistinctObservation"}
+                  ]
                 }
               }
             }
@@ -484,7 +490,10 @@
             "properties": {
               "observations": {
                 "contains": {
-                  "$ref": "#/$defs/bindingIdentityObservation"
+                  "anyOf": [
+                    {"$ref": "#/$defs/bindingIdentityObservation"},
+                    {"$ref": "#/$defs/bindingDistinctObservation"}
+                  ]
                 }
               }
             },
@@ -817,6 +826,26 @@
       "properties": {
         "kind": {
           "const": "python_binding_identity"
+        },
+        "selector": {
+          "const": "binding_identity"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "bindingDistinctObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_binding_distinct"
         },
         "selector": {
           "const": "binding_identity"

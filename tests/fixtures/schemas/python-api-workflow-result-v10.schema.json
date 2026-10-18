@@ -1037,6 +1037,9 @@
               },
               {
                 "$ref": "#/$defs/bindingIdentityObservation"
+              },
+              {
+                "$ref": "#/$defs/bindingDistinctObservation"
               }
             ]
           }
@@ -1231,6 +1234,105 @@
               "type": [
                 "boolean",
                 "null"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "python_type",
+            "parameter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "parameter_spec_args"
+            },
+            "python_type": {
+              "const": "typing.ParamSpecArgs"
+            },
+            "parameter": {
+              "$ref": "#/$defs/signatureAnnotation"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "python_type",
+            "parameter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "parameter_spec_kwargs"
+            },
+            "python_type": {
+              "const": "typing.ParamSpecKwargs"
+            },
+            "parameter": {
+              "$ref": "#/$defs/signatureAnnotation"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "python_type",
+            "name",
+            "module",
+            "bound",
+            "covariant",
+            "contravariant",
+            "infer_variance",
+            "has_default",
+            "default"
+          ],
+          "properties": {
+            "kind": {
+              "const": "parameter_spec"
+            },
+            "python_type": {
+              "const": "typing.ParamSpec"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "module": {
+              "type": "string"
+            },
+            "bound": {
+              "$ref": "#/$defs/signatureAnnotation"
+            },
+            "covariant": {
+              "type": "boolean"
+            },
+            "contravariant": {
+              "type": "boolean"
+            },
+            "infer_variance": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "has_default": {
+              "type": "boolean"
+            },
+            "default": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/signatureAnnotation"
+                }
               ]
             }
           }
@@ -2373,6 +2475,46 @@
         },
         "kind": {
           "const": "python_binding_identity"
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "public_symbol",
+            "canonical_symbol",
+            "same_object"
+          ],
+          "properties": {
+            "public_symbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "canonical_symbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "same_object": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "bindingDistinctObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "python_binding_distinct"
         },
         "values": {
           "type": "object",

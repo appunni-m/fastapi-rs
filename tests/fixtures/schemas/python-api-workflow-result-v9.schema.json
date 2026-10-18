@@ -1238,6 +1238,105 @@
           "required": [
             "kind",
             "python_type",
+            "parameter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "parameter_spec_args"
+            },
+            "python_type": {
+              "const": "typing.ParamSpecArgs"
+            },
+            "parameter": {
+              "$ref": "#/$defs/signatureAnnotation"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "python_type",
+            "parameter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "parameter_spec_kwargs"
+            },
+            "python_type": {
+              "const": "typing.ParamSpecKwargs"
+            },
+            "parameter": {
+              "$ref": "#/$defs/signatureAnnotation"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "python_type",
+            "name",
+            "module",
+            "bound",
+            "covariant",
+            "contravariant",
+            "infer_variance",
+            "has_default",
+            "default"
+          ],
+          "properties": {
+            "kind": {
+              "const": "parameter_spec"
+            },
+            "python_type": {
+              "const": "typing.ParamSpec"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "module": {
+              "type": "string"
+            },
+            "bound": {
+              "$ref": "#/$defs/signatureAnnotation"
+            },
+            "covariant": {
+              "type": "boolean"
+            },
+            "contravariant": {
+              "type": "boolean"
+            },
+            "infer_variance": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "has_default": {
+              "type": "boolean"
+            },
+            "default": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/signatureAnnotation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "python_type",
             "alias_name",
             "base",
             "metadata"

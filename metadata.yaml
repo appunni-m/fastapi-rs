@@ -15004,45 +15004,36 @@ reviewed_api_contract_overlay:
         The selected APIKey OpenAPI cases serialize this enum member as the
         scheme type value `apiKey`.
     fastapi.background.BackgroundTasks.add_task:
-      rust_binding: fastapi-rs/src/datastructures.rs::register
+      rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
       source_evidence:
         - {path: fastapi/background.py, symbol: BackgroundTasks}
         - {path: fastapi/background.py, symbol: add_task}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+          case_id: fastapi.background.background-tasks-add-task
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
-      feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response
+      feature_ids: [dependency-security, response-serialization]
+      observation_selectors: [python.signature, python.binding_identity, python.attribute_value, http.status, http.headers.ordered, http.body.bytes]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Only asynchronous task integration with FastAPI yield scopes is declared here; standalone generic behavior remains sibling owned.
-          - The pinned sibling's unsendable background data crashes sync worker add_task; the full worker-dispatch gate requires a corrected sibling revision.
+          - Generic callable scheduling, task ordering, and sync/async dispatch remain Starlette-RS-owned and require their sibling contract evidence.
+          - Invalid-call errors and subclass-specific super() dispatch require further focused coverage.
       supported_slice: >-
-        The worker-dispatch inputs declare injection and one public async
-        background callback, its context, and function/request scope ordering.
-        Fresh receipts are required. Standalone task behavior, sync callbacks,
-        reflection and generic scheduling remain in the sibling contract.
+        The direct API workflow checks the FastAPI override signature, distinct
+        method identity, and forwarding call result; request fixtures observe
+        injected task effects. Generic scheduling remains delegated to Starlette-RS.
 
     fastapi.BackgroundTasks:
-      target_binding:
-        implementation_owner: fastapi-rs
-        status: unresolved
-        known_gaps:
-          - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+      rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15053,9 +15044,20 @@ reviewed_api_contract_overlay:
           alias_spelling: BackgroundTasks
           local_name: BackgroundTasks
           target_path: fastapi.background.BackgroundTasks
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+          case_id: fastapi.background.background-tasks-class
+      feature_ids: [app-routing, dependency-security, response-serialization]
+      observation_selectors: [python.signature, python.binding_identity, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Generic inherited task behavior and all dependency-injection shapes remain broader than the linked cases.
       supported_slice: >-
-        Root export identity only: `fastapi.BackgroundTasks` is the
-        `fastapi.background.BackgroundTasks` class re-exported at the pinned root.
+        The root binding exposes the FastAPI-owned subclass with the pinned
+        constructor signature; the existing root-alias workflow checks that it
+        is identical to `fastapi.background.BackgroundTasks`.
 
     fastapi.UploadFile:
       target_binding:
@@ -15171,28 +15173,31 @@ reviewed_api_contract_overlay:
         not describe distribution metadata or a version-discovery API.
 
     fastapi.background.BackgroundTasks:
-      target_binding:
-        implementation_owner: fastapi-rs
-        status: unresolved
-        known_gaps:
-          - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+      rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
       source_evidence:
         - path: fastapi/background.py
           kind: source-definition
           symbol: BackgroundTasks
           start_line: 11
           end_line: 61
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+          case_id: fastapi.background.background-tasks-class
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background
+      feature_ids: [app-routing, dependency-security, response-serialization]
+      observation_selectors: [python.signature, python.binding_identity, http.status, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Constructor task-list inputs, inherited generic task execution, and exhaustive request-injection forms remain unverified.
       supported_slice: >-
-        FastAPI-specific behavior is the subclass and unchanged `add_task(func, *args,
-        **kwargs)` forwarding; task collection, execution order, and sync/async dispatch follow
-        the pinned Starlette contract.
+        FastAPI's class is a subclass of the pinned Starlette BackgroundTasks
+        class; the linked API case compares the constructor signature and
+        subclass identity, while route cases compare task injection effects.
 
     fastapi.datastructures.UploadFile:
       target_binding:

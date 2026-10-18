@@ -2325,6 +2325,121 @@
       ]
     },
     {
+      "id": "background-tasks-public-api",
+      "input_path": "tests/fixtures/inputs/parity/background-tasks-public-api.json",
+      "input_sha256": "7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0",
+      "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml",
+      "recipe_sha256": "fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f",
+      "case_ids": [
+        "fastapi.background.background-tasks-class",
+        "fastapi.background.background-tasks-add-task"
+      ],
+      "workload_path": "tests/fixtures/workloads/background_tasks_public_api.py",
+      "workload_sha256": "be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.background.background-tasks-add-task",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "path": "fastapi/background.py",
+          "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-class",
+          "symbol_id": "fastapi.BackgroundTasks",
+          "path": "fastapi/__init__.py",
+          "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9"
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-class",
+          "symbol_id": "fastapi.background.BackgroundTasks",
+          "path": "fastapi/background.py",
+          "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.background.background-tasks-add-task",
+          "probe_id": "add-task-is-not-starlette-method-alias",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.binding_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task",
+          "probe_id": "add-task-method-return",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task",
+          "probe_id": "add-task-method-signature",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-class",
+          "probe_id": "module-class-is-not-starlette-alias",
+          "symbol_id": "fastapi.background.BackgroundTasks",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.binding_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-class",
+          "probe_id": "module-class-signature",
+          "symbol_id": "fastapi.background.BackgroundTasks",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-class",
+          "probe_id": "root-class-is-not-starlette-alias",
+          "symbol_id": "fastapi.BackgroundTasks",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.binding_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-class",
+          "probe_id": "root-class-signature",
+          "symbol_id": "fastapi.BackgroundTasks",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.background.background-tasks-class",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.BackgroundTasks",
+            "api:fastapi.background.BackgroundTasks"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.background.BackgroundTasks.add_task"
+          ]
+        }
+      ]
+    },
+    {
       "id": "behind-proxy-sections-20261015",
       "input_path": "tests/fixtures/inputs/parity/behind-proxy-sections-20261015.json",
       "input_sha256": "fa0e3ac1099eafa5d70f84dd00e126fee5b724d6cf9872f11fb4b5a50e85584f",

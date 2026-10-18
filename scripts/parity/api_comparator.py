@@ -155,7 +155,7 @@ def compare_api_workflow_results(
                     )
                 )
             binding_identity_selected = any(
-                observation.get("kind") == "python_binding_identity"
+                observation.get("kind") in {"python_binding_identity", "python_binding_distinct"}
                 for observation in probe_spec["observations"]
             )
             if binding_identity_selected and workflow_schema_id != WORKFLOW_SCHEMA_V8_ID:
@@ -253,18 +253,22 @@ def compare_api_workflow_results(
                             target_observation.get("values"),
                         )
                     )
-                if kind == "python_binding_identity":
+                if kind in {"python_binding_identity", "python_binding_distinct"}:
+                    expected_identity = kind == "python_binding_identity"
                     for product, observation in (
                         ("source", source_observation),
                         ("target", target_observation),
                     ):
                         values = observation.get("values")
-                        if not isinstance(values, dict) or values.get("same_object") is not True:
+                        if (
+                            not isinstance(values, dict)
+                            or values.get("same_object") is not expected_identity
+                        ):
                             diffs.append(
                                 _diff(
                                     probe_id,
                                     f"{base}/observations/{index}/{product}_same_object",
-                                    True,
+                                    expected_identity,
                                     values.get("same_object") if isinstance(values, dict) else None,
                                 )
                             )

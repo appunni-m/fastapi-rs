@@ -1,8 +1,147 @@
 //! FastAPI-owned data structure integrations with Starlette-RS values.
 
-use pyo3::exceptions::PyValueError;
+use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyModule, PyTuple, PyType};
+use pyo3::types::{PyDict, PyList, PyModule, PyTuple, PyType};
+
+const BACKGROUND_TASKS_CLASS_DOC: &str = r#"
+    A collection of background tasks that will be called after a response has been
+    sent to the client.
+
+    Read more about it in the
+    [FastAPI docs for Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/).
+
+    ## Example
+
+    ```python
+    from fastapi import BackgroundTasks, FastAPI
+
+    app = FastAPI()
+
+
+    def write_notification(email: str, message=""):
+        with open("log.txt", mode="w") as email_file:
+            content = f"notification for {email}: {message}"
+            email_file.write(content)
+
+
+    @app.post("/send-notification/{email}")
+    async def send_notification(email: str, background_tasks: BackgroundTasks):
+        background_tasks.add_task(write_notification, email, message="some notification")
+        return {"message": "Notification sent in the background"}
+    ```
+    "#;
+const BACKGROUND_TASKS_ADD_TASK_DOC: &str = r#"
+        Add a function to be called in the background after the response is sent.
+
+        Read more about it in the
+        [FastAPI docs for Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/).
+        "#;
+
+#[pyclass(name = "_BackgroundTasksAddTask", module = "fastapi_rs._core", dict)]
+struct BackgroundTasksAddTask;
+
+#[pymethods]
+impl BackgroundTasksAddTask {
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        owner: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        match instance {
+            Some(instance) => py
+                .import("types")?
+                .getattr("MethodType")?
+                .call1((slf, instance))
+                .map(Bound::unbind),
+            None if owner.is_some() => Ok(slf.into_any()),
+            None => Err(PyTypeError::new_err("__get__(None, None) is invalid")),
+        }
+    }
+
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let bound_arguments = slf
+            .bind(py)
+            .getattr("__signature__")?
+            .call_method("bind", args, kwargs)?;
+        let bound_args = bound_arguments.getattr("args")?.cast_into::<PyTuple>()?;
+        let bound_kwargs = bound_arguments.getattr("kwargs")?.cast_into::<PyDict>()?;
+        let instance = bound_args.get_item(0)?;
+        let owner = slf.bind(py).getattr("__fastapi_owner__")?;
+        let super_object = py
+            .import("builtins")?
+            .getattr("super")?
+            .call1((owner, instance))?;
+        let parent_method = super_object.getattr("add_task")?;
+        let forwarded_args = PyTuple::new(py, bound_args.iter().skip(1))?;
+        parent_method
+            .call(&forwarded_args, Some(&bound_kwargs))
+            .map(Bound::unbind)
+    }
+}
+
+fn background_tasks_add_task_signature<'py>(
+    py: Python<'py>,
+) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyDict>)> {
+    let typing = py.import("typing")?;
+    let parameter_spec = py
+        .import("typing_extensions")?
+        .getattr("ParamSpec")?
+        .call1(("P",))?;
+    parameter_spec.setattr("__module__", "fastapi.background")?;
+    let callable = py.import("collections.abc")?.getattr("Callable")?;
+    let callable_arguments = PyTuple::new(py, [parameter_spec.clone(), typing.getattr("Any")?])?;
+    let callable_annotation = callable.get_item(callable_arguments)?;
+    let documentation = py
+        .import("annotated_doc")?
+        .getattr("Doc")?
+        .call1(("\n                The function to call after the response is sent.\n\n                It can be a regular `def` function or an `async def` function.\n                ",))?;
+    let annotated_arguments = PyTuple::new(py, [callable_annotation, documentation])?;
+    let function_annotation = typing.getattr("Annotated")?.get_item(annotated_arguments)?;
+    let args_annotation = parameter_spec.getattr("args")?;
+    let kwargs_annotation = parameter_spec.getattr("kwargs")?;
+
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let positional_or_keyword = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let parameters = PyList::empty(py);
+    parameters.append(parameter_type.call1(("self", &positional_or_keyword))?)?;
+
+    let function_kwargs = PyDict::new(py);
+    function_kwargs.set_item("annotation", &function_annotation)?;
+    parameters
+        .append(parameter_type.call(("func", &positional_or_keyword), Some(&function_kwargs))?)?;
+
+    let variable_positional = parameter_type.getattr("VAR_POSITIONAL")?;
+    let args_kwargs = PyDict::new(py);
+    args_kwargs.set_item("annotation", &args_annotation)?;
+    parameters.append(parameter_type.call(("args", variable_positional), Some(&args_kwargs))?)?;
+
+    let variable_keyword = parameter_type.getattr("VAR_KEYWORD")?;
+    let kwargs_kwargs = PyDict::new(py);
+    kwargs_kwargs.set_item("annotation", &kwargs_annotation)?;
+    parameters.append(parameter_type.call(("kwargs", variable_keyword), Some(&kwargs_kwargs))?)?;
+
+    let annotations = PyDict::new(py);
+    annotations.set_item("func", &function_annotation)?;
+    annotations.set_item("args", &args_annotation)?;
+    annotations.set_item("kwargs", &kwargs_annotation)?;
+    annotations.set_item("return", py.None())?;
+
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", py.None())?;
+    let signature = inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))?;
+    Ok((signature, annotations))
+}
 
 /// FastAPI's Pydantic validator accepts any Starlette UploadFile and preserves
 /// the exact object produced by the request parser.
@@ -123,10 +262,18 @@ fn register_background_tasks(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
     let attributes = PyDict::new(py);
     attributes.set_item("__module__", "fastapi.background")?;
-    attributes.set_item(
-        "__doc__",
-        "A collection of background tasks that will be called after a response has been sent to the client.",
-    )?;
+    attributes.set_item("__doc__", BACKGROUND_TASKS_CLASS_DOC)?;
+
+    let (signature, annotations) = background_tasks_add_task_signature(py)?;
+    let add_task = Py::new(py, BackgroundTasksAddTask)?;
+    let add_task_bound = add_task.bind(py);
+    add_task_bound.setattr("__name__", "add_task")?;
+    add_task_bound.setattr("__qualname__", "BackgroundTasks.add_task")?;
+    add_task_bound.setattr("__module__", "fastapi.background")?;
+    add_task_bound.setattr("__doc__", BACKGROUND_TASKS_ADD_TASK_DOC)?;
+    add_task_bound.setattr("__annotations__", annotations)?;
+    add_task_bound.setattr("__signature__", signature)?;
+    attributes.set_item("add_task", add_task_bound)?;
 
     let starlette_background_tasks = py
         .import("starlette.background")?
@@ -136,5 +283,6 @@ fn register_background_tasks(module: &Bound<'_, PyModule>) -> PyResult<()> {
         py.import("builtins")?
             .getattr("type")?
             .call1(("BackgroundTasks", bases, attributes))?;
+    add_task_bound.setattr("__fastapi_owner__", &background_tasks)?;
     module.add("BackgroundTasks", background_tasks)
 }

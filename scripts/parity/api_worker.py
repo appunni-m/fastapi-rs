@@ -743,7 +743,11 @@ def _validate_workflow_callables(
                 raise WorkerError("direct Python API probe observations are malformed")
             binding_identity_selected = any(
                 isinstance(observation, dict)
-                and observation.get("kind") == "python_binding_identity"
+                and observation.get("kind")
+                in {
+                    "python_binding_identity",
+                    "python_binding_distinct",
+                }
                 for observation in observations
             )
             if "binding_identity" in probe or binding_identity_selected:
@@ -1015,7 +1019,10 @@ async def _run_probe(
                 if not _is_strict_json_value(attribute_value):
                     raise ValueError("public attribute value is not strict JSON")
                 values = {"value": _json_safe(attribute_value)}
-            elif observation["kind"] == "python_binding_identity":
+            elif observation["kind"] in {
+                "python_binding_identity",
+                "python_binding_distinct",
+            }:
                 public_value = function if "public_callable" in probe else attribute_value
                 if public_value is None:
                     raise WorkerError("binding identity observation has no public object")

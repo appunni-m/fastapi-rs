@@ -49,6 +49,7 @@ INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
     "python_binding_identity": "python.binding_identity",
+    "python_binding_distinct": "python.binding_identity",
     "python_call_outcome": "python.call_outcome",
     "python_import_path": "python.import_path",
     "python_object_identity": "python.object_identity",
