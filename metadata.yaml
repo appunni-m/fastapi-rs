@@ -8175,6 +8175,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/applications.py, symbol: get}
         - {path: fastapi/routing.py, symbol: serialize_response}
         - {path: fastapi/_compat/v2.py, symbol: serialize}
+        - {path: tests/test_response_model_include_exclude.py}
         - {path: fastapi/_compat/v2.py, symbol: get_schema_from_model_field}
         - {path: fastapi/routing.py, symbol: get_request_handler}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
@@ -8415,6 +8416,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.response-model.exclude-if-predicate
           workload_path: tests/fixtures/workloads/response_model_serialization.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/response-model-collection-projection.yaml
+          case_id: fastapi.response-model.include.collection-all
+          workload_path: tests/fixtures/workloads/response_model_collection_projection.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/response-model-collection-projection.yaml
+          case_id: fastapi.response-model.exclude.collection-all
+          workload_path: tests/fixtures/workloads/response_model_collection_projection.py
+          observation_selectors: [http.status, http.body.bytes]
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -8491,7 +8500,10 @@ reviewed_api_contract_overlay:
         The response-model serialization input applies a Pydantic `Field(exclude_if=...)`
         predicate during GET response encoding: the matching value is omitted and a
         non-matching value is retained in exact HTTP bodies. Other predicates and
-        field configurations remain unproven.
+        field configurations remain unproven. The collection-projection inputs
+        exercise include and exclude selector trees using `__all__` across list
+        elements; FastAPI documents these options as Pydantic configuration. Fresh
+        identity-checked receipts are required to establish this behavior.
 
         A direct GET route uses the application callback when no route-level callback is supplied, sampled by `generate-unique-id-function-precedence`. Callback integer and empty-string returns are retained as operation IDs; unhashable returns fail during OpenAPI generation, callback exceptions surface during registration, and duplicate integer IDs emit warnings, sampled by `generate-unique-id-callback-values`.
 

@@ -27946,6 +27946,37 @@
       ]
     },
     {
+      "id": "response-model-collection-projection",
+      "input_path": "tests/fixtures/inputs/parity/response-model-collection-projection.json",
+      "input_sha256": "1944025415afd15567891fc4096b64a2a20252011fdbf96b531fcd708aba13cc",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-collection-projection.yaml",
+      "recipe_sha256": "af1a0456ffc7045fb8c07335e28ee6a43a07dc861e8aecdc3d42547b83bea724",
+      "case_ids": [
+        "fastapi.response-model.include.collection-all",
+        "fastapi.response-model.exclude.collection-all"
+      ],
+      "workload_path": "tests/fixtures/workloads/response_model_collection_projection.py",
+      "workload_sha256": "e9f59d0a783782fa6f274adf6ca420ebe63c82162b6c85744800ac49d41f55cc",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.response-model.include.collection-all",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_response_model_include_exclude.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-model.exclude.collection-all",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_response_model_include_exclude.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "response-model-data-filter-exclude-unset-none-review",
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
@@ -61121,6 +61152,36 @@
         "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-model-collection-projection",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.exclude.collection-all",
+        "fastapi.response-model.include.collection-all"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_include_exclude.py",
+      "fixture_id": "fastapi.test.test-response-model-include-exclude",
+      "workflow_id": "response-model-collection-projection",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.exclude.collection-all",
+        "fastapi.response-model.include.collection-all"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },
