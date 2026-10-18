@@ -970,8 +970,10 @@ def validate_compatibility_artifacts(
                 )
                 _require(
                     isinstance(target_binding, dict)
-                    and target_binding.get("implementation_owner") == "fastapi-rs"
-                    and target_binding.get("status") in {"partial-contract", "unimplemented"}
+                    and target_binding.get("implementation_owner")
+                    in {"fastapi-rs", "starlette-rs"}
+                    and target_binding.get("status")
+                    in {"partial-contract", "unimplemented", "unresolved"}
                     and isinstance(known_gaps, list)
                     and bool(known_gaps)
                     and all(isinstance(gap, str) and gap.strip() for gap in known_gaps),

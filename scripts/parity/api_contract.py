@@ -20,10 +20,10 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@11"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@12"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@8"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@9"
 
 
 def _read_project_metadata() -> dict[str, Any]:
@@ -2027,8 +2027,9 @@ def build_api_surface_contract(
                     "known_gaps",
                     "rust_binding",
                 }
-                or target_binding.get("implementation_owner") != "fastapi-rs"
-                or target_binding.get("status") not in {"partial-contract", "unimplemented"}
+                or target_binding.get("implementation_owner") not in {"fastapi-rs", "starlette-rs"}
+                or target_binding.get("status")
+                not in {"partial-contract", "unimplemented", "unresolved"}
                 or not isinstance(known_gaps, list)
                 or not known_gaps
                 or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
@@ -2039,8 +2040,8 @@ def build_api_surface_contract(
                 )
             ):
                 raise ContractError(
-                    "reviewed API target binding must declare FastAPI-RS ownership, "
-                    "partial-contract or unimplemented status, and unique known gaps: "
+                    "reviewed API target binding must declare FastAPI-RS or Starlette-RS ownership, "
+                    "partial-contract, unimplemented, or unresolved status, and unique known gaps: "
                     f"{operation_id}"
                 )
         for documentation_ref in docs:
@@ -2138,7 +2139,8 @@ def build_api_surface_contract(
             if (
                 not isinstance(target_binding, dict)
                 or target_binding.get("implementation_owner") != "fastapi-rs"
-                or target_binding.get("status") not in {"partial-contract", "unimplemented"}
+                or target_binding.get("status")
+                not in {"partial-contract", "unimplemented", "unresolved"}
                 or not isinstance(known_gaps, list)
                 or not known_gaps
                 or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
@@ -2150,7 +2152,7 @@ def build_api_surface_contract(
             ):
                 raise ContractError(
                     "inherited canonical target binding must declare FastAPI-RS ownership, "
-                    "partial-contract or unimplemented status, and unique known gaps: "
+                    "partial-contract, unimplemented, or unresolved status, and unique known gaps: "
                     f"{operation_id}"
                 )
         evidence = operation.get("source_evidence", [])
