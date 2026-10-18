@@ -209,8 +209,9 @@ target internals to manufacture compatibility.
 ## Benchmark plan
 
 Revision-specific observations are recorded in
-[the 2026-10-05 measurements at 76dedd6](benchmarks/2026-10-05-76dedd6.md).
-These include the slower workloads and apply only to the measured revision.
+[the 2026-10-05 measurements at 76dedd6](benchmarks/2026-10-05-76dedd6.md)
+and the [2026-10-18 first-slice refresh at 9c8df51](benchmarks/2026-10-18-9c8df51.md).
+Each report applies only to the measured revision and workload.
 
 ### First executable lane
 
