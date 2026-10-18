@@ -6563,6 +6563,7 @@ impl PyFastApi {
             let source = source_inner.bind(py).borrow();
             validate_empty_path_router_include(&source.routes, prefix)?;
         }
+        let dependency_overrides_provider = fastapi_public_instance(py, &slf)?;
         let mut destination_guard = slf.bind(py).borrow_mut();
         let destination = &mut *destination_guard;
         let parent_responses = route_response_declarations(py, Some(&destination.responses))?;
@@ -6605,7 +6606,6 @@ impl PyFastApi {
             ..frontend_route_position + source.frontend_routes.len())
             .collect::<Vec<_>>();
         let strict_content_type = destination.strict_content_type;
-        let dependency_overrides_provider = fastapi_public_instance(py, &slf)?;
         merge_router_routes(
             py,
             destination,
@@ -8652,6 +8652,7 @@ impl PyApiRouter {
         inherited_dependencies.extend(dependencies.unwrap_or_default());
         let deprecated = combined_deprecated(deprecated, parent_deprecated);
         let include_in_schema = include_in_schema && parent_include_in_schema;
+        let dependency_overrides_provider = fastapi_public_instance(py, &inner)?;
         let source = router_inner.bind(py).borrow();
         let mut destination = inner.bind(py).borrow_mut();
         if source.lifespan.is_included_by(py, &destination.lifespan)? {
@@ -8671,7 +8672,6 @@ impl PyApiRouter {
         let source_frontend_route_indexes = (frontend_route_position
             ..frontend_route_position + source.frontend_routes.len())
             .collect::<Vec<_>>();
-        let dependency_overrides_provider = fastapi_public_instance(py, &inner)?;
         merge_router_routes(
             py,
             &mut destination,

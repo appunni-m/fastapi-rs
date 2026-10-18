@@ -29714,14 +29714,15 @@
     {
       "id": "router-events-lifespan-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-events-lifespan-upstream.json",
-      "input_sha256": "3e1605a8c9879404e278b0e263741ce5ae9220535795f20c8ca4b4219b01decf",
+      "input_sha256": "ecea0a295d6b7385f97cbcb6bfe1b8c8e2a69bc5bb6b0eeeeb3e64db253469ec",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
-      "recipe_sha256": "42d07842363a624fd2ed7ecac48af759545fa72b808afc830f35a813040aff0c",
+      "recipe_sha256": "8761e40c082d537d0c02dcaabbb91f668cbd29d37a23b7f216793c08dad281d4",
       "case_ids": [
         "fastapi.lifecycle.router-events-legacy",
         "fastapi.lifecycle.app-lifespan-state",
         "fastapi.lifecycle.nested-lifespan-state",
         "fastapi.lifecycle.parent-lifespan-state-override",
+        "fastapi.lifecycle.sibling-lifespan-state-precedence",
         "fastapi.lifecycle.empty-merged-lifespan-state",
         "fastapi.lifecycle.mixed-merged-lifespan-state",
         "fastapi.lifecycle.async-shutdown-handler",
@@ -29770,6 +29771,14 @@
             "source:documented-page:advanced/events.md",
             "source:documented-page:advanced/testing-events.md",
             "source:upstream-test:tests/test_router_events.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.lifecycle.sibling-lifespan-state-precedence",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/events.md",
+            "source:documented-page:advanced/testing-events.md"
           ]
         },
         {
@@ -63676,7 +63685,7 @@
       "fixture_id": "fastapi.docs.advanced-events",
       "workflow_id": "router-events-lifespan-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 12 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status, python.warnings, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 13 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status, python.warnings, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.lifecycle.add-event-handler-invalid-string",
         "fastapi.lifecycle.app-lifespan-state",
@@ -63689,6 +63698,7 @@
         "fastapi.lifecycle.parameter-event-handlers",
         "fastapi.lifecycle.parent-lifespan-state-override",
         "fastapi.lifecycle.router-events-legacy",
+        "fastapi.lifecycle.sibling-lifespan-state-precedence",
         "fastapi.lifecycle.sync-generator-lifespan"
       ],
       "observation_selectors": [
@@ -63711,7 +63721,7 @@
       "fixture_id": "fastapi.docs.advanced-testing-events",
       "workflow_id": "router-events-lifespan-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 10 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status, python.warnings, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 11 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status, python.warnings, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.lifecycle.app-lifespan-state",
         "fastapi.lifecycle.async-generator-lifespan",
@@ -63722,6 +63732,7 @@
         "fastapi.lifecycle.parameter-event-handlers",
         "fastapi.lifecycle.parent-lifespan-state-override",
         "fastapi.lifecycle.router-events-legacy",
+        "fastapi.lifecycle.sibling-lifespan-state-precedence",
         "fastapi.lifecycle.sync-generator-lifespan"
       ],
       "observation_selectors": [

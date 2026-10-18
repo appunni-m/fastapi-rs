@@ -5981,6 +5981,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
+        - {path: fastapi/routing.py, symbol: _merge_lifespan_context}
         - {path: docs/en/docs/advanced/events.md}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: fastapi/routing.py, symbol: APIRouter}
@@ -6026,6 +6027,7 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.parent-lifespan-state-override}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.sibling-lifespan-state-precedence}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml, case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent}
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml, case_id: fastapi.test.test-ws-router.test-router-ws-depends}
@@ -6160,7 +6162,10 @@ reviewed_api_contract_overlay:
         legacy startup/shutdown handlers and nested lifespan contexts. The
         lifecycle workflow observes successful startup/shutdown order and
         request-visible merged state, including app precedence for duplicate
-        keys; lifecycle error paths and TestClient.app_state are not covered.
+        keys. The sibling precedence case also establishes that the first
+        included router wins collisions with later included routers, while
+        unique keys from both survive. Lifecycle error paths and
+        TestClient.app_state are not covered.
         The app's `strict_content_type` value is the root context for included
         routers; `strict-content-type-router-level-upstream` observes
         absent-header rejection or JSON parsing under app and router overrides.
@@ -7306,6 +7311,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
+        - {path: fastapi/routing.py, symbol: _merge_lifespan_context}
         - {path: tests/test_router_circular_import.py, symbol: test_router_circular_import}
         - {path: docs/en/docs/advanced/events.md}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
@@ -7345,7 +7351,10 @@ reviewed_api_contract_overlay:
         pinned `FastAPIError` at construction. The direct nested-router entry
         point is sampled by `apirouter-empty-path-include-construction`.
         Nested router inclusion also composes the tested startup/shutdown
-        handlers and lifespan contexts. One input maps an included lifespan
+        handlers and lifespan contexts. The sibling state-precedence input
+        compares app-over-router and earlier-router-over-later-router
+        collisions while retaining each context's unique keys. One input maps
+        an included lifespan
         entry error suppressed by an already-entered parent context; it
         compares failed startup, exact exception, cleanup trace, and final ASGI
         scope state. Its reviewed startup-contract selector excludes diagnostic
@@ -7455,6 +7464,7 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml, case_id: fastapi.routing.include-router.router-and-include-dependencies}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.nested-lifespan-state}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.parent-lifespan-state-override}
+        - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.sibling-lifespan-state-precedence}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml, case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent}
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-self-include-construction}
