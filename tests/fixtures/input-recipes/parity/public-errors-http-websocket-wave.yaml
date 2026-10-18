@@ -286,6 +286,38 @@ cases:
   source_evidence:
   - {path: docs/en/docs/reference/exceptions.md, kind: upstream_documentation}
   - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.public-errors.websocket.default-reason-empty
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: reject-websocket-with-default-reason
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /errors/websocket-default-reason
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+  source_evidence:
+  - {path: docs/en/docs/advanced/websockets.md, kind: upstream_documentation}
+  - {path: docs_src/websockets_/tutorial002_an_py310.py, kind: upstream_documentation_example}
+  - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, kind: upstream_test}
 - case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
   factory_input: {}
   construction_observation:

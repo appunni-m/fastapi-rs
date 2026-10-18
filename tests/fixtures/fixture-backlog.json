@@ -28113,19 +28113,38 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-websockets-tutorial002.yaml",
           "workflow_id": "atlas-testing-websocket-websockets-tutorial002"
+        },
+        {
+          "case_ids": [
+            "fastapi.public-errors.websocket.default-reason-empty"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "websocket.close_code",
+            "websocket.close_reason",
+            "websocket.event_order"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
+          "workflow_id": "public-errors-http-websocket-wave"
         }
       ],
       "input_only": true,
       "observation_selectors": [
         "websocket.close_code",
+        "websocket.close_reason",
         "websocket.event_order",
         "websocket.messages"
       ],
       "selector_evidence": [
         {
           "feature_id": "websocket-lifecycle",
+          "schema_extension_required": [
+            "websocket.close_reason"
+          ],
           "selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ]
@@ -28163,7 +28182,7 @@
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
         "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
       ],
-      "stimulus_design_notes": "The annotated WebSocket example extracts cookie/query credentials, validates them in a dependency, then accepts and exchanges messages. Independent socket actions sample message/event order and close codes; the HTML client and exact tutorial messages are not claimed."
+      "stimulus_design_notes": "The annotated WebSocket example extracts cookie/query credentials, validates them in a dependency, then accepts and exchanges messages. Independent cases sample message and event order, successful close behavior, and the documented pre-accept WebSocketException call with its omitted reason. The HTML client and exact tutorial messages are not claimed."
     },
     {
       "feature_ids": [
@@ -61799,10 +61818,11 @@
         "workflow_scope_notes": [
           {
             "case_ids": [
+              "fastapi.public-errors.websocket.default-reason-empty",
               "fastapi.public-errors.websocket.pre-accept-code-and-reason"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-            "scope_note": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed."
+            "scope_note": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed."
           },
           {
             "case_ids": [
@@ -63015,9 +63035,10 @@
         },
         {
           "case_ids": [
+            "fastapi.public-errors.websocket.default-reason-empty",
             "fastapi.public-errors.websocket.pre-accept-code-and-reason"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "construction.exception_class",
@@ -63305,6 +63326,7 @@
         "workflow_cases": [
           {
             "case_ids": [
+              "fastapi.public-errors.websocket.default-reason-empty",
               "fastapi.public-errors.websocket.pre-accept-code-and-reason"
             ],
             "observation_selectors": [
@@ -63316,7 +63338,7 @@
               "websocket.event_order"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-            "scope_note": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed."
+            "scope_note": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed."
           },
           {
             "case_ids": [
@@ -63639,10 +63661,11 @@
       "workflow_scope_notes": [
         {
           "case_ids": [
+            "fastapi.public-errors.websocket.default-reason-empty",
             "fastapi.public-errors.websocket.pre-accept-code-and-reason"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-          "scope_note": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed."
+          "scope_note": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed."
         },
         {
           "case_ids": [
@@ -719476,9 +719499,10 @@
         },
         {
           "case_ids": [
+            "fastapi.public-errors.websocket.default-reason-empty",
             "fastapi.public-errors.websocket.pre-accept-code-and-reason"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes websocket.close_code, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "websocket.close_code",

@@ -726,6 +726,7 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
                 "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml"
             ),
             "case_ids": [
+                "fastapi.public-errors.websocket.default-reason-empty",
                 "fastapi.public-errors.websocket.pre-accept-code-and-reason",
             ],
             "observation_selectors": [
@@ -737,7 +738,7 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
                 "websocket.event_order",
             ],
             "scope_note": (
-                "Partial independent sample across 1 case(s); observes "
+                "Partial independent sample across 2 case(s); observes "
                 "construction.exception_class, construction.exception_message, "
                 "construction.outcome, websocket.close_code, websocket.close_reason, "
                 "websocket.event_order. Unlisted functions, branches, configurations, and "

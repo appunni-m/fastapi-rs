@@ -535,9 +535,10 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
     "docs_src/websockets_/tutorial002_an_py310.py": _review(
         (
             "The annotated WebSocket example extracts cookie/query credentials, validates them in "
-            "a dependency, then accepts and exchanges messages. Independent socket actions sample "
-            "message/event order and close codes; the HTML client and exact tutorial messages are "
-            "not claimed."
+            "a dependency, then accepts and exchanges messages. Independent cases sample message "
+            "and event order, successful close behavior, and the documented pre-accept "
+            "WebSocketException call with its omitted reason. The HTML client and exact tutorial "
+            "messages are not claimed."
         ),
         [
             _span(
@@ -562,7 +563,16 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
                     "websocket.event_order",
                     "websocket.messages",
                 ],
-            )
+            ),
+            _case(
+                "public-errors-http-websocket-wave.yaml",
+                "fastapi.public-errors.websocket.default-reason-empty",
+                selectors=[
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                ],
+            ),
         ],
     ),
 }

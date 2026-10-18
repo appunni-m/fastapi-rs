@@ -22487,9 +22487,9 @@
     {
       "id": "public-errors-http-websocket-wave",
       "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
-      "input_sha256": "1babb55797f8ad9a9e891c07fa0e8dfb1849cef075f8ea74858aa553df5839e5",
+      "input_sha256": "43af3934692f2e877823405b765d45dd1808fa452eb897dc7d92402e3a42f867",
       "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-      "recipe_sha256": "37f33f4b2b07ecbb4dd457c4d546224f70526f9f905374d651442bb5825fb0a0",
+      "recipe_sha256": "b26aa582cacf1f0ae308049cf3d12e58a730fec6e1d798112abbd71811835360",
       "case_ids": [
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.starlette-base-detail-and-header",
@@ -22501,10 +22501,11 @@
         "fastapi.public-errors.http.constructor-state",
         "fastapi.public-errors.http.default-detail-no-headers",
         "fastapi.public-errors.websocket.constructor-state",
+        "fastapi.public-errors.websocket.default-reason-empty",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "736b2d4ce2a36c8b519324942aa82841d480c17feff88debb167d0b14ab940e2",
+      "workload_sha256": "9014285c88506dc23e52f7699638de82cebae3f54ae888624e996a93fd3c4d56",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -22584,6 +22585,15 @@
           "requirement_refs": [
             "source:documented-page:reference/exceptions.md",
             "source:upstream-test:tests/test_ws_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.public-errors.websocket.default-reason-empty",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/websockets_/tutorial002_an_py310.py",
+            "source:documented-page:advanced/websockets.md",
+            "source:upstream-test:tests/test_tutorial/test_websockets/test_tutorial002.py"
           ]
         },
         {
@@ -56598,12 +56608,28 @@
       ]
     },
     {
+      "source_item_id": "documented-example:docs_src/websockets_/tutorial002_an_py310.py",
+      "fixture_id": "fastapi.docs-example.websockets-tutorial002-an-py310",
+      "workflow_id": "public-errors-http-websocket-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.websocket.default-reason-empty"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.close_reason",
+        "websocket.event_order"
+      ]
+    },
+    {
       "source_item_id": "documented-page:advanced/websockets.md",
       "fixture_id": "fastapi.docs.advanced-websockets",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.public-errors.websocket.default-reason-empty",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "observation_selectors": [
@@ -56692,8 +56718,9 @@
       "fixture_id": "fastapi.test.test-tutorial-test-websockets-test-tutorial002",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes websocket.close_code, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.public-errors.websocket.default-reason-empty",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "observation_selectors": [

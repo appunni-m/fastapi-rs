@@ -130,4 +130,9 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
         del websocket
         raise WebSocketException(code=1008, reason="credentials required")
 
+    @app.websocket("/errors/websocket-default-reason")
+    async def websocket_default_reason_error(websocket: WebSocket) -> None:
+        del websocket
+        raise WebSocketException(code=1008)
+
     return app

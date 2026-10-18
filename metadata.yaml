@@ -13173,6 +13173,8 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.constructor-state
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.default-reason-empty
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
@@ -13196,9 +13198,11 @@ reviewed_api_contract_overlay:
         the identity workflow records the root-to-public-module relation. The
         custom-handler workflow also constructs this error and observes its
         code, reason, dispatch, and resulting close event. A constructor-state
-        case also compares the exception class/MRO, args, string, code, reason,
-        and base-class relationship. Other constructor values and generic
-        WebSocket state behavior remain outside this partial slice.
+        case compares the exception class/MRO, args, string, code, explicit
+        reason, and base-class relationship; the default-reason case observes
+        the normalized empty reason in the close event.
+        Other constructor values and generic WebSocket state behavior remain
+        outside this partial slice.
     fastapi.exceptions.WebSocketException:
       target_binding:
         implementation_owner: fastapi-rs
@@ -13226,6 +13230,8 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.constructor-state
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.default-reason-empty
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
@@ -13249,8 +13255,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The constructor snapshot covers one code/reason pair; other values, omitted reason,
-            mutation, and subclass behavior remain unverified.
+            The constructor snapshot covers one explicit code/reason pair; the omitted-reason
+            normalization is observed in the close event. Other values, mutation, and subclass
+            behavior remain unverified.
           - >-
             The current comparison receipt is local and not checked in; mapped fixture evidence
             does not itself establish parity for other builds.
@@ -13269,11 +13276,18 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.constructor-state
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.default-reason-empty
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
         - python.signature
         - construction.exception_class
+        - http.status
+        - http.headers.ordered
         - http.body.bytes
+        - websocket.close_code
+        - websocket.close_reason
+        - websocket.event_order
     fastapi.security.APIKeyCookie:
       target_binding:
         implementation_owner: fastapi-rs
