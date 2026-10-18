@@ -11916,20 +11916,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-tutorial005.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.password-form-constructor-fields-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+          case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature, python.call_outcome]
       supported_slice: >-
         Direct API probes compare the public constructor signatures. Selected
         ASGI inputs verify username/password/client fields, omitted grant_type
         and client fields, and Unicode-whitespace scope splitting; tutorial
         inputs cover dependency integration and OpenAPI. Request.form parsing
         and FormData remain within the pinned Starlette-RS contract; multipart,
-        file parts, and parser errors remain outside this slice.
+        file parts, and parser errors remain outside this slice. Direct
+        initializer calls compare missing-credentials, positional-credentials,
+        and unexpected-keyword errors.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+          - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected cases remain unverified.
         rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
     fastapi.security.oauth2.OAuth2PasswordRequestForm:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
@@ -11950,20 +11954,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-tutorial005.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.password-form-constructor-fields-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+          case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature, python.call_outcome]
       supported_slice: >-
         Direct API probes compare the public constructor signatures. Selected
         ASGI inputs verify username/password/client fields, omitted grant_type
         and client fields, Unicode-whitespace scope splitting, dependency
         integration, and request-schema generation. Request.form parsing and
         FormData remain within the pinned Starlette-RS contract; multipart,
-        file parts, and parser errors remain outside this slice.
+        file parts, and parser errors remain outside this slice. Direct
+        initializer calls compare missing-credentials, positional-credentials,
+        and unexpected-keyword errors.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+          - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected cases remain unverified.
         rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
     fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__:
       rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
@@ -11985,19 +11993,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-tutorial005.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml
           case_id: fastapi.security-tutorial005.password-form-constructor-fields-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+          case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
       feature_ids: [dependency-security, request-validation]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature, python.call_outcome]
       supported_slice: >-
         The exact keyword-only constructor signature matches the source. An
         independent URL-encoded request observes the stored username,
         password/client-secret predicates, optional defaults, and scopes after
-        Unicode-whitespace splitting. Other encodings and direct-constructor
-        error wording are not selected.
+        Unicode-whitespace splitting. Direct initializer calls compare
+        missing-credentials, positional-credentials, and unexpected-keyword
+        errors. Other encodings and error combinations remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+          - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected cases remain unverified.
         rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
     fastapi.security.OAuth2PasswordRequestFormStrict:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestFormStrict

@@ -4,7 +4,7 @@ import inspect
 from typing import Annotated, Any
 
 from fastapi import FastAPI, Security
-from fastapi.security import OAuth2AuthorizationCodeBearer, OpenIdConnect
+from fastapi.security import OAuth2AuthorizationCodeBearer, OAuth2PasswordRequestForm, OpenIdConnect
 
 
 class NamedAuthorizationCodeBearer(OAuth2AuthorizationCodeBearer):
@@ -113,6 +113,7 @@ def create_app(factory_input: dict[str, Any], workload_trace: list[str]) -> Fast
 def create_argument_bundles() -> dict[str, dict[str, object]]:
     code = OAuth2AuthorizationCodeBearer("/initial-authorize", "/initial-token")
     openid = OpenIdConnect(openIdConnectUrl="/initial-openid")
+    password_form = OAuth2PasswordRequestForm(username="initial-user", password="initial-password")
     return {
         "code-explicit": {
             "args": [code, "/replacement-authorize", "/replacement-token"],
@@ -154,5 +155,18 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "openid-unexpected-keyword": {
             "args": [openid],
             "kwargs": {"openIdConnectUrl": "/replacement-openid", "unknown": "value"},
+        },
+        "password-form-missing-credentials": {"args": [password_form], "kwargs": {}},
+        "password-form-positional-credentials": {
+            "args": [password_form, "replacement-user", "replacement-password"],
+            "kwargs": {},
+        },
+        "password-form-unexpected-keyword": {
+            "args": [password_form],
+            "kwargs": {
+                "username": "replacement-user",
+                "password": "replacement-password",
+                "unknown": "value",
+            },
         },
     }

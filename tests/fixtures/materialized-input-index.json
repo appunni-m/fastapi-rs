@@ -31748,19 +31748,26 @@
     {
       "id": "security-explicit-initializer-api",
       "input_path": "tests/fixtures/inputs/parity/security-explicit-initializer-api.json",
-      "input_sha256": "b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7",
+      "input_sha256": "d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1",
       "recipe_path": "tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml",
-      "recipe_sha256": "d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead",
+      "recipe_sha256": "0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607",
       "case_ids": [
         "fastapi.security.explicit-initializer-api.oauth2-code",
-        "fastapi.security.explicit-initializer-api.openid"
+        "fastapi.security.explicit-initializer-api.openid",
+        "fastapi.security.explicit-initializer-api.oauth2-password-form"
       ],
       "workload_path": "tests/fixtures/workloads/security_explicit_reinitialization.py",
-      "workload_sha256": "04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec",
+      "workload_sha256": "8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988",
       "api_definitions": [
         {
           "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
           "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-password-form",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__",
           "path": "fastapi/security/oauth2.py",
           "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
         },
@@ -31812,6 +31819,33 @@
           "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
           "probe_id": "code-unexpected-keyword",
           "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-password-form",
+          "probe_id": "password-form-missing-credentials",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-password-form",
+          "probe_id": "password-form-positional-credentials",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-password-form",
+          "probe_id": "password-form-unexpected-keyword",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.call_outcome"
@@ -31886,6 +31920,13 @@
           "requirement_refs": [
             "api:fastapi.security.open_id_connect_url.OpenIdConnect.__init__"
           ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-password-form",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__"
+          ]
         }
       ]
     },
@@ -31914,7 +31955,7 @@
         "fastapi.security.explicit-reinitialization.openid-unexpected-keyword"
       ],
       "workload_path": "tests/fixtures/workloads/security_explicit_reinitialization.py",
-      "workload_sha256": "04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec",
+      "workload_sha256": "8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988",
       "case_contracts": [
         {
           "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-bound",

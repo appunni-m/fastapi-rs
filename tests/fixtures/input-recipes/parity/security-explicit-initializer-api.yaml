@@ -117,3 +117,37 @@ cases:
     kind: upstream_api_definition
     sha256: 57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e
     symbol_id: fastapi.security.open_id_connect_url.OpenIdConnect.__init__
+- case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
+  probes:
+  - probe_id: password-form-missing-credentials
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordRequestForm.__init__
+    argument_bundle: password-form-missing-credentials
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: password-form-positional-credentials
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordRequestForm.__init__
+    argument_bundle: password-form-positional-credentials
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: password-form-unexpected-keyword
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordRequestForm.__init__
+    argument_bundle: password-form-unexpected-keyword
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__

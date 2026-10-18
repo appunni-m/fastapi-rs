@@ -574,13 +574,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 3917fb998cb585c8021135b570473e6d58c1906bfd5099e24a4a8d6aef2081ce
+    sha256: a65ea64375e91a89c95e7cdc3a903ccc516c054d494792895acebc6709e668ed
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 681
-      cases: 2737
+      cases: 2738
       partial_source_mappings: 1934
 
 contract_metadata:
@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 173
     symbols_with_operation_fixture_refs: 286
-    operation_fixture_refs: 2183
+    operation_fixture_refs: 2186
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -58974,7 +58974,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-bound
       observation_selectors:
       - construction.exception_class
@@ -58993,7 +58993,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-unbound
       observation_selectors:
       - construction.exception_class
@@ -59012,7 +59012,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass
       observation_selectors:
       - construction.exception_class
@@ -59031,7 +59031,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero
       observation_selectors:
       - construction.exception_class
@@ -59315,6 +59315,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-explicit-initializer-api
+      input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
+      recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
+      workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
+      case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -59329,6 +59339,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.call_outcome
     - python.import_path
     - python.object_identity
     - python.signature
@@ -59348,7 +59359,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
       known_gaps:
-      - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+      - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected
+        cases remain unverified.
   - id: fastapi.security.OAuth2PasswordRequestFormStrict
     kind: import_binding
     source_candidate_ref: /api_candidates/1471
@@ -59635,7 +59647,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-bound
       observation_selectors:
       - construction.exception_class
@@ -59654,7 +59666,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-unbound
       observation_selectors:
       - construction.exception_class
@@ -59673,7 +59685,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-descriptor-subclass
       observation_selectors:
       - construction.exception_class
@@ -59692,7 +59704,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-auto-error-null
       observation_selectors:
       - construction.exception_class
@@ -64171,7 +64183,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-bound
       observation_selectors:
       - construction.exception_class
@@ -64190,7 +64202,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-unbound
       observation_selectors:
       - construction.exception_class
@@ -64209,7 +64221,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass
       observation_selectors:
       - construction.exception_class
@@ -64228,7 +64240,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero
       observation_selectors:
       - construction.exception_class
@@ -64454,11 +64466,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.oauth2-code
       probe_id: code-duplicate-authorization
       probe_kind: callable
@@ -64466,11 +64478,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.oauth2-code
       probe_id: code-explicit
       probe_kind: callable
@@ -64478,11 +64490,11 @@ api_surface_contract:
       - python.attribute_value
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.oauth2-code
       probe_id: code-missing-token
       probe_kind: callable
@@ -64490,11 +64502,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.oauth2-code
       probe_id: code-too-many-positionals
       probe_kind: callable
@@ -64502,11 +64514,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.oauth2-code
       probe_id: code-unexpected-keyword
       probe_kind: callable
@@ -64581,7 +64593,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-bound
       observation_selectors:
       - construction.exception_class
@@ -64600,7 +64612,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-unbound
       observation_selectors:
       - construction.exception_class
@@ -64619,7 +64631,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass
       observation_selectors:
       - construction.exception_class
@@ -64638,7 +64650,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero
       observation_selectors:
       - construction.exception_class
@@ -64657,7 +64669,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-missing-token
       observation_selectors:
       - construction.exception_class
@@ -64676,7 +64688,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-duplicate-authorization
       observation_selectors:
       - construction.exception_class
@@ -64695,7 +64707,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-unexpected-keyword
       observation_selectors:
       - construction.exception_class
@@ -64714,7 +64726,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.oauth2-code-too-many-positionals
       observation_selectors:
       - construction.exception_class
@@ -64729,11 +64741,11 @@ api_surface_contract:
       - openapi.security
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.oauth2-code
       observation_selectors:
       - python.attribute_value
@@ -65162,6 +65174,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-explicit-initializer-api
+      input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
+      recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
+      workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
+      case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -65176,6 +65198,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.call_outcome
     - python.signature
     operation_scope:
       status: slice-described
@@ -65192,7 +65215,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
       known_gaps:
-      - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+      - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected
+        cases remain unverified.
   - id: fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1552
@@ -65225,6 +65249,42 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id021
     input_workflow_refs:
+    - workflow_id: security-explicit-initializer-api
+      input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
+      recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
+      workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
+      case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
+      probe_id: password-form-missing-credentials
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: security-explicit-initializer-api
+      input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
+      recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
+      workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
+      case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
+      probe_id: password-form-positional-credentials
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: security-explicit-initializer-api
+      input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
+      recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
+      workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
+      case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
+      probe_id: password-form-unexpected-keyword
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -65296,6 +65356,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-explicit-initializer-api
+      input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
+      recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
+      workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
+      case_id: fastapi.security.explicit-initializer-api.oauth2-password-form
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -65310,6 +65380,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.call_outcome
     - python.signature
     operation_scope:
       status: slice-described
@@ -65326,7 +65397,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
       known_gaps:
-      - multipart/file inputs, parser failures, and direct-constructor error wording are not selected.
+      - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected
+        cases remain unverified.
   - id: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict
     kind: class
     source_candidate_ref: /api_candidates/1553
@@ -66025,7 +66097,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-bound
       observation_selectors:
       - construction.exception_class
@@ -66044,7 +66116,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-unbound
       observation_selectors:
       - construction.exception_class
@@ -66063,7 +66135,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-descriptor-subclass
       observation_selectors:
       - construction.exception_class
@@ -66082,7 +66154,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-auto-error-null
       observation_selectors:
       - construction.exception_class
@@ -66262,11 +66334,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.openid
       probe_id: openid-duplicate-receiver
       probe_kind: callable
@@ -66274,11 +66346,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.openid
       probe_id: openid-explicit
       probe_kind: callable
@@ -66286,11 +66358,11 @@ api_surface_contract:
       - python.attribute_value
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.openid
       probe_id: openid-extra-positional-and-url
       probe_kind: callable
@@ -66298,11 +66370,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.openid
       probe_id: openid-missing-url
       probe_kind: callable
@@ -66310,11 +66382,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.openid
       probe_id: openid-positional-url
       probe_kind: callable
@@ -66322,11 +66394,11 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.openid
       probe_id: openid-unexpected-keyword
       probe_kind: callable
@@ -66401,7 +66473,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-bound
       observation_selectors:
       - construction.exception_class
@@ -66420,7 +66492,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-unbound
       observation_selectors:
       - construction.exception_class
@@ -66439,7 +66511,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-descriptor-subclass
       observation_selectors:
       - construction.exception_class
@@ -66458,7 +66530,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-auto-error-null
       observation_selectors:
       - construction.exception_class
@@ -66477,7 +66549,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-missing-url
       observation_selectors:
       - construction.exception_class
@@ -66496,7 +66568,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-positional-url
       observation_selectors:
       - construction.exception_class
@@ -66515,7 +66587,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-extra-positional-and-url
       observation_selectors:
       - construction.exception_class
@@ -66534,7 +66606,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
       recipe_sha256: 4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-reinitialization.openid-unexpected-keyword
       observation_selectors:
       - construction.exception_class
@@ -66549,11 +66621,11 @@ api_surface_contract:
       - openapi.security
     - workflow_id: security-explicit-initializer-api
       input_path: tests/fixtures/inputs/parity/security-explicit-initializer-api.json
-      input_sha256: b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7
+      input_sha256: d269a61e5b7c2984af12249d7d29e7fa822c885f3f7c72e8cba86f7aab5b48b1
       recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
-      recipe_sha256: d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead
+      recipe_sha256: 0d8194c965565f5dc2a1d303f9d273dc841beedf7d23f122bc9304b93b8fa607
       workload_path: tests/fixtures/workloads/security_explicit_reinitialization.py
-      workload_sha256: 04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec
+      workload_sha256: 8d267f2a2fd471668d387db4a6827dbbafc69ddc98e0f3018e422e4369fcd988
       case_id: fastapi.security.explicit-initializer-api.openid
       observation_selectors:
       - python.attribute_value
