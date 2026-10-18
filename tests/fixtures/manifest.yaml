@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 173
     symbols_with_operation_fixture_refs: 291
-    operation_fixture_refs: 2198
+    operation_fixture_refs: 2199
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5317,6 +5317,23 @@ api_surface_contract:
       case_id: fastapi.applications.constructor-empty-version-allowed-when-openapi-disabled
       observation_selectors:
       - python.call_outcome
+    - workflow_id: app-constructor-route-defaults
+      input_path: tests/fixtures/inputs/parity/app-constructor-route-defaults.json
+      input_sha256: 42ff24fd8c748afc050607798c2dee27da56c8b28577826306dbd695e89602ad
+      recipe_path: tests/fixtures/input-recipes/parity/app-constructor-route-defaults.yaml
+      recipe_sha256: a10c0b5d1e37456c83defe4bd775a33b0c1aa3cfa4b69f4ec5fb2a58d1498a4b
+      workload_path: tests/fixtures/workloads/app_constructor_route_defaults.py
+      workload_sha256: ac49b137d8ac23bcbc2ab1eb09c0780a045229147989412133c72920a149c3ae
+      case_id: fastapi.applications.constructor.route-defaults
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: openapi-extra-deep-merge-full-document-review
       input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
       input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
@@ -5628,8 +5645,10 @@ api_surface_contract:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       known_gaps:
       - The linked constructor workflow covers the exact signature, debug=True construction, capture of
-        extra keyword arguments, and empty-version behavior with OpenAPI enabled or disabled; other constructor
-        options and error branches remain unproven.
+        extra keyword arguments, and empty-version behavior with OpenAPI enabled or disabled. The linked
+        ASGI workflow additionally checks deprecated/include_in_schema defaults, extra kwargs, one route's
+        inherited metadata, and its OpenAPI omission; other constructor options and error branches remain
+        unproven.
       - Application routing, lifecycle, middleware, dependency resolution, serialization, and OpenAPI
         behavior outside the linked cases are not established by this constructor slice.
       - Comparison receipts are generated under ignored parity-results and are not committed; regenerate

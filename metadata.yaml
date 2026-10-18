@@ -6319,7 +6319,9 @@ reviewed_api_contract_overlay:
           - >-
             The linked constructor workflow covers the exact signature, debug=True construction,
             capture of extra keyword arguments, and empty-version behavior with OpenAPI enabled or
-            disabled; other constructor options and error branches remain unproven.
+            disabled. The linked ASGI workflow additionally checks deprecated/include_in_schema
+            defaults, extra kwargs, one route's inherited metadata, and its OpenAPI omission; other
+            constructor options and error branches remain unproven.
           - >-
             Application routing, lifecycle, middleware, dependency resolution, serialization, and
             OpenAPI behavior outside the linked cases are not established by this constructor slice.
@@ -6330,8 +6332,10 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         The root export resolves to `fastapi.applications.FastAPI`. The linked direct API workflow
         compares the exact constructor signature, debug=True construction, extra-keyword capture,
-        and empty-version validation with OpenAPI enabled and disabled. Other constructor options
-        and application behavior are outside this bounded slice.
+        and empty-version validation with OpenAPI enabled and disabled. The linked ASGI workflow
+        compares deprecated/include_in_schema defaults and extra kwargs through one GET route,
+        including route metadata and OpenAPI exclusion. Other constructor options and application
+        behavior are outside this bounded slice.
       source_evidence:
         - {path: fastapi/__init__.py}
         - {path: fastapi/applications.py, symbol: FastAPI}
@@ -6342,6 +6346,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor-empty-version-rejected
         - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
           case_id: fastapi.applications.constructor-empty-version-allowed-when-openapi-disabled
+        - recipe_path: tests/fixtures/input-recipes/parity/app-constructor-route-defaults.yaml
+          case_id: fastapi.applications.constructor.route-defaults
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
           case_id: fastapi.openapi-extra.full-document-merge-add-override
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
