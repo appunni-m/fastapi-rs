@@ -5916,6 +5916,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
+          case_id: fastapi.routing.apirouter.constructor-signature
+          workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
@@ -7629,6 +7632,9 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
+          case_id: fastapi.routing.apirouter.constructor-signature
+          workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
           workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
@@ -7675,14 +7681,16 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         This workflow constructs default routers and one router with a `prefix`;
         it passes no other APIRouter constructor options apart from the
-        response-precedence case. Source parameters `routes`, `default`,
-        `dependency_overrides_provider`, and `route_class` are omitted by the
-        current native constructor and are not established here. The
+        response-precedence case. The native constructor accepts `routes` and
+        `route_class`, but this workflow does not exercise those parameters.
+        It omits source parameters `default` and
+        `dependency_overrides_provider`, which the native constructor also
+        omits. The focused `apirouter-constructor-signature` workflow compares
+        the public constructor signature directly. The
         `apirouter-redirect-slashes` ASGI workflow mounts a router with the
         default and with `redirect_slashes=False`, observing exact-route
         dispatch and trailing-slash mismatch behavior under FastAPI's request
-        context. Direct exact signature parity, including annotations, remains
-        unverified for the native constructor.
+        context.
 
         The `callbacks` constructor option is accepted and its callback routes
         are compared in the `atlas-pending-callbacks-source-wave` OpenAPI
@@ -7761,6 +7769,12 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
+          - >-
+            The constructor signature is not exact: the target omits `default` and
+            `dependency_overrides_provider`, narrows `tags` from `list[str | Enum] | None`
+            to `list[str] | None`, and uses `strict_content_type=None` instead of the
+            source default `Default(True)`. Source `Annotated` parameter and return
+            annotations are also not currently reproduced.
           - *response_field_lifecycle_gap
           - *response_class_provenance_gap
           - *response_field_serialization_gap
