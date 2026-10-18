@@ -4940,6 +4940,10 @@ fn install_route_operation_descriptors(
     let fast_api_type = py.get_type::<PyFastApi>();
     let api_router_type = py.get_type::<PyApiRouter>();
     api_route_type(py)?.setattr("__signature__", signatures.build_signature(py, "APIRoute")?)?;
+    api_router_type.setattr(
+        "__signature__",
+        signatures.build_signature(py, "APIRouter")?,
+    )?;
     for name in [
         "get", "put", "post", "delete", "options", "head", "patch", "trace",
     ] {

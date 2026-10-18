@@ -18,6 +18,7 @@ CONTRACT_SCHEMA = "fastapi-rs/application-signature-contract@1"
 SIGNATURES = (
     ("FastAPI", "fastapi", "FastAPI"),
     ("APIRoute", "fastapi.routing", "APIRoute"),
+    ("APIRouter", "fastapi.routing", "APIRouter"),
     ("operation", "fastapi.applications", "FastAPI.get"),
     ("openapi", "fastapi.applications", "FastAPI.openapi"),
     ("websocket", "fastapi.applications", "FastAPI.websocket"),
@@ -62,6 +63,7 @@ def build_contract(source_root: Path) -> dict[str, Any]:
     source_objects = {
         "FastAPI": fastapi.FastAPI,
         "APIRoute": routing.APIRoute,
+        "APIRouter": routing.APIRouter,
         "operation": applications.FastAPI.get,
         "openapi": applications.FastAPI.openapi,
         "websocket": applications.FastAPI.websocket,

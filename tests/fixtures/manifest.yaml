@@ -574,7 +574,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 318d80457cfae8aaafc8846679e9d5bd85df77f35eaa5a8c579d46a2d6d46cb7
+    sha256: f4d50dfd66e433aef832a5c3e3f77e98d2193c6784bcc14af0e7baf8b9e6eea9
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1392,9 +1392,9 @@ api_surface_contract:
       - websocket.messages
     - workflow_id: apirouter-constructor-signature
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-signature.json
-      input_sha256: 81d20c9ccad61cd95c7fe628f852eabbe7bfd7f148148c2b3e8e87bdf5f289d5
+      input_sha256: afe3be016b3bbf805a6efa3fbb9d711557bb51169e0fc8f35f46396ac9beeee4
       recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
-      recipe_sha256: 7cd3d2b55920eafc095eb8cab27544a0052d98953f3e5631a8efa05ef661fbf2
+      recipe_sha256: d9a1e0d4673d5fe0e2c20e7923c34c0e1ee6eb9c0e6f18af752d3f8f0777ac29
       workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
       workload_sha256: 8de486419aca3d08631bdc68dbfbd0195dfb58cf9db3f3b68c6b54d7eca31306
       case_id: fastapi.routing.apirouter.constructor-signature
@@ -53313,7 +53313,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-apirouter
       fixture_design_ref: /fixture_designs/372
       observation_selectors: *id020
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: apirouter-constructor-signature
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-signature.json
+      input_sha256: afe3be016b3bbf805a6efa3fbb9d711557bb51169e0fc8f35f46396ac9beeee4
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
+      recipe_sha256: d9a1e0d4673d5fe0e2c20e7923c34c0e1ee6eb9c0e6f18af752d3f8f0777ac29
+      workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
+      workload_sha256: 8de486419aca3d08631bdc68dbfbd0195dfb58cf9db3f3b68c6b54d7eca31306
+      case_id: fastapi.routing.apirouter.constructor-signature
+      probe_id: apirouter-constructor-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: generate-unique-id-multi-methods
       input_path: tests/fixtures/inputs/parity/generate-unique-id-multi-methods.json
@@ -53349,6 +53361,16 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: apirouter-constructor-signature
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-signature.json
+      input_sha256: afe3be016b3bbf805a6efa3fbb9d711557bb51169e0fc8f35f46396ac9beeee4
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
+      recipe_sha256: d9a1e0d4673d5fe0e2c20e7923c34c0e1ee6eb9c0e6f18af752d3f8f0777ac29
+      workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
+      workload_sha256: 8de486419aca3d08631bdc68dbfbd0195dfb58cf9db3f3b68c6b54d7eca31306
+      case_id: fastapi.routing.apirouter.constructor-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -53365,6 +53387,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter/supported_slice
@@ -53410,19 +53433,7 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-apirouter
       fixture_design_ref: /fixture_designs/372
       observation_selectors: *id020
-    input_workflow_refs:
-    - workflow_id: apirouter-constructor-signature
-      input_path: tests/fixtures/inputs/parity/apirouter-constructor-signature.json
-      input_sha256: 81d20c9ccad61cd95c7fe628f852eabbe7bfd7f148148c2b3e8e87bdf5f289d5
-      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
-      recipe_sha256: 7cd3d2b55920eafc095eb8cab27544a0052d98953f3e5631a8efa05ef661fbf2
-      workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
-      workload_sha256: 8de486419aca3d08631bdc68dbfbd0195dfb58cf9db3f3b68c6b54d7eca31306
-      case_id: fastapi.routing.apirouter.constructor-signature
-      probe_id: apirouter-constructor-signature
-      probe_kind: callable
-      observation_selectors:
-      - python.signature
+    input_workflow_refs: []
     operation_fixture_refs:
     - workflow_id: apirouter-constructor-starlette-route
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
@@ -53450,16 +53461,6 @@ api_surface_contract:
       - websocket.close_reason
       - websocket.event_order
       - websocket.messages
-    - workflow_id: apirouter-constructor-signature
-      input_path: tests/fixtures/inputs/parity/apirouter-constructor-signature.json
-      input_sha256: 81d20c9ccad61cd95c7fe628f852eabbe7bfd7f148148c2b3e8e87bdf5f289d5
-      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
-      recipe_sha256: 7cd3d2b55920eafc095eb8cab27544a0052d98953f3e5631a8efa05ef661fbf2
-      workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
-      workload_sha256: 8de486419aca3d08631bdc68dbfbd0195dfb58cf9db3f3b68c6b54d7eca31306
-      case_id: fastapi.routing.apirouter.constructor-signature
-      observation_selectors:
-      - python.signature
     - workflow_id: starlette-routing-runtime-upstream
       input_path: tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json
       input_sha256: fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0
@@ -53856,7 +53857,6 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
-    - python.signature
     - websocket.close_code
     - websocket.close_reason
     - websocket.event_order
@@ -53876,10 +53876,10 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       known_gaps:
-      - 'The constructor signature is not exact: the target omits `default` and `dependency_overrides_provider`,
-        narrows `tags` from `list[str | Enum] | None` to `list[str] | None`, and uses `strict_content_type=None`
-        instead of the source default `Default(True)`. Source `Annotated` parameter and return annotations
-        are also not currently reproduced.'
+      - The class-level `inspect.signature(APIRouter)` contract is source-derived, but the constructor
+        call binding still omits `default` and `dependency_overrides_provider`, and narrows `tags` from
+        `list[str | Enum] | None` to `list[str] | None`. Constructor acceptance and behavior for these
+        inputs remain unimplemented.
       - Response-field construction must retain source registration and included effective-context timing,
         schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
         fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary

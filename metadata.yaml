@@ -7632,9 +7632,6 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
-        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
-          case_id: fastapi.routing.apirouter.constructor-signature
-          workload_path: tests/fixtures/workloads/operation_signatures_upstream.py
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
           workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
@@ -7686,7 +7683,10 @@ reviewed_api_contract_overlay:
         It omits source parameters `default` and
         `dependency_overrides_provider`, which the native constructor also
         omits. The focused `apirouter-constructor-signature` workflow compares
-        the public constructor signature directly. The
+        `inspect.signature(APIRouter)` against the pinned public class
+        constructor signature, including annotations and default placeholders;
+        this introspection contract does not establish that every keyword is
+        accepted or behaves equivalently. The
         `apirouter-redirect-slashes` ASGI workflow mounts a router with the
         default and with `redirect_slashes=False`, observing exact-route
         dispatch and trailing-slash mismatch behavior under FastAPI's request
@@ -7770,11 +7770,11 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The constructor signature is not exact: the target omits `default` and
-            `dependency_overrides_provider`, narrows `tags` from `list[str | Enum] | None`
-            to `list[str] | None`, and uses `strict_content_type=None` instead of the
-            source default `Default(True)`. Source `Annotated` parameter and return
-            annotations are also not currently reproduced.
+            The class-level `inspect.signature(APIRouter)` contract is source-derived,
+            but the constructor call binding still omits `default` and
+            `dependency_overrides_provider`, and narrows `tags` from
+            `list[str | Enum] | None` to `list[str] | None`. Constructor acceptance
+            and behavior for these inputs remain unimplemented.
           - *response_field_lifecycle_gap
           - *response_class_provenance_gap
           - *response_field_serialization_gap
@@ -13079,8 +13079,12 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - *generate_unique_id_multi_methods
         - *generate_unique_id_router_add_api_route
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
+          case_id: fastapi.routing.apirouter.constructor-signature
       supported_slice: >-
-        Constructor state only for router prefix, tags, dependencies, default response class,
+        Constructor introspection compares the complete public
+        `inspect.signature(APIRouter)` contract against FastAPI 0.141.1. Constructor
+        state only for router prefix, tags, dependencies, default response class,
         responses/callbacks, route class and lifespan/startup configuration; path-operation
         decorators, `include_router`, event methods, and Starlette route matching remain their
         own operations/contracts. A separate input probes callback-visible defaults when the
