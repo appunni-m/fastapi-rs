@@ -1864,6 +1864,6 @@ APP_DEPENDENCY_WAVE_GAPS = {
     "full_fastapi_manifest": "Every linked case remains a source candidate until the full FastAPI public API manifest is complete and identity-checked.",
     "python_object_observations": "The current ASGI workflow does not express Python object identity/isinstance observations such as APIRoute subclass identity.",
     "dependency_matrix": "The current links do not exhaust all dependency cache keys, sync/async generator forms, nested scopes, app/router overrides, or exception matrices.",
-    "websocket_request_validation": "WebSocket Header/path/query dependency failures remain with request-validation/security waves; generic handshakes, middleware, and unmatched-route close behavior remain Starlette-RS-owned.",
+    "websocket_request_validation": "Missing required WebSocket query validation through Depends is sampled by the validation-handler wave; other Header/path/query dependency combinations remain with request-validation/security waves. Generic handshakes, middleware, and unmatched-route close behavior remain Starlette-RS-owned.",
     "starlette_contract_identity": "Starlette behavior is assigned to the pinned 1.6.0 / 4f250d6b814587e20c5365f0a5f0c4d42bcb929f contract; no sibling Starlette-RS files are modified by this mapping wave.",
 }

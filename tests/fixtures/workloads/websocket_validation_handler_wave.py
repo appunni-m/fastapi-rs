@@ -5,12 +5,16 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Mapping
 from typing import Annotated, Any
 
-from fastapi import Depends, FastAPI, Header, WebSocket
+from fastapi import Depends, FastAPI, Header, Query, WebSocket
 from fastapi.exceptions import WebSocketRequestValidationError
 
 
 async def required_header_dependency(x_missing: Annotated[str, Header()]) -> None:
     del x_missing
+
+
+async def required_query_dependency(required_query: Annotated[str, Query()]) -> None:
+    del required_query
 
 
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
@@ -67,6 +71,14 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
     async def dependency_validation_endpoint(
         websocket: WebSocket,
         _dependency: None = Depends(required_header_dependency),
+        _lease: None = Depends(websocket_validation_lease),
+    ) -> None:
+        del websocket, _dependency, _lease
+
+    @app.websocket("/depends-query-validate/")
+    async def query_dependency_validation_endpoint(
+        websocket: WebSocket,
+        _dependency: None = Depends(required_query_dependency),
         _lease: None = Depends(websocket_validation_lease),
     ) -> None:
         del websocket, _dependency, _lease

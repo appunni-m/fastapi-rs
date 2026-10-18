@@ -544134,9 +544134,10 @@
           },
           {
             "case_ids": [
-              "fastapi.websocket-validation.default-handler-close"
+              "fastapi.websocket-validation.default-handler-close",
+              "fastapi.websocket-validation.missing-required-query-dependency"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "websocket.close_code",
@@ -741030,9 +741031,10 @@
             "case_ids": [
               "fastapi.websocket-validation.constructor-override-close",
               "fastapi.websocket-validation.custom-handler-close",
-              "fastapi.websocket-validation.default-handler-close"
+              "fastapi.websocket-validation.default-handler-close",
+              "fastapi.websocket-validation.missing-required-query-dependency"
             ],
-            "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "construction.exception_class",
@@ -758742,7 +758744,7 @@
       "status": "pinned, clean Starlette-RS checkout"
     },
     {
-      "evidence": "Every linked case remains a source candidate until the full FastAPI public API manifest is complete and identity-checked. The current ASGI workflow does not express Python object identity/isinstance observations such as APIRoute subclass identity. The current links do not exhaust all dependency cache keys, sync/async generator forms, nested scopes, app/router overrides, or exception matrices. WebSocket Header/path/query dependency failures remain with request-validation/security waves; generic handshakes, middleware, and unmatched-route close behavior remain Starlette-RS-owned. Starlette behavior is assigned to the pinned 1.6.0 / 4f250d6b814587e20c5365f0a5f0c4d42bcb929f contract; no sibling Starlette-RS files are modified by this mapping wave.",
+      "evidence": "Every linked case remains a source candidate until the full FastAPI public API manifest is complete and identity-checked. The current ASGI workflow does not express Python object identity/isinstance observations such as APIRoute subclass identity. The current links do not exhaust all dependency cache keys, sync/async generator forms, nested scopes, app/router overrides, or exception matrices. Missing required WebSocket query validation through Depends is sampled by the validation-handler wave; other Header/path/query dependency combinations remain with request-validation/security waves. Generic handshakes, middleware, and unmatched-route close behavior remain Starlette-RS-owned. Starlette behavior is assigned to the pinned 1.6.0 / 4f250d6b814587e20c5365f0a5f0c4d42bcb929f contract; no sibling Starlette-RS files are modified by this mapping wave.",
       "id": "app-dependency-wave-residual-gaps",
       "question": "Which app, dependency, lifecycle, exception, and WebSocket cases still need independent inputs or target observations?",
       "status": "source-reviewed; partial-input-gates-remain"

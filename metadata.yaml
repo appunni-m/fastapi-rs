@@ -2551,6 +2551,10 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
           observation_selectors: [websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.missing-required-query-dependency
+          workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+          observation_selectors: [websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.constructor-override-close
           workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
           observation_selectors: [websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
@@ -2853,6 +2857,8 @@ reviewed_api_contract_overlay:
           observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.status, http.headers.ordered, http.body.bytes, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.default-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.missing-required-query-dependency
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
@@ -4420,6 +4426,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-invalid-data
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.default-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.missing-required-query-dependency
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
@@ -9333,6 +9341,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.websocket-function-scope-isolated
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml
           case_id: fastapi.dependencies.websocket-request-scope-isolated
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.missing-required-query-dependency
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml
           case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-http
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml
@@ -10137,15 +10147,21 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.query
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.missing-required-query-dependency
+          workload_path: tests/fixtures/workloads/websocket_validation_handler_wave.py
+          observation_selectors: [websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace]
       feature_ids: [request-validation]
-      observation_selectors: [python.signature]
+      observation_selectors: [python.signature, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace]
       supported_slice: >-
         FastAPI-RS creates a Python Query class derived from its Param class and
         Pydantic FieldInfo, and supplies a Rust-backed __init__ callable with
         the reviewed source signature, confirmed by the identity-checked API
-        workflow. The class remains private/internal in candidate review; this
-        signature workflow does not compare construction values, warning
-        provenance, exception behavior, or class MRO.
+        workflow. The missing-required-WebSocket-query workflow also exercises
+        a default `Query()` marker through dependency resolution and observes
+        the resulting close contract. The class remains private/internal in
+        candidate review; these workflows do not compare arbitrary construction
+        values, warning provenance, or class MRO.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -11129,6 +11145,8 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.default-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.missing-required-query-dependency
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
