@@ -70,6 +70,8 @@ remains in progress, so no overall compatibility claim is made.
   `make developer-tools-inventory-update` to resolve and refresh it.
 - [Parity and benchmark plan](docs/PARITY_BENCHMARK_PLAN.md) and
   [license analysis](docs/LICENSING.md) define the next contract and release work.
+- [Release preparation](docs/RELEASE.md) records local artifact checks, the first
+  publication sequence, and current registry blockers.
 - FastAPI-derived signature metadata is attributed to original author and MIT
   copyright holder Sebastián Ramírez; the complete required MIT notice is in
   [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and ships with distributions.
