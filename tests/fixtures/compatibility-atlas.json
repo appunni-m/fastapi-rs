@@ -602691,10 +602691,12 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.background.constructor.sequence-inherited-execution",
+              "fastapi.background.task-injection.mixed-sync-async-order",
               "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background",
               "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
@@ -758747,7 +758749,7 @@
       ],
       "starlette_rs_subclass_contract_refs": {
         "resolution": "subclass-contract-operation-links",
-        "scope_note": "The target links the inherited task-list attribute contract and Response's generic dynamic add_task lookup. FastAPI's dependency aggregation and task registration API remain FastAPI-owned.",
+        "scope_note": "The target links inherited task-list attributes and the sibling's generic add_task lookup, sync/async dispatch, sequential execution, and sequence construction requirements without duplicating Starlette's API inventory. FastAPI's dependency aggregation and subclass registration API remain FastAPI-owned.",
         "starlette_symbol": "starlette.background.BackgroundTasks",
         "target_operation_refs": [
           {
@@ -758779,7 +758781,11 @@
             "operation_id": "asgi-call",
             "relationship": "generic Starlette base behavior linked through a FastAPI subclass; FastAPI-owned overrides and FastAPI-RS parity remain separate",
             "requirement_ids": [
-              "starlette.responses.Response.asgi-call.background-tasks-subclass-add-task-dynamic-lookup"
+              "starlette.responses.Response.asgi-call.background-tasks-subclass-add-task-dynamic-lookup",
+              "starlette.responses.Response.asgi-call.background-async-task",
+              "starlette.responses.Response.asgi-call.background-sync-task",
+              "starlette.responses.Response.asgi-call.background-task-order",
+              "starlette.responses.Response.asgi-call.background-task-sequence-constructor"
             ],
             "source_path": "starlette.responses.Response.__call__",
             "surface_id": "starlette.responses.Response",

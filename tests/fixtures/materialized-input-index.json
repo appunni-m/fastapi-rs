@@ -2295,15 +2295,17 @@
     {
       "id": "background-tasks-injection-precedence",
       "input_path": "tests/fixtures/inputs/parity/background-tasks-injection-precedence.json",
-      "input_sha256": "8e7b0397a6e79d96e192950af0926fda27854157acc2e35f4bb1229d65b28992",
+      "input_sha256": "14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83",
       "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
-      "recipe_sha256": "f3e9d98dd5dcc22a19ece62ceab315bcec2358ff423c759d100fea64b745b059",
+      "recipe_sha256": "ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd",
       "case_ids": [
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
+        "fastapi.background.task-injection.mixed-sync-async-order",
+        "fastapi.background.constructor.sequence-inherited-execution",
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background"
       ],
       "workload_path": "tests/fixtures/workloads/background_tasks_injection_precedence.py",
-      "workload_sha256": "c9e6dbacb6901125e3f322a7178b907b386ac66806adedd1cd0d4729c09272db",
+      "workload_sha256": "aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
@@ -2312,6 +2314,20 @@
             "source:documented-example:docs_src/background_tasks/tutorial002_an_py310.py",
             "source:documented-example:docs_src/background_tasks/tutorial002_py310.py",
             "source:documented-page:tutorial/background-tasks.md",
+            "source:upstream-test:tests/test_response_dependency.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.task-injection.mixed-sync-async-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_dependency.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.constructor.sequence-inherited-execution",
+          "verification": "parity",
+          "requirement_refs": [
             "source:upstream-test:tests/test_response_dependency.py"
           ]
         },
@@ -40549,8 +40565,10 @@
       "fixture_id": "fastapi.test.test-response-dependency",
       "workflow_id": "background-tasks-injection-precedence",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.background.constructor.sequence-inherited-execution",
+        "fastapi.background.task-injection.mixed-sync-async-order",
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background",
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
       ],

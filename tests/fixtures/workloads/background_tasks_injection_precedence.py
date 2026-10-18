@@ -3,7 +3,8 @@
 from typing import Annotated
 
 from fastapi import BackgroundTasks, Depends, FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
+from starlette.background import BackgroundTask
 
 
 def create_app() -> FastAPI:
@@ -11,6 +12,9 @@ def create_app() -> FastAPI:
     task_events: list[str] = []
 
     def record_task(label: str) -> None:
+        task_events.append(label)
+
+    async def record_async_task(label: str) -> None:
         task_events.append(label)
 
     def add_nested_task(background_tasks: BackgroundTasks) -> str:
@@ -44,6 +48,24 @@ def create_app() -> FastAPI:
             {"kind": "explicit", "dependency": dependency_value},
             background=explicit_background,
         )
+
+    @app.get("/mixed")
+    async def mixed_sync_async_tasks(background_tasks: BackgroundTasks) -> dict[str, str]:
+        background_tasks.add_task(record_task, "sync-first")
+        background_tasks.add_task(record_async_task, "async-second")
+        background_tasks.add_task(record_task, "sync-third")
+        return {"kind": "mixed"}
+
+    @app.get("/constructor")
+    def constructor_task_sequence() -> Response:
+        background = BackgroundTasks(
+            [
+                BackgroundTask(record_task, "constructor-sync-first"),
+                BackgroundTask(record_async_task, "constructor-async-second"),
+                BackgroundTask(record_task, "constructor-sync-third"),
+            ]
+        )
+        return Response("constructed", media_type="text/plain", background=background)
 
     @app.get("/events")
     def read_task_events() -> dict[str, list[str]]:

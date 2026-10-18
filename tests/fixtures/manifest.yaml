@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 6c8dc3c533adf75fc8265f331940ecaa6129bc3f9fbcd393fe6c5dec79cbee00
+    sha256: 99f79440ab0389a1f288e0e79eb299a5ec51967aa832c73a44340ad42f7b617b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 7877575c739e2584ae1fb3770ed3b0eb0140acc17d51691a4225e74ce9c3df15
+    sha256: f168181f8458d8241bc9dfc0166a78c3c321047ce6149f7f76ad7983bf70b5df
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: d1f6721714fbb493da342cac4fd899d37f80ac3843b7616a8adad7c3dc7b9900
+    sha256: 39bb40e741167c48fb352f76afc1c37321c67d45fe3c8d4f29dc290aa46926c7
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 683
-      cases: 2759
+      cases: 2761
       partial_source_mappings: 1936
 
 contract_metadata:
@@ -1305,7 +1305,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 176
     symbols_with_operation_fixture_refs: 300
-    operation_fixture_refs: 2258
+    operation_fixture_refs: 2261
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1894,6 +1894,28 @@ api_surface_contract:
       case_id: fastapi.background.background-tasks-class
       observation_selectors:
       - python.signature
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0
+      case_id: fastapi.background.task-injection.mixed-sync-async-order
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0
+      case_id: fastapi.background.constructor.sequence-inherited-execution
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -1940,8 +1962,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
       known_gaps:
-      - Generic inherited task behavior and all dependency-injection shapes remain broader than the linked
-        cases.
+      - The linked cases cover nested/endpoint injection, explicit-response precedence, mixed callback
+        types, and sequence construction; generic failure/cancellation and less common injection shapes
+        remain outside the declared scope.
   - id: fastapi.Body
     kind: import_binding
     source_candidate_ref: /api_candidates/2
@@ -22247,22 +22270,22 @@ api_surface_contract:
       - python.signature
     - workflow_id: background-tasks-injection-precedence
       input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
-      input_sha256: 8e7b0397a6e79d96e192950af0926fda27854157acc2e35f4bb1229d65b28992
+      input_sha256: 14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
-      recipe_sha256: f3e9d98dd5dcc22a19ece62ceab315bcec2358ff423c759d100fea64b745b059
+      recipe_sha256: ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd
       workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
-      workload_sha256: c9e6dbacb6901125e3f322a7178b907b386ac66806adedd1cd0d4729c09272db
+      workload_sha256: aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0
       case_id: fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response
       observation_selectors:
       - http.body.bytes
       - http.status
     - workflow_id: background-tasks-injection-precedence
       input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
-      input_sha256: 8e7b0397a6e79d96e192950af0926fda27854157acc2e35f4bb1229d65b28992
+      input_sha256: 14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
-      recipe_sha256: f3e9d98dd5dcc22a19ece62ceab315bcec2358ff423c759d100fea64b745b059
+      recipe_sha256: ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd
       workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
-      workload_sha256: c9e6dbacb6901125e3f322a7178b907b386ac66806adedd1cd0d4729c09272db
+      workload_sha256: aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0
       case_id: fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background
       observation_selectors:
       - http.body.bytes
@@ -22435,12 +22458,23 @@ api_surface_contract:
       - http.status
     - workflow_id: background-tasks-injection-precedence
       input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
-      input_sha256: 8e7b0397a6e79d96e192950af0926fda27854157acc2e35f4bb1229d65b28992
+      input_sha256: 14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
-      recipe_sha256: f3e9d98dd5dcc22a19ece62ceab315bcec2358ff423c759d100fea64b745b059
+      recipe_sha256: ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd
       workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
-      workload_sha256: c9e6dbacb6901125e3f322a7178b907b386ac66806adedd1cd0d4729c09272db
+      workload_sha256: aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0
       case_id: fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0
+      case_id: fastapi.background.task-injection.mixed-sync-async-order
       observation_selectors:
       - http.body.bytes
       - http.status
@@ -22474,9 +22508,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
       known_gaps:
-      - Generic callable scheduling, task ordering, and sync/async dispatch remain Starlette-RS-owned
-        and require their sibling contract evidence.
-      - Invalid-call errors and subclass-specific super() dispatch require further focused coverage.
+      - Generic task failure, cancellation, callable-shape, and invalid-call behavior remains Starlette-RS-owned;
+        only the selected inherited requirements below are linked here.
+      - FastAPI subclass invalid-call errors and less common dependency-injection combinations remain
+        outside the focused cases.
   - id: fastapi.datastructures.Address
     kind: import_binding
     source_candidate_ref: /api_candidates/293
