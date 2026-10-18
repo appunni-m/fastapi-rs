@@ -70,6 +70,9 @@ remains in progress, so no overall compatibility claim is made.
   `make developer-tools-inventory-update` to resolve and refresh it.
 - [Parity and benchmark plan](docs/PARITY_BENCHMARK_PLAN.md) and
   [license analysis](docs/LICENSING.md) define the next contract and release work.
+- FastAPI-derived signature metadata is attributed to original author and MIT
+  copyright holder Sebastián Ramírez; the complete required MIT notice is in
+  [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and ships with distributions.
 
 The `fastapi-rs/` crate is the sole FastAPI implementation. `fastapi-rs-py/`
 builds its private PyO3 extension and ships the thin `fastapi` facade; it is
