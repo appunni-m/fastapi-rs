@@ -6,7 +6,7 @@ import datetime as dt
 import uuid
 from typing import Any
 
-from scripts.parity.comparator import _validate_identity_pair
+from scripts.parity.comparator import _json_exact_equal, _validate_identity_pair
 from scripts.parity.contract import (
     API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
     API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
@@ -30,21 +30,6 @@ def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
         "source": source,
         "target": target,
     }
-
-
-def _json_exact_equal(source: Any, target: Any) -> bool:
-    """Compare JSON values without Python's bool/int/float equality coercions."""
-    if type(source) is not type(target):
-        return False
-    if type(source) is dict:
-        if source.keys() != target.keys():
-            return False
-        return all(_json_exact_equal(source[key], target[key]) for key in source)
-    if type(source) is list:
-        return len(source) == len(target) and all(
-            _json_exact_equal(left, right) for left, right in zip(source, target, strict=True)
-        )
-    return source == target
 
 
 def compare_api_workflow_results(
@@ -139,7 +124,7 @@ def compare_api_workflow_results(
             source_case.get("status") == "product_error"
             and target_case.get("status") == "product_error"
         ):
-            if source_case.get("error") != target_case.get("error"):
+            if not _json_exact_equal(source_case.get("error"), target_case.get("error")):
                 diffs.append(
                     _diff("case", "/error", source_case.get("error"), target_case.get("error"))
                 )
@@ -219,7 +204,7 @@ def compare_api_workflow_results(
                         f"direct API warning sidecar was not selected: {case_id}/{probe_id}"
                     )
             if source_status == "product_error" and target_status == "product_error":
-                if source_probe.get("error") != target_probe.get("error"):
+                if not _json_exact_equal(source_probe.get("error"), target_probe.get("error")):
                     diffs.append(
                         _diff(
                             probe_id,

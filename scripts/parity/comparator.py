@@ -141,8 +141,23 @@ def _validate_identity_pair(
             raise ComparisonError(f"source and target shared dependency differs: {package}")
 
 
+def _json_exact_equal(source: Any, target: Any) -> bool:
+    """Compare JSON values without Python's bool/int/float equality coercions."""
+    if type(source) is not type(target):
+        return False
+    if type(source) is dict:
+        if source.keys() != target.keys():
+            return False
+        return all(_json_exact_equal(source[key], target[key]) for key in source)
+    if type(source) is list:
+        return len(source) == len(target) and all(
+            _json_exact_equal(left, right) for left, right in zip(source, target, strict=True)
+        )
+    return source == target
+
+
 def _compare_error(source: Any, target: Any, path: str, action_id: str) -> list[dict[str, Any]]:
-    if source == target:
+    if _json_exact_equal(source, target):
         return []
     return [
         {
@@ -261,7 +276,7 @@ def _compare_action(
             )
             continue
         comparison = observation_spec["comparison"]
-        if source_observation["values"] != target_observation["values"]:
+        if not _json_exact_equal(source_observation["values"], target_observation["values"]):
             diffs.append(
                 {
                     "action_id": action_id,
@@ -447,13 +462,13 @@ def _compare_warning_sidecar(
     target_warnings = target_phase.get("warnings")
     if not isinstance(source_warnings, list) or not isinstance(target_warnings, list):
         raise ComparisonError("selected warning sidecar is missing from a source or target phase")
-    if source_warnings == target_warnings:
+    if _json_exact_equal(source_warnings, target_warnings):
         return []
     normalizations = phase_spec.get("warning_location_normalizations", [])
     if normalizations:
         source_comparable = _normalize_warning_locations(source_warnings, normalizations, "source")
         target_comparable = _normalize_warning_locations(target_warnings, normalizations, "target")
-        if source_comparable == target_comparable:
+        if _json_exact_equal(source_comparable, target_comparable):
             return []
     return [
         {
@@ -482,10 +497,9 @@ def _normalize_warning_locations(
             raise ComparisonError("warning location normalization rules overlap")
         if matches:
             location = matches[0][side]
-            if (
-                warning.get("filename") == location["filename"]
-                and warning.get("lineno") == location["lineno"]
-            ):
+            if _json_exact_equal(
+                warning.get("filename"), location["filename"]
+            ) and _json_exact_equal(warning.get("lineno"), location["lineno"]):
                 comparable["filename"] = "<reviewed-runtime-frame-difference>"
                 comparable["lineno"] = 0
         normalized.append(comparable)

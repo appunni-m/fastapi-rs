@@ -13,6 +13,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+from scripts.parity.comparator import _json_exact_equal
 from scripts.parity.contract import (
     PROCESS_WORKFLOW_SCHEMA_ID,
     PROCESS_WORKFLOW_SCHEMA_V2_ID,
@@ -268,7 +269,7 @@ def _validate_case_command(
             "inherited": False,
         },
     }
-    if result_case.get("command") != expected_command:
+    if not _json_exact_equal(result_case.get("command"), expected_command):
         raise ProcessComparisonError(
             f"{product} case command does not match the input specification: {case_id}"
         )
@@ -592,7 +593,7 @@ def compare_process_workflow_results(
             artifact_value = json.loads(artifact_bytes)
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise ProcessComparisonError(f"{label} result artifact is not valid JSON") from exc
-        if artifact_value != result:
+        if not _json_exact_equal(artifact_value, result):
             raise ProcessComparisonError(f"{label} result object differs from its artifact")
     if (
         not isinstance(command, list)
