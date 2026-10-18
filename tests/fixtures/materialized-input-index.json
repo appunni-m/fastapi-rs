@@ -948,6 +948,35 @@
       ]
     },
     {
+      "id": "apirouter-default-dispatch",
+      "input_path": "tests/fixtures/inputs/parity/apirouter-default-dispatch.json",
+      "input_sha256": "fbcc7cfe74aba9cb778a4e98a1fe83727dcd08b989661e5035ee947d8d4ab920",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-default-dispatch.yaml",
+      "recipe_sha256": "bd5eb1291fa3f97ad26b6ed72e7651feb50a8cd971d2a92e53339e4a591418d9",
+      "case_ids": [
+        "fastapi.routing.apirouter.default-http-miss",
+        "fastapi.routing.apirouter.default-websocket-miss"
+      ],
+      "workload_path": "tests/fixtures/workloads/apirouter_default_dispatch.py",
+      "workload_sha256": "bd0bc55f50dd0e4323d8bd7512be971e023b35c9ce0c101f54a6ccb32dd53528",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.default-http-miss",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apirouter.default-websocket-miss",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_ws_router.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "apirouter-default-response-class",
       "input_path": "tests/fixtures/inputs/parity/apirouter-default-response-class.json",
       "input_sha256": "bdde2b75c1103044e059627a77f8bb193041bbe31c0d3d3ff8be41c61e7c6306",
@@ -965,6 +994,27 @@
           "requirement_refs": [
             "source:documented-page:advanced/custom-response.md",
             "source:upstream-test:tests/test_include_router_defaults_overrides.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "apirouter-dependency-overrides-provider-mounted-asgi",
+      "input_path": "tests/fixtures/inputs/parity/apirouter-dependency-overrides-provider-mounted-asgi.json",
+      "input_sha256": "66caf342f6e19436791d9e32101affa17a6d4ee87074ddc5eabf6a3b0cec2664",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-dependency-overrides-provider-mounted-asgi.yaml",
+      "recipe_sha256": "994b1698c48ca55da3f0391e0eb37327c064c9dc9c65f0dcb374002dcfe5560b",
+      "case_ids": [
+        "fastapi.routing.apirouter.dependency-overrides-provider-mounted-asgi"
+      ],
+      "workload_path": "tests/fixtures/workloads/apirouter_dependency_overrides_provider_asgi.py",
+      "workload_sha256": "2c35513d9f4375d86a3c90c40cd6485c96677b4d0c61e1740c93da647b1d8980",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.dependency-overrides-provider-mounted-asgi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py"
           ]
         }
       ]
@@ -38640,6 +38690,39 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "apirouter-default-dispatch",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.default-http-miss"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "apirouter-default-dispatch",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.default-websocket-miss"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "websocket.close_code",
+        "websocket.close_reason",
+        "websocket.event_order"
+      ]
+    },
+    {
       "source_item_id": "documented-page:advanced/custom-response.md",
       "fixture_id": "fastapi.docs.advanced-custom-response",
       "workflow_id": "apirouter-default-response-class",
@@ -38676,6 +38759,22 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "apirouter-dependency-overrides-provider-mounted-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.body.json, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.dependency-overrides-provider-mounted-asgi"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.body.json",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

@@ -1,0 +1,74 @@
+# Pinned source basis for the configured ASGI default:
+# - FastAPI 0.141.1 fastapi/routing.py:2384-2392 documents the APIRouter
+#   `default` ASGIApp; :2532-2537 forwards it to Starlette Router; :2719-2781
+#   dispatches unmatched scopes to `self.default` after redirects and fallback routes.
+# - Starlette 1.6.0 starlette/routing.py:573-590 stores the configured default;
+#   :672-720 runs it after route matching. Its built-in miss path is at :616-629.
+# - Starlette 1.6.0 starlette/websockets.py:190-196 defines the built-in close.
+# The upstream tests below cover the neighboring HTTP/WebSocket miss paths; neither
+# directly asserts a custom APIRouter(default=...) callback.
+schema: fastapi-rs/python-asgi-workflow@14
+workload:
+  file: tests/fixtures/workloads/apirouter_default_dispatch.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.routing.apirouter.default-http-miss
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: direct-router-http-miss
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /missing
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+- case_id: fastapi.routing.apirouter.default-websocket-miss
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: direct-router-websocket-miss
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /missing
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}

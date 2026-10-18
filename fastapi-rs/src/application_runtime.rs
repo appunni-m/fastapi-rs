@@ -2465,6 +2465,8 @@ impl PyApiRouteState {
                 None,
                 None,
                 true,
+                None,
+                None,
                 RouteClassArgument::Omitted,
                 None,
                 None,
@@ -4674,9 +4676,12 @@ impl PyFastApiRouteHandler {
                 scope,
                 receive,
                 py.None(),
-                Some(route_index),
-                dependency_overrides_provider,
-                Some(request.clone().unbind()),
+                FastApiCallOptions {
+                    forced_route_index: Some(route_index),
+                    route_dependency_overrides_provider: dependency_overrides_provider,
+                    router_default: None,
+                    provided_request: Some(request.clone().unbind()),
+                },
             ),
         )
     }
@@ -4714,6 +4719,8 @@ struct PyRawWebSocketDecorator {
 pub(crate) struct PyApiRouter {
     inner: ApiRouterInner,
     prefix: String,
+    default: Option<Py<PyAny>>,
+    dependency_overrides_provider: Option<Py<PyAny>>,
     route_class: Py<PyAny>,
     tags: Vec<String>,
     deprecated: Option<bool>,
@@ -4862,8 +4869,10 @@ impl PyOperationRouteCallable {
             .map(|kwargs| kwargs.bind(py))
             .or(kwargs);
         let mut router_kwargs = None;
+        let mut dependency_overrides_provider = None;
         let method_instance = if self.is_router {
             let router = instance.extract::<PyRef<'_, PyApiRouter>>()?;
+            dependency_overrides_provider = router.route_dependency_overrides_provider(py)?;
             let effective_kwargs = PyDict::new(py);
             if let Some(kwargs) = forwarded_kwargs {
                 for (key, value) in kwargs.iter() {
@@ -4908,7 +4917,7 @@ impl PyOperationRouteCallable {
         if self.is_router {
             let mut decorator = result.extract::<PyRefMut<'_, PyOperationDecorator>>()?;
             decorator.deprecated_precombined = true;
-            decorator.dependency_overrides_provider = None;
+            decorator.dependency_overrides_provider = dependency_overrides_provider;
         }
         Ok(result.unbind())
     }
@@ -5207,6 +5216,8 @@ impl PyFastApi {
                     None,
                     None,
                     true,
+                    None,
+                    None,
                     RouteClassArgument::Omitted,
                     None,
                     None,
@@ -6617,7 +6628,7 @@ impl PyFastApi {
             destination,
             &source_inner,
             &source,
-            &dependency_overrides_provider,
+            Some(&dependency_overrides_provider),
             RouterIncludePolicy {
                 prefix: &prefix,
                 frontend_prefix: &frontend_merge_prefix,
@@ -8164,6 +8175,8 @@ impl PyApiRouter {
         Ok(Self {
             inner,
             prefix: String::new(),
+            default: None,
+            dependency_overrides_provider: None,
             route_class,
             tags: app_state.router_tags.clone(),
             deprecated: app_state.router_deprecated,
@@ -8180,12 +8193,25 @@ impl PyApiRouter {
     fn inner_app(&self, py: Python<'_>) -> PyResult<Py<PyFastApi>> {
         self.inner.app(py)
     }
+
+    fn route_dependency_overrides_provider(&self, py: Python<'_>) -> PyResult<Option<Py<PyAny>>> {
+        if let Some(provider) = self.dependency_overrides_provider.as_ref() {
+            return Ok(Some(provider.clone_ref(py)));
+        }
+        match &self.inner {
+            ApiRouterInner::Owned(_) => Ok(None),
+            ApiRouterInner::FastApiWeak(_) => {
+                let app = self.inner_app(py)?;
+                fastapi_public_instance(py, &app).map(Some)
+            }
+        }
+    }
 }
 
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, routes = None, redirect_slashes = true, route_class = RouteClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, routes = None, redirect_slashes = true, default = None, dependency_overrides_provider = None, route_class = RouteClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -8201,6 +8227,8 @@ impl PyApiRouter {
         callbacks: Option<Py<PyAny>>,
         routes: Option<Py<PyAny>>,
         redirect_slashes: bool,
+        default: Option<Py<PyAny>>,
+        dependency_overrides_provider: Option<Py<PyAny>>,
         route_class: RouteClassArgument,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
@@ -8283,6 +8311,8 @@ impl PyApiRouter {
         Ok(Self {
             inner: ApiRouterInner::Owned(inner),
             prefix: prefix.to_owned(),
+            default,
+            dependency_overrides_provider,
             route_class,
             tags: router_tags,
             deprecated,
@@ -8299,12 +8329,48 @@ impl PyApiRouter {
         receive: Py<PyAny>,
         send: Py<PyAny>,
     ) -> PyResult<Py<PyAny>> {
-        fastapi_core_call(py, self.inner_app(py)?, scope, receive, send)
+        let default = self.default.as_ref().map(|default| default.clone_ref(py));
+        let dependency_overrides_provider = self.route_dependency_overrides_provider(py)?;
+        fastapi_core_call(
+            py,
+            self.inner_app(py)?,
+            scope,
+            receive,
+            send,
+            default,
+            dependency_overrides_provider,
+        )
     }
 
     #[getter]
     fn prefix(&self) -> &str {
         &self.prefix
+    }
+
+    #[getter]
+    fn default(&self, py: Python<'_>) -> Py<PyAny> {
+        self.default
+            .as_ref()
+            .map(|default| default.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[setter]
+    fn set_default(&mut self, default: Option<Py<PyAny>>) {
+        self.default = default;
+    }
+
+    #[getter]
+    fn dependency_overrides_provider(&self, py: Python<'_>) -> Py<PyAny> {
+        self.dependency_overrides_provider
+            .as_ref()
+            .map(|provider| provider.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[setter]
+    fn set_dependency_overrides_provider(&mut self, provider: Option<Py<PyAny>>) {
+        self.dependency_overrides_provider = provider;
     }
 
     #[getter]
@@ -8454,11 +8520,11 @@ impl PyApiRouter {
             .iter()
             .map(|method| method.extract::<String>())
             .collect::<PyResult<Vec<_>>>()?;
-        let (inner, is_fastapi_router, configured_route_class) = {
+        let (inner, dependency_overrides_provider, configured_route_class) = {
             let router = slf.bind(py).borrow();
             (
                 router.inner_app(py)?,
-                matches!(router.inner, ApiRouterInner::FastApiWeak(_)),
+                router.route_dependency_overrides_provider(py)?,
                 router.route_class.clone_ref(py),
             )
         };
@@ -8467,11 +8533,6 @@ impl PyApiRouter {
                 route_class_override
             }
             _ => configured_route_class,
-        };
-        let dependency_overrides_provider = if is_fastapi_router {
-            Some(fastapi_public_instance(py, &inner)?)
-        } else {
-            None
         };
         let decorator = operation_decorator(
             inner.clone_ref(py),
@@ -8659,7 +8720,10 @@ impl PyApiRouter {
         inherited_dependencies.extend(dependencies.unwrap_or_default());
         let deprecated = combined_deprecated(deprecated, parent_deprecated);
         let include_in_schema = include_in_schema && parent_include_in_schema;
-        let dependency_overrides_provider = fastapi_public_instance(py, &inner)?;
+        let dependency_overrides_provider = slf
+            .bind(py)
+            .borrow()
+            .route_dependency_overrides_provider(py)?;
         let source = router_inner.bind(py).borrow();
         let mut destination = inner.bind(py).borrow_mut();
         if source.lifespan.is_included_by(py, &destination.lifespan)? {
@@ -8684,7 +8748,7 @@ impl PyApiRouter {
             &mut destination,
             &router_inner,
             &source,
-            &dependency_overrides_provider,
+            dependency_overrides_provider.as_ref(),
             RouterIncludePolicy {
                 prefix: &prefix,
                 frontend_prefix: &frontend_merge_prefix,
@@ -9284,7 +9348,7 @@ fn merge_router_routes(
     app: &mut PyFastApi,
     source_router: &Py<PyFastApi>,
     source: &PyFastApi,
-    dependency_overrides_provider: &Py<PyAny>,
+    dependency_overrides_provider: Option<&Py<PyAny>>,
     policy: RouterIncludePolicy<'_>,
 ) -> PyResult<()> {
     merge_router_routes_from(
@@ -9657,7 +9721,7 @@ fn merge_router_routes_from(
     app: &mut PyFastApi,
     source_router: &Py<PyFastApi>,
     source: &PyFastApi,
-    dependency_overrides_provider: &Py<PyAny>,
+    dependency_overrides_provider: Option<&Py<PyAny>>,
     policy: RouterIncludePolicy<'_>,
     starts: RouterMergeStarts,
 ) -> PyResult<()> {
@@ -9785,7 +9849,7 @@ fn merge_router_routes_from(
                 response_model_exclude_none: source_route.response_model_exclude_none,
                 response_class: &response_class,
                 response_class_resolution: Some(&response_class_resolution),
-                dependency_overrides_provider: Some(dependency_overrides_provider),
+                dependency_overrides_provider,
                 callbacks: Some(&callbacks),
                 strict_content_type: &strict_content_type,
                 stream_item_type: source_route.stream_item_type.as_ref(),
@@ -10235,7 +10299,7 @@ fn refresh_included_router_routes_inner(
             &mut destination,
             &source_router,
             &source,
-            &dependency_overrides_provider,
+            Some(&dependency_overrides_provider),
             RouterIncludePolicy {
                 prefix: &include.merge_prefix,
                 frontend_prefix: &include.frontend_merge_prefix,
@@ -15697,10 +15761,22 @@ fn fastapi_core_call(
     scope: Py<PyAny>,
     receive: Py<PyAny>,
     send: Py<PyAny>,
+    router_default: Option<Py<PyAny>>,
+    route_dependency_overrides_provider: Option<Py<PyAny>>,
 ) -> PyResult<Py<PyAny>> {
     into_python_awaitable(
         py,
-        FastApiCall::new(app, scope, receive, send, None, None, None),
+        FastApiCall::new(
+            app,
+            scope,
+            receive,
+            send,
+            FastApiCallOptions {
+                route_dependency_overrides_provider,
+                router_default,
+                ..FastApiCallOptions::default()
+            },
+        ),
     )
 }
 
@@ -15720,9 +15796,11 @@ fn fastapi_route_core_call(
             scope,
             receive,
             send,
-            Some(route_index),
-            dependency_overrides_provider,
-            None,
+            FastApiCallOptions {
+                forced_route_index: Some(route_index),
+                route_dependency_overrides_provider: dependency_overrides_provider,
+                ..FastApiCallOptions::default()
+            },
         ),
     )
 }
@@ -15760,9 +15838,18 @@ fn is_async_custom_route_handler(py: Python<'_>, handler: &Bound<'_, PyAny>) -> 
         .extract::<bool>()
 }
 
+#[derive(Default)]
+struct FastApiCallOptions {
+    forced_route_index: Option<usize>,
+    route_dependency_overrides_provider: Option<Py<PyAny>>,
+    router_default: Option<Py<PyAny>>,
+    provided_request: Option<Py<PyAny>>,
+}
+
 struct FastApiCall {
     app: Py<PyFastApi>,
     route_dependency_overrides_provider: Option<Py<PyAny>>,
+    router_default: Option<Py<PyAny>>,
     scope: Py<PyAny>,
     receive: Py<PyAny>,
     send: Py<PyAny>,
@@ -15800,14 +15887,19 @@ impl FastApiCall {
         scope: Py<PyAny>,
         receive: Py<PyAny>,
         send: Py<PyAny>,
-        forced_route_index: Option<usize>,
-        route_dependency_overrides_provider: Option<Py<PyAny>>,
-        provided_request: Option<Py<PyAny>>,
+        options: FastApiCallOptions,
     ) -> Self {
+        let FastApiCallOptions {
+            forced_route_index,
+            route_dependency_overrides_provider,
+            router_default,
+            provided_request,
+        } = options;
         let route_handler_response = provided_request.is_some();
         Self {
             app,
             route_dependency_overrides_provider,
+            router_default,
             scope,
             receive,
             send,
@@ -16973,6 +17065,13 @@ impl FastApiCall {
         if let Some(action) = self.dispatch_frontend_route(py, &route_path, &method)? {
             return Ok(action);
         }
+        if let Some(default) = self
+            .router_default
+            .as_ref()
+            .map(|default| default.clone_ref(py))
+        {
+            return self.dispatch_router_default(py, default);
+        }
         let exception = py
             .import("starlette.exceptions")?
             .getattr("HTTPException")?
@@ -17055,7 +17154,14 @@ impl FastApiCall {
                 "selected FastAPI WebSocket route is missing from dispatch order",
             ));
         }
-        self.close_unmatched_websocket(py)
+        match self
+            .router_default
+            .as_ref()
+            .map(|default| default.clone_ref(py))
+        {
+            Some(default) => self.dispatch_router_default(py, default),
+            None => self.close_unmatched_websocket(py),
+        }
     }
 
     fn begin_fastapi_websocket_route(
@@ -17170,6 +17276,20 @@ impl FastApiCall {
             self.send.bind(py),
         ))?;
         self.pending = Some(PendingAction::WebSocketClose);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn dispatch_router_default(
+        &mut self,
+        py: Python<'_>,
+        default: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let awaitable = default.bind(py).call1((
+            self.scope.bind(py),
+            self.receive.bind(py),
+            self.send.bind(py),
+        ))?;
+        self.pending = Some(PendingAction::MountedApp);
         Ok(MachineAction::Await(awaitable.unbind()))
     }
 

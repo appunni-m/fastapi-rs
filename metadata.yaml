@@ -7594,6 +7594,30 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
+        - path: fastapi/routing.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 2282
+          end_line: 2568
+        - path: fastapi/routing.py
+          symbol: app
+          kind: source-definition
+          start_line: 2719
+          end_line: 2781
+        - path: starlette/routing.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Router
+          symbol: __init__
+          start_line: 574
+          end_line: 614
+        - path: starlette/routing.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Router
+          symbol: app
+          start_line: 672
+          end_line: 720
         - {path: fastapi/utils.py, symbol: generate_unique_id}
         - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
         - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
@@ -7632,6 +7656,15 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-websocket-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-dispatch.yaml
+          case_id: fastapi.routing.apirouter.default-http-miss
+          workload_path: tests/fixtures/workloads/apirouter_default_dispatch.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-dispatch.yaml
+          case_id: fastapi.routing.apirouter.default-websocket-miss
+          workload_path: tests/fixtures/workloads/apirouter_default_dispatch.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-dependency-overrides-provider-mounted-asgi.yaml
+          case_id: fastapi.routing.apirouter.dependency-overrides-provider-mounted-asgi
+          workload_path: tests/fixtures/workloads/apirouter_dependency_overrides_provider_asgi.py
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
           workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
@@ -7680,13 +7713,14 @@ reviewed_api_contract_overlay:
         it passes no other APIRouter constructor options apart from the
         response-precedence case. The native constructor accepts `routes` and
         `route_class`, but this workflow does not exercise those parameters.
-        It omits source parameters `default` and
-        `dependency_overrides_provider`, which the native constructor also
-        omits. The focused `apirouter-constructor-signature` workflow compares
+        This workflow omits source parameters `default` and
+        `dependency_overrides_provider`; focused ASGI inputs cover custom
+        `default` dispatch on HTTP and WebSocket misses and dependency solving
+        through an explicit provider. The focused
+        `apirouter-constructor-signature` workflow compares
         `inspect.signature(APIRouter)` against the pinned public class
-        constructor signature, including annotations and default placeholders;
-        this introspection contract does not establish that every keyword is
-        accepted or behaves equivalently. The
+        constructor signature, including annotations and default placeholders.
+        The
         `apirouter-redirect-slashes` ASGI workflow mounts a router with the
         default and with `redirect_slashes=False`, observing exact-route
         dispatch and trailing-slash mismatch behavior under FastAPI's request
@@ -7770,11 +7804,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The class-level `inspect.signature(APIRouter)` contract is source-derived,
-            but the constructor call binding still omits `default` and
-            `dependency_overrides_provider`, and narrows `tags` from
-            `list[str | Enum] | None` to `list[str] | None`. Constructor acceptance
-            and behavior for these inputs remain unimplemented.
+            The constructor binding narrows `tags` from `list[str | Enum] | None`
+            to `list[str] | None`; Enum-valued tags acceptance remains unimplemented.
           - *response_field_lifecycle_gap
           - *response_class_provenance_gap
           - *response_field_serialization_gap
@@ -13081,15 +13112,25 @@ reviewed_api_contract_overlay:
         - *generate_unique_id_router_add_api_route
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
           case_id: fastapi.routing.apirouter.constructor-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-dispatch.yaml
+          case_id: fastapi.routing.apirouter.default-http-miss
+          workload_path: tests/fixtures/workloads/apirouter_default_dispatch.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-dispatch.yaml
+          case_id: fastapi.routing.apirouter.default-websocket-miss
+          workload_path: tests/fixtures/workloads/apirouter_default_dispatch.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-dependency-overrides-provider-mounted-asgi.yaml
+          case_id: fastapi.routing.apirouter.dependency-overrides-provider-mounted-asgi
+          workload_path: tests/fixtures/workloads/apirouter_dependency_overrides_provider_asgi.py
       supported_slice: >-
         Constructor introspection compares the complete public
-        `inspect.signature(APIRouter)` contract against FastAPI 0.141.1. Constructor
-        state only for router prefix, tags, dependencies, default response class,
-        responses/callbacks, route class and lifespan/startup configuration; path-operation
-        decorators, `include_router`, event methods, and Starlette route matching remain their
-        own operations/contracts. A separate input probes callback-visible defaults when the
-        source's semi-internal `add_api_route` registration path is called directly; it does not
-        classify that method as a public FastAPI contract.
+        `inspect.signature(APIRouter)` contract against FastAPI 0.141.1. Direct ASGI
+        inputs compare a configured `default` on unmatched HTTP and WebSocket scopes,
+        plus dependency solving through an explicit dependency-overrides provider.
+        Other constructor state, path-operation decorators, `include_router`, event
+        methods, and Starlette route matching remain their own operations/contracts.
+        A separate input probes callback-visible defaults when the source's
+        semi-internal `add_api_route` registration path is called directly; it does
+        not classify that method as a public FastAPI contract.
 
     fastapi.security.http.HTTPAuthorizationCredentials.scheme:
       source_evidence:
