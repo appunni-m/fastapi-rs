@@ -1,8 +1,7 @@
 from typing import Annotated
 
-from pydantic import AliasChoices
-
 from fastapi import FastAPI, Query
+from pydantic import AliasChoices
 
 
 def create_app() -> FastAPI:
