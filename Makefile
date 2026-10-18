@@ -47,6 +47,7 @@ export STARLETTE_RS_SOURCE
 SOURCE_RESULT ?=
 TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
+PARITY_FAULT_INPUT ?= tests/fixtures/inputs/parity/route-invocation-fault-contract.json
 PARITY_EMAIL_INPUT ?= tests/fixtures/inputs/parity/extra-models-tutorials-upstream-wave.json
 PARITY_MULTIPART_INPUT ?= tests/fixtures/inputs/parity/request-optional-list-aliases-20261016.json
 PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
@@ -391,9 +392,11 @@ parity-target-email-validation: parity-inputs parity-prepare-target-email-valida
 parity-target-standard-multipart: parity-inputs parity-prepare-target-standard-multipart ## Execute PARITY_MULTIPART_INPUT against the paired locked target profile
 	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_MULTIPART_INPUT)" --python "$(TARGET_STANDARD_MULTIPART_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
-parity-fault-target: parity-inputs fault-injection-build ## Execute fault-contract cases against the isolated fault-enabled target
+parity-fault-target: parity-inputs ## Execute a declared fault-contract workflow against the isolated target
+	$(PYTHON) -m scripts.check_fault_contract_workflow --input "$(PARITY_FAULT_INPUT)"
+	$(MAKE) --no-print-directory fault-injection-build
 	$(FAULT_TARGET_PYTHON) scripts/check_target_runtime_boundary.py
-	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_INPUT)" --python "$(FAULT_TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_FAULT_INPUT)" --python "$(FAULT_TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-compare: ## Compare live source/target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
