@@ -5863,6 +5863,14 @@ reviewed_api_contract_overlay:
         - {path: tests/test_sub_callbacks.py, symbol: test_openapi_schema}
         - {path: docs/en/docs/advanced/openapi-callbacks.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+          case_id: fastapi.routing.apirouter.redirect-slashes-default
+          workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+          case_id: fastapi.routing.apirouter.redirect-slashes-disabled
+          workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-starlette-route.yaml
           case_id: fastapi.routing.apirouter.constructor-starlette-route-prefixed-dispatch
           workload_path: tests/fixtures/workloads/apirouter_constructor_starlette_route.py
@@ -7628,10 +7636,14 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         This workflow constructs default routers and one router with a `prefix`;
         it passes no other APIRouter constructor options apart from the
-        response-precedence case. Source parameters `routes`,
-        `redirect_slashes`, `default`, `dependency_overrides_provider`, and
-        `route_class` are omitted by the current native constructor and are not
-        established here.
+        response-precedence case. Source parameters `routes`, `default`,
+        `dependency_overrides_provider`, and `route_class` are omitted by the
+        current native constructor and are not established here. The
+        `apirouter-redirect-slashes` ASGI workflow mounts a router with the
+        default and with `redirect_slashes=False`, observing exact-route
+        dispatch and trailing-slash mismatch behavior under FastAPI's request
+        context. Direct exact signature parity, including annotations, remains
+        unverified for the native constructor.
 
         The `callbacks` constructor option is accepted and its callback routes
         are compared in the `atlas-pending-callbacks-source-wave` OpenAPI
@@ -7678,7 +7690,9 @@ reviewed_api_contract_overlay:
         routes, nested constructor-route prefixes, and generic HTTP
         partial-match fallback both after a later API full match and when no
         later route fully matches.
-        Slash redirects, route families beyond the sampled Starlette Route,
+        APIRouter slash redirects are covered for the exact route and missing
+        trailing slash with the default and disabled policy. Other redirect
+        combinations, route families beyond the sampled Starlette Route,
         WebSocketRoute, Mount, and Host cases, and other ordering combinations
         remain open.
         Five response-field-lifecycle inputs reach router construction/GET and

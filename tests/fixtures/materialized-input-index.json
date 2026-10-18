@@ -930,6 +930,35 @@
       ]
     },
     {
+      "id": "apirouter-redirect-slashes",
+      "input_path": "tests/fixtures/inputs/parity/apirouter-redirect-slashes.json",
+      "input_sha256": "abb21cf76b9b74afd052450c21de6d4635408005e46064c753e17c384744c36d",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml",
+      "recipe_sha256": "34e62ea4df35ec50fe42f3b863e9338c217eef0595990dd7eaabfad68f7a336b",
+      "case_ids": [
+        "fastapi.routing.apirouter.redirect-slashes-default",
+        "fastapi.routing.apirouter.redirect-slashes-disabled"
+      ],
+      "workload_path": "tests/fixtures/workloads/apirouter_redirect_slashes.py",
+      "workload_sha256": "a4539e1029de6d61458955512f6d30ffeec4b586d2d65fe2ffb8f7beec7e7ebb",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.redirect-slashes-default",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_redirect_slashes.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apirouter.redirect-slashes-disabled",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_redirect_slashes.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "app-constructor-route-defaults",
       "input_path": "tests/fixtures/inputs/parity/app-constructor-route-defaults.json",
       "input_sha256": "42ff24fd8c748afc050607798c2dee27da56c8b28577826306dbd695e89602ad",
@@ -38505,6 +38534,22 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_redirect_slashes.py",
+      "fixture_id": "fastapi.test.test-router-redirect-slashes",
+      "workflow_id": "apirouter-redirect-slashes",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.redirect-slashes-default",
+        "fastapi.routing.apirouter.redirect-slashes-disabled"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

@@ -2464,6 +2464,7 @@ impl PyApiRouteState {
                 None,
                 None,
                 None,
+                true,
                 RouteClassArgument::Omitted,
                 None,
                 None,
@@ -5201,6 +5202,7 @@ impl PyFastApi {
                     None,
                     None,
                     None,
+                    true,
                     RouteClassArgument::Omitted,
                     None,
                     None,
@@ -8179,7 +8181,7 @@ impl PyApiRouter {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, routes = None, route_class = RouteClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, routes = None, redirect_slashes = true, route_class = RouteClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -8194,6 +8196,7 @@ impl PyApiRouter {
         responses: Option<Py<PyAny>>,
         callbacks: Option<Py<PyAny>>,
         routes: Option<Py<PyAny>>,
+        redirect_slashes: bool,
         route_class: RouteClassArgument,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
@@ -8246,7 +8249,7 @@ impl PyApiRouter {
                 Some(py.None()),
                 None,
                 default_response_class,
-                true,
+                redirect_slashes,
                 None,
                 None,
                 on_startup,

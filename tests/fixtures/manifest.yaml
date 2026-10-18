@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 611275f8c7603d0046d978dd652247a62e5679208e9715b22320f74111c223d7
+    sha256: 13e5b58e1e95b0179e788698cb92013ef4c8cf5c650435b12cdf6ca63bc5f1e0
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: e36c7364c9cd7402bcdd776bffc3e791ba0a5bbc03b3feee75429a52087a3d39
+    sha256: 5f32a5f9504a05184027234201328dbf5ae54a1d2fb811e5513d878712f5795c
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: e0e0d4302ac5c116133dbd14168640973929b083158fd43afa09759cfee795c1
+    sha256: 72ddd7566524c76db5259b3e16898057c65161bf735f6bd18f004b4384372e71
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 674
-      cases: 2722
-      partial_source_mappings: 1924
+      workflows: 675
+      cases: 2724
+      partial_source_mappings: 1925
 
 contract_metadata:
   aliases:
@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 286
-    operation_fixture_refs: 2159
+    operation_fixture_refs: 2161
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1334,6 +1334,36 @@ api_surface_contract:
       observation_selectors: &id002 []
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: apirouter-redirect-slashes
+      input_path: tests/fixtures/inputs/parity/apirouter-redirect-slashes.json
+      input_sha256: abb21cf76b9b74afd052450c21de6d4635408005e46064c753e17c384744c36d
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+      recipe_sha256: 34e62ea4df35ec50fe42f3b863e9338c217eef0595990dd7eaabfad68f7a336b
+      workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+      workload_sha256: a4539e1029de6d61458955512f6d30ffeec4b586d2d65fe2ffb8f7beec7e7ebb
+      case_id: fastapi.routing.apirouter.redirect-slashes-default
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: apirouter-redirect-slashes
+      input_path: tests/fixtures/inputs/parity/apirouter-redirect-slashes.json
+      input_sha256: abb21cf76b9b74afd052450c21de6d4635408005e46064c753e17c384744c36d
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+      recipe_sha256: 34e62ea4df35ec50fe42f3b863e9338c217eef0595990dd7eaabfad68f7a336b
+      workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+      workload_sha256: a4539e1029de6d61458955512f6d30ffeec4b586d2d65fe2ffb8f7beec7e7ebb
+      case_id: fastapi.routing.apirouter.redirect-slashes-disabled
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: apirouter-constructor-starlette-route
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-starlette-route.json
       input_sha256: 74e2fadcb609650fdee723d5c2ea2f28852facd9b8fe07c5fd1c1352f2299f02
