@@ -28,6 +28,11 @@ class AliasedItem(BaseModel):
     item_name: str = Field(alias="displayName")
 
 
+class ConditionalCredential(BaseModel):
+    name: str
+    credential: str = Field(exclude_if=lambda value: value == "suppressed")
+
+
 class RequiredOutput(BaseModel):
     name: str
     total: int
@@ -87,6 +92,14 @@ def create_app() -> FastAPI:
     )
     async def serialize_field_name() -> dict[str, str]:
         return {"displayName": "python-field-name"}
+
+    @app.get("/exclude-if/suppressed", response_model=ConditionalCredential)
+    async def exclude_matching_field() -> dict[str, str]:
+        return {"name": "omit", "credential": "suppressed"}
+
+    @app.get("/exclude-if/retained", response_model=ConditionalCredential)
+    async def retain_nonmatching_field() -> dict[str, str]:
+        return {"name": "retain", "credential": "visible"}
 
     @app.get("/invalid-output", response_model=RequiredOutput)
     async def return_invalid_output() -> dict[str, str]:

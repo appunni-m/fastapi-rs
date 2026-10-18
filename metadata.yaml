@@ -8401,6 +8401,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi-extra.deep-merge-and-router-inclusion
           workload_path: tests/fixtures/workloads/openapi_extra_deep_merge.py
           observation_selectors: [openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/response-model-serialization.yaml
+          case_id: fastapi.response-model.exclude-if-predicate
+          workload_path: tests/fixtures/workloads/response_model_serialization.py
+          observation_selectors: [http.status, http.body.bytes]
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -8474,6 +8478,10 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+        The response-model serialization input applies a Pydantic `Field(exclude_if=...)`
+        predicate during GET response encoding: the matching value is omitted and a
+        non-matching value is retained in exact HTTP bodies. Other predicates and
+        field configurations remain unproven.
 
         A direct GET route uses the application callback when no route-level callback is supplied, sampled by `generate-unique-id-function-precedence`. Callback integer and empty-string returns are retained as operation IDs; unhashable returns fail during OpenAPI generation, callback exceptions surface during registration, and duplicate integer IDs emit warnings, sampled by `generate-unique-id-callback-values`.
 

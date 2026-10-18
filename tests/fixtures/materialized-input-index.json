@@ -28415,9 +28415,9 @@
     {
       "id": "response-model-serialization",
       "input_path": "tests/fixtures/inputs/parity/response-model-serialization.json",
-      "input_sha256": "0a37bf2e61308fa42e36c31bf5e767ed1494e3535ad2d54212dbdabe441c7984",
+      "input_sha256": "b37cb7b7c89d58d54f702d75e1b43330441c7ab713baf1b3aa8f848543bbf7ad",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
-      "recipe_sha256": "25b47147ab69ad832073840ec7a0ae87718b046e8445868c761a326f27a5906e",
+      "recipe_sha256": "d65fca8741ad9159831797e445ccbdaf36b4fca5aaf8f04ef40f1095ada24e19",
       "case_ids": [
         "fastapi.response-model.include.nested",
         "fastapi.response-model.exclude.nested",
@@ -28425,10 +28425,11 @@
         "fastapi.response-model.exclude-defaults.explicit-defaults",
         "fastapi.response-model.alias.default-by-alias",
         "fastapi.response-model.alias.field-name-output",
+        "fastapi.response-model.exclude-if-predicate",
         "fastapi.response-model.validation.missing-output-field"
       ],
       "workload_path": "tests/fixtures/workloads/response_model_serialization.py",
-      "workload_sha256": "ae57825c986c7aa48ce0dd37b7800fd8e0b8c60e98c2578f62f48541b0460757",
+      "workload_sha256": "97ad0c2eef29addf432cee59e31e252d96da172c990917fc438f2f6655a7fb83",
       "case_contracts": [
         {
           "case_id": "fastapi.response-model.include.nested",
@@ -28477,6 +28478,14 @@
           "requirement_refs": [
             "source:documented-page:tutorial/response-model.md",
             "source:upstream-test:tests/test_response_by_alias.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-model.exclude-if-predicate",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_response_model_include_exclude.py"
           ]
         },
         {
@@ -61454,11 +61463,12 @@
       "fixture_id": "fastapi.docs.tutorial-response-model",
       "workflow_id": "response-model-serialization",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model.alias.default-by-alias",
         "fastapi.response-model.alias.field-name-output",
         "fastapi.response-model.exclude-defaults.explicit-defaults",
+        "fastapi.response-model.exclude-if-predicate",
         "fastapi.response-model.exclude-unset.explicit-null",
         "fastapi.response-model.exclude.nested",
         "fastapi.response-model.include.nested",
@@ -61505,8 +61515,9 @@
       "fixture_id": "fastapi.test.test-response-model-include-exclude",
       "workflow_id": "response-model-serialization",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.response-model.exclude-if-predicate",
         "fastapi.response-model.exclude.nested",
         "fastapi.response-model.include.nested"
       ],
