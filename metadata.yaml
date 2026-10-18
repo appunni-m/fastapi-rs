@@ -6593,19 +6593,26 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.summary-mutation-before-openapi
           observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.empty-summary
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.summary-mutation-after-openapi-cache
+          observation_selectors: [http.status, http.body.json]
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json]
       supported_slice: >-
         The pinned constructor stores `summary`, and the metadata tutorial lists
         it as an OpenAPI field. The linked input-only cases compare its default,
-        configured value, string reassignment before first schema generation,
-        and the resulting generated `info.summary` through an ASGI endpoint.
+        configured and empty values, string reassignment before and after first
+        schema generation, and the resulting generated `info.summary` through
+        an ASGI endpoint.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::summary
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Deletion, non-string assignment, and mutation after the OpenAPI schema has been cached remain unverified.
+          - Deletion and non-string assignment remain unverified.
     fastapi.applications.FastAPI.description:
       source_evidence:
         - path: fastapi/applications.py

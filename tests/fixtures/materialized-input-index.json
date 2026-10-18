@@ -982,16 +982,18 @@
     {
       "id": "application-attributes",
       "input_path": "tests/fixtures/inputs/parity/application-attributes.json",
-      "input_sha256": "04afa319d68ee3055f9a8169711ef0fcd2b2174270160df2792bc3effdfa36db",
+      "input_sha256": "ab4637dd8384c867cad07444891f1990bb5dea22f5aacfa492395953080e7645",
       "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
-      "recipe_sha256": "d40bb4bd4cecdbe5e7574e8e2570dac4f036fffda5c5175f8a9c889cb4b015c2",
+      "recipe_sha256": "21f41e202f0709b716f00bad083bb8a11772328f41b242dc7cc7317f0cffcccc",
       "case_ids": [
         "fastapi.application.attributes.defaults",
         "fastapi.application.attributes.configured",
-        "fastapi.application.attributes.summary-mutation-before-openapi"
+        "fastapi.application.attributes.summary-mutation-before-openapi",
+        "fastapi.application.attributes.empty-summary",
+        "fastapi.application.attributes.summary-mutation-after-openapi-cache"
       ],
       "workload_path": "tests/fixtures/workloads/application_attributes.py",
-      "workload_sha256": "589d5ce7d61d2249d34bce8e0e1271e637a3dc6032eeaced1094385bdbe277b6",
+      "workload_sha256": "51bb600217f9dda302a267e51475f17d09d42e711678aefd7453740e40bf6b3b",
       "case_contracts": [
         {
           "case_id": "fastapi.application.attributes.defaults",
@@ -1011,6 +1013,21 @@
           "case_id": "fastapi.application.attributes.summary-mutation-before-openapi",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.empty-summary",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.summary-mutation-after-openapi-cache",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md",
             "source:documented-page:tutorial/metadata.md"
           ]
         }
@@ -38419,14 +38436,33 @@
       ]
     },
     {
+      "source_item_id": "documented-page:how-to/extending-openapi.md",
+      "fixture_id": "fastapi.docs.how-to-extending-openapi",
+      "workflow_id": "application-attributes",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.attributes.summary-mutation-after-openapi-cache"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/metadata.md",
       "fixture_id": "fastapi.docs.tutorial-metadata",
       "workflow_id": "application-attributes",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.application.attributes.configured",
         "fastapi.application.attributes.defaults",
+        "fastapi.application.attributes.empty-summary",
+        "fastapi.application.attributes.summary-mutation-after-openapi-cache",
         "fastapi.application.attributes.summary-mutation-before-openapi"
       ],
       "observation_selectors": [

@@ -12,6 +12,7 @@ _UNSET = object()
 def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> FastAPI:
     options = factory_input.copy()
     summary_after_init = options.pop("_summary_after_init", _UNSET)
+    summary_after_openapi = options.pop("_summary_after_openapi", _UNSET)
     app = FastAPI(**options)
     if summary_after_init is not _UNSET:
         app.summary = summary_after_init
@@ -30,5 +31,9 @@ def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> Fas
             "redoc_url": app.redoc_url,
             "swagger_ui_parameters": app.swagger_ui_parameters,
         }
+
+    if summary_after_openapi is not _UNSET:
+        app.openapi()
+        app.summary = summary_after_openapi
 
     return app
