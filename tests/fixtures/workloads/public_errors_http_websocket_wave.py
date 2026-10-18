@@ -4,7 +4,24 @@ from collections.abc import Mapping
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketException
-from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.exceptions import (
+    HTTPException as StarletteHTTPException,
+    WebSocketException as StarletteWebSocketException,
+)
+
+
+def _exception_snapshot(exception: Exception) -> dict[str, object]:
+    exception_type = type(exception)
+    return {
+        "class_module": exception_type.__module__,
+        "class_qualname": exception_type.__qualname__,
+        "mro": [
+            f"{class_type.__module__}.{class_type.__qualname__}"
+            for class_type in exception_type.__mro__
+        ],
+        "args": list(exception.args),
+        "message": str(exception),
+    }
 
 
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
@@ -69,6 +86,33 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             status_code="204",
             detail="Status values are not normalized by the exception constructor.",
         )
+
+    @app.get("/errors/http-constructor-state")
+    async def http_exception_constructor_state() -> dict[str, object]:
+        exception = HTTPException(
+            status_code=422,
+            detail={"field": "display_name", "problems": ["empty", "too_short"]},
+            headers={"X-Exception-Owner": "fastapi"},
+        )
+        return {
+            **_exception_snapshot(exception),
+            "is_starlette_http_exception": isinstance(exception, StarletteHTTPException),
+            "status_code": exception.status_code,
+            "detail": exception.detail,
+            "headers": exception.headers,
+        }
+
+    @app.get("/errors/websocket-constructor-state")
+    async def websocket_exception_constructor_state() -> dict[str, object]:
+        exception = WebSocketException(code=1008, reason="credentials required")
+        return {
+            **_exception_snapshot(exception),
+            "is_starlette_websocket_exception": isinstance(
+                exception, StarletteWebSocketException
+            ),
+            "code": exception.code,
+            "reason": exception.reason,
+        }
 
     @app.websocket("/errors/websocket")
     async def websocket_policy_error(websocket: WebSocket) -> None:

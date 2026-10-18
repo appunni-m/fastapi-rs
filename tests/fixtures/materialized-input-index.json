@@ -22340,9 +22340,9 @@
     {
       "id": "public-errors-http-websocket-wave",
       "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
-      "input_sha256": "05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6",
+      "input_sha256": "efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e",
       "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-      "recipe_sha256": "3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73",
+      "recipe_sha256": "a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184",
       "case_ids": [
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.starlette-base-detail-and-header",
@@ -22351,10 +22351,12 @@
         "fastapi.public-errors.http.reset-content-status-with-detail",
         "fastapi.public-errors.http.not-modified-status-with-detail",
         "fastapi.public-errors.http.numeric-string-status",
+        "fastapi.public-errors.http.constructor-state",
+        "fastapi.public-errors.websocket.constructor-state",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135",
+      "workload_sha256": "e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -22410,6 +22412,22 @@
           "requirement_refs": [
             "source:documented-page:tutorial/handling-errors.md",
             "source:upstream-test:tests/test_starlette_exception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.public-errors.http.constructor-state",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/exceptions.md",
+            "source:upstream-test:tests/test_starlette_exception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.public-errors.websocket.constructor-state",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/exceptions.md",
+            "source:upstream-test:tests/test_ws_router.py"
           ]
         },
         {
@@ -56438,14 +56456,19 @@
       "fixture_id": "fastapi.docs.reference-exceptions",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.public-errors.http.constructor-state",
+        "fastapi.public-errors.websocket.constructor-state",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "observation_selectors": [
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
         "websocket.close_code",
         "websocket.close_reason",
         "websocket.event_order"
@@ -56481,9 +56504,10 @@
       "fixture_id": "fastapi.test.test-starlette-exception",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.bodyless-status-with-detail",
+        "fastapi.public-errors.http.constructor-state",
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.informational-status-with-detail",
         "fastapi.public-errors.http.not-modified-status-with-detail",
@@ -56516,14 +56540,18 @@
       "fixture_id": "fastapi.test.test-ws-router",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.public-errors.websocket.constructor-state",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "observation_selectors": [
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
         "websocket.close_code",
         "websocket.close_reason",
         "websocket.event_order"

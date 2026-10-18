@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: babb113b04bc5f716caed57294fc23b0c8a50cda6f51892d8f34bc8cc89a1190
+    sha256: dbee3dfa6c5899f4e3cf3622a2fd8b645d4aeed6e57422f2baa1d17eff4fbdfa
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 629742ea912dc11481b087489842f82f546f8cda9486ad060101a9a65fbd66af
+    sha256: 55eae8cab11100e6ddcf50d9a1a2a5922d7788dcbbe89506195378c09d09401b
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: a40ece258d0bd14c3cb245e6929ed159f203176223210e196787af3caec20a6f
+    sha256: 6c39a954979e480426e3b99882513badfd326b838fbd9ca7e64c9f579161620f
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 682
-      cases: 2749
+      cases: 2751
       partial_source_mappings: 1935
 
 contract_metadata:
@@ -1287,8 +1287,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 173
-    symbols_with_operation_fixture_refs: 291
-    operation_fixture_refs: 2223
+    symbols_with_operation_fixture_refs: 296
+    operation_fixture_refs: 2242
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -6190,6 +6190,112 @@ api_surface_contract:
       case_id: fastapi.docs.handling-errors.import-http-exception
       observation_selectors:
       - python.signature
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.fastapi-json-detail-and-header
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.bodyless-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.informational-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.reset-content-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.not-modified-status-with-detail
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.numeric-string-status
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.constructor-state
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -8563,6 +8669,29 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/389
       observation_selectors: *id004
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5
+      case_id: fastapi.root-alias-identity.websocket-reexports
+      observation_selectors:
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: documented-core-module-identities
+      input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
+      input_sha256: 3f8b6957b9be9d066d7053819fc682fe1b1ae12f575e5d12e5765815601d21b5
+      recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+      recipe_sha256: 37044f4b3c9a7d3a54f6d81b898b1140afa25bbf683c54f2a55da1452e20f9b1
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.documented-module.websockets
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -8627,6 +8756,8 @@ api_surface_contract:
     - error.args
     - error.class
     - error.public_attributes
+    - python.import_path
+    - python.object_identity
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -8643,16 +8774,15 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/17
         - /api_candidates/1641
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Input/workflow references exist, but no exact implementation binding or current comparison result
-        establishes this operation.
-      - The source ownership plan delegates the generic API object to Starlette-RS; no exact canonical
-        sibling operation mapping establishes this FastAPI symbol.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - FastAPI-specific workflows compare root, public-module, and Starlette import identity; constructor
+        fields and disconnect behavior are owned by the separate Starlette-RS contract and are not repeated
+        by this FastAPI alias workflow.
+      - The current identity comparison receipt is local and not checked in; mapped fixture evidence does
+        not itself establish parity for other builds.
   - id: fastapi.WebSocketException
     kind: import_binding
     source_candidate_ref: /api_candidates/18
@@ -8729,6 +8859,36 @@ api_surface_contract:
       - websocket.event_order
       - websocket.messages
       - websocket.workload_trace
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.websocket.constructor-state
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -24337,11 +24497,11 @@ api_surface_contract:
       - http.status
     - workflow_id: public-errors-http-websocket-wave
       input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
-      input_sha256: 05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
       recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
-      recipe_sha256: 3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
       workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
-      workload_sha256: b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
       case_id: fastapi.public-errors.http.fastapi-json-detail-and-header
       observation_selectors:
       - construction.exception_class
@@ -24352,11 +24512,11 @@ api_surface_contract:
       - http.status
     - workflow_id: public-errors-http-websocket-wave
       input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
-      input_sha256: 05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
       recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
-      recipe_sha256: 3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
       workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
-      workload_sha256: b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
       case_id: fastapi.public-errors.http.starlette-base-detail-and-header
       observation_selectors:
       - construction.exception_class
@@ -24367,11 +24527,11 @@ api_surface_contract:
       - http.status
     - workflow_id: public-errors-http-websocket-wave
       input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
-      input_sha256: 05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
       recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
-      recipe_sha256: 3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
       workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
-      workload_sha256: b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
       case_id: fastapi.public-errors.http.bodyless-status-with-detail
       observation_selectors:
       - construction.exception_class
@@ -24382,11 +24542,11 @@ api_surface_contract:
       - http.status
     - workflow_id: public-errors-http-websocket-wave
       input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
-      input_sha256: 05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
       recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
-      recipe_sha256: 3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
       workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
-      workload_sha256: b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
       case_id: fastapi.public-errors.http.informational-status-with-detail
       observation_selectors:
       - construction.exception_class
@@ -24397,11 +24557,11 @@ api_surface_contract:
       - http.status
     - workflow_id: public-errors-http-websocket-wave
       input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
-      input_sha256: 05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
       recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
-      recipe_sha256: 3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
       workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
-      workload_sha256: b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
       case_id: fastapi.public-errors.http.reset-content-status-with-detail
       observation_selectors:
       - construction.exception_class
@@ -24412,11 +24572,11 @@ api_surface_contract:
       - http.status
     - workflow_id: public-errors-http-websocket-wave
       input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
-      input_sha256: 05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
       recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
-      recipe_sha256: 3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
       workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
-      workload_sha256: b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
       case_id: fastapi.public-errors.http.not-modified-status-with-detail
       observation_selectors:
       - construction.exception_class
@@ -24427,11 +24587,11 @@ api_surface_contract:
       - http.status
     - workflow_id: public-errors-http-websocket-wave
       input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
-      input_sha256: 05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
       recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
-      recipe_sha256: 3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
       workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
-      workload_sha256: b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
       case_id: fastapi.public-errors.http.numeric-string-status
       observation_selectors:
       - asgi.application_error.exception
@@ -24614,6 +24774,22 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/376
       observation_selectors: *id005
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.constructor-state
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -24645,15 +24821,16 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/562
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Constructor-state coverage enters through the documented root import and does not separately compare
+        the object imported from fastapi.exceptions.
+      - Unlinked detail types, header values, status values, mutation, and exception subclasses remain
+        unverified.
+      - The current comparison receipt is local and not checked in; mapped fixture evidence does not itself
+        establish parity for other builds.
   - id: fastapi.exceptions.HTTPException.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/563
@@ -24719,6 +24896,32 @@ api_surface_contract:
       - websocket.messages
       - websocket.workload_trace
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-reference-wave.http-exception-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.http.constructor-state
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24766,15 +24969,14 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/563
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The linked constructor case covers one status/detail/header combination; other values, omitted
+        defaults, and Starlette subclass behavior remain unverified.
+      - The current comparison receipt is local and not checked in; mapped fixture evidence does not itself
+        establish parity for other builds.
   - id: fastapi.exceptions.RequestValidationError
     kind: class
     source_candidate_ref: /api_candidates/567
@@ -25160,6 +25362,47 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/376
       observation_selectors: *id005
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.websocket.constructor-state
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -25174,8 +25417,6 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    - python.import_path
-    - python.object_identity
     - python.signature
     - websocket.close_code
     - websocket.close_reason
@@ -25193,15 +25434,16 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/581
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The constructor-state workflow constructs through the documented root import; direct identity
+        of the separately imported fastapi.exceptions module attribute is not observed.
+      - Constructor inputs and subclass behavior outside the linked signature, snapshot, and close cases
+        remain unverified.
+      - The current comparison receipt is local and not checked in; mapped fixture evidence does not itself
+        establish parity for other builds.
   - id: fastapi.exceptions.WebSocketException.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/582
@@ -25240,6 +25482,32 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/411
       observation_selectors: *id012
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: b17755d6464ead4a8c4535150d2e151102f9dd61db716ddc8907f80e269c8339
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: cf748044a3caa6d116ba9d32a38dc674833ed47d142ab841e9d4f732611085ef
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: public-errors-http-websocket-wave
+      input_path: tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json
+      input_sha256: efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e
+      recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+      recipe_sha256: a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184
+      workload_path: tests/fixtures/workloads/public_errors_http_websocket_wave.py
+      workload_sha256: e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d
+      case_id: fastapi.public-errors.websocket.constructor-state
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -25262,8 +25530,6 @@ api_surface_contract:
     - docs.response.body.bytes
     - docs.response.headers
     - docs.response.status
-    - error.args
-    - error.public_attributes
     - http.body.bytes
     - http.headers.ordered
     - http.status
@@ -25290,15 +25556,14 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/582
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The constructor snapshot covers one code/reason pair; other values, omitted reason, mutation,
+        and subclass behavior remain unverified.
+      - The current comparison receipt is local and not checked in; mapped fixture evidence does not itself
+        establish parity for other builds.
   - id: fastapi.exceptions.WebSocketRequestValidationError
     kind: class
     source_candidate_ref: /api_candidates/583

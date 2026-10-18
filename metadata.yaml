@@ -5444,16 +5444,31 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-reference-wave.http-exception-signature
         - recipe_path: tests/fixtures/input-recipes/parity/handling-errors-import-http-exception.yaml
           case_id: fastapi.docs.handling-errors.import-http-exception
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.fastapi-json-detail-and-header
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.bodyless-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.informational-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.reset-content-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.not-modified-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.numeric-string-status
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.constructor-state
       feature_ids: [public-api-errors]
-      observation_selectors: [python.import_path, python.object_identity, python.signature]
+      observation_selectors: [python.import_path, python.object_identity, python.signature, construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         FastAPI 0.141.1 documents `HTTPException` as a top-level `fastapi` import.
         The linked direct API cases capture its class signature in the API
         reference and error-handling tutorial, while the identity workflow
-        records the root-to-public-module relation. This
-        source and fixture scope covers only the documented import, signature,
-        and identity relation; it does not establish constructor-call,
-        Starlette-subclass, exception-dispatch, or HTTP response parity.
+        records the root-to-public-module relation. The linked ASGI cases also
+        exercise JSON detail, headers, selected unusual statuses, numeric
+        string status preservation, and one constructor-state snapshot. This
+        remains a partial slice; other constructor inputs, status values,
+        Starlette subclasses, and handler behavior are not established.
     fastapi.exception_handlers.request_validation_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: request_validation_exception_handler}
@@ -13131,6 +13146,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml
           case_id: fastapi.websocket-exception.custom-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.constructor-state
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
         - error.args
@@ -13139,6 +13158,11 @@ reviewed_api_contract_overlay:
         - python.import_path
         - python.object_identity
         - python.signature
+        - construction.exception_class
+        - construction.exception_message
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
         - websocket.close_code
         - websocket.close_reason
         - websocket.workload_trace
@@ -13147,51 +13171,65 @@ reviewed_api_contract_overlay:
         import. The linked direct API case captures its class signature, while
         the identity workflow records the root-to-public-module relation. The
         custom-handler workflow also constructs this error and observes its
-        code, reason, dispatch, and resulting close event. Socket identity and
-        state remain an explicit partial-parity gap under
-        FastAPI.exception_handler; the fixtures do not establish the complete
-        constructor signature or Starlette subclass contract.
+        code, reason, dispatch, and resulting close event. A constructor-state
+        case also compares the exception class/MRO, args, string, code, reason,
+        and base-class relationship. Other constructor values and generic
+        WebSocket state behavior remain outside this partial slice.
     fastapi.exceptions.WebSocketException:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
+            The constructor-state workflow constructs through the documented root import; direct
+            identity of the separately imported fastapi.exceptions module attribute is not observed.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
+            Constructor inputs and subclass behavior outside the linked signature, snapshot, and
+            close cases remain unverified.
           - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
-      supported_slice: >-
-        FastAPI exception subtype and constructor; close behavior is delegated to the pinned
-        Starlette WebSocket exception path.
+            The current comparison receipt is local and not checked in; mapped fixture evidence
+            does not itself establish parity for other builds.
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
-        - {path: fastapi/exceptions.py, symbol: WebSocketException}
+        - path: fastapi/exceptions.py
+          symbol: WebSocketException
+          kind: source-definition
+          start_line: 86
+          end_line: 154
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+          case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.constructor-state
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
-        - error.args
-        - error.class
-        - error.public_attributes
-        - python.import_path
-        - python.object_identity
         - websocket.close_code
         - websocket.close_reason
+        - construction.outcome
+        - construction.exception_class
+        - construction.exception_message
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - python.signature
+      supported_slice: >-
+        The linked cases compare the documented constructor signature, a snapshot of the FastAPI
+        exception class/MRO/args/string and code/reason attributes, and the default pre-accept
+        WebSocket close code and reason. They do not establish every constructor input or generic
+        WebSocket state behavior.
     fastapi.exceptions.WebSocketException.__init__:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
+            The constructor snapshot covers one code/reason pair; other values, omitted reason,
+            mutation, and subclass behavior remain unverified.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current comparison receipt is local and not checked in; mapped fixture evidence
+            does not itself establish parity for other builds.
       supported_slice: >-
         Accept required close code and optional reason, then delegate both values unchanged to
         Starlette.
@@ -13202,13 +13240,16 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 128
           end_line: 154
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+          case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket.constructor-state
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
-        - error.args
-        - error.public_attributes
         - python.signature
-        - websocket.close_code
-        - websocket.close_reason
+        - construction.exception_class
+        - http.body.bytes
     fastapi.security.APIKeyCookie:
       target_binding:
         implementation_owner: fastapi-rs
@@ -15052,17 +15093,15 @@ reviewed_api_contract_overlay:
     fastapi.WebSocketDisconnect:
       target_binding:
         implementation_owner: starlette-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
+            FastAPI-specific workflows compare root, public-module, and Starlette import identity;
+            constructor fields and disconnect behavior are owned by the separate Starlette-RS
+            contract and are not repeated by this FastAPI alias workflow.
           - >-
-            The source ownership plan delegates the generic API object to Starlette-RS; no exact
-            canonical sibling operation mapping establishes this FastAPI symbol.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current identity comparison receipt is local and not checked in; mapped fixture
+            evidence does not itself establish parity for other builds.
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15073,9 +15112,17 @@ reviewed_api_contract_overlay:
           alias_spelling: WebSocketDisconnect
           local_name: WebSocketDisconnect
           target_path: fastapi.websockets.WebSocketDisconnect
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.websocket-reexports
+        - recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+          case_id: fastapi.documented-module.websockets
+      feature_ids: [websocket-lifecycle]
+      observation_selectors: [python.import_path, python.object_identity, websocket.messages]
       supported_slice: >-
         Import identity only: the root binding aliases the FastAPI websocket-module binding,
-        which directly re-exports `starlette.websockets.WebSocketDisconnect`.
+        which directly re-exports `starlette.websockets.WebSocketDisconnect`; generic constructor
+        behavior is delegated to the pinned Starlette-RS `constructor-contract` surface.
 
     fastapi.__version__:
       target_binding:
@@ -15353,39 +15400,46 @@ reviewed_api_contract_overlay:
     fastapi.exceptions.HTTPException:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
+            Constructor-state coverage enters through the documented root import and does not
+            separately compare the object imported from fastapi.exceptions.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
+            Unlinked detail types, header values, status values, mutation, and exception subclasses
+            remain unverified.
           - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current comparison receipt is local and not checked in; mapped fixture evidence
+            does not itself establish parity for other builds.
+      rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
           kind: source-definition
           symbol: HTTPException
           start_line: 17
           end_line: 83
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.constructor-state
+      feature_ids: [public-api-errors]
+      observation_selectors: [construction.exception_class, http.body.bytes]
       supported_slice: >-
-        FastAPI exception subtype identity and its FastAPI constructor surface; transport
-        handling and response conversion are separate handler/middleware behavior.
+        One constructor-state case captures the FastAPI exception class/MRO, args, string, status,
+        arbitrary JSON detail, and headers through the public root import. Other constructor and
+        transport behavior remains outside this class-level slice.
 
     fastapi.exceptions.HTTPException.__init__:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
+            The linked constructor case covers one status/detail/header combination; other values,
+            omitted defaults, and Starlette subclass behavior remain unverified.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current comparison receipt is local and not checked in; mapped fixture evidence
+            does not itself establish parity for other builds.
+      rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
           kind: source-definition
@@ -15393,6 +15447,13 @@ reviewed_api_contract_overlay:
           owner: HTTPException
           start_line: 45
           end_line: 83
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+          case_id: fastapi.direct-api-reference-wave.http-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.constructor-state
+      feature_ids: [public-api-errors]
+      observation_selectors: [python.signature, construction.exception_class, http.body.bytes]
       supported_slice: >-
         Constructor requiredness/defaults and unchanged delegation of status, arbitrary detail,
         and optional headers to Starlette.
