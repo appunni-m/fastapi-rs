@@ -10573,6 +10573,68 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 )
             subclass_edge["starlette_rs_integration_operation_refs"] = integration_operation_refs
         starlette_edges.append(subclass_edge)
+
+    canonical_contract_kinds = {
+        "surface-alias": 0,
+        "operation-alias": 1,
+        "subclass-base-contract": 2,
+        "surface-gap": 3,
+    }
+    canonical_edges_by_symbol: dict[str, list[tuple[int, dict[str, Any]]]] = defaultdict(list)
+    for edge in starlette_edges:
+        relation = edge.get("relation")
+        if relation == "direct_reexport":
+            if edge.get("starlette_rs_surface_aliases"):
+                kind = "surface-alias"
+            elif edge.get("starlette_rs_operation_aliases"):
+                kind = "operation-alias"
+            elif edge.get("starlette_rs_surface_gap"):
+                kind = "surface-gap"
+            else:
+                continue
+        elif relation == "subclass_edge" and edge.get("starlette_rs_subclass_contract_refs"):
+            kind = "subclass-base-contract"
+        else:
+            continue
+        canonical_edges_by_symbol[edge["starlette_symbol"]].append(
+            (canonical_contract_kinds[kind], {"edge_id": edge["id"], "contract_kind": kind})
+        )
+
+    for edge in starlette_edges:
+        if edge.get("relation") != "internal_dependency":
+            continue
+        matching_canonical_edges = canonical_edges_by_symbol.get(edge["starlette_symbol"], [])
+        if not matching_canonical_edges:
+            continue
+        best_rank = min(rank for rank, _ in matching_canonical_edges)
+        canonical_refs = sorted(
+            (reference for rank, reference in matching_canonical_edges if rank == best_rank),
+            key=lambda reference: reference["edge_id"],
+        )
+        edge["starlette_rs_canonical_edge_refs"] = {
+            "resolution": "same-starlette-symbol",
+            "starlette_symbol": edge["starlette_symbol"],
+            "canonical_edges": canonical_refs,
+            "scope_note": (
+                "This internal import resolves to the same pinned Starlette symbol as the "
+                "referenced direct-re-export or subclass edge. Dereference those edges for "
+                "the generic contract and target support. This link does not assert that "
+                "every operation on the surface is used here or prove FastAPI-RS parity."
+            ),
+        }
+        if edge.get("starlette_rs_integration_operation_refs") or edge.get(
+            "starlette_rs_behavior_crosswalk"
+        ):
+            edge["status"] = (
+                "source-mapped; canonical symbol edge and specific operation/helper evidence "
+                "linked; FastAPI-RS parity remains separately unproven"
+            )
+        else:
+            edge["status"] = (
+                "source-mapped; canonical same-symbol edge linked; FastAPI operation use "
+                "remains separately scoped"
+            )
+
     starlette_edges.sort(key=lambda x: x["id"])
     behavior_crosswalk_counts = Counter(
         edge.get("starlette_rs_behavior_crosswalk", {}).get("kind")
@@ -13027,7 +13089,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     reviewed_inherited_api_candidates.sort(key=lambda row: row["id"])
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@9",
+        "schema": "fastapi-rs/compatibility-atlas@10",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -13155,6 +13217,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 Counter(record["classification"] for record in candidates.values())
             ),
             "starlette_integration_edges": len(starlette_edges),
+            "starlette_internal_edges_with_canonical_refs": sum(
+                edge.get("relation") == "internal_dependency"
+                and isinstance(edge.get("starlette_rs_canonical_edge_refs"), dict)
+                for edge in starlette_edges
+            ),
             "starlette_surface_aliases": len(starlette_surface_aliases),
             "starlette_surface_alias_gaps": len(starlette_surface_alias_gaps),
             "starlette_subclass_contract_refs": len(starlette_subclass_contract_refs),
@@ -13654,6 +13721,45 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     ]
     if len(surface_gap_edges) != atlas["counts"]["starlette_surface_alias_gaps"]:
         raise AtlasError("Starlette surface gap count differs from the integration crosswalk")
+    internal_edges = [
+        edge
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict) and edge.get("relation") == "internal_dependency"
+    ]
+    internal_edges_with_canonical_refs = [
+        edge
+        for edge in internal_edges
+        if isinstance(edge.get("starlette_rs_canonical_edge_refs"), dict)
+    ]
+    internal_edges_with_specific_refs_only = [
+        edge
+        for edge in internal_edges
+        if not edge.get("starlette_rs_canonical_edge_refs")
+        and (
+            edge.get("starlette_rs_integration_operation_refs")
+            or edge.get("starlette_rs_behavior_crosswalk")
+        )
+    ]
+    internal_edges_without_contract_links = [
+        edge
+        for edge in internal_edges
+        if not edge.get("starlette_rs_canonical_edge_refs")
+        and not edge.get("starlette_rs_integration_operation_refs")
+        and not edge.get("starlette_rs_behavior_crosswalk")
+    ]
+    if sum(
+        map(
+            len,
+            (
+                internal_edges_with_canonical_refs,
+                internal_edges_with_specific_refs_only,
+                internal_edges_without_contract_links,
+            ),
+        )
+    ) != len(internal_edges):
+        raise AtlasError(
+            "Starlette internal-edge crosswalk categories do not partition the inventory"
+        )
 
     def crosswalk_evidence_refs(records: Any) -> list[str]:
         refs: set[str] = set()
@@ -13762,6 +13868,18 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 atlas["counts"]["starlette_private_helper_behavior_crosswalks"],
                 atlas["counts"]["starlette_module_namespace_crosswalks"],
             ),
+            "",
+            "| FastAPI internal import edges | Same-symbol canonical contract references | Specific operation/helper references without a canonical edge | No operation/helper or canonical edge link |",
+            "|---:|---:|---:|---:|",
+            "| %d | %d | %d | %d |"
+            % (
+                len(internal_edges),
+                len(internal_edges_with_canonical_refs),
+                len(internal_edges_with_specific_refs_only),
+                len(internal_edges_without_contract_links),
+            ),
+            "",
+            "Same-symbol references point to an already reviewed direct-re-export or subclass edge and can be dereferenced for its generic contract and per-target support. They do not claim that every sibling operation is used at that FastAPI import site or establish FastAPI-RS parity. Rows without a reference remain explicit atlas gaps for source-use review.",
             "",
             "The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is "
             + atlas["authorities"]["starlette_rs"]["implementation_revision"]
@@ -13912,6 +14030,9 @@ def _sync_manifest_artifact_metadata(
             "error_candidates": counts["error_candidates"],
             "optional_features": len(atlas["optional_features"]),
             "starlette_integration_edges": counts["starlette_integration_edges"],
+            "starlette_internal_edges_with_canonical_refs": counts[
+                "starlette_internal_edges_with_canonical_refs"
+            ],
             "documentation_python_examples": counts["documentation_python_examples"],
             "documentation_python_examples_grouped_with_page": counts[
                 "documentation_python_examples_grouped_with_page"

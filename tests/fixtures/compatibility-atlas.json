@@ -77361,6 +77361,7 @@
     "source_deprecations": 21,
     "starlette_behavior_crosswalks": 4,
     "starlette_integration_edges": 133,
+    "starlette_internal_edges_with_canonical_refs": 52,
     "starlette_module_namespace_crosswalks": 1,
     "starlette_private_helper_behavior_crosswalks": 3,
     "starlette_subclass_contract_refs": 15,
@@ -745690,7 +745691,7 @@
       }
     }
   ],
-  "schema": "fastapi-rs/compatibility-atlas@9",
+  "schema": "fastapi-rs/compatibility-atlas@10",
   "starlette_integration_edges": [
     {
       "fastapi_binding": "fastapi.concurrency.iterate_in_threadpool",
@@ -750303,6 +750304,25 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-baseroute",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-frontendroute"
+          },
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-frontendroutegroup"
+          },
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-includedrouter"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.routing.BaseRoute"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -750336,7 +750356,7 @@
         "symbol": "starlette.routing.BaseRoute"
       },
       "starlette_symbol": "starlette.routing.BaseRoute",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.ExceptionHandler",
@@ -750477,6 +750497,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-htmlresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-htmlresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.HTMLResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -750536,7 +750567,7 @@
         "symbol": "starlette.responses.HTMLResponse"
       },
       "starlette_symbol": "starlette.responses.HTMLResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.HTTPException",
@@ -750547,6 +750578,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-httpexception",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-exceptions-httpexception"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.exceptions.HTTPException"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -750592,7 +750634,7 @@
         "symbol": "starlette.exceptions.HTTPException"
       },
       "starlette_symbol": "starlette.exceptions.HTTPException",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.JSONResponse",
@@ -750603,6 +750645,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-jsonresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-jsonresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.JSONResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -750657,7 +750710,7 @@
         "symbol": "starlette.responses.JSONResponse"
       },
       "starlette_symbol": "starlette.responses.JSONResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.Lifespan",
@@ -750712,6 +750765,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-middleware",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-middleware-middleware"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.middleware.Middleware"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -750813,7 +750877,7 @@
         "symbol": "starlette.middleware.Middleware"
       },
       "starlette_symbol": "starlette.middleware.Middleware",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.applications.Receive",
@@ -750873,6 +750937,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -750947,7 +751022,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.Response",
@@ -750958,6 +751033,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-response",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-response"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.Response"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751007,7 +751093,7 @@
         "symbol": "starlette.responses.Response"
       },
       "starlette_symbol": "starlette.responses.Response",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.Scope",
@@ -751202,6 +751288,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-starlette",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-applications-fastapi"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.applications.Starlette"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751325,7 +751422,7 @@
         "symbol": "starlette.applications.Starlette"
       },
       "starlette_symbol": "starlette.applications.Starlette",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.State",
@@ -751336,6 +751433,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-applications-state",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-datastructures-state"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.State"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751407,7 +751515,7 @@
         "symbol": "starlette.datastructures.State"
       },
       "starlette_symbol": "starlette.datastructures.State",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.background.StarletteBackgroundTasks",
@@ -751418,6 +751526,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-background-starlettebackgroundtasks",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-background-backgroundtasks"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.background.BackgroundTasks"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751457,7 +751576,7 @@
         "symbol": "starlette.background.BackgroundTasks"
       },
       "starlette_symbol": "starlette.background.BackgroundTasks",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi._compat.shared.UploadFile",
@@ -751468,6 +751587,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-compat-shared-uploadfile",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-datastructures-uploadfile"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.UploadFile"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751501,7 +751631,7 @@
         "symbol": "starlette.datastructures.UploadFile"
       },
       "starlette_symbol": "starlette.datastructures.UploadFile",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.datastructures.StarletteUploadFile",
@@ -751512,6 +751642,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-datastructures-starletteuploadfile",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-datastructures-uploadfile"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.UploadFile"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751545,7 +751686,7 @@
         "symbol": "starlette.datastructures.UploadFile"
       },
       "starlette_symbol": "starlette.datastructures.UploadFile",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.FormData",
@@ -751556,6 +751697,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-formdata",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-datastructures-formdata"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.FormData"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751649,7 +751801,7 @@
         "symbol": "starlette.datastructures.FormData"
       },
       "starlette_symbol": "starlette.datastructures.FormData",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.Headers",
@@ -751660,6 +751812,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-headers",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-datastructures-headers"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.Headers"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751757,7 +751920,7 @@
         "symbol": "starlette.datastructures.Headers"
       },
       "starlette_symbol": "starlette.datastructures.Headers",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.HTTPConnection",
@@ -751768,6 +751931,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-httpconnection",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-gap",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-httpconnection"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.HTTPConnection"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751802,7 +751976,7 @@
         "symbol": "starlette.requests.HTTPConnection"
       },
       "starlette_symbol": "starlette.requests.HTTPConnection",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.ImmutableMultiDict",
@@ -751857,6 +752031,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-queryparams",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-datastructures-queryparams"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.QueryParams"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -751957,7 +752142,7 @@
         "symbol": "starlette.datastructures.QueryParams"
       },
       "starlette_symbol": "starlette.datastructures.QueryParams",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.Request",
@@ -751968,6 +752153,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752042,7 +752238,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.Response",
@@ -752053,6 +752249,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-response",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-response"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.Response"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752102,7 +752309,7 @@
         "symbol": "starlette.responses.Response"
       },
       "starlette_symbol": "starlette.responses.Response",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.run_in_threadpool",
@@ -752113,6 +752320,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-run-in-threadpool",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "operation-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-concurrency-run-in-threadpool"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.concurrency.run_in_threadpool"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752183,7 +752401,7 @@
         "symbol": "starlette.concurrency.run_in_threadpool"
       },
       "starlette_symbol": "starlette.concurrency.run_in_threadpool",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.StarletteBackgroundTasks",
@@ -752194,6 +752412,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-starlettebackgroundtasks",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-background-backgroundtasks"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.background.BackgroundTasks"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752233,7 +752462,7 @@
         "symbol": "starlette.background.BackgroundTasks"
       },
       "starlette_symbol": "starlette.background.BackgroundTasks",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.UploadFile",
@@ -752244,6 +752473,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-uploadfile",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-datastructures-uploadfile"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.UploadFile"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752277,7 +752517,7 @@
         "symbol": "starlette.datastructures.UploadFile"
       },
       "starlette_symbol": "starlette.datastructures.UploadFile",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.dependencies.utils.WebSocket",
@@ -752288,6 +752528,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-dependencies-utils-websocket",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-websockets-websocket"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.websockets.WebSocket"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752336,7 +752587,7 @@
         "symbol": "starlette.websockets.WebSocket"
       },
       "starlette_symbol": "starlette.websockets.WebSocket",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.exception_handlers.HTTPException",
@@ -752347,6 +752598,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-exception-handlers-httpexception",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-exceptions-httpexception"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.exceptions.HTTPException"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752392,7 +752654,7 @@
         "symbol": "starlette.exceptions.HTTPException"
       },
       "starlette_symbol": "starlette.exceptions.HTTPException",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.exception_handlers.JSONResponse",
@@ -752403,6 +752665,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-exception-handlers-jsonresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-jsonresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.JSONResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752457,7 +752730,7 @@
         "symbol": "starlette.responses.JSONResponse"
       },
       "starlette_symbol": "starlette.responses.JSONResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.exception_handlers.Request",
@@ -752468,6 +752741,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-exception-handlers-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752542,7 +752826,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.exception_handlers.Response",
@@ -752553,6 +752837,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-exception-handlers-response",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-response"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.Response"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752602,7 +752897,7 @@
         "symbol": "starlette.responses.Response"
       },
       "starlette_symbol": "starlette.responses.Response",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.exception_handlers.WS_1008_POLICY_VIOLATION",
@@ -752657,6 +752952,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-exceptions-starlettehttpexception",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-exceptions-httpexception"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.exceptions.HTTPException"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752702,7 +753008,7 @@
         "symbol": "starlette.exceptions.HTTPException"
       },
       "starlette_symbol": "starlette.exceptions.HTTPException",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.exceptions.StarletteWebSocketException",
@@ -752713,6 +753019,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-exceptions-starlettewebsocketexception",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-exceptions-websocketexception"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.exceptions.WebSocketException"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -752748,7 +753065,7 @@
         "symbol": "starlette.exceptions.WebSocketException"
       },
       "starlette_symbol": "starlette.exceptions.WebSocketException",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.middleware.asyncexitstack.ASGIApp",
@@ -752955,6 +753272,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-openapi-docs-htmlresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-htmlresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.HTMLResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753014,7 +753342,7 @@
         "symbol": "starlette.responses.HTMLResponse"
       },
       "starlette_symbol": "starlette.responses.HTMLResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.openapi.utils.BaseRoute",
@@ -753025,6 +753353,25 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-openapi-utils-baseroute",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-frontendroute"
+          },
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-frontendroutegroup"
+          },
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-includedrouter"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.routing.BaseRoute"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753058,7 +753405,7 @@
         "symbol": "starlette.routing.BaseRoute"
       },
       "starlette_symbol": "starlette.routing.BaseRoute",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.openapi.utils.JSONResponse",
@@ -753069,6 +753416,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-openapi-utils-jsonresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-jsonresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.JSONResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753123,7 +753481,7 @@
         "symbol": "starlette.responses.JSONResponse"
       },
       "starlette_symbol": "starlette.responses.JSONResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.routing.AppType",
@@ -753227,6 +753585,25 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-baseroute",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-frontendroute"
+          },
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-frontendroutegroup"
+          },
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-routing-includedrouter"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.routing.BaseRoute"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753260,7 +753637,7 @@
         "symbol": "starlette.routing.BaseRoute"
       },
       "starlette_symbol": "starlette.routing.BaseRoute",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.routing.compile_path",
@@ -753315,6 +753692,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-formdata",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-datastructures-formdata"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.FormData"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753384,7 +753772,7 @@
         "symbol": "starlette.datastructures.FormData"
       },
       "starlette_symbol": "starlette.datastructures.FormData",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.get_name",
@@ -753552,6 +753940,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-httpexception",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-exceptions-httpexception"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.exceptions.HTTPException"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753681,7 +754080,7 @@
         "symbol": "starlette.exceptions.HTTPException"
       },
       "starlette_symbol": "starlette.exceptions.HTTPException",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.is_async_callable",
@@ -753777,6 +754176,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-iterate-in-threadpool",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "operation-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-concurrency-iterate-in-threadpool"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.concurrency.iterate_in_threadpool"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753847,7 +754257,7 @@
         "symbol": "starlette.concurrency.iterate_in_threadpool"
       },
       "starlette_symbol": "starlette.concurrency.iterate_in_threadpool",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.JSONResponse",
@@ -753858,6 +754268,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-jsonresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-jsonresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.JSONResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -753956,7 +754377,7 @@
         "symbol": "starlette.responses.JSONResponse"
       },
       "starlette_symbol": "starlette.responses.JSONResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.Lifespan",
@@ -754099,6 +754520,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-plaintextresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-plaintextresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.PlainTextResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -754211,7 +754643,7 @@
         "symbol": "starlette.responses.PlainTextResponse"
       },
       "starlette_symbol": "starlette.responses.PlainTextResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.Receive",
@@ -754271,6 +754703,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-redirectresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-redirectresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.RedirectResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -754364,7 +754807,7 @@
         "symbol": "starlette.responses.RedirectResponse"
       },
       "starlette_symbol": "starlette.responses.RedirectResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.Request",
@@ -754375,6 +754818,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -754637,7 +755091,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.Response",
@@ -754648,6 +755102,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-response",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-response"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.Response"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -754797,7 +755262,7 @@
         "symbol": "starlette.responses.Response"
       },
       "starlette_symbol": "starlette.responses.Response",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.routing",
@@ -755395,6 +755860,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-run-in-threadpool",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "operation-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-concurrency-run-in-threadpool"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.concurrency.run_in_threadpool"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -755477,7 +755953,7 @@
         "symbol": "starlette.concurrency.run_in_threadpool"
       },
       "starlette_symbol": "starlette.concurrency.run_in_threadpool",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.Scope",
@@ -755586,6 +756062,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-staticfiles",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-staticfiles-staticfiles"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.staticfiles.StaticFiles"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -755639,7 +756126,7 @@
         "symbol": "starlette.staticfiles.StaticFiles"
       },
       "starlette_symbol": "starlette.staticfiles.StaticFiles",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.routing.StreamingResponse",
@@ -755650,6 +756137,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-streamingresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-streamingresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.StreamingResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -755763,7 +756261,7 @@
         "symbol": "starlette.responses.StreamingResponse"
       },
       "starlette_symbol": "starlette.responses.StreamingResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.URL",
@@ -755774,6 +756272,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-url",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-datastructures-url"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.datastructures.URL"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -755886,7 +756395,7 @@
         "symbol": "starlette.datastructures.URL"
       },
       "starlette_symbol": "starlette.datastructures.URL",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.URLPath",
@@ -755977,6 +756486,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-routing-websocket",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-websockets-websocket"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.websockets.WebSocket"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756063,7 +756583,7 @@
         "symbol": "starlette.websockets.WebSocket"
       },
       "starlette_symbol": "starlette.websockets.WebSocket",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical symbol edge and specific operation/helper evidence linked; FastAPI-RS parity remains separately unproven"
     },
     {
       "fastapi_binding": "fastapi.routing.wrap_app_handling_exceptions",
@@ -756217,6 +756737,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-security-api-key-httpexception",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-exceptions-httpexception"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.exceptions.HTTPException"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756262,7 +756793,7 @@
         "symbol": "starlette.exceptions.HTTPException"
       },
       "starlette_symbol": "starlette.exceptions.HTTPException",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.security.api_key.Request",
@@ -756273,6 +756804,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-security-api-key-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756347,7 +756889,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.security.http.HTTP_401_UNAUTHORIZED",
@@ -756402,6 +756944,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-security-http-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756476,7 +757029,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.security.oauth2.HTTP_401_UNAUTHORIZED",
@@ -756531,6 +757084,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-security-oauth2-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756605,7 +757169,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.security.open_id_connect_url.HTTP_401_UNAUTHORIZED",
@@ -756660,6 +757224,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-security-open-id-connect-url-httpexception",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "subclass-base-contract",
+            "edge_id": "fastapi-starlette:subclass:fastapi-exceptions-httpexception"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.exceptions.HTTPException"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756705,7 +757280,7 @@
         "symbol": "starlette.exceptions.HTTPException"
       },
       "starlette_symbol": "starlette.exceptions.HTTPException",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.security.open_id_connect_url.Request",
@@ -756716,6 +757291,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-security-open-id-connect-url-request",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-requests-request"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.requests.Request"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756790,7 +757376,7 @@
         "symbol": "starlette.requests.Request"
       },
       "starlette_symbol": "starlette.requests.Request",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.sse.StreamingResponse",
@@ -756801,6 +757387,17 @@
       },
       "id": "fastapi-starlette:internal_dependency:fastapi-sse-streamingresponse",
       "relation": "internal_dependency",
+      "starlette_rs_canonical_edge_refs": {
+        "canonical_edges": [
+          {
+            "contract_kind": "surface-alias",
+            "edge_id": "fastapi-starlette:direct_reexport:fastapi-responses-streamingresponse"
+          }
+        ],
+        "resolution": "same-starlette-symbol",
+        "scope_note": "This internal import resolves to the same pinned Starlette symbol as the referenced direct-re-export or subclass edge. Dereference those edges for the generic contract and target support. This link does not assert that every operation on the surface is used here or prove FastAPI-RS parity.",
+        "starlette_symbol": "starlette.responses.StreamingResponse"
+      },
       "starlette_rs_catalog_evidence": [
         {
           "artifact_path": "docs/api-surface.csv",
@@ -756840,7 +757437,7 @@
         "symbol": "starlette.responses.StreamingResponse"
       },
       "starlette_symbol": "starlette.responses.StreamingResponse",
-      "status": "source-mapped; Starlette-RS behavior proof pending its atlas/parity run"
+      "status": "source-mapped; canonical same-symbol edge linked; FastAPI operation use remains separately scoped"
     },
     {
       "fastapi_binding": "fastapi.applications.FastAPI",
