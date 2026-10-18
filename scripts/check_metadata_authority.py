@@ -15,6 +15,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+import tomllib
 import yaml
 from public_candidate_review_schema import (
     PublicCandidateReviewSchemaError,
@@ -257,6 +258,75 @@ def validate_ci_source_checkouts(metadata: dict[str, Any]) -> None:
         require_equal(f"CI {path} revision", settings.get("ref"), identity["commit"])
     if checkouts.get("fastapi-rs", {}).get("path") != "fastapi-rs":
         raise MetadataError("CI must checkout the project under fastapi-rs beside its sources")
+
+
+def validate_cargo_starlette_rs_pin(starlette_rs: dict[str, Any]) -> None:
+    sibling_root = STARLETTE_RS_ROOT_OVERRIDE or (ROOT / starlette_rs["owner"]).resolve()
+    manifests = {
+        "workspace": ROOT / "Cargo.toml",
+        "fastapi-rs crate": ROOT / "fastapi-rs/Cargo.toml",
+        "Starlette-RS workspace": sibling_root / "Cargo.toml",
+        "Starlette-RS crate": sibling_root / "starlette-rs/Cargo.toml",
+    }
+    try:
+        parsed = {
+            label: tomllib.loads(path.read_text(encoding="utf-8"))
+            for label, path in manifests.items()
+        }
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        raise MetadataError(f"cannot read Cargo release identity manifests: {exc}") from exc
+
+    dependency = (
+        parsed["workspace"].get("workspace", {}).get("dependencies", {}).get("starlette-rs")
+    )
+    if not isinstance(dependency, dict):
+        raise MetadataError("workspace starlette-rs dependency must declare a path and version")
+    require_equal(
+        "workspace Starlette-RS exact dependency version",
+        dependency.get("version"),
+        f"={starlette_rs['distribution_version']}",
+    )
+    require_equal(
+        "workspace Starlette-RS path",
+        dependency.get("path"),
+        f"{starlette_rs['owner'].rstrip('/')}/starlette-rs",
+    )
+    require_equal(
+        "FastAPI-RS crate Starlette-RS dependency declaration",
+        parsed["fastapi-rs crate"].get("dependencies", {}).get("starlette-rs"),
+        {"workspace": True},
+    )
+
+    crate_identity = (
+        parsed["fastapi-rs crate"]
+        .get("package", {})
+        .get("metadata", {})
+        .get("fastapi-rs", {})
+        .get("starlette-rs")
+    )
+    expected_identity = {
+        "version": starlette_rs["distribution_version"],
+        "commit": starlette_rs["commit"],
+        "source_tree_sha256": starlette_rs["source_tree_sha256"],
+    }
+    require_equal(
+        "FastAPI-RS package-local Starlette-RS source identity",
+        crate_identity,
+        expected_identity,
+    )
+
+    sibling_package = parsed["Starlette-RS crate"].get("package", {})
+    require_equal("Starlette-RS Cargo package name", sibling_package.get("name"), "starlette-rs")
+    sibling_version = sibling_package.get("version")
+    if sibling_version == {"workspace": True}:
+        sibling_version = (
+            parsed["Starlette-RS workspace"].get("workspace", {}).get("package", {}).get("version")
+        )
+    require_equal(
+        "Starlette-RS Cargo package version",
+        sibling_version,
+        starlette_rs["distribution_version"],
+    )
 
 
 def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:
@@ -755,6 +825,7 @@ def validate() -> None:
     starlette = authority["starlette"]
     pydantic_core_source = authority["pydantic_core_source"]
     starlette_rs = metadata["starlette_rs"]
+    validate_cargo_starlette_rs_pin(starlette_rs)
     validate_ci_source_checkouts(metadata)
     validate_pinned_source_checkout("FastAPI", (ROOT / fastapi["checkout"]).resolve(), fastapi)
     validate_pinned_source_checkout(
