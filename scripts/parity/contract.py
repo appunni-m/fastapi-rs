@@ -1459,9 +1459,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
-            } and any(
-                action["kind"] == "testclient_request" for action in case["actions"]
-            ):
+            } and any(action["kind"] == "testclient_request" for action in case["actions"]):
                 if workflow.get("oracle_profile_extension") != "testclient":
                     raise ContractError(
                         "testclient_request actions require the paired TestClient profile"

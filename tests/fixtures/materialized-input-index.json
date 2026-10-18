@@ -7151,6 +7151,48 @@
       ]
     },
     {
+      "id": "direct-api-warning-sidecar-v8",
+      "input_path": "tests/fixtures/inputs/parity/direct-api-warning-sidecar-v8.json",
+      "input_sha256": "6dc3911fa6ebc7ec9e355a0b80a65e48192eaba666ec6a19036bc1e0754e9538",
+      "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-warning-sidecar-v8.yaml",
+      "recipe_sha256": "e200a8c89c57c65633ff43112c13e61a2d3d4ed417ec9cab8effca7f82c7d2e4",
+      "case_ids": [
+        "fastapi.direct-api.v8-warning-sidecar.query-example"
+      ],
+      "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
+      "workload_sha256": "b1c2d98beeda85111dfccb984b33479f753a0f3845eb8e5ea4cc8d71f5be8709",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.direct-api.v8-warning-sidecar.query-example",
+          "symbol_id": "fastapi.Query",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.direct-api.v8-warning-sidecar.query-example",
+          "probe_id": "query-example",
+          "symbol_id": "fastapi.Query",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.direct-api.v8-warning-sidecar.query-example",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Query",
+            "source:upstream-test:tests/test_schema_extra_examples.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "direct-api-warnings",
       "input_path": "tests/fixtures/inputs/parity/direct-api-warnings.json",
       "input_sha256": "9f06de42fe7fed19e7282cd24cfaaa16ca25f8534197c679ace071129a5aa5ea",
@@ -45082,6 +45124,20 @@
       "observation_selectors": [
         "python.attribute_value",
         "python.signature"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_schema_extra_examples.py",
+      "fixture_id": "fastapi.test.test-schema-extra-examples",
+      "workflow_id": "direct-api-warning-sidecar-v8",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes python.call_outcome, python.warnings. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.direct-api.v8-warning-sidecar.query-example"
+      ],
+      "observation_selectors": [
+        "python.call_outcome",
+        "python.warnings"
       ]
     },
     {

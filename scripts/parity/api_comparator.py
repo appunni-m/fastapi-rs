@@ -180,6 +180,7 @@ def compare_api_workflow_results(
                 WORKFLOW_SCHEMA_V5_ID,
                 WORKFLOW_SCHEMA_V6_ID,
                 WORKFLOW_SCHEMA_V7_ID,
+                WORKFLOW_SCHEMA_V8_ID,
             }:
                 if probe_spec.get("capture_warnings") is True:
                     source_warnings = source_probe.get("warnings")

@@ -499,9 +499,9 @@ def _path_test_function_case_mappings(test_path: str) -> list[dict[str, Any]]:
     function_case_mappings = []
     used_case_ids: set[str] = set()
     for node in tree.body:
-        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or not node.name.startswith(
-            "test_"
-        ):
+        if not isinstance(
+            node, (ast.FunctionDef, ast.AsyncFunctionDef)
+        ) or not node.name.startswith("test_"):
             continue
         calls = [
             call
@@ -550,10 +550,10 @@ def _path_test_function_case_mappings(test_path: str) -> list[dict[str, Any]]:
         )
 
     if len(used_case_ids) != len(cases_by_request):
-        unmatched = sorted(set(cases_by_request) - {
-            (row["request"]["method"], row["request"]["path"])
-            for row in function_case_mappings
-        })
+        unmatched = sorted(
+            set(cases_by_request)
+            - {(row["request"]["method"], row["request"]["path"]) for row in function_case_mappings}
+        )
         raise ValueError(f"path-test input cases without exact test-function links: {unmatched}")
     return function_case_mappings
 

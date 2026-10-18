@@ -7,9 +7,7 @@ from fastapi import FastAPI
 from starlette.applications import Starlette
 
 
-def create_app(
-    _factory_input: dict[str, object], _workload_trace: list[str]
-) -> FastAPI:
+def create_app(_factory_input: dict[str, object], _workload_trace: list[str]) -> FastAPI:
     app = FastAPI()
 
     @app.get("/class-contract")

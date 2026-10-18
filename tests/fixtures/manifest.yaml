@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 72f69cf5fffd8e2749ef341572d9a92d741c2e752c17a694f36462e3bd065658
+    sha256: d3829883f29cc9a2a96b55e5db99947f47896a1b7da20504de7357d0e3af4014
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 330da0d028d3f1d483e9b64ad893d0d6eeceeee768ab23e1d3bc613e51a2d059
+    sha256: 633fd68ea9c28cd1c5765a2267ffae59a0728623772de9c0bf0af9dab5da9fe8
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: d52bf97475e85b5cadbb6e8699e459a81556ca4e0da1fa036e75b97c222561fd
+    sha256: 3f161e411558ae29593492ad06f4269521138625bd6da5faab684b76dd73e527
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 680
-      cases: 2736
-      partial_source_mappings: 1933
+      workflows: 681
+      cases: 2737
+      partial_source_mappings: 1934
 
 contract_metadata:
   aliases:
@@ -6665,6 +6665,19 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs:
+    - workflow_id: direct-api-warning-sidecar-v8
+      input_path: tests/fixtures/inputs/parity/direct-api-warning-sidecar-v8.json
+      input_sha256: 6dc3911fa6ebc7ec9e355a0b80a65e48192eaba666ec6a19036bc1e0754e9538
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warning-sidecar-v8.yaml
+      recipe_sha256: e200a8c89c57c65633ff43112c13e61a2d3d4ed417ec9cab8effca7f82c7d2e4
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: b1c2d98beeda85111dfccb984b33479f753a0f3845eb8e5ea4cc8d71f5be8709
+      case_id: fastapi.direct-api.v8-warning-sidecar.query-example
+      probe_id: query-example
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
       input_sha256: 9f06de42fe7fed19e7282cd24cfaaa16ca25f8534197c679ace071129a5aa5ea

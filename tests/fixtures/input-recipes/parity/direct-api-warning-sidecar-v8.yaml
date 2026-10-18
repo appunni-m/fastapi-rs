@@ -1,0 +1,26 @@
+schema: fastapi-rs/python-api-workflow@8
+workload:
+  file: tests/fixtures/workloads/direct_api_warnings.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.direct-api.v8-warning-sidecar.query-example
+  probes:
+  - probe_id: query-example
+    public_callable:
+      module: fastapi
+      attribute: Query
+    argument_bundle: query-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_schema_extra_examples.py
+    kind: upstream_test
+    sha256: 2d65521abfc513ebafbe3ec72e27d7f2e0634ce52274fe8958e0b916a6c5a4fa
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.Query
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
