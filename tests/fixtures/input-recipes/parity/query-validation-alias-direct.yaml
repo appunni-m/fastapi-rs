@@ -41,6 +41,118 @@ cases:
   source_evidence:
   - path: tests/test_request_params/test_query/test_required_str.py
     kind: upstream_test
+# FastAPI has no upstream AliasChoices query test; this module is adjacent
+# string-alias control coverage. Exact source behavior is recorded in metadata.yaml.
+- case_id: fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias
+  actions:
+  - action_id: direct-alias-choices-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /required-alias-choices
+      query_string: external-id=cedar
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias
+  actions:
+  - action_id: direct-alias-choices-choice-only-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /required-alias-choices
+      query_string: legacy-id=cedar
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.validation-alias.alias-choices.openapi
+  actions:
+  - action_id: direct-alias-choices-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1required-alias-choices/get/parameters
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
 - case_id: fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name
   actions:
   - action_id: direct-parameter-name

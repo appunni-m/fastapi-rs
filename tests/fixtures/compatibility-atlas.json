@@ -599973,12 +599973,15 @@
           },
           {
             "case_ids": [
+              "fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias",
+              "fastapi.request-parameters.query.validation-alias.alias-choices.openapi",
+              "fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias",
               "fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias",
               "fastapi.request-parameters.query.validation-alias.direct.openapi",
               "fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias",
               "fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name"
             ],
-            "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
@@ -600186,7 +600189,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml::fastapi.dependency-overrides.async-nested-two-distinct-query-aliases (actions: both-aliased-query-values-missing, revision-alias-missing, revision-alias-invalid-integer, both-aliased-query-values-valid; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias (actions: direct-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name (actions: direct-parameter-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias (actions: direct-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.openapi (actions: direct-openapi; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.rejects-declared-alias (actions: model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.accepts-validation-alias (actions: model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.required-missing (actions: model-required-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.rejects-python-name (actions: model-python-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.openapi (actions: model-openapi; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml::fastapi.request-param-model-alias.query-alias-openapi (actions: query-alias-openapi-parameters; selectors: docs.response.status, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.required-missing (actions: get-required-query-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.alias-valid (actions: get-query-by-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.alias-name-missing (actions: get-query-by-python-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.invalid-integer (actions: get-query-invalid-integer; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml::fastapi.dependency-overrides.async-nested-two-distinct-query-aliases (actions: both-aliased-query-values-missing, revision-alias-missing, revision-alias-invalid-integer, both-aliased-query-values-valid; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias (actions: direct-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias (actions: direct-alias-choices-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias (actions: direct-alias-choices-choice-only-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.alias-choices.openapi (actions: direct-alias-choices-openapi; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name (actions: direct-parameter-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias (actions: direct-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml::fastapi.request-parameters.query.validation-alias.direct.openapi (actions: direct-openapi; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.rejects-declared-alias (actions: model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.accepts-validation-alias (actions: model-validation-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.required-missing (actions: model-required-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.rejects-python-name (actions: model-python-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml::fastapi.request-parameters.query.validation-alias.model.openapi (actions: model-openapi; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml::fastapi.request-param-model-alias.query-alias-openapi (actions: query-alias-openapi-parameters; selectors: docs.response.status, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.required-missing (actions: get-required-query-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.alias-valid (actions: get-query-by-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.alias-name-missing (actions: get-query-by-python-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.invalid-integer (actions: get-query-invalid-integer; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 347,
@@ -600400,6 +600403,36 @@
               "observation_selectors": [
                 "http.body.bytes",
                 "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias.alias-choices.openapi"
+              ],
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml"
             },

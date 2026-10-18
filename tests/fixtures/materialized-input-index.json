@@ -24605,20 +24605,44 @@
     {
       "id": "query-validation-alias-direct",
       "input_path": "tests/fixtures/inputs/parity/query-validation-alias-direct.json",
-      "input_sha256": "128fdd750a78d1d9931b28679a2608d9ba38762b1c46d5e0a9f1bb332999c4fb",
+      "input_sha256": "9776ec488793dccafa07fa94f1fc794f69abc37e9d84db43057965666148d34d",
       "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml",
-      "recipe_sha256": "bfaf5008b9c8d84e5ec46d55c4fdc8018d29ab375d55ea752faf8fed53ab99e2",
+      "recipe_sha256": "28e57b267a00f74af94f40ecd1d1dfcf3b5f6f48d40fd305f8f5a69ca3d36d6e",
       "case_ids": [
         "fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias",
+        "fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias",
+        "fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias",
+        "fastapi.request-parameters.query.validation-alias.alias-choices.openapi",
         "fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name",
         "fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias",
         "fastapi.request-parameters.query.validation-alias.direct.openapi"
       ],
       "workload_path": "tests/fixtures/workloads/query_validation_alias_direct.py",
-      "workload_sha256": "6a9b7f53a0eb121ad277064224f95ee517423bc7dccc82e5807ce7012728c38f",
+      "workload_sha256": "c096093061e190e4fe4b1b14fa884f93e09333507c5d17f28868af3f42828b72",
       "case_contracts": [
         {
           "case_id": "fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_query/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_query/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_query/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameters.query.validation-alias.alias-choices.openapi",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_request_params/test_query/test_required_str.py"
@@ -58428,8 +58452,11 @@
       "fixture_id": "fastapi.test.test-request-params-test-query-test-required-str",
       "workflow_id": "query-validation-alias-direct",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias",
+        "fastapi.request-parameters.query.validation-alias.alias-choices.openapi",
+        "fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias",
         "fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias",
         "fastapi.request-parameters.query.validation-alias.direct.openapi",
         "fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias",

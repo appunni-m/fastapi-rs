@@ -3359,9 +3359,12 @@ reviewed_api_contract_overlay:
         - {path: fastapi/param_functions.py, symbol: Query}
         - {path: fastapi/params.py, symbol: Query}
         - {path: fastapi/dependencies/utils.py, symbol: request_params_to_args}
+        - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
+        - {path: fastapi/dependencies/utils.py, symbol: _get_multidict_value}
         - {path: fastapi/dependencies/utils.py, symbol: get_dependant}
         - {path: fastapi/openapi/utils.py, symbol: _get_openapi_operation_parameters}
         - {path: fastapi/_compat/v2.py, symbol: get_model_fields}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
         - {path: docs/en/docs/tutorial/query-param-models.md}
         - {path: tests/test_tutorial/test_query_param_models/test_tutorial001.py}
         - {path: tests/test_tutorial/test_query_param_models/test_tutorial002.py}
@@ -3441,6 +3444,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias
         - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
           case_id: fastapi.request-parameters.query.validation-alias.direct.openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.alias-choices.accepts-declared-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.alias-choices.rejects-choice-only-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.alias-choices.openapi
         - recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
           case_id: fastapi.query-param-models.grouped-repeated-list
         - recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
@@ -3515,7 +3524,13 @@ reviewed_api_contract_overlay:
         query-validation-alias-direct workflow covers string validation_alias
         behavior: a nonempty validation alias takes precedence over alias and
         the Python name for query lookup, required-error location, and OpenAPI
-        name. ASGI cases for direct path-operation Query(BaseModel) parameters in
+        name. Its direct AliasChoices cases are source-derived: FastAPI's
+        ModelField.validation_alias accepts only a nonempty string, so query
+        extraction falls back to the declared alias and ignores choice-only
+        alternatives. FastAPI has no upstream test for this direct AliasChoices
+        query shape; its exact source path is recorded above, and the recipe
+        cites the neighboring string-alias test module as control coverage.
+        ASGI cases for direct path-operation Query(BaseModel) parameters in
         query-param-models, query-param-model-tutorial-edges,
         request-parameter-model-tutorial-edges,
         model-extra-request-parameters-upstream,
