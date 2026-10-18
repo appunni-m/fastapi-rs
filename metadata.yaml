@@ -15150,25 +15150,27 @@ reviewed_api_contract_overlay:
     fastapi.__version__:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
-        known_gaps:
-          - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+        status: full-contract-established
+      rust_binding: fastapi-rs-py/src/lib.rs::_core.__version__
       source_evidence:
         - path: fastapi/__init__.py
           kind: module-value
           symbol: __version__
           start_line: 3
           end_line: 3
-      supported_slice: >-
-        Expose the pinned source version literal `0.141.1` as `fastapi.__version__`; this does
-        not describe distribution metadata or a version-discovery API.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-version-value.yaml
+          case_id: fastapi.public-api.package-version-value
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.attribute_value]
+      observation_selectors: [python.attribute_value]
+      full_contract: >-
+        The complete public behavior of fastapi.__version__ for the pinned FastAPI 0.141.1
+        source is its string value, `0.141.1`, assigned in fastapi/__init__.py. The Python
+        facade directly re-exports the native module attribute. The input-only workflow
+        compares the exact value in an identity-checked isolated source and target process;
+        this contract is scoped to the pinned version and does not claim distribution
+        metadata or version discovery behavior.
 
     fastapi.background.BackgroundTasks:
       rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks

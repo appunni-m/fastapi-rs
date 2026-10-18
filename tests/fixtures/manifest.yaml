@@ -1286,13 +1286,13 @@ api_surface_contract:
       runtime-signature-unavailable: 1
       source-signature-recorded: 6
     target_disposition_counts:
-      supported: 1
-      unresolved: 496
+      supported: 2
+      unresolved: 495
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      full-contract-established: 1
-      slice-described: 487
+      full-contract-established: 2
+      slice-described: 486
     implementation_owner_plans:
       fastapi-rs: 457
       starlette-rs: 31
@@ -1304,8 +1304,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 176
-    symbols_with_operation_fixture_refs: 299
-    operation_fixture_refs: 2253
+    symbols_with_operation_fixture_refs: 300
+    operation_fixture_refs: 2254
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -9045,14 +9045,25 @@ api_surface_contract:
       probe_kind: attribute
       observation_selectors:
       - python.attribute_value
+    operation_fixture_refs:
+    - workflow_id: fastapi-version-value
+      input_path: tests/fixtures/inputs/parity/fastapi-version-value.json
+      input_sha256: ac9e10f5ee1b168d83fe0ac01bab21a57f217f227d46c258dd33ad807c2ab4ec
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-version-value.yaml
+      recipe_sha256: 1e9dd3ae2f56d85c669622a8610009d8f183eb9622298c1c8635b80379f38ce0
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.public-api.package-version-value
+      observation_selectors:
+      - python.attribute_value
     identity_workflow_refs: []
     feature_ids: []
     observation_selectors:
     - python.attribute_value
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.__version__/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.__version__/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.__version__
@@ -9061,15 +9072,9 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/20
-      status: unresolved
-      disposition: unresolved
-      rust_binding: null
-      known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      status: full-contract-established
+      disposition: supported
+      rust_binding: fastapi-rs-py/src/lib.rs::_core.__version__
   - id: fastapi.applications.FastAPI
     kind: class
     source_candidate_ref: /api_candidates/186
