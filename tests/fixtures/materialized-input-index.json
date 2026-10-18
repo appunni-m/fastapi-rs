@@ -1101,12 +1101,16 @@
     {
       "id": "application-attributes",
       "input_path": "tests/fixtures/inputs/parity/application-attributes.json",
-      "input_sha256": "d87abf1e83e531ef760d091738cc45b8b12c5fd95c98a3037c1f7b90f2d23365",
+      "input_sha256": "eb30fbd75026670c605edea998dcfd899852188db39d8cca55172d50331ad5e7",
       "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
-      "recipe_sha256": "50d6890f26e27b93c39a992691fde6e63a6b320090354257e72a2a09257a21ce",
+      "recipe_sha256": "089426ceefc91058b9ac8d58db4eca91924b5a08e41b796c78c97e030cf3bb7c",
       "case_ids": [
         "fastapi.application.attributes.defaults",
         "fastapi.application.attributes.configured",
+        "fastapi.application.attributes.contact-reassignment-before-openapi",
+        "fastapi.application.attributes.contact-reassignment-after-openapi-cache",
+        "fastapi.application.attributes.contact-deletion-after-openapi-cache",
+        "fastapi.application.attributes.contact-deletion-before-openapi",
         "fastapi.application.attributes.summary-mutation-before-openapi",
         "fastapi.application.attributes.empty-summary",
         "fastapi.application.attributes.summary-mutation-after-openapi-cache",
@@ -1114,7 +1118,7 @@
         "fastapi.application.attributes.empty-redoc-url"
       ],
       "workload_path": "tests/fixtures/workloads/application_attributes.py",
-      "workload_sha256": "51bb600217f9dda302a267e51475f17d09d42e711678aefd7453740e40bf6b3b",
+      "workload_sha256": "decc8bf1e9e5205d722643476624c0555dcfa181a4b0f77b834c0f6320ee9fdf",
       "case_contracts": [
         {
           "case_id": "fastapi.application.attributes.defaults",
@@ -1125,6 +1129,34 @@
         },
         {
           "case_id": "fastapi.application.attributes.configured",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.contact-reassignment-before-openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.contact-reassignment-after-openapi-cache",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.contact-deletion-after-openapi-cache",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.contact-deletion-before-openapi",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:tutorial/metadata.md"
@@ -22356,7 +22388,7 @@
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "e0b69476127137f28df80166a89661c667ec94bd58722f93be84c42d61f6c89d",
+      "workload_sha256": "577a6796326c136233e93e2a2376185fe7794ba0696f49999d27888f9c130126",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -39099,9 +39131,13 @@
       "fixture_id": "fastapi.docs.tutorial-metadata",
       "workflow_id": "application-attributes",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 7 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 11 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.application.attributes.configured",
+        "fastapi.application.attributes.contact-deletion-after-openapi-cache",
+        "fastapi.application.attributes.contact-deletion-before-openapi",
+        "fastapi.application.attributes.contact-reassignment-after-openapi-cache",
+        "fastapi.application.attributes.contact-reassignment-before-openapi",
         "fastapi.application.attributes.defaults",
         "fastapi.application.attributes.empty-docs-url",
         "fastapi.application.attributes.empty-redoc-url",

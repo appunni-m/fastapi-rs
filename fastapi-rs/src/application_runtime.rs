@@ -2211,6 +2211,23 @@ impl PyFastApiProxyPropertyDescriptor {
         fastapi_proxy_state(instance)?.setattr(member, value)?;
         Ok(())
     }
+
+    fn __delete__(&self, instance: &Bound<'_, PyAny>) -> PyResult<()> {
+        let state = fastapi_proxy_state(instance)?;
+        if self.member == "contact" {
+            let mut state = state.extract::<PyRefMut<'_, PyFastApi>>()?;
+            if !state.contact_is_set {
+                return Err(PyAttributeError::new_err(
+                    "'FastAPI' object has no attribute 'contact'",
+                ));
+            }
+            state.contact = None;
+            state.contact_is_set = false;
+            return Ok(());
+        }
+        state.delattr(self.member.as_str())?;
+        Ok(())
+    }
 }
 
 #[pymethods]
@@ -4399,6 +4416,7 @@ pub(crate) struct PyFastApi {
     separate_input_output_schemas: bool,
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
+    contact_is_set: bool,
     license_info: Option<Py<PyAny>>,
     openapi_external_docs: Option<Py<PyAny>>,
     webhooks: Py<PyAny>,
@@ -4559,6 +4577,15 @@ struct OpenApiAppSnapshot {
     operations: Vec<OpenApiRouteSnapshot>,
 }
 
+fn fastapi_contact_value(py: Python<'_>, app: &PyFastApi) -> PyResult<Option<Py<PyAny>>> {
+    if !app.contact_is_set {
+        return Err(PyAttributeError::new_err(
+            "'FastAPI' object has no attribute 'contact'",
+        ));
+    }
+    Ok(app.contact.as_ref().map(|value| value.clone_ref(py)))
+}
+
 impl OpenApiAppSnapshot {
     fn from_app(py: Python<'_>, app: &PyFastApi) -> PyResult<Self> {
         let route_order = effective_route_order(py, app, IncludedRouteCategory::Http)?;
@@ -4590,7 +4617,7 @@ impl OpenApiAppSnapshot {
             openapi_version: app.openapi_version.clone(),
             openapi_tags: app.openapi_tags.clone_ref(py),
             terms_of_service: app.terms_of_service.clone(),
-            contact: app.contact.as_ref().map(|value| value.clone_ref(py)),
+            contact: fastapi_contact_value(py, app)?,
             license_info: app.license_info.as_ref().map(|value| value.clone_ref(py)),
             openapi_external_docs: app
                 .openapi_external_docs
@@ -5380,6 +5407,7 @@ impl PyFastApi {
             separate_input_output_schemas,
             terms_of_service,
             contact,
+            contact_is_set: true,
             license_info,
             openapi_external_docs,
             webhooks,
@@ -5507,16 +5535,14 @@ impl PyFastApi {
     }
 
     #[getter]
-    fn contact(&self, py: Python<'_>) -> Py<PyAny> {
-        self.contact
-            .as_ref()
-            .map(|value| value.clone_ref(py))
-            .unwrap_or_else(|| py.None())
+    fn contact(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        Ok(fastapi_contact_value(py, self)?.unwrap_or_else(|| py.None()))
     }
 
     #[setter]
     fn set_contact(&mut self, contact: Option<Py<PyAny>>) {
         self.contact = contact;
+        self.contact_is_set = true;
     }
 
     #[getter]

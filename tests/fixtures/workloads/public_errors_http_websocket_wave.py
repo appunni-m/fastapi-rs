@@ -6,6 +6,8 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketException
 from starlette.exceptions import (
     HTTPException as StarletteHTTPException,
+)
+from starlette.exceptions import (
     WebSocketException as StarletteWebSocketException,
 )
 
@@ -107,9 +109,7 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
         exception = WebSocketException(code=1008, reason="credentials required")
         return {
             **_exception_snapshot(exception),
-            "is_starlette_websocket_exception": isinstance(
-                exception, StarletteWebSocketException
-            ),
+            "is_starlette_websocket_exception": isinstance(exception, StarletteWebSocketException),
             "code": exception.code,
             "reason": exception.reason,
         }

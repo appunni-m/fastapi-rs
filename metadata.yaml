@@ -8033,6 +8033,16 @@ reviewed_api_contract_overlay:
           initializer: __init__
           start_line: 879
           end_line: 879
+        - path: fastapi/applications.py
+          kind: source-definition
+          symbol: openapi
+          start_line: 1070
+          end_line: 1103
+        - path: fastapi/openapi/utils.py
+          kind: source-definition
+          symbol: get_openapi
+          start_line: 585
+          end_line: 679
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -8041,18 +8051,31 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.configured
           observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.contact-reassignment-before-openapi
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.contact-reassignment-after-openapi-cache
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.contact-deletion-after-openapi-cache
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.contact-deletion-before-openapi
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json]
       supported_slice: >-
         The pinned constructor stores `contact`, and the metadata tutorial
         documents its OpenAPI dictionary. The linked input-only cases compare
-        its default and configured public values from an ASGI endpoint.
+        default and configured reads, reassignment before and after schema
+        caching, and deletion before schema generation and after schema caching.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::contact
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+          - Arbitrary runtime values and effects on non-OpenAPI metadata consumers remain outside this slice.
     fastapi.applications.FastAPI.license_info:
       source_evidence:
         - path: fastapi/applications.py

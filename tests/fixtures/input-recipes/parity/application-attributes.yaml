@@ -71,6 +71,80 @@ cases:
     observations: *attributes-json-response
   source_evidence: *attributes-source-evidence
 
+- case_id: fastapi.application.attributes.contact-reassignment-before-openapi
+  verification: parity
+  factory_input:
+    contact:
+      name: Initial Support
+    _contact_after_init:
+      name: Reassigned Support
+      email: support@example.com
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-contact-reassignment-before-openapi
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  source_evidence: *attributes-source-evidence
+
+- case_id: fastapi.application.attributes.contact-reassignment-after-openapi-cache
+  verification: parity
+  factory_input:
+    contact:
+      name: Cached Support
+    _contact_after_openapi:
+      name: Current Support
+      email: current@example.com
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-contact-reassignment-after-openapi-cache
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  source_evidence: *attributes-source-evidence
+
+- case_id: fastapi.application.attributes.contact-deletion-after-openapi-cache
+  verification: parity
+  factory_input:
+    contact:
+      name: Cached Support
+      email: cached@example.com
+    _delete_contact_after_openapi: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-contact-deletion-after-openapi-cache
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  source_evidence: *attributes-source-evidence
+
+- case_id: fastapi.application.attributes.contact-deletion-before-openapi
+  verification: parity
+  factory_input:
+    contact:
+      name: Uncached Support
+      email: uncached@example.com
+    _delete_contact_after_init: true
+    _openapi_after_contact_deletion: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence: *attributes-source-evidence
+
 - case_id: fastapi.application.attributes.summary-mutation-before-openapi
   verification: parity
   factory_input:
