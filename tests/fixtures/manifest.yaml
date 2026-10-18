@@ -578,7 +578,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: f02fc20c6af68fd618aa2824830fc47161c60f35d7cd1669a9a7204f5c21d692
+    sha256: 25c6b7e5bd8feff2715335ade148941eeffcb553a5d53d6572df1ed8ecb06f1a
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1286,11 +1286,13 @@ api_surface_contract:
       runtime-signature-unavailable: 1
       source-signature-recorded: 6
     target_disposition_counts:
-      unresolved: 497
+      supported: 1
+      unresolved: 496
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      slice-described: 488
+      full-contract-established: 1
+      slice-described: 487
     implementation_owner_plans:
       fastapi-rs: 457
       starlette-rs: 31
@@ -1302,8 +1304,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 176
-    symbols_with_operation_fixture_refs: 298
-    operation_fixture_refs: 2252
+    symbols_with_operation_fixture_refs: 299
+    operation_fixture_refs: 2253
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -72431,6 +72433,18 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/387
       observation_selectors: *id026
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: status-module-identity
+      input_path: tests/fixtures/inputs/parity/status-module-identity.json
+      input_sha256: b4620f847fba631bc81970cc9d983a64db753e5d828e2cf9cfef4211031a5e6f
+      recipe_path: tests/fixtures/input-recipes/parity/status-module-identity.yaml
+      recipe_sha256: 145e57da69d805462d71bba719e97bbc76f9e0883ea400329552248142f3994a
+      workload_path: tests/fixtures/workloads/status_module_identity.py
+      workload_sha256: 5e13a439fefebc08cc2fa03f26b803c781389a79efc24fb4ced8bb920c9cf9a7
+      case_id: fastapi.status-alias.namespace
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -72459,9 +72473,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.status/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.status/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.status
@@ -72470,18 +72484,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1601
-      status: partial-contract
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: fastapi-rs/src/parameters.rs::register
-      known_gaps:
-      - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
-        and identity mappings are not pass results.
-      - Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs, branches,
-        mutations, and error paths remain unproven.
-      - Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS 1.6.0
-        contract; the FastAPI recommendation is limited to its alias/integration layer.
-      - The bounded mapping covers only the FastAPI-facing slice; it does not establish the full Starlette-RS
-        public API contract.
   - id: fastapi.templating.Jinja2Templates
     kind: import_binding
     source_candidate_ref: /api_candidates/1602

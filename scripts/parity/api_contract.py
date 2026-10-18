@@ -23,13 +23,14 @@ from scripts.parity.contract import (
 CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@13"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@10"
-TARGET_DISPOSITION_POLICY_SCHEMA = "fastapi-rs/api-target-disposition-policy@1"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@11"
+TARGET_DISPOSITION_POLICY_SCHEMA = "fastapi-rs/api-target-disposition-policy@2"
 TARGET_DISPOSITION_STATUSES = {
     "partial-contract": "unresolved",
     "unimplemented": "unsupported",
     "unresolved": "unresolved",
     "full-contract-not-established": "unresolved",
+    "full-contract-established": "supported",
 }
 
 
@@ -2031,11 +2032,25 @@ def build_api_surface_contract(
             raise ContractError(
                 f"reviewed API supported_slice must be a nonempty string: {operation_id}"
             )
+        full_contract = operation.get("full_contract")
+        if full_contract is not None and (
+            not isinstance(full_contract, str) or not full_contract.strip()
+        ):
+            raise ContractError(
+                f"reviewed API full_contract must be a nonempty string: {operation_id}"
+            )
+        if supported_slice is not None and full_contract is not None:
+            raise ContractError(
+                f"reviewed API operation cannot declare both a slice and a full contract: "
+                f"{operation_id}"
+            )
         for field in ("feature_ids", "observation_selectors", "error_contract_ids"):
             values = operation.get(field, [])
             if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
                 raise ContractError(f"reviewed API {field} must be a string list: {operation_id}")
         target_binding = operation.get("target_binding")
+        if full_contract is not None and target_binding is None:
+            raise ContractError(f"reviewed full API contract has no target binding: {operation_id}")
         if target_binding is not None:
             known_gaps = (
                 target_binding.get("known_gaps") if isinstance(target_binding, dict) else None
@@ -2043,6 +2058,10 @@ def build_api_surface_contract(
             rust_binding = (
                 target_binding.get("rust_binding") if isinstance(target_binding, dict) else None
             )
+            target_status = (
+                target_binding.get("status") if isinstance(target_binding, dict) else None
+            )
+            full_status = target_status == "full-contract-established"
             if (
                 not isinstance(target_binding, dict)
                 or set(target_binding)
@@ -2053,12 +2072,35 @@ def build_api_surface_contract(
                     "rust_binding",
                 }
                 or target_binding.get("implementation_owner") not in {"fastapi-rs", "starlette-rs"}
-                or target_binding.get("status")
-                not in {"partial-contract", "unimplemented", "unresolved"}
-                or not isinstance(known_gaps, list)
-                or not known_gaps
-                or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
-                or len(known_gaps) != len(set(known_gaps))
+                or target_status
+                not in {
+                    "partial-contract",
+                    "unimplemented",
+                    "unresolved",
+                    "full-contract-established",
+                }
+                or (
+                    not full_status
+                    and (
+                        not isinstance(known_gaps, list)
+                        or not known_gaps
+                        or any(
+                            not isinstance(value, str) or not value.strip() for value in known_gaps
+                        )
+                        or len(known_gaps) != len(set(known_gaps))
+                    )
+                )
+                or (
+                    full_status
+                    and (
+                        full_contract is None
+                        or supported_slice is not None
+                        or not fixtures
+                        or not evidence
+                        or known_gaps not in (None, [])
+                    )
+                )
+                or (not full_status and full_contract is not None)
                 or (
                     rust_binding is not None
                     and (not isinstance(rust_binding, str) or not rust_binding.strip())
@@ -2067,8 +2109,8 @@ def build_api_surface_contract(
                 raise ContractError(
                     "reviewed API target binding must declare FastAPI-RS or Starlette-RS "
                     "ownership, "
-                    "partial-contract, unimplemented, or unresolved status, and unique known gaps: "
-                    f"{operation_id}"
+                    "a supported full contract or an unresolved/unsupported status with unique "
+                    f"known gaps: {operation_id}"
                 )
         for documentation_ref in docs:
             doc_selectors = documentation_ref.get("observation_selectors", [])
@@ -3507,10 +3549,25 @@ def build_api_surface_contract(
                 f"reviewed Rust binding for {symbol_id} must be a nonempty source path"
             )
         supported_slice = reviewed_operation.get("supported_slice")
+        full_contract = reviewed_operation.get("full_contract")
+        is_full_contract = (
+            reviewed_target_binding is not None
+            and reviewed_target_binding.get("status") == "full-contract-established"
+        )
         operation_scope = {
-            "status": "slice-described" if supported_slice else "scope-review-pending",
+            "status": (
+                "full-contract-established"
+                if is_full_contract
+                else "slice-described"
+                if supported_slice
+                else "scope-review-pending"
+            ),
         }
-        if supported_slice:
+        if is_full_contract:
+            operation_scope["metadata_ref"] = _pointer(
+                "reviewed_api_contract_overlay", "operations", symbol_id, "full_contract"
+            )
+        elif supported_slice:
             operation_scope["metadata_ref"] = _pointer(
                 "reviewed_api_contract_overlay", "operations", symbol_id, "supported_slice"
             )
@@ -3601,7 +3658,9 @@ def build_api_surface_contract(
                 "observation_selectors": sorted(selectors),
                 "operation_scope": operation_scope,
                 "behavior_contract_state": (
-                    "reviewed-operation-and-documentation-links; full compatibility pending"
+                    "reviewed-full-operation-contract; identity-checked parity established"
+                    if is_full_contract
+                    else "reviewed-operation-and-documentation-links; full compatibility pending"
                     if reviewed_operation
                     else "documentation-fixture-design-linked; operation-level review pending"
                     if documentation_refs

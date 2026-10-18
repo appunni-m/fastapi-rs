@@ -1928,7 +1928,7 @@ pydantic_core_dependency_inventory:
     feature guarantee.
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@10
+  schema: fastapi-rs/reviewed-api-contract-overlay@11
   purpose: >-
     Source-backed overlays link selected supported operations to documented
     features, observable selectors, and candidate error records. Inherited
@@ -1943,12 +1943,13 @@ reviewed_api_contract_overlay:
     unresolved implementation statuses. Direct Starlette re-exports remain Starlette-RS-owned;
     source or input links alone do not establish parity.
   target_disposition_policy:
-    schema: fastapi-rs/api-target-disposition-policy@1
+    schema: fastapi-rs/api-target-disposition-policy@2
     status_mapping:
       partial-contract: unresolved
       unimplemented: unsupported
       unresolved: unresolved
       full-contract-not-established: unresolved
+      full-contract-established: supported
     supported_evidence_requirement: >-
       A supported target disposition requires identity-checked source/target parity
       over the complete observable public operation contract. A bounded partial
@@ -1957,7 +1958,9 @@ reviewed_api_contract_overlay:
       The generated per-symbol contract keeps implementation status separate from
       the public API disposition. Partial implementations remain unresolved for
       the whole symbol; deliberately unimplemented symbols are unsupported. No
-      symbol is marked supported unless full-operation parity evidence is reviewed.
+      symbol is marked supported unless its full public operation is source-reviewed,
+      fixture-linked, and covered by identity-checked parity. A complete contract must
+      be declared explicitly; a partial slice cannot imply support.
   module_target_identity_refs:
     fastapi.middleware.cors:
       workflow_id: documented-core-module-identities
@@ -4033,31 +4036,26 @@ reviewed_api_contract_overlay:
     fastapi.status:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/parameters.rs::register
       source_evidence:
         - {path: fastapi/__init__.py}
         - {path: docs/en/docs/reference/status.md}
       feature_ids: [response-serialization]
       observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        The root fastapi.status export is the exact Starlette-RS starlette.status
-        module object. The identity-checked HTTP workflow compares its complete
-        __all__ names and integer values against the pinned FastAPI oracle;
-        generic Starlette status values remain owned by the sibling contract.
+      full_contract: >-
+        FastAPI 0.141.1 directly re-exports the exact starlette.status module object.
+        The identity-checked workflow compares module identity, ordered __all__ names
+        and integer values, dir(), all deprecated aliases and their warning category,
+        message and callsite, and the unknown-attribute exception class and arguments.
+        Generic status namespace behavior is implemented once by the matching
+        Starlette-RS 1.6.0 status contract; support here covers the full FastAPI alias
+        contract rather than duplicating Starlette's API inventory.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/status-module-identity.yaml
+          case_id: fastapi.status-alias.namespace
+          workload_path: tests/fixtures/workloads/status_module_identity.py
+          observation_selectors: [http.status, http.body.bytes]
     fastapi.datastructures.URL:
       target_binding:
         implementation_owner: starlette-rs
