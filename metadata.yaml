@@ -12328,11 +12328,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Successful credentials, scheme-case variants, optional authentication, HTTPBase inheritance,
-            and OpenAPI security generation remain unverified.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Mixed-case Digest scheme behavior and complete HTTPBase inheritance and subclass edge
+            cases remain unverified. FastAPI documents HTTPDigest as an OpenAPI stub, not an RFC 7616
+            Digest implementation.
         rust_binding: "fastapi-rs/src/security.rs::PyHttpDigest"
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
       source_evidence:
@@ -12344,27 +12342,34 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.scheme-only-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-security-http-digest
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.scheme-only-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-digest
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
-        Partial Rust-owned Digest dependency. The selected request cases
-        observe missing-credential and wrong-scheme challenge responses, and
-        the public API input reflects its constructor signature. Successful
-        credentials, scheme-case variants, optional authentication, HTTPBase
-        inheritance, and OpenAPI security generation remain unverified.
+        Partial Rust-owned Digest dependency. The selected input workflows cover
+        required and optional credentials, missing and scheme-only authorization
+        headers, wrong schemes, and OpenAPI scheme plus operation security.
+        Mixed-case schemes and the complete inherited HTTPBase contract remain
+        unverified. FastAPI documents HTTPDigest as a stub rather than a full
+        RFC 7616 implementation.
     fastapi.security.http.HTTPDigest:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            Source HTTPBase inheritance, optional authentication, successful credential extraction, and
-            OpenAPI scheme generation are not established here.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Mixed-case Digest scheme behavior and complete HTTPBase inheritance and subclass edge
+            cases remain unverified. FastAPI documents HTTPDigest as an OpenAPI stub, not an RFC 7616
+            Digest implementation.
         rust_binding: "fastapi-rs/src/security.rs::PyHttpDigest"
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
       source_evidence:
@@ -12378,15 +12383,36 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-security-http-digest
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.scheme-only-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.scheme-only-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.http-digest
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial native implementation handles Digest authorization parsing and
-        authentication errors in Rust. Source HTTPBase inheritance, optional
-        authentication, successful credential extraction, and OpenAPI scheme
-        generation are not established here.
+        authentication errors in Rust. The selected inputs cover required and
+        optional extraction, absent and scheme-only headers, wrong schemes, and
+        OpenAPI scheme plus operation security. Mixed-case schemes and complete
+        HTTPBase inheritance remain unverified.
     fastapi.security.http.HTTPDigest.__init__:
       target_binding:
         implementation_owner: fastapi-rs
@@ -12395,9 +12421,6 @@ reviewed_api_contract_overlay:
           - >-
             Annotated Doc metadata, subclass naming edge cases, and all constructor outcomes are not
             fully reflected by the selected workflow.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
         rust_binding: "fastapi-rs/src/security.rs::PyHttpDigest::new"
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::new
       source_evidence:
@@ -12426,11 +12449,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Successful nonempty extraction, scheme-case variants, and optional credential behavior
-            remain unverified.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Mixed-case Digest schemes and complete HTTPBase inheritance behavior remain unverified.
         rust_binding: "fastapi-rs/src/security.rs::PyHttpDigest::__call__"
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::__call__
       source_evidence:
@@ -12444,14 +12463,30 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.test-security-http-digest
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest.scheme-only-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+          case_id: fastapi.security-gap.http-digest-optional.scheme-only-header
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        The selected workflow verifies missing-credential and wrong-scheme
-        Digest challenge responses, plus successful extraction from a
-        scheme-only header with an empty credential parameter. Successful
-        nonempty extraction, scheme-case variants, and optional credential
-        behavior remain unverified.
+        The selected input workflow covers required and optional Digest
+        extraction, missing and scheme-only credentials, and wrong-scheme
+        behavior. A scheme-only header has an empty parameter and follows the
+        source-defined missing-credential branch. Mixed-case schemes remain
+        unverified.
     fastapi.security.HTTPBasicCredentials:
       target_binding:
         implementation_owner: fastapi-rs

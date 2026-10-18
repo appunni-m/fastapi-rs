@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 48e4b6415b1839be12116b73efb35a6f034e1dfde6c00a24774c6d468926ab90
+    sha256: babb113b04bc5f716caed57294fc23b0c8a50cda6f51892d8f34bc8cc89a1190
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 2c2650d0b3882b39ee7c8850a5bb3e6464cee6a2921339a26aa02c00c27256e0
+    sha256: 629742ea912dc11481b087489842f82f546f8cda9486ad060101a9a65fbd66af
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: b9be60b41e9a28bc522d09c401cb8104d168d26f556e3941dfa42eacd7625d25
+    sha256: a40ece258d0bd14c3cb245e6929ed159f203176223210e196787af3caec20a6f
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 682
-      cases: 2745
-      partial_source_mappings: 1934
+      cases: 2749
+      partial_source_mappings: 1935
 
 contract_metadata:
   aliases:
@@ -1288,7 +1288,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 173
     symbols_with_operation_fixture_refs: 291
-    operation_fixture_refs: 2201
+    operation_fixture_refs: 2223
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -61975,6 +61975,54 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-security-http-digest
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-openapi-schema
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+      - openapi.security
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.scheme-only-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-openapi-schema
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+      - openapi.security
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -62020,10 +62068,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
       known_gaps:
-      - Successful credentials, scheme-case variants, optional authentication, HTTPBase inheritance, and
-        OpenAPI security generation remain unverified.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Mixed-case Digest scheme behavior and complete HTTPBase inheritance and subclass edge cases remain
+        unverified. FastAPI documents HTTPDigest as an OpenAPI stub, not an RFC 7616 Digest implementation.
   - id: fastapi.security.OAuth2
     kind: import_binding
     source_candidate_ref: /api_candidates/1467
@@ -66905,6 +66951,126 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-security-http-digest
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.scheme-only-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-openapi-schema
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+      - openapi.security
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.scheme-only-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-openapi-schema
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+      - openapi.security
     - workflow_id: security-oauth-public-api
       input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
       input_sha256: 7b2ade6ae820e3103b3e699179f52b2cd714f761b5451f956011cd26bd567a9b
@@ -66947,10 +67113,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
       known_gaps:
-      - Source HTTPBase inheritance, optional authentication, successful credential extraction, and OpenAPI
-        scheme generation are not established here.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Mixed-case Digest scheme behavior and complete HTTPBase inheritance and subclass edge cases remain
+        unverified. FastAPI documents HTTPDigest as an OpenAPI stub, not an RFC 7616 Digest implementation.
   - id: fastapi.security.http.HTTPDigest.__call__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1525
@@ -67008,6 +67172,102 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.test-security-http-digest
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest.scheme-only-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-http-auth-gaps-wave
+      input_path: tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json
+      input_sha256: bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933
+      recipe_path: tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml
+      recipe_sha256: 918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e
+      workload_path: tests/fixtures/workloads/security_http_auth_gaps_wave.py
+      workload_sha256: e831a6714580902c15ae2328a7b0f29d5ec2f026af804e2ff76d7f98c3dd5797
+      case_id: fastapi.security-gap.http-digest-optional.scheme-only-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -67040,10 +67300,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::__call__
       known_gaps:
-      - Successful nonempty extraction, scheme-case variants, and optional credential behavior remain
-        unverified.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Mixed-case Digest schemes and complete HTTPBase inheritance behavior remain unverified.
   - id: fastapi.security.http.HTTPDigest.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1526
@@ -67156,8 +67413,6 @@ api_surface_contract:
       known_gaps:
       - Annotated Doc metadata, subclass naming edge cases, and all constructor outcomes are not fully
         reflected by the selected workflow.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
   - id: fastapi.security.oauth2.OAuth2
     kind: class
     source_candidate_ref: /api_candidates/1540

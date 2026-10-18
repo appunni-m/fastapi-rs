@@ -32193,17 +32193,21 @@
     {
       "id": "security-http-auth-gaps-wave",
       "input_path": "tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json",
-      "input_sha256": "ebb1a0a787f686c35f257d045b45fad64e985c186371f2a8cb290b8ed1c50efb",
+      "input_sha256": "bab5f60a193ec8f94f407de08f87a96187c7a798b49be26b8fa296d2711c4933",
       "recipe_path": "tests/fixtures/input-recipes/parity/security-http-auth-gaps-wave.yaml",
-      "recipe_sha256": "f038e173a93899d9c2fcc572c72bdb9324313adce07bb61b23678ea90c4ef1cd",
+      "recipe_sha256": "918132deae764eee5c61845b5f07ea2e3d806f94236f2d1a56ae38569b4b5a0e",
       "case_ids": [
         "fastapi.security-gap.http-base.test-security-http-base-with-whitespaces",
         "fastapi.security-gap.http-base.test-security-http-base-no-credentials",
         "fastapi.security-gap.http-base.test-openapi-schema",
         "fastapi.security-gap.http-digest.test-security-http-digest-incorrect-scheme-credentials",
+        "fastapi.security-gap.http-digest.test-security-http-digest",
+        "fastapi.security-gap.http-digest.scheme-only-header",
         "fastapi.security-gap.http-digest.test-openapi-schema",
         "fastapi.security-gap.http-digest-optional.test-security-http-digest",
         "fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials",
+        "fastapi.security-gap.http-digest-optional.test-security-http-digest-no-credentials",
+        "fastapi.security-gap.http-digest-optional.scheme-only-header",
         "fastapi.security-gap.http-digest-optional.test-openapi-schema",
         "fastapi.security-gap.oauth2-required.test-security-oauth2-password-other-header",
         "fastapi.security-gap.oauth2-required.test-security-oauth2-password-bearer-no-header",
@@ -32245,6 +32249,20 @@
           ]
         },
         {
+          "case_id": "fastapi.security-gap.http-digest.test-security-http-digest",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security-gap.http-digest.scheme-only-header",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest_description.py"
+          ]
+        },
+        {
           "case_id": "fastapi.security-gap.http-digest.test-openapi-schema",
           "verification": "parity",
           "requirement_refs": [
@@ -32260,6 +32278,20 @@
         },
         {
           "case_id": "fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest_optional.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security-gap.http-digest-optional.test-security-http-digest-no-credentials",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest_optional.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security-gap.http-digest-optional.scheme-only-header",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_security_http_digest_optional.py"
@@ -66226,9 +66258,10 @@
       "fixture_id": "fastapi.test.test-security-http-digest",
       "workflow_id": "security-http-auth-gaps-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security-gap.http-digest.test-openapi-schema",
+        "fastapi.security-gap.http-digest.test-security-http-digest",
         "fastapi.security-gap.http-digest.test-security-http-digest-incorrect-scheme-credentials",
         "fastapi.security-gap.http-digest.test-security-http-digest-no-credentials"
       ],
@@ -66236,7 +66269,23 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_http_digest_description.py",
+      "fixture_id": "fastapi.test.test-security-http-digest-description",
+      "workflow_id": "security-http-auth-gaps-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security-gap.http-digest.scheme-only-header"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
@@ -66244,16 +66293,19 @@
       "fixture_id": "fastapi.test.test-security-http-digest-optional",
       "workflow_id": "security-http-auth-gaps-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.security-gap.http-digest-optional.scheme-only-header",
         "fastapi.security-gap.http-digest-optional.test-openapi-schema",
         "fastapi.security-gap.http-digest-optional.test-security-http-digest",
-        "fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials"
+        "fastapi.security-gap.http-digest-optional.test-security-http-digest-incorrect-scheme-credentials",
+        "fastapi.security-gap.http-digest-optional.test-security-http-digest-no-credentials"
       ],
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
