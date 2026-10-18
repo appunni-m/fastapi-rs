@@ -5369,16 +5369,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.public-errors.http.reset-content-status-with-detail
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.not-modified-status-with-detail
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.numeric-string-status
       feature_ids: [public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors:
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - asgi.application_error.exception
       supported_slice: >-
         The documented tutorial imports this public coroutine and directly awaits
         it from a registered Starlette HTTPException handler. The tutorial
         workflow observes its 409 response, while the public-errors workflow
         observes structured FastAPI detail and headers, the Starlette base
         exception and headers, and body suppression for statuses 199, 204, 205,
-        and 304. A separate root-module input records coroutine-function
-        classification and inspect.signature, and confirms the default FastAPI
+        and 304. An additional request observes how a numeric string status is
+        converted for the body rule but preserved for Response construction,
+        including the exact dispatch exception. A separate root-module input
+        records coroutine-function classification and inspect.signature, and confirms the default FastAPI
         handler map references the same callable. This remains a partial
         contract: it does not establish Python-function identity/type, every
         body-allowed status or detail value, arbitrary Starlette exception

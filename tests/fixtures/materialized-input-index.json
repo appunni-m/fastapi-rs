@@ -22317,9 +22317,9 @@
     {
       "id": "public-errors-http-websocket-wave",
       "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
-      "input_sha256": "b23ad71d3d47c0fd79ef08b910540f09e4a8cc80f1ca2510bcfd3ebd5f3f9d5d",
+      "input_sha256": "05fb6d3269040c0c8b4c15203c5d6cb1900eadccc431caa396f8a52364f9c3d6",
       "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-      "recipe_sha256": "72b208d082512ab1d19a1b0fbb0570e2b04c97383a8977eb2d29e54ed00aafe7",
+      "recipe_sha256": "3dff6b57d847b3578c04c6a84d0a6bc7a7e7dfd31f800855dabe09d649a28d73",
       "case_ids": [
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.starlette-base-detail-and-header",
@@ -22327,10 +22327,11 @@
         "fastapi.public-errors.http.informational-status-with-detail",
         "fastapi.public-errors.http.reset-content-status-with-detail",
         "fastapi.public-errors.http.not-modified-status-with-detail",
+        "fastapi.public-errors.http.numeric-string-status",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "77fd181a38c348d7da03fc81025aa92053c2741ec47c13ad0496d20ea03cb303",
+      "workload_sha256": "b1aedb17cbb4852c06f882c3c7f943fa1d00c3d7496ed34bda7084d076948135",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -22374,6 +22375,14 @@
         },
         {
           "case_id": "fastapi.public-errors.http.not-modified-status-with-detail",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:upstream-test:tests/test_starlette_exception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.public-errors.http.numeric-string-status",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:tutorial/handling-errors.md",
@@ -56392,16 +56401,18 @@
       "fixture_id": "fastapi.docs.tutorial-handling-errors",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 6 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.bodyless-status-with-detail",
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.informational-status-with-detail",
         "fastapi.public-errors.http.not-modified-status-with-detail",
+        "fastapi.public-errors.http.numeric-string-status",
         "fastapi.public-errors.http.reset-content-status-with-detail",
         "fastapi.public-errors.http.starlette-base-detail-and-header"
       ],
       "observation_selectors": [
+        "asgi.application_error.exception",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
@@ -56415,12 +56426,13 @@
       "fixture_id": "fastapi.test.test-starlette-exception",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.bodyless-status-with-detail",
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.informational-status-with-detail",
         "fastapi.public-errors.http.not-modified-status-with-detail",
+        "fastapi.public-errors.http.numeric-string-status",
         "fastapi.public-errors.http.reset-content-status-with-detail",
         "fastapi.public-errors.http.starlette-base-detail-and-header"
       ],

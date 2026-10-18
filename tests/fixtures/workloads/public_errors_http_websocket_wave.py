@@ -63,6 +63,13 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             headers={"X-Failure-Origin": "not-modified"},
         )
 
+    @app.get("/errors/numeric-string-status")
+    async def numeric_string_status_error() -> None:
+        raise HTTPException(
+            status_code="204",
+            detail="Status values are not normalized by the exception constructor.",
+        )
+
     @app.websocket("/errors/websocket")
     async def websocket_policy_error(websocket: WebSocket) -> None:
         del websocket

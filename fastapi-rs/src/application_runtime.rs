@@ -7149,16 +7149,16 @@ fn default_http_exception_response(
     py: Python<'_>,
     exception: &Bound<'_, PyAny>,
 ) -> PyResult<Py<PyAny>> {
-    let status_code = exception.getattr("status_code")?.extract::<u16>()?;
+    let status_code = exception.getattr("status_code")?;
+    let has_body = is_body_allowed_for_status_code(py, &status_code)?;
     let response_module = py.import("starlette.responses")?;
-    let has_body = status_code >= 200 && !matches!(status_code, 204 | 205 | 304);
     let response_type = if has_body {
         response_module.getattr("JSONResponse")?
     } else {
         response_module.getattr("Response")?
     };
     let kwargs = PyDict::new(py);
-    kwargs.set_item("status_code", status_code)?;
+    kwargs.set_item("status_code", &status_code)?;
     let headers =
         py.import("builtins")?
             .getattr("getattr")?
@@ -10567,7 +10567,7 @@ fn merge_response_maps(
     Ok(merged.unbind())
 }
 
-fn additional_response_body_allowed(py: Python<'_>, status: &Bound<'_, PyAny>) -> PyResult<bool> {
+fn is_body_allowed_for_status_code(py: Python<'_>, status: &Bound<'_, PyAny>) -> PyResult<bool> {
     if status.is_none() {
         return Ok(true);
     }
@@ -10592,7 +10592,7 @@ fn build_additional_response_fields(
         let model = response.get_item("model")?;
         let field = match model {
             Some(model) if model.is_truthy()? => {
-                if !additional_response_body_allowed(py, &status)? {
+                if !is_body_allowed_for_status_code(py, &status)? {
                     let options = PyDict::new(py);
                     options.set_item("status", &status)?;
                     let message =
