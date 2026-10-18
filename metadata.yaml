@@ -905,23 +905,31 @@ starlette_rs:
     fastapi.datastructures.Address:
       state: surface-not-declared
       scope_note: >-
-        Starlette-RS reviews this symbol as supported, but its pinned manifest
-        declares no Address surface or operation, so no target behavior contract
-        can be linked yet.
+        FastAPI classifies this imported symbol as a supported API candidate
+        based on its release-note evidence. Starlette-RS also reviews Address as
+        supported, but its pinned manifest declares no Address surface or
+        operation, so no target behavior contract can be linked yet. This is a
+        sibling contract gap, not FastAPI-RS parity evidence.
     fastapi.requests.HTTPConnection:
       state: surface-not-declared
       scope_note: >-
-        Starlette-RS reviews this symbol as supported, but its pinned manifest
-        declares no HTTPConnection surface or operation, so no target behavior
-        contract can be linked yet. FastAPI also uses the imported type at
-        fastapi/dependencies/utils.py:359 and :481 to classify injected connection
-        parameters; that parameter-selection behavior remains FastAPI-owned.
+        FastAPI classifies this documented import as a supported API candidate.
+        Starlette-RS also reviews HTTPConnection as supported, but its pinned
+        manifest declares no HTTPConnection surface or operation, so no target
+        behavior contract can be linked yet. FastAPI also uses the imported type
+        at fastapi/dependencies/utils.py:359 and :481 to classify injected
+        connection parameters; that parameter-selection behavior remains
+        FastAPI-owned. This is a sibling contract gap, not FastAPI-RS parity
+        evidence.
     fastapi.websockets.WebSocketState:
       state: private-internal
       scope_note: >-
-        Starlette-RS classifies this protocol-state enum as private/internal and
-        declares no target surface; it remains visible as a FastAPI import edge
-        without a supported contract claim.
+        FastAPI documents and classifies this import as a supported API
+        candidate, while Starlette-RS classifies the protocol-state enum as
+        private/internal and declares no target surface. Preserve this source
+        exposure conflict explicitly: the sibling classification does not
+        downgrade FastAPI's public contract, and it does not establish
+        FastAPI-RS parity.
   subclass_contract_refs:
     fastapi.applications.FastAPI:
       starlette_symbol: starlette.applications.Starlette

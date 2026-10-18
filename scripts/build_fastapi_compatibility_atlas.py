@@ -13642,12 +13642,101 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 workload_link,
             )
         )
+    crosswalk_candidates = {
+        row.get("id"): row
+        for row in atlas.get("api_candidates", [])
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    surface_gap_edges = [
+        edge
+        for edge in atlas.get("starlette_integration_edges", [])
+        if isinstance(edge, dict) and isinstance(edge.get("starlette_rs_surface_gap"), dict)
+    ]
+    if len(surface_gap_edges) != atlas["counts"]["starlette_surface_alias_gaps"]:
+        raise AtlasError("Starlette surface gap count differs from the integration crosswalk")
+
+    def crosswalk_evidence_refs(records: Any) -> list[str]:
+        refs: set[str] = set()
+        if not isinstance(records, list):
+            return []
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            candidates = [record]
+            references = record.get("references")
+            if isinstance(references, list):
+                candidates.extend(item for item in references if isinstance(item, dict))
+            for item in candidates:
+                path = item.get("path")
+                line = item.get("line")
+                if (
+                    isinstance(path, str)
+                    and path
+                    and isinstance(line, int)
+                    and not isinstance(line, bool)
+                    and line > 0
+                ):
+                    refs.add(f"{path}:{line}")
+        return sorted(refs)
+
+    surface_gap_table_lines = [
+        "| FastAPI import binding | FastAPI candidate disposition | FastAPI source and public evidence | Starlette source | Starlette-RS review and surface state | Reviewed gap note |",
+        "|---|---|---|---|---|---|",
+    ]
+    for edge in surface_gap_edges:
+        binding = edge.get("fastapi_binding")
+        candidate = crosswalk_candidates.get(binding)
+        gap = edge["starlette_rs_surface_gap"]
+        if not isinstance(binding, str) or candidate is None:
+            raise AtlasError("Starlette surface gap lacks its FastAPI API candidate")
+        disposition = candidate.get("classification")
+        if disposition not in {"supported", "private/internal", "uncertain"}:
+            raise AtlasError("Starlette surface gap has an invalid FastAPI disposition: " + binding)
+        source_refs = crosswalk_evidence_refs(candidate.get("source_evidence"))
+        public_refs = crosswalk_evidence_refs(candidate.get("public_evidence"))
+        evidence = []
+        if source_refs:
+            evidence.append("source: " + ", ".join(f"`{ref}`" for ref in source_refs))
+        if public_refs:
+            evidence.append("public: " + ", ".join(f"`{ref}`" for ref in public_refs))
+        starlette_source = edge.get("starlette_source")
+        if isinstance(starlette_source, dict):
+            source_path = starlette_source.get("path")
+            source_line = starlette_source.get("line")
+            starlette_ref = (
+                f"`{source_path}:{source_line}`"
+                if isinstance(source_path, str)
+                and isinstance(source_line, int)
+                and not isinstance(source_line, bool)
+                else "—"
+            )
+        else:
+            starlette_ref = "—"
+        review_state = "`%s` / `%s`" % (
+            gap.get("review_disposition", "unresolved"),
+            gap.get("resolution", "unresolved"),
+        )
+        gap_note = str(gap.get("scope_note", "")).replace("|", "\\|")
+        surface_gap_table_lines.append(
+            "| `%s` | `%s` | %s | %s | %s | %s |"
+            % (
+                binding,
+                disposition,
+                "; ".join(evidence) if evidence else "—",
+                starlette_ref,
+                review_state,
+                gap_note,
+            )
+        )
+
     lines.extend(
         [
             "",
             "## FastAPI to Starlette-RS ownership crosswalk",
             "",
-            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Twenty-six direct re-exports link complete sibling surfaces; three direct imports record a public-surface gap or private/internal disposition. All fifteen subclass edges link selected generic base operations and requirements, while FastAPI overrides remain FastAPI-owned. Three private-helper paths link existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest. These references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
+            "The merged coverage matrix links each FastAPI test, documented feature, or example to relevant operation and requirement IDs from the sibling Starlette-RS manifest, including its per-target support states. Rows without a matching operation say why they are outside the sibling's current slice. Direct re-export and subclass edges retain FastAPI and Starlette source locations plus exact sibling review/catalog references. Twenty-six direct re-exports link complete sibling surfaces; three direct imports record a public-surface gap or private/internal disposition. The table below joins each sibling gap with FastAPI's independently reviewed candidate classification and its source/public evidence; a Starlette-RS private classification does not override FastAPI's source contract. All fifteen subclass edges link selected generic base operations and requirements, while FastAPI overrides remain FastAPI-owned. Three private-helper paths link existing sibling behavior requirements, and the `starlette.routing` namespace points to the sibling catalog by digest. These references do not promote helpers to public API or claim FastAPI-RS parity. FastAPI-RS planning labels are separate from Starlette-RS contract IDs, and no source mapping claims implementation support.",
+            "",
+            *surface_gap_table_lines,
             "",
             "| FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |",
             "|---:|---:|---:|---:|",
