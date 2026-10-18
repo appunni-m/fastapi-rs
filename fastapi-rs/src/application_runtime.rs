@@ -10277,6 +10277,7 @@ fn refresh_included_router_routes_inner(
             continue;
         }
 
+        let dependency_overrides_provider = fastapi_public_instance(py, app)?;
         let (
             destination_route_start,
             destination_websocket_route_start,
@@ -10291,7 +10292,6 @@ fn refresh_included_router_routes_inner(
                 destination,
             )
         };
-        let dependency_overrides_provider = fastapi_public_instance(py, app)?;
         // Route vectors keep stable append-only ids. A separate order
         // projection places late registrations back at this include slot.
         merge_router_routes_from(
