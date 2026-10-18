@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 173
     symbols_with_operation_fixture_refs: 286
-    operation_fixture_refs: 2181
+    operation_fixture_refs: 2183
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -53371,6 +53371,36 @@ api_surface_contract:
       case_id: fastapi.routing.apirouter.constructor-signature
       observation_selectors:
       - python.signature
+    - workflow_id: apirouter-redirect-slashes
+      input_path: tests/fixtures/inputs/parity/apirouter-redirect-slashes.json
+      input_sha256: abb21cf76b9b74afd052450c21de6d4635408005e46064c753e17c384744c36d
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+      recipe_sha256: 34e62ea4df35ec50fe42f3b863e9338c217eef0595990dd7eaabfad68f7a336b
+      workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+      workload_sha256: a4539e1029de6d61458955512f6d30ffeec4b586d2d65fe2ffb8f7beec7e7ebb
+      case_id: fastapi.routing.apirouter.redirect-slashes-default
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: apirouter-redirect-slashes
+      input_path: tests/fixtures/inputs/parity/apirouter-redirect-slashes.json
+      input_sha256: abb21cf76b9b74afd052450c21de6d4635408005e46064c753e17c384744c36d
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+      recipe_sha256: 34e62ea4df35ec50fe42f3b863e9338c217eef0595990dd7eaabfad68f7a336b
+      workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+      workload_sha256: a4539e1029de6d61458955512f6d30ffeec4b586d2d65fe2ffb8f7beec7e7ebb
+      case_id: fastapi.routing.apirouter.redirect-slashes-disabled
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: apirouter-default-dispatch
       input_path: tests/fixtures/inputs/parity/apirouter-default-dispatch.json
       input_sha256: fbcc7cfe74aba9cb778a4e98a1fe83727dcd08b989661e5035ee947d8d4ab920

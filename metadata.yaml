@@ -13107,11 +13107,20 @@ reviewed_api_contract_overlay:
           symbol: APIRouter
           start_line: 2255
           end_line: 6447
+        - {path: tests/test_router_redirect_slashes.py, kind: upstream_test}
       fixture_refs:
         - *generate_unique_id_multi_methods
         - *generate_unique_id_router_add_api_route
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-signature.yaml
           case_id: fastapi.routing.apirouter.constructor-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+          case_id: fastapi.routing.apirouter.redirect-slashes-default
+          workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-redirect-slashes.yaml
+          case_id: fastapi.routing.apirouter.redirect-slashes-disabled
+          workload_path: tests/fixtures/workloads/apirouter_redirect_slashes.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-default-dispatch.yaml
           case_id: fastapi.routing.apirouter.default-http-miss
           workload_path: tests/fixtures/workloads/apirouter_default_dispatch.py
@@ -13124,8 +13133,9 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Constructor introspection compares the complete public
         `inspect.signature(APIRouter)` contract against FastAPI 0.141.1. Direct ASGI
-        inputs compare a configured `default` on unmatched HTTP and WebSocket scopes,
-        plus dependency solving through an explicit dependency-overrides provider.
+        inputs compare `redirect_slashes` on exact and slash-mismatched paths, a
+        configured `default` on unmatched HTTP and WebSocket scopes, plus dependency
+        solving through an explicit dependency-overrides provider.
         Other constructor state, path-operation decorators, `include_router`, event
         methods, and Starlette route matching remain their own operations/contracts.
         A separate input probes callback-visible defaults when the source's
