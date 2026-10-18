@@ -185,7 +185,7 @@ contents, including license-file metadata and notices, against the versions
 and native components actually shipped.
 Upstream tests, docs, examples, and branding must be reviewed separately.
 
-### Current-head source-archive evidence (2026-10-18)
+### Source-archive evidence (FastAPI-RS 0.1.0, 2026-10-18)
 
 Built from FastAPI-RS commit `adae40eeb7258b6fca6021370171d1cbd715c7bf`
 against pinned Starlette-RS
@@ -214,28 +214,44 @@ against pinned Starlette-RS
   builder succeeded with the pre-existing CPython 3.12.13/Maturin 1.14.1
   environment. The build-tools lock was not re-synced during this run.
 
-This is local artifact evidence for macOS arm64 only. Other platform builds,
-Cargo crate verification/publication, and a release workflow remain
-unresolved. The maintainer has since confirmed MIT licensing authority and
-selected the Python wheel plus `fastapi-rs` Cargo crate as public artifacts.
-Offline `cargo package` cannot verify `fastapi-rs` until its `starlette-rs`
-0.1.0 dependency is available from the registry. The current core build script
-also assumes the monorepo's parent `Cargo.toml`, `metadata.yaml`, and pinned
-Starlette-RS checkout; it must support the packaged registry source before
-the public crate can build for consumers.
+This is local artifact evidence for macOS arm64 only. Other platform builds
+and a release workflow remain unresolved. The maintainer has confirmed MIT
+licensing authority and selected the Python wheel plus `fastapi-rs` Cargo
+crate as public artifacts.
+
+### Cargo crate archive evidence (2026-10-18)
+
+Built `fastapi-rs-0.1.0.crate` from FastAPI-RS commit
+`07385885011bd0858836075ed69476d7bbd86090` against pinned Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338` on macOS arm64. The archive SHA-256
+is `2f9ef72865f071fac57916b442092c21d209cfa4d865de99c65eb3a45ce5deca`
+(263,955 bytes). It contains the normalized Cargo manifest, `build.rs`,
+README, project license, and third-party notices.
+
+The archive was created with Cargo `--no-verify` and a local Cargo patch for
+the pinned Starlette-RS source because `starlette-rs` 0.1.0 is not yet on
+crates.io. An extracted copy outside the monorepo then passed
+`cargo check --locked --offline` with that same local patch and CPython
+3.12.13 selected for PyO3. The package-mode build script validated the
+package-local Starlette-RS version, commit, and source digest without access
+to the parent workspace, `metadata.yaml`, or Git metadata. The notice checker
+verified that the archive retains the FastAPI MIT attribution and complete
+license notice.
+
+This verifies archive portability against the pinned local source. It does
+not yet verify resolution against the published crates.io package or establish
+that the registry artifact corresponds to the recorded source identity.
 
 ### First-publication blockers
 
-The first public release is not ready. `starlette-rs` 0.1.0 must be available
-on crates.io before the core crate can resolve its Rust dependency, and
-`starlette-rs-py` 0.1.0 must be available on PyPI before consumers can resolve
-the wheel's runtime dependency. Make `fastapi-rs/build.rs` work from the
-published crate archive without monorepo-only files, then package and build
-the core crate from its `.crate` archive. Rebuild and validate the wheel and
-source distribution from the final clean release commit, and verify the
-declared platform matrix before publishing.
+The first public release is not ready. Publish `starlette-rs` 0.1.0 before
+publishing `fastapi-rs`, then verify the core crate against the registry
+dependency without a local patch. Publish `starlette-rs-py` 0.1.0 before
+consumers can resolve the wheel's runtime dependency. Rebuild and validate the
+wheel and source distribution from the final clean release commit, and verify
+the declared platform matrix before publishing.
 
-### Current-head release-profile archive evidence (2026-10-17)
+### Release-profile source archive evidence (2026-10-17)
 
 Built and inspected a portable source archive from FastAPI-RS target sources
 at commit `ccaf89c19c9e4b66b3da692b5ab599806c9a45f7`, against pinned

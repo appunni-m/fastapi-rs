@@ -20,14 +20,23 @@ FastAPI declares `starlette>=0.46.0`.
 
 ## FastAPI-RS build identity gate
 
-`fastapi-rs/build.rs` reads the Starlette-RS commit from `metadata.yaml`,
-follows the path Cargo actually resolved, and rejects a different revision or
-dirty Starlette-RS implementation inputs. The check applies to direct Cargo
-and Maturin builds as well as the extension builder's temporary Cargo overlay.
-`STARLETTE_RS_SOURCE` selects a checkout for commands that support that option;
-it does not bypass the pin or authorize an unpinned development build. There is
-no unpinned-build override. Parity and benchmark receipts must still report and
-match the pinned source identity before they count as evidence.
+In monorepo builds, `fastapi-rs/build.rs` reads the Starlette-RS version,
+commit, and source digest from `metadata.yaml`, follows the path Cargo actually
+resolved, and rejects a different revision or dirty implementation inputs.
+The root manifest requires the exact pinned crate version. The check applies
+to direct Cargo and Maturin workspace builds as well as the extension builder's
+temporary Cargo overlay.
+
+The published crate carries the same Starlette-RS identity in its package
+metadata. Outside the monorepo, its build script checks that identity and the
+exact registry-version requirement without requiring the sibling checkout,
+`metadata.yaml`, or Git metadata. That package-local contract does not prove
+that a registry artifact matches the recorded source digest; release evidence
+must verify the registry package separately. `STARLETTE_RS_SOURCE` selects a
+checkout for commands that support that option; it does not bypass the
+workspace pin or authorize an unpinned development build. Parity and benchmark
+receipts must still report and match the pinned source identity before they
+count as evidence.
 
 ## How to read this inventory
 
