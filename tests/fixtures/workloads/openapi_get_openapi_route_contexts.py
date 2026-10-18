@@ -87,6 +87,23 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
     )
     excluded_response_router.routes[0].responses[204] = {"model": str}
 
+    live_response_app = FastAPI()
+    live_response_router = APIRouter()
+
+    class CreatedRecord(BaseModel):
+        id: int
+        label: str
+
+    @live_response_router.post("/created", tags=["records"], summary="Create a record")
+    def create_record():
+        return {"id": 1, "label": "new"}
+
+    live_response_app.include_router(live_response_router, prefix="/v1")
+    live_response_router.routes[0].responses[201] = {
+        "model": CreatedRecord,
+        "description": "Created",
+    }
+
     return {
         "filtered-included-route-context": {
             "args": [],
@@ -127,6 +144,14 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "title": "Excluded Included API",
                 "version": "1.0.0",
                 "routes": excluded_response_app.routes,
+            },
+        },
+        "live-included-route-responses": {
+            "args": [],
+            "kwargs": {
+                "title": "Live Included API",
+                "version": "1.0.0",
+                "routes": live_response_app.routes,
             },
         },
     }

@@ -1603,6 +1603,8 @@ struct FastApiRoute {
     description: String,
     response_description: String,
     responses: Py<PyDict>,
+    inherited_responses: Py<PyDict>,
+    original_responses_snapshot: Py<PyDict>,
     openapi_extra: Option<Py<PyAny>>,
     operation_id: Option<String>,
     unique_id: String,
@@ -3416,6 +3418,113 @@ fn direct_openapi_route_index(
         })
 }
 
+fn response_map_with_live_route_changes(
+    py: Python<'_>,
+    inherited: &Py<PyDict>,
+    previous_original: &Py<PyDict>,
+    current_original: &Py<PyDict>,
+    effective: &Py<PyDict>,
+) -> PyResult<(Py<PyDict>, bool)> {
+    let updated = PyDict::new(py);
+    for (status, response) in effective.bind(py).iter() {
+        updated.set_item(status, response)?;
+    }
+    let mut changed = false;
+    for (status, previous) in previous_original.bind(py).iter() {
+        let current = current_original.bind(py).get_item(&status)?;
+        let source_unchanged = match current.as_ref() {
+            Some(current) => current.eq(&previous)?,
+            None => false,
+        };
+        if source_unchanged {
+            continue;
+        }
+        let effective_value = updated.get_item(&status)?;
+        let effective_matches_previous = match effective_value.as_ref() {
+            Some(value) => value.eq(&previous)?,
+            None => false,
+        };
+        if !effective_matches_previous {
+            continue;
+        }
+        match current {
+            Some(current) => updated.set_item(&status, current)?,
+            None => match inherited.bind(py).get_item(&status)? {
+                Some(inherited_value) => updated.set_item(&status, inherited_value)?,
+                None => updated.del_item(&status)?,
+            },
+        }
+        changed = true;
+    }
+    for (status, current) in current_original.bind(py).iter() {
+        if previous_original.bind(py).contains(&status)? {
+            continue;
+        }
+        let effective_value = updated.get_item(&status)?;
+        let inherited_value = inherited.bind(py).get_item(&status)?;
+        let matches_inherited = match (effective_value.as_ref(), inherited_value.as_ref()) {
+            (None, None) => true,
+            (Some(effective), Some(inherited)) => effective.eq(inherited)?,
+            _ => false,
+        };
+        if matches_inherited {
+            updated.set_item(&status, current)?;
+            changed = true;
+        }
+    }
+    Ok((updated.unbind(), changed))
+}
+
+fn refresh_deferred_openapi_route_responses(
+    py: Python<'_>,
+    owner: &Py<PyFastApi>,
+    route_index: usize,
+    original_route: &Py<PyAny>,
+    effective_route: &Py<PyAny>,
+) -> PyResult<()> {
+    let (is_deferred, inherited, previous_original, effective) = {
+        let app = owner.bind(py).borrow();
+        let route = app
+            .routes
+            .get(route_index)
+            .ok_or_else(|| PyRuntimeError::new_err("selected OpenAPI route was lost"))?;
+        (
+            matches!(&route.response_field, ResponseFieldState::Deferred),
+            route.inherited_responses.clone_ref(py),
+            route.original_responses_snapshot.clone_ref(py),
+            route.responses.clone_ref(py),
+        )
+    };
+    if !is_deferred {
+        return Ok(());
+    }
+
+    let source_responses = api_route_state_ref(original_route.bind(py))?
+        .responses
+        .clone_ref(py);
+    let current_original = clone_response_map(py, &source_responses)?;
+    let (updated, changed) = response_map_with_live_route_changes(
+        py,
+        &inherited,
+        &previous_original,
+        &current_original,
+        &effective,
+    )?;
+    if changed {
+        api_route_state_mut(effective_route.bind(py))?.responses = updated.clone_ref(py);
+    }
+    let mut app = owner.bind(py).borrow_mut();
+    let route = app
+        .routes
+        .get_mut(route_index)
+        .ok_or_else(|| PyRuntimeError::new_err("selected OpenAPI route was lost"))?;
+    route.original_responses_snapshot = current_original;
+    if changed {
+        route.responses = updated;
+    }
+    Ok(())
+}
+
 fn api_route_dispatch_owner(
     py: Python<'_>,
     facade: &Bound<'_, PyAny>,
@@ -3554,6 +3663,15 @@ fn direct_openapi_contexts(
         let owner_route_index = owner.as_ref().and_then(|owner| {
             direct_openapi_route_index(owner, context.bind(py), effective_route.bind(py))
         });
+        if let (Some(owner), Some(route_index)) = (owner.as_ref(), owner_route_index) {
+            refresh_deferred_openapi_route_responses(
+                py,
+                owner,
+                route_index,
+                &original_route,
+                &effective_route,
+            )?;
+        }
         contexts.push(DirectOpenApiRoute {
             effective_route,
             owner,
@@ -9745,10 +9863,19 @@ fn merge_router_routes_from(
     )> = Vec::new();
     for source_route in source.routes.iter().skip(starts.routes) {
         let path = format!("{prefix}{}", source_route.path);
-        let responses = merge_response_maps(
+        let route_inherited_responses = merge_response_maps(
             py,
             inherited_responses.bind(py),
-            source_route.responses.bind(py),
+            source_route.inherited_responses.bind(py),
+        )?;
+        let original_responses = api_route_state_ref(source_route.original_route.bind(py))?
+            .responses
+            .clone_ref(py);
+        let original_responses_snapshot = clone_response_map(py, &original_responses)?;
+        let responses = merge_response_maps(
+            py,
+            route_inherited_responses.bind(py),
+            original_responses.bind(py),
         )?;
         let mut route_dependencies = inherited_dependencies
             .iter()
@@ -9927,6 +10054,8 @@ fn merge_router_routes_from(
             description: source_route.description.clone(),
             response_description: source_route.response_description.clone(),
             responses: responses.clone_ref(py),
+            inherited_responses: route_inherited_responses,
+            original_responses_snapshot,
             openapi_extra: source_route
                 .openapi_extra
                 .as_ref()
@@ -10567,6 +10696,11 @@ fn merge_response_maps(
     Ok(merged.unbind())
 }
 
+fn clone_response_map(py: Python<'_>, responses: &Py<PyDict>) -> PyResult<Py<PyDict>> {
+    let empty = PyDict::new(py);
+    merge_response_maps(py, &empty, responses.bind(py))
+}
+
 fn is_body_allowed_for_status_code(py: Python<'_>, status: &Bound<'_, PyAny>) -> PyResult<bool> {
     if status.is_none() {
         return Ok(true);
@@ -10927,6 +11061,11 @@ impl PyOperationDecorator {
         let additional = build_additional_response_fields(py, responses.bind(py), &unique_id_text)?;
         let response_field = build_response_field(py, &unique_id_text, response_model.as_ref())?;
         set_api_route_response_field(py, &public_route, response_field.as_ref())?;
+        let original_responses = api_route_state_ref(public_route.bind(py))?
+            .responses
+            .clone_ref(py);
+        let original_responses_snapshot = clone_response_map(py, &original_responses)?;
+        let inherited_responses = PyDict::new(py).unbind();
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
         let mut operation_index = None;
@@ -10957,6 +11096,8 @@ impl PyOperationDecorator {
             description,
             response_description: self.response_description.clone(),
             responses,
+            inherited_responses,
+            original_responses_snapshot,
             openapi_extra: self.openapi_extra.as_ref().map(|value| value.clone_ref(py)),
             operation_id: self.operation_id.clone(),
             unique_id: unique_id_text,
