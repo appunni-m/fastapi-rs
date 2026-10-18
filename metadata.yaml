@@ -4260,6 +4260,13 @@ reviewed_api_contract_overlay:
         - {path: fastapi/param_functions.py, symbol: Header}
         - {path: fastapi/params.py, symbol: Header}
         - {path: fastapi/dependencies/utils.py, symbol: analyze_param}
+        - {path: fastapi/dependencies/utils.py, symbol: request_params_to_args}
+        - {path: fastapi/dependencies/utils.py, symbol: get_dependant}
+        - {path: tests/test_tutorial/test_header_param_models/test_tutorial001.py, symbol: test_header_param_model}
+        - {path: tests/test_tutorial/test_header_param_models/test_tutorial001.py, symbol: test_header_param_model_defaults}
+        - {path: tests/test_tutorial/test_header_param_models/test_tutorial001.py, symbol: test_header_param_model_invalid}
+        - {path: tests/test_tutorial/test_header_param_models/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs/en/docs/tutorial/header-param-models.md}
         - {path: tests/test_tutorial/test_header_params/test_tutorial002.py, symbol: test}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml
@@ -4272,13 +4279,32 @@ reviewed_api_contract_overlay:
           case_id: fastapi.parameter-factory-signatures.header
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml
           case_id: fastapi.parameter-metadata-projection.header-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/header-param-models-dependency.yaml
+          case_id: fastapi.header-models-dependency.repeated-values
+          workload_path: tests/fixtures/workloads/header_model_dependency.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/header-param-models-dependency.yaml
+          case_id: fastapi.header-models-dependency.defaults
+          workload_path: tests/fixtures/workloads/header_model_dependency.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/header-param-models-dependency.yaml
+          case_id: fastapi.header-models-dependency.missing-required
+          workload_path: tests/fixtures/workloads/header_model_dependency.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/header-param-models-dependency.yaml
+          case_id: fastapi.header-models-dependency.openapi
+          workload_path: tests/fixtures/workloads/header_model_dependency.py
+          observation_selectors: [http.status, openapi.document]
       feature_ids: [request-validation]
-      observation_selectors: [http.status, http.body.bytes, python.signature, python.parameter_metadata]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature, python.parameter_metadata]
       supported_slice: >-
         Partial native slice: an Annotated optional string header accepts an
         underscore-preserving name with Header(convert_underscores=False), while
         the hyphenated spelling does not satisfy it. Default-style Header markers
-        and other Header or FieldInfo options remain outside this reviewed slice.
+        also support one Pydantic header model inside a Depends callable, including
+        underscore-to-hyphen field names, repeated sequence values, defaults,
+        required-field validation, and OpenAPI parameter expansion. Other Header
+        or FieldInfo options remain outside this reviewed slice.
     fastapi.exception_handlers.http_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: http_exception_handler}

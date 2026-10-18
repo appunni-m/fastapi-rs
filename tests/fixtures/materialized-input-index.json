@@ -12429,6 +12429,55 @@
       ]
     },
     {
+      "id": "header-param-models-dependency",
+      "input_path": "tests/fixtures/inputs/parity/header-param-models-dependency.json",
+      "input_sha256": "29fced908cf27d6f20e357d7fcae41952aa16953e3aa70a8076c9a60f4a2f769",
+      "recipe_path": "tests/fixtures/input-recipes/parity/header-param-models-dependency.yaml",
+      "recipe_sha256": "abb1b782eb32e3e63998b485d5c8cd17f44939b85f5347234bbe93bdae6749be",
+      "case_ids": [
+        "fastapi.header-models-dependency.repeated-values",
+        "fastapi.header-models-dependency.defaults",
+        "fastapi.header-models-dependency.missing-required",
+        "fastapi.header-models-dependency.openapi"
+      ],
+      "workload_path": "tests/fixtures/workloads/header_model_dependency.py",
+      "workload_sha256": "7922783c6c4d70ada468abe47b11728ae7ddd7d435808d5ca98b6f4e13e6198d",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.header-models-dependency.repeated-values",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/header-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.header-models-dependency.defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/header-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.header-models-dependency.missing-required",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/header-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.header-models-dependency.openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/header-param-models.md",
+            "source:upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "http-basic",
       "input_path": "tests/fixtures/inputs/parity/http-basic.json",
       "input_sha256": "c11bdceb3a2b4677e4d87ec78a62e9a591a02ed8f1d54d5afcc6e6987037a010",
@@ -50199,6 +50248,46 @@
         "fastapi.request-parameter-model-tutorial.header-003-underscore-disabled"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/header-param-models.md",
+      "fixture_id": "fastapi.docs.tutorial-header-param-models",
+      "workflow_id": "header-param-models-dependency",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header-models-dependency.defaults",
+        "fastapi.header-models-dependency.missing-required",
+        "fastapi.header-models-dependency.openapi",
+        "fastapi.header-models-dependency.repeated-values"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-header-param-models-test-tutorial001",
+      "workflow_id": "header-param-models-dependency",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header-models-dependency.defaults",
+        "fastapi.header-models-dependency.missing-required",
+        "fastapi.header-models-dependency.openapi",
+        "fastapi.header-models-dependency.repeated-values"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
         "http.status",
         "openapi.document",
