@@ -22487,9 +22487,9 @@
     {
       "id": "public-errors-http-websocket-wave",
       "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
-      "input_sha256": "efa278675ad873c2b09c3298ca22e13c01ad7440524dcd4135d671d5fbd86d6e",
+      "input_sha256": "1babb55797f8ad9a9e891c07fa0e8dfb1849cef075f8ea74858aa553df5839e5",
       "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-      "recipe_sha256": "a63132e903acea424e857320054dc6228f037a11290e8675fe99fb9b043aa184",
+      "recipe_sha256": "37f33f4b2b07ecbb4dd457c4d546224f70526f9f905374d651442bb5825fb0a0",
       "case_ids": [
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.starlette-base-detail-and-header",
@@ -22499,11 +22499,12 @@
         "fastapi.public-errors.http.not-modified-status-with-detail",
         "fastapi.public-errors.http.numeric-string-status",
         "fastapi.public-errors.http.constructor-state",
+        "fastapi.public-errors.http.default-detail-no-headers",
         "fastapi.public-errors.websocket.constructor-state",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "577a6796326c136233e93e2a2376185fe7794ba0696f49999d27888f9c130126",
+      "workload_sha256": "736b2d4ce2a36c8b519324942aa82841d480c17feff88debb167d0b14ab940e2",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -22563,6 +22564,14 @@
         },
         {
           "case_id": "fastapi.public-errors.http.constructor-state",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/exceptions.md",
+            "source:upstream-test:tests/test_starlette_exception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.public-errors.http.default-detail-no-headers",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:reference/exceptions.md",
@@ -56611,9 +56620,10 @@
       "fixture_id": "fastapi.docs.reference-exceptions",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.constructor-state",
+        "fastapi.public-errors.http.default-detail-no-headers",
         "fastapi.public-errors.websocket.constructor-state",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason"
       ],
@@ -56659,10 +56669,11 @@
       "fixture_id": "fastapi.test.test-starlette-exception",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 9 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.bodyless-status-with-detail",
         "fastapi.public-errors.http.constructor-state",
+        "fastapi.public-errors.http.default-detail-no-headers",
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.informational-status-with-detail",
         "fastapi.public-errors.http.not-modified-status-with-detail",

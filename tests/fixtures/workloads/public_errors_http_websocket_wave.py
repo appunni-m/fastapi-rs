@@ -104,6 +104,17 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             "headers": exception.headers,
         }
 
+    @app.get("/errors/http-default-constructor-state")
+    async def http_exception_default_constructor_state() -> dict[str, object]:
+        exception = HTTPException(status_code=418)
+        return {
+            **_exception_snapshot(exception),
+            "is_starlette_http_exception": isinstance(exception, StarletteHTTPException),
+            "status_code": exception.status_code,
+            "detail": exception.detail,
+            "headers": exception.headers,
+        }
+
     @app.get("/errors/websocket-constructor-state")
     async def websocket_exception_constructor_state() -> dict[str, object]:
         exception = WebSocketException(code=1008, reason="credentials required")

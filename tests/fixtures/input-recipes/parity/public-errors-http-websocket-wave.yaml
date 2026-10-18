@@ -230,6 +230,34 @@ cases:
   source_evidence:
   - {path: docs/en/docs/reference/exceptions.md, kind: upstream_documentation}
   - {path: tests/test_starlette_exception.py, kind: upstream_test}
+- case_id: fastapi.public-errors.http.default-detail-no-headers
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-http-exception-default-detail
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /errors/http-default-constructor-state
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/reference/exceptions.md, kind: upstream_documentation}
+  - {path: tests/test_starlette_exception.py, kind: upstream_test}
 - case_id: fastapi.public-errors.websocket.constructor-state
   factory_input: {}
   construction_observation:

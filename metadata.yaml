@@ -5456,6 +5456,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.public-errors.http.numeric-string-status
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.constructor-state
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.default-detail-no-headers
       feature_ids: [public-api-errors]
       observation_selectors: [python.import_path, python.object_identity, python.signature, construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
@@ -5464,9 +5466,10 @@ reviewed_api_contract_overlay:
         reference and error-handling tutorial, while the identity workflow
         records the root-to-public-module relation. The linked ASGI cases also
         exercise JSON detail, headers, selected unusual statuses, numeric
-        string status preservation, and one constructor-state snapshot. This
-        remains a partial slice; other constructor inputs, status values,
-        Starlette subclasses, and handler behavior are not established.
+        string status preservation, and constructor-state snapshots with
+        explicit and omitted detail/headers. This remains a partial slice;
+        other constructor inputs, status values, Starlette subclasses, and
+        handler behavior are not established.
     fastapi.exception_handlers.request_validation_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: request_validation_exception_handler}
