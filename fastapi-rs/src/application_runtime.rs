@@ -5165,7 +5165,7 @@ impl PyFastApi {
         let mut docs_router = RouteTable::new();
         let mut docs_routes = Vec::new();
         if openapi_url.is_some_and(|url| !url.is_empty()) {
-            if let Some(path) = docs_url {
+            if let Some(path) = docs_url.filter(|path| !path.is_empty()) {
                 docs_router
                     .add_route(path, ["GET"])
                     .map_err(|error| PyValueError::new_err(error.to_string()))?;
@@ -5179,7 +5179,7 @@ impl PyFastApi {
                     docs_routes.push(FastApiDocsRoute::OAuth2Redirect);
                 }
             }
-            if let Some(path) = redoc_url {
+            if let Some(path) = redoc_url.filter(|path| !path.is_empty()) {
                 docs_router
                     .add_route(path, ["GET"])
                     .map_err(|error| PyValueError::new_err(error.to_string()))?;

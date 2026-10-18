@@ -982,15 +982,17 @@
     {
       "id": "application-attributes",
       "input_path": "tests/fixtures/inputs/parity/application-attributes.json",
-      "input_sha256": "ab4637dd8384c867cad07444891f1990bb5dea22f5aacfa492395953080e7645",
+      "input_sha256": "d87abf1e83e531ef760d091738cc45b8b12c5fd95c98a3037c1f7b90f2d23365",
       "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
-      "recipe_sha256": "21f41e202f0709b716f00bad083bb8a11772328f41b242dc7cc7317f0cffcccc",
+      "recipe_sha256": "50d6890f26e27b93c39a992691fde6e63a6b320090354257e72a2a09257a21ce",
       "case_ids": [
         "fastapi.application.attributes.defaults",
         "fastapi.application.attributes.configured",
         "fastapi.application.attributes.summary-mutation-before-openapi",
         "fastapi.application.attributes.empty-summary",
-        "fastapi.application.attributes.summary-mutation-after-openapi-cache"
+        "fastapi.application.attributes.summary-mutation-after-openapi-cache",
+        "fastapi.application.attributes.empty-docs-url",
+        "fastapi.application.attributes.empty-redoc-url"
       ],
       "workload_path": "tests/fixtures/workloads/application_attributes.py",
       "workload_sha256": "51bb600217f9dda302a267e51475f17d09d42e711678aefd7453740e40bf6b3b",
@@ -1028,6 +1030,20 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:how-to/extending-openapi.md",
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.empty-docs-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.empty-redoc-url",
+          "verification": "parity",
+          "requirement_refs": [
             "source:documented-page:tutorial/metadata.md"
           ]
         }
@@ -38457,10 +38473,12 @@
       "fixture_id": "fastapi.docs.tutorial-metadata",
       "workflow_id": "application-attributes",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.application.attributes.configured",
         "fastapi.application.attributes.defaults",
+        "fastapi.application.attributes.empty-docs-url",
+        "fastapi.application.attributes.empty-redoc-url",
         "fastapi.application.attributes.empty-summary",
         "fastapi.application.attributes.summary-mutation-after-openapi-cache",
         "fastapi.application.attributes.summary-mutation-before-openapi"

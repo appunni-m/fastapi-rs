@@ -6651,6 +6651,16 @@ reviewed_api_contract_overlay:
           initializer: __init__
           start_line: 877
           end_line: 877
+        - path: fastapi/applications.py
+          kind: source-use
+          symbol: openapi
+          start_line: 1084
+          end_line: 1103
+        - path: fastapi/openapi/utils.py
+          kind: source-definition
+          symbol: get_openapi
+          start_line: 585
+          end_line: 679
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -6659,18 +6669,22 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.configured
           observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml
+          case_id: fastapi.docs.reference-wave.openapi.fastapi-application-settings
+          observation_selectors: [openapi.document]
       feature_ids: [openapi-docs]
-      observation_selectors: [http.status, http.body.json]
+      observation_selectors: [http.status, http.body.json, openapi.document]
       supported_slice: >-
         The pinned constructor stores `version`, and the metadata tutorial lists
         it as an OpenAPI field. The linked input-only cases compare its default
-        and configured public values from an ASGI endpoint.
+        and configured public values, and observe the configured
+        `/info/version` value in the generated OpenAPI document.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::version
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior remain unverified.
+          - Only one non-empty configured string is observed in generated OpenAPI; empty-version behavior, reassignment after schema generation, deletion, and non-string assignment remain unverified.
     fastapi.applications.FastAPI.terms_of_service:
       source_evidence:
         - path: fastapi/applications.py
@@ -6767,6 +6781,12 @@ reviewed_api_contract_overlay:
           initializer: __init__
           start_line: 884
           end_line: 884
+        - path: fastapi/applications.py
+          kind: source-use
+          symbol: setup
+          start_line: 1105
+          end_line: 1158
+        - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.defaults
@@ -6774,19 +6794,29 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.configured
           observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml
+          case_id: fastapi.docs.reference-wave.openapi.docs-ui-helpers
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.empty-docs-url
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.empty-redoc-url
+          observation_selectors: [http.status, http.body.json]
       feature_ids: [openapi-docs]
-      observation_selectors: [http.status, http.body.json]
+      observation_selectors: [http.status, http.body.json, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        The pinned constructor stores `docs_url`; the linked input-only cases
-        compare the default and configured public field value from an ASGI
-        endpoint. Route registration and UI output remain outside this field
-        slice.
+        The pinned constructor stores `docs_url`, and `setup()` registers
+        Swagger UI and its OAuth2 redirect only when the URL is truthy. The
+        linked inputs compare its default, configured, and empty public values,
+        the custom Swagger UI route, and the empty-string case where Swagger UI
+        and its redirect are absent while ReDoc remains.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::docs_url
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Default and configured reads are covered; reassignment, deletion, and route registration behavior remain unverified.
+          - None and post-construction mutation/deletion route behavior are unverified; only the selected custom Swagger UI output is compared.
     fastapi.applications.FastAPI.redoc_url:
       source_evidence:
         - path: fastapi/applications.py
@@ -6796,6 +6826,12 @@ reviewed_api_contract_overlay:
           initializer: __init__
           start_line: 885
           end_line: 885
+        - path: fastapi/applications.py
+          kind: source-use
+          symbol: setup
+          start_line: 1105
+          end_line: 1158
+        - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.defaults
@@ -6803,19 +6839,29 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.configured
           observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml
+          case_id: fastapi.docs.reference-wave.openapi.docs-ui-helpers
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.empty-docs-url
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.empty-redoc-url
+          observation_selectors: [http.status, http.body.json]
       feature_ids: [openapi-docs]
-      observation_selectors: [http.status, http.body.json]
+      observation_selectors: [http.status, http.body.json, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        The pinned constructor stores `redoc_url`; the linked input-only cases
-        compare the default and configured public field value from an ASGI
-        endpoint. Route registration and UI output remain outside this field
-        slice.
+        The pinned constructor stores `redoc_url`, and `setup()` registers
+        ReDoc only when the URL is truthy. The linked inputs compare its
+        default, configured, and empty public values, the custom ReDoc route,
+        and the empty-string case where ReDoc is absent while Swagger UI
+        remains.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::redoc_url
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Default and configured reads are covered; reassignment, deletion, and route registration behavior remain unverified.
+          - None and post-construction mutation/deletion route behavior are unverified; only the selected custom ReDoc output is compared.
     fastapi.applications.FastAPI.swagger_ui_parameters:
       source_evidence:
         - path: fastapi/applications.py

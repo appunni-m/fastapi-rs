@@ -124,3 +124,101 @@ cases:
     kind: upstream_documentation
   - path: docs/en/docs/how-to/extending-openapi.md
     kind: upstream_documentation
+
+- case_id: fastapi.application.attributes.empty-docs-url
+  verification: parity
+  factory_input:
+    docs_url: ''
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-empty-docs-url
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  - action_id: swagger-ui-not-registered
+    kind: http_request
+    scope: &attributes-docs-probe-scope
+      type: http
+      asgi: *attributes-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /docs
+      query_string: ''
+      root_path: ''
+      headers: *attributes-headers
+      client: *attributes-client
+      server: *attributes-server
+    receive_events: *attributes-empty-request
+    observations: &attributes-status-response
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+  - action_id: oauth2-redirect-not-registered-without-swagger-ui
+    kind: http_request
+    scope: &attributes-oauth2-probe-scope
+      type: http
+      asgi: *attributes-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /docs/oauth2-redirect
+      query_string: ''
+      root_path: ''
+      headers: *attributes-headers
+      client: *attributes-client
+      server: *attributes-server
+    receive_events: *attributes-empty-request
+    observations: *attributes-status-response
+  - action_id: redoc-remains-registered
+    kind: http_request
+    scope: &attributes-redoc-probe-scope
+      type: http
+      asgi: *attributes-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /redoc
+      query_string: ''
+      root_path: ''
+      headers: *attributes-headers
+      client: *attributes-client
+      server: *attributes-server
+    receive_events: *attributes-empty-request
+    observations: *attributes-status-response
+  source_evidence: *attributes-source-evidence
+
+- case_id: fastapi.application.attributes.empty-redoc-url
+  verification: parity
+  factory_input:
+    redoc_url: ''
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-empty-redoc-url
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  - action_id: swagger-ui-remains-registered
+    kind: http_request
+    scope: *attributes-docs-probe-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-status-response
+  - action_id: oauth2-redirect-remains-registered-with-swagger-ui
+    kind: http_request
+    scope: *attributes-oauth2-probe-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-status-response
+  - action_id: redoc-not-registered
+    kind: http_request
+    scope: *attributes-redoc-probe-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-status-response
+  source_evidence: *attributes-source-evidence
