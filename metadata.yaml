@@ -13558,8 +13558,16 @@ reviewed_api_contract_overlay:
           end_line: 218
       supported_slice: >-
         TypedDict declaration only: total=False makes the declared keys non-required;
-        __pydantic_config__ separately declares extra=allow. Direct TypedDict construction and
-        key/value projections are not mapped.
+        __pydantic_config__ separately declares extra=allow. Direct construction with no keys
+        and key/value projection, including an additional key, are compared exactly; annotations
+        are not runtime-validated by the TypedDict constructor.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-example-typed-dict.yaml
+          case_id: fastapi.openapi-models.example.empty-construction
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-example-typed-dict.yaml
+          case_id: fastapi.openapi-models.example.populated-extra-key
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.attribute_value]
 
     fastapi.openapi.models.Example.__pydantic_config__:
       source_evidence:
@@ -13581,8 +13589,14 @@ reviewed_api_contract_overlay:
           end_line: 218
       supported_slice: >-
         Declared field only: annotation str | None; optional TypedDict key
-        (Example.total=False). Pydantic validation/coercion, default omission, alias
-        parsing/dump, errors, and full schema behavior are not claimed.
+        (Example.total=False). The populated direct TypedDict constructor preserves the input
+        value; Pydantic validation/coercion, alias parsing/dump, errors, and full schema behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-example-typed-dict.yaml
+          case_id: fastapi.openapi-models.example.populated-extra-key
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.attribute_value]
 
     fastapi.openapi.models.Example.externalValue:
       source_evidence:
@@ -13593,8 +13607,14 @@ reviewed_api_contract_overlay:
           end_line: 218
       supported_slice: >-
         Declared field only: annotation AnyUrl | None; optional TypedDict key
-        (Example.total=False). Pydantic validation/coercion, default omission, alias
-        parsing/dump, errors, and full schema behavior are not claimed.
+        (Example.total=False). The populated direct TypedDict constructor preserves the input
+        string without URL validation; Pydantic validation/coercion, alias parsing/dump, errors,
+        and full schema behavior are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-example-typed-dict.yaml
+          case_id: fastapi.openapi-models.example.populated-extra-key
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.attribute_value]
 
     fastapi.openapi.models.Example.summary:
       source_evidence:
@@ -13605,8 +13625,14 @@ reviewed_api_contract_overlay:
           end_line: 218
       supported_slice: >-
         Declared field only: annotation str | None; optional TypedDict key
-        (Example.total=False). Pydantic validation/coercion, default omission, alias
-        parsing/dump, errors, and full schema behavior are not claimed.
+        (Example.total=False). The populated direct TypedDict constructor preserves the input
+        value; Pydantic validation/coercion, alias parsing/dump, errors, and full schema behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-example-typed-dict.yaml
+          case_id: fastapi.openapi-models.example.populated-extra-key
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.attribute_value]
 
     fastapi.openapi.models.Example.value:
       source_evidence:
@@ -13617,8 +13643,14 @@ reviewed_api_contract_overlay:
           end_line: 218
       supported_slice: >-
         Declared field only: annotation Any | None; optional TypedDict key
-        (Example.total=False). Pydantic validation/coercion, default omission, alias
-        parsing/dump, errors, and full schema behavior are not claimed.
+        (Example.total=False). The populated direct TypedDict constructor preserves the input
+        value; Pydantic validation/coercion, alias parsing/dump, errors, and full schema behavior
+        are not claimed.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-example-typed-dict.yaml
+          case_id: fastapi.openapi-models.example.populated-extra-key
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.attribute_value]
 
     fastapi.openapi.models.ExternalDocumentation:
       source_evidence:

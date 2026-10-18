@@ -15369,6 +15369,69 @@
       ]
     },
     {
+      "id": "openapi-example-typed-dict",
+      "input_path": "tests/fixtures/inputs/parity/openapi-example-typed-dict.json",
+      "input_sha256": "d6f8be8f36aa7ea5f84e9c33cbe98cdcd0ba4b949192196b9d698e986b8ee95b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-example-typed-dict.yaml",
+      "recipe_sha256": "9cdfdf0d5237da48719a1d2e2351979dac60f6bf90fa2182649186dbddf6c8f0",
+      "case_ids": [
+        "fastapi.openapi-models.example.empty-construction",
+        "fastapi.openapi-models.example.populated-extra-key"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_model_projection.py",
+      "workload_sha256": "e4f49c2857f8671f244967c75bde332c470396a5c3fc69e61aefc9af6abf9cb1",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi-models.example.empty-construction",
+          "symbol_id": "fastapi.openapi.models.Example",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.example.populated-extra-key",
+          "symbol_id": "fastapi.openapi.models.Example",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi-models.example.empty-construction",
+          "probe_id": "example-empty-construction",
+          "symbol_id": "fastapi.openapi.models.Example",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.example.populated-extra-key",
+          "probe_id": "example-populated-extra-key",
+          "symbol_id": "fastapi.openapi.models.Example",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-models.example.empty-construction",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Example"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.example.populated-extra-key",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Example"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-examples-file-placement",
       "input_path": "tests/fixtures/inputs/parity/openapi-examples-file-placement.json",
       "input_sha256": "4f15a4a5f5cf9176913217ce3f8801ef04e5022676c4c681608896287f139643",
@@ -16881,7 +16944,7 @@
         "fastapi.openapi-models.components.model-result"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_model_projection.py",
-      "workload_sha256": "01ada2598b0cfd64597ce700d869116b0a026dc3cdcae1fd16c65ae3a22b9206",
+      "workload_sha256": "e4f49c2857f8671f244967c75bde332c470396a5c3fc69e61aefc9af6abf9cb1",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.api-key.model-result",

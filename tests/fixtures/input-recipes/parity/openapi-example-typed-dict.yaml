@@ -1,0 +1,40 @@
+# Input-only direct API parity for the pinned Example TypedDict constructor.
+# FastAPI 0.141.1 source: fastapi/openapi/models.py:212-218.
+schema: fastapi-rs/python-api-workflow@4
+workload:
+  file: tests/fixtures/workloads/openapi_model_projection.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-models.example.empty-construction
+  probes:
+  - probe_id: example-empty-construction
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Example
+    argument_bundle: example-empty
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Example
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-models.example.populated-extra-key
+  probes:
+  - probe_id: example-populated-extra-key
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Example
+    argument_bundle: example-populated-extra
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Example
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d

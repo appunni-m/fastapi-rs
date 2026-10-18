@@ -94,6 +94,17 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [],
             "kwargs": {"ref": "#/components/schemas/FieldGuide"},
         },
+        "example-empty": {"args": [], "kwargs": {}},
+        "example-populated-extra": {
+            "args": [],
+            "kwargs": {
+                "summary": "Reference example",
+                "description": None,
+                "value": {"kind": "pet", "count": 2},
+                "externalValue": "not-a-url",
+                "x-example-trace": {"source": "fixture"},
+            },
+        },
         "encoding": {
             "args": [],
             "kwargs": {
