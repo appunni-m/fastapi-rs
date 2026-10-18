@@ -11423,6 +11423,12 @@ impl CallablePlan {
                         field_info.as_ref().map(|value| value.bind(py)),
                     )?;
                 }
+                if field_info.is_some() {
+                    crate::response_field::validate_pydantic_v1_annotation(
+                        py,
+                        full_annotation.bind(py),
+                    )?;
+                }
                 let (required, default) = match field_info.as_ref() {
                     Some(field_info) => parameter_field_info_defaults(py, field_info.bind(py))?,
                     None => (false, None),
@@ -11469,6 +11475,14 @@ impl CallablePlan {
                 } else {
                     None
                 };
+                if let Some(field_info) = field_info.as_ref() {
+                    validate_parameter_field_shape(
+                        py,
+                        &name,
+                        field_info.bind(py),
+                        path_parameters,
+                    )?;
+                }
                 let (example, openapi_examples) = parameter_openapi_examples(
                     py,
                     field_info.as_ref().map(|value| value.bind(py)),
@@ -12776,6 +12790,37 @@ fn parameter_field_info_defaults(
     Ok((false, default))
 }
 
+fn validate_parameter_field_shape(
+    py: Python<'_>,
+    name: &str,
+    field_info: &Bound<'_, PyAny>,
+    path_parameters: &[String],
+) -> PyResult<()> {
+    let annotation = field_info.getattr("annotation")?;
+    if path_parameters.iter().any(|path_name| path_name == name) {
+        let body_type = py.import("fastapi_rs._core")?.getattr("ParamsBody")?;
+        if field_info.is_instance(&body_type)? || !field_annotation_is_scalar(py, &annotation)? {
+            return Err(PyAssertionError::new_err(
+                "Path params must be of one of the supported types",
+            ));
+        }
+    }
+
+    let query_type = py.import("fastapi_rs._core")?.getattr("ParamsQuery")?;
+    if field_info.is_instance(&query_type)?
+        && !field_annotation_is_scalar(py, &annotation)?
+        && !field_annotation_is_scalar_sequence(py, &annotation)?
+        && !is_pydantic_model(py, &annotation)?
+    {
+        let parameter_name = PyString::new(py, name).repr()?;
+        return Err(PyAssertionError::new_err(format!(
+            "Query parameter {} must be one of the supported types",
+            parameter_name.to_string_lossy()
+        )));
+    }
+    Ok(())
+}
+
 fn parameter_default_for_request(
     py: Python<'_>,
     field_info: Option<&Py<PyAny>>,
@@ -13244,6 +13289,63 @@ fn field_annotation_is_complex(py: Python<'_>, annotation: &Bound<'_, PyAny>) ->
     }
     Ok(origin.hasattr("__pydantic_core_schema__")?
         || origin.hasattr("__get_pydantic_core_schema__")?)
+}
+
+/// Mirrors FastAPI's `field_annotation_is_scalar` classification.
+fn field_annotation_is_scalar(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    if annotation.is(&py.import("builtins")?.getattr("Ellipsis")?) {
+        return Ok(true);
+    }
+    Ok(!field_annotation_is_complex(py, annotation)?)
+}
+
+/// Mirrors FastAPI's `field_annotation_is_scalar_sequence` query-field rule.
+fn field_annotation_is_scalar_sequence(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    if origin.is(&typing.getattr("Annotated")?) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        return field_annotation_is_scalar_sequence(py, &arguments.get_item(0)?);
+    }
+
+    let types = py.import("types")?;
+    let union = typing.getattr("Union")?;
+    let union_type = types.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        let mut found_scalar_sequence = false;
+        for argument in arguments.iter() {
+            if field_annotation_is_scalar_sequence(py, &argument)? {
+                found_scalar_sequence = true;
+            } else if !field_annotation_is_scalar(py, &argument)? {
+                return Ok(false);
+            }
+        }
+        return Ok(found_scalar_sequence);
+    }
+
+    if !field_annotation_is_sequence(py, annotation)? {
+        return Ok(false);
+    }
+    for argument in typing
+        .getattr("get_args")?
+        .call1((annotation,))?
+        .try_iter()?
+    {
+        if !field_annotation_is_scalar(py, &argument?)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 fn annotation_is_complex_type(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {

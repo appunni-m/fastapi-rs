@@ -64,14 +64,7 @@ impl ResponseField {
     /// This follows FastAPI's `create_model_field` and v2 `ModelField` setup for
     /// an Undefined default, no alias, serialization mode and no adapter config.
     pub(crate) fn new(py: Python<'_>, name: &str, annotation: &Bound<'_, PyAny>) -> PyResult<Self> {
-        if annotation_is_pydantic_v1(py, annotation)? {
-            let representation = annotation.repr()?.extract::<String>()?;
-            return Err(crate::errors::PydanticV1NotSupportedError::new_err(
-                format!(
-                    "pydantic.v1 models are no longer supported by FastAPI. Please update the response model {representation}."
-                ),
-            ));
-        }
+        validate_pydantic_v1_annotation(py, annotation)?;
 
         let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
         let options = PyDict::new(py);
@@ -381,6 +374,22 @@ impl ResponseFieldSchemaBatch {
         }
         Ok(schema.into_any().unbind())
     }
+}
+
+/// Applies FastAPI's shared `create_model_field` Pydantic-v1 rejection.
+pub(crate) fn validate_pydantic_v1_annotation(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    if !annotation_is_pydantic_v1(py, annotation)? {
+        return Ok(());
+    }
+    let representation = annotation.repr()?.extract::<String>()?;
+    Err(crate::errors::PydanticV1NotSupportedError::new_err(
+        format!(
+            "pydantic.v1 models are no longer supported by FastAPI. Please update the response model {representation}."
+        ),
+    ))
 }
 
 fn with_warnings_context<T>(
