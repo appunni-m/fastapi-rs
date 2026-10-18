@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: dbee3dfa6c5899f4e3cf3622a2fd8b645d4aeed6e57422f2baa1d17eff4fbdfa
+    sha256: e815b0e8a06a7cbcef8556f1817c97bcd4a88350ead8f5b855b28ccc636da2db
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 55eae8cab11100e6ddcf50d9a1a2a5922d7788dcbbe89506195378c09d09401b
+    sha256: 287c4b8cb9a4412dd6729cebe99bb0741c353d2a16ae047d21dd649c7ca62f1f
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,7 +550,7 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: e215d0529bea6aa2f0d229c585eef733c7d1ba87211de4f856296a750eac0b71
+    sha256: 087868d5b97dce63e0194134f44f728724aa976fcb69780aef5904771a417d62
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
       selectors: 55
@@ -578,7 +578,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 6c39a954979e480426e3b99882513badfd326b838fbd9ca7e64c9f579161620f
+    sha256: 840e7ebe4e56755165e7b0c55ef46f044b82d9e60d9f600bae9cada0bec8c44c
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -886,6 +886,21 @@ unresolved:
       Adds explicit final ASGI lifespan scope-state and startup-contract
       observations; the latter compares status/type and exact application
       exception details while excluding sibling-owned traceback frames.
+  python_asgi_workflow_v15:
+    state: ordered-dependency-call-trace-observation; v2-v15-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@15
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v15.schema.json
+    schema_sha256: 074c0a15c92e195155625e427d349ca9fe7e1c64b8bf47f94fbd51562ff47018
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@15
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v15.schema.json
+    result_schema_sha256: 466c9e1c5ccda7d89018df85f22c960ae13361c0a8b63a78a88e697f1943492e
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@16
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v16.schema.json
+    comparison_schema_sha256: c4f9889c1455bc23e878efaca7f2bba36cf6d36940c7b285b24177e0574598c5
+    coverage: >-
+      Adds a strict HTTP observation for ordered dependency callback labels.
+      Results carry the per-case trace accumulated by each action; comparison
+      remains exact and preserves callback order.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1
@@ -4521,13 +4536,17 @@ api_surface_contract:
       - http.status
     - workflow_id: dependency-override-async-two-keys-request-local
       input_path: tests/fixtures/inputs/parity/dependency-override-async-two-keys-request-local.json
-      input_sha256: aa7c51af2800193dfbe44ddb6f48612b3f72a499f06b444a17e4f367370782b5
+      input_sha256: 97676b9545594d021528eb0d2b6cdb2eef4fbc5ede3372c2cafb003b5827f111
       recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-two-keys-request-local.yaml
-      recipe_sha256: 523bd78fddab71bdaddbf3f780b5475a757968ed904fb1f7a18dc3e1dbb20902
+      recipe_sha256: a8091a777f9999e231492c9edea3112a88beb45e30b1d2745cf7b1ec0339da44
       workload_path: tests/fixtures/workloads/dependency_override_async_two_keys_request_local.py
-      workload_sha256: b9f664ab04b65b791dc471cb536a94a59e6df55ff8928e117ccd0ffecd744d88
+      workload_sha256: 8e17dc2298443ac3953e62ea08ff3ce7ab2a51d6ba7d853b7c4e09f95d2e67eb
       case_id: fastapi.dependencies.override-async-two-keys-request-local
       observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - dependency.call_order
       - http.body.bytes
       - http.status
     - workflow_id: dependency-override-async-query-cache-request-local
@@ -4587,13 +4606,17 @@ api_surface_contract:
       - http.status
     - workflow_id: dependency-override-mixed-sync-async-direct-order-request-local
       input_path: tests/fixtures/inputs/parity/dependency-override-mixed-sync-async-direct-order-request-local.json
-      input_sha256: 4a503d0dd3a5056512710757c50f467e277bf7c045f54a30cb2c0c61fc5ec918
+      input_sha256: 96a6bca65b8666cd0abd714a48386dc389af3e50ff45cbe18cc3d5ed9b255527
       recipe_path: tests/fixtures/input-recipes/parity/dependency-override-mixed-sync-async-direct-order-request-local.yaml
-      recipe_sha256: 3382014e19fe82b1414fd23b64fca97ddbb326d64a9556770014295abe1492fe
+      recipe_sha256: dff2dcc3c54ade638c446f854553e25d8772e228a91ae42383294b9a55676746
       workload_path: tests/fixtures/workloads/dependency_override_mixed_sync_async_direct_order_request_local.py
-      workload_sha256: e2082661c5350a82318ba4ed967ae20c6dd4fa4bd2f1748cbb8fb23216f3547c
+      workload_sha256: 4f97045c6a127fceeb473bfef5e2f6ec3863b463f2b3f5459cfdb1c8b4e90b20
       case_id: fastapi.dependencies.override-mixed-sync-async-direct-order-request-local
       observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - dependency.call_order
       - http.body.bytes
       - http.status
     - workflow_id: dependency-override-async-endpoint-request-local

@@ -40,6 +40,7 @@ WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow@11"
 WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow@12"
 WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow@13"
 WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow@14"
+WORKFLOW_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow@15"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -53,6 +54,7 @@ RESULT_SCHEMA_V11_ID = "fastapi-rs/python-asgi-workflow-result@11"
 RESULT_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow-result@12"
 RESULT_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow-result@13"
 RESULT_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow-result@14"
+RESULT_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow-result@15"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -569,6 +571,18 @@ def _observe(
         elif kind == "asgi_send":
             result.append(
                 {"index": index, "kind": kind, "values": {"message_types": message_types}}
+            )
+        elif kind == "workload_trace":
+            selector = observation["selector"]
+            if selector != "dependency.call_order" or workload_trace is None:
+                raise WorkerError(f"worker does not support workload trace selector: {selector}")
+            result.append(
+                {
+                    "index": index,
+                    "kind": kind,
+                    "selector": selector,
+                    "values": {"labels": copy.deepcopy(workload_trace)},
+                }
             )
         elif kind == "asgi_lifespan":
             selector = observation["selector"]
@@ -1668,6 +1682,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1690,6 +1705,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1706,6 +1722,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1722,6 +1739,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
+                WORKFLOW_SCHEMA_V15_ID,
             }
             else []
         )
@@ -1737,11 +1755,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
+                WORKFLOW_SCHEMA_V15_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V14_ID
+            RESULT_SCHEMA_V15_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V15_ID
+            else RESULT_SCHEMA_V14_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V14_ID
             else RESULT_SCHEMA_V13_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V13_ID

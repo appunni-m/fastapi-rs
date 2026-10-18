@@ -6,10 +6,9 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 
 
-def create_app() -> FastAPI:
+def create_app(_factory_input: dict[str, object], event_trace: list[str]) -> FastAPI:
     app = FastAPI()
     calls = {"first": 0, "second": 0}
-    resolution_order: list[str] = []
 
     def original_first() -> str:
         return "original-first"
@@ -20,13 +19,13 @@ def create_app() -> FastAPI:
     async def first_override() -> str:
         await asyncio.sleep(0)
         calls["first"] += 1
-        resolution_order.append("first")
+        event_trace.append("first")
         return f"first-{calls['first']}"
 
     async def second_override() -> str:
         await asyncio.sleep(0)
         calls["second"] += 1
-        resolution_order.append("second")
+        event_trace.append("second")
         return f"second-{calls['second']}"
 
     @app.get("/override-async-two-keys")
@@ -42,7 +41,7 @@ def create_app() -> FastAPI:
             "second": second,
             "second_again": second_again,
             "calls": dict(calls),
-            "resolution_order": list(resolution_order),
+            "resolution_order": list(event_trace),
         }
 
     app.dependency_overrides[original_first] = first_override

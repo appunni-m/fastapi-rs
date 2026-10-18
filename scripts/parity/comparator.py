@@ -21,6 +21,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V12_ID,
     WORKFLOW_SCHEMA_V13_ID,
     WORKFLOW_SCHEMA_V14_ID,
+    WORKFLOW_SCHEMA_V15_ID,
     ContractError,
 )
 from scripts.parity.fault_contracts import (
@@ -650,6 +651,7 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }:
         fault_case_present = any(
             verification_mode(case) == "fault-contract" for case in workflow["cases"]
@@ -704,6 +706,7 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }:
         compare_case = _compare_case_v4
     elif workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
@@ -723,6 +726,7 @@ def compare_workflow_results(
             WORKFLOW_SCHEMA_V12_ID,
             WORKFLOW_SCHEMA_V13_ID,
             WORKFLOW_SCHEMA_V14_ID,
+            WORKFLOW_SCHEMA_V15_ID,
         }:
             mode = verification_mode(case)
             if source_case is None or target_case is None:
@@ -791,6 +795,7 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }:
         parity_results = [case for case in case_results if case["verification"] == "parity"]
         fault_results = [case for case in case_results if case["verification"] == "fault-contract"]

@@ -13,13 +13,19 @@
 # dimensions: a first direct sync dependency remains unoverridden, then a
 # distinct direct dependency uses a flat async override, with both requests on
 # the same app.
-schema: fastapi-rs/python-asgi-workflow@2
+schema: fastapi-rs/python-asgi-workflow@15
 workload:
   file: tests/fixtures/workloads/dependency_override_mixed_sync_async_direct_order_request_local.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.dependencies.override-mixed-sync-async-direct-order-request-local
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  verification: parity
   actions:
   - action_id: first-request
     kind: http_request
@@ -39,6 +45,7 @@ cases:
     - {type: http.request, body: '', more_body: false}
     observations:
     - {kind: http_response, selectors: [status, body], comparison: exact}
+    - {kind: workload_trace, selector: dependency.call_order, comparison: ordered}
   - action_id: second-request
     kind: http_request
     scope:
@@ -57,6 +64,7 @@ cases:
     - {type: http.request, body: '', more_body: false}
     observations:
     - {kind: http_response, selectors: [status, body], comparison: exact}
+    - {kind: workload_trace, selector: dependency.call_order, comparison: ordered}
   source_evidence:
   - {path: tests/test_dependency_overrides.py, kind: upstream_test}
   - {path: tests/test_dependency_cache.py, kind: upstream_test}

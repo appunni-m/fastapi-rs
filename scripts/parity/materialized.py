@@ -31,6 +31,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V12_ID,
     WORKFLOW_SCHEMA_V13_ID,
     WORKFLOW_SCHEMA_V14_ID,
+    WORKFLOW_SCHEMA_V15_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -138,6 +139,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -156,6 +158,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V12_ID,
             WORKFLOW_SCHEMA_V13_ID,
             WORKFLOW_SCHEMA_V14_ID,
+            WORKFLOW_SCHEMA_V15_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -175,6 +178,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
+                WORKFLOW_SCHEMA_V15_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -195,7 +199,9 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             path = action["scope"]["path"]
         openapi_endpoint = path == "/openapi.json"
         for observation in action["observations"]:
-            if observation["kind"] == "asgi_lifespan":
+            if observation["kind"] == "workload_trace":
+                selectors.add(observation["selector"])
+            elif observation["kind"] == "asgi_lifespan":
                 selectors.add(f"asgi.lifespan.{observation['selector']}")
             elif observation["kind"] == "asgi_send":
                 selectors.add("asgi.send.message_types")
@@ -516,6 +522,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
+                WORKFLOW_SCHEMA_V15_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)
