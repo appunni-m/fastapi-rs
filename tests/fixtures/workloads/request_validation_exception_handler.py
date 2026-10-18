@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from datetime import datetime
+from decimal import Decimal
+from enum import Enum
 from typing import Any
+from uuid import UUID
 
 from fastapi import FastAPI, Form, Request
 from fastapi.exceptions import RequestValidationError
@@ -13,6 +17,10 @@ from pydantic import BaseModel
 
 class Payload(BaseModel):
     count: int
+
+
+class ValidationMode(Enum):
+    STRICT = "strict"
 
 
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
@@ -53,5 +61,24 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
     @app.post("/validation-form")
     def validate_form(count: int = Form()):
         return {"count": count}
+
+    @app.get("/validation-manual-structured")
+    def raise_structured_validation_error():
+        raise RequestValidationError(
+            [
+                {
+                    "type": "value_error",
+                    "loc": ("body", "payload", "amount"),
+                    "msg": "Invalid amount",
+                    "input": {
+                        "amount": Decimal("12.50"),
+                        "observed_at": datetime(2025, 1, 2, 3, 4, 5),
+                        "request_id": UUID("12345678-1234-5678-1234-567812345678"),
+                        "mode": ValidationMode.STRICT,
+                    },
+                    "ctx": {"error": ValueError("invalid amount")},
+                }
+            ]
+        )
 
     return app

@@ -4354,15 +4354,20 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs-example.handling-errors.tutorial006.delegated-validation-error
         - recipe_path: tests/fixtures/input-recipes/parity/root-documented-module-attributes.yaml
           case_id: fastapi.root.documented-module-attributes
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.manual-structured-errors
       feature_ids: [public-api-errors, request-validation]
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         The documented tutorial imports this public coroutine and directly awaits
         it from a registered RequestValidationError handler. The linked input
         observes a 422 response and exact serialized error body for one invalid
-        path parameter. A separate root-module input records coroutine-function
-        classification and inspect.signature, and confirms the FastAPI default
-        handler map references the same callable. Arbitrary validation records,
+        path parameter. The manual structured-error input also observes default
+        handler serialization of one record with a tuple location, nested
+        Decimal/datetime/UUID/Enum values, and a ValueError in `ctx`. A separate
+        root-module input records coroutine-function classification and
+        inspect.signature, and confirms the FastAPI default handler map
+        references the same callable. Other record shapes, encoded value types,
         body serialization options, and the full handler contract remain outside
         this slice.
       target_binding:
@@ -4371,7 +4376,7 @@ reviewed_api_contract_overlay:
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRequestValidationExceptionHandler::__call__
         known_gaps:
           - Python function identity and function-only introspection are not established.
-          - Arbitrary validation records and encoded value types are not covered by linked inputs.
+          - Other validation record shapes and encoded value types are not covered by linked inputs.
           - Direct calls with unusual Request objects are not covered.
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/handling-errors.md
@@ -11022,6 +11027,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-validation-handler.default-precedes-server-error
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
           case_id: fastapi.request-validation-handler.form-body
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
+          case_id: fastapi.request-validation-handler.manual-structured-errors
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message]
       error_contract_ids: [fastapi.exceptions.RequestValidationError]
       supported_slice: >-
@@ -11030,9 +11037,11 @@ reviewed_api_contract_overlay:
         FastAPI string representation. Identity-checked ASGI cases also cover
         generated path, body, malformed-JSON, and form errors dispatched to a
         custom RequestValidationError handler, plus the default 422 handler
-        taking precedence over a registered server-error handler. WebSocket
-        validation, overrides, and other ValidationException subclasses remain
-        outside this slice.
+        taking precedence over a registered server-error handler. A manually
+        raised structured error also checks default handler encoding of a tuple
+        location, nested Decimal/datetime/UUID/Enum values, and a ValueError
+        context. Other error records, WebSocket validation, overrides, and other
+        ValidationException subclasses remain outside this slice.
     fastapi.exceptions.ValidationException.errors:
       rust_binding: fastapi-rs/src/errors.rs::BoundValidationExceptionErrors::__call__
       source_evidence:
