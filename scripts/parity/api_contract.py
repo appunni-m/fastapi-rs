@@ -20,10 +20,17 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@12"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@13"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@9"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@10"
+TARGET_DISPOSITION_POLICY_SCHEMA = "fastapi-rs/api-target-disposition-policy@1"
+TARGET_DISPOSITION_STATUSES = {
+    "partial-contract": "unresolved",
+    "unimplemented": "unsupported",
+    "unresolved": "unresolved",
+    "full-contract-not-established": "unresolved",
+}
 
 
 def _read_project_metadata() -> dict[str, Any]:
@@ -1950,6 +1957,24 @@ def build_api_surface_contract(
     overlay = reviewed_overlay if reviewed_overlay is not None else _read_reviewed_overlay(metadata)
     if overlay.get("schema") != OVERLAY_SCHEMA:
         raise ContractError("reviewed API contract overlay schema is unsupported")
+    disposition_policy = overlay.get("target_disposition_policy")
+    if (
+        not isinstance(disposition_policy, dict)
+        or disposition_policy.get("schema") != TARGET_DISPOSITION_POLICY_SCHEMA
+        or disposition_policy.get("status_mapping") != TARGET_DISPOSITION_STATUSES
+        or not isinstance(disposition_policy.get("supported_evidence_requirement"), str)
+        or not disposition_policy["supported_evidence_requirement"].strip()
+        or not isinstance(disposition_policy.get("rationale"), str)
+        or not disposition_policy["rationale"].strip()
+    ):
+        raise ContractError("reviewed target disposition policy is missing or unsupported")
+
+    def target_disposition(status: str) -> str:
+        disposition = disposition_policy["status_mapping"].get(status)
+        if disposition not in {"supported", "unsupported", "unresolved"}:
+            raise ContractError(f"target binding has no reviewed disposition: {status}")
+        return disposition
+
     overlay_operations = overlay.get("operations")
     if not isinstance(overlay_operations, dict):
         raise ContractError("reviewed API contract overlay operations must be a mapping")
@@ -2040,7 +2065,8 @@ def build_api_surface_contract(
                 )
             ):
                 raise ContractError(
-                    "reviewed API target binding must declare FastAPI-RS or Starlette-RS ownership, "
+                    "reviewed API target binding must declare FastAPI-RS or Starlette-RS "
+                    "ownership, "
                     "partial-contract, unimplemented, or unresolved status, and unique known gaps: "
                     f"{operation_id}"
                 )
@@ -3262,6 +3288,7 @@ def build_api_surface_contract(
                                 "sibling_contract_gap_ref": sibling_gap_ref,
                             },
                             "status": target_binding["status"],
+                            "disposition": target_disposition(target_binding["status"]),
                             "known_gaps": target_binding["known_gaps"],
                         },
                     }
@@ -3300,6 +3327,7 @@ def build_api_surface_contract(
                                 "sibling_contract_gap_ref": sibling_gap_ref,
                             },
                             "status": target_binding["status"],
+                            "disposition": target_disposition(target_binding["status"]),
                             "known_gaps": target_binding["known_gaps"],
                             "rust_binding": target_binding.get("rust_binding"),
                         },
@@ -3324,6 +3352,7 @@ def build_api_surface_contract(
                     "canonical_operation_ref": canonical_operation_ref,
                 },
                 "status": target_binding["status"],
+                "disposition": target_disposition(target_binding["status"]),
             }
             if "known_gaps" in target_binding:
                 rendered_target_binding["known_gaps"] = target_binding["known_gaps"]
@@ -3503,6 +3532,11 @@ def build_api_surface_contract(
             )
             selectors.update(documentation_ref["observation_selectors"])
 
+        target_binding_status = (
+            reviewed_target_binding["status"]
+            if reviewed_target_binding is not None
+            else "full-contract-not-established"
+        )
         target_binding = {
             "target_profile": TARGET_PROFILE,
             "public_python_path": symbol_id,
@@ -3511,11 +3545,8 @@ def build_api_surface_contract(
                 "kind": owner_reason,
                 "source_candidate_refs": owner_source_refs,
             },
-            "status": (
-                reviewed_target_binding["status"]
-                if reviewed_target_binding is not None
-                else "full-contract-not-established"
-            ),
+            "status": target_binding_status,
+            "disposition": target_disposition(target_binding_status),
             "rust_binding": rust_binding,
         }
         if reviewed_target_binding is not None:
@@ -3616,6 +3647,9 @@ def build_api_surface_contract(
         "public_import": "fastapi",
         "classification_source": "source_artifacts.compatibility_atlas.api_candidates",
         "reviewed_operation_overlay_source": "metadata.yaml:/reviewed_api_contract_overlay",
+        "target_disposition_policy": (
+            "metadata.yaml:/reviewed_api_contract_overlay/target_disposition_policy"
+        ),
         "identity_workflow_source": (
             "metadata.yaml:/reviewed_api_contract_overlay/identity_workflow_refs"
         ),
@@ -3663,6 +3697,14 @@ def build_api_surface_contract(
                 bool(target["source_candidate_ids"]) for target in module_targets
             ),
             "signature_contract_states": dict(sorted(signature_statuses.items())),
+            "target_disposition_counts": dict(
+                sorted(
+                    Counter(
+                        row["target_binding"]["disposition"]
+                        for row in [*symbols, *inherited_operation_contracts]
+                    ).items()
+                )
+            ),
             "symbols_with_constructor_definition_refs": sum(
                 bool(symbol.get("source_constructor_definition_refs")) for symbol in symbols
             ),

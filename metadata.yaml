@@ -1683,7 +1683,7 @@ pydantic_core_dependency_inventory:
     feature guarantee.
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@9
+  schema: fastapi-rs/reviewed-api-contract-overlay@10
   purpose: >-
     Source-backed overlays link selected supported operations to documented
     features, observable selectors, and candidate error records. Inherited
@@ -1695,8 +1695,24 @@ reviewed_api_contract_overlay:
     targets use separate module-target identity workflow links; an error link
     does not promote an uncertain exception into the public import contract.
     FastAPI-RS target bindings distinguish partial-contract, unimplemented, and
-    unresolved dispositions. Direct Starlette re-exports remain Starlette-RS-owned;
+    unresolved implementation statuses. Direct Starlette re-exports remain Starlette-RS-owned;
     source or input links alone do not establish parity.
+  target_disposition_policy:
+    schema: fastapi-rs/api-target-disposition-policy@1
+    status_mapping:
+      partial-contract: unresolved
+      unimplemented: unsupported
+      unresolved: unresolved
+      full-contract-not-established: unresolved
+    supported_evidence_requirement: >-
+      A supported target disposition requires identity-checked source/target parity
+      over the complete observable public operation contract. A bounded partial
+      slice, a binding, or delegated Starlette-RS ownership is insufficient.
+    rationale: >-
+      The generated per-symbol contract keeps implementation status separate from
+      the public API disposition. Partial implementations remain unresolved for
+      the whole symbol; deliberately unimplemented symbols are unsupported. No
+      symbol is marked supported unless full-operation parity evidence is reviewed.
   module_target_identity_refs:
     fastapi.middleware.cors:
       workflow_id: documented-core-module-identities
@@ -15207,6 +15223,8 @@ reviewed_api_contract_overlay:
           - >-
             No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
             source identity evidence alone do not prove parity.
+      feature_ids: [app-routing]
+      observation_selectors: [python.attribute_value]
       source_evidence:
         - path: fastapi/routing.py
           kind: source-definition

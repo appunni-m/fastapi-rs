@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: 0767a7ec9963772f2251a951224caed5ae42625e8d665032cf4afd09e41cc12c
+    sha256: a8a9a57d16c845017fbb4a96b45276b350d506a07e79fad4ffae4b7761e8f74e
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -1209,7 +1209,7 @@ evidence_policy:
 
 # BEGIN GENERATED PER-SYMBOL API CONTRACT
 api_surface_contract:
-  schema: fastapi-rs/public-api-contract@12
+  schema: fastapi-rs/public-api-contract@13
   status: source-api-linked; behavior-and-target-contract-incomplete
   authority:
     fastapi:
@@ -1228,6 +1228,7 @@ api_surface_contract:
   public_import: fastapi
   classification_source: source_artifacts.compatibility_atlas.api_candidates
   reviewed_operation_overlay_source: metadata.yaml:/reviewed_api_contract_overlay
+  target_disposition_policy: metadata.yaml:/reviewed_api_contract_overlay/target_disposition_policy
   identity_workflow_source: metadata.yaml:/reviewed_api_contract_overlay/identity_workflow_refs
   module_target_identity_source: metadata.yaml:/reviewed_api_contract_overlay/module_target_identity_refs
   inherited_operation_source: metadata.yaml:/reviewed_api_contract_overlay/inherited_operations
@@ -1265,6 +1266,8 @@ api_surface_contract:
       runtime-signature-reflected: 226
       runtime-signature-unavailable: 1
       source-signature-recorded: 6
+    target_disposition_counts:
+      unresolved: 497
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
@@ -1766,6 +1769,7 @@ api_surface_contract:
         - /api_candidates/0
         - /api_candidates/1090
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       known_gaps:
       - Response-field construction must retain source registration and included effective-context timing,
@@ -1875,6 +1879,7 @@ api_surface_contract:
         - /api_candidates/1
         - /api_candidates/274
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -2522,6 +2527,7 @@ api_surface_contract:
         - /api_candidates/2
         - /api_candidates/958
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::body
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -2746,6 +2752,7 @@ api_surface_contract:
         - /api_candidates/3
         - /api_candidates/960
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -5103,6 +5110,7 @@ api_surface_contract:
         - /api_candidates/4
         - /api_candidates/961
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::depends
       known_gaps:
       - Safe gi_code property lookup can emit extra audit events or invoke rejecting audit hooks compared
@@ -5642,6 +5650,7 @@ api_surface_contract:
         - /api_candidates/5
         - /api_candidates/186
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       known_gaps:
       - The linked constructor workflow covers the exact signature, debug=True construction, capture of
@@ -5854,6 +5863,7 @@ api_surface_contract:
         - /api_candidates/6
         - /api_candidates/964
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::file
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -6069,6 +6079,7 @@ api_surface_contract:
         - /api_candidates/7
         - /api_candidates/965
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::form
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -6228,6 +6239,7 @@ api_surface_contract:
         - /api_candidates/8
         - /api_candidates/562
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -6476,6 +6488,7 @@ api_surface_contract:
         - /api_candidates/9
         - /api_candidates/966
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::header
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -6730,6 +6743,7 @@ api_surface_contract:
         - /api_candidates/10
         - /api_candidates/968
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::path
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -7594,6 +7608,7 @@ api_surface_contract:
         - /api_candidates/11
         - /api_candidates/969
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::query
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -7802,6 +7817,7 @@ api_surface_contract:
         - /api_candidates/12
         - /api_candidates/1027
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -7928,6 +7944,7 @@ api_surface_contract:
         - /api_candidates/13
         - /api_candidates/1039
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -8284,6 +8301,7 @@ api_surface_contract:
         - /api_candidates/14
         - /api_candidates/970
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::security
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -8377,6 +8395,7 @@ api_surface_contract:
         - /api_candidates/15
         - /api_candidates/315
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -8498,6 +8517,7 @@ api_surface_contract:
         - /api_candidates/16
         - /api_candidates/1640
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -8620,6 +8640,7 @@ api_surface_contract:
         - /api_candidates/17
         - /api_candidates/1641
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -8758,6 +8779,7 @@ api_surface_contract:
         - /api_candidates/18
         - /api_candidates/581
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -8818,6 +8840,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/20
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -9368,6 +9391,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/186
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -10705,6 +10729,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/187
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::__call__
       known_gaps:
       - Response-field construction must retain source registration and included effective-context timing,
@@ -13223,6 +13248,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/188
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       known_gaps:
       - Response-field construction must retain source registration and included effective-context timing,
@@ -13351,6 +13377,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/194
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::contact
       known_gaps:
       - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior
@@ -13456,6 +13483,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/196
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::delete
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -13615,6 +13643,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/197
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The linked inputs cover one ordinary override and one replacement signature adding a scalar Header;
@@ -13705,6 +13734,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/198
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::description
       known_gaps:
       - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior
@@ -13836,6 +13866,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/199
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::docs_url
       known_gaps:
       - None and post-construction mutation/deletion route behavior are unverified; only the selected
@@ -14465,6 +14496,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/200
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       known_gaps:
       - Visited included branches must prepare all own effective fields before publishing the vector,
@@ -14631,6 +14663,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/203
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::frontend
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -16659,6 +16692,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/204
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
       known_gaps:
       - Response-field construction must retain source registration and included effective-context timing,
@@ -16792,6 +16826,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/205
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::head
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -17723,6 +17758,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/206
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       known_gaps:
       - Response-field construction must retain source registration and included effective-context timing,
@@ -17841,6 +17877,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/207
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::license_info
       known_gaps:
       - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior
@@ -17962,6 +17999,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/208
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::middleware
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -18061,6 +18099,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/210
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::on_event
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -18964,6 +19003,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/211
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -19069,6 +19109,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/213
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The linked input observes one direct cache assignment after generation; callable replacement,
@@ -19191,6 +19232,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/215
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi_url
       known_gaps:
       - Constructor-time default, custom path, and None values are covered with their OpenAPI and docs
@@ -19303,6 +19345,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/216
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Only the documented post-construction `3.0.2` mutation and generated `/openapi` value are observed;
@@ -19408,6 +19451,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/217
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::options
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -19517,6 +19561,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/218
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::patch
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -20069,6 +20114,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/219
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       known_gaps:
       - Visited included branches must prepare all own effective fields before publishing the vector,
@@ -20195,6 +20241,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/220
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -20330,6 +20377,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/221
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::redoc_url
       known_gaps:
       - None and post-construction mutation/deletion route behavior are unverified; only the selected
@@ -20428,6 +20476,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/224
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::router
       known_gaps:
       - Direct FastAPI constructor routes are projected through the shared router; full matching generic
@@ -20549,6 +20598,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/228
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Generic State behavior remains delegated to Starlette-RS; these inputs cover only app.state assignment
@@ -20681,6 +20731,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/229
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::summary
       known_gaps:
       - Deletion and non-string assignment remain unverified.
@@ -20788,6 +20839,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/231
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::swagger_ui_oauth2_redirect_url
       known_gaps:
       - Constructor-time default, custom path, and None values are covered with the public field read
@@ -20881,6 +20933,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/232
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::swagger_ui_parameters
       known_gaps:
       - Default and configured reads are covered; reassignment, deletion, and Swagger UI rendering remain
@@ -20971,6 +21024,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/233
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::terms_of_service
       known_gaps:
       - Default and configured reads are covered; reassignment, deletion, and generated OpenAPI behavior
@@ -21143,6 +21197,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/234
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::title
       known_gaps:
       - Constructor strings and string reassignment are covered; non-string runtime values and deleting
@@ -21250,6 +21305,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/235
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -21361,6 +21417,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/237
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::version
       known_gaps:
       - Only one non-empty configured string is observed in generated OpenAPI; empty-version behavior,
@@ -21539,6 +21596,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/238
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::webhooks
       known_gaps:
       - Other falsey values and failures for truthy webhook objects beyond the selected plain object remain
@@ -21806,6 +21864,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/239
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket
       known_gaps:
       - Other WebSocket endpoint signatures, router-level handler registrations, post-accept validation
@@ -21863,6 +21922,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/274
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -21984,6 +22044,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/275
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register
       known_gaps:
       - Only asynchronous task integration with FastAPI yield scopes is declared here; standalone generic
@@ -22057,6 +22118,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/293
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -22163,6 +22225,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/303
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiDefaultPlaceholder::value
       known_gaps:
       - The linked inputs cover one wrapped response class and do not establish alternate value types
@@ -22235,6 +22298,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/306
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -22314,6 +22378,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/308
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -22393,6 +22458,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/310
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -22472,6 +22538,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/312
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -22551,6 +22618,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/314
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -22620,6 +22688,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/315
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -22685,6 +22754,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/319
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -22749,6 +22819,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/320
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -22813,6 +22884,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/321
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -22877,6 +22949,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/322
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -22941,6 +23014,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/323
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -23006,6 +23080,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/324
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -23071,6 +23146,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/325
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -23135,6 +23211,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/326
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -23200,6 +23277,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/327
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -24183,6 +24261,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/536
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -24367,6 +24446,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/545
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiHttpExceptionHandler::__call__
       known_gaps:
       - Python function identity and function-only introspection are not established.
@@ -24473,6 +24553,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/548
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRequestValidationExceptionHandler::__call__
       known_gaps:
       - Python function identity and function-only introspection are not established.
@@ -24544,6 +24625,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/562
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -24664,6 +24746,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/563
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -24836,6 +24919,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/567
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -25012,6 +25096,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/579
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::BoundValidationExceptionErrors::__call__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -25088,6 +25173,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/581
       status: unresolved
+      disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -25184,6 +25270,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/582
       status: unresolved
+      disposition: unresolved
       rust_binding: fastapi-rs/src/errors.rs::register
       known_gaps:
       - No operation-specific input workflow and observation mapping is linked to this operation.
@@ -25326,6 +25413,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/583
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Exact introspection metadata of the native callable stored as the default handler remains unverified.
@@ -25412,6 +25500,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/597
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -25507,6 +25596,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/598
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -25602,6 +25692,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/599
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -25697,6 +25788,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/600
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -25783,6 +25875,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/601
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -25886,6 +25979,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/610
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/docs.rs::get_redoc_html
       known_gaps:
       - ReDoc URL combinations, the default Google Fonts output, and direct HTMLResponse identity are
@@ -26071,6 +26165,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/611
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/docs.rs::get_swagger_ui_html
       known_gaps:
       - The linked inputs do not cover every Swagger UI helper parameter combination, direct helper return-object
@@ -26163,6 +26258,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/612
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/docs.rs::get_swagger_ui_oauth2_redirect_html
       known_gaps:
       - The helper's direct return object and every route-mounting or response-header context are outside
@@ -26275,6 +26371,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/615
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/docs.rs::default_swagger_ui_parameters
       known_gaps:
       - The inputs do not compare object identity, mutation persistence, or the full mapping behavior
@@ -26509,6 +26606,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/616
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -26711,6 +26809,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/617
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -26913,6 +27012,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/618
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -27115,6 +27215,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/619
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -27332,6 +27433,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/620
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -27534,6 +27636,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/621
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -27736,6 +27839,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/622
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -27938,6 +28042,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/623
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -28029,6 +28134,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/628
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -28154,6 +28260,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/631
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the exact constructor signature and one successful model_dump projection are verified; other
@@ -28216,6 +28323,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/632
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28281,6 +28389,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/633
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28346,6 +28455,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/634
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28411,6 +28521,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/635
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28476,6 +28587,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/636
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28541,6 +28653,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/637
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28606,6 +28719,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/638
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28671,6 +28785,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/639
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28736,6 +28851,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/640
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28801,6 +28917,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/641
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -28970,6 +29087,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/642
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - The email-validation profile covers one accepted and one rejected address; the core fallback warning,
@@ -29063,6 +29181,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/643
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - The email-validation profile covers one accepted and one rejected address; the core fallback warning,
@@ -29152,6 +29271,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/644
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - The email-validation profile covers one accepted and one rejected address; the core fallback warning,
@@ -29241,6 +29361,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/645
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - The email-validation profile covers one accepted and one rejected address; the core fallback warning,
@@ -29369,6 +29490,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/646
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the exact constructor signature and one successful model_dump projection are verified; invalid
@@ -29430,6 +29552,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/647
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -29495,6 +29618,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/648
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -29664,6 +29788,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/649
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, default projection, one nested Header/Reference projection,
@@ -29747,6 +29872,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/650
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, default projection, one nested Header/Reference projection,
@@ -29836,6 +29962,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/651
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, default projection, one nested Header/Reference projection,
@@ -29935,6 +30062,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/652
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, default projection, one nested Header/Reference projection,
@@ -30024,6 +30152,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/653
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, default projection, one nested Header/Reference projection,
@@ -30113,6 +30242,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/654
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, default projection, one nested Header/Reference projection,
@@ -30242,6 +30372,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/656
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -30309,6 +30440,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/657
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -30386,6 +30518,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/658
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -30465,6 +30598,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/659
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -30544,6 +30678,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/660
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -30623,6 +30758,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/661
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -30705,6 +30841,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/662
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -30770,6 +30907,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/663
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -30835,6 +30973,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/664
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -30915,6 +31054,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/667
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -30980,6 +31120,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/668
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31045,6 +31186,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/669
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31125,6 +31267,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/670
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31190,6 +31333,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/671
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31255,6 +31399,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/672
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31335,6 +31480,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/673
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31460,6 +31606,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/674
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Selected constructor output and signature pass direct parity; invalid inputs, optional EmailStr
@@ -31521,6 +31668,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/675
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31586,6 +31734,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/676
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31651,6 +31800,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/677
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31716,6 +31866,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/678
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31781,6 +31932,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/679
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31846,6 +31998,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/680
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31911,6 +32064,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/681
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -31991,6 +32145,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/683
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32056,6 +32211,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/684
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32121,6 +32277,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/685
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32186,6 +32343,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/686
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32266,6 +32424,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/687
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32331,6 +32490,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/688
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32396,6 +32556,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/689
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32461,6 +32622,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/690
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32526,6 +32688,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/691
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32591,6 +32754,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/692
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32656,6 +32820,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/693
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -32825,6 +32990,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/696
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only one nested graph and one invalid schema value are compared; broader union precedence, coercions,
@@ -32907,6 +33073,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/697
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only one nested graph and one invalid schema value are compared; broader union precedence, coercions,
@@ -32995,6 +33162,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/698
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only one nested graph and one invalid schema value are compared; broader union precedence, coercions,
@@ -33083,6 +33251,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/699
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only one nested graph and one invalid schema value are compared; broader union precedence, coercions,
@@ -33181,6 +33350,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/700
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only one nested graph and one invalid schema value are compared; broader union precedence, coercions,
@@ -33263,6 +33433,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/701
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33328,6 +33499,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/702
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33393,6 +33565,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/703
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33473,6 +33646,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/704
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33538,6 +33712,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/705
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33603,6 +33778,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/706
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33683,6 +33859,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/707
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33748,6 +33925,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/708
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33813,6 +33991,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/709
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33893,6 +34072,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/710
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -33958,6 +34138,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/711
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34038,6 +34219,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/712
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34103,6 +34285,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/713
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34183,6 +34366,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/714
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34248,6 +34432,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/715
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34328,6 +34513,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/716
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34393,6 +34579,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/717
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34458,6 +34645,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/718
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34523,6 +34711,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/719
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34588,6 +34777,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/720
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34735,6 +34925,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/721
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Direct construction covers one empty-path document and the required Info error; populated route
@@ -34796,6 +34987,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/722
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34861,6 +35053,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/723
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34926,6 +35119,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/724
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -34991,6 +35185,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/725
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35056,6 +35251,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/726
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35121,6 +35317,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/727
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35186,6 +35383,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/728
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35251,6 +35449,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/729
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35316,6 +35515,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/730
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35381,6 +35581,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/731
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35461,6 +35662,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/732
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35526,6 +35728,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/733
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35591,6 +35794,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/734
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35671,6 +35875,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/735
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35736,6 +35941,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/736
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35801,6 +36007,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/737
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35866,6 +36073,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/738
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35931,6 +36139,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/739
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -35996,6 +36205,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/740
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36061,6 +36271,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/741
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36126,6 +36337,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/742
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36191,6 +36403,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/743
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36256,6 +36469,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/744
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36321,6 +36535,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/745
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36386,6 +36601,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/746
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36451,6 +36667,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/747
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36531,6 +36748,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/749
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36596,6 +36814,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/750
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36661,6 +36880,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/751
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36741,6 +36961,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/752
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36806,6 +37027,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/753
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36871,6 +37093,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/754
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -36936,6 +37159,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/755
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37001,6 +37225,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/756
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37066,6 +37291,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/757
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37131,6 +37357,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/758
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37196,6 +37423,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/759
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37261,6 +37489,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/760
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37326,6 +37555,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/761
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37391,6 +37621,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/762
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37471,6 +37702,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/763
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37536,6 +37768,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/764
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37601,6 +37834,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/765
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37666,6 +37900,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/766
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37731,6 +37966,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/767
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37811,6 +38047,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/768
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37876,6 +38113,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/769
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -37941,6 +38179,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/770
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38006,6 +38245,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/771
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38071,6 +38311,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/772
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38136,6 +38377,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/773
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38201,6 +38443,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/774
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38266,6 +38509,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/775
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38331,6 +38575,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/776
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38396,6 +38641,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/777
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38461,6 +38707,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/778
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38526,6 +38773,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/779
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38591,6 +38839,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/780
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38656,6 +38905,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/781
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -38803,6 +39053,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/782
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - One alias input/output and one required-alias error are compared; other Pydantic coercions, JSON
@@ -38885,6 +39136,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/783
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - One alias input/output and one required-alias error are compared; other Pydantic coercions, JSON
@@ -38967,6 +39219,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/784
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39032,6 +39285,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/785
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39097,6 +39351,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/786
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39162,6 +39417,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/787
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39242,6 +39498,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/788
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39307,6 +39564,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/789
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39372,6 +39630,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/790
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39437,6 +39696,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/791
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39502,6 +39762,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/792
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -39771,6 +40032,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/793
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -39844,6 +40106,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/794
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -39923,6 +40186,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/795
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40022,6 +40286,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/796
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40101,6 +40366,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/797
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40200,6 +40466,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/798
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40279,6 +40546,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/799
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40358,6 +40626,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/800
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40437,6 +40706,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/801
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40516,6 +40786,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/802
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40595,6 +40866,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/803
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40674,6 +40946,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/804
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40773,6 +41046,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/805
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40852,6 +41126,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/806
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -40931,6 +41206,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/807
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41010,6 +41286,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/808
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41089,6 +41366,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/809
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41168,6 +41446,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/810
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41267,6 +41546,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/811
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41366,6 +41646,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/812
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41465,6 +41746,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/813
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41544,6 +41826,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/814
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41623,6 +41906,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/815
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41702,6 +41986,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/816
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41781,6 +42066,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/817
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41860,6 +42146,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/818
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -41939,6 +42226,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/819
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42018,6 +42306,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/820
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42117,6 +42406,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/821
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42216,6 +42506,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/822
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42295,6 +42586,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/823
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42374,6 +42666,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/824
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42463,6 +42756,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/825
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42542,6 +42836,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/826
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42621,6 +42916,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/827
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42700,6 +42996,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/828
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42779,6 +43076,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/829
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42858,6 +43156,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/830
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -42947,6 +43246,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/831
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43026,6 +43326,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/832
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43105,6 +43406,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/833
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43194,6 +43496,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/834
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43293,6 +43596,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/835
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43372,6 +43676,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/836
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43451,6 +43756,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/837
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43530,6 +43836,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/838
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43609,6 +43916,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/839
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43688,6 +43996,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/840
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43767,6 +44076,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/841
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43846,6 +44156,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/842
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -43945,6 +44256,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/843
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44024,6 +44336,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/844
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44123,6 +44436,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/845
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44202,6 +44516,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/846
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44281,6 +44596,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/847
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44370,6 +44686,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/848
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44449,6 +44766,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/849
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44528,6 +44846,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/850
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44607,6 +44926,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/851
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44706,6 +45026,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/852
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44785,6 +45106,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/853
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44864,6 +45186,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/854
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
       - Only the declared constructor signature, selected model_dump projections, 12 alias-related field
@@ -44947,6 +45270,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/855
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -45027,6 +45351,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/856
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -45244,6 +45569,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/857
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -45446,6 +45772,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/858
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -45648,6 +45975,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/859
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -45728,6 +46056,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/860
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -45945,6 +46274,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/861
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -46147,6 +46477,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/862
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -46212,6 +46543,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/863
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -46277,6 +46609,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/864
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -46342,6 +46675,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/865
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -46489,6 +46823,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/866
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -46577,6 +46912,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/867
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -46675,6 +47011,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/868
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -46763,6 +47100,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/869
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -46934,6 +47272,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/870
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -47042,6 +47381,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/871
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -47130,6 +47470,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/872
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -47228,6 +47569,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/873
       status: partial-contract
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - The current active input/workflow mapping and historical comparison outcome define only the bounded
@@ -47310,6 +47652,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/874
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47375,6 +47718,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/875
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47440,6 +47784,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/876
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47505,6 +47850,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/877
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47585,6 +47931,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/880
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47650,6 +47997,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/881
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47715,6 +48063,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/882
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47780,6 +48129,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/883
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47845,6 +48195,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/884
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47910,6 +48261,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/885
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -47991,6 +48343,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/930
       status: unresolved
+      disposition: unresolved
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       known_gaps:
       - No exact operation-specific input workflow, case, or observation selector is linked for this model
@@ -48544,6 +48897,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/938
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       known_gaps:
       - Generic Starlette routes are skipped as in FastAPI. Full traversal of arbitrary included route
@@ -48696,6 +49050,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/958
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::body
       known_gaps:
       - Returned class MRO, Pydantic isinstance relationships, and the complete FieldInfo object protocol
@@ -48794,6 +49149,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/960
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       known_gaps:
       - Cookie runtime parsing, returned class MRO, Pydantic isinstance relationships, and the complete
@@ -50449,6 +50805,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/961
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::depends
       known_gaps:
       - Safe gi_code property lookup can emit extra audit events or invoke rejecting audit hooks compared
@@ -50591,6 +50948,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/964
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::file
       known_gaps:
       - Broader multipart behavior, returned class MRO, Pydantic isinstance relationships, and the complete
@@ -50734,6 +51092,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/965
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::form
       known_gaps:
       - Broader form behavior, returned class MRO, Pydantic isinstance relationships, and the complete
@@ -50843,6 +51202,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/966
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::header
       known_gaps:
       - Header parsing, returned class MRO, Pydantic isinstance relationships, and the complete FieldInfo
@@ -50989,6 +51349,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/968
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::path
       known_gaps:
       - Returned class MRO, Pydantic isinstance relationships, and the complete FieldInfo object protocol
@@ -51246,6 +51607,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/969
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::query
       known_gaps:
       - Returned class MRO, Pydantic isinstance relationships, and the complete FieldInfo object protocol
@@ -51565,6 +51927,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/970
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::security
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -51655,6 +52018,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/981
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameter_classes.rs::make_method
       known_gaps:
       - Direct-constructor values, warning provenance, exception behavior, and class MRO remain outside
@@ -51741,6 +52105,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/985
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameter_classes.rs::make_method
       known_gaps:
       - Direct-constructor values, warning provenance, exception behavior, and class MRO remain outside
@@ -51827,6 +52192,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/996
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameter_classes.rs::make_method
       known_gaps:
       - Direct-constructor values, warning provenance, exception behavior, and class MRO remain outside
@@ -51913,6 +52279,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/998
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameter_classes.rs::make_method
       known_gaps:
       - Direct-constructor values, warning provenance, exception behavior, and class MRO remain outside
@@ -51999,6 +52366,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1000
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameter_classes.rs::make_method
       known_gaps:
       - Direct-constructor values, warning provenance, exception behavior, and class MRO remain outside
@@ -52085,6 +52453,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1013
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameter_classes.rs::make_method
       known_gaps:
       - Direct-constructor values, warning provenance, exception behavior, and class MRO remain outside
@@ -52193,6 +52562,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1016
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameter_classes.rs::make_method
       known_gaps:
       - Direct-constructor values, warning provenance, exception behavior, and class MRO remain outside
@@ -52292,6 +52662,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1026
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -52388,6 +52759,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1027
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -52490,6 +52862,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1031
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -52588,6 +52961,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1032
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -53940,6 +54314,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1033
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -54033,6 +54408,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1034
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register_orjson_response
       known_gaps:
       - Successful optional-orjson serialization, constructor warning details, and broader class behavior
@@ -54115,6 +54491,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1035
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       known_gaps:
       - Successful serialization when optional orjson is installed and nonstandard values are not covered.
@@ -54204,6 +54581,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1036
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -54302,6 +54680,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1038
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -54408,6 +54787,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1039
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -54506,6 +54886,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1040
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -54622,6 +55003,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1041
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register_ujson_response
       known_gaps:
       - Successful serialization with optional `ujson`, direct construction, subclassing, and broader
@@ -54701,6 +55083,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1042
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       known_gaps:
       - Successful optional-`ujson` serialization, arbitrary content, and direct render-signature behavior
@@ -55272,6 +55655,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1052
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::install_api_route_proxy
       known_gaps:
       - Standalone construction supports the mapped common and selected OpenAPI-facing options, including
@@ -55822,6 +56206,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1063
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute::get_route_handler
       known_gaps:
       - The selected custom route wrapper maps Request-to-Response behavior across nested router inclusion.
@@ -55878,8 +56263,10 @@ api_surface_contract:
       - openapi.document
       - openapi.paths
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    observation_selectors:
+    - python.attribute_value
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRoute.response_class/supported_slice
@@ -55893,6 +56280,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1071
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -55987,6 +56375,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1088
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -56192,6 +56581,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1090
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -56718,6 +57108,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1091
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       known_gaps:
       - The constructor binding narrows `tags` from `list[str | Enum] | None` to `list[str] | None`; Enum-valued
@@ -56832,6 +57223,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1105
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
       known_gaps:
       - Non-string event_type inputs have not been compared, so their accepted types and exception outcomes
@@ -56930,6 +57322,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1111
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::default_response_class
       known_gaps:
       - The linked inputs cover omitted placeholders and one concrete class but do not establish explicit
@@ -57021,6 +57414,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1112
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -57142,6 +57536,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1116
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::frontend
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -57654,6 +58049,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1118
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - Response-field construction must retain source registration and included effective-context timing,
@@ -57768,6 +58164,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1120
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -58380,6 +58777,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1122
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       known_gaps:
       - Visited included branches must prepare all own effective fields before publishing the vector,
@@ -58464,6 +58862,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1125
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::on_event
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -58557,6 +58956,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1128
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -58650,6 +59050,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1129
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -58808,6 +59209,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1130
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -58901,6 +59303,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1132
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -59022,6 +59425,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1135
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::route_class
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -59115,6 +59519,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1138
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -59295,6 +59700,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1139
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__ and PyFastApi::websocket
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -59406,6 +59812,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1140
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket_route, PyRawWebSocketDecorator,
         PyApiRouter::__getattr__, FastApiCall::begin_websocket
       known_gaps:
@@ -59495,6 +59902,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1191
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       known_gaps:
       - Constructor and dataclass semantics are not claimed.
@@ -59582,6 +59990,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1195
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       known_gaps:
       - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
@@ -59670,6 +60079,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1196
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       known_gaps:
       - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
@@ -59758,6 +60168,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1197
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       known_gaps:
       - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
@@ -59846,6 +60257,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1198
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       known_gaps:
       - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
@@ -59934,6 +60346,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1199
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       known_gaps:
       - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
@@ -60022,6 +60435,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1200
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
       known_gaps:
       - Only this getter's selected values for one direct and one nested included HTTP GET APIRoute are
@@ -60110,6 +60524,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1440
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
       known_gaps:
       - Live identity-checked parity covers only one direct and one nested included HTTP GET APIRoute.
@@ -60358,6 +60773,7 @@ api_surface_contract:
         - /api_candidates/1459
         - /api_candidates/1480
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie
       known_gaps:
       - Direct alias-object identity and behavior outside those cases remain unverified; live identity-bound
@@ -60541,6 +60957,7 @@ api_surface_contract:
         - /api_candidates/1460
         - /api_candidates/1483
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader
       known_gaps:
       - Direct alias-object identity and behavior outside those cases remain unverified; live identity-bound
@@ -60780,6 +61197,7 @@ api_surface_contract:
         - /api_candidates/1461
         - /api_candidates/1487
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery
       known_gaps:
       - Direct alias-object identity and behavior outside those cases remain unverified; live identity-bound
@@ -60897,6 +61315,7 @@ api_surface_contract:
         - /api_candidates/1462
         - /api_candidates/1503
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_credentials_model
       known_gaps:
       - Other model schema and validation behavior remains outside this slice.
@@ -61101,6 +61520,7 @@ api_surface_contract:
         - /api_candidates/1463
         - /api_candidates/1513
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBasic
       known_gaps:
       - Direct alias-object identity and non-default options are not covered.
@@ -61205,6 +61625,7 @@ api_surface_contract:
         - /api_candidates/1464
         - /api_candidates/1517
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       known_gaps:
       - Root/module object identity, field validation, and schema parity remain unverified.
@@ -61409,6 +61830,7 @@ api_surface_contract:
         - /api_candidates/1465
         - /api_candidates/1520
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBearer
       known_gaps:
       - Other constructor options and the full HTTPBase hierarchy remain outside this slice.
@@ -61552,6 +61974,7 @@ api_surface_contract:
         - /api_candidates/1466
         - /api_candidates/1524
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
       known_gaps:
       - Successful credentials, scheme-case variants, optional authentication, HTTPBase inheritance, and
@@ -61684,6 +62107,7 @@ api_surface_contract:
         - /api_candidates/1467
         - /api_candidates/1540
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2
       known_gaps:
       - SecurityBase inheritance, full flow variants, and dependency-to-OpenAPI security requirements
@@ -61908,6 +62332,7 @@ api_surface_contract:
         - /api_candidates/1468
         - /api_candidates/1544
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
       known_gaps:
       - other OAuth2 flow models and the complete public OpenAPI model namespace remain incomplete.
@@ -62028,6 +62453,7 @@ api_surface_contract:
         - /api_candidates/1469
         - /api_candidates/1548
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
       known_gaps:
       - Direct alias-object identity and request token extraction through this import path remain unverified
@@ -62194,6 +62620,7 @@ api_surface_contract:
         - /api_candidates/1470
         - /api_candidates/1551
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
       known_gaps:
       - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected
@@ -62347,6 +62774,7 @@ api_surface_contract:
         - /api_candidates/1471
         - /api_candidates/1553
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestFormStrict
       known_gaps:
       - non-URL-encoded inputs, parser failures, and direct-constructor error wording are not selected.
@@ -62586,6 +63014,7 @@ api_surface_contract:
         - /api_candidates/1472
         - /api_candidates/1566
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
       known_gaps:
       - token verification and OpenID provider discovery are not provided by the source class or target.
@@ -62751,6 +63180,7 @@ api_surface_contract:
         - /api_candidates/1473
         - /api_candidates/1558
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
       known_gaps:
       - unusual truthiness and iterable error cases and arbitrary dependency graphs are not selected by
@@ -62878,6 +63308,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1478
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyBase::make_not_authenticated_error
       known_gaps:
       - Direct invocation and subclass override behavior remain outside this slice.
@@ -63099,6 +63530,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1480
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie
       known_gaps:
       - Selected OpenAPI cases cover the cookie scheme and operation requirement; other constructor validation
@@ -63309,6 +63741,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1481
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie::__call__
       known_gaps:
       - Callable and bound-method introspection, empty-cookie handling, and other cookie parsing edges
@@ -63530,6 +63963,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1482
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie::new
       known_gaps:
       - Constructor `Annotated`/`Doc` annotations, complete signature metadata, invalid argument outcomes,
@@ -63696,6 +64130,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1483
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader
       known_gaps:
       - Selected OpenAPI cases cover the header scheme and operation requirement; other constructor validation
@@ -63850,6 +64285,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1484
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::__call__
       known_gaps:
       - Callable and bound-method introspection, optional-header behavior, and header normalization edges
@@ -64015,6 +64451,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1485
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::new
       known_gaps:
       - Constructor `Annotated`/`Doc` annotations, complete signature metadata, invalid argument outcomes,
@@ -64237,6 +64674,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1487
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery
       known_gaps:
       - Selected OpenAPI cases cover the query scheme and operation requirement; other constructor validation
@@ -64447,6 +64885,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1488
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery::__call__
       known_gaps:
       - Callable and bound-method introspection and other query parsing edges are unverified.
@@ -64667,6 +65106,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1489
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery::new
       known_gaps:
       - Constructor `Annotated`/`Doc` annotations, complete signature metadata, invalid argument outcomes,
@@ -64757,6 +65197,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1496
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PySecurityBase
       known_gaps:
       - Base-class identity, annotations, and MRO are unverified.
@@ -64856,6 +65297,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1503
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_credentials_model
       known_gaps:
       - Full schema, field documentation, and validation parity remain outside this slice.
@@ -64933,6 +65375,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1504
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_credentials_model
       known_gaps:
       - Other field-level validation and schema behavior is not established.
@@ -65010,6 +65453,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1505
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_credentials_model
       known_gaps:
       - Only the parsed string value as part of a valid Bearer request is observed; field validation,
@@ -65108,6 +65552,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1510
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBase::make_not_authenticated_error
       known_gaps:
       - The selected request cases observe the generated 401 response; direct helper invocation, Python
@@ -65296,6 +65741,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1513
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBasic
       known_gaps:
       - Optional authentication, custom scheme names/realms/descriptions, HTTPBase inheritance/MRO, subclass
@@ -65448,6 +65894,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1514
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBasic::__call__
       known_gaps:
       - A non-Basic authorization scheme, auto_error=False return values, and Python exception-cause parity
@@ -65563,6 +66010,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1515
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBasic::new
       known_gaps:
       - Non-default constructor options, signature details, and Annotated parameter metadata remain unverified.
@@ -65650,6 +66098,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1517
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       known_gaps:
       - Field descriptions, schema parity, and validation outcomes remain unverified.
@@ -65743,6 +66192,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1518
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       known_gaps:
       - The selected valid optional-authentication request returns the parsed password through the public
@@ -65829,6 +66279,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1519
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       known_gaps:
       - The selected valid optional-authentication request returns the parsed username through the public
@@ -66017,6 +66468,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1520
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBearer
       known_gaps:
       - The separate HTTPBase type and other authentication schemes remain unsupported.
@@ -66156,6 +66608,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1521
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::__call__
       known_gaps:
       - Empty credentials, other schemes, auto_error=False, and all OpenAPI security behavior remain outside
@@ -66333,6 +66786,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1522
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::new
       known_gaps:
       - Other constructor options and full annotated signature parity remain outside this slice.
@@ -66447,6 +66901,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1524
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
       known_gaps:
       - Source HTTPBase inheritance, optional authentication, successful credential extraction, and OpenAPI
@@ -66539,6 +66994,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1525
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::__call__
       known_gaps:
       - Successful nonempty extraction, scheme-case variants, and optional credential behavior remain
@@ -66652,6 +67108,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1526
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::new
       known_gaps:
       - Annotated Doc metadata, subclass naming edge cases, and all constructor outcomes are not fully
@@ -66767,6 +67224,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1540
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2
       known_gaps:
       - Inheritance from SecurityBase, full flow-model validation, and OpenAPI security output remain
@@ -66859,6 +67317,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1541
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2::__call__
       known_gaps:
       - The selected cases observe only present and missing Authorization behavior; direct signature or
@@ -66972,6 +67431,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1542
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2::new
       known_gaps:
       - Other OAuth2 flow fields, annotations, and validation outcomes remain outside the selected cases.
@@ -67057,6 +67517,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1543
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2::make_not_authenticated_error
       known_gaps:
       - The selected missing-token request observes this response through the OAuth2 dependency path;
@@ -67265,6 +67726,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1544
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
       known_gaps:
       - other OAuth2 flow models and the complete public OpenAPI model namespace remain incomplete.
@@ -67412,6 +67874,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1545
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::__call__
       known_gaps:
       - malformed header and subclass override behavior beyond the selected cases remain unverified.
@@ -67763,6 +68226,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1546
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::ConstructorInit::__call__
       known_gaps:
       - Pydantic invalid-value validation details and unselected argument errors remain outside this partial
@@ -67867,6 +68331,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1548
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
       known_gaps:
       - Other flow variants, inheritance, request token extraction, and optional-auth handling are not
@@ -67959,6 +68424,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1549
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::__call__
       known_gaps:
       - Token whitespace/case variants, empty parameters, and optional authentication remain unverified.
@@ -68061,6 +68527,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1550
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::new
       known_gaps:
       - Other constructor options, its reflected signature, and validation outcomes remain unverified.
@@ -68209,6 +68676,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1551
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestForm
       known_gaps:
       - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected
@@ -68391,6 +68859,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1552
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
       known_gaps:
       - multipart/file inputs, parser failures, and direct-constructor error combinations beyond the selected
@@ -68527,6 +68996,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1553
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordRequestFormStrict
       known_gaps:
       - non-URL-encoded inputs, parser failures, and direct-constructor error wording are not selected.
@@ -68661,6 +69131,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1554
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::initialize_oauth2_password_request_form
       known_gaps:
       - direct-constructor validation errors and non-URL-encoded inputs are not selected.
@@ -68808,6 +69279,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1558
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PySecurityScopes
       known_gaps:
       - unusual truthiness and iterable error cases and arbitrary dependency graphs are not selected by
@@ -68970,6 +69442,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1559
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::initialize_security_scopes
       known_gaps:
       - unusual truthiness and iterable error cases are not selected by current fixtures.
@@ -69192,6 +69665,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1566
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
       known_gaps:
       - subclass overrides and complete Pydantic OpenID model behavior remain unverified.
@@ -69293,6 +69767,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1567
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::__call__
       known_gaps:
       - behavior of empty and non-string Authorization values is not exhaustively observed.
@@ -69656,6 +70131,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1568
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::ConstructorInit::__call__
       known_gaps:
       - Pydantic invalid-value validation details and unselected argument errors remain outside this partial
@@ -69742,6 +70218,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1569
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::make_not_authenticated_error
       known_gaps:
       - The selected required OpenID Connect request observes that response through the public dependency
@@ -70099,6 +70576,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1579
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -70359,6 +70837,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1583
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -70439,6 +70918,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1585
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -70558,6 +71038,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1586
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -70701,6 +71182,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1587
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -70828,6 +71310,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1588
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -70919,6 +71402,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1589
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -71022,6 +71506,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1590
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/sse.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -71113,6 +71598,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1600
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -71197,6 +71683,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1601
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/parameters.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -71311,6 +71798,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1602
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -71410,6 +71898,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1603
       status: unresolved
+      disposition: unresolved
       rust_binding: null
       known_gaps:
       - Input/workflow references exist, but no exact implementation binding or current comparison result
@@ -71478,6 +71967,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1632
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -71570,6 +72060,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1640
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -71672,6 +72163,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1641
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -71770,6 +72262,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1642
       status: partial-contract
+      disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       known_gaps:
       - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
@@ -72637,6 +73130,7 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id044
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - Current parity covers basic registration and dispatch plus a method miss; argument and signature
         errors, route option combinations, and broader ordering or mutation behavior remain unestablished.
@@ -72729,6 +73223,7 @@ api_surface_contract:
         signature_source_ref: *id045
         sibling_contract_gap_ref: *id046
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - Current parity covers one named subdomain dispatch; other host patterns, named host-route reversal,
         and host-route error behavior remain unestablished.
@@ -72879,6 +73374,7 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id047
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing
         or mismatched route parameters are not established.
@@ -72980,6 +73476,7 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id048
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - The webhook input covers a relative event identifier and its URLPath path/protocol/host. Broader
         FastAPI nested inclusion, route-parameter errors, and custom-converter formatting remain unestablished.
@@ -73083,6 +73580,7 @@ api_surface_contract:
         attribute_source_ref: *id049
         sibling_contract_gap_ref: *id050
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; the implementation
         also projects generic routes supplied directly to FastAPI. Constructor-route HTTP dispatch is
@@ -73190,6 +73688,7 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id051
       status: full-contract-not-established
+      disposition: unresolved
   - id: fastapi.applications.FastAPI.add_exception_handler
     kind: inherited_method
     exposure: inherited-from-starlette
@@ -73376,6 +73875,7 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id052
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
         state when Starlette-RS invokes the handler.
@@ -73542,6 +74042,7 @@ api_surface_contract:
         signature_source_ref: *id053
         sibling_contract_gap_ref: *id054
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - Named-mount reverse URL lookup has no focused identity-checked input and receipt.
   - id: fastapi.applications.FastAPI.routes
@@ -73625,6 +74126,7 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id055
       status: partial-contract
+      disposition: unresolved
       known_gaps:
       - The projection includes generic route objects supplied directly to FastAPI, but does not establish
         route-tree or mount structure, generic routes added later or through included APIRouters, WebSocket
