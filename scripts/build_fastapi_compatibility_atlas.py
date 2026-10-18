@@ -9574,6 +9574,16 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "fastapi.routing.RedirectResponse",
             "fastapi.routing.WebSocket",
             "fastapi.routing.HTTPException",
+            "fastapi.dependencies.utils.ImmutableMultiDict",
+            "fastapi.routing.compile_path",
+            "fastapi.routing.get_name",
+            "fastapi.routing.Match",
+            "fastapi.routing.NoMatchFound",
+            "fastapi.security.api_key.HTTP_401_UNAUTHORIZED",
+            "fastapi.security.http.HTTP_401_UNAUTHORIZED",
+            "fastapi.security.oauth2.HTTP_401_UNAUTHORIZED",
+            "fastapi.security.open_id_connect_url.HTTP_401_UNAUTHORIZED",
+            "fastapi.exception_handlers.WS_1008_POLICY_VIOLATION",
         }
         if not isinstance(specifications, dict) or set(specifications) != expected_ids:
             raise AtlasError(
@@ -9669,7 +9679,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     or not isinstance(reference.get("operation_id"), str)
                     or (
                         reference.get("operation_id") == "route-dispatch"
-                        and fastapi_id != "fastapi.routing.routing"
+                        and fastapi_id
+                        not in {
+                            "fastapi.routing.routing",
+                            "fastapi.routing.compile_path",
+                            "fastapi.routing.Match",
+                        }
                     )
                     or not isinstance(reference.get("source_use_lines"), list)
                     or not reference["source_use_lines"]
@@ -9812,6 +9827,111 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         return resolved
 
     starlette_subclass_contract_refs = load_starlette_subclass_contract_refs()
+
+    def load_starlette_type_only_contract_refs() -> dict[str, dict[str, Any]]:
+        """Resolve Starlette typing aliases without treating them as runtime operations."""
+        specifications = project_metadata.get("starlette_rs", {}).get("type_only_contract_refs")
+        internal_type_bindings = [
+            row
+            for row in inventory.get("import_bindings", [])
+            if isinstance(row, dict)
+            and row.get("starlette_delegation") == "internal_dependency"
+            and isinstance(row.get("target_path"), str)
+            and row["target_path"].startswith("starlette.types.")
+        ]
+        expected_symbols = {row["target_path"] for row in internal_type_bindings}
+        if not isinstance(specifications, dict) or set(specifications) != expected_symbols:
+            raise AtlasError(
+                "Starlette type-only references must cover the exact internal types import set"
+            )
+        native_surface_ids = {
+            surface.get("id")
+            for surface in (starlette_rs_manifest or {}).get("native_surfaces", [])
+            if isinstance(surface, dict) and isinstance(surface.get("id"), str)
+        }
+        resolved: dict[str, dict[str, Any]] = {}
+        for symbol, specification in specifications.items():
+            if not isinstance(specification, dict) or set(specification) != {
+                "python_package_disposition",
+                "scope_note",
+            }:
+                raise AtlasError("Starlette type-only reference fields are unsupported: " + symbol)
+            python_disposition = specification.get("python_package_disposition")
+            scope_note = specification.get("scope_note")
+            review_rows = starlette_review_records.get(symbol, [])
+            reviewed_dispositions = {row.get("api_disposition") for row in review_rows}
+            if (
+                python_disposition not in {"supported", "private/internal", "uncertain"}
+                or reviewed_dispositions != {python_disposition}
+                or not isinstance(scope_note, str)
+                or not scope_note.strip()
+                or symbol in native_surface_ids
+            ):
+                raise AtlasError("Starlette type-only reference evidence is invalid: " + symbol)
+            for binding in internal_type_bindings:
+                if binding["target_path"] != symbol:
+                    continue
+                source_ref = binding.get("source_ref")
+                local_name = binding.get("local_name")
+                source_path = source_ref.get("path") if isinstance(source_ref, dict) else None
+                source_file = (
+                    (fastapi_root / source_path).resolve() if isinstance(source_path, str) else None
+                )
+                if (
+                    not isinstance(local_name, str)
+                    or source_file is None
+                    or fastapi_root.resolve() not in source_file.parents
+                    or not source_file.is_file()
+                ):
+                    raise AtlasError(
+                        "Starlette type-only source binding is invalid: " + binding["id"]
+                    )
+                source_tree = ast.parse(
+                    source_file.read_text(encoding="utf-8"), filename=str(source_file)
+                )
+                annotation_name_ids: set[int] = set()
+                for node in ast.walk(source_tree):
+                    annotation: ast.expr | None = None
+                    if isinstance(node, ast.arg):
+                        annotation = node.annotation
+                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        annotation = node.returns
+                    elif isinstance(node, ast.AnnAssign):
+                        annotation = node.annotation
+                    if annotation is not None:
+                        annotation_name_ids.update(
+                            id(child)
+                            for child in ast.walk(annotation)
+                            if isinstance(child, ast.Name)
+                        )
+                uses = [
+                    node
+                    for node in ast.walk(source_tree)
+                    if isinstance(node, ast.Name) and node.id == local_name
+                ]
+                if not uses or any(id(node) not in annotation_name_ids for node in uses):
+                    raise AtlasError(
+                        "Starlette type-only import has a non-annotation FastAPI use: "
+                        + binding["id"]
+                    )
+            resolved[symbol] = {
+                "resolution": "python-typing-only",
+                "starlette_symbol": symbol,
+                "target_support": {
+                    "python-package": {
+                        "status": python_disposition,
+                        "reason": "Disposition follows the pinned Starlette-RS API review; no behavioral operation is declared for this type alias.",
+                    },
+                    "rust-native": {
+                        "status": "out_of_scope",
+                        "reason": "The pinned Starlette-RS manifest declares no Rust-native surface for this Python typing alias.",
+                    },
+                },
+                "scope_note": scope_note,
+            }
+        return resolved
+
+    starlette_type_only_contract_refs = load_starlette_type_only_contract_refs()
 
     def has_middleware_registration_source(coverage_item: dict[str, Any]) -> bool:
         source_path = coverage_item.get("source_path")
@@ -10531,6 +10651,18 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         + binding["id"]
                     )
                 edge["starlette_rs_integration_operation_refs"] = integration_operation_refs
+            type_only_ref = starlette_type_only_contract_refs.get(target_symbol)
+            if type_only_ref is not None:
+                if relation != "internal_dependency":
+                    raise AtlasError(
+                        "Starlette type-only resolution is attached to a non-internal edge: "
+                        + binding["id"]
+                    )
+                edge["starlette_rs_type_only_ref"] = type_only_ref
+                edge["status"] = (
+                    "source-mapped; exact sibling Python type disposition linked; "
+                    "FastAPI use is annotation-only and carries no runtime behavior claim"
+                )
             starlette_edges.append(edge)
     for edge in starlette.get("base_edges", []):
         symbol = edge["base"]
@@ -13089,7 +13221,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     reviewed_inherited_api_candidates.sort(key=lambda row: row["id"])
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@10",
+        "schema": "fastapi-rs/compatibility-atlas@11",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -13220,6 +13352,28 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "starlette_internal_edges_with_canonical_refs": sum(
                 edge.get("relation") == "internal_dependency"
                 and isinstance(edge.get("starlette_rs_canonical_edge_refs"), dict)
+                for edge in starlette_edges
+            ),
+            "starlette_internal_edges_with_specific_refs_without_canonical": sum(
+                edge.get("relation") == "internal_dependency"
+                and not isinstance(edge.get("starlette_rs_canonical_edge_refs"), dict)
+                and (
+                    isinstance(edge.get("starlette_rs_integration_operation_refs"), dict)
+                    or isinstance(edge.get("starlette_rs_behavior_crosswalk"), dict)
+                )
+                for edge in starlette_edges
+            ),
+            "starlette_internal_edges_with_type_only_refs": sum(
+                edge.get("relation") == "internal_dependency"
+                and isinstance(edge.get("starlette_rs_type_only_ref"), dict)
+                for edge in starlette_edges
+            ),
+            "starlette_internal_edges_unresolved": sum(
+                edge.get("relation") == "internal_dependency"
+                and not isinstance(edge.get("starlette_rs_canonical_edge_refs"), dict)
+                and not isinstance(edge.get("starlette_rs_integration_operation_refs"), dict)
+                and not isinstance(edge.get("starlette_rs_behavior_crosswalk"), dict)
+                and not isinstance(edge.get("starlette_rs_type_only_ref"), dict)
                 for edge in starlette_edges
             ),
             "starlette_surface_aliases": len(starlette_surface_aliases),
@@ -13740,12 +13894,21 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             or edge.get("starlette_rs_behavior_crosswalk")
         )
     ]
+    internal_edges_with_type_only_refs = [
+        edge
+        for edge in internal_edges
+        if not edge.get("starlette_rs_canonical_edge_refs")
+        and not edge.get("starlette_rs_integration_operation_refs")
+        and not edge.get("starlette_rs_behavior_crosswalk")
+        and isinstance(edge.get("starlette_rs_type_only_ref"), dict)
+    ]
     internal_edges_without_contract_links = [
         edge
         for edge in internal_edges
         if not edge.get("starlette_rs_canonical_edge_refs")
         and not edge.get("starlette_rs_integration_operation_refs")
         and not edge.get("starlette_rs_behavior_crosswalk")
+        and not edge.get("starlette_rs_type_only_ref")
     ]
     if sum(
         map(
@@ -13753,6 +13916,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             (
                 internal_edges_with_canonical_refs,
                 internal_edges_with_specific_refs_only,
+                internal_edges_with_type_only_refs,
                 internal_edges_without_contract_links,
             ),
         )
@@ -13869,17 +14033,18 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 atlas["counts"]["starlette_module_namespace_crosswalks"],
             ),
             "",
-            "| FastAPI internal import edges | Same-symbol canonical contract references | Specific operation/helper references without a canonical edge | No operation/helper or canonical edge link |",
-            "|---:|---:|---:|---:|",
-            "| %d | %d | %d | %d |"
+            "| FastAPI internal import edges | Same-symbol canonical contract references | Specific operation/helper/namespace links without a canonical edge | Type-only references | Unresolved |",
+            "|---:|---:|---:|---:|---:|",
+            "| %d | %d | %d | %d | %d |"
             % (
                 len(internal_edges),
                 len(internal_edges_with_canonical_refs),
                 len(internal_edges_with_specific_refs_only),
+                len(internal_edges_with_type_only_refs),
                 len(internal_edges_without_contract_links),
             ),
             "",
-            "Same-symbol references point to an already reviewed direct-re-export or subclass edge and can be dereferenced for its generic contract and per-target support. They do not claim that every sibling operation is used at that FastAPI import site or establish FastAPI-RS parity. Rows without a reference remain explicit atlas gaps for source-use review.",
+            "Same-symbol references point to an already reviewed direct-re-export or subclass edge and can be dereferenced for its generic contract and per-target support. Specific links identify only the consumed generic operations or private helper behavior. Type-only references have no runtime operation and retain the pinned Python review state plus Rust-native scope. None of these links establish FastAPI-RS parity.",
             "",
             "The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is "
             + atlas["authorities"]["starlette_rs"]["implementation_revision"]
@@ -14033,6 +14198,13 @@ def _sync_manifest_artifact_metadata(
             "starlette_internal_edges_with_canonical_refs": counts[
                 "starlette_internal_edges_with_canonical_refs"
             ],
+            "starlette_internal_edges_with_specific_refs_without_canonical": counts[
+                "starlette_internal_edges_with_specific_refs_without_canonical"
+            ],
+            "starlette_internal_edges_with_type_only_refs": counts[
+                "starlette_internal_edges_with_type_only_refs"
+            ],
+            "starlette_internal_edges_unresolved": counts["starlette_internal_edges_unresolved"],
             "documentation_python_examples": counts["documentation_python_examples"],
             "documentation_python_examples_grouped_with_page": counts[
                 "documentation_python_examples_grouped_with_page"

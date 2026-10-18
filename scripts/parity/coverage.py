@@ -573,7 +573,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@10", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@11", "unsupported atlas schema")
     starlette_edges = atlas.get("starlette_integration_edges")
     _require(isinstance(starlette_edges, list), "Starlette integration edges are missing")
     edge_by_id = {
@@ -618,13 +618,56 @@ def validate_compatibility_artifacts(
             )
 
     canonical_link_count = 0
+    specific_link_count = 0
+    type_only_link_count = 0
+    unresolved_link_count = 0
     for edge in starlette_edges:
         if not isinstance(edge, dict) or edge.get("relation") != "internal_dependency":
             _require(
                 not isinstance(edge, dict) or "starlette_rs_canonical_edge_refs" not in edge,
                 "canonical Starlette edge references are allowed only on internal dependencies",
             )
+            _require(
+                not isinstance(edge, dict) or "starlette_rs_type_only_ref" not in edge,
+                "type-only Starlette references are allowed only on internal dependencies",
+            )
             continue
+        type_only = edge.get("starlette_rs_type_only_ref")
+        if type_only is not None:
+            _require(
+                isinstance(type_only, dict)
+                and set(type_only)
+                == {"resolution", "starlette_symbol", "target_support", "scope_note"}
+                and type_only.get("resolution") == "python-typing-only"
+                and type_only.get("starlette_symbol") == edge.get("starlette_symbol")
+                and isinstance(type_only.get("scope_note"), str)
+                and bool(type_only["scope_note"].strip()),
+                "type-only Starlette reference has invalid identity or scope",
+            )
+            target_support = type_only.get("target_support")
+            _require(
+                isinstance(target_support, dict)
+                and set(target_support) == {"python-package", "rust-native"},
+                "type-only Starlette reference must declare both target states",
+            )
+            python_support = target_support.get("python-package")
+            rust_support = target_support.get("rust-native")
+            _require(
+                isinstance(python_support, dict)
+                and set(python_support) == {"status", "reason"}
+                and python_support.get("status") in {"supported", "private/internal", "uncertain"}
+                and isinstance(python_support.get("reason"), str)
+                and bool(python_support["reason"].strip()),
+                "type-only Starlette Python state is invalid",
+            )
+            _require(
+                isinstance(rust_support, dict)
+                and set(rust_support) == {"status", "reason"}
+                and rust_support.get("status") == "out_of_scope"
+                and isinstance(rust_support.get("reason"), str)
+                and bool(rust_support["reason"].strip()),
+                "type-only Starlette Rust-native state is invalid",
+            )
         candidates = canonical_by_symbol.get(edge.get("starlette_symbol"), [])
         supplied = edge.get("starlette_rs_canonical_edge_refs")
         if not candidates:
@@ -632,46 +675,85 @@ def validate_compatibility_artifacts(
                 supplied is None,
                 "internal dependency without a same-symbol contract edge has a canonical reference",
             )
-            continue
-        best_rank = min(rank for rank, _, _ in candidates)
-        expected = sorted(
-            (edge_id, kind) for rank, edge_id, kind in candidates if rank == best_rank
-        )
-        _require(
-            isinstance(supplied, dict), "same-symbol internal dependency lacks canonical references"
-        )
-        _require(
-            set(supplied) == {"resolution", "starlette_symbol", "canonical_edges", "scope_note"},
-            "canonical Starlette edge reference has unsupported fields",
-        )
-        _require(
-            supplied.get("resolution") == "same-starlette-symbol"
-            and supplied.get("starlette_symbol") == edge.get("starlette_symbol")
-            and isinstance(supplied.get("scope_note"), str)
-            and bool(supplied["scope_note"].strip()),
-            "canonical Starlette edge reference has invalid identity or scope",
-        )
-        refs = supplied.get("canonical_edges")
-        _require(isinstance(refs, list), "canonical Starlette edge references must be a list")
-        _require(
-            refs == [{"edge_id": edge_id, "contract_kind": kind} for edge_id, kind in expected],
-            "canonical Starlette edge references differ from exact same-symbol contracts",
-        )
-        for edge_id, kind in expected:
-            canonical = edge_by_id.get(edge_id)
-            _require(canonical is not None, "canonical Starlette edge reference points nowhere")
-            _require(
-                canonical.get("starlette_symbol") == edge.get("starlette_symbol")
-                and canonical_kind(canonical) == kind,
-                "canonical Starlette edge reference target changed identity",
+        else:
+            best_rank = min(rank for rank, _, _ in candidates)
+            expected = sorted(
+                (edge_id, kind) for rank, edge_id, kind in candidates if rank == best_rank
             )
-        canonical_link_count += 1
+            _require(
+                isinstance(supplied, dict),
+                "same-symbol internal dependency lacks canonical references",
+            )
+            _require(
+                set(supplied)
+                == {"resolution", "starlette_symbol", "canonical_edges", "scope_note"},
+                "canonical Starlette edge reference has unsupported fields",
+            )
+            _require(
+                supplied.get("resolution") == "same-starlette-symbol"
+                and supplied.get("starlette_symbol") == edge.get("starlette_symbol")
+                and isinstance(supplied.get("scope_note"), str)
+                and bool(supplied["scope_note"].strip()),
+                "canonical Starlette edge reference has invalid identity or scope",
+            )
+            refs = supplied.get("canonical_edges")
+            _require(isinstance(refs, list), "canonical Starlette edge references must be a list")
+            _require(
+                refs == [{"edge_id": edge_id, "contract_kind": kind} for edge_id, kind in expected],
+                "canonical Starlette edge references differ from exact same-symbol contracts",
+            )
+            for edge_id, kind in expected:
+                canonical = edge_by_id.get(edge_id)
+                _require(canonical is not None, "canonical Starlette edge reference points nowhere")
+                _require(
+                    canonical.get("starlette_symbol") == edge.get("starlette_symbol")
+                    and canonical_kind(canonical) == kind,
+                    "canonical Starlette edge reference target changed identity",
+                )
+        has_specific_links = isinstance(
+            edge.get("starlette_rs_integration_operation_refs"), dict
+        ) or isinstance(edge.get("starlette_rs_behavior_crosswalk"), dict)
+        _require(
+            not (type_only is not None and (supplied is not None or has_specific_links)),
+            "type-only Starlette reference overlaps a behavior or canonical resolution",
+        )
+        if supplied is not None:
+            canonical_link_count += 1
+        elif has_specific_links:
+            specific_link_count += 1
+        elif type_only is not None:
+            type_only_link_count += 1
+        else:
+            unresolved_link_count += 1
 
+    internal_edge_count = sum(
+        isinstance(edge, dict) and edge.get("relation") == "internal_dependency"
+        for edge in starlette_edges
+    )
+    atlas_counts = atlas.get("counts", {})
     _require(
-        atlas.get("counts", {}).get("starlette_internal_edges_with_canonical_refs")
-        == canonical_link_count,
+        atlas_counts.get("starlette_internal_edges_with_canonical_refs") == canonical_link_count,
         "canonical Starlette internal-edge count differs from the edge map",
     )
+    _require(
+        atlas_counts.get("starlette_internal_edges_with_specific_refs_without_canonical")
+        == specific_link_count,
+        "specific Starlette internal-edge count differs from the edge map",
+    )
+    _require(
+        atlas_counts.get("starlette_internal_edges_with_type_only_refs") == type_only_link_count,
+        "type-only Starlette internal-edge count differs from the edge map",
+    )
+    _require(
+        atlas_counts.get("starlette_internal_edges_unresolved") == unresolved_link_count,
+        "unresolved Starlette internal-edge count differs from the edge map",
+    )
+    _require(
+        canonical_link_count + specific_link_count + type_only_link_count + unresolved_link_count
+        == internal_edge_count,
+        "Starlette internal-edge resolutions do not partition the inventory",
+    )
+    _require(unresolved_link_count == 0, "Starlette internal edges remain unresolved")
     _require(
         backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
         "unsupported fixture backlog schema",

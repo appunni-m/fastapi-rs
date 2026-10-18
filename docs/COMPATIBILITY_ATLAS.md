@@ -769,11 +769,11 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|---:|---:|---:|
 | 133 | 26 | 3 | 15 | 3 | 1 | 0 |
 
-| FastAPI internal import edges | Same-symbol canonical contract references | Specific operation/helper references without a canonical edge | No operation/helper or canonical edge link |
-|---:|---:|---:|---:|
-| 86 | 52 | 8 | 26 |
+| FastAPI internal import edges | Same-symbol canonical contract references | Specific operation/helper/namespace links without a canonical edge | Type-only references | Unresolved |
+|---:|---:|---:|---:|---:|
+| 86 | 52 | 18 | 16 | 0 |
 
-Same-symbol references point to an already reviewed direct-re-export or subclass edge and can be dereferenced for its generic contract and per-target support. They do not claim that every sibling operation is used at that FastAPI import site or establish FastAPI-RS parity. Rows without a reference remain explicit atlas gaps for source-use review.
+Same-symbol references point to an already reviewed direct-re-export or subclass edge and can be dereferenced for its generic contract and per-target support. Specific links identify only the consumed generic operations or private helper behavior. Type-only references have no runtime operation and retain the pinned Python review state plus Rust-native scope. None of these links establish FastAPI-RS parity.
 
 The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 4139a72449bf5751e8902fb1c7175ee7f191d338 (pinned, clean Starlette-RS checkout).
 

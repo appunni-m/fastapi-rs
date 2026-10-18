@@ -78,7 +78,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V10_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
-ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@10"
+ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 _MODULE_PATH = re.compile(r"fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 _STARLETTE_MODULE_PATH = re.compile(r"starlette(?:\.[A-Za-z_][A-Za-z0-9_]*)+\Z")

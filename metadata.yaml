@@ -699,7 +699,7 @@ api_public_candidate_classification_review:
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
-  schema: fastapi-rs/compatibility-atlas@10
+  schema: fastapi-rs/compatibility-atlas@11
   candidates_pointer: /api_candidates
   inherited_candidates_pointer: /reviewed_inherited_api_candidates
   classification_pointer: /classification
@@ -751,6 +751,15 @@ classification_atlas:
     starlette_internal_edges_with_canonical_refs:
       artifact: /counts/starlette_internal_edges_with_canonical_refs
       manifest: /source_artifacts/compatibility_atlas/counts/starlette_internal_edges_with_canonical_refs
+    starlette_internal_edges_with_specific_refs_without_canonical:
+      artifact: /counts/starlette_internal_edges_with_specific_refs_without_canonical
+      manifest: /source_artifacts/compatibility_atlas/counts/starlette_internal_edges_with_specific_refs_without_canonical
+    starlette_internal_edges_with_type_only_refs:
+      artifact: /counts/starlette_internal_edges_with_type_only_refs
+      manifest: /source_artifacts/compatibility_atlas/counts/starlette_internal_edges_with_type_only_refs
+    starlette_internal_edges_unresolved:
+      artifact: /counts/starlette_internal_edges_unresolved
+      manifest: /source_artifacts/compatibility_atlas/counts/starlette_internal_edges_unresolved
   classifications:
     supported: Explicit root export, documented target/import, reviewed public contract, or documented model field; source evidence only.
     private/internal: Private-name or implementation/protocol evidence without a consumer-facing contract.
@@ -774,6 +783,50 @@ starlette_rs:
   metadata_revision_pointer: /authority/revision
   boundary: FastAPI records only its direct Starlette imports, aliases, inheritance and integration edges; generic Starlette API and behavior stay sibling-owned.
   catalog_policy: Link to sibling artifacts; never copy or expand the Starlette API catalog here.
+  type_only_contract_refs:
+    starlette.types.ASGIApp:
+      python_package_disposition: supported
+      scope_note: >-
+        FastAPI uses ASGIApp only as a Python callable annotation. Starlette-RS reviews
+        the Python type as supported but declares no operation for it; Rust-native
+        exposes no equivalent Python callback alias. Track concrete ASGI execution
+        through the linked FastAPI operations and parity cases.
+    starlette.types.AppType:
+      python_package_disposition: private/internal
+      scope_note: >-
+        FastAPI uses AppType only in Python type annotations. Starlette-RS reviews this
+        generic alias as private/internal and declares no operation or Rust-native
+        equivalent; it carries no independent runtime behavior.
+    starlette.types.ExceptionHandler:
+      python_package_disposition: supported
+      scope_note: >-
+        FastAPI uses ExceptionHandler only to annotate its exception-handler mapping.
+        Starlette-RS reviews the Python callable alias as supported but declares no
+        operation for it; handler selection and responses remain FastAPI behavior.
+    starlette.types.Lifespan:
+      python_package_disposition: supported
+      scope_note: >-
+        FastAPI uses Lifespan only in callback annotations. Starlette-RS reviews the
+        Python context-manager alias as supported but declares no operation for it;
+        lifecycle behavior is tracked through application operations and parity cases.
+    starlette.types.Receive:
+      python_package_disposition: supported
+      scope_note: >-
+        FastAPI uses Receive only as an ASGI callable annotation. Starlette-RS reviews
+        the Python alias as supported but declares no operation for it; message and
+        lifecycle behavior remain linked to their owning operations.
+    starlette.types.Scope:
+      python_package_disposition: supported
+      scope_note: >-
+        FastAPI uses Scope only as a Python mapping annotation. Starlette-RS reviews
+        the alias as supported but declares no operation for the type itself; scope
+        mutation and dispatch behavior are linked through their owning operations.
+    starlette.types.Send:
+      python_package_disposition: supported
+      scope_note: >-
+        FastAPI uses Send only as an ASGI callable annotation. Starlette-RS reviews
+        the Python alias as supported but declares no operation for it; emitted
+        messages and response behavior remain linked to their owning operations.
   operation_aliases:
     fastapi.concurrency.iterate_in_threadpool:
       starlette_symbol: starlette.concurrency.iterate_in_threadpool
@@ -1652,6 +1705,187 @@ starlette_rs:
       scope_note: >-
         FastAPI constructs Starlette streaming responses in its route wrapper and
         invokes the resulting ASGI response. This is an ownership link only.
+    fastapi.dependencies.utils.ImmutableMultiDict:
+      starlette_symbol: starlette.datastructures.ImmutableMultiDict
+      fastapi_source_uses:
+        - {path: fastapi/dependencies/utils.py, line: 756, expression: "and isinstance(values, (ImmutableMultiDict, Headers))"}
+        - {path: fastapi/dependencies/utils.py, line: 832, expression: "if isinstance(received_params, (ImmutableMultiDict, Headers)):"}
+      target_refs:
+        - surface_id: starlette.datastructures.QueryParams
+          operation_id: construction-and-mapping-sequence
+          requirement_ids: [starlette.datastructures.QueryParams.immutable-multidict-lookup-and-iteration]
+          source_use_lines: [756, 832]
+        - surface_id: starlette.datastructures.FormData
+          operation_id: multidict-lookups
+          requirement_ids: [starlette.datastructures.FormData.multidict-lookups]
+          source_use_lines: [756, 832]
+      scope_note: >-
+        FastAPI detects the shared immutable multi-value container base and calls
+        getlist when collecting repeated request parameters. QueryParams and FormData
+        provide the sibling operation references; FastAPI's extraction and validation
+        behavior remains FastAPI-owned and is not proven by these links.
+    fastapi.routing.compile_path:
+      starlette_symbol: starlette.routing.compile_path
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 815, expression: "self.path_regex, self.path_format, self.param_convertors = compile_path(path)"}
+        - {path: fastapi/routing.py, line: 1018, expression: "route.path_regex, route.path_format, route.param_convertors = compile_path(path)"}
+        - {path: fastapi/routing.py, line: 1707, expression: ") = compile_path(starlette_route.path + \"/{path:path}\")"}
+      target_refs:
+        - surface_id: starlette.routing.Route
+          operation_id: __init__
+          requirement_ids:
+            - starlette.routing.Route.__init__.duplicate-parameter-name-single
+            - starlette.routing.Route.__init__.duplicate-parameter-name-multiple
+            - starlette.routing.Route.__init__.lone-surrogate-path
+          source_use_lines: [815, 1018]
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids: [starlette.routing.Router.route-dispatch.path-converter-match]
+          source_use_lines: [1707]
+      scope_note: >-
+        FastAPI calls the same pinned path compiler when building API routes and a
+        prefixed catch-all route. The compiler is private/internal in Starlette-RS;
+        public Route construction and Router dispatch provide the nearest exact
+        generic contracts. FastAPI path rewriting and route composition remain owned
+        by FastAPI.
+    fastapi.routing.get_name:
+      starlette_symbol: starlette.routing.get_name
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 813, expression: "self.name = get_name(endpoint) if name is None else name"}
+        - {path: fastapi/routing.py, line: 1017, expression: "route.name = get_name(endpoint) if name is None else name"}
+      target_refs:
+        - surface_id: starlette.routing.Route
+          operation_id: __init__
+          requirement_ids:
+            - starlette.routing.Route.endpoint-name.function
+            - starlette.routing.Route.endpoint-name.method
+            - starlette.routing.Route.endpoint-name.classmethod
+            - starlette.routing.Route.endpoint-name.staticmethod
+            - starlette.routing.Route.endpoint-name.object
+            - starlette.routing.Route.endpoint-name.lambda
+          source_use_lines: [813, 1017]
+      scope_note: >-
+        FastAPI uses Starlette's private endpoint-name helper for default API route
+        names. The generic Route constructor requirements cover the supported
+        callable forms; FastAPI route naming overrides remain separately owned.
+    fastapi.routing.Match:
+      starlette_symbol: starlette.routing.Match
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 835, expression: "if match != Match.NONE:"}
+        - {path: fastapi/routing.py, line: 1257, expression: "if match != Match.NONE:"}
+        - {path: fastapi/routing.py, line: 1512, expression: "return Match.NONE, {}"}
+        - {path: fastapi/routing.py, line: 1516, expression: "return Match.NONE, {}"}
+        - {path: fastapi/routing.py, line: 1525, expression: "return Match.PARTIAL, child_scope"}
+        - {path: fastapi/routing.py, line: 1526, expression: "return Match.FULL, child_scope"}
+        - {path: fastapi/routing.py, line: 1755, expression: "if match == Match.FULL:"}
+        - {path: fastapi/routing.py, line: 1757, expression: "if match == Match.PARTIAL and partial is None:"}
+        - {path: fastapi/routing.py, line: 1761, expression: "return Match.PARTIAL, child_scope, route, route_context"}
+        - {path: fastapi/routing.py, line: 1762, expression: "return Match.NONE, {}, None, None"}
+      target_refs:
+        - surface_id: starlette.routing.WebSocketRoute
+          operation_id: route-dispatch
+          requirement_ids: [starlette.routing.WebSocketRoute.route-dispatch.standalone-match]
+          source_use_lines: [835]
+        - surface_id: starlette.routing.Router
+          operation_id: route-dispatch
+          requirement_ids:
+            - starlette.routing.Router.route-dispatch.static-parameter-order
+            - starlette.routing.Router.route-dispatch.duplicate-path-method-fallthrough
+            - starlette.routing.Router.route-dispatch.base-route-subclass-matches
+            - starlette.routing.Router.route-dispatch.instance-matches-override
+          source_use_lines: [1257, 1512, 1516, 1525, 1526, 1755, 1757, 1761, 1762]
+      scope_note: >-
+        Match is private/internal in the sibling API review. FastAPI consumes its
+        NONE, PARTIAL, and FULL states in custom HTTP and WebSocket route classes;
+        generic Route/Router references document those meanings. FastAPI candidate
+        ordering and fallback behavior remain FastAPI-owned and require FastAPI parity.
+    fastapi.routing.NoMatchFound:
+      starlette_symbol: starlette.routing.NoMatchFound
+      fastapi_source_uses:
+        - {path: fastapi/routing.py, line: 1536, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 1815, expression: "except routing.NoMatchFound:"}
+        - {path: fastapi/routing.py, line: 1817, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 2100, expression: "raise NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 2210, expression: "raise NoMatchFound(name, path_params)"}
+      target_refs:
+        - surface_id: starlette.routing.Route
+          operation_id: url_path_for
+          requirement_ids: [starlette.routing.Route.url_path_for.parameter-mismatch]
+          source_use_lines: [1536]
+        - surface_id: starlette.routing.Router
+          operation_id: url_path_for
+          requirement_ids: [starlette.routing.Router.url_path_for.mismatch]
+          source_use_lines: [1815, 1817, 2100, 2210]
+      scope_note: >-
+        FastAPI raises and catches Starlette's public reverse-lookup exception in
+        route and router URL generation. These links cover the generic mismatch
+        exception contract; FastAPI's search order and route-group behavior remain
+        FastAPI-owned.
+    fastapi.security.api_key.HTTP_401_UNAUTHORIZED:
+      starlette_symbol: starlette.status.HTTP_401_UNAUTHORIZED
+      fastapi_source_uses:
+        - {path: fastapi/security/api_key.py, line: 42, expression: "status_code=HTTP_401_UNAUTHORIZED,"}
+      target_refs:
+        - surface_id: starlette.status
+          operation_id: module-symbol-sequence
+          requirement_ids: [starlette.status.module-symbol-sequence.public-integer-constants]
+          source_use_lines: [42]
+      scope_note: >-
+        FastAPI uses the exported integer value as the API-key authentication failure
+        status. Its exception detail, challenge header, and dependency behavior remain
+        FastAPI-owned; this link claims the shared constant only.
+    fastapi.security.http.HTTP_401_UNAUTHORIZED:
+      starlette_symbol: starlette.status.HTTP_401_UNAUTHORIZED
+      fastapi_source_uses:
+        - {path: fastapi/security/http.py, line: 89, expression: "status_code=HTTP_401_UNAUTHORIZED,"}
+      target_refs:
+        - surface_id: starlette.status
+          operation_id: module-symbol-sequence
+          requirement_ids: [starlette.status.module-symbol-sequence.public-integer-constants]
+          source_use_lines: [89]
+      scope_note: >-
+        FastAPI uses the exported integer value as the HTTP authentication failure
+        status. Its exception detail, challenge header, and dependency behavior remain
+        FastAPI-owned; this link claims the shared constant only.
+    fastapi.security.oauth2.HTTP_401_UNAUTHORIZED:
+      starlette_symbol: starlette.status.HTTP_401_UNAUTHORIZED
+      fastapi_source_uses:
+        - {path: fastapi/security/oauth2.py, line: 418, expression: "status_code=HTTP_401_UNAUTHORIZED,"}
+      target_refs:
+        - surface_id: starlette.status
+          operation_id: module-symbol-sequence
+          requirement_ids: [starlette.status.module-symbol-sequence.public-integer-constants]
+          source_use_lines: [418]
+      scope_note: >-
+        FastAPI uses the exported integer value as the OAuth2 authentication failure
+        status. Its exception detail, challenge header, and dependency behavior remain
+        FastAPI-owned; this link claims the shared constant only.
+    fastapi.security.open_id_connect_url.HTTP_401_UNAUTHORIZED:
+      starlette_symbol: starlette.status.HTTP_401_UNAUTHORIZED
+      fastapi_source_uses:
+        - {path: fastapi/security/open_id_connect_url.py, line: 82, expression: "status_code=HTTP_401_UNAUTHORIZED,"}
+      target_refs:
+        - surface_id: starlette.status
+          operation_id: module-symbol-sequence
+          requirement_ids: [starlette.status.module-symbol-sequence.public-integer-constants]
+          source_use_lines: [82]
+      scope_note: >-
+        FastAPI uses the exported integer value as the OpenID Connect authentication
+        failure status. Its exception detail, challenge header, and dependency behavior
+        remain FastAPI-owned; this link claims the shared constant only.
+    fastapi.exception_handlers.WS_1008_POLICY_VIOLATION:
+      starlette_symbol: starlette.status.WS_1008_POLICY_VIOLATION
+      fastapi_source_uses:
+        - {path: fastapi/exception_handlers.py, line: 33, expression: "code=WS_1008_POLICY_VIOLATION, reason=jsonable_encoder(exc.errors())"}
+      target_refs:
+        - surface_id: starlette.status
+          operation_id: module-symbol-sequence
+          requirement_ids: [starlette.status.module-symbol-sequence.public-integer-constants]
+          source_use_lines: [33]
+      scope_note: >-
+        FastAPI uses the exported integer value for validation-failure WebSocket
+        closure. Its error encoding, reason payload, and endpoint integration remain
+        FastAPI-owned; this link claims the shared constant only.
 
 cargo_dependency_inventory:
   schema: fastapi-rs/cargo-dependency-inventory-annotations@1
