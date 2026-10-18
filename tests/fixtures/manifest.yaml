@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@9
-    sha256: a1c352a7119015a0ddc13d517cb8cf56722d6ddf073e274356f0aeb010f7e788
+    sha256: 611275f8c7603d0046d978dd652247a62e5679208e9715b22320f74111c223d7
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -537,7 +537,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 1cf6f1b241a8b20806fa94d59d10a7d099c9317900e72db7cae148609bcdd490
+    sha256: e36c7364c9cd7402bcdd776bffc3e791ba0a5bbc03b3feee75429a52087a3d39
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -574,14 +574,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 1230e4697a658d8e37be337613ce71e7ec703db140472c7c6a9e7fc4abb98931
+    sha256: e0e0d4302ac5c116133dbd14168640973929b083158fd43afa09759cfee795c1
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 673
-      cases: 2721
-      partial_source_mappings: 1923
+      workflows: 674
+      cases: 2722
+      partial_source_mappings: 1924
 
 contract_metadata:
   aliases:
@@ -1281,7 +1281,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 172
     symbols_with_operation_fixture_refs: 286
-    operation_fixture_refs: 2158
+    operation_fixture_refs: 2159
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5002,7 +5002,8 @@ api_surface_contract:
         with CPython native field access; audit-event parity is not exercised by these inputs.
       - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;
         the existing generic three-argument throw path does not establish source parity for every iterator.
-      - Instance-versus-type await-slot lookup, ABC-only awaitable registration, coroutine reuse/already-awaited
+      - Only ordinary class-method __await__ lookup is covered when an awaitable instance shadows that
+        name; custom descriptor and metaclass behavior, ABC-only awaitable registration, coroutine reuse/already-awaited
         checks, cancellation, GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
       - The selected immutable generator roles do not establish mutable classification-cache history,
         descriptor hooks, arbitrary awaitable concurrency, or exact traceback parity. Static admission
@@ -9845,6 +9846,22 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: awaitable-type-slot
+      input_path: tests/fixtures/inputs/parity/awaitable-type-slot.json
+      input_sha256: 5028551c5f62229f37535cb8bafa72f6337a1bcea914777cfa53a4e02abe6e33
+      recipe_path: tests/fixtures/input-recipes/parity/awaitable-type-slot.yaml
+      recipe_sha256: 448ca521505db07ac9336aeb9e38af9117421af3cf63c198afee291d277679b4
+      workload_path: tests/fixtures/workloads/awaitable_type_slot.py
+      workload_sha256: 60e1a81da162324d45456be33f4e443094d1a912a3e09a3b9abc7b914be889d4
+      case_id: fastapi.awaitables.type-slot.instance-shadowed-await-method
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: response-model-return-annotation-focused-upstream
       input_path: tests/fixtures/inputs/parity/response-model-return-annotation-focused-upstream.json
       input_sha256: fc09eafe5f5553258dc62172d22c49706426bcfda4a98f77269d566f539dd893
@@ -10309,7 +10326,8 @@ api_surface_contract:
         with CPython native field access; audit-event parity is not exercised by these inputs.
       - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;
         the existing generic three-argument throw path does not establish source parity for every iterator.
-      - Instance-versus-type await-slot lookup, ABC-only awaitable registration, coroutine reuse/already-awaited
+      - Only ordinary class-method __await__ lookup is covered when an awaitable instance shadows that
+        name; custom descriptor and metaclass behavior, ABC-only awaitable registration, coroutine reuse/already-awaited
         checks, cancellation, GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
       - The selected immutable generator roles do not establish mutable classification-cache history,
         descriptor hooks, arbitrary awaitable concurrency, or exact traceback parity. Static admission
@@ -47662,7 +47680,8 @@ api_surface_contract:
         with CPython native field access; audit-event parity is not exercised by these inputs.
       - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;
         the existing generic three-argument throw path does not establish source parity for every iterator.
-      - Instance-versus-type await-slot lookup, ABC-only awaitable registration, coroutine reuse/already-awaited
+      - Only ordinary class-method __await__ lookup is covered when an awaitable instance shadows that
+        name; custom descriptor and metaclass behavior, ABC-only awaitable registration, coroutine reuse/already-awaited
         checks, cancellation, GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
       - The selected immutable generator roles do not establish mutable classification-cache history,
         descriptor hooks, arbitrary awaitable concurrency, or exact traceback parity. Static admission

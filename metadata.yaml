@@ -5542,6 +5542,7 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/custom-response.md}
         - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
         - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
+        - {path: fastapi/routing.py, symbol: run_endpoint_function}
         - {path: fastapi/dependencies/utils.py, symbol: solve_dependencies}
         - {path: fastapi/dependencies/models.py, symbol: _is_gen_callable}
         - {path: fastapi/dependencies/models.py, symbol: _is_coroutine_callable}
@@ -5650,6 +5651,10 @@ reviewed_api_contract_overlay:
         - *generator_await_await_noniterator_error
         - *generator_await_async_bridge_error
         - *generator_await_ordinary_iterator_error
+        - recipe_path: tests/fixtures/input-recipes/parity/awaitable-type-slot.yaml
+          case_id: fastapi.awaitables.type-slot.instance-shadowed-await-method
+          workload_path: tests/fixtures/workloads/awaitable_type_slot.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml
           case_id: fastapi.response-model-return-annotation.explicit-response-model-bypass
           workload_path: tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py
@@ -5749,6 +5754,11 @@ reviewed_api_contract_overlay:
         public state response retains all warning entries and raw ASGI sends.
         These selected inputs require fresh source/target execution receipts;
         they do not establish the complete Python await protocol.
+        The awaitable-type-slot input sends one request through a marked dependency
+        and marked endpoint whose awaitable instances each shadow `__await__` with
+        a non-callable value. It covers ordinary class-method type lookup for those
+        two paths; custom descriptors and broader await-protocol behavior remain
+        outside this input.
         Fifteen response-field-lifecycle cases dispatch HTTP through fixed async
         endpoints. They require source field-plus-placeholder dump_json eligibility,
         concrete/inherited class dump_python invocation, explicit None failure after
@@ -5799,9 +5809,11 @@ reviewed_api_contract_overlay:
             three-argument throw path does not establish source parity for
             every iterator.
           - &generator_await_protocol_gap >-
-            Instance-versus-type await-slot lookup, ABC-only awaitable
-            registration, coroutine reuse/already-awaited checks, cancellation,
-            GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
+            Only ordinary class-method __await__ lookup is covered when an
+            awaitable instance shadows that name; custom descriptor and
+            metaclass behavior, ABC-only awaitable registration, coroutine
+            reuse/already-awaited checks, cancellation, GeneratorExit, and
+            arbitrary send/throw/close protocols remain gaps.
           - &generator_await_history_gap >-
             The selected immutable generator roles do not establish mutable
             classification-cache history, descriptor hooks, arbitrary awaitable

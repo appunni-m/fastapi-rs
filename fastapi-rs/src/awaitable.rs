@@ -340,7 +340,15 @@ fn await_iterator(py: Python<'_>, awaitable: Py<PyAny>) -> PyResult<DelegatedIte
         )));
     }
 
-    let iterator = awaitable.call_method0("__await__")?;
+    // `await value` resolves special methods on the type and bypasses the
+    // instance dictionary and metaclass `__getattribute__`. Calling the
+    // instance method here can therefore run a shadowing attribute instead
+    // of the await slot used by CPython.
+    let await_method = py
+        .get_type::<PyType>()
+        .getattr("__getattribute__")?
+        .call1((awaitable.get_type(), "__await__"))?;
+    let iterator = await_method.call1((awaitable,))?;
     if iterator.get_type().is(&coroutine_type)
         || is_iterable_coroutine_generator(&iterator, &generator_type)?
     {

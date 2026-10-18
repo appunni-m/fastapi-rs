@@ -2099,6 +2099,27 @@
       ]
     },
     {
+      "id": "awaitable-type-slot",
+      "input_path": "tests/fixtures/inputs/parity/awaitable-type-slot.json",
+      "input_sha256": "5028551c5f62229f37535cb8bafa72f6337a1bcea914777cfa53a4e02abe6e33",
+      "recipe_path": "tests/fixtures/input-recipes/parity/awaitable-type-slot.yaml",
+      "recipe_sha256": "448ca521505db07ac9336aeb9e38af9117421af3cf63c198afee291d277679b4",
+      "case_ids": [
+        "fastapi.awaitables.type-slot.instance-shadowed-await-method"
+      ],
+      "workload_path": "tests/fixtures/workloads/awaitable_type_slot.py",
+      "workload_sha256": "60e1a81da162324d45456be33f4e443094d1a912a3e09a3b9abc7b914be889d4",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.awaitables.type-slot.instance-shadowed-await-method",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:async.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "background-task-keyword-arguments-tutorial-review",
       "input_path": "tests/fixtures/inputs/parity/background-task-keyword-arguments-tutorial-review.json",
       "input_sha256": "4b571581993500a51e557bbebd8b40638f26e911239708b9770851b4a5e8fd9e",
@@ -39719,6 +39740,25 @@
         "fastapi.docs.auth-error-status.valid-bearer"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:async.md",
+      "fixture_id": "fastapi.docs.async",
+      "workflow_id": "awaitable-type-slot",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.awaitables.type-slot.instance-shadowed-await-method"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
