@@ -18596,17 +18596,14 @@ reviewed_api_contract_overlay:
     fastapi.openapi.models.Operation.callbacks:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for callbacks through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18614,24 +18611,29 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation dict[str, dict[str, "PathItem"] | Reference] | None;
-        default None. Pydantic validation/coercion, default omission, alias parsing/dump,
-        errors, and full schema behavior are not claimed.
+        Declared field: annotation dict[str, dict[str, "PathItem"] | Reference] | None; default None.
+        The parent Operation workflow compares its default and one populated value through exact
+        model_dump parity. Other coercions, field-specific errors, serialization modes, and JSON
+        Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.deprecated:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for deprecated through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18639,23 +18641,31 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field: annotation bool | None; default None. The parent Operation workflow compares
+        its default and one populated value through exact model_dump parity. One invalid input outcome
+        is also compared. Other coercions, field-specific errors, serialization modes, and JSON Schema
+        behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.invalid-deprecated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Operation.description:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for description through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18663,23 +18673,28 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field: annotation str | None; default None. The parent Operation workflow compares
+        its default and one populated value through exact model_dump parity. Other coercions, field-
+        specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.externalDocs:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for externalDocs through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18687,24 +18702,29 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation ExternalDocumentation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation ExternalDocumentation | None; default None. The parent Operation
+        workflow compares its default and one populated value through exact model_dump parity. Other
+        coercions, field-specific errors, serialization modes, and JSON Schema behavior remain
+        unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.operationId:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for operationId through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18712,23 +18732,28 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field: annotation str | None; default None. The parent Operation workflow compares
+        its default and one populated value through exact model_dump parity. Other coercions, field-
+        specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.parameters:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for parameters through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18736,24 +18761,29 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation list[Parameter | Reference] | None; default None.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field: annotation list[Parameter | Reference] | None; default None. The parent
+        Operation workflow compares its default and one populated value through exact model_dump
+        parity. Other coercions, field-specific errors, serialization modes, and JSON Schema behavior
+        remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.requestBody:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for requestBody through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18761,24 +18791,29 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation RequestBody | Reference | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation RequestBody | Reference | None; default None. The parent Operation
+        workflow compares its default and one populated value through exact model_dump parity. Other
+        coercions, field-specific errors, serialization modes, and JSON Schema behavior remain
+        unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.responses:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for responses through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18786,24 +18821,29 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation dict[str, Response | Any] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation dict[str, Response | Any] | None; default None. The parent
+        Operation workflow compares its default and one populated value through exact model_dump
+        parity. Other coercions, field-specific errors, serialization modes, and JSON Schema behavior
+        remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.security:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for security through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18811,24 +18851,29 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation list[dict[str, list[str]]] | None; default None.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field: annotation list[dict[str, list[str]]] | None; default None. The parent
+        Operation workflow compares its default and one populated value through exact model_dump
+        parity. Other coercions, field-specific errors, serialization modes, and JSON Schema behavior
+        remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.servers:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for servers through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18836,24 +18881,28 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation list[Server] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation list[Server] | None; default None. The parent Operation workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.summary:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for summary through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18861,23 +18910,28 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field: annotation str | None; default None. The parent Operation workflow compares
+        its default and one populated value through exact model_dump parity. Other coercions, field-
+        specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Operation.tags:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent Operation workflow compares the declared default and one populated value for tags through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18885,9 +18939,16 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Declared field only: annotation list[str] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation list[str] | None; default None. The parent Operation workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Parameter:
       target_binding:
@@ -19396,17 +19457,14 @@ reviewed_api_contract_overlay:
     fastapi.openapi.models.PathItem.delete:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for delete through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19414,24 +19472,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.description:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for description through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19439,23 +19501,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field: annotation str | None; default None. The parent PathItem workflow compares its
+        default and one populated value through exact model_dump parity. Other coercions, field-
+        specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.get:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for get through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19463,24 +19530,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.head:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for head through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19488,24 +19559,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.options:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for options through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19513,24 +19588,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.parameters:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for parameters through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19538,24 +19617,29 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation list[Parameter | Reference] | None; default None.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field: annotation list[Parameter | Reference] | None; default None. The parent
+        PathItem workflow compares its default and one populated value through exact model_dump
+        parity. Other coercions, field-specific errors, serialization modes, and JSON Schema behavior
+        remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.patch:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for patch through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19563,24 +19647,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.post:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for post through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19588,24 +19676,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.put:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for put through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19613,24 +19705,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.ref:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for ref through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19638,24 +19734,29 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation str | None; default None; serialization alias '$ref'.
-        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
-        schema behavior are not claimed.
+        Declared field: annotation str | None; default None; serialization alias '$ref'. The parent
+        PathItem workflow compares its default and one populated value through exact model_dump
+        parity. Other coercions, field-specific errors, serialization modes, and JSON Schema behavior
+        remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.servers:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for servers through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19663,24 +19764,28 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation list[Server] | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation list[Server] | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.PathItem.summary:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for summary through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19688,23 +19793,31 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
-        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+        Declared field: annotation str | None; default None. The parent PathItem workflow compares its
+        default and one populated value through exact model_dump parity. One invalid input outcome is
+        also compared. Other coercions, field-specific errors, serialization modes, and JSON Schema
+        behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.invalid-summary
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.PathItem.trace:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            The parent PathItem workflow compares the declared default and one populated value for trace through
+            an exact model_dump projection; it does not exhaust field-specific coercion or validation.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Other accepted values, field errors, serialization modes, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19712,9 +19825,16 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Declared field only: annotation Operation | None; default None. Pydantic
-        validation/coercion, default omission, alias parsing/dump, errors, and full schema
-        behavior are not claimed.
+        Declared field: annotation Operation | None; default None. The parent PathItem workflow
+        compares its default and one populated value through exact model_dump parity. Other coercions,
+        field-specific errors, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
 
     fastapi.openapi.models.Reference:
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
