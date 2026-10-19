@@ -4160,6 +4160,11 @@ for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
             "stimulus_notes": function_note,
             "contract_gate": function_row["contract_gate"],
         }
+        if test_path == "tests/test_request_params/test_query/test_list.py":
+            function_review["workflow_case"] = {
+                **workflow,
+                "workflow_id": Path(workflow["recipe_path"]).stem.replace("_", "-"),
+            }
         reviewed_functions.setdefault(function_name, {}).update(function_review)
 
 DOC_EXCLUSION_OVERRIDES = {
@@ -10984,6 +10989,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 metadata = function_mapping.get(metadata_key, reviewed_mapping.get(metadata_key))
                 if metadata is not None:
                     reviewed_record[metadata_key] = metadata
+            if "workflow_case" in function_mapping:
+                reviewed_record["workflow_case"] = function_mapping["workflow_case"]
             test["reviewed_mapping"] = reviewed_record
             test["reviewed_observation_selectors"] = function_mapping.get("observation_selectors")
             test["reviewed_stimulus_notes"] = function_mapping.get(
@@ -11116,6 +11123,37 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 )
                 if exact_selectors is not None:
                     exact_selectors = selectors_with_exact_http_body(exact_selectors)
+                function_source_ref = None
+                workflow_case = (test.get("reviewed_mapping") or {}).get("workflow_case")
+                if workflow_case:
+                    source_refs = [
+                        reference
+                        for reference in test["reviewed_mapping"].get("source_evidence", [])
+                        if reference.get("path") == rel
+                        and reference.get("start_line") == test["line"]
+                        and reference.get("end_line") == test["end_line"]
+                    ]
+                    source_ref_identities = {
+                        (
+                            reference.get("path"),
+                            reference.get("start_line"),
+                            reference.get("end_line"),
+                            reference.get("sha256"),
+                        )
+                        for reference in source_refs
+                    }
+                    if len(source_ref_identities) != 1:
+                        raise AtlasError(
+                            "function workflow mapping must have one exact source span for %s::%s"
+                            % (rel, test["qualified_name"])
+                        )
+                    source_ref = source_refs[0]
+                    function_source_ref = {
+                        "path": source_ref["path"],
+                        "line": source_ref["start_line"],
+                        "end_line": source_ref["end_line"],
+                        "sha256": source_ref["sha256"],
+                    }
                 case_designs.append(
                     {
                         "id": case_id,
@@ -11132,6 +11170,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "mapping_status": test["mapping_status"],
                         "mapping_scope": test.get("mapping_scope"),
                         "reviewed_mapping": test.get("reviewed_mapping"),
+                        **(
+                            {
+                                "function_source_ref": function_source_ref,
+                                "workflow_case": workflow_case,
+                            }
+                            if workflow_case
+                            else {}
+                        ),
                         "stimulus_design_notes": test.get("reviewed_stimulus_notes")
                         or reviewed_mapping.get("stimulus_notes"),
                     }
@@ -11290,6 +11336,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "case_id": case["id"],
                             "mapping_status": case["mapping_status"],
                             "mapping_scope": case.get("mapping_scope"),
+                            **(
+                                {
+                                    "function_source_ref": case["function_source_ref"],
+                                    "workflow_case": case["workflow_case"],
+                                }
+                                if case.get("workflow_case")
+                                else {}
+                            ),
                         }
                         for case in case_designs
                     ],
@@ -13325,7 +13379,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         "first_end_to_end_request_response_slice": first_slice_workflow,
         "fixture_backlog_ref": {
             "path": "tests/fixtures/fixture-backlog.json",
-            "schema": "fastapi-rs/fixture-backlog@1",
+            "schema": "fastapi-rs/fixture-backlog@2",
             "item_count": len(fixture_backlog),
         },
         "_fixture_backlog_designs": fixture_backlog,
@@ -14098,7 +14152,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "- [`compatibility-atlas.json`](../tests/fixtures/compatibility-atlas.json) is generated by [`build_fastapi_compatibility_atlas.py`](../scripts/build_fastapi_compatibility_atlas.py).",
             "- [`api-inventory.json`](../tests/fixtures/api-inventory.json) remains source inventory input, not support/parity evidence.",
-            "- [`fixture-backlog.json`](../tests/fixtures/fixture-backlog.json) is the merged input-only design queue. Its source links, selectors, and no-output invariant are checked by `make parity-validate`; the remaining candidates still need concrete independent workloads before they can execute as parity cases.",
+            "- [`fixture-backlog.json`](../tests/fixtures/fixture-backlog.json) is the merged input-only design queue (`fastapi-rs/fixture-backlog@2`). Reviewed function links retain their source span and exact workflow, recipe, case, action, and observation-selector scope. `make parity-validate` checks these links and the no-output invariant; remaining candidates need concrete independent workloads before they can execute as parity cases.",
             "- [`observation-selectors.json`](../tests/fixtures/observation-selectors.json) defines exact projection semantics for every selector used by the atlas and backlog; selectors marked `planned` still need runner support.",
             "",
         ]
@@ -14271,6 +14325,7 @@ def _sync_manifest_artifact_metadata(
         manifest_text,
         "fixture_backlog",
         {
+            "schema": atlas["fixture_backlog_ref"]["schema"],
             "sha256": sha256(backlog_path),
             "designs": len(fixture_designs),
             "test_case_designs": sum(len(row.get("case_designs", [])) for row in fixture_designs),
@@ -14364,7 +14419,7 @@ def write_outputs(atlas: dict[str, Any], output: Path) -> None:
         json.dumps(atlas, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     backlog = {
-        "schema": "fastapi-rs/fixture-backlog@1",
+        "schema": "fastapi-rs/fixture-backlog@2",
         "purpose": "Input-only candidate fixture designs derived from the pinned source coverage matrix; not an executable parity input index.",
         "authority": {
             key: atlas["authorities"][key] for key in ("fastapi", "starlette", "python", "pydantic")

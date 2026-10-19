@@ -40,6 +40,58 @@ REVIEWED_CALLABLE_KINDS = {
     "property_getter",
     "protocol_method",
 }
+FIXTURE_BACKLOG_SCHEMA_ID = "fastapi-rs/fixture-backlog@2"
+QUERY_VALIDATION_ALIAS_FUNCTION_CASES = {
+    "test_required_list_validation_alias_schema": (
+        "fastapi.request-parameters.query.validation-alias-list.validation-only.openapi",
+        ("openapi-validation-only-parameters",),
+        ("openapi.document", "openapi.paths"),
+    ),
+    "test_required_list_validation_alias_missing": (
+        "fastapi.request-parameters.query.validation-alias-list.validation-only.missing",
+        ("direct-missing", "model-missing"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_validation_alias_by_name": (
+        "fastapi.request-parameters.query.validation-alias-list.validation-only.rejects-field-name",
+        ("direct-field-name", "model-field-name"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_validation_alias_by_validation_alias": (
+        "fastapi.request-parameters.query.validation-alias-list.validation-only.accepts-wire-name",
+        ("direct-wire-name", "model-wire-name"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_alias_and_validation_alias_schema": (
+        "fastapi.request-parameters.query.validation-alias-list.both-aliases.openapi",
+        ("openapi-both-aliases-parameters",),
+        ("openapi.document", "openapi.paths"),
+    ),
+    "test_required_list_alias_and_validation_alias_missing": (
+        "fastapi.request-parameters.query.validation-alias-list.both-aliases.missing",
+        ("direct-missing", "model-missing"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_alias_and_validation_alias_by_name": (
+        "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-field-name",
+        ("direct-field-name", "model-field-name"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_alias_and_validation_alias_by_alias": (
+        "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-declared-alias",
+        ("direct-declared-alias", "model-declared-alias"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_alias_and_validation_alias_by_validation_alias": (
+        "fastapi.request-parameters.query.validation-alias-list.both-aliases.accepts-validation-alias",
+        ("direct-wire-name", "model-wire-name"),
+        ("http.body.bytes", "http.status"),
+    ),
+}
+QUERY_VALIDATION_ALIAS_RECIPE_PATH = (
+    "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+)
+QUERY_VALIDATION_ALIAS_WORKFLOW_ID = "query-validation-alias-list-cases"
 
 
 def _fail(message: str) -> None:
@@ -755,7 +807,7 @@ def validate_compatibility_artifacts(
     )
     _require(unresolved_link_count == 0, "Starlette internal edges remain unresolved")
     _require(
-        backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
+        backlog.get("schema") == FIXTURE_BACKLOG_SCHEMA_ID,
         "unsupported fixture backlog schema",
     )
     fastapi_authority = atlas.get("authorities", {}).get("fastapi", {})
@@ -1766,6 +1818,170 @@ def validate_compatibility_artifacts(
                 design_ids == matched_ids,
                 f"test module {fixture_id} case designs disagree with its function map",
             )
+            matched_by_case = {
+                row.get("case_id"): row
+                for row in source_row.get("mapping_evidence", {}).get("matched_test_functions", [])
+            }
+            linked_functions: dict[str, str] = {}
+            for design in designs:
+                function_name = design.get("source_function")
+                workflow_case = design.get("workflow_case")
+                function_source_ref = design.get("function_source_ref")
+                inventory_row = matched_by_case.get(design.get("id"), {})
+                _require(
+                    inventory_row.get("workflow_case") == workflow_case
+                    and inventory_row.get("function_source_ref") == function_source_ref,
+                    f"case {design.get('id')} direct function links differ "
+                    "from the atlas inventory",
+                )
+                if workflow_case is None:
+                    _require(
+                        function_source_ref is None,
+                        f"case {design.get('id')} has a source span without a direct workflow link",
+                    )
+                    continue
+                _require(
+                    isinstance(workflow_case, dict)
+                    and set(workflow_case)
+                    == {
+                        "workflow_id",
+                        "recipe_path",
+                        "case_id",
+                        "action_ids",
+                        "observation_selectors",
+                    },
+                    f"case {design.get('id')} has an invalid direct workflow link",
+                )
+                workflow_id = workflow_case.get("workflow_id")
+                recipe_path = workflow_case.get("recipe_path")
+                linked_case_id = workflow_case.get("case_id")
+                action_ids = workflow_case.get("action_ids")
+                link_selectors = workflow_case.get("observation_selectors")
+                _require(
+                    isinstance(workflow_id, str)
+                    and isinstance(recipe_path, str)
+                    and isinstance(linked_case_id, str)
+                    and isinstance(action_ids, list)
+                    and bool(action_ids)
+                    and all(isinstance(value, str) and value for value in action_ids)
+                    and len(action_ids) == len(set(action_ids))
+                    and isinstance(link_selectors, list)
+                    and bool(link_selectors)
+                    and all(isinstance(value, str) and value for value in link_selectors)
+                    and len(link_selectors) == len(set(link_selectors)),
+                    f"case {design.get('id')} has malformed direct workflow selectors or actions",
+                )
+                expected_link = QUERY_VALIDATION_ALIAS_FUNCTION_CASES.get(function_name)
+                _require(
+                    expected_link is not None
+                    and workflow_case
+                    == {
+                        "workflow_id": QUERY_VALIDATION_ALIAS_WORKFLOW_ID,
+                        "recipe_path": QUERY_VALIDATION_ALIAS_RECIPE_PATH,
+                        "case_id": expected_link[0],
+                        "action_ids": list(expected_link[1]),
+                        "observation_selectors": list(expected_link[2]),
+                    },
+                    f"case {design.get('id')} direct link differs from its reviewed mapping",
+                )
+                workflow = indexed_workflows.get(workflow_id)
+                _require(
+                    isinstance(workflow, dict) and workflow.get("recipe_path") == recipe_path,
+                    f"case {design.get('id')} references an unknown workflow or recipe",
+                )
+                source_mapping = indexed_mappings.get((source_id, workflow_id), {})
+                _require(
+                    linked_case_id in source_mapping.get("case_ids", [])
+                    and set(link_selectors) <= set(source_mapping.get("observation_selectors", [])),
+                    f"case {design.get('id')} direct link exceeds its indexed source mapping",
+                )
+                input_path = (ROOT / workflow.get("input_path", "")).resolve()
+                _require(
+                    input_path.is_relative_to(ROOT.resolve()) and input_path.is_file(),
+                    f"case {design.get('id')} linked workflow input is missing or escapes the repo",
+                )
+                workflow_document = read_json(input_path)
+                materialized_cases = [
+                    case
+                    for case in workflow_document.get("cases", [])
+                    if isinstance(case, dict) and case.get("case_id") == linked_case_id
+                ]
+                _require(
+                    len(materialized_cases) == 1,
+                    f"case {design.get('id')} linked workflow case is missing or ambiguous",
+                )
+                materialized_case = materialized_cases[0]
+                actions = materialized_case.get("actions")
+                _require(
+                    isinstance(actions, list)
+                    and all(isinstance(action, dict) for action in actions),
+                    f"case {design.get('id')} linked workflow actions are malformed",
+                )
+                action_by_id = {
+                    action.get("action_id"): action
+                    for action in actions
+                    if isinstance(action.get("action_id"), str)
+                }
+                _require(
+                    len(action_by_id) == len(actions) and set(action_ids) <= action_by_id.keys(),
+                    f"case {design.get('id')} link references an unknown or duplicate "
+                    "workflow action",
+                )
+                selected_case = dict(materialized_case)
+                selected_case["actions"] = [action_by_id[action_id] for action_id in action_ids]
+                from scripts.parity.materialized import _selected_selectors
+
+                projected_selectors = _selected_selectors(
+                    selected_case, workflow_schema=workflow_document.get("schema")
+                )
+                _require(
+                    set(link_selectors) == projected_selectors
+                    and set(link_selectors) == set(design.get("observation_selectors", [])),
+                    f"case {design.get('id')} direct selectors do not match selected actions",
+                )
+                register_selectors(link_selectors, f"case {design.get('id')} direct workflow")
+
+                _require(
+                    isinstance(function_source_ref, dict)
+                    and set(function_source_ref) == {"path", "line", "end_line", "sha256"}
+                    and function_source_ref.get("path") == source_row.get("source_path")
+                    and function_source_ref.get("line") == design.get("source_line")
+                    and function_source_ref.get("end_line") == design.get("source_end_line")
+                    and function_source_ref.get("sha256") == source_row.get("source_sha256"),
+                    f"case {design.get('id')} has a missing or mismatched function source span",
+                )
+                _verify_source_ref(
+                    fastapi_source,
+                    function_source_ref,
+                    f"case {design.get('id')} direct function source",
+                    digest_key="sha256",
+                )
+                source_path = _source_path(
+                    fastapi_source, function_source_ref.get("path"), f"case {design.get('id')}"
+                )
+                source_tree = ast.parse(source_path.read_text(encoding="utf-8"))
+                source_functions = [
+                    node
+                    for node in source_tree.body
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and node.name == function_name
+                ]
+                _require(
+                    len(source_functions) == 1
+                    and source_functions[0].lineno == function_source_ref.get("line")
+                    and source_functions[0].end_lineno == function_source_ref.get("end_line"),
+                    f"case {design.get('id')} source span does not identify its exact function",
+                )
+                linked_functions[function_name] = linked_case_id
+            if source_row.get("source_path") == "tests/test_request_params/test_query/test_list.py":
+                _require(
+                    linked_functions
+                    == {
+                        function_name: mapping[0]
+                        for function_name, mapping in QUERY_VALIDATION_ALIAS_FUNCTION_CASES.items()
+                    },
+                    "query validation-alias list functions lost or changed direct workflow links",
+                )
         elif source_row.get("kind") == "documented_feature_page":
             sections = fixture.get("documented_sections")
             _require(isinstance(sections, list), f"documented page {fixture_id} has no section map")
@@ -2187,6 +2403,10 @@ def validate_compatibility_artifacts(
     _require(
         backlog_ref.get("path") == "tests/fixtures/fixture-backlog.json",
         "atlas fixture backlog path is unexpected",
+    )
+    _require(
+        backlog_ref.get("schema") == backlog.get("schema") == FIXTURE_BACKLOG_SCHEMA_ID,
+        "atlas fixture backlog schema differs from the backlog artifact",
     )
 
     kinds = Counter(row.get("kind") for row in coverage_rows)

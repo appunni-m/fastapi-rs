@@ -120,6 +120,7 @@ PROCESS_RESULT_SCHEMA_ID = "fastapi-rs/python-process-workflow-result@1"
 PROCESS_RESULT_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow-result@2"
 PROCESS_COMPARISON_SCHEMA_ID = "fastapi-rs/python-process-comparison@1"
 PROCESS_COMPARISON_SCHEMA_V2_ID = "fastapi-rs/python-process-comparison@2"
+FIXTURE_BACKLOG_SCHEMA_ID = "fastapi-rs/fixture-backlog@2"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
@@ -635,6 +636,20 @@ def read_manifest() -> dict[str, Any]:
 
     atlas_artifact = source_artifacts["compatibility_atlas"]
     atlas = read_json(_resolve_repo_file(atlas_artifact["path"], "compatibility atlas"))
+    fixture_backlog_artifact = source_artifacts["fixture_backlog"]
+    fixture_backlog = read_json(
+        _resolve_repo_file(fixture_backlog_artifact["path"], "fixture backlog")
+    )
+    fixture_backlog_ref = atlas.get("fixture_backlog_ref") if isinstance(atlas, dict) else None
+    backlog_schema = fixture_backlog_artifact.get("schema")
+    if (
+        not isinstance(fixture_backlog_ref, dict)
+        or backlog_schema != FIXTURE_BACKLOG_SCHEMA_ID
+        or fixture_backlog.get("schema") != FIXTURE_BACKLOG_SCHEMA_ID
+        or fixture_backlog_ref.get("schema") != FIXTURE_BACKLOG_SCHEMA_ID
+        or fixture_backlog_ref.get("path") != fixture_backlog_artifact.get("path")
+    ):
+        raise ContractError("manifest, atlas, and fixture-backlog schemas or paths differ")
     review_artifact = source_artifacts["api_classification_review"]
     review_link = atlas.get("api_classification_review") if isinstance(atlas, dict) else None
     if not isinstance(review_link, dict) or any(
