@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import inspect
 import json
+from collections.abc import Callable
 from importlib import import_module
+from typing import Any
 
 import fastapi.middleware.cors as fastapi_cors
 import fastapi.middleware.gzip as fastapi_gzip
@@ -57,6 +60,45 @@ from fastapi import (
     websockets,
 )
 from starlette import status as starlette_status
+
+
+def _captured_error(call: Callable[[], Any]) -> dict[str, Any]:
+    try:
+        call()
+    except Exception as error:
+        return {
+            "outcome": "raised",
+            "exception_class": f"{type(error).__module__}.{type(error).__qualname__}",
+            "args": list(error.args),
+            "message": str(error),
+        }
+    return {"outcome": "returned"}
+
+
+def _websocket_state_contract() -> dict[str, Any]:
+    state_type = websockets.WebSocketState
+    members = list(state_type)
+    return {
+        "module": state_type.__module__,
+        "qualname": state_type.__qualname__,
+        "signature": str(inspect.signature(state_type)),
+        "member_names": list(state_type.__members__),
+        "members": [
+            {
+                "name": member.name,
+                "value": member.value,
+                "string": str(member),
+                "repr": repr(member),
+                "is_enum_member": type(member) is state_type,
+                "lookup_by_name": state_type[member.name] is member,
+                "lookup_by_value": state_type(member.value) is member,
+                "lookup_by_attribute": getattr(state_type, member.name) is member,
+            }
+            for member in members
+        ],
+        "invalid_value": _captured_error(lambda: state_type(99)),
+        "invalid_name": _captured_error(lambda: state_type["MISSING"]),
+    }
 
 
 def _http_identity_relations() -> dict[str, dict[str, bool]]:
@@ -172,6 +214,7 @@ def create_app() -> FastAPI:
                             WebSocketDisconnect is starlette_websockets.WebSocketDisconnect
                         ),
                     },
+                    "websocket_state_contract": _websocket_state_contract(),
                     "public_module_to_starlette": {
                         "WebSocket": (websockets.WebSocket is starlette_websockets.WebSocket),
                         "WebSocketDisconnect": (

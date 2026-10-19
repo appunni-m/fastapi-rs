@@ -982,10 +982,10 @@ starlette_rs:
       scope_note: >-
         FastAPI documents and classifies this import as a supported API
         candidate, while Starlette-RS classifies the protocol-state enum as
-        private/internal and declares no target surface. Preserve this source
-        exposure conflict explicitly: the sibling classification does not
-        downgrade FastAPI's public contract, and it does not establish
-        FastAPI-RS parity.
+        private/internal and declares no public target surface. Keep these
+        dispositions separate: FastAPI's export belongs to its own API
+        contract, while the Starlette-RS enum remains private/internal and has
+        no separate public surface.
   subclass_contract_refs:
     fastapi.applications.FastAPI:
       starlette_symbol: starlette.applications.Starlette
@@ -4993,35 +4993,40 @@ reviewed_api_contract_overlay:
     fastapi.websockets.WebSocketState:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
-        - {path: fastapi/websockets.py}
-      observation_selectors: [websocket.messages]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's WebSocketState under
-        fastapi.websockets. FastAPI-RS registers the canonical
-        starlette.websockets.WebSocketState object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity in a WebSocket message. This scope covers alias
-        exposure and identity; enum behavior remains in the pinned
-        Starlette-RS API contract and is not claimed here.
+        - path: fastapi/websockets.py
+          kind: import-binding
+          line: 3
+          imported_module: starlette.websockets
+          relative_level: 0
+          imported_name: WebSocketState
+          alias_spelling: WebSocketState
+          local_name: WebSocketState
+          target_path: starlette.websockets.WebSocketState
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.websocket-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [websocket.messages]
+        - recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+          case_id: fastapi.documented-module.websockets
+          workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+          observation_selectors: [python.import_path, python.object_identity]
+      observation_selectors: [python.import_path, python.object_identity, python.signature, websocket.messages]
+      full_contract: >-
+        The complete FastAPI-facing public contract is the direct
+        `fastapi.websockets.WebSocketState` re-export of
+        `starlette.websockets.WebSocketState`, including its reflected module,
+        qualified name, and constructor signature; member order and names;
+        integer values; exact member type; `str` and `repr`; name, value, and
+        class-attribute lookup; and the exception class, arguments, and message
+        for invalid name and value lookups. The identity-checked workflows also
+        compare the public import path and object identity. This contract is
+        limited to FastAPI's documented enum exposure and does not make the
+        private/internal Starlette-RS enum a separate public sibling surface or
+        claim WebSocket session behavior.
     fastapi.sse.EventSourceResponse:
       target_binding:
         implementation_owner: fastapi-rs
