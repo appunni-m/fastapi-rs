@@ -1,15 +1,19 @@
 """Independent HTTP and WebSocket exception stimuli for the public error surface."""
 
 from collections.abc import Mapping
+from inspect import signature
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketException
+from fastapi import WebSocketDisconnect as FastAPIWebSocketDisconnect
+from fastapi.websockets import WebSocketDisconnect as FastAPIWebsocketsWebSocketDisconnect
 from starlette.exceptions import (
     HTTPException as StarletteHTTPException,
 )
 from starlette.exceptions import (
     WebSocketException as StarletteWebSocketException,
 )
+from starlette.websockets import WebSocketDisconnect as StarletteWebSocketDisconnect
 
 
 def _exception_snapshot(exception: Exception) -> dict[str, object]:
@@ -26,8 +30,74 @@ def _exception_snapshot(exception: Exception) -> dict[str, object]:
     }
 
 
+class _FalseyReason(str):
+    def __bool__(self) -> bool:
+        return False
+
+
+class _RaisingReason(str):
+    def __bool__(self) -> bool:
+        raise ValueError("reason truthiness failed")
+
+
+def _websocket_disconnect_arguments(
+    call: Mapping[str, Any],
+) -> tuple[tuple[object, ...], dict[str, object]]:
+    args = tuple(call.get("args", []))
+    kwargs = dict(call.get("kwargs", {}))
+    reason_behavior = call.get("reason_behavior")
+    if reason_behavior == "falsey-str":
+        reason: str = _FalseyReason("falsey")
+    elif reason_behavior == "raising-str":
+        reason = _RaisingReason("raising")
+    else:
+        return args, kwargs
+
+    if call.get("reason_position") == "positional":
+        return (*args, reason), kwargs
+    kwargs["reason"] = reason
+    return args, kwargs
+
+
+def _websocket_disconnect_snapshot(call: Mapping[str, Any]) -> dict[str, object]:
+    args, kwargs = _websocket_disconnect_arguments(call)
+    try:
+        exception = FastAPIWebSocketDisconnect(*args, **kwargs)
+    except Exception as error:
+        error_type = type(error)
+        return {
+            "label": call["label"],
+            "outcome": "error",
+            "exception_class": f"{error_type.__module__}.{error_type.__qualname__}",
+            "exception_message": str(error),
+            "exception_args": list(error.args),
+        }
+
+    for name, value in call.get("mutations", {}).items():
+        setattr(exception, name, value)
+
+    exception_type = type(exception)
+    return {
+        "label": call["label"],
+        "outcome": "returned",
+        "class_module": exception_type.__module__,
+        "class_qualname": exception_type.__qualname__,
+        "mro": [
+            f"{class_type.__module__}.{class_type.__qualname__}"
+            for class_type in exception_type.__mro__
+        ],
+        "args": list(exception.args),
+        "args_types": [type(value).__name__ for value in exception.args],
+        "attributes": vars(exception),
+        "message": str(exception),
+        "repr": repr(exception),
+        "code": exception.code,
+        "reason": exception.reason,
+    }
+
+
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
-    del factory_input, event_trace
+    del event_trace
     app = FastAPI()
 
     @app.get("/errors/fastapi")
@@ -123,6 +193,25 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             "is_starlette_websocket_exception": isinstance(exception, StarletteWebSocketException),
             "code": exception.code,
             "reason": exception.reason,
+        }
+
+    @app.get("/errors/websocket-disconnect-constructor-state")
+    async def websocket_disconnect_constructor_state() -> dict[str, object]:
+        return {
+            "identity": {
+                "root_to_module": (
+                    FastAPIWebSocketDisconnect is FastAPIWebsocketsWebSocketDisconnect
+                ),
+                "root_to_starlette": (FastAPIWebSocketDisconnect is StarletteWebSocketDisconnect),
+                "module_to_starlette": (
+                    FastAPIWebsocketsWebSocketDisconnect is StarletteWebSocketDisconnect
+                ),
+            },
+            "signature": str(signature(FastAPIWebSocketDisconnect)),
+            "calls": [
+                _websocket_disconnect_snapshot(call)
+                for call in factory_input.get("websocket_disconnect_calls", [])
+            ],
         }
 
     @app.websocket("/errors/websocket")

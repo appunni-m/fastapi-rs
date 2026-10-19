@@ -4955,35 +4955,37 @@ reviewed_api_contract_overlay:
     fastapi.websockets.WebSocketDisconnect:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
-      rust_binding: fastapi-rs/src/application_runtime.rs::register
+        status: full-contract-established
       source_evidence:
-        - {path: fastapi/websockets.py}
-      observation_selectors: [websocket.messages]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's WebSocketDisconnect under
-        fastapi.websockets. FastAPI-RS registers the canonical
-        starlette.websockets.WebSocketDisconnect object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity in a WebSocket message. This scope covers alias
-        exposure and identity; exception behavior remains in the pinned
-        Starlette-RS API contract and is not claimed here.
+        - path: fastapi/websockets.py
+          kind: import-binding
+          line: 2
+          imported_module: starlette.websockets
+          relative_level: 0
+          imported_name: WebSocketDisconnect
+          alias_spelling: WebSocketDisconnect
+          local_name: WebSocketDisconnect
+          target_path: starlette.websockets.WebSocketDisconnect
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket-disconnect.constructor-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.websocket-reexports
+        - recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+          case_id: fastapi.documented-module.websockets
+      feature_ids: [public-api-errors, websocket-lifecycle]
+      observation_selectors: [http.status, http.body.bytes, python.import_path, python.object_identity, python.signature, error.args, error.class, error.public_attributes, construction.outcome, construction.exception_class, construction.exception_message]
+      full_contract: >-
+        The complete FastAPI-specific public behavior of this module alias is its direct
+        re-export of `starlette.websockets.WebSocketDisconnect`. The identity workflow
+        observes the exact public-module-to-Starlette binding; the constructor workflow
+        checks the pinned signature, exception type and MRO, BaseException.args, code and
+        reason fields, mutable instance attributes, str/repr, reason truthiness behavior,
+        and exact call-binding errors over input-defined calls. Generic constructor behavior
+        is linked through the declared Starlette-RS surface alias to
+        `starlette.websockets.WebSocketDisconnect.constructor-contract` and its complete
+        `python-package` requirements. This claim covers the exception alias, not the full
+        WebSocket endpoint or session API.
     fastapi.websockets.WebSocketState:
       target_binding:
         implementation_owner: starlette-rs
@@ -15149,15 +15151,7 @@ reviewed_api_contract_overlay:
     fastapi.WebSocketDisconnect:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            FastAPI-specific workflows compare root, public-module, and Starlette import identity;
-            constructor fields and disconnect behavior are owned by the separate Starlette-RS
-            contract and are not repeated by this FastAPI alias workflow.
-          - >-
-            The current identity comparison receipt is local and not checked in; mapped fixture
-            evidence does not itself establish parity for other builds.
+        status: full-contract-established
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15169,16 +15163,25 @@ reviewed_api_contract_overlay:
           local_name: WebSocketDisconnect
           target_path: fastapi.websockets.WebSocketDisconnect
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.websocket-disconnect.constructor-contract
         - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
           case_id: fastapi.root-alias-identity.websocket-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
           case_id: fastapi.documented-module.websockets
       feature_ids: [websocket-lifecycle]
-      observation_selectors: [python.import_path, python.object_identity, websocket.messages]
-      supported_slice: >-
-        Import identity only: the root binding aliases the FastAPI websocket-module binding,
-        which directly re-exports `starlette.websockets.WebSocketDisconnect`; generic constructor
-        behavior is delegated to the pinned Starlette-RS `constructor-contract` surface.
+      observation_selectors: [http.status, http.body.bytes, python.import_path, python.object_identity, python.signature, error.args, error.class, error.public_attributes, construction.outcome, construction.exception_class, construction.exception_message]
+      full_contract: >-
+        The complete FastAPI-specific public behavior of this root symbol is the same
+        `WebSocketDisconnect` class re-exported by `fastapi.websockets` and
+        `starlette.websockets`. The input workflows compare the root/module/Starlette
+        identity chain and the pinned constructor signature, exception type and MRO,
+        BaseException.args, code and reason fields, mutable instance attributes, str/repr,
+        reason truthiness behavior, and exact call-binding errors. Generic constructor
+        behavior is linked through the declared Starlette-RS surface alias to
+        `starlette.websockets.WebSocketDisconnect.constructor-contract` and its complete
+        `python-package` requirements. This claim covers the exception alias, not the full
+        WebSocket endpoint or session API.
 
     fastapi.__version__:
       target_binding:

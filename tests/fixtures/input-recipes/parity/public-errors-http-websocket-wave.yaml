@@ -352,3 +352,43 @@ cases:
   - {path: docs_src/websockets_/tutorial002_an_py310.py, kind: upstream_documentation}
   - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, kind: upstream_test}
   - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.public-errors.websocket-disconnect.constructor-contract
+  factory_input:
+    websocket_disconnect_calls:
+    - {label: omitted-arguments, args: [], kwargs: {}}
+    - {label: positional-code, args: [1001], kwargs: {}}
+    - {label: explicit-none-reason, args: [], kwargs: {code: 1002, reason: null}}
+    - {label: empty-positional-reason, args: [1003, ''], kwargs: {}}
+    - {label: truthy-keyword-reason, args: [], kwargs: {code: 1004, reason: client-left}}
+    - {label: falsey-str-subclass, args: [1005], kwargs: {}, reason_behavior: falsey-str, reason_position: positional}
+    - {label: reason-truthiness-error, args: [], kwargs: {code: 1006}, reason_behavior: raising-str}
+    - {label: mutable-public-fields, args: [1007, initial], kwargs: {}, mutations: {code: 1010, reason: updated, marker: visible}}
+    - {label: too-many-positional, args: [1008, supplied, extra], kwargs: {}}
+    - {label: unexpected-keyword, args: [], kwargs: {unrecognized: true}}
+    - {label: duplicate-code, args: [1009], kwargs: {code: 1011}}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-websocket-disconnect-constructor-contract
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /errors/websocket-disconnect-constructor-state
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/reference/websockets.md, kind: upstream_documentation}
+  - {path: tests/test_ws_router.py, kind: upstream_test}
