@@ -305,6 +305,12 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
         return {
             **_exception_snapshot(exception),
             "is_starlette_websocket_exception": isinstance(exception, StarletteWebSocketException),
+            "class_metadata": {
+                "module": WebSocketException.__module__,
+                "name": WebSocketException.__name__,
+                "qualname": WebSocketException.__qualname__,
+                "doc": WebSocketException.__doc__,
+            },
             "code": exception.code,
             "reason": exception.reason,
         }
