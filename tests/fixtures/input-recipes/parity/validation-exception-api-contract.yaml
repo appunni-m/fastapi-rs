@@ -39,6 +39,42 @@ cases:
           - kind: python_signature
             selector: signature
             comparison: exact
+      - probe_id: request-validation-error-populated-constructor-input
+        public_callable:
+          module: fastapi.exceptions
+          attribute: RequestValidationError
+        argument_bundle: request-populated
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+      - probe_id: request-validation-error-nonmapping-context-input
+        public_callable:
+          module: fastapi.exceptions
+          attribute: RequestValidationError
+        argument_bundle: request-nonmapping-context
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+      - probe_id: websocket-validation-error-populated-constructor-input
+        public_callable:
+          module: fastapi.exceptions
+          attribute: WebSocketRequestValidationError
+        argument_bundle: websocket-populated
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+      - probe_id: websocket-validation-error-nonmapping-context-input
+        public_callable:
+          module: fastapi.exceptions
+          attribute: WebSocketRequestValidationError
+        argument_bundle: websocket-nonmapping-context
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
     source_evidence:
       - path: fastapi/exceptions.py
         kind: upstream_api_definition

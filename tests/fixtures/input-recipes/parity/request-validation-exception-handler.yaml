@@ -190,3 +190,48 @@ cases:
   source_evidence:
   - {path: tests/test_validation_error_context.py, kind: upstream_test}
   - {path: tests/test_exception_handlers.py, kind: upstream_test}
+- case_id: fastapi.request-validation-handler.manual-explicit-endpoint-context
+  factory_input:
+    custom_validation_handler: true
+    observe_full_endpoint_context: true
+    manual_validation_error:
+      errors:
+      - type: value_error
+        loc: [body, payload, amount]
+        msg: Invalid amount
+        input: invalid
+        ctx: {reason: malformed amount}
+      body: {payload: {amount: invalid}}
+      endpoint_ctx:
+        function: manual_validation_error
+        path: /validation-manual-context
+        file: fixture-input.py
+        line: 73
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: expose-explicit-request-error-context
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /validation-manual-context
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_validation_error_context.py, kind: upstream_test}
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}

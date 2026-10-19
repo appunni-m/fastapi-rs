@@ -38,14 +38,23 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             body = exception.body
             if hasattr(body, "multi_items"):
                 body = body.multi_items()
+            endpoint = {
+                "function": exception.endpoint_function,
+                "path": exception.endpoint_path,
+            }
+            if factory_input.get("observe_full_endpoint_context", False):
+                endpoint.update(
+                    {
+                        "file": exception.endpoint_file,
+                        "line": exception.endpoint_line,
+                        "context": exception.endpoint_ctx,
+                    }
+                )
             return JSONResponse(
                 {
                     "errors": exception.errors(),
                     "body": body,
-                    "endpoint": {
-                        "function": exception.endpoint_function,
-                        "path": exception.endpoint_path,
-                    },
+                    "endpoint": endpoint,
                 },
                 status_code=422,
             )
@@ -80,5 +89,11 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
                 }
             ]
         )
+
+    if "manual_validation_error" in factory_input:
+
+        @app.get("/validation-manual-context")
+        def raise_manual_context_validation_error():
+            raise RequestValidationError(**factory_input["manual_validation_error"])
 
     return app
