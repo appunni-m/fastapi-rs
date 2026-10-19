@@ -53,15 +53,23 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The current complete direct-ASGI suite is
-[`docs/benchmarks/2026-10-17-9a4ffe9.md`](benchmarks/2026-10-17-9a4ffe9.md).
-It completed 7/7 declared workloads with 45/45 selected parity observations
-passing on FastAPI-RS `9a4ffe9114345dc26e3576610a4adce80d6d2e1b`, the pinned
-Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`, and manifest SHA-256
-`b6affa30e49850ef948e2d11e2116f1f85a0da8ff82287aafdde689b37b539fc`. Suite
-receipt `benchmark-results/suite-20261017T141404Z-b55c85fb-87bb-4dab-be98-3de35d31b6d4.json`
-(SHA-256 `da9478738f7c486a1f003889cc65e3ef6210176403708c85a1a0192c0a0e8c53`)
-is current for those seven workloads only. It does not establish full FastAPI
-parity or a global speedup.
+[`docs/benchmarks/2026-10-19-8eceda6.md`](benchmarks/2026-10-19-8eceda6.md).
+It completed 7/7 declared workloads with all 45 selected parity observations
+passing on FastAPI-RS `8eceda6f867de40cd04eaa71e62270a556fd2a3e`, FastAPI
+0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and pinned Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. The fixture manifest SHA-256 is
+`ad2201cafa88a868d8f1be69c601609b60e8e243f00c9941d16c5e064ad8ebfd`. Suite
+receipt `benchmark-results/suite-20261019T040400Z-15192e11-90f3-4bb6-96bc-da52788da632.json`
+has SHA-256
+`28d2b87d10266f9f43d2c82a80ea8162b63633f5709b24bf6383881a1abd4ae9`. On this
+CPython 3.12.13 / macOS 15.7.7 arm64 run, FastAPI-RS median and p95 latency
+were higher for all seven workloads. This is evidence for those selected
+cases only; it does not establish full FastAPI parity or a global speedup.
+
+The preceding seven-workload suite report
+[`2026-10-17-9a4ffe9.md`](benchmarks/2026-10-17-9a4ffe9.md) and its receipt
+are historical for the earlier target revision.
 
 The previous one-workload valid-request baseline
 [`docs/benchmarks/2026-10-17-fc27ab5.md`](benchmarks/2026-10-17-fc27ab5.md)
