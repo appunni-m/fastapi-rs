@@ -21,7 +21,9 @@ _TEST = "tests/test_router_include_context.py"
 _RECIPE = "tests/fixtures/input-recipes/parity/router-live-route-after-include-source-review.yaml"
 _WORKLOAD = "tests/fixtures/workloads/router_live_route_after_include_source_review.py"
 _CASE = "fastapi.router.include-context.live-route-after-include"
-_OPENAPI_CACHE_RECIPE = "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml"
+_OPENAPI_CACHE_RECIPE = (
+    "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml"
+)
 _OPENAPI_CACHE_WORKLOAD = "tests/fixtures/workloads/router_openapi_cache_after_include.py"
 _OPENAPI_CACHE_CASE = "fastapi.router.include-context.openapi-cache-after-live-route"
 _RUNTIME_ACTION = "dispatch-late-route"

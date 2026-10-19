@@ -1,0 +1,559 @@
+# Input-only probes for FastAPI 0.141.1 at source commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f. The declarations below have no
+# deprecated class aliases; SecurityBase.type_ uses the public Pydantic alias "type".
+schema: fastapi-rs/python-api-workflow@5
+workload:
+  file: tests/fixtures/workloads/openapi_security_models_projection.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-security-models.httpbase-direct-api
+  probes:
+  - probe_id: httpbase-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBase
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: httpbase-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBase
+    argument_bundle: http-base-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: httpbase-populated-alias
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBase
+    argument_bundle: http-base-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: httpbase-field-name-alias-input
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBase
+    argument_bundle: http-base-field-name-type
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.HTTPBase
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.httpbearer-direct-api
+  probes:
+  - probe_id: httpbearer-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBearer
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: httpbearer-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBearer
+    argument_bundle: http-bearer-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: httpbearer-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBearer
+    argument_bundle: http-bearer-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.HTTPBearer
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.oauthflow-direct-api
+  probes:
+  - probe_id: oauthflow-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlow
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: oauthflow-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlow
+    argument_bundle: oauth-flow-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: oauthflow-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlow
+    argument_bundle: oauth-flow-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlow
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.oauthflowimplicit-direct-api
+  probes:
+  - probe_id: oauthflowimplicit-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowImplicit
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: oauthflowimplicit-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowImplicit
+    argument_bundle: oauth-flow-implicit-minimal
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: oauthflowimplicit-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowImplicit
+    argument_bundle: oauth-flow-implicit-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowImplicit
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.oauthflowpassword-direct-api
+  probes:
+  - probe_id: oauthflowpassword-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowPassword
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: oauthflowpassword-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowPassword
+    argument_bundle: oauth-flow-password-minimal
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: oauthflowpassword-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowPassword
+    argument_bundle: oauth-flow-password-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowPassword
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.oauthflowclientcredentials-direct-api
+  probes:
+  - probe_id: oauthflowclientcredentials-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowClientCredentials
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: oauthflowclientcredentials-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowClientCredentials
+    argument_bundle: oauth-flow-client-credentials-minimal
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: oauthflowclientcredentials-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowClientCredentials
+    argument_bundle: oauth-flow-client-credentials-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowClientCredentials
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.oauthflowauthorizationcode-direct-api
+  probes:
+  - probe_id: oauthflowauthorizationcode-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowAuthorizationCode
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: oauthflowauthorizationcode-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowAuthorizationCode
+    argument_bundle: oauth-flow-authorization-code-minimal
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: oauthflowauthorizationcode-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowAuthorizationCode
+    argument_bundle: oauth-flow-authorization-code-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowAuthorizationCode
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.oauthflows-direct-api
+  probes:
+  - probe_id: oauthflows-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlows
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: oauthflows-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlows
+    argument_bundle: oauth-flows-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: oauthflows-populated-all-variants
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlows
+    argument_bundle: oauth-flows-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlows
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.oauth2-direct-api
+  probes:
+  - probe_id: oauth2-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuth2
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: oauth2-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuth2
+    argument_bundle: oauth2-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: oauth2-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuth2
+    argument_bundle: oauth2-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuth2
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.openidconnect-direct-api
+  probes:
+  - probe_id: openidconnect-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OpenIdConnect
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: openidconnect-defaults
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OpenIdConnect
+    argument_bundle: open-id-connect-defaults
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: openidconnect-populated
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OpenIdConnect
+    argument_bundle: open-id-connect-populated
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OpenIdConnect
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-httpbase-scheme
+  probes:
+  - probe_id: httpbase-missing-scheme
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBase
+    argument_bundle: http-base-missing-scheme
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.HTTPBase
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.invalid-httpbase-type
+  probes:
+  - probe_id: httpbase-invalid-type-enum
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBase
+    argument_bundle: http-base-invalid-type
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.HTTPBase
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.invalid-httpbearer-scheme
+  probes:
+  - probe_id: httpbearer-invalid-literal
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: HTTPBearer
+    argument_bundle: http-bearer-invalid-scheme
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.HTTPBearer
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-oauthflowimplicit-authorization-url
+  probes:
+  - probe_id: oauthflowimplicit-missing-authorization-url
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowImplicit
+    argument_bundle: oauth-flow-implicit-missing
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowImplicit
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-oauthflowpassword-token-url
+  probes:
+  - probe_id: oauthflowpassword-missing-token-url
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowPassword
+    argument_bundle: oauth-flow-password-missing
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowPassword
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-oauthflowclientcredentials-token-url
+  probes:
+  - probe_id: oauthflowclientcredentials-missing-token-url
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowClientCredentials
+    argument_bundle: oauth-flow-client-credentials-missing
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowClientCredentials
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-oauthflowauthorizationcode-authorization-url
+  probes:
+  - probe_id: oauthflowauthorizationcode-missing-authorization-url
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowAuthorizationCode
+    argument_bundle: oauth-flow-authorization-code-missing-authorization-url
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowAuthorizationCode
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-oauthflowauthorizationcode-token-url
+  probes:
+  - probe_id: oauthflowauthorizationcode-missing-token-url
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuthFlowAuthorizationCode
+    argument_bundle: oauth-flow-authorization-code-missing-token-url
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuthFlowAuthorizationCode
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-oauth2-flows
+  probes:
+  - probe_id: oauth2-missing-flows
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OAuth2
+    argument_bundle: oauth2-missing-flows
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OAuth2
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.required-openidconnect-url
+  probes:
+  - probe_id: openidconnect-missing-url
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OpenIdConnect
+    argument_bundle: open-id-connect-missing-url
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.OpenIdConnect
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.components-security-schemes-union
+  probes:
+  - probe_id: components-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Components
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: components-security-schemes-model-result
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Components
+    argument_bundle: components-security-schemes
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Components
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-security-models.components-security-schemes-invalid-http-scheme
+  probes:
+  - probe_id: components-security-schemes-invalid-http-scheme
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Components
+    argument_bundle: components-security-schemes-invalid-http
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Components
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d

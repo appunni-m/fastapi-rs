@@ -15402,6 +15402,386 @@
       ]
     },
     {
+      "id": "openapi-alias-enum-public-api",
+      "input_path": "tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json",
+      "input_sha256": "82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml",
+      "recipe_sha256": "6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85",
+      "case_ids": [
+        "fastapi.openapi-models.schema-type.accepted-values",
+        "fastapi.openapi-models.schema-type.invalid-value",
+        "fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs",
+        "fastapi.openapi-models.schema-or-bool.invalid-recursive-value",
+        "fastapi.openapi-models.parameter-in-type.accepted-values",
+        "fastapi.openapi-models.parameter.in-python-field-name",
+        "fastapi.openapi-models.parameter-in-type.invalid-value",
+        "fastapi.openapi-models.api-key-in.accepted-values",
+        "fastapi.openapi-models.api-key-in.invalid-value",
+        "fastapi.openapi-models.security-scheme.accepted-union-inputs",
+        "fastapi.openapi-models.security-scheme.invalid-union-input"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_alias_enum_projection.py",
+      "workload_sha256": "648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.accepted-values",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.invalid-value",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.accepted-values",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.invalid-value",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.in-python-field-name",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-or-bool.invalid-recursive-value",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.invalid-value",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.security-scheme.accepted-union-inputs",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.security-scheme.invalid-union-input",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.accepted-values",
+          "probe_id": "api-key-in-cookie",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.accepted-values",
+          "probe_id": "api-key-in-header",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.accepted-values",
+          "probe_id": "api-key-in-query",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.invalid-value",
+          "probe_id": "api-key-in-invalid",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.accepted-values",
+          "probe_id": "parameter-in-cookie",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.accepted-values",
+          "probe_id": "parameter-in-header",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.accepted-values",
+          "probe_id": "parameter-in-path",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.accepted-values",
+          "probe_id": "parameter-in-query",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.invalid-value",
+          "probe_id": "parameter-in-invalid",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.in-python-field-name",
+          "probe_id": "parameter-in-python-name",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs",
+          "probe_id": "schema-or-bool-consumers",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-or-bool.invalid-recursive-value",
+          "probe_id": "schema-or-bool-invalid-child",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-array",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-boolean",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-integer",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-list",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-null",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-number",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-object",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "probe_id": "schema-type-string",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.invalid-value",
+          "probe_id": "schema-type-invalid-literal",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.security-scheme.accepted-union-inputs",
+          "probe_id": "components-security-schemes",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.security-scheme.invalid-union-input",
+          "probe_id": "components-security-scheme-invalid",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-models.schema-type.accepted-values",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Schema"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.invalid-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Schema"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Schema"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-or-bool.invalid-recursive-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Schema"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.accepted-values",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Parameter"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.in-python-field-name",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Parameter"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-in-type.invalid-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Parameter"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.accepted-values",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.APIKey"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.api-key-in.invalid-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.APIKey"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.security-scheme.accepted-union-inputs",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Components",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.security-scheme.invalid-union-input",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Components",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-auxiliary-models-public-api",
       "input_path": "tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json",
       "input_sha256": "21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4",
@@ -18284,7 +18664,7 @@
         "fastapi.openapi-models.path-item.invalid-summary"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_operation_pathitem_projection.py",
-      "workload_sha256": "32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c",
+      "workload_sha256": "1435e0bfed1a600fb2154a311971cc64b22260c91d4a816a30b332722cd46b10",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.operation.defaults",
@@ -18687,6 +19067,419 @@
       ]
     },
     {
+      "id": "openapi-parameter-response-models-public-api",
+      "input_path": "tests/fixtures/inputs/parity/openapi-parameter-response-models-public-api.json",
+      "input_sha256": "9661730df805fc44dc7ad9b3e6dffe3551ac9d4241745ac7ca97190a86c69978",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-parameter-response-models-public-api.yaml",
+      "recipe_sha256": "4ee5de775fd1a3c69a87f276d0bd98fc267a86e8f253ce2a9e26ff79b5bcb298",
+      "case_ids": [
+        "fastapi.openapi-models.header.constructor-surface",
+        "fastapi.openapi-models.parameter-base.constructor-surface",
+        "fastapi.openapi-models.parameter.constructor-surface",
+        "fastapi.openapi-models.request-body.constructor-surface",
+        "fastapi.openapi-models.response.constructor-surface",
+        "fastapi.openapi-models.link.constructor-surface",
+        "fastapi.openapi-models.parameter.missing-required-fields",
+        "fastapi.openapi-models.parameter.invalid-in-enum",
+        "fastapi.openapi-models.parameter.python-field-name-in",
+        "fastapi.openapi-models.request-body.missing-required-content",
+        "fastapi.openapi-models.response.missing-required-description",
+        "fastapi.openapi-models.parameter-base.python-field-name-schema"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_parameter_response_models_projection.py",
+      "workload_sha256": "6bbecad20cf6b1af8e89b33b7e03c6db2e06a05fe3b9ba28952a97f1460e3b63",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi-models.header.constructor-surface",
+          "symbol_id": "fastapi.openapi.models.Header",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.link.constructor-surface",
+          "symbol_id": "fastapi.openapi.models.Link",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.constructor-surface",
+          "symbol_id": "fastapi.openapi.models.ParameterBase",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.python-field-name-schema",
+          "symbol_id": "fastapi.openapi.models.ParameterBase",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.constructor-surface",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.invalid-in-enum",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.missing-required-fields",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.python-field-name-in",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.constructor-surface",
+          "symbol_id": "fastapi.openapi.models.RequestBody",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.missing-required-content",
+          "symbol_id": "fastapi.openapi.models.RequestBody",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.constructor-surface",
+          "symbol_id": "fastapi.openapi.models.Response",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.missing-required-description",
+          "symbol_id": "fastapi.openapi.models.Response",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi-models.header.constructor-surface",
+          "probe_id": "default-values",
+          "symbol_id": "fastapi.openapi.models.Header",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.header.constructor-surface",
+          "probe_id": "populated-nested-values",
+          "symbol_id": "fastapi.openapi.models.Header",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.header.constructor-surface",
+          "probe_id": "signature",
+          "symbol_id": "fastapi.openapi.models.Header",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.link.constructor-surface",
+          "probe_id": "default-values",
+          "symbol_id": "fastapi.openapi.models.Link",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.link.constructor-surface",
+          "probe_id": "populated-nested-values",
+          "symbol_id": "fastapi.openapi.models.Link",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.link.constructor-surface",
+          "probe_id": "signature",
+          "symbol_id": "fastapi.openapi.models.Link",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.constructor-surface",
+          "probe_id": "default-values",
+          "symbol_id": "fastapi.openapi.models.ParameterBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.constructor-surface",
+          "probe_id": "populated-nested-values",
+          "symbol_id": "fastapi.openapi.models.ParameterBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.constructor-surface",
+          "probe_id": "signature",
+          "symbol_id": "fastapi.openapi.models.ParameterBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.python-field-name-schema",
+          "probe_id": "use-python-field-name-schema",
+          "symbol_id": "fastapi.openapi.models.ParameterBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.constructor-surface",
+          "probe_id": "default-values",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.constructor-surface",
+          "probe_id": "populated-nested-values",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.constructor-surface",
+          "probe_id": "signature",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.invalid-in-enum",
+          "probe_id": "invalid-in-value",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.missing-required-fields",
+          "probe_id": "omit-name-and-in",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.python-field-name-in",
+          "probe_id": "use-python-field-name-in",
+          "symbol_id": "fastapi.openapi.models.Parameter",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.constructor-surface",
+          "probe_id": "default-values",
+          "symbol_id": "fastapi.openapi.models.RequestBody",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.constructor-surface",
+          "probe_id": "populated-nested-values",
+          "symbol_id": "fastapi.openapi.models.RequestBody",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.constructor-surface",
+          "probe_id": "signature",
+          "symbol_id": "fastapi.openapi.models.RequestBody",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.missing-required-content",
+          "probe_id": "omit-content",
+          "symbol_id": "fastapi.openapi.models.RequestBody",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.constructor-surface",
+          "probe_id": "default-values",
+          "symbol_id": "fastapi.openapi.models.Response",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.constructor-surface",
+          "probe_id": "populated-nested-values",
+          "symbol_id": "fastapi.openapi.models.Response",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.constructor-surface",
+          "probe_id": "signature",
+          "symbol_id": "fastapi.openapi.models.Response",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.missing-required-description",
+          "probe_id": "omit-description",
+          "symbol_id": "fastapi.openapi.models.Response",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-models.header.constructor-surface",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Header",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.constructor-surface",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.ParameterBase",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.constructor-surface",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Parameter",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.constructor-surface",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.RequestBody",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.constructor-surface",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Response",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.link.constructor-surface",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Link",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.missing-required-fields",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Parameter",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.invalid-in-enum",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Parameter",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter.python-field-name-in",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Parameter",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.request-body.missing-required-content",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.RequestBody",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.response.missing-required-description",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Response",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.parameter-base.python-field-name-schema",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.ParameterBase",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-raw-yaml-body-full-document-review",
       "input_path": "tests/fixtures/inputs/parity/openapi-raw-yaml-body-full-document-review.json",
       "input_sha256": "4264c10c2f83f89a7a81876423c3c85fbae4d838f9110098a5944030cd7f724c",
@@ -18958,6 +19751,727 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_tutorial/test_separate_openapi_schemas/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openapi-security-models-public-api",
+      "input_path": "tests/fixtures/inputs/parity/openapi-security-models-public-api.json",
+      "input_sha256": "3b6eb05ff2225a916e625451d8b89fad335f469df5769c169197e38f8d936e6e",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-security-models-public-api.yaml",
+      "recipe_sha256": "1194c1d882bb69ee46a29014509dedff1bc7a1268b42b64a12966624310bd980",
+      "case_ids": [
+        "fastapi.openapi-security-models.httpbase-direct-api",
+        "fastapi.openapi-security-models.httpbearer-direct-api",
+        "fastapi.openapi-security-models.oauthflow-direct-api",
+        "fastapi.openapi-security-models.oauthflowimplicit-direct-api",
+        "fastapi.openapi-security-models.oauthflowpassword-direct-api",
+        "fastapi.openapi-security-models.oauthflowclientcredentials-direct-api",
+        "fastapi.openapi-security-models.oauthflowauthorizationcode-direct-api",
+        "fastapi.openapi-security-models.oauthflows-direct-api",
+        "fastapi.openapi-security-models.oauth2-direct-api",
+        "fastapi.openapi-security-models.openidconnect-direct-api",
+        "fastapi.openapi-security-models.required-httpbase-scheme",
+        "fastapi.openapi-security-models.invalid-httpbase-type",
+        "fastapi.openapi-security-models.invalid-httpbearer-scheme",
+        "fastapi.openapi-security-models.required-oauthflowimplicit-authorization-url",
+        "fastapi.openapi-security-models.required-oauthflowpassword-token-url",
+        "fastapi.openapi-security-models.required-oauthflowclientcredentials-token-url",
+        "fastapi.openapi-security-models.required-oauthflowauthorizationcode-authorization-url",
+        "fastapi.openapi-security-models.required-oauthflowauthorizationcode-token-url",
+        "fastapi.openapi-security-models.required-oauth2-flows",
+        "fastapi.openapi-security-models.required-openidconnect-url",
+        "fastapi.openapi-security-models.components-security-schemes-union",
+        "fastapi.openapi-security-models.components-security-schemes-invalid-http-scheme"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_security_models_projection.py",
+      "workload_sha256": "3465627546c5c39dc1d11fc787669a67acd18cc2607c4401ca62db42291ecf08",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi-security-models.components-security-schemes-invalid-http-scheme",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.components-security-schemes-union",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbase-direct-api",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbearer-direct-api",
+          "symbol_id": "fastapi.openapi.models.HTTPBearer",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.invalid-httpbase-type",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.invalid-httpbearer-scheme",
+          "symbol_id": "fastapi.openapi.models.HTTPBearer",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauth2-direct-api",
+          "symbol_id": "fastapi.openapi.models.OAuth2",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflow-direct-api",
+          "symbol_id": "fastapi.openapi.models.OAuthFlow",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowauthorizationcode-direct-api",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowclientcredentials-direct-api",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowClientCredentials",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowimplicit-direct-api",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowImplicit",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowpassword-direct-api",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowPassword",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflows-direct-api",
+          "symbol_id": "fastapi.openapi.models.OAuthFlows",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.openidconnect-direct-api",
+          "symbol_id": "fastapi.openapi.models.OpenIdConnect",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-httpbase-scheme",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauth2-flows",
+          "symbol_id": "fastapi.openapi.models.OAuth2",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowauthorizationcode-authorization-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowauthorizationcode-token-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowclientcredentials-token-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowClientCredentials",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowimplicit-authorization-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowImplicit",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowpassword-token-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowPassword",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-openidconnect-url",
+          "symbol_id": "fastapi.openapi.models.OpenIdConnect",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi-security-models.components-security-schemes-invalid-http-scheme",
+          "probe_id": "components-security-schemes-invalid-http-scheme",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.components-security-schemes-union",
+          "probe_id": "components-security-schemes-model-result",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.components-security-schemes-union",
+          "probe_id": "components-signature",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbase-direct-api",
+          "probe_id": "httpbase-defaults",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbase-direct-api",
+          "probe_id": "httpbase-field-name-alias-input",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbase-direct-api",
+          "probe_id": "httpbase-populated-alias",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbase-direct-api",
+          "probe_id": "httpbase-signature",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbearer-direct-api",
+          "probe_id": "httpbearer-defaults",
+          "symbol_id": "fastapi.openapi.models.HTTPBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbearer-direct-api",
+          "probe_id": "httpbearer-populated",
+          "symbol_id": "fastapi.openapi.models.HTTPBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbearer-direct-api",
+          "probe_id": "httpbearer-signature",
+          "symbol_id": "fastapi.openapi.models.HTTPBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.invalid-httpbase-type",
+          "probe_id": "httpbase-invalid-type-enum",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.invalid-httpbearer-scheme",
+          "probe_id": "httpbearer-invalid-literal",
+          "symbol_id": "fastapi.openapi.models.HTTPBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauth2-direct-api",
+          "probe_id": "oauth2-defaults",
+          "symbol_id": "fastapi.openapi.models.OAuth2",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauth2-direct-api",
+          "probe_id": "oauth2-populated",
+          "symbol_id": "fastapi.openapi.models.OAuth2",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauth2-direct-api",
+          "probe_id": "oauth2-signature",
+          "symbol_id": "fastapi.openapi.models.OAuth2",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflow-direct-api",
+          "probe_id": "oauthflow-defaults",
+          "symbol_id": "fastapi.openapi.models.OAuthFlow",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflow-direct-api",
+          "probe_id": "oauthflow-populated",
+          "symbol_id": "fastapi.openapi.models.OAuthFlow",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflow-direct-api",
+          "probe_id": "oauthflow-signature",
+          "symbol_id": "fastapi.openapi.models.OAuthFlow",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowauthorizationcode-direct-api",
+          "probe_id": "oauthflowauthorizationcode-defaults",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowauthorizationcode-direct-api",
+          "probe_id": "oauthflowauthorizationcode-populated",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowauthorizationcode-direct-api",
+          "probe_id": "oauthflowauthorizationcode-signature",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowclientcredentials-direct-api",
+          "probe_id": "oauthflowclientcredentials-defaults",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowClientCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowclientcredentials-direct-api",
+          "probe_id": "oauthflowclientcredentials-populated",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowClientCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowclientcredentials-direct-api",
+          "probe_id": "oauthflowclientcredentials-signature",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowClientCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowimplicit-direct-api",
+          "probe_id": "oauthflowimplicit-defaults",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowImplicit",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowimplicit-direct-api",
+          "probe_id": "oauthflowimplicit-populated",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowImplicit",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowimplicit-direct-api",
+          "probe_id": "oauthflowimplicit-signature",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowImplicit",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowpassword-direct-api",
+          "probe_id": "oauthflowpassword-defaults",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowPassword",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowpassword-direct-api",
+          "probe_id": "oauthflowpassword-populated",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowPassword",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowpassword-direct-api",
+          "probe_id": "oauthflowpassword-signature",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowPassword",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflows-direct-api",
+          "probe_id": "oauthflows-defaults",
+          "symbol_id": "fastapi.openapi.models.OAuthFlows",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflows-direct-api",
+          "probe_id": "oauthflows-populated-all-variants",
+          "symbol_id": "fastapi.openapi.models.OAuthFlows",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflows-direct-api",
+          "probe_id": "oauthflows-signature",
+          "symbol_id": "fastapi.openapi.models.OAuthFlows",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.openidconnect-direct-api",
+          "probe_id": "openidconnect-defaults",
+          "symbol_id": "fastapi.openapi.models.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.openidconnect-direct-api",
+          "probe_id": "openidconnect-populated",
+          "symbol_id": "fastapi.openapi.models.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.openidconnect-direct-api",
+          "probe_id": "openidconnect-signature",
+          "symbol_id": "fastapi.openapi.models.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-httpbase-scheme",
+          "probe_id": "httpbase-missing-scheme",
+          "symbol_id": "fastapi.openapi.models.HTTPBase",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauth2-flows",
+          "probe_id": "oauth2-missing-flows",
+          "symbol_id": "fastapi.openapi.models.OAuth2",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowauthorizationcode-authorization-url",
+          "probe_id": "oauthflowauthorizationcode-missing-authorization-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowauthorizationcode-token-url",
+          "probe_id": "oauthflowauthorizationcode-missing-token-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowAuthorizationCode",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowclientcredentials-token-url",
+          "probe_id": "oauthflowclientcredentials-missing-token-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowClientCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowimplicit-authorization-url",
+          "probe_id": "oauthflowimplicit-missing-authorization-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowImplicit",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowpassword-token-url",
+          "probe_id": "oauthflowpassword-missing-token-url",
+          "symbol_id": "fastapi.openapi.models.OAuthFlowPassword",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-openidconnect-url",
+          "probe_id": "openidconnect-missing-url",
+          "symbol_id": "fastapi.openapi.models.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-security-models.httpbase-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.HTTPBase"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.httpbearer-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.HTTPBearer"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflow-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlow"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowimplicit-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowImplicit"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowpassword-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowPassword"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowclientcredentials-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowClientCredentials"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflowauthorizationcode-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowAuthorizationCode"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauthflows-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlows"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.oauth2-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuth2"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.openidconnect-direct-api",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OpenIdConnect"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-httpbase-scheme",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.HTTPBase"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.invalid-httpbase-type",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.HTTPBase"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.invalid-httpbearer-scheme",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.HTTPBearer"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowimplicit-authorization-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowImplicit"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowpassword-token-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowPassword"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowclientcredentials-token-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowClientCredentials"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowauthorizationcode-authorization-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowAuthorizationCode"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauthflowauthorizationcode-token-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuthFlowAuthorizationCode"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-oauth2-flows",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OAuth2"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.required-openidconnect-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.OpenIdConnect"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.components-security-schemes-union",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Components"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-security-models.components-security-schemes-invalid-http-scheme",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Components"
           ]
         }
       ]
@@ -54226,6 +55740,21 @@
     {
       "source_item_id": "documented-page:reference/openapi/models.md",
       "fixture_id": "fastapi.docs.reference-openapi-models",
+      "workflow_id": "openapi-alias-enum-public-api",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes python.call_outcome, python.pydantic_model_result. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-models.security-scheme.accepted-union-inputs",
+        "fastapi.openapi-models.security-scheme.invalid-union-input"
+      ],
+      "observation_selectors": [
+        "python.call_outcome",
+        "python.pydantic_model_result"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/openapi/models.md",
+      "fixture_id": "fastapi.docs.reference-openapi-models",
       "workflow_id": "openapi-auxiliary-models-public-api",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 16 case(s); observes python.call_outcome, python.pydantic_model_result, python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -54928,6 +56457,32 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/openapi/models.md",
+      "fixture_id": "fastapi.docs.reference-openapi-models",
+      "workflow_id": "openapi-parameter-response-models-public-api",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 12 case(s); observes python.call_outcome, python.pydantic_model_result, python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-models.header.constructor-surface",
+        "fastapi.openapi-models.link.constructor-surface",
+        "fastapi.openapi-models.parameter-base.constructor-surface",
+        "fastapi.openapi-models.parameter-base.python-field-name-schema",
+        "fastapi.openapi-models.parameter.constructor-surface",
+        "fastapi.openapi-models.parameter.invalid-in-enum",
+        "fastapi.openapi-models.parameter.missing-required-fields",
+        "fastapi.openapi-models.parameter.python-field-name-in",
+        "fastapi.openapi-models.request-body.constructor-surface",
+        "fastapi.openapi-models.request-body.missing-required-content",
+        "fastapi.openapi-models.response.constructor-surface",
+        "fastapi.openapi-models.response.missing-required-description"
+      ],
+      "observation_selectors": [
+        "python.call_outcome",
+        "python.pydantic_model_result",
+        "python.signature"
       ]
     },
     {

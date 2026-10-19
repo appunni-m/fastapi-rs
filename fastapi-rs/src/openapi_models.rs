@@ -158,10 +158,11 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
     let options = PyDict::new(py);
     options.set_item("_types_namespace", &namespace)?;
     for (name, model) in models {
-        // FastAPI 0.141.1 leaves MediaType incomplete after import because it
-        // was declared against the not-yet-rebuilt Schema. Pydantic therefore
-        // exposes only **extra_data in its captured constructor signature.
-        if name == "MediaType" {
+        // FastAPI 0.141.1 leaves these models incomplete at import because
+        // their annotations point into the not-yet-rebuilt OpenAPI graph.
+        // Pydantic's incomplete state is observable in their constructor
+        // signatures, so preserve it instead of eagerly resolving the graph.
+        if matches!(name, "MediaType" | "ParameterBase" | "Parameter") {
             continue;
         }
         model

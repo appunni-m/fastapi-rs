@@ -1,0 +1,265 @@
+schema: fastapi-rs/python-api-workflow@7
+workload:
+  file: tests/fixtures/workloads/openapi_alias_enum_projection.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-models.schema-type.accepted-values
+  probes:
+  - probe_id: schema-type-array
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-array
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: schema-type-boolean
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-boolean
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: schema-type-integer
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-integer
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: schema-type-null
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-null
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: schema-type-number
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-number
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: schema-type-object
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-object
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: schema-type-string
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-string
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: schema-type-list
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-list
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: &schema_source
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Schema
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-models.schema-type.invalid-value
+  probes:
+  - probe_id: schema-type-invalid-literal
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-type-invalid
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *schema_source
+- case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
+  probes:
+  - probe_id: schema-or-bool-consumers
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-or-bool-recursive
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: *schema_source
+- case_id: fastapi.openapi-models.schema-or-bool.invalid-recursive-value
+  probes:
+  - probe_id: schema-or-bool-invalid-child
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: schema-or-bool-invalid
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *schema_source
+- case_id: fastapi.openapi-models.parameter-in-type.accepted-values
+  probes:
+  - probe_id: parameter-in-query
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Parameter
+    argument_bundle: parameter-in-query
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: parameter-in-header
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Parameter
+    argument_bundle: parameter-in-header
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: parameter-in-path
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Parameter
+    argument_bundle: parameter-in-path
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: parameter-in-cookie
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Parameter
+    argument_bundle: parameter-in-cookie
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: &parameter_source
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Parameter
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-models.parameter.in-python-field-name
+  probes:
+  - probe_id: parameter-in-python-name
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Parameter
+    argument_bundle: parameter-in-python-name
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *parameter_source
+- case_id: fastapi.openapi-models.parameter-in-type.invalid-value
+  probes:
+  - probe_id: parameter-in-invalid
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Parameter
+    argument_bundle: parameter-in-invalid
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *parameter_source
+- case_id: fastapi.openapi-models.api-key-in.accepted-values
+  probes:
+  - probe_id: api-key-in-query
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: APIKey
+    argument_bundle: api-key-in-query
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: api-key-in-header
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: APIKey
+    argument_bundle: api-key-in-header
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  - probe_id: api-key-in-cookie
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: APIKey
+    argument_bundle: api-key-in-cookie
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: &api_key_source
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.APIKey
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.openapi-models.api-key-in.invalid-value
+  probes:
+  - probe_id: api-key-in-invalid
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: APIKey
+    argument_bundle: api-key-in-invalid
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *api_key_source
+- case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
+  probes:
+  - probe_id: components-security-schemes
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Components
+    argument_bundle: components-security-schemes
+    observations:
+    - kind: python_pydantic_model_result
+      selector: model_dump
+      comparison: exact
+  source_evidence: &components_source
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Components
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
+- case_id: fastapi.openapi-models.security-scheme.invalid-union-input
+  probes:
+  - probe_id: components-security-scheme-invalid
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Components
+    argument_bundle: components-security-scheme-invalid
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence: *components_source

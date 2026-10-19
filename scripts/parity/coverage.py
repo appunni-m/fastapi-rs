@@ -2068,8 +2068,10 @@ def validate_compatibility_artifacts(
             if source_row.get("source_path") == "tests/test_router_include_context.py":
                 expected_direct_links = {
                     function_name: row[2]
-                    for (source_path, function_name), row
-                    in REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS.items()
+                    for (
+                        source_path,
+                        function_name,
+                    ), row in REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS.items()
                     if source_path == source_row.get("source_path")
                 }
                 _require(

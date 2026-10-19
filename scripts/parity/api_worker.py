@@ -341,6 +341,18 @@ def _signature_component(
             "name": "PydanticUndefined",
             "qualified_name": "pydantic_core._pydantic_core.PydanticUndefinedType",
         }
+    if isinstance(value, Enum):
+        enum_type = type(value)
+        return {
+            "kind": "python_enum",
+            "qualified_name": f"{enum_type.__module__}.{enum_type.__qualname__}",
+            "member_name": value.name,
+            "value": _signature_component(
+                value.value,
+                depth=depth + 1,
+                allow_pydantic_model_defaults=allow_pydantic_model_defaults,
+            ),
+        }
     if _is_strict_json_value(value):
         return _json_safe(value)
     value_type = type(value)

@@ -43,9 +43,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                         },
                     }
                 },
-                "callbacks": {
-                    "onChanged": {"$ref": "#/components/callbacks/widgetChanged"}
-                },
+                "callbacks": {"onChanged": {"$ref": "#/components/callbacks/widgetChanged"}},
                 "deprecated": False,
                 "security": [{"widgetsOAuth": ["widgets:read"]}],
                 "servers": [

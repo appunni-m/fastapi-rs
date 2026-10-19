@@ -1019,7 +1019,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml"
+            ),
             "case_ids": [
                 "fastapi.openapi-models.operation.signature",
                 "fastapi.openapi-models.operation.defaults",
@@ -1043,7 +1045,9 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml",
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml"
+            ),
             "case_ids": [
                 "fastapi.openapi-models.external-documentation.signature",
                 "fastapi.openapi-models.external-documentation.defaults",
