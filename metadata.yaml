@@ -16770,19 +16770,18 @@ reviewed_api_contract_overlay:
       observation_selectors: [python.attribute_value]
 
     fastapi.openapi.models.ExternalDocumentation:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            Direct inputs compare the constructor signature, required URL with optional description
+            default, one populated URL and retained extension, and the missing-required-URL result.
+            Other URL validation and coercion boundaries remain unproven.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Alternate serialization modes and JSON Schema behavior are outside this direct API slice.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -16790,10 +16789,20 @@ reviewed_api_contract_overlay:
           start_line: 112
           end_line: 114
       supported_slice: >-
-        Source model declaration only: ExternalDocumentation inherits BaseModelWithConfig and
-        declares description, url. No direct constructor/model_result case is row-linked;
-        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
-        Schema behavior remain outside this source-only slice.
+        Direct inputs compare the constructor signature, required URL with optional description
+        default, one populated result with an extension value, and an exact missing-URL failure.
+        Broader URL validation, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.external-documentation.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.external-documentation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.external-documentation.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.external-documentation.invalid-missing-url
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.ExternalDocumentation.description:
       target_binding:
@@ -17221,19 +17230,18 @@ reviewed_api_contract_overlay:
         behavior are not claimed.
 
     fastapi.openapi.models.License:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            Direct inputs compare the constructor signature, required name, optional identifier and URL
+            defaults, one populated result with an extension value, and the missing-required-name
+            result. Other field coercion and validation boundaries remain unproven.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Alternate serialization modes and JSON Schema behavior are outside this direct API slice.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -17241,10 +17249,20 @@ reviewed_api_contract_overlay:
           start_line: 67
           end_line: 70
       supported_slice: >-
-        Source model declaration only: License inherits BaseModelWithConfig and declares
-        identifier, name, url. No direct constructor/model_result case is row-linked; Pydantic
-        signature generation, validation/coercion, extras, serialization, and JSON Schema
-        behavior remain outside this source-only slice.
+        Direct inputs compare the constructor signature, required name, omitted optional fields,
+        populated identifier and URL with retained extension data, and an exact missing-name failure.
+        Broader validation, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.license.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.license.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.license.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.license.invalid-missing-name
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.License.identifier:
       target_binding:
@@ -22716,19 +22734,18 @@ reviewed_api_contract_overlay:
         equality and other enum values remain unverified.
 
     fastapi.openapi.models.Tag:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            Direct inputs compare the constructor signature, required name with optional field defaults,
+            one nested ExternalDocumentation result with extension data, and one invalid name value.
+            Other nested validation and field coercion boundaries remain unproven.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Alternate serialization modes and JSON Schema behavior are outside this direct API slice.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -22736,10 +22753,20 @@ reviewed_api_contract_overlay:
           start_line: 413
           end_line: 416
       supported_slice: >-
-        Source model declaration only: Tag inherits BaseModelWithConfig and declares
-        description, externalDocs, name. No direct constructor/model_result case is row-linked;
-        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
-        Schema behavior remain outside this source-only slice.
+        Direct inputs compare the constructor signature, required name with omitted optional fields,
+        a populated nested ExternalDocumentation value with retained extension data, and an invalid
+        name result. Broader validation, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.tag.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.tag.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.tag.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.tag.invalid-name
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Tag.description:
       target_binding:
@@ -22816,19 +22843,18 @@ reviewed_api_contract_overlay:
         behavior are not claimed.
 
     fastapi.openapi.models.XML:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            Direct inputs compare the constructor signature, all-None defaults, one populated result
+            with all five declared fields and retained extension data, and one invalid boolean value.
+            Other coercion and validation boundaries remain unproven.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Alternate serialization modes and JSON Schema behavior are outside this direct API slice.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -22836,10 +22862,20 @@ reviewed_api_contract_overlay:
           start_line: 104
           end_line: 109
       supported_slice: >-
-        Source model declaration only: XML inherits BaseModelWithConfig and declares attribute,
-        name, namespace, prefix, wrapped. No direct constructor/model_result case is row-linked;
-        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
-        Schema behavior remain outside this source-only slice.
+        Direct inputs compare the constructor signature, all-None defaults, one populated result with
+        all five declared fields and retained extension data, and an invalid wrapped boolean outcome.
+        Broader coercion, validation, serialization modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.invalid-wrapped
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.XML.attribute:
       target_binding:

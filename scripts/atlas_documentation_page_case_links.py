@@ -1042,6 +1042,38 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
                 "Other model classes, Pydantic behavior, and validation boundaries are not claimed."
             ),
         },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml",
+            "case_ids": [
+                "fastapi.openapi-models.external-documentation.signature",
+                "fastapi.openapi-models.external-documentation.defaults",
+                "fastapi.openapi-models.external-documentation.populated",
+                "fastapi.openapi-models.external-documentation.invalid-missing-url",
+                "fastapi.openapi-models.license.signature",
+                "fastapi.openapi-models.license.defaults",
+                "fastapi.openapi-models.license.populated",
+                "fastapi.openapi-models.license.invalid-missing-name",
+                "fastapi.openapi-models.tag.signature",
+                "fastapi.openapi-models.tag.defaults",
+                "fastapi.openapi-models.tag.populated",
+                "fastapi.openapi-models.tag.invalid-name",
+                "fastapi.openapi-models.xml.signature",
+                "fastapi.openapi-models.xml.defaults",
+                "fastapi.openapi-models.xml.populated",
+                "fastapi.openapi-models.xml.invalid-wrapped",
+            ],
+            "observation_selectors": [
+                "python.call_outcome",
+                "python.pydantic_model_result",
+                "python.signature",
+            ],
+            "scope_note": (
+                "Partial independent sample across 16 cases; observes signatures, required and "
+                "optional field projections, nested ExternalDocumentation, extension retention, "
+                "and representative invalid inputs for ExternalDocumentation, License, Tag, "
+                "and XML. Other Pydantic behavior and validation boundaries are not claimed."
+            ),
+        },
     ],
     "reference/request.md": [
         {
