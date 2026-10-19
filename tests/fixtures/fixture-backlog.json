@@ -361671,23 +361671,23 @@
             "app-routing",
             "openapi-docs"
           ],
+          "function_source_ref": {
+            "end_line": 263,
+            "line": 249,
+            "path": "tests/test_router_include_context.py",
+            "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109"
+          },
           "id": "fastapi.test.test-router-include-context.test-openapi-cache-updates-after-live-route-addition",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "docs.response.body.bytes",
-            "docs.response.headers",
-            "docs.response.status",
-            "http.body.bytes",
-            "http.headers.ordered",
             "http.status",
             "openapi.document",
-            "openapi.paths",
-            "python.pydantic_model_result",
-            "route.match"
+            "openapi.paths"
           ],
           "reviewed_mapping": {
-            "rationale": "A route is added to an APIRouter after FastAPI has included that router. The public ASGI request checks that the new prefixed route dispatches and receives the include-level dependency; a focused OpenAPI projection checks that the include-level tag and response declaration apply to the late route.",
+            "contract_gate": "Partial: the selected JSON pointer compares the /api/later path item, which is stronger than the source's absent/present membership assertions. The hidden route's status is a harness stimulus, not an upstream assertion; the full OpenAPI document, runtime dispatch, and other router mutations remain outside this mapping.",
+            "rationale": "The workflow primes the OpenAPI cache with an empty router already included at /api, adds GET /later to that child router through its public decorator, then observes the selected path item in a fresh /openapi.json response.",
             "source_evidence": [
               {
                 "end_line": 263,
@@ -361738,28 +361738,35 @@
                 "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
                 "start_line": 1070
               }
-            ]
+            ],
+            "workflow_case": {
+              "action_ids": [
+                "observe-openapi-before-child-route",
+                "add-child-route-after-openapi-cache",
+                "observe-openapi-after-child-route"
+              ],
+              "case_id": "fastapi.router.include-context.openapi-cache-after-live-route",
+              "observation_selectors": [
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+              "workflow_id": "router-openapi-cache-after-include"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "app-routing",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
                 "openapi.paths"
               ]
             },
             {
               "feature_id": "openapi-docs",
               "selectors": [
-                "openapi.document",
-                "python.pydantic_model_result",
-                "docs.response.status",
-                "docs.response.headers",
-                "docs.response.body.bytes",
-                "http.body.bytes"
+                "openapi.document"
               ]
             }
           ],
@@ -361770,7 +361777,22 @@
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": null,
+          "workflow_case": {
+            "action_ids": [
+              "observe-openapi-before-child-route",
+              "add-child-route-after-openapi-cache",
+              "observe-openapi-after-child-route"
+            ],
+            "case_id": "fastapi.router.include-context.openapi-cache-after-live-route",
+            "observation_selectors": [
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+            "workflow_id": "router-openapi-cache-after-include"
+          }
         },
         {
           "feature_evidence": [
@@ -367098,6 +367120,20 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/router-live-route-after-include-source-review.yaml",
           "workflow_id": "router-live-route-after-include-source-review"
+        },
+        {
+          "case_ids": [
+            "fastapi.router.include-context.openapi-cache-after-live-route"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.status",
+            "openapi.document",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+          "workflow_id": "router-openapi-cache-after-include"
         },
         {
           "case_ids": [

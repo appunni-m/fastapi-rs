@@ -7314,6 +7314,7 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_openapi_cache_updates_after_live_route_addition}
         - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for}
@@ -7352,6 +7353,10 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, openapi.document, openapi.paths]
         - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
           workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
@@ -8656,6 +8661,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.webhooks.openapi.duplicate-operation-id-warning
           workload_path: tests/fixtures/workloads/webhooks_duplicate_operation_id.py
           observation_selectors: [http.status, warnings.category_message, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, openapi.document, openapi.paths]
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema, warnings.category_message]
       supported_slice: >-
@@ -8734,6 +8743,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: ModelField}
         - {path: tests/test_response_model_data_filter.py, symbol: test_filter_top_level_model}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_openapi_cache_updates_after_live_route_addition}
         - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs/en/docs/tutorial/response-model.md}
@@ -8880,6 +8890,10 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.parent-lifespan-state-override}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml, case_id: fastapi.lifecycle.sibling-lifespan-state-precedence}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-lifespan-startup-suppression.yaml, case_id: fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent}
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, openapi.document, openapi.paths]
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-self-include-construction}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-transitive-cycle-include-construction}
@@ -9258,6 +9272,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_openapi_cache_updates_after_live_route_addition}
         - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
@@ -9320,6 +9335,10 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-late-url-path-for-order.yaml
           case_id: fastapi.router-late-route-order.url-path-for-include-slot
           workload_path: tests/fixtures/workloads/router_late_url_path_for_order.py
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, openapi.document, openapi.paths]
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-

@@ -31241,6 +31241,27 @@
       ]
     },
     {
+      "id": "router-openapi-cache-after-include",
+      "input_path": "tests/fixtures/inputs/parity/router-openapi-cache-after-include.json",
+      "input_sha256": "035acc097fc5a7fc992e0edaf4e1d66f2e290228b734d43fab7e90d1dc30a5de",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+      "recipe_sha256": "d9b800700040699c3e462349243b1d23b66d2c0e49758da03dc419a2131fbed7",
+      "case_ids": [
+        "fastapi.router.include-context.openapi-cache-after-live-route"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_openapi_cache_after_include.py",
+      "workload_sha256": "d008079175d99da2bd385e9a264aeaa2e8aa662f33fecf6680e296d5f42a1885",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.router.include-context.openapi-cache-after-live-route",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "router-overrides",
       "input_path": "tests/fixtures/inputs/parity/router-overrides.json",
       "input_sha256": "51e2eb7beb6b7076a8f086f0e8dcca4689833322660839c2535a982a2f97686e",
@@ -65782,6 +65803,21 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-openapi-cache-after-include",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.router.include-context.openapi-cache-after-live-route"
+      ],
+      "observation_selectors": [
         "http.status",
         "openapi.document",
         "openapi.paths"

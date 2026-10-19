@@ -133,6 +133,22 @@ QUERY_REQUIRED_LIST_RECIPE_PATH = (
     "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml"
 )
 QUERY_REQUIRED_LIST_WORKFLOW_ID = "query-required-list-aliases"
+REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
+    (
+        "tests/test_router_include_context.py",
+        "test_openapi_cache_updates_after_live_route_addition",
+    ): (
+        "router-openapi-cache-after-include",
+        "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+        "fastapi.router.include-context.openapi-cache-after-live-route",
+        (
+            "observe-openapi-before-child-route",
+            "add-child-route-after-openapi-cache",
+            "observe-openapi-after-child-route",
+        ),
+        ("http.status", "openapi.document", "openapi.paths"),
+    ),
+}
 
 
 def _fail(message: str) -> None:
@@ -1919,6 +1935,23 @@ def validate_compatibility_artifacts(
                     expected_link = QUERY_REQUIRED_LIST_FUNCTION_CASES.get(function_name)
                     expected_workflow_id = QUERY_REQUIRED_LIST_WORKFLOW_ID
                     expected_recipe_path = QUERY_REQUIRED_LIST_RECIPE_PATH
+                if expected_link is None:
+                    direct_review = REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS.get(
+                        (source_row.get("source_path"), function_name)
+                    )
+                    if direct_review is not None:
+                        (
+                            expected_workflow_id,
+                            expected_recipe_path,
+                            expected_case_id,
+                            expected_action_ids,
+                            expected_selectors,
+                        ) = direct_review
+                        expected_link = (
+                            expected_case_id,
+                            expected_action_ids,
+                            expected_selectors,
+                        )
                 _require(
                     expected_link is not None
                     and workflow_case
@@ -2031,6 +2064,17 @@ def validate_compatibility_artifacts(
                         }.items()
                     },
                     "query-list functions lost or changed direct workflow links",
+                )
+            if source_row.get("source_path") == "tests/test_router_include_context.py":
+                expected_direct_links = {
+                    function_name: row[2]
+                    for (source_path, function_name), row
+                    in REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS.items()
+                    if source_path == source_row.get("source_path")
+                }
+                _require(
+                    linked_functions == expected_direct_links,
+                    "router-include-context functions lost or changed direct workflow links",
                 )
         elif source_row.get("kind") == "documented_feature_page":
             sections = fixture.get("documented_sections")

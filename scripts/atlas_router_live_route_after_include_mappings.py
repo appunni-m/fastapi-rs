@@ -21,9 +21,18 @@ _TEST = "tests/test_router_include_context.py"
 _RECIPE = "tests/fixtures/input-recipes/parity/router-live-route-after-include-source-review.yaml"
 _WORKLOAD = "tests/fixtures/workloads/router_live_route_after_include_source_review.py"
 _CASE = "fastapi.router.include-context.live-route-after-include"
+_OPENAPI_CACHE_RECIPE = "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml"
+_OPENAPI_CACHE_WORKLOAD = "tests/fixtures/workloads/router_openapi_cache_after_include.py"
+_OPENAPI_CACHE_CASE = "fastapi.router.include-context.openapi-cache-after-live-route"
 _RUNTIME_ACTION = "dispatch-late-route"
 _OPENAPI_ACTION = "project-openapi-late-route"
 _SELECTORS = ["http.status", "http.body.bytes", "openapi.document"]
+_OPENAPI_CACHE_ACTIONS = [
+    "observe-openapi-before-child-route",
+    "add-child-route-after-openapi-cache",
+    "observe-openapi-after-child-route",
+]
+_OPENAPI_CACHE_SELECTORS = ["http.status", "openapi.document", "openapi.paths"]
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -108,6 +117,35 @@ _APIRouter_URL_PATH_FOR_MAPPING = {
     ],
 }
 
+_OPENAPI_CACHE_LIVE_ROUTE_MAPPING = {
+    "feature_ids": ["app-routing", "openapi-docs"],
+    "observation_selectors": list(_OPENAPI_CACHE_SELECTORS),
+    "rationale": (
+        "The workflow primes the OpenAPI cache with an empty router already included at /api, adds GET /later "
+        "to that child router through its public decorator, then observes the selected path item in a fresh /openapi.json response."
+    ),
+    "contract_gate": (
+        "Partial: the selected JSON pointer compares the /api/later path item, which is stronger than the source's "
+        "absent/present membership assertions. The hidden route's status is a harness stimulus, not an upstream "
+        "assertion; the full OpenAPI document, runtime dispatch, and other router mutations remain outside this mapping."
+    ),
+    "workflow_case": {
+        "workflow_id": "router-openapi-cache-after-include",
+        "recipe_path": _OPENAPI_CACHE_RECIPE,
+        "case_id": _OPENAPI_CACHE_CASE,
+        "action_ids": list(_OPENAPI_CACHE_ACTIONS),
+        "observation_selectors": list(_OPENAPI_CACHE_SELECTORS),
+    },
+    "source_evidence": [
+        _source(
+            _TEST,
+            249,
+            263,
+            "pinned FastAPI 0.141.1 test_openapi_cache_updates_after_live_route_addition and its absent-then-present path assertion",
+        ),
+    ],
+}
+
 _LIVE_ROUTE_MAPPING = {
     "review_status": "reviewed_partial",
     "feature_ids": ["app-routing"],
@@ -177,18 +215,11 @@ ROUTER_LIVE_ROUTE_AFTER_INCLUDE_SOURCE_REVIEW = {
     "test_module": _TEST,
     "test_mappings": {
         "test_live_route_addition_uses_include_metadata_for_runtime_and_openapi": _LIVE_ROUTE_MAPPING,
+        "test_openapi_cache_updates_after_live_route_addition": _OPENAPI_CACHE_LIVE_ROUTE_MAPPING,
         "test_url_path_for_uses_effective_context_for_live_included_route": _APP_URL_PATH_FOR_MAPPING,
         "test_url_path_for_uses_distinct_repeated_inclusion_contexts": _APIRouter_URL_PATH_FOR_MAPPING,
     },
     "exclusions": {
-        "test_openapi_cache_updates_after_live_route_addition": {
-            "source_span": {"path": _TEST, "start_line": 249, "end_line": 264},
-            "reason": (
-                "That test asserts that the first schema omits the route and a later schema includes it. "
-                "This workflow observes only the post-addition projection and does not claim the separate "
-                "pre-mutation cache invalidation sequence."
-            ),
-        },
         "test_nested_router_added_after_parent_inclusion_is_live": {
             "source_span": {"path": _TEST, "start_line": 266, "end_line": 284},
             "reason": (
