@@ -7,6 +7,37 @@ surface through a pass-through facade. The initial Rust vertical slice
 implements a scoped HTTP request-to-response flow; full FastAPI compatibility
 remains in progress, so no overall compatibility claim is made.
 
+**Status: alpha.** A public `fastapi-rs` release and consumer installation have
+not been verified. Registry ownership and availability remain unknown, so do
+not rely on `pip install fastapi-rs` yet. The release plan is one public
+`fastapi-rs` Cargo crate and one Python wheel; the source archive is built only
+for portability validation, and `fastapi-rs-py` remains an internal binding
+crate.
+
+## Availability and first use
+
+There is no verified public install command yet. To check the facade from a
+source checkout, use CPython 3.12.13, `uv`, the Rust toolchain in
+[`rust-toolchain.toml`](https://github.com/appunni-m/fastapi-rs/blob/main/rust-toolchain.toml),
+and a clean Starlette-RS checkout at the commit pinned in `metadata.yaml`:
+
+On a fresh checkout, create and activate a local helper environment, then
+prepare the target environment:
+
+```sh
+python3.12 -m venv .venv
+. .venv/bin/activate
+python -m pip install --requirement requirements-dev.txt
+STARLETTE_RS_SOURCE=/absolute/path/to/clean/starlette-rs make parity-prepare-target
+.venv-target/bin/python -c 'import fastapi'
+```
+
+The second command is a facade import smoke check; it does not establish route
+or API compatibility. The current public implementation scope remains the
+scoped HTTP slice described below. See
+[release preparation](https://github.com/appunni-m/fastapi-rs/blob/main/docs/RELEASE.md)
+for artifact checks and publication prerequisites.
+
 ## Compatibility target
 
 - Oracle baseline: FastAPI 0.141.1, pinned to upstream commit
@@ -23,9 +54,9 @@ remains in progress, so no overall compatibility claim is made.
 - Validation: keep Pydantic's public model API compatible. Pydantic v2 uses
   Python for model definition and Rust `pydantic-core` for validation and
   serialization; dependency reuse is the working assumption.
-- Public package: install as `fastapi-rs`, expose `import fastapi`, and keep
-  implementation bindings private. The package/distribution naming will be
-  checked before release.
+- Planned Python distribution: `fastapi-rs`, exposing `import fastapi`; its
+  installability remains unverified until its dependencies are published and
+  a consumer install is checked.
 - Runtime boundary: upstream FastAPI is source-oracle-only and never a runtime
   dependency or import. Python runtime modules contain only native re-exports
   and literal `__all__`, with no functions, branches, loops, or fallback
@@ -33,48 +64,50 @@ remains in progress, so no overall compatibility claim is made.
 
 ## Project rules and research
 
-- [AGENTS.md](AGENTS.md) keeps the core contract, parity, benchmark, and license
+- [AGENTS.md](https://github.com/appunni-m/fastapi-rs/blob/main/AGENTS.md) keeps the core contract, parity, benchmark, and license
   rules compact.
-- [Project scope and depth](docs/PROJECT_SCOPE.md) records the confirmed scale,
+- [Project scope and depth](https://github.com/appunni-m/fastapi-rs/blob/main/docs/PROJECT_SCOPE.md) records the confirmed scale,
   sequencing, and rough effort ranges.
-- [API scope](docs/API_SCOPE.md) and the generated
-  [`api-inventory.json`](tests/fixtures/api-inventory.json) map source APIs;
+- [API scope](https://github.com/appunni-m/fastapi-rs/blob/main/docs/API_SCOPE.md) and the generated
+  [`api-inventory.json`](https://github.com/appunni-m/fastapi-rs/blob/main/tests/fixtures/api-inventory.json) map source APIs;
   regenerate the JSON with `scripts/inventory_fastapi_api.py`.
-- [`metadata.yaml`](metadata.yaml) is the compact human-maintained API source
+- [`metadata.yaml`](https://github.com/appunni-m/fastapi-rs/blob/main/metadata.yaml) is the compact human-maintained API source
   authority. It pins the source identities and names generated inventory/atlas
   pointers; `make metadata-check` reconciles it against those artifacts and the
   sibling Starlette-RS contract without duplicating that catalog.
-- The active [`manifest.yaml`](tests/fixtures/manifest.yaml) contains the
+- The active [`manifest.yaml`](https://github.com/appunni-m/fastapi-rs/blob/main/tests/fixtures/manifest.yaml) contains the
   generated per-symbol source/runtime contract for source-supported APIs. Use
   `make api-contract-update` after refreshing its inputs and
   `make api-contract-check` to verify freshness.
-- [`runtime-api-surface-core.json`](tests/fixtures/runtime-api-surface-core.json)
-  and [`runtime-api-surface-standard.json`](tests/fixtures/runtime-api-surface-standard.json)
+- [`runtime-api-surface-core.json`](https://github.com/appunni-m/fastapi-rs/blob/main/tests/fixtures/runtime-api-surface-core.json)
+  and [`runtime-api-surface-standard.json`](https://github.com/appunni-m/fastapi-rs/blob/main/tests/fixtures/runtime-api-surface-standard.json)
   reflect the pinned CPython API namespaces, identity aliases, and Pydantic
   OpenAPI models. Prepare the core and standard environments, then run
   `make parity-api-runtime`.
-- [Compatibility atlas](docs/COMPATIBILITY_ATLAS.md) and the generated
-  [`fixture-backlog.json`](tests/fixtures/fixture-backlog.json) map API evidence,
+- [Compatibility atlas](https://github.com/appunni-m/fastapi-rs/blob/main/docs/COMPATIBILITY_ATLAS.md) and the generated
+  [`fixture-backlog.json`](https://github.com/appunni-m/fastapi-rs/blob/main/tests/fixtures/fixture-backlog.json) map API evidence,
   upstream test modules, documentation pages/examples, and Starlette-RS ownership.
-  [`observation-selectors.json`](tests/fixtures/observation-selectors.json) defines
+  [`observation-selectors.json`](https://github.com/appunni-m/fastapi-rs/blob/main/tests/fixtures/observation-selectors.json) defines
   each exact output projection and its current workflow support.
-- [Dependency atlas](docs/dependency-atlas.md) explains the recursive runtime,
+- [Dependency atlas](https://github.com/appunni-m/fastapi-rs/blob/main/docs/dependency-atlas.md) explains the recursive runtime,
   optional-feature, and development closures, including package purpose,
-  language/native components, and license evidence. The [dependency summary](docs/DEPENDENCIES.md)
-  and [full lock graph](docs/DEPENDENCY_GRAPH.md) provide compact and exhaustive
+  language/native components, and license evidence. The [dependency summary](https://github.com/appunni-m/fastapi-rs/blob/main/docs/DEPENDENCIES.md)
+  and [full lock graph](https://github.com/appunni-m/fastapi-rs/blob/main/docs/DEPENDENCY_GRAPH.md) provide compact and exhaustive
   views.
-- [Developer-tool dependency profile](docs/DEVELOPER_TOOL_DEPENDENCIES.md)
+- [Developer-tool dependency profile](https://github.com/appunni-m/fastapi-rs/blob/main/docs/DEVELOPER_TOOL_DEPENDENCIES.md)
   records the hash-locked Ruff, uv, JSON Schema, and PyYAML closure separately
   from the target runtime. Use `make developer-tools-prepare` to install it,
   `make developer-tools-inventory-check` to check it offline, and
   `make developer-tools-inventory-update` to resolve and refresh it.
-- [Parity and benchmark plan](docs/PARITY_BENCHMARK_PLAN.md) and
-  [license analysis](docs/LICENSING.md) define the next contract and release work.
-- [Release preparation](docs/RELEASE.md) records local artifact checks, the first
-  publication sequence, and current registry blockers.
-- FastAPI-derived signature metadata is attributed to original author and MIT
-  copyright holder Sebastián Ramírez; the complete required MIT notice is in
-  [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and ships with distributions.
+- [Parity and benchmark plan](https://github.com/appunni-m/fastapi-rs/blob/main/docs/PARITY_BENCHMARK_PLAN.md) and
+  [license analysis](https://github.com/appunni-m/fastapi-rs/blob/main/docs/LICENSING.md) define the next contract and release work.
+- [Release preparation](https://github.com/appunni-m/fastapi-rs/blob/main/docs/RELEASE.md)
+  records the one-crate/one-wheel plan, sdist validation, and release evidence;
+  registry ownership and availability must be rechecked before publication.
+- FastAPI-derived signature metadata retains the original MIT attribution
+  `Copyright (c) 2018 Sebastián Ramírez`. The complete required notice is in
+  [THIRD_PARTY_NOTICES.md](https://github.com/appunni-m/fastapi-rs/blob/main/THIRD_PARTY_NOTICES.md);
+  inclusion in a release artifact must be verified on that exact artifact.
 
 The `fastapi-rs/` crate is the sole FastAPI implementation. `fastapi-rs-py/`
 builds its private PyO3 extension and ships the thin `fastapi` facade; it is
@@ -91,7 +124,7 @@ scope and runner capability, not pass/fail results.
 An earlier OpenAPI response-contract checkpoint passed 214 selected normal
 cases and six separate fault contracts; its incremental coverage added 42 Rust
 regions. See the
-[checkpoint report](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
+[checkpoint report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
 for that run's identity, scope and remaining schema-order gaps.
 
 The latest recorded seven-workload suite passed 45/45 selected parity
@@ -100,8 +133,8 @@ and pinned Starlette-RS `4139a724`. FastAPI-RS median and p95 latency were
 higher in all seven measured workloads. That receipt is bound to an earlier
 manifest and is historical until the suite is refreshed against the current
 manifest. See the
-[latest recorded benchmark report](docs/benchmarks/2026-10-19-8eceda6.md) and
-[benchmark evidence freshness note](docs/PARITY_BENCHMARK_PLAN.md#benchmark-evidence-freshness).
+[latest recorded benchmark report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-19-8eceda6.md) and
+[benchmark evidence freshness note](https://github.com/appunni-m/fastapi-rs/blob/main/docs/PARITY_BENCHMARK_PLAN.md#benchmark-evidence-freshness).
 These selected cases do not establish full API parity or a global performance
 claim.
 
@@ -164,3 +197,13 @@ are stored under ignored `benchmark-results/`.
 - `tests/fixtures/` contains the source inventory, compatibility atlas, and
   input-only workflow definitions. Run `make help` for maintained build and
   quality commands.
+
+## Contributing, security, and license
+
+See the [contribution guide](https://github.com/appunni-m/fastapi-rs/blob/main/CONTRIBUTING.md)
+for the pinned development environment and focused validation workflow. For
+vulnerabilities, follow the [security policy](https://github.com/appunni-m/fastapi-rs/blob/main/SECURITY.md)
+and keep unpatched details private. Original FastAPI-RS code
+is MIT-licensed under [LICENSE.md](https://github.com/appunni-m/fastapi-rs/blob/main/LICENSE.md),
+with third-party attributions in
+[THIRD_PARTY_NOTICES.md](https://github.com/appunni-m/fastapi-rs/blob/main/THIRD_PARTY_NOTICES.md).

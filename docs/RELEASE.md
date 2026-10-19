@@ -7,7 +7,10 @@ deployment.
 ## Release scope and order
 
 - Publish one Cargo crate: `fastapi-rs`. Keep `fastapi-rs-py` internal.
-- Publish the `fastapi-rs` Python distribution as a wheel and source archive.
+- Publish one Python wheel for the `fastapi-rs` distribution. Build a source
+  distribution only as a local portability-validation input; do not publish or
+  upload it. The wheel rebuilt from that source archive is validation output,
+  not a second release artifact.
 - Keep project guides in repository Markdown and publish the Rust API reference
   through docs.rs when the crate is published. There is no separate static site
   build or deployment workflow yet.
@@ -25,22 +28,27 @@ Set `STARLETTE_RS_SOURCE` to the Starlette-RS repository root:
 git status --short --branch
 test -z "$(git status --porcelain)" || exit 1
 git rev-parse HEAD
-export STARLETTE_RS_SOURCE=/absolute/path/to/starlette-rs
+export STARLETTE_RS_SOURCE=/absolute/path/to/clean/starlette-rs
 git -C "$STARLETTE_RS_SOURCE" rev-parse HEAD
 export RELEASE_ID="$(git rev-parse --short HEAD)"
+make build-python STARLETTE_RS_SOURCE="$STARLETTE_RS_SOURCE"
 make release-sdist \
   STARLETTE_RS_SOURCE="$STARLETTE_RS_SOURCE" \
-  RELEASE_SDIST_DIR="target/release-sdist-$RELEASE_ID" \
-  RELEASE_SDIST_WHEEL_DIR="target/release-sdist-wheels-$RELEASE_ID"
+  RELEASE_SDIST_DIR="target/release-sdist-validation-$RELEASE_ID" \
+  RELEASE_SDIST_WHEEL_DIR="target/release-sdist-validation-wheels-$RELEASE_ID"
 ```
 
-The target is built from the sdist and places the source archive and validated
-wheel in the two selected directories. Record the commit, filenames, platform
-tags, and SHA-256 for each artifact:
+`make build-python` produces the candidate wheel under `target/wheels/`.
+`make release-sdist` then creates a source archive, validates it, and rebuilds a
+wheel from the extracted archive in the two validation directories. Only the
+directly built wheel is a planned Python release artifact. Record the source
+commit, exact candidate wheel filename, platform tag, and SHA-256; record the
+sdist and rebuilt wheel separately as validation evidence:
 
 ```sh
-shasum -a 256 target/release-sdist-"$RELEASE_ID"/* \
-  target/release-sdist-wheels-"$RELEASE_ID"/*
+shasum -a 256 target/release-sdist-validation-"$RELEASE_ID"/* \
+  target/release-sdist-validation-wheels-"$RELEASE_ID"/* \
+  target/wheels/fastapi_rs-0.1.0-*.whl
 ```
 
 Before publishing, verify the Rust package without a local path patch, using
@@ -91,17 +99,19 @@ Publishers](https://docs.pypi.org/trusted-publishers/) for workflow-based
 publishing, but this repository does not yet contain a publish workflow.
 
 For PyPI, confirm the `fastapi-rs` project name is available or controlled by
-the project account. Check and upload the validated source archive and wheel;
-Twine prompts for credentials when none are configured:
+the project account. Check and upload only the directly built candidate wheel;
+Twine prompts for credentials when none are configured. Select the single
+validated platform-tagged wheel from `target/wheels/`:
 
 ```sh
-uvx --from twine twine check \
-  target/release-sdist-"$RELEASE_ID"/fastapi_rs-0.1.0.tar.gz \
-  target/release-sdist-wheels-"$RELEASE_ID"/*.whl
-uvx --from twine twine upload --repository pypi \
-  target/release-sdist-"$RELEASE_ID"/fastapi_rs-0.1.0.tar.gz \
-  target/release-sdist-wheels-"$RELEASE_ID"/*.whl
+set -- target/wheels/fastapi_rs-0.1.0-*.whl
+test "$#" -eq 1 && test -f "$1" || exit 1
+uvx --from twine twine check "$1"
+uvx --from twine twine upload --repository pypi "$1"
 ```
+
+Do not upload the source archive or the wheel rebuilt from it; those are local
+validation outputs.
 
 Do not put registry tokens in shell history, source files, or command-line
 arguments. After each upload, install into a fresh environment from the public
@@ -128,39 +138,35 @@ crates.io releases](https://docs.rs/about/builds). Documentation changes are
 released with their Git commit; there is no site deployment command until a
 separate hosted site is selected and configured.
 
-## Current readiness snapshot
+## Readiness snapshot (2026-10-20)
 
-This snapshot was checked on 2026-10-19 at clean `main` commit
-`4aa588dafe5b1e1f7bcdf9b2b28192434fe62c4d`:
+This source snapshot is bound to `main` at
+`4a89a968b7729cddd1eaec414b6066820772da97`. The shared checkout has uncommitted
+work, so it is not a clean release candidate and no artifact check from that
+checkout is claimed here.
 
-- `cargo package --list --locked --package fastapi-rs` lists 33 files,
-  including `README.md`, `LICENSE.md`, `THIRD_PARTY_NOTICES.md`, and
-  `Cargo.lock`. This is a file-list check only; no current `.crate` archive
-  was built. The release audit's missing README/license findings are false
-  positives for these parent-relative manifest paths; Cargo's package list
-  confirms both files are included.
-- `cargo info fastapi-rs@0.1.0 --registry crates-io` and
-  `cargo info starlette-rs@0.1.0 --registry crates-io` both report that the
-  exact crate version is not in the registry. PyPI's JSON endpoints for
-  `fastapi-rs` and `starlette-rs-py` returned 404. A missing result does not
-  prove that a name is available or that this project controls it; verify
-  ownership in the maintainer accounts.
-- The configured sibling checkout is Starlette-RS commit
-  `2da349cf90bb5b6f47aaf9b3bd61759e0b3d450c`, on a different branch with local
-  modifications. It is not the pinned source `4139a72449bf5751e8902fb1c7175ee7f191d338`
-  and must not be used to build release artifacts. Keep that checkout intact;
-  prepare a separate clean pinned source before the next local build.
-- The pinned build-tools environment uses CPython 3.12.13. The default shell
-  `python3` is 3.9.6 and is not the release builder.
-- Earlier local sdist, wheel, crate archive, notice, and rustdoc evidence was
-  produced at `b5987b4`. It is historical and does not verify current HEAD.
+- The current manifests declare `fastapi-rs` as the one publishable Cargo
+  crate, `fastapi-rs-py` as `publish = false`, and `fastapi-rs` as the Python
+  distribution name. The release plan is one Python wheel; the sdist and wheel
+  rebuilt from it are validation-only outputs.
+- Public registry ownership and package availability are **unknown**. The
+  registry probes recorded on 2026-10-19 were against the preceding
+  `4aa588d` source revision; those results are historical and must be checked
+  again by the release maintainer.
+- The most recent source-archive and rebuilt-wheel evidence in
+  [LICENSING.md](LICENSING.md#source-archive-evidence-fastapi-rs-010-2026-10-18)
+  is from `adae40e` on macOS arm64. The Cargo archive evidence there is from
+  `0738588`. These records are historical; none verifies artifacts from
+  `4a89a96`.
+- The source tree contains the FastAPI MIT notice. Inclusion in a candidate
+  wheel and Cargo archive remains **unverified** until
+  `make license-artifact-check` is run on those exact files.
+- The compatibility atlas at `4a89a96` records 490 unresolved target
+  dispositions among 497 source-supported public API entries. This inventory
+  is not a claim of complete FastAPI compatibility or release readiness.
 
-No current release artifact was built, no registry upload or tag was created,
-and no GitHub release or documentation deployment occurred. The repository
-keeps project documentation in Markdown; docs.rs can publish the Rust API
-reference after the crate is available, and there is no separate static-site
-workflow. FastAPI-RS compatibility remains incomplete: the current
-[compatibility atlas](COMPATIBILITY_ATLAS.md) reports 490 unresolved target
-dispositions among 497 source-supported public API entries. Do not describe
-this candidate as a complete FastAPI replacement or as release-ready until the
-compatibility scope and release gates are resolved.
+No package build, current registry query, upload, tag, GitHub release, or
+documentation deployment was performed while refreshing this source snapshot.
+Project guides remain in repository Markdown; docs.rs can build the Rust API
+reference after the crate is published, and no static-site workflow is
+configured.

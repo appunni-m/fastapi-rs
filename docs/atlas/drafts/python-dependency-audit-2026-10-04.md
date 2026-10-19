@@ -56,17 +56,17 @@ target package's declared dependency graph.
 ## Concrete discrepancy: `annotated-doc`
 
 The claim that FastAPI-RS does not import `annotated-doc` is false. The
-extension initializer ([`fastapi-rs-py/src/lib.rs`](../../../fastapi-rs-py/src/lib.rs:321)) calls
-[`register_python_api`](../../../fastapi-rs/src/lib.rs:31), which calls
-[`parameters::register`](../../../fastapi-rs/src/lib.rs:34) and constructs the
+extension initializer ([`fastapi-rs-py/src/lib.rs`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs-py/src/lib.rs#L321)) calls
+[`register_python_api`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs/src/lib.rs#L31), which calls
+[`parameters::register`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs/src/lib.rs#L34) and constructs the
 `Depends` and `Security` signatures. The signature builders
-[`set_depends_signature`](../../../fastapi-rs/src/parameters.rs:899) and
-[`set_security_signature`](../../../fastapi-rs/src/parameters.rs:1067) import
+[`set_depends_signature`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs/src/parameters.rs#L899) and
+[`set_security_signature`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs/src/parameters.rs#L1067) import
 `annotated_doc.Doc`. Thus an ordinary `fastapi` import reaches this dependency.
 Other direct call sites build documented parameter/error/security annotations
-in [`docs.rs`](../../../fastapi-rs/src/docs.rs:508),
-[`errors.rs`](../../../fastapi-rs/src/errors.rs:512), and
-[`security.rs`](../../../fastapi-rs/src/security.rs:1382).
+in [`docs.rs`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs/src/docs.rs#L508),
+[`errors.rs`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs/src/errors.rs#L512), and
+[`security.rs`](https://github.com/appunni-m/fastapi-rs/blob/c496ca40733c252e427e5e53f848b23ddc5a424a/fastapi-rs/src/security.rs#L1382).
 
 The following current claims need correction:
 

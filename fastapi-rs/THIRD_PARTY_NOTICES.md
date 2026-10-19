@@ -1,6 +1,6 @@
 # Third-party notices
 
-FastAPI-RS's original code is licensed under MIT; see [`LICENSE.md`](LICENSE.md).
+FastAPI-RS's original code is licensed under MIT; see [`LICENSE.md`][project-license].
 This repository does not include FastAPI implementation source or wholesale
 Starlette modules. `fastapi-rs/src/route_signature.json` does include
 FastAPI 0.141.1 signature metadata and annotation text copied from its pinned
@@ -12,13 +12,17 @@ notice is also reproduced below. The target runtime must not install or import
 the original FastAPI package. The versioned source trees are compatibility
 authorities, not included implementation source trees in this distribution.
 
+[project-license]: https://github.com/appunni-m/fastapi-rs/blob/main/LICENSE.md
+[rust-target-dependencies]: https://github.com/appunni-m/fastapi-rs/blob/main/docs/RUST_TARGET_DEPENDENCIES.md
+[licensing-guide]: https://github.com/appunni-m/fastapi-rs/blob/main/docs/LICENSING.md
+
 ## Dependencies
 
 - `starlette-rs` 0.1.0 is a separate BSD-3-Clause project and is a Rust
   dependency of FastAPI-RS.
 - PyO3 0.29.2 and its Cargo dependency closure declare MIT OR Apache-2.0 or the
   package-specific expressions recorded in
-  [`docs/RUST_TARGET_DEPENDENCIES.md`](docs/RUST_TARGET_DEPENDENCIES.md).
+  [`docs/RUST_TARGET_DEPENDENCIES.md`][rust-target-dependencies].
 - `annotated-doc==0.0.4` is a direct MIT-licensed Python runtime dependency.
   Rust calls `annotated_doc.Doc` through PyO3 to construct `Doc` metadata in
   Python signatures. It is installed as a separate distribution and is not
@@ -54,14 +58,14 @@ and inspect the wheel and sdist. Retain the zlib notice in any source
 distribution containing its bundled source and mark altered source; record
 the linked backend for every binary build. The project license does not
 replace or relicense dependency material; see
-[`docs/LICENSING.md`](docs/LICENSING.md).
+[`docs/LICENSING.md`][licensing-guide].
 
 <!-- BEGIN LOCKED RUST DEPENDENCY NOTICES -->
 ## Locked Rust Cargo dependency license sources
 
 This source-derived inventory covers license/copyright-named files in every registry
 package in the pinned `Cargo.lock`;
-the role labels match [`RUST_TARGET_DEPENDENCIES.md`](docs/RUST_TARGET_DEPENDENCIES.md).
+the role labels match [`RUST_TARGET_DEPENDENCIES.md`][rust-target-dependencies].
 License source bytes below are copied from the exact `.crate` archives whose SHA-256
 checksums are recorded in `Cargo.lock`. This is the locked dependency-source union, not
 a claim that every package is linked into every wheel: target-specific, optional,

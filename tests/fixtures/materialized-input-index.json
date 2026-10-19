@@ -11394,6 +11394,28 @@
       ]
     },
     {
+      "id": "fastapi-response-direct-asgi",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-response-direct-asgi.json",
+      "input_sha256": "f0e5de7a15d9b2536b489ed514ebf05b6846e7c07f2fab5e7db708ce7d9fea08",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-response-direct-asgi.yaml",
+      "recipe_sha256": "3e4a2e839a93eb2df33e08e93cce41c06a3919fa18b32f7a8f0633828cbe4f30",
+      "case_ids": [
+        "fastapi.responses.response-direct-asgi"
+      ],
+      "workload_path": "tests/fixtures/workloads/fastapi_response_direct_asgi.py",
+      "workload_sha256": "8d848a76ae1669ec1502f6bc6daf7c3f87a46dba91af8e93a1f5dd97f322e90c",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.responses.response-direct-asgi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/response-directly.md",
+            "source:documented-page:reference/responses.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "fastapi-templating-alias-identity",
       "input_path": "tests/fixtures/inputs/parity/fastapi-templating-alias-identity.json",
       "input_sha256": "6309660ea1728109b988c95b2a14d5c2dc43114d3a06d64b6f124b613a6567a9",
@@ -52284,6 +52306,38 @@
         "fastapi.mount.websocket-included-router-order"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/response-directly.md",
+      "fixture_id": "fastapi.docs.advanced-response-directly",
+      "workflow_id": "fastapi-response-direct-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.responses.response-direct-asgi"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/responses.md",
+      "fixture_id": "fastapi.docs.reference-responses",
+      "workflow_id": "fastapi-response-direct-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.responses.response-direct-asgi"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"

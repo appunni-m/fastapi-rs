@@ -4819,15 +4819,18 @@ reviewed_api_contract_overlay:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
         - {path: fastapi/responses.py}
-      observation_selectors: [http.status, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       supported_slice: >-
         FastAPI directly re-exports Starlette's Response under
         fastapi.responses. FastAPI-RS registers the canonical
         starlette.responses.Response object from Starlette-RS. The
         root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity. This scope covers alias exposure and identity;
-        response behavior remains in the pinned Starlette-RS API contract and
-        is not claimed here.
+        object identity. The `fastapi.responses.response-direct-asgi` input
+        constructs the alias directly and invokes that instance as the ASGI
+        application, comparing status, ordered headers, body bytes, and send
+        message types. This covers the FastAPI-facing alias construction and
+        invocation slice; the broader generic response contract remains owned
+        by the pinned Starlette-RS API contract.
     fastapi.responses.StreamingResponse:
       target_binding:
         implementation_owner: starlette-rs

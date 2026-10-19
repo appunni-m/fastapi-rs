@@ -181,7 +181,7 @@ def _cargo_notice_body() -> str:
         "",
         "This source-derived inventory covers license/copyright-named files in every registry",
         "package in the pinned `Cargo.lock`;",
-        "the role labels match [`RUST_TARGET_DEPENDENCIES.md`](docs/RUST_TARGET_DEPENDENCIES.md).",
+        "the role labels match [`RUST_TARGET_DEPENDENCIES.md`][rust-target-dependencies].",
         "License source bytes below are copied from the exact `.crate` archives whose SHA-256",
         "checksums are recorded in `Cargo.lock`. This is the locked dependency-source union, not",
         "a claim that every package is linked into every wheel: target-specific, optional,",
