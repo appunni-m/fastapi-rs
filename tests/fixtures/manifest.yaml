@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: e11989a9f4c59cc4d7ec459697ff281a5f6457870e8c58da7a1d46870c50654b
+    sha256: a3c2c236c9d2b0c56c469ce17c305a1faf50f0bfcaf36b0a91fff82359fba711
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: fd47e61f1470621d06f9d5a0451de01b6013a01b3222f3e6b48b6ba30f7577a3
+    sha256: c894547f14e84b7092b7a6ed707326e85272454d7e62774182340fc1f41781ee
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 03f6ea2f3f3922181e5ba68c73bb22a92495b2d6a7a19f5c5e723c637a8cb66c
+    sha256: 1f006ccfe250d6110492224d19284e07d56c77a493217a31e1b7767f082f22f3
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 690
-      cases: 2780
-      partial_source_mappings: 1942
+      workflows: 691
+      cases: 2788
+      partial_source_mappings: 1943
 
 contract_metadata:
   aliases:
@@ -1319,8 +1319,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 184
-    symbols_with_operation_fixture_refs: 304
-    operation_fixture_refs: 2288
+    symbols_with_operation_fixture_refs: 306
+    operation_fixture_refs: 2296
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -37007,6 +37007,95 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.defaults
+      probe_id: operation-defaults
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.invalid-deprecated
+      probe_id: operation-invalid-deprecated
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.populated
+      probe_id: operation-populated
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.signature
+      probe_id: operation-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.populated
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.operation.invalid-deprecated
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -37034,16 +37123,15 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/735
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Direct inputs compare the constructor signature, all-None defaults, one populated model projection
+        across the declared fields, nested references, extension data, and one invalid deprecated value.
+        Other field-specific coercion and validation boundaries remain unproven.
+      - Full Pydantic serialization modes, JSON Schema behavior, and field-isolated validation are outside
+        this direct API slice.
   - id: fastapi.openapi.models.Operation.callbacks
     kind: field
     source_candidate_ref: /api_candidates/736
@@ -39179,6 +39267,95 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.defaults
+      probe_id: path-item-defaults
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.invalid-summary
+      probe_id: path-item-invalid-summary
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.populated
+      probe_id: path-item-populated
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.signature
+      probe_id: path-item-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.populated
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-operation-pathitem-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-operation-pathitem-public-api.json
+      input_sha256: 7698e06dd866a4ce99fc72f8cbb7f8bc06461f35feda131160d36e9f781eb74c
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+      recipe_sha256: 1a1a46a97e995d77128efff51f279fb92f7abd58695d816a9eab420d579f1186
+      workload_path: tests/fixtures/workloads/openapi_operation_pathitem_projection.py
+      workload_sha256: 32891305e2a47a5372735f183f079c9d4f2a1f99a6661d46319f6a0ab357669c
+      case_id: fastapi.openapi-models.path-item.invalid-summary
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -39206,16 +39383,15 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/768
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Direct inputs compare the constructor signature, all-None defaults, one populated model projection
+        across the declared fields, nested operations, the $ref alias, extension data, and one invalid
+        summary value. Other field-specific coercion and validation boundaries remain unproven.
+      - Full Pydantic serialization modes, JSON Schema behavior, and field-isolated validation are outside
+        this direct API slice.
   - id: fastapi.openapi.models.PathItem.delete
     kind: field
     source_candidate_ref: /api_candidates/769

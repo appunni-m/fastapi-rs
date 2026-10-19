@@ -1018,6 +1018,30 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
                 "claimed."
             ),
         },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml",
+            "case_ids": [
+                "fastapi.openapi-models.operation.signature",
+                "fastapi.openapi-models.operation.defaults",
+                "fastapi.openapi-models.operation.populated",
+                "fastapi.openapi-models.operation.invalid-deprecated",
+                "fastapi.openapi-models.path-item.signature",
+                "fastapi.openapi-models.path-item.defaults",
+                "fastapi.openapi-models.path-item.populated",
+                "fastapi.openapi-models.path-item.invalid-summary",
+            ],
+            "observation_selectors": [
+                "python.call_outcome",
+                "python.pydantic_model_result",
+                "python.signature",
+            ],
+            "scope_note": (
+                "Partial independent sample across 8 cases; observes constructor signatures, "
+                "default and populated model dumps, nested OpenAPI fields, reference aliases, "
+                "extra extension retention, and invalid values for Operation and PathItem. "
+                "Other model classes, Pydantic behavior, and validation boundaries are not claimed."
+            ),
+        },
     ],
     "reference/request.md": [
         {

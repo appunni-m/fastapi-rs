@@ -18539,19 +18539,19 @@ reviewed_api_contract_overlay:
         behavior are not claimed.
 
     fastapi.openapi.models.Operation:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            Direct inputs compare the constructor signature, all-None defaults, one populated model
+            projection across the declared fields, nested references, extension data, and one invalid
+            deprecated value. Other field-specific coercion and validation boundaries remain unproven.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Full Pydantic serialization modes, JSON Schema behavior, and field-isolated validation are
+            outside this direct API slice.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -18559,11 +18559,21 @@ reviewed_api_contract_overlay:
           start_line: 289
           end_line: 302
       supported_slice: >-
-        Source model declaration only: Operation inherits BaseModelWithConfig and declares
-        callbacks, deprecated, description, externalDocs, operationId, parameters, requestBody,
-        responses, security, servers, summary, tags. No direct constructor/model_result case is
-        row-linked; Pydantic signature generation, validation/coercion, extras, serialization,
-        and JSON Schema behavior remain outside this source-only slice.
+        Direct inputs compare the Operation constructor signature, all-None defaults, one populated
+        model dump with every declared field set, nested references, retained extension data, and an
+        invalid deprecated value. Broader validation boundaries, serialization modes, and JSON Schema
+        behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.operation.invalid-deprecated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.Operation.callbacks:
       target_binding:
@@ -19328,19 +19338,20 @@ reviewed_api_contract_overlay:
         member-value/identity case is indexed.
 
     fastapi.openapi.models.PathItem:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            Direct inputs compare the constructor signature, all-None defaults, one populated model
+            projection across the declared fields, nested operations, the $ref alias, extension data,
+            and one invalid summary value. Other field-specific coercion and validation boundaries
+            remain unproven.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Full Pydantic serialization modes, JSON Schema behavior, and field-isolated validation are
+            outside this direct API slice.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -19348,11 +19359,21 @@ reviewed_api_contract_overlay:
           start_line: 305
           end_line: 318
       supported_slice: >-
-        Source model declaration only: PathItem inherits BaseModelWithConfig and declares
-        delete, description, get, head, options, parameters, patch, post, put, ref, servers,
-        summary, trace. No direct constructor/model_result case is row-linked; Pydantic
-        signature generation, validation/coercion, extras, serialization, and JSON Schema
-        behavior remain outside this source-only slice.
+        Direct inputs compare the PathItem constructor signature, all-None defaults, one populated
+        model dump with every declared field set, nested operations, the $ref alias, and retained
+        extension data, plus one invalid summary value. Broader validation boundaries, serialization
+        modes, and JSON Schema behavior remain unproven.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-operation-pathitem-public-api.yaml
+          case_id: fastapi.openapi-models.path-item.invalid-summary
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.PathItem.delete:
       target_binding:
