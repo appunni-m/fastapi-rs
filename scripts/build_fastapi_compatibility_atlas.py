@@ -12742,7 +12742,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "priority": 1,
             "id": "complete-public-operation-contract",
             "status": "reviewed-contract-complete; target-parity-unresolved",
-            "acceptance": "The manifest has a pinned source/runtime/signature reference, target binding, observation selectors, and explicit supported/unsupported/unresolved disposition for all 488 source-supported symbols and 9 supported inherited operations. Current dispositions are supported=0, unsupported=0, unresolved=497; this records the remaining behavior gap without claiming parity. Keep the 45 uncertain source candidates explicitly uncertain until public exposure is established, and keep the Starlette 1.6.0 ownership boundary explicit.",
+            "acceptance": "The manifest has pinned source/runtime/signature references, target bindings, observation selectors, and an explicit supported/unsupported/unresolved disposition for every source-supported symbol and supported inherited operation. Current disposition counts are rendered from the manifest in the summary above; this backlog records unresolved target behavior and does not claim parity. Keep uncertain source candidates explicit until public exposure is established, and keep the Starlette 1.6.0 ownership boundary clear.",
         },
         {
             "priority": 2,
