@@ -148,6 +148,16 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ),
         ("http.status", "openapi.document", "openapi.paths"),
     ),
+    (
+        "tests/test_additional_responses_response_class.py",
+        "test_openapi_schema",
+    ): (
+        "additional-responses-response-class",
+        "tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml",
+        "fastapi.additional-responses-response-class.openapi",
+        ("inspect-paired-response-classes",),
+        ("docs.response.status", "http.status", "openapi.document"),
+    ),
 }
 
 

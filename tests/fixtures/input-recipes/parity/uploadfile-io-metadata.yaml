@@ -1,0 +1,88 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/uploadfile_io_metadata.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.uploadfile-io.metadata-and-async-operations
+  actions:
+  - action_id: construct-read-write-seek-close
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /uploadfile-io
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"content":"maple","filename":"maple.txt","size":5,"headers":{"content-type":"text/plain","x-upload-tag":"north"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+  actions:
+  - action_id: construct-null-metadata-and-operate
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /uploadfile-io
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"content":"birch","filename":null,"size":null,"headers":{}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation

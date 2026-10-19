@@ -15424,9 +15424,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The root alias and constructor signature match the pinned oracle, but method annotations,
-            field annotations, class documentation, Pydantic behavior, and upload operations are not
-            fully established.
+            The root alias, constructor signature, selected metadata values, and BytesIO-backed
+            asynchronous operations are checked; exact method and field annotations, class
+            documentation, Pydantic hooks, and other file storage modes remain unverified.
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15442,6 +15442,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-uploadfile.root-signature
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
           observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
         The root alias resolves to the same class as `fastapi.datastructures.UploadFile`, and its
         constructor signature matches FastAPI 0.141.1. The four method signatures also match;
@@ -15578,9 +15586,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The class signature and Rust-owned write/read/seek/close method signatures match the
-            oracle. Class attributes, documentation, Pydantic hooks, and file I/O behavior still
-            need direct contract evidence.
+            The focused workflow covers BytesIO-backed construction, metadata values, and awaited
+            read/write/seek/close results; class and method annotations, documentation, Pydantic
+            hooks, and alternate file storage modes remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15592,19 +15600,27 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-uploadfile.class-signature
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
           observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
-        FastAPI subclass recognition and Pydantic hooks: the plain validator accepts Starlette
-        `UploadFile` instances, and the generated JSON schema is string/octet-stream; the listed
-        methods and fields are separate rows.
+        The public class constructs from a BytesIO-backed file, exposes selected file metadata,
+        and supports the linked awaited file-operation sequence. Exact class annotations,
+        documentation, Pydantic hooks, and other storage modes remain outside this slice.
 
     fastapi.datastructures.UploadFile.close:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            The direct method signature matches FastAPI 0.141.1; close behavior has no direct
-            identity-checked comparison yet.
+            The workflow checks the awaited close return and closed state for BytesIO-backed files;
+            other file storage modes and close errors remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15617,105 +15633,130 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-uploadfile.close-signature
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
           observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
-        Async close forwarding to the pinned Starlette `UploadFile.close`, returning its result.
+        Awaited close returns `None` and closes the underlying BytesIO file object.
 
     fastapi.datastructures.UploadFile.content_type:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Values are checked for one explicit lower-case content-type header and for absent
+            content-type; other header spellings and duplicate values remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
           symbol: UploadFile
           start_line: 21
           end_line: 150
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
-        Read the nullable upload content-type value exposed from its headers.
+        Read `content_type` from an explicit lower-case header and return `None` when that header
+        is absent.
 
     fastapi.datastructures.UploadFile.file:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Object identity and blocking reads are checked for BytesIO; SpooledTemporaryFile and
+            disk-rolled storage remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
           symbol: UploadFile
           start_line: 21
           end_line: 150
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
-        Expose the underlying standard blocking `BinaryIO` file object.
+        Expose the exact BytesIO object passed to the constructor, supporting direct blocking reads.
 
     fastapi.datastructures.UploadFile.filename:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The workflow checks an explicit string and `None`; additional filename values and
+            parser-provided filename edge cases remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
           symbol: UploadFile
           start_line: 21
           end_line: 150
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
-        Read the nullable original upload filename.
+        Read the explicit constructor filename, including the `None` value.
 
     fastapi.datastructures.UploadFile.headers:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            One lower-case content-type plus one additional header and the empty headers case are
+            checked; casing and duplicate-header behavior remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
           symbol: UploadFile
           start_line: 21
           end_line: 150
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
-        Read the upload’s `Headers` value.
+        Read the supplied `Headers` values and return the empty headers mapping for the default case.
 
     fastapi.datastructures.UploadFile.read:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            The direct method signature matches FastAPI 0.141.1; read behavior has no direct
-            identity-checked comparison yet.
+            The workflow checks a positive byte count, the default full read, and a read after
+            writing; other sizes, EOF, and file storage modes remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15728,17 +15769,25 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-uploadfile.read-signature
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
           observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
         Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes.
 
     fastapi.datastructures.UploadFile.seek:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            The direct method signature matches FastAPI 0.141.1; seek behavior has no direct
-            identity-checked comparison yet.
+            The workflow checks offsets zero and two for BytesIO; negative offsets, large offsets,
+            and other storage modes remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15751,39 +15800,52 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-uploadfile.seek-signature
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
           observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
         Forward a required byte offset to awaited Starlette `UploadFile.seek`; return `None`.
 
     fastapi.datastructures.UploadFile.size:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The workflow checks an explicit starting size, its increment after one write, and
+            `None` before and after a write; parser-computed and other sizes remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
           symbol: UploadFile
           start_line: 21
           end_line: 150
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
-        Read the nullable upload size in bytes.
+        Read an explicitly supplied size, observe its increment on write, and preserve `None` when
+        the size is unknown.
 
     fastapi.datastructures.UploadFile.write:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            The direct method signature matches FastAPI 0.141.1; write behavior has no direct
-            identity-checked comparison yet.
+            The workflow checks a one-byte in-place overwrite for BytesIO; appends, longer writes,
+            and other storage modes remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15796,6 +15858,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-uploadfile.write-signature
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
           observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+          case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+          workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+          observation_selectors: [http.body.bytes, http.status]
       supported_slice: >-
         Forward bytes to awaited Starlette `UploadFile.write`; return `None`.
 

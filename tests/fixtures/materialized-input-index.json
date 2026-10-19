@@ -40220,6 +40220,37 @@
       ]
     },
     {
+      "id": "uploadfile-io-metadata",
+      "input_path": "tests/fixtures/inputs/parity/uploadfile-io-metadata.json",
+      "input_sha256": "a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82",
+      "recipe_path": "tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml",
+      "recipe_sha256": "54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c",
+      "case_ids": [
+        "fastapi.uploadfile-io.metadata-and-async-operations",
+        "fastapi.uploadfile-io.null-metadata-and-async-operations"
+      ],
+      "workload_path": "tests/fixtures/workloads/uploadfile_io_metadata.py",
+      "workload_sha256": "fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.uploadfile-io.metadata-and-async-operations",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.uploadfile-io.null-metadata-and-async-operations",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "using-request-directly",
       "input_path": "tests/fixtures/inputs/parity/using_request_directly.json",
       "input_sha256": "a59c5db31a141603779291b5aed8e7cf80ddfc81f5f2e43ada99379f6f0b828f",
@@ -73257,6 +73288,36 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.upload-lifetime-probe-wave.upload-file-is-closed.test-upload-file-is-closed"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "uploadfile-io-metadata",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.uploadfile-io.metadata-and-async-operations",
+        "fastapi.uploadfile-io.null-metadata-and-async-operations"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial001",
+      "workflow_id": "uploadfile-io-metadata",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.uploadfile-io.metadata-and-async-operations",
+        "fastapi.uploadfile-io.null-metadata-and-async-operations"
       ],
       "observation_selectors": [
         "http.body.bytes",

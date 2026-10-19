@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 9bde1dc86f43457240bb5eb8557f8c3e6301ea1440390d8886df9f8a542eb20c
+    sha256: fbb0cbf11deba5c02c19bb3c6af28b305ebb43f80791f095864ab511254e9b7c
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 69d17d9846a1f818ac026efe94f88c7b7316b8e6b4434311876f5fec5d12a561
+    sha256: 468e208677975cc75daa043fd1ad409f071c10bbefb8bf28150696ea65020201
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: e43cdc11c537e33827953d16825ac439558a3f1c44909d4ff786e5653e87c76d
+    sha256: 87232d389e97c7a447900e88b53b41c7eb438acf53803bdf0a77f2bc4c6c7044
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 696
-      cases: 2855
-      partial_source_mappings: 1946
+      workflows: 697
+      cases: 2857
+      partial_source_mappings: 1948
 
 contract_metadata:
   aliases:
@@ -1319,8 +1319,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
-    symbols_with_operation_fixture_refs: 393
-    operation_fixture_refs: 2491
+    symbols_with_operation_fixture_refs: 398
+    operation_fixture_refs: 2513
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -8631,6 +8631,28 @@ api_surface_contract:
       case_id: fastapi.direct-api-uploadfile.root-signature
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -8680,8 +8702,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The root alias and constructor signature match the pinned oracle, but method annotations, field
-        annotations, class documentation, Pydantic behavior, and upload operations are not fully established.
+      - The root alias, constructor signature, selected metadata values, and BytesIO-backed asynchronous
+        operations are checked; exact method and field annotations, class documentation, Pydantic hooks,
+        and other file storage modes remain unverified.
   - id: fastapi.WebSocket
     kind: import_binding
     source_candidate_ref: /api_candidates/16
@@ -23496,6 +23519,28 @@ api_surface_contract:
       case_id: fastapi.direct-api-uploadfile.class-signature
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23526,8 +23571,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The class signature and Rust-owned write/read/seek/close method signatures match the oracle. Class
-        attributes, documentation, Pydantic hooks, and file I/O behavior still need direct contract evidence.
+      - The focused workflow covers BytesIO-backed construction, metadata values, and awaited read/write/seek/close
+        results; class and method annotations, documentation, Pydantic hooks, and alternate file storage
+        modes remain unverified.
   - id: fastapi.datastructures.UploadFile.close
     kind: method
     source_candidate_ref: /api_candidates/319
@@ -23583,6 +23629,28 @@ api_surface_contract:
       case_id: fastapi.direct-api-uploadfile.close-signature
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23609,12 +23677,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/319
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The direct method signature matches FastAPI 0.141.1; close behavior has no direct identity-checked
-        comparison yet.
+      - The workflow checks the awaited close return and closed state for BytesIO-backed files; other
+        file storage modes and close errors remain unverified.
   - id: fastapi.datastructures.UploadFile.content_type
     kind: field
     source_candidate_ref: /api_candidates/320
@@ -23646,6 +23714,29 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23671,15 +23762,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/320
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Values are checked for one explicit lower-case content-type header and for absent content-type;
+        other header spellings and duplicate values remain unverified.
   - id: fastapi.datastructures.UploadFile.file
     kind: field
     source_candidate_ref: /api_candidates/321
@@ -23711,6 +23799,29 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23736,15 +23847,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/321
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Object identity and blocking reads are checked for BytesIO; SpooledTemporaryFile and disk-rolled
+        storage remain unverified.
   - id: fastapi.datastructures.UploadFile.filename
     kind: field
     source_candidate_ref: /api_candidates/322
@@ -23776,6 +23884,29 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23801,15 +23932,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/322
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The workflow checks an explicit string and `None`; additional filename values and parser-provided
+        filename edge cases remain unverified.
   - id: fastapi.datastructures.UploadFile.headers
     kind: field
     source_candidate_ref: /api_candidates/323
@@ -23841,6 +23969,29 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23866,15 +24017,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/323
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - One lower-case content-type plus one additional header and the empty headers case are checked;
+        casing and duplicate-header behavior remain unverified.
   - id: fastapi.datastructures.UploadFile.read
     kind: method
     source_candidate_ref: /api_candidates/324
@@ -23930,6 +24078,28 @@ api_surface_contract:
       case_id: fastapi.direct-api-uploadfile.read-signature
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23956,12 +24126,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/324
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The direct method signature matches FastAPI 0.141.1; read behavior has no direct identity-checked
-        comparison yet.
+      - The workflow checks a positive byte count, the default full read, and a read after writing; other
+        sizes, EOF, and file storage modes remain unverified.
   - id: fastapi.datastructures.UploadFile.seek
     kind: method
     source_candidate_ref: /api_candidates/325
@@ -24017,6 +24187,28 @@ api_surface_contract:
       case_id: fastapi.direct-api-uploadfile.seek-signature
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24043,12 +24235,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/325
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The direct method signature matches FastAPI 0.141.1; seek behavior has no direct identity-checked
-        comparison yet.
+      - The workflow checks offsets zero and two for BytesIO; negative offsets, large offsets, and other
+        storage modes remain unverified.
   - id: fastapi.datastructures.UploadFile.size
     kind: field
     source_candidate_ref: /api_candidates/326
@@ -24080,6 +24272,29 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24105,15 +24320,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/326
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The workflow checks an explicit starting size, its increment after one write, and `None` before
+        and after a write; parser-computed and other sizes remain unverified.
   - id: fastapi.datastructures.UploadFile.write
     kind: method
     source_candidate_ref: /api_candidates/327
@@ -24169,6 +24381,28 @@ api_surface_contract:
       case_id: fastapi.direct-api-uploadfile.write-signature
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-metadata
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-metadata.json
+      input_sha256: a8104c44cb97ad41c424643f6333e679e45762ed0db7b48f87ba596841167d82
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
+      recipe_sha256: 54e2a235a963a56a8462efc9254c09b1ccb890cbea82ff155fe6b90e127bc95c
+      workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
+      workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
+      case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24195,12 +24429,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/327
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The direct method signature matches FastAPI 0.141.1; write behavior has no direct identity-checked
-        comparison yet.
+      - The workflow checks a one-byte in-place overwrite for BytesIO; appends, longer writes, and other
+        storage modes remain unverified.
   - id: fastapi.encoders.jsonable_encoder
     kind: function
     source_candidate_ref: /api_candidates/536

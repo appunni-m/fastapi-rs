@@ -845,10 +845,21 @@ CORE_TEST_REVIEW_MAPPINGS = {
         "functions": {
             "test_openapi_schema": _case(
                 ["openapi-docs", "response-serialization"],
-                ["http.status", "openapi.document"],
+                ["docs.response.status", "http.status", "openapi.document"],
                 "The source asserts status 200 and compares the complete parsed OpenAPI JSON document, including both routes, their success and additional responses, media types, operation metadata, and model schemas.",
                 contract_gate="The dedicated input observes the source route/model configuration and complete OpenAPI output through direct ASGI; it does not assert the generic TestClient/HTTPX client API.",
                 stimulus_notes="Use tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml case fastapi.additional-responses-response-class.openapi. It observes the full parsed document as live source/target output and embeds no expected snapshot.",
+                workflow_case={
+                    "workflow_id": "additional-responses-response-class",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml",
+                    "case_id": "fastapi.additional-responses-response-class.openapi",
+                    "action_ids": ["inspect-paired-response-classes"],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                },
             ),
         },
     },

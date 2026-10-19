@@ -494072,6 +494072,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/request-uploads.yaml",
             "workflow_id": "request-uploads"
+          },
+          {
+            "case_ids": [
+              "fastapi.uploadfile-io.metadata-and-async-operations",
+              "fastapi.uploadfile-io.null-metadata-and-async-operations"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml",
+            "workflow_id": "uploadfile-io-metadata"
           }
         ],
         "linked_example_sources": [
@@ -536568,10 +536582,29 @@
           {
             "case_id": "fastapi.test.test-additional-responses-response-class.test-openapi-schema",
             "end_line": 117,
+            "function_source_ref": {
+              "end_line": 117,
+              "line": 40,
+              "path": "tests/test_additional_responses_response_class.py",
+              "sha256": "cf9e364924e2206020e20edb8aade1869059872007084971bceb69b39e947c7d"
+            },
             "line": 40,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "inspect-paired-response-classes"
+              ],
+              "case_id": "fastapi.additional-responses-response-class.openapi",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml",
+              "workflow_id": "additional-responses-response-class"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -706334,6 +706367,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/request-form-upload-source-review-2026.yaml",
             "workflow_id": "request-form-upload-source-review-2026"
+          },
+          {
+            "case_ids": [
+              "fastapi.uploadfile-io.metadata-and-async-operations",
+              "fastapi.uploadfile-io.null-metadata-and-async-operations"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml",
+            "workflow_id": "uploadfile-io-metadata"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
