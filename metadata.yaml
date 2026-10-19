@@ -15612,7 +15612,8 @@ reviewed_api_contract_overlay:
             acceptance, and selected class/method annotations, docstrings, module names, qualified
             names, and coroutine metadata. A direct error case checks one propagated OSError for
             each async file method and the size increment after a failed write. The broader
-            invalid-input matrix and alternate file storage modes remain unverified.
+            invalid-input matrix and storage types beyond BytesIO and SpooledTemporaryFile
+            remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15664,14 +15665,19 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        The public class constructs from a BytesIO-backed file, exposes selected file metadata,
-        supports the linked awaited file-operation sequence, generates its Pydantic JSON schema,
-        and accepts a Starlette UploadFile base instance through TypeAdapter. The linked custom
-        type cases observe validator diagnostics, including Python format-protocol behavior for
-        one custom metaclass. A selected introspection case compares class and method annotations,
-        docstrings, module and qualified names, and coroutine flags; the broader invalid-input
-        matrix and alternate storage modes remain outside this partial slice.
+        The public class constructs from BytesIO and SpooledTemporaryFile objects, exposes selected
+        file metadata, supports the linked awaited file-operation sequence, generates its Pydantic
+        JSON schema, and accepts a Starlette UploadFile base instance through TypeAdapter. The
+        spooled-file cases compare threshold equality, crossing, and an already-rolled file. The
+        linked custom type cases observe validator diagnostics, including Python format-protocol
+        behavior for one custom metaclass. A selected introspection case compares class and method
+        annotations, docstrings, module and qualified names, and coroutine flags; other file-object
+        types and the broader invalid-input matrix remain outside this partial slice.
 
     fastapi.datastructures.UploadFile.close:
       target_binding:
@@ -15680,8 +15686,9 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             The workflow checks the awaited close return and closed state for BytesIO-backed files,
-            plus propagation of one underlying OSError; other file storage modes and exception
-            types remain unverified.
+            plus propagation of one underlying OSError and successful close after spooled threshold
+            equality, crossing, and pre-rollover; other file types and exception types remain
+            unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15710,8 +15717,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Awaited close returns `None` and closes the underlying BytesIO file object; a selected
+        Awaited close returns `None` and closes BytesIO and spooled file objects; a selected
         underlying OSError propagates and leaves the failing file open.
 
     fastapi.datastructures.UploadFile.content_type:
@@ -15747,8 +15758,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Object identity and blocking reads are checked for BytesIO; SpooledTemporaryFile and
-            disk-rolled storage remain unverified.
+            Object identity and blocking reads are checked for BytesIO and SpooledTemporaryFile
+            before and after rollover; other file object types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15768,8 +15779,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Expose the exact BytesIO object passed to the constructor, supporting direct blocking reads.
+        Expose the exact BytesIO or SpooledTemporaryFile object passed to the constructor, including
+        direct reads before and after rollover.
 
     fastapi.datastructures.UploadFile.filename:
       target_binding:
@@ -15829,9 +15845,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks a positive byte count, the default full read, and a read after
-            writing, plus propagation of one underlying OSError; other sizes, EOF, storage modes,
-            and exception types remain unverified.
+            The workflow checks positive and default full reads, a read after writing, one propagated
+            OSError, and reads after spooled threshold equality, crossing, and pre-rollover; other
+            sizes, EOF, file types, and exception types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15860,9 +15876,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes and
-        propagate a selected underlying OSError.
+        propagate a selected underlying OSError. The workflow reads spooled files before and after
+        threshold equality, crossing, and pre-rollover.
 
     fastapi.datastructures.UploadFile.seek:
       target_binding:
@@ -15870,9 +15891,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks offsets zero and two for BytesIO; negative offsets, large offsets,
-            storage modes, and exception types remain unverified. One underlying OSError is
-            checked for propagation.
+            The workflow checks offsets zero and two for BytesIO, one underlying OSError, and offset
+            zero after spooled threshold equality, crossing, and pre-rollover; negative/large offsets,
+            other file types, and other exception types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15901,9 +15922,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Forward a required byte offset to awaited Starlette `UploadFile.seek`; return `None` and
-        propagate a selected underlying OSError.
+        propagate a selected underlying OSError. The workflow seeks spooled files before reading
+        after threshold equality, crossing, and pre-rollover.
 
     fastapi.datastructures.UploadFile.size:
       target_binding:
@@ -15911,8 +15937,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks an explicit starting size, its increment after one write, and
-            `None` before and after a write; parser-computed and other sizes remain unverified.
+            The workflow checks explicit, incremented, and unknown sizes plus writes at spooled
+            threshold equality, crossing, and pre-rollover; parser-computed and other sizes remain
+            unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15932,9 +15959,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Read an explicitly supplied size, observe its increment on write, and preserve `None` when
-        the size is unknown. A failed write also preserves Starlette's increment-before-I/O order.
+        Read an explicitly supplied size, observe its increment on successful and failed writes, and
+        preserve `None` when the size is unknown. Spooled-file writes at threshold equality, across
+        threshold, and after rollover are included.
 
     fastapi.datastructures.UploadFile.write:
       target_binding:
@@ -15942,9 +15974,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks a one-byte in-place overwrite for BytesIO; appends, longer writes,
-            other storage modes, and exception types remain unverified. One underlying OSError
-            path and its size update are checked.
+            The workflow checks a one-byte BytesIO overwrite and spooled writes at threshold equality,
+            crossing, and pre-rollover, plus one propagated OSError and its size update; appends,
+            longer writes, other file types, and other exception types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15973,9 +16005,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Forward bytes to awaited Starlette `UploadFile.write`; return `None`. A selected
-        underlying OSError propagates after the observed size increment.
+        Forward bytes to awaited Starlette `UploadFile.write`; return `None`. Spooled writes are
+        compared at threshold equality, crossing, and pre-rollover. A selected underlying OSError
+        propagates after the observed size increment.
 
     fastapi.exceptions.HTTPException:
       target_binding:

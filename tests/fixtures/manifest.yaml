@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 2d925fc435882de003fc522e21403cb025d437566c55a6eadbe377f8ef85d3aa
+    sha256: 9a497d6e03c876b3cdac9e91f97c4c07c70e92e77f51bd2541ea4486b3b5b851
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 703
-      cases: 2872
+      workflows: 704
+      cases: 2873
       partial_source_mappings: 1956
 
 contract_metadata:
@@ -1336,7 +1336,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2533
+    operation_fixture_refs: 2540
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -23676,6 +23676,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23710,7 +23724,8 @@ api_surface_contract:
         contribution, direct schema generation, Starlette base-instance acceptance, and selected class/method
         annotations, docstrings, module names, qualified names, and coroutine metadata. A direct error
         case checks one propagated OSError for each async file method and the size increment after a failed
-        write. The broader invalid-input matrix and alternate file storage modes remain unverified.
+        write. The broader invalid-input matrix and storage types beyond BytesIO and SpooledTemporaryFile
+        remain unverified.
   - id: fastapi.datastructures.UploadFile.close
     kind: method
     source_candidate_ref: /api_candidates/319
@@ -23816,6 +23831,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23847,7 +23876,8 @@ api_surface_contract:
       rust_binding: null
       known_gaps:
       - The workflow checks the awaited close return and closed state for BytesIO-backed files, plus propagation
-        of one underlying OSError; other file storage modes and exception types remain unverified.
+        of one underlying OSError and successful close after spooled threshold equality, crossing, and
+        pre-rollover; other file types and exception types remain unverified.
   - id: fastapi.datastructures.UploadFile.content_type
     kind: field
     source_candidate_ref: /api_candidates/320
@@ -24001,6 +24031,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24030,8 +24074,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Object identity and blocking reads are checked for BytesIO; SpooledTemporaryFile and disk-rolled
-        storage remain unverified.
+      - Object identity and blocking reads are checked for BytesIO and SpooledTemporaryFile before and
+        after rollover; other file object types remain unverified.
   - id: fastapi.datastructures.UploadFile.filename
     kind: field
     source_candidate_ref: /api_candidates/322
@@ -24307,6 +24351,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24337,9 +24395,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks a positive byte count, the default full read, and a read after writing, plus
-        propagation of one underlying OSError; other sizes, EOF, storage modes, and exception types remain
-        unverified.
+      - The workflow checks positive and default full reads, a read after writing, one propagated OSError,
+        and reads after spooled threshold equality, crossing, and pre-rollover; other sizes, EOF, file
+        types, and exception types remain unverified.
   - id: fastapi.datastructures.UploadFile.seek
     kind: method
     source_candidate_ref: /api_candidates/325
@@ -24445,6 +24503,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24475,8 +24547,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks offsets zero and two for BytesIO; negative offsets, large offsets, storage
-        modes, and exception types remain unverified. One underlying OSError is checked for propagation.
+      - The workflow checks offsets zero and two for BytesIO, one underlying OSError, and offset zero
+        after spooled threshold equality, crossing, and pre-rollover; negative/large offsets, other file
+        types, and other exception types remain unverified.
   - id: fastapi.datastructures.UploadFile.size
     kind: field
     source_candidate_ref: /api_candidates/326
@@ -24545,6 +24618,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24574,8 +24661,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks an explicit starting size, its increment after one write, and `None` before
-        and after a write; parser-computed and other sizes remain unverified.
+      - The workflow checks explicit, incremented, and unknown sizes plus writes at spooled threshold
+        equality, crossing, and pre-rollover; parser-computed and other sizes remain unverified.
   - id: fastapi.datastructures.UploadFile.write
     kind: method
     source_candidate_ref: /api_candidates/327
@@ -24681,6 +24768,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24711,9 +24812,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks a one-byte in-place overwrite for BytesIO; appends, longer writes, other storage
-        modes, and exception types remain unverified. One underlying OSError path and its size update
-        are checked.
+      - The workflow checks a one-byte BytesIO overwrite and spooled writes at threshold equality, crossing,
+        and pre-rollover, plus one propagated OSError and its size update; appends, longer writes, other
+        file types, and other exception types remain unverified.
   - id: fastapi.encoders.jsonable_encoder
     kind: function
     source_candidate_ref: /api_candidates/536
