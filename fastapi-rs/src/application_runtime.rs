@@ -2163,6 +2163,64 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
 
 #[pymethods]
 impl PyFastApiProxyDescriptor {
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let keyword_instance = kwargs
+            .map(|kwargs| kwargs.get_item("self"))
+            .transpose()?
+            .flatten();
+        if !args.is_empty() && keyword_instance.is_some() {
+            return Err(PyTypeError::new_err(format!(
+                "FastAPI.{}() got multiple values for argument 'self'",
+                self.member
+            )));
+        }
+        let instance = if args.is_empty() {
+            keyword_instance
+        } else {
+            Some(args.get_item(0)?)
+        }
+        .ok_or_else(|| {
+            PyTypeError::new_err(format!(
+                "FastAPI.{}() missing 1 required positional argument: 'self'",
+                self.member
+            ))
+        })?;
+        let forwarded_args = PyTuple::new(py, args.iter().skip(usize::from(!args.is_empty())))?;
+        let forwarded_kwargs = PyDict::new(py);
+        if let Some(kwargs) = kwargs {
+            for (key, value) in kwargs.iter() {
+                if key.extract::<String>()? != "self" {
+                    forwarded_kwargs.set_item(key, value)?;
+                }
+            }
+        }
+
+        if matches!(self.member.as_str(), "__init__" | "__getattr__") {
+            let bound_member = Py::new(
+                py,
+                PyBoundFastApiProxyMember {
+                    instance: instance.unbind(),
+                    member: self.member.clone(),
+                },
+            )?;
+            return bound_member
+                .bind(py)
+                .call(&forwarded_args, Some(&forwarded_kwargs))
+                .map(Bound::unbind);
+        }
+
+        fastapi_proxy_state(&instance)?
+            .getattr(self.member.as_str())?
+            .call(&forwarded_args, Some(&forwarded_kwargs))
+            .map(Bound::unbind)
+    }
+
     fn __get__(
         slf: Py<Self>,
         py: Python<'_>,
