@@ -38,7 +38,7 @@ cases:
     - {kind: application_error, selector: validation_error_details, comparison: exact}
     - kind: application_error
       selector: error_public_attributes
-      attributes: [body]
+      attributes: [body, endpoint_ctx, endpoint_function, endpoint_path, endpoint_file, endpoint_line]
       comparison: exact
   source_evidence:
   - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
