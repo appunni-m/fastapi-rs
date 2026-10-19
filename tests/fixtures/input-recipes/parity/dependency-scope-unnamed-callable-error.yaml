@@ -1,0 +1,16 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/dependency_scope_unnamed_callable_error.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.public-errors.dependency-scope.unnamed-callable-fallback
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_dependency_yield_scope.py
+    kind: upstream_test

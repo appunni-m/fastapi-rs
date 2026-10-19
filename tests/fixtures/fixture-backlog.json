@@ -127818,21 +127818,18 @@
           "heading": "`UploadFile` { #uploadfile }",
           "independent_workflow_mappings": [
             {
-              "action_ids": [
-                "plain-request",
-                "annotated-request"
-              ],
               "case_ids": [
-                "fastapi.request-form-upload.uploadfile.read-seek-replay"
+                "fastapi.uploadfile-io.metadata-and-async-operations",
+                "fastapi.uploadfile-io.null-metadata-and-async-operations"
               ],
               "coverage_status": "partial",
               "observation_selectors": [
                 "http.body.bytes",
                 "http.status"
               ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/request-form-upload-source-review-2026.yaml",
-              "scope_note": "Both selected actions read a prefix and remainder, seek to offset zero, and reread the same uploaded bytes from an async endpoint. The sample supports only that read/seek sequence; filename and content type are sampled in the parent section. It does not assert `.file`, write/close methods, spool rollover, or thread-pool scheduling.",
-              "workflow_id": "request-form-upload-source-review-2026"
+              "recipe_path": "tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml",
+              "scope_note": "The two actions construct `UploadFile` with a BytesIO file and non-null or null metadata, then observe filename, size, headers, content type, blocking file reads, async partial/full reads, seek, write, size update, close return, and closed state. They do not submit a multipart upload, exercise `SpooledTemporaryFile` rollover, sample thread-pool scheduling, or call Pydantic's validation hooks.",
+              "workflow_id": "uploadfile-io-metadata"
             }
           ],
           "observation_selectors": [
@@ -127846,7 +127843,7 @@
             "validation.error_class",
             "validation.error_details"
           ],
-          "review_rationale": "The FastAPI-specific surface in this case is accepting its `UploadFile` annotation in the route. Read, seek, file-object, metadata, spooling, and async method mechanics follow the Starlette 1.6.0 `UploadFile` contract implemented by Starlette-RS.",
+          "review_rationale": "FastAPI 0.141.1 `fastapi/datastructures.py:21-64` defines the subclass and its file metadata, while lines 66-130 forward awaited read, write, seek, and close calls to Starlette; its Pydantic hooks at lines 132-150 are outside this sample. Starlette 1.6.0 `starlette/datastructures.py:415-476` owns the generic file storage, size updates, and in-memory versus spooled-file behavior assigned to Starlette-RS.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -181405,6 +181402,20 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml",
           "workflow_id": "dependency-scope-construction-errors"
+        },
+        {
+          "case_ids": [
+            "fastapi.public-errors.dependency-scope.unnamed-callable-fallback"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/dependency-scope-unnamed-callable-error.yaml",
+          "workflow_id": "dependency-scope-unnamed-callable-error"
         },
         {
           "case_ids": [
@@ -362356,6 +362367,12 @@
           "feature_ids": [
             "app-routing"
           ],
+          "function_source_ref": {
+            "end_line": 319,
+            "line": 310,
+            "path": "tests/test_router_include_context.py",
+            "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109"
+          },
           "id": "fastapi.test.test-router-include-context.test-url-path-for-uses-effective-context-for-live-included-route",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -362425,7 +362442,20 @@
                 "start_line": 310
               }
             ],
-            "stimulus_notes": "The recipe includes an empty router before adding its named route, then requests a separate probe endpoint that returns the lookup result as response text; no expected path is embedded in the input."
+            "stimulus_notes": "The recipe includes an empty router before adding its named route, then requests a separate probe endpoint that returns the lookup result as response text; no expected path is embedded in the input.",
+            "workflow_case": {
+              "action_ids": [
+                "reverse-included-route"
+              ],
+              "case_id": "fastapi.applications.url-path-for.included-router-context",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml",
+              "workflow_id": "inherited-app-url-path-for"
+            }
           },
           "selector_evidence": [
             {
@@ -362443,7 +362473,20 @@
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
-          "stimulus_design_notes": "The recipe includes an empty router before adding its named route, then requests a separate probe endpoint that returns the lookup result as response text; no expected path is embedded in the input."
+          "stimulus_design_notes": "The recipe includes an empty router before adding its named route, then requests a separate probe endpoint that returns the lookup result as response text; no expected path is embedded in the input.",
+          "workflow_case": {
+            "action_ids": [
+              "reverse-included-route"
+            ],
+            "case_id": "fastapi.applications.url-path-for.included-router-context",
+            "observation_selectors": [
+              "http.status",
+              "http.headers.ordered",
+              "http.body.bytes"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml",
+            "workflow_id": "inherited-app-url-path-for"
+          }
         },
         {
           "feature_evidence": [
@@ -362475,6 +362518,12 @@
           "feature_ids": [
             "app-routing"
           ],
+          "function_source_ref": {
+            "end_line": 337,
+            "line": 322,
+            "path": "tests/test_router_include_context.py",
+            "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109"
+          },
           "id": "fastapi.test.test-router-include-context.test-url-path-for-uses-distinct-repeated-inclusion-contexts",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -362544,7 +362593,20 @@
                 "start_line": 322
               }
             ],
-            "stimulus_notes": "The independent routers use distinct prefixes and an entry identifier. The expected path is not stored in the YAML input."
+            "stimulus_notes": "The independent routers use distinct prefixes and an entry identifier. The expected path is not stored in the YAML input.",
+            "workflow_case": {
+              "action_ids": [
+                "reverse-parent-router-route"
+              ],
+              "case_id": "fastapi.apirouter.url-path-for.repeated-inclusion-context",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/inherited-apirouter-url-path-for.yaml",
+              "workflow_id": "inherited-apirouter-url-path-for"
+            }
           },
           "selector_evidence": [
             {
@@ -362562,7 +362624,20 @@
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
-          "stimulus_design_notes": "The independent routers use distinct prefixes and an entry identifier. The expected path is not stored in the YAML input."
+          "stimulus_design_notes": "The independent routers use distinct prefixes and an entry identifier. The expected path is not stored in the YAML input.",
+          "workflow_case": {
+            "action_ids": [
+              "reverse-parent-router-route"
+            ],
+            "case_id": "fastapi.apirouter.url-path-for.repeated-inclusion-context",
+            "observation_selectors": [
+              "http.status",
+              "http.headers.ordered",
+              "http.body.bytes"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/inherited-apirouter-url-path-for.yaml",
+            "workflow_id": "inherited-apirouter-url-path-for"
+          }
         },
         {
           "feature_evidence": [

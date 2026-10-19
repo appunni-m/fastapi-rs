@@ -4,7 +4,7 @@ _MULTIPART = "tests/fixtures/input-recipes/parity/request-multipart.yaml"
 _REQUEST_FILES_OPENAPI = (
     "tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml"
 )
-_UPLOADFILE_READ = "tests/fixtures/input-recipes/parity/request-form-upload-source-review-2026.yaml"
+_UPLOADFILE_IO = "tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml"
 _FILE_METADATA = (
     "tests/fixtures/input-recipes/parity/request-files-metadata-openapi-source-review-20261015.yaml"
 )
@@ -14,17 +14,19 @@ _OPENAPI = ["openapi.document", "openapi.paths"]
 
 
 def _workflow(heading, start, end, recipe, cases, actions, selectors, note, rationale):
-    return {
+    row = {
         "heading": heading,
         "start_line": start,
         "end_line": end,
         "recipe_path": recipe,
         "case_ids": cases,
-        "action_ids": actions,
         "observation_selectors": selectors,
         "scope_note": note,
         "rationale": rationale,
     }
+    if actions is not None:
+        row["action_ids"] = actions
+    return row
 
 
 def _excluded(heading, start, end, reason, rationale):
@@ -125,22 +127,26 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015 = {
         "`UploadFile` { #uploadfile }",
         69,
         111,
-        _UPLOADFILE_READ,
-        ["fastapi.request-form-upload.uploadfile.read-seek-replay"],
-        ["plain-request", "annotated-request"],
+        _UPLOADFILE_IO,
+        [
+            "fastapi.uploadfile-io.metadata-and-async-operations",
+            "fastapi.uploadfile-io.null-metadata-and-async-operations",
+        ],
+        None,
         _HTTP,
         (
-            "Both selected actions read a prefix and remainder, seek to offset zero, and reread "
-            "the same uploaded bytes from an async endpoint. The sample supports only that "
-            "read/seek sequence; filename and content type are sampled in the parent section. "
-            "It does not assert `.file`, write/close methods, spool rollover, or thread-pool "
-            "scheduling."
+            "The two actions construct `UploadFile` with a BytesIO file and non-null or null "
+            "metadata, then observe filename, size, headers, content type, blocking file reads, "
+            "async partial/full reads, seek, write, size update, close return, and closed state. "
+            "They do not submit a multipart upload, exercise `SpooledTemporaryFile` rollover, "
+            "sample thread-pool scheduling, or call Pydantic's validation hooks."
         ),
         (
-            "The FastAPI-specific surface in this case is accepting its `UploadFile` annotation "
-            "in the route. Read, seek, file-object, metadata, spooling, and async method "
-            "mechanics follow the Starlette 1.6.0 `UploadFile` contract implemented by "
-            "Starlette-RS."
+            "FastAPI 0.141.1 `fastapi/datastructures.py:21-64` defines the subclass and its file "
+            "metadata, while lines 66-130 forward awaited read, write, seek, and close calls to "
+            "Starlette; its Pydantic hooks at lines 132-150 are outside this sample. Starlette "
+            "1.6.0 `starlette/datastructures.py:415-476` owns the generic file storage, size "
+            "updates, and in-memory versus spooled-file behavior assigned to Starlette-RS."
         ),
     ),
     ("tutorial/request-files.md", "what-is-form-data"): _workflow(

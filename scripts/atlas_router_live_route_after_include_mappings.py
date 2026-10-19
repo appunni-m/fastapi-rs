@@ -71,6 +71,10 @@ _APP_URL_PATH_FOR_MAPPING = {
         "returns the URLPath string through an independent HTTP endpoint. The route prefix and value are input-only."
     ),
     "replace_features": True,
+    "workflow_case": {
+        "workflow_id": "inherited-app-url-path-for",
+        **_APP_URL_PATH_FOR_WORKFLOW,
+    },
     "contract_gate": (
         "Partial: this case observes the path string for one explicitly named route added after router inclusion. "
         "It does not claim URLPath host/protocol metadata, missing names, or other converter values."
@@ -99,6 +103,10 @@ _APIRouter_URL_PATH_FOR_MAPPING = {
         "selects the public parent.url_path_for result through an independent HTTP endpoint."
     ),
     "replace_features": True,
+    "workflow_case": {
+        "workflow_id": "inherited-apirouter-url-path-for",
+        **_APIRouter_URL_PATH_FOR_WORKFLOW,
+    },
     "contract_gate": (
         "Partial: the workflow observes the public parent router's first matching URLPath string. The "
         "source test's direct routes[1].url_path_for assertion concerns the mutable route collection and "

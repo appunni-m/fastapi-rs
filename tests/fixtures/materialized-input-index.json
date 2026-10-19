@@ -6348,6 +6348,27 @@
       ]
     },
     {
+      "id": "dependency-scope-unnamed-callable-error",
+      "input_path": "tests/fixtures/inputs/parity/dependency-scope-unnamed-callable-error.json",
+      "input_sha256": "921d9b6879709ed1bd16a96cbeaacdca71c59e5adb7865735a1ef4c0b5fa1ed7",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-scope-unnamed-callable-error.yaml",
+      "recipe_sha256": "3a37c1bc3f7240b4132cdd2282bd18d9dc679ad5b73ce1c61e2e2b0a13a5d488",
+      "case_ids": [
+        "fastapi.public-errors.dependency-scope.unnamed-callable-fallback"
+      ],
+      "workload_path": "tests/fixtures/workloads/dependency_scope_unnamed_callable_error.py",
+      "workload_sha256": "b0114002823ead90592034f692a4c63ba74e511c4ee0d31e3c605c5698b7acab",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.public-errors.dependency-scope.unnamed-callable-fallback",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_yield_scope.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "dependency-scope-websocket",
       "input_path": "tests/fixtures/inputs/parity/dependency-scope-websocket.json",
       "input_sha256": "2f28f0331235cc9bcbef00a5d0754b9db4017914804692ffaff428fec570dc76",
@@ -46988,6 +47009,21 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.invalid-request-scope-depends-on-function-websocket"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_yield_scope.py",
+      "fixture_id": "fastapi.test.test-dependency-yield-scope",
+      "workflow_id": "dependency-scope-unnamed-callable-error",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.dependency-scope.unnamed-callable-fallback"
       ],
       "observation_selectors": [
         "construction.exception_class",

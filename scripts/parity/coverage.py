@@ -136,6 +136,26 @@ QUERY_REQUIRED_LIST_WORKFLOW_ID = "query-required-list-aliases"
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
         "tests/test_router_include_context.py",
+        "test_url_path_for_uses_effective_context_for_live_included_route",
+    ): (
+        "inherited-app-url-path-for",
+        "tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml",
+        "fastapi.applications.url-path-for.included-router-context",
+        ("reverse-included-route",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_router_include_context.py",
+        "test_url_path_for_uses_distinct_repeated_inclusion_contexts",
+    ): (
+        "inherited-apirouter-url-path-for",
+        "tests/fixtures/input-recipes/parity/inherited-apirouter-url-path-for.yaml",
+        "fastapi.apirouter.url-path-for.repeated-inclusion-context",
+        ("reverse-parent-router-route",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_router_include_context.py",
         "test_openapi_cache_updates_after_live_route_addition",
     ): (
         "router-openapi-cache-after-include",

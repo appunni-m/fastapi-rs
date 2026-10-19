@@ -11012,6 +11012,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-http
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml
           case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-websocket
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-unnamed-callable-error.yaml
+          case_id: fastapi.public-errors.dependency-scope.unnamed-callable-fallback
         - recipe_path: tests/fixtures/input-recipes/parity/depends-signature.yaml
           case_id: fastapi.dependencies.depends-yield-scope-signature
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
@@ -11246,6 +11248,12 @@ reviewed_api_contract_overlay:
         annotated parameter documentation, is covered by the independent
         `tests/fixtures/input-recipes/parity/depends-signature.yaml` case
         `fastapi.dependencies.depends-yield-scope-signature`.
+        The independent
+        `dependency-scope-unnamed-callable-error` input exercises the
+        `<unnamed_callable>` fallback in `get_dependant`; this source-linked
+        input is limited to one callable instance and a function-scoped
+        generator child. It does not establish direct exception imports or
+        other invalid dependency-scope inputs.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract

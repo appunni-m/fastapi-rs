@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: fbb0cbf11deba5c02c19bb3c6af28b305ebb43f80791f095864ab511254e9b7c
+    sha256: a656fe14e3b6ac4a708c1a3467a4182595bd133dfb94ab99dfe485d6798a55ee
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 468e208677975cc75daa043fd1ad409f071c10bbefb8bf28150696ea65020201
+    sha256: b6983a82acc51245ed54f3f86b7ae8be1eaf7ace5ffa09702be751060116ea15
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 87232d389e97c7a447900e88b53b41c7eb438acf53803bdf0a77f2bc4c6c7044
+    sha256: 3d0b866e7856363aec01ae3c774d1a7f9c02d2f56dfd1f306c125642cdf16fb8
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 697
-      cases: 2857
-      partial_source_mappings: 1948
+      workflows: 698
+      cases: 2858
+      partial_source_mappings: 1949
 
 contract_metadata:
   aliases:
@@ -1320,7 +1320,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2513
+    operation_fixture_refs: 2514
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5110,6 +5110,18 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/dependency_scope_construction_errors.py
       workload_sha256: 1313e5a6f88ded5c080b983437afe693823d1cfa03abeef564194ec4c65723f5
       case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: dependency-scope-unnamed-callable-error
+      input_path: tests/fixtures/inputs/parity/dependency-scope-unnamed-callable-error.json
+      input_sha256: 921d9b6879709ed1bd16a96cbeaacdca71c59e5adb7865735a1ef4c0b5fa1ed7
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-unnamed-callable-error.yaml
+      recipe_sha256: 3a37c1bc3f7240b4132cdd2282bd18d9dc679ad5b73ce1c61e2e2b0a13a5d488
+      workload_path: tests/fixtures/workloads/dependency_scope_unnamed_callable_error.py
+      workload_sha256: b0114002823ead90592034f692a4c63ba74e511c4ee0d31e3c605c5698b7acab
+      case_id: fastapi.public-errors.dependency-scope.unnamed-callable-fallback
       observation_selectors:
       - construction.exception_class
       - construction.exception_message
