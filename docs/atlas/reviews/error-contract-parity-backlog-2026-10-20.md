@@ -66,24 +66,21 @@ uncertain warning class or its internal aliases.
   `capture_warnings` inputs add `python.warnings` to the selector set in
   `scripts/parity/materialized.py:77-82`.
 
-## Highest-impact gap and next input-only boundary
+## Highest-impact gap and input-only boundary
 
-Prioritize a WebSocket request-validation object-observation case. The
-existing close workflow checks the serialized close result, while the root and
-mounted rethrow cases select only the exception class. The direct constructor
-workflow selects call outcome, not the constructed exception’s fields. As a
-result, the candidate’s `error.args`, `error.public_attributes`, and
-`validation.error_details` selectors are not joined on a WebSocket
-`WebSocketRequestValidationError` instance in an input case.
+The direct WebSocket constructor workflow still selects call outcome rather
+than instance fields. An input-only ASGI case now exercises a route with
+invalid path, query, and header-dependency values and the existing rethrowing
+handler pattern. It selects the exception class/message, validation details,
+`args`, `endpoint_ctx`, and derived endpoint fields. The case lives in
+`tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml`
+as `fastapi.validation-error-context.exact.websocket-error-fields`; its
+workload is `tests/fixtures/workloads/validation_error_context_exact_review.py`.
+The existing default-close case remains separate for the 1008/reason contract.
 
-Add one independently authored ASGI case to the existing WebSocket validation
-workflow: send a WebSocket connect to a route with multiple invalid
-path/query/dependency values, use the existing rethrow-handler pattern, and
-select `application_error.exception`, `validation_error_class`,
-`validation_error_details`, and `error_public_attributes` for `args`,
-`endpoint_ctx`, and the derived endpoint fields. Keep the current default-close
-case for the separate 1008/reason contract. The input recipe should contain
-only the request and route stimulus, with no expected outputs.
+The recipe passes validation and the indexed workflow matches 8/8 cases. The
+new observation is included in that live comparison; the result does not
+establish full FastAPI-RS support for this class or for the broader error API.
 
 ## Source evidence and ownership boundary
 
@@ -108,5 +105,14 @@ only the request and route stimulus, with no expected outputs.
   `tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml`,
   and `tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml`.
 
-This review establishes source and input coverage only. It makes no
-FastAPI-RS parity or support claim.
+## Focused parity evidence
+
+The indexed 8-case workflow has passed an identity-checked oracle/target
+comparison against FastAPI 0.141.1, Starlette 1.6.0, and the pinned
+Starlette-RS contract. Its exact run and target identities are recorded on
+Kata issue `r17z`; the comparison artifact remains in the ignored
+`parity-results` directory.
+
+This is bounded workflow evidence. The complete 42-candidate source-backed
+error audit, remaining operation mappings, and full FastAPI-RS compatibility
+remain open.

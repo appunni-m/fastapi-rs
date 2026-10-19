@@ -13221,11 +13221,17 @@ reviewed_api_contract_overlay:
           case_id: fastapi.websocket-validation.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.constructor-override-close
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+          case_id: fastapi.validation-error-context.exact.websocket-error-fields
       feature_ids: [public-api-errors, request-validation, websocket-lifecycle]
       observation_selectors:
         - construction.outcome
         - construction.exception_class
         - construction.exception_message
+        - asgi.application_error.exception
+        - validation.error_class
+        - validation.error_details
+        - error.public_attributes
         - websocket.close_code
         - websocket.close_reason
         - websocket.event_order
@@ -13240,7 +13246,11 @@ reviewed_api_contract_overlay:
         and workload traces proving the default handler-map entry and custom
         override registration. It does not cover every handler callable
         metadata field or all custom WebSocket object
-        identity/state behavior.
+        identity/state behavior. A separate input-driven ASGI case rethrows a
+        WebSocket validation error caused by invalid path, query, and header
+        dependency values, then observes its class, details, args, endpoint
+        context, and derived endpoint fields. This fixture mapping is not a
+        parity result and does not establish behavior beyond those inputs.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract

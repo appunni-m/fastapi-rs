@@ -1,6 +1,9 @@
 """Endpoint-context validation errors exposed at the ASGI exception boundary."""
 
-from fastapi import FastAPI, Request, WebSocket
+from collections.abc import Mapping
+from typing import Annotated, Any
+
+from fastapi import Depends, FastAPI, Header, Query, Request, WebSocket
 from fastapi.exceptions import (
     RequestValidationError,
     ResponseValidationError,
@@ -32,7 +35,15 @@ def _register_handlers(app: FastAPI) -> None:
     app.exception_handler(WebSocketRequestValidationError)(websocket_validation_handler)
 
 
-def create_app() -> FastAPI:
+async def _websocket_context_dependency(
+    limit: Annotated[int, Query(gt=0)],
+    x_count: Annotated[int, Header(gt=0)],
+) -> None:
+    del limit, x_count
+
+
+def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
+    del factory_input, event_trace
     app = FastAPI()
     sub_app = FastAPI()
     _register_handlers(app)
@@ -56,6 +67,14 @@ def create_app() -> FastAPI:
         await websocket.accept()
         await websocket.send_text(f"Item: {item_id}")
         await websocket.close()
+
+    @app.websocket("/ws/context/{item_id}")
+    async def websocket_context_endpoint(
+        websocket: WebSocket,
+        item_id: int,
+        _dependency: None = Depends(_websocket_context_dependency),
+    ) -> None:
+        del websocket, item_id, _dependency
 
     @sub_app.websocket("/ws/{item_id}")
     async def subapp_websocket_endpoint(websocket: WebSocket, item_id: int):

@@ -178,7 +178,9 @@ _STARLETTE_BOUNDARY = (
     "parsing, generic route/mount scope behavior, exception middleware, and TestClient encoding "
     "and re-raising. FastAPI owns body/form parameter binding, validation exception context and "
     "OpenAPI operation composition. The error-context workflows observe the ASGI exception "
-    "directly; they do not claim TestClient transport or re-raising parity."
+    "directly; fastapi.validation-error-context.exact.websocket-error-fields covers one "
+    "rethrowing WebSocket-handler path. It does not claim TestClient transport or all handler "
+    "and re-raising behavior."
 )
 
 _RUST_TARGET_BOUNDARY = (

@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: bce37b2c30cbc2d8994331e8e908c2d400937a3621db9472375da94db43b35ac
+    sha256: b0bdb576751019d2f0245a597c5156c822ae03370106815ddf385aabe68aa62c
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 7ee8bc4aa7f5b7a15188cd848912e2ad3636d3716fb7c4dfb24ceddce98ab2fa
+    sha256: abeeae2d11bf51a304265dad5e20cc4e89117bac8e670e7438fb4a7f70427333
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 513098813be4a3a2d9eea25c138983d0f87bb8dee27ad83fd4fc8d0363c87431
+    sha256: ae3485a3c6be755ac3ad088c6259d555e2afd37ca4fec5d7c63a15006dabe723
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 701
-      cases: 2865
-      partial_source_mappings: 1955
+      cases: 2866
+      partial_source_mappings: 1956
 
 contract_metadata:
   aliases:
@@ -1320,7 +1320,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2514
+    operation_fixture_refs: 2515
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -26908,12 +26908,29 @@ api_surface_contract:
       - websocket.event_order
       - websocket.messages
       - websocket.workload_trace
+    - workflow_id: validation-error-context-exact-review
+      input_path: tests/fixtures/inputs/parity/validation-error-context-exact-review.json
+      input_sha256: fe84e9db5c6cb1f9b1fa19ecf5ecb593f1a63d0a1cd46a69b97afb2bd97ab022
+      recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+      recipe_sha256: cbc0cb8439c3d5deba6dfd57f10fca81bee324c675a559cf0a5a24cb7990207f
+      workload_path: tests/fixtures/workloads/validation_error_context_exact_review.py
+      workload_sha256: 60c68c66b30b5023da11e9eb4e296c887bc1657a140fb0a036f8f60be18486a0
+      case_id: fastapi.validation-error-context.exact.websocket-error-fields
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - validation.error_class
+      - validation.error_details
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
     - request-validation
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
     - construction.exception_class
     - construction.exception_message
     - construction.outcome

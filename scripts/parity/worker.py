@@ -447,6 +447,8 @@ def _json_safe(value: Any) -> Any:
     """Project exception data into deterministic JSON values."""
     if value is None or isinstance(value, (bool, int, str)):
         return value
+    if inspect.isfunction(value):
+        return {"callable": f"{value.__module__}.{value.__qualname__}"}
     if isinstance(value, float):
         if value == value and value not in (float("inf"), float("-inf")):
             return value
