@@ -33,6 +33,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V13_ID,
     WORKFLOW_SCHEMA_V14_ID,
     WORKFLOW_SCHEMA_V15_ID,
+    WORKFLOW_SCHEMA_V16_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -146,6 +147,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
         WORKFLOW_SCHEMA_V15_ID,
+        WORKFLOW_SCHEMA_V16_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -165,6 +167,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V13_ID,
             WORKFLOW_SCHEMA_V14_ID,
             WORKFLOW_SCHEMA_V15_ID,
+            WORKFLOW_SCHEMA_V16_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -185,6 +188,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
                 WORKFLOW_SCHEMA_V15_ID,
+                WORKFLOW_SCHEMA_V16_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -346,8 +350,11 @@ def validate_materialized_input_index(
     selector_support = {
         selector_id: selector["workflow_support"] for selector_id, selector in selector_rows.items()
     }
+    api_candidates_by_symbol = {row["id"]: row for row in atlas["api_candidates"]}
     supported_api_symbols = {
-        row["id"] for row in atlas["api_candidates"] if row["classification"] == "supported"
+        symbol_id
+        for symbol_id, row in api_candidates_by_symbol.items()
+        if row["classification"] == "supported"
     }
     supported_api_symbols.update(
         row["id"]
@@ -421,10 +428,25 @@ def validate_materialized_input_index(
                     continue
                 symbol_id = evidence["symbol_id"]
                 if symbol_id not in public_symbol_ids:
-                    _fail(
-                        "API definition evidence does not match a probed public symbol: "
-                        f"{case['case_id']} -> {symbol_id}"
+                    candidate = api_candidates_by_symbol.get(symbol_id)
+                    candidate_sources = (
+                        candidate.get("source_evidence", []) if candidate is not None else []
                     )
+                    source_matches_candidate = any(
+                        source.get("path") == evidence["path"]
+                        and source.get("module_sha256") == evidence["sha256"]
+                        for source in candidate_sources
+                    )
+                    if (
+                        workflow["schema"] != WORKFLOW_SCHEMA_V16_ID
+                        or symbol_id not in supported_api_symbols
+                        or not source_matches_candidate
+                    ):
+                        _fail(
+                            "ASGI API definition evidence must identify a supported symbol and "
+                            "its reviewed source file: "
+                            f"{case['case_id']} -> {symbol_id}"
+                        )
                 source_path = (fastapi_source / evidence["path"]).resolve()
                 try:
                     source_path.relative_to(fastapi_source.resolve())
@@ -534,6 +556,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
                 WORKFLOW_SCHEMA_V15_ID,
+                WORKFLOW_SCHEMA_V16_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)
@@ -542,7 +565,7 @@ def validate_materialized_input_index(
                         f"materialized input index: invalid case contract {case_id}: {exc}"
                     ) from exc
             elif "verification" in case or "fault" in case:
-                _fail(f"verification lanes require Python/ASGI workflow v7 through v10: {case_id}")
+                _fail(f"verification lanes require Python/ASGI workflow v7 through v16: {case_id}")
             if indexed_contracts[case_id]["verification"] != expected_mode:
                 _fail(f"indexed verification lane differs from workflow: {case_id}")
             if expected_mode == "fault-contract" and indexed_contracts[case_id].get(

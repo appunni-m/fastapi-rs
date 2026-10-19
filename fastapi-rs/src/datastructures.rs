@@ -384,13 +384,12 @@ fn upload_file_validate(
         .call1((input_value, starlette_upload_file))?
         .extract::<bool>()?;
     if !is_upload_file {
-        let received_type = py
-            .import("builtins")?
-            .getattr("type")?
-            .call1((input_value,))?
-            .repr()?
-            .to_str()?
-            .to_owned();
+        let builtins = py.import("builtins")?;
+        let value_type = builtins.getattr("type")?.call1((input_value,))?;
+        let received_type = builtins
+            .getattr("format")?
+            .call1((&value_type, ""))?
+            .extract::<String>()?;
         return Err(PyValueError::new_err(format!(
             "Expected UploadFile, received: {received_type}"
         )));

@@ -41,6 +41,7 @@ WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow@12"
 WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow@13"
 WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow@14"
 WORKFLOW_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow@15"
+WORKFLOW_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow@16"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -55,6 +56,7 @@ RESULT_SCHEMA_V12_ID = "fastapi-rs/python-asgi-workflow-result@12"
 RESULT_SCHEMA_V13_ID = "fastapi-rs/python-asgi-workflow-result@13"
 RESULT_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow-result@14"
 RESULT_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow-result@15"
+RESULT_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow-result@16"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -1685,6 +1687,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
         WORKFLOW_SCHEMA_V15_ID,
+        WORKFLOW_SCHEMA_V16_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1708,6 +1711,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
         WORKFLOW_SCHEMA_V15_ID,
+        WORKFLOW_SCHEMA_V16_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1725,6 +1729,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
         WORKFLOW_SCHEMA_V15_ID,
+        WORKFLOW_SCHEMA_V16_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1742,6 +1747,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
                 WORKFLOW_SCHEMA_V15_ID,
+                WORKFLOW_SCHEMA_V16_ID,
             }
             else []
         )
@@ -1758,11 +1764,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
                 WORKFLOW_SCHEMA_V15_ID,
+                WORKFLOW_SCHEMA_V16_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V15_ID
+            RESULT_SCHEMA_V16_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V16_ID
+            else RESULT_SCHEMA_V15_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V15_ID
             else RESULT_SCHEMA_V14_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V14_ID

@@ -143,6 +143,7 @@ from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
+    WORKFLOW_SCHEMA_V16_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -351,8 +352,11 @@ def build_index() -> dict[str, Any]:
     selector_support = {
         row["id"]: row["workflow_support"] for row in selector_catalog["selectors"] if "id" in row
     }
+    api_candidates_by_symbol = {row["id"]: row for row in atlas["api_candidates"]}
     supported_api_symbols = {
-        row["id"] for row in atlas["api_candidates"] if row["classification"] == "supported"
+        symbol_id
+        for symbol_id, row in api_candidates_by_symbol.items()
+        if row["classification"] == "supported"
     }
     supported_api_symbols.update(
         row["id"]
@@ -439,10 +443,25 @@ def build_index() -> dict[str, Any]:
                 if evidence["kind"] != "upstream_api_definition":
                     continue
                 if evidence["symbol_id"] not in public_symbol_ids:
-                    raise ContractError(
-                        "upstream API definition evidence must bind to a probed public symbol: "
-                        f"{case['case_id']} -> {evidence['symbol_id']}"
+                    candidate = api_candidates_by_symbol.get(evidence["symbol_id"])
+                    candidate_sources = (
+                        candidate.get("source_evidence", []) if candidate is not None else []
                     )
+                    source_matches_candidate = any(
+                        source.get("path") == evidence["path"]
+                        and source.get("module_sha256") == evidence["sha256"]
+                        for source in candidate_sources
+                    )
+                    if (
+                        workflow["schema"] != WORKFLOW_SCHEMA_V16_ID
+                        or evidence["symbol_id"] not in supported_api_symbols
+                        or not source_matches_candidate
+                    ):
+                        raise ContractError(
+                            "ASGI API definition evidence must identify a supported symbol and "
+                            "its reviewed source file: "
+                            f"{case['case_id']} -> {evidence['symbol_id']}"
+                        )
                 api_definitions.append(
                     {
                         "case_id": case["case_id"],

@@ -15607,9 +15607,10 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The focused workflow covers BytesIO-backed construction, metadata values, and awaited
-            read/write/seek/close results; class and method annotations, documentation, Pydantic
-            hooks, and alternate file storage modes remain unverified.
+            Linked cases cover selected BytesIO construction and I/O, one multipart validation
+            error, OpenAPI contribution, direct schema generation, and acceptance of a Starlette
+            base instance. Full class/member annotations and documentation, the broader invalid
+            input matrix, and alternate file storage modes remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15629,10 +15630,37 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/request-uploads.yaml
+          case_id: fastapi.request-uploads.request-files.openapi-schema
+          workload_path: tests/fixtures/workloads/request_uploads.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-type-validation.yaml
+          case_id: fastapi.uploadfile.pydantic-validation.reject-text-form-value
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_type_validation.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.json-schema
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.accept-starlette-base
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.reject-custom-type
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.reject-custom-format-type
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         The public class constructs from a BytesIO-backed file, exposes selected file metadata,
-        and supports the linked awaited file-operation sequence. Exact class annotations,
-        documentation, Pydantic hooks, and other storage modes remain outside this slice.
+        supports the linked awaited file-operation sequence, generates its Pydantic JSON schema,
+        and accepts a Starlette UploadFile base instance through TypeAdapter. The linked custom
+        type cases observe validator diagnostics, including Python format-protocol behavior for
+        one custom metaclass; broader class annotations, documentation, invalid inputs, and
+        alternate storage modes remain outside this partial slice.
 
     fastapi.datastructures.UploadFile.close:
       target_binding:

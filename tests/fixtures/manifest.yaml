@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: ae3485a3c6be755ac3ad088c6259d555e2afd37ca4fec5d7c63a15006dabe723
+    sha256: 09df3dd52839da8538405e0328e3de64a4770ec012eb7058048f21ecb931e508
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 701
-      cases: 2866
+      workflows: 702
+      cases: 2870
       partial_source_mappings: 1956
 
 contract_metadata:
@@ -901,6 +901,22 @@ unresolved:
       Adds a strict HTTP observation for ordered dependency callback labels.
       Results carry the per-case trace accumulated by each action; comparison
       remains exact and preserves callback order.
+  python_asgi_workflow_v16:
+    state: digest-checked-api-definition-evidence-for-asgi-cases; v2-v16-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@16
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v16.schema.json
+    schema_sha256: 81d21f5c61703ae7cf3b3818e7e21da6ba6be015e7ee5c062fbb4a060d563fa1
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@16
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v16.schema.json
+    result_schema_sha256: c94f2ac379bc206982da1dd01ae568745520f555217146f29459700d11681060
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@17
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v17.schema.json
+    comparison_schema_sha256: bebff527e89db5c43b6f28fe4d006b747601b97e8931e51c601a74cf440f9f22
+    coverage: >-
+      Adds source-definition references to ASGI cases. Each reference identifies
+      a supported FastAPI API candidate, its reviewed source file, and the
+      pinned source digest; it is recorded as an API requirement rather than a
+      documented-page or upstream-test requirement.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1
@@ -1320,7 +1336,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2515
+    operation_fixture_refs: 2521
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -23553,6 +23569,85 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: request-uploads
+      input_path: tests/fixtures/inputs/parity/request-uploads.json
+      input_sha256: 1c5c247f56bb6da55754c9cad2324a439a5d52ebdbf54b17ffbed19ac0536e01
+      recipe_path: tests/fixtures/input-recipes/parity/request-uploads.yaml
+      recipe_sha256: 01ad9402f835a9785083b1693ef44309e8be3cc18a9483954369a3f2c0de908b
+      workload_path: tests/fixtures/workloads/request_uploads.py
+      workload_sha256: cd2ce85961119e92f97822cc67d7e2a73ae7f3f5c12177317f6aa6cacd940ec9
+      case_id: fastapi.request-uploads.request-files.openapi-schema
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: uploadfile-pydantic-type-validation
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-type-validation.json
+      input_sha256: 74f92c00a53d2e5f9d8446045a7f13e81ab50f67f229f87e8d329eeaa7d9cf69
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-type-validation.yaml
+      recipe_sha256: e8a0f7d718cc0a3fcb09032d503a4cd3b603dcccc771712048d8467b0e206baa
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_type_validation.py
+      workload_sha256: aa4a187be491d4637ca30e162c965f2cb8140ca2806bb19478777ff212093f2f
+      case_id: fastapi.uploadfile.pydantic-validation.reject-text-form-value
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: d132196a4d80c5f7cd436e53fdca75b6040f58ab86c64b35d4dfc422fda8bd9b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: fe0c61420b35bf094a213555301579005ace6a3bfaefc013ed5bc6ac10363e0f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: eb53f22d4d2061e8cb73d39f5ef03421475f267f83c4569b2b0047f45de107b1
+      case_id: fastapi.uploadfile.pydantic-contract.json-schema
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: d132196a4d80c5f7cd436e53fdca75b6040f58ab86c64b35d4dfc422fda8bd9b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: fe0c61420b35bf094a213555301579005ace6a3bfaefc013ed5bc6ac10363e0f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: eb53f22d4d2061e8cb73d39f5ef03421475f267f83c4569b2b0047f45de107b1
+      case_id: fastapi.uploadfile.pydantic-contract.accept-starlette-base
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: d132196a4d80c5f7cd436e53fdca75b6040f58ab86c64b35d4dfc422fda8bd9b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: fe0c61420b35bf094a213555301579005ace6a3bfaefc013ed5bc6ac10363e0f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: eb53f22d4d2061e8cb73d39f5ef03421475f267f83c4569b2b0047f45de107b1
+      case_id: fastapi.uploadfile.pydantic-contract.reject-custom-type
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: d132196a4d80c5f7cd436e53fdca75b6040f58ab86c64b35d4dfc422fda8bd9b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: fe0c61420b35bf094a213555301579005ace6a3bfaefc013ed5bc6ac10363e0f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: eb53f22d4d2061e8cb73d39f5ef03421475f267f83c4569b2b0047f45de107b1
+      case_id: fastapi.uploadfile.pydantic-contract.reject-custom-format-type
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23583,9 +23678,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The focused workflow covers BytesIO-backed construction, metadata values, and awaited read/write/seek/close
-        results; class and method annotations, documentation, Pydantic hooks, and alternate file storage
-        modes remain unverified.
+      - Linked cases cover selected BytesIO construction and I/O, one multipart validation error, OpenAPI
+        contribution, direct schema generation, and acceptance of a Starlette base instance. Full class/member
+        annotations and documentation, the broader invalid input matrix, and alternate file storage modes
+        remain unverified.
   - id: fastapi.datastructures.UploadFile.close
     kind: method
     source_candidate_ref: /api_candidates/319
