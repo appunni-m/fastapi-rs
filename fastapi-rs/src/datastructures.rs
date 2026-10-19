@@ -38,6 +38,171 @@ const BACKGROUND_TASKS_ADD_TASK_DOC: &str = r#"
         [FastAPI docs for Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/).
         "#;
 
+const UPLOAD_FILE_WRITE_DOC: &str = r#"
+        Write some bytes to the file.
+
+        You normally wouldn't use this from a file you read in a request.
+
+        To be awaitable, compatible with async, this is run in threadpool.
+        "#;
+const UPLOAD_FILE_READ_DOC: &str = r#"
+        Read some bytes from the file.
+
+        To be awaitable, compatible with async, this is run in threadpool.
+        "#;
+const UPLOAD_FILE_SEEK_DOC: &str = r#"
+        Move to a position in the file.
+
+        Any next read or write will be done from that position.
+
+        To be awaitable, compatible with async, this is run in threadpool.
+        "#;
+const UPLOAD_FILE_CLOSE_DOC: &str = r#"
+        Close the file.
+
+        To be awaitable, compatible with async, this is run in threadpool.
+        "#;
+const UPLOAD_FILE_CLASS_DOC: &str = r#"
+    A file uploaded in a request.
+
+    Define it as a *path operation function* (or dependency) parameter.
+
+    If you are using a regular `def` function, you can use the `upload_file.file`
+    attribute to access the raw standard Python file (blocking, not async), useful and
+    needed for non-async code.
+
+    Read more about it in the
+    [FastAPI docs for Request Files](https://fastapi.tiangolo.com/tutorial/request-files/).
+
+    ## Example
+
+    ```python
+    from typing import Annotated
+
+    from fastapi import FastAPI, File, UploadFile
+
+    app = FastAPI()
+
+
+    @app.post("/files/")
+    async def create_file(file: Annotated[bytes, File()]):
+        return {"file_size": len(file)}
+
+
+    @app.post("/uploadfile/")
+    async def create_upload_file(file: UploadFile):
+        return {"filename": file.filename}
+    ```
+    "#;
+
+fn upload_file_annotated_type<'py>(
+    py: Python<'py>,
+    base: &Bound<'py, PyAny>,
+    documentation: &str,
+) -> PyResult<Bound<'py, PyAny>> {
+    let doc = py
+        .import("annotated_doc")?
+        .getattr("Doc")?
+        .call1((documentation,))?;
+    let metadata = PyTuple::new(py, [base, &doc])?;
+    py.import("typing")?
+        .getattr("Annotated")?
+        .get_item(metadata)
+}
+
+fn copy_upload_file_method<'py>(
+    py: Python<'py>,
+    starlette_upload_file: &Bound<'py, PyAny>,
+    method_name: &str,
+    documentation: &str,
+    annotations: &Bound<'py, PyDict>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let source = starlette_upload_file.getattr(method_name)?;
+    let function_type = py.import("types")?.getattr("FunctionType")?;
+    let method = function_type.call1((
+        source.getattr("__code__")?,
+        source.getattr("__globals__")?,
+        method_name,
+        source.getattr("__defaults__")?,
+        source.getattr("__closure__")?,
+    ))?;
+    method.setattr("__kwdefaults__", source.getattr("__kwdefaults__")?)?;
+    method.setattr("__annotations__", annotations)?;
+    method.setattr("__module__", "fastapi.datastructures")?;
+    method.setattr("__qualname__", format!("UploadFile.{method_name}"))?;
+    method.setattr("__doc__", documentation)?;
+    Ok(method)
+}
+
+fn upload_file_method<'py>(
+    py: Python<'py>,
+    starlette_upload_file: &Bound<'py, PyAny>,
+    method_name: &str,
+    documentation: &str,
+    parameter: Option<(&str, Bound<'py, PyAny>)>,
+    return_annotation: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let annotations = PyDict::new(py);
+    if let Some((name, annotation)) = parameter {
+        annotations.set_item(name, annotation)?;
+    }
+    annotations.set_item("return", return_annotation)?;
+    copy_upload_file_method(
+        py,
+        starlette_upload_file,
+        method_name,
+        documentation,
+        &annotations,
+    )
+}
+
+fn upload_file_class_annotations<'py>(
+    py: Python<'py>,
+    starlette_datastructures: &Bound<'py, PyAny>,
+    string_type: &Bound<'py, PyAny>,
+    integer_type: &Bound<'py, PyAny>,
+    none_type: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyDict>> {
+    let typing = py.import("typing")?;
+    let union = py.import("operator")?.getattr("or_")?;
+    let optional_string = union.call1((string_type, none_type))?;
+    let optional_integer = union.call1((integer_type, none_type))?;
+    let annotations = PyDict::new(py);
+    annotations.set_item(
+        "file",
+        upload_file_annotated_type(
+            py,
+            &typing.getattr("BinaryIO")?,
+            "The standard Python file object (non-async).",
+        )?,
+    )?;
+    annotations.set_item(
+        "filename",
+        upload_file_annotated_type(py, &optional_string, "The original file name.")?,
+    )?;
+    annotations.set_item(
+        "size",
+        upload_file_annotated_type(py, &optional_integer, "The size of the file in bytes.")?,
+    )?;
+    annotations.set_item(
+        "headers",
+        upload_file_annotated_type(
+            py,
+            &starlette_datastructures.getattr("Headers")?,
+            "The headers of the request.",
+        )?,
+    )?;
+    annotations.set_item(
+        "content_type",
+        upload_file_annotated_type(
+            py,
+            &optional_string,
+            "The content type of the request, from the headers.",
+        )?,
+    )?;
+    Ok(annotations)
+}
+
 #[pyclass(name = "_BackgroundTasksAddTask", module = "fastapi_rs._core", dict)]
 struct BackgroundTasksAddTask;
 
@@ -274,12 +439,78 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let core_schema = wrap_pyfunction!(upload_file_core_schema, module)?;
     let json_schema = wrap_pyfunction!(upload_file_json_schema, module)?;
 
+    let starlette_datastructures = py.import("starlette.datastructures")?;
+    let starlette_upload_file = starlette_datastructures.getattr("UploadFile")?;
+    let builtins = py.import("builtins")?;
+    let bytes_type = builtins.getattr("bytes")?;
+    let integer_type = builtins.getattr("int")?;
+    let string_type = builtins.getattr("str")?;
+    let none_value = py.None();
+    let none_type = builtins.getattr("type")?.call1((none_value.bind(py),))?;
+    let class_annotations = upload_file_class_annotations(
+        py,
+        &starlette_datastructures,
+        &string_type,
+        &integer_type,
+        &none_type,
+    )?;
+
+    let write_annotation = upload_file_annotated_type(
+        py,
+        &bytes_type,
+        "\n                The bytes to write to the file.\n                ",
+    )?;
+    let read_annotation = upload_file_annotated_type(
+        py,
+        &integer_type,
+        "\n                The number of bytes to read from the file.\n                ",
+    )?;
+    let seek_annotation = upload_file_annotated_type(
+        py,
+        &integer_type,
+        "\n                The position in bytes to seek to in the file.\n                ",
+    )?;
+    let write = upload_file_method(
+        py,
+        &starlette_upload_file,
+        "write",
+        UPLOAD_FILE_WRITE_DOC,
+        Some(("data", write_annotation)),
+        none_value.bind(py),
+    )?;
+    let read = upload_file_method(
+        py,
+        &starlette_upload_file,
+        "read",
+        UPLOAD_FILE_READ_DOC,
+        Some(("size", read_annotation)),
+        &bytes_type,
+    )?;
+    let seek = upload_file_method(
+        py,
+        &starlette_upload_file,
+        "seek",
+        UPLOAD_FILE_SEEK_DOC,
+        Some(("offset", seek_annotation)),
+        none_value.bind(py),
+    )?;
+    let close = upload_file_method(
+        py,
+        &starlette_upload_file,
+        "close",
+        UPLOAD_FILE_CLOSE_DOC,
+        None,
+        none_value.bind(py),
+    )?;
+
     let attributes = PyDict::new(py);
     attributes.set_item("__module__", "fastapi.datastructures")?;
-    attributes.set_item(
-        "__doc__",
-        "A file uploaded in a request, validated as a Starlette UploadFile.",
-    )?;
+    attributes.set_item("__doc__", UPLOAD_FILE_CLASS_DOC)?;
+    attributes.set_item("__annotations__", class_annotations)?;
+    attributes.set_item("write", write)?;
+    attributes.set_item("read", read)?;
+    attributes.set_item("seek", seek)?;
+    attributes.set_item("close", close)?;
     attributes.set_item("_validate", classmethod.call1((validate,))?)?;
     attributes.set_item(
         "__get_pydantic_core_schema__",
@@ -290,9 +521,6 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         classmethod.call1((json_schema,))?,
     )?;
 
-    let starlette_upload_file = py
-        .import("starlette.datastructures")?
-        .getattr("UploadFile")?;
     let bases = PyTuple::new(py, [starlette_upload_file])?;
     let upload_file =
         py.import("builtins")?
@@ -301,7 +529,6 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("UploadFile", upload_file)?;
     register_background_tasks(module)?;
 
-    let starlette_datastructures = py.import("starlette.datastructures")?;
     for name in [
         "URL",
         "Address",

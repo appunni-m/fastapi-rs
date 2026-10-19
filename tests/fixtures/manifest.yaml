@@ -23526,9 +23526,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The class signature matches the oracle, but the inherited write/read/seek/close method signatures
-        differ in annotation values and Annotated Doc metadata; class attributes, documentation, and Pydantic
-        hooks still need direct contract evidence.
+      - The class signature and Rust-owned write/read/seek/close method signatures match the oracle. Class
+        attributes, documentation, Pydantic hooks, and file I/O behavior still need direct contract evidence.
   - id: fastapi.datastructures.UploadFile.close
     kind: method
     source_candidate_ref: /api_candidates/319
@@ -23614,8 +23613,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - 'The direct signature comparison fails: FastAPI returns None, while the target exposes the string
-        annotation "None". Close behavior has no direct identity-checked comparison.'
+      - The direct method signature matches FastAPI 0.141.1; close behavior has no direct identity-checked
+        comparison yet.
   - id: fastapi.datastructures.UploadFile.content_type
     kind: field
     source_candidate_ref: /api_candidates/320
@@ -23961,8 +23960,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - 'The direct signature comparison fails: the target exposes a string "int" annotation and omits
-        FastAPI''s Annotated Doc metadata for the size parameter; behavior remains unverified.'
+      - The direct method signature matches FastAPI 0.141.1; read behavior has no direct identity-checked
+        comparison yet.
   - id: fastapi.datastructures.UploadFile.seek
     kind: method
     source_candidate_ref: /api_candidates/325
@@ -24048,8 +24047,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - 'The direct signature comparison fails: the target exposes a string "int" annotation and omits
-        FastAPI''s Annotated Doc metadata for the offset parameter; behavior remains unverified.'
+      - The direct method signature matches FastAPI 0.141.1; seek behavior has no direct identity-checked
+        comparison yet.
   - id: fastapi.datastructures.UploadFile.size
     kind: field
     source_candidate_ref: /api_candidates/326
@@ -24200,8 +24199,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - 'The direct signature comparison fails: the target exposes a string "bytes" annotation and omits
-        FastAPI''s Annotated Doc metadata for the data parameter; behavior remains unverified.'
+      - The direct method signature matches FastAPI 0.141.1; write behavior has no direct identity-checked
+        comparison yet.
   - id: fastapi.encoders.jsonable_encoder
     kind: function
     source_candidate_ref: /api_candidates/536
