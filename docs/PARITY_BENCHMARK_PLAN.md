@@ -52,90 +52,43 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-The latest recorded complete direct-ASGI suite is
-[`docs/benchmarks/2026-10-19-8eceda6.md`](benchmarks/2026-10-19-8eceda6.md).
-It completed 7/7 declared workloads with all 45 selected parity observations
-passing on FastAPI-RS `8eceda6f867de40cd04eaa71e62270a556fd2a3e`, FastAPI
-0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
-`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and pinned Starlette-RS
-`4139a72449bf5751e8902fb1c7175ee7f191d338`. The fixture manifest SHA-256 is
-`ad2201cafa88a868d8f1be69c601609b60e8e243f00c9941d16c5e064ad8ebfd`. Suite
-receipt `benchmark-results/suite-20261019T040400Z-15192e11-90f3-4bb6-96bc-da52788da632.json`
+The latest complete direct-ASGI suite is recorded in
+[the 2026-10-19 report](benchmarks/2026-10-19-135805f.md). It completed all
+seven reviewed workloads and passed all 45 selected parity observations on
+FastAPI-RS `135805f9146773cc0b5722596383832f832e4d09`, FastAPI 0.141.1 at
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. The manifest SHA-256 is
+`fec1d84887e682f981837d55071e122e444c5f6060f58bf744714399c266bf9c`. Suite
+receipt `benchmark-results/suite-20261019T083442Z-b46a5b02-128a-4083-aa16-91b3e5547742.json`
 has SHA-256
-`28d2b87d10266f9f43d2c82a80ea8162b63633f5709b24bf6383881a1abd4ae9`. On this
-CPython 3.12.13 / macOS 15.7.7 arm64 run, FastAPI-RS median and p95 latency
-were higher for all seven workloads. This is evidence for those selected
-cases only; it does not establish full FastAPI parity or a global speedup.
-Its manifest SHA-256 (`ad2201cafa88a868d8f1be69c601609b60e8e243f00c9941d16c5e064ad8ebfd`)
-differs from the current manifest SHA-256
-(`646cea6480cc5270d8c1015fa6e6b4e173e08c3ee8686cc57d2cb3c89b5a4614`), so
-the receipt is historical and must be refreshed before it is treated as
-current benchmark evidence.
+`1879e206c5d533bb13c6591366b6de94535afef0134f634f0c7f09d901b94f7d`.
+`make benchmark-contract-check` passes with this current receipt. The seven
+workloads are single-host direct-ASGI measurements; FastAPI-RS median and p95
+were higher in all seven. See the report for complete identities, measurement
+boundaries, per-workload parity counts, timings, and result paths. This does
+not establish full FastAPI parity or a global performance conclusion.
 
-The preceding seven-workload suite report
-[`2026-10-17-9a4ffe9.md`](benchmarks/2026-10-17-9a4ffe9.md) and its receipt
-are historical for the earlier target revision.
-
-The previous one-workload valid-request baseline
-[`docs/benchmarks/2026-10-17-fc27ab5.md`](benchmarks/2026-10-17-fc27ab5.md)
-binds FastAPI-RS `fc27ab530be20fbac83f093db467c9129609bf5d`; its ignored receipt
-`benchmark-results/20261016T194410Z-e9800f2f-7fd6-4af4-a3e2-4a6e8b1cf764.json`
-(SHA-256
-`98e6d3df02d04c38000df6b9fe87783e7b14c17003107f39f9774e9282d753c7`)
-passed 13/13 parity observations against the pinned Starlette-RS source. It is
-historical now. The Starlette control is contextual and is not subtracted.
-
-The preceding one-workload baseline
-[`docs/benchmarks/2026-10-16-a1a619e.md`](benchmarks/2026-10-16-a1a619e.md)
-binds FastAPI-RS `a1a619e` and is historical. Its receipt is retained in the
-ignored benchmark output directory.
-
-The previous one-workload baseline
-[`docs/benchmarks/2026-10-16-bccc10c.md`](benchmarks/2026-10-16-bccc10c.md)
-binds FastAPI-RS `bccc10c` and is historical. Its receipt is retained in the
-ignored benchmark output directory.
-
-The previous one-workload receipt
-`benchmark-results/20261016T111732Z-afec247b-f026-4500-9901-11878a57e57d.json`
-(SHA-256
-`234ef470418a31859f7ce4c9aa69c32da5664143aacdea326ca2662ddfebd572`)
-binds FastAPI-RS `6bb19bc`; it is historical and is superseded by the current
-receipt above.
-
-The preceding seven-workload suite
-`benchmark-results/stale/suite-20261016T023943Z-4f961fd7-3d5f-45f9-84c0-4d7815a9e522.json`
-(SHA-256
-`e62b11c6604e5c7d76ac3269156d1db72e2da35088906c0bc89f292c1f584909`)
-binds FastAPI-RS `2c3e94d6`; it is historical and is superseded by the current
-suite above.
-
-A newer one-workload TestClient receipt,
-`benchmark-results/testclient/7aa89e37-44f6-4b88-878d-0b09e04fb971.json`
-(SHA-256
-`fbc10709f87035b37966e2050c6d9d75723c38ad4a6adb1ce8547c9c3b426c43`),
-passed its single parity case and used the pinned Starlette-RS `4139a72`, but
-it binds FastAPI-RS `e76c1986` and covers only
-`fastapi.testclient.sync-validated-post`. It is also historical, not a current
-performance result. The detailed seven-workload table below records an earlier
-2026-10-14 run and must likewise be read as historical. Re-run a workload only
-after its identity-checked parity gate passes for the current target.
+The prior suite report [`2026-10-19-8eceda6.md`](benchmarks/2026-10-19-8eceda6.md)
+and its suite receipt are historical because they reference the previous
+manifest and target revision. Earlier reports under `docs/benchmarks/` are
+historical for the same reason. Re-run a workload only after its
+identity-checked parity gate passes for the current target.
 
 ## Parity suite
 
-The first thirteen-case HTTP request/response slice now has a Rust-owned target,
+The first thirteen-case HTTP request/response slice has a Rust-owned target,
 pass-through `fastapi` facade, isolated workers, and an exact comparator. The
 `make parity-first-slice` command runs both pinned products and stores the
-comparison in ignored `parity-results/`; CI runs this gate. This only validates
-the current first slice. It does not establish broader API or feature parity.
-On 2026-10-14, the live comparison passed 13/13 on FastAPI-RS `c6b5246` and
-Starlette-RS `b4c8a65`, with FastAPI 0.141.1 and Starlette 1.6.0 as the pinned
-oracle; comparison receipt
-`parity-results/comparisons/bd7fa5a5-86c2-4ad9-9445-0688df0e2256.json`
+comparison in ignored `parity-results/`; CI runs this gate. The latest
+identity-checked first-slice comparison passed 13/13 at FastAPI-RS
+`135805f9146773cc0b5722596383832f832e4d09` with FastAPI 0.141.1, Starlette
+1.6.0, and Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`; comparison
+receipt `parity-results/comparisons/ea1e603b-5d4c-4486-95ad-a9a07fb0cbc3.json`
 binds manifest SHA-256
-`d808858a9fd54ded33b713a8b1fa31db3c9cf17e0fcbfc6d07dd3815e88b8b1c`.
-The current 2026-10-17 seven-workload suite in the evidence-freshness section
-supersedes this historical result for the valid-request workload only; broader
-parity remains incomplete.
+`fec1d84887e682f981837d55071e122e444c5f6060f58bf744714399c266bf9c`. This
+validates only the declared first slice. It does not establish broader API or
+feature parity. Broader parity remains incomplete.
 
 Direct Python API workflows use isolated source and target workers, a versioned
 result schema, and exact comparison. The 2026-10-14 receipt below contains one
@@ -1144,15 +1097,14 @@ historical too.
 
 An earlier exploratory warm-request call profile of the invalid workload
 counted four `TypeAdapter` constructions in FastAPI-RS and none in FastAPI
-after each app was constructed. FastAPI-RS currently calls
-`TypeAdapter(annotation)` inside
-`validate_python_value` for each validated input
-(`fastapi-rs/src/application_runtime.rs`); this identifies repeated adapter
-setup as an optimization candidate, but does not establish how much of the
-`2.195x` median ratio for invalid requests in the latest run it causes. After
-the public operation contract is complete, measure per-parameter adapter reuse
-on the full boundary, including dependency overrides, and retain the invalid
-error-body parity gate.
+after each app was constructed. FastAPI-RS calls
+`TypeAdapter(annotation)` inside `validate_python_value` for each validated
+input (`fastapi-rs/src/application_runtime.rs`), which identifies repeated
+adapter setup as an optimization candidate but does not establish causality.
+The current report measures a 1.439x median and 2.832x p95 ratio for invalid
+requests on this host. After the public operation contract is complete, measure
+per-parameter adapter reuse on the full boundary, including dependency
+overrides, and retain the invalid error-body parity gate.
 
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
