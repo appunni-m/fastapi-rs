@@ -1,0 +1,105 @@
+schema: fastapi-rs/python-api-workflow@5
+workload:
+  file: tests/fixtures/workloads/application_callable_signatures.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.application-callable-signatures.surface
+  probes:
+  - probe_id: fastapi-root-class-signature
+    public_callable:
+      module: fastapi
+      attribute: FastAPI
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-init-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-asgi-call-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.__call__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: inherited-add-route-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.add_route
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: inherited-host-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.host
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: inherited-url-path-for-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.url_path_for
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: inherited-add-middleware-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.add_middleware
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: inherited-add-exception-handler-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.add_exception_handler
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: inherited-mount-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.mount
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/fastapi.md
+    kind: upstream_documentation
+    sha256: 24ae7edeabea12e47165c6026470a201b261c67ea108f762ef4faff756b72504
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
+    sha256: ecc419c9e4ccf1e996db0b196301aab93a8f43d52ddc59a180d4e88f8290c858
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation
+    sha256: 051ef9c6cd54a566be9192e0e4b6667b0e84604db7a3cffea8d970f874d72014
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+    sha256: c0cb7aeafe8ed3802396f2421755cf1e740000347305c515a2c828c0c41f4b1a
+  - path: docs/en/docs/advanced/sub-applications.md
+    kind: upstream_documentation
+    sha256: 79ef2e6ad8b5bc4450369c3964a293a5ca79238c938b7e624995ec9eab97a5d8

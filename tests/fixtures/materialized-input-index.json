@@ -1201,6 +1201,120 @@
       ]
     },
     {
+      "id": "application-callable-signatures",
+      "input_path": "tests/fixtures/inputs/parity/application-callable-signatures.json",
+      "input_sha256": "e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435",
+      "recipe_path": "tests/fixtures/input-recipes/parity/application-callable-signatures.yaml",
+      "recipe_sha256": "f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f",
+      "case_ids": [
+        "fastapi.application-callable-signatures.surface"
+      ],
+      "workload_path": "tests/fixtures/workloads/application_callable_signatures.py",
+      "workload_sha256": "a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7",
+      "api_probes": [
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "fastapi-asgi-call-signature",
+          "symbol_id": "fastapi.applications.FastAPI.__call__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "fastapi-init-signature",
+          "symbol_id": "fastapi.applications.FastAPI.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "fastapi-root-class-signature",
+          "symbol_id": "fastapi.FastAPI",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "inherited-add-exception-handler-signature",
+          "symbol_id": "fastapi.applications.FastAPI.add_exception_handler",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "inherited-add-middleware-signature",
+          "symbol_id": "fastapi.applications.FastAPI.add_middleware",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "inherited-add-route-signature",
+          "symbol_id": "fastapi.applications.FastAPI.add_route",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "inherited-host-signature",
+          "symbol_id": "fastapi.applications.FastAPI.host",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "inherited-mount-signature",
+          "symbol_id": "fastapi.applications.FastAPI.mount",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "probe_id": "inherited-url-path-for-signature",
+          "symbol_id": "fastapi.applications.FastAPI.url_path_for",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.application-callable-signatures.surface",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.FastAPI",
+            "api:fastapi.applications.FastAPI.__call__",
+            "api:fastapi.applications.FastAPI.__init__",
+            "api:fastapi.applications.FastAPI.add_exception_handler",
+            "api:fastapi.applications.FastAPI.add_middleware",
+            "api:fastapi.applications.FastAPI.add_route",
+            "api:fastapi.applications.FastAPI.host",
+            "api:fastapi.applications.FastAPI.mount",
+            "api:fastapi.applications.FastAPI.url_path_for",
+            "source:documented-page:reference/fastapi.md",
+            "source:documented-page:tutorial/handling-errors.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "application-constructor-starlette-route",
       "input_path": "tests/fixtures/inputs/parity/application-constructor-starlette-route.json",
       "input_sha256": "a4f07d917d29d790a0d0dbb3be993d0c8f666f9212c3090fab5b7d7354a5bf2c",
@@ -39347,6 +39461,32 @@
         "construction.outcome",
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/fastapi.md",
+      "fixture_id": "fastapi.docs.reference-fastapi",
+      "workflow_id": "application-callable-signatures",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application-callable-signatures.surface"
+      ],
+      "observation_selectors": [
+        "python.signature"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "application-callable-signatures",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application-callable-signatures.surface"
+      ],
+      "observation_selectors": [
+        "python.signature"
       ]
     },
     {

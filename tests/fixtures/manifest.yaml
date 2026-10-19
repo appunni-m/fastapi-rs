@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 484d9226b2e2b8e2f2f1881ef8715c8e8b9a5e08745579e7a441b0fd0bd3c9c7
+    sha256: bdd962e61f37d47a8b80ffee20c855f74e8fcc021266d66686cd6fd2cda12c21
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 6c1219e041274c9f37cc1649ed55ad7165824da99d53fcb5b2a25d894433443d
+    sha256: a517bba2f055327cea9ed683216297ceb47f6b4e7c9857ac0d1c0c7476ba19d1
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 879ef3f7d2c002f165cce805991ee1e27e3b4472c102db0b3b7202fe91d72554
+    sha256: 82763cb0c3c513ea926cf551356dd2d5ba1eef0860a8ddf0f02c8dfd6f0a2b70
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 683
-      cases: 2763
-      partial_source_mappings: 1937
+      workflows: 684
+      cases: 2764
+      partial_source_mappings: 1939
 
 contract_metadata:
   aliases:
@@ -1303,9 +1303,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 177
+    symbols_with_direct_api_input_workflow_refs: 179
     symbols_with_operation_fixture_refs: 301
-    operation_fixture_refs: 2270
+    operation_fixture_refs: 2272
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5306,6 +5306,18 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: fastapi-root-class-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     - workflow_id: fastapi-constructor-debug
       input_path: tests/fixtures/inputs/parity/fastapi-constructor-debug.json
       input_sha256: c6e4bd52a0e200d146bced10285b5136f7185a2b8fc169a92dc2c3958f123c2f
@@ -9750,8 +9762,30 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: []
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: fastapi-asgi-call-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      observation_selectors:
+      - python.signature
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
       input_sha256: f937e7552eb473629234576db598707748fe0a6570e5b3982022af21d4d86fbe
@@ -11034,6 +11068,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.signature
     - validation.error_details
     operation_scope:
       status: slice-described
@@ -11125,8 +11160,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-fastapi
       fixture_design_ref: /fixture_designs/377
       observation_selectors: *id006
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: fastapi-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      observation_selectors:
+      - python.signature
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
       input_sha256: f937e7552eb473629234576db598707748fe0a6570e5b3982022af21d4d86fbe
@@ -74105,6 +74162,11 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      case_id: fastapi.application-callable-signatures.surface
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      observation_selectors:
+      - python.signature
     - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-add-route.yaml
       case_id: fastapi.applications.add-route.registration-dispatch
       workload_path: tests/fixtures/workloads/inherited_fastapi_add_route.py
@@ -74128,6 +74190,19 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: inherited-add-route-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     canonical_operation_ref: &id044
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
@@ -74199,6 +74274,11 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      case_id: fastapi.application-callable-signatures.surface
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      observation_selectors:
+      - python.signature
     - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-host.yaml
       case_id: fastapi.applications.host.named-subdomain-dispatch
       workload_path: tests/fixtures/workloads/inherited_fastapi_host.py
@@ -74215,6 +74295,19 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: inherited-host-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     signature: 'def host(self, host: str, app: ASGIApp, name: str | None=None) -> None'
     signature_source_ref: &id045
       repository: starlette
@@ -74300,6 +74393,11 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      case_id: fastapi.application-callable-signatures.surface
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      observation_selectors:
+      - python.signature
     - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
       case_id: fastapi.test.test-starlette-urlconvertors.test-url-path-for-path-convertor
       workload_path: tests/fixtures/workloads/starlette_url_converters_upstream.py
@@ -74372,6 +74470,19 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: inherited-url-path-for-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     canonical_operation_ref: &id047
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
@@ -74474,6 +74585,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    input_workflow_refs: []
     canonical_operation_ref: &id048
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
@@ -74564,6 +74676,7 @@ api_surface_contract:
     observation_selectors:
     - http.body.bytes
     - http.status
+    input_workflow_refs: []
     attribute_source_ref: &id049
       repository: starlette
       version: 1.6.0
@@ -74662,6 +74775,11 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      case_id: fastapi.application-callable-signatures.surface
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      observation_selectors:
+      - python.signature
     - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
       case_id: fastapi.docs.middleware.request-and-response-order
       workload_path: tests/fixtures/workloads/middleware_execution_order_wave.py
@@ -74686,6 +74804,19 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: inherited-add-middleware-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     canonical_operation_ref: &id051
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
@@ -74766,6 +74897,11 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      case_id: fastapi.application-callable-signatures.surface
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      observation_selectors:
+      - python.signature
     - recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
       case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
       workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
@@ -74873,6 +75009,19 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: inherited-add-exception-handler-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     canonical_operation_ref: &id052
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
@@ -74982,6 +75131,11 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      case_id: fastapi.application-callable-signatures.surface
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      observation_selectors:
+      - python.signature
     - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
       case_id: fastapi.docs.sub-applications.mount-and-own-openapi
       workload_path: tests/fixtures/workloads/sub_applications.py
@@ -75033,6 +75187,19 @@ api_surface_contract:
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
+    input_workflow_refs:
+    - workflow_id: application-callable-signatures
+      input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
+      input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
+      recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+      recipe_sha256: f14d9e438f17802ebd4636495e4e781b1cc623007e2be972c139bf930c74642f
+      workload_path: tests/fixtures/workloads/application_callable_signatures.py
+      workload_sha256: a2ba9481ae472fd8da3843904fadbfdb5f80b7698d37dccdb9aa6fcd36c763b7
+      case_id: fastapi.application-callable-signatures.surface
+      probe_id: inherited-mount-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_source_ref: &id053
       repository: starlette
@@ -75124,6 +75291,7 @@ api_surface_contract:
     - openapi-docs
     observation_selectors:
     - http.body.bytes
+    input_workflow_refs: []
     canonical_operation_ref: &id055
       contract_id: starlette-1.6.0-full
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml

@@ -2365,6 +2365,10 @@ reviewed_api_contract_overlay:
         - {path: docs_src/metadata/tutorial004_py310.py}
         - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, symbol: test_openapi_schema}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - &first_asgi_openapi
           recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
           case_id: fastapi.first-slice.openapi
@@ -2915,7 +2919,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/atlas_pending_callbacks_wave.py
           observation_selectors: [http.status, openapi.document, openapi.paths]
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, asgi.send.message_types, asgi.application_error.exception, validation.error_details, error.public_attributes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, asgi.send.message_types, asgi.application_error.exception, validation.error_details, error.public_attributes, python.signature]
       supported_slice: >-
         The router-prefix-and-nested-composition workflow calls `FastAPI()` with
         no constructor arguments. It records only default construction needed
@@ -6820,6 +6824,10 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - *first_asgi_openapi
         - *first_asgi_valid
         - *first_asgi_optional_query
@@ -6957,6 +6965,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
       feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
+        - python.signature
         - http.status
         - http.headers.ordered
         - http.body.bytes
@@ -23105,6 +23114,10 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.tutorial-first-steps
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-add-route.yaml
           case_id: fastapi.applications.add-route.registration-dispatch
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-add-route.yaml
@@ -23150,6 +23163,10 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.tutorial-first-steps
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-host.yaml
           case_id: fastapi.applications.host.named-subdomain-dispatch
       feature_ids: [app-routing]
@@ -23184,6 +23201,10 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.tutorial-first-steps
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
           case_id: fastapi.test.test-starlette-urlconvertors.test-url-path-for-path-convertor
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
@@ -23334,6 +23355,10 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.advanced-middleware
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
           case_id: fastapi.docs.middleware.request-and-response-order
         - recipe_path: tests/fixtures/input-recipes/parity/gzip-streaming-response-integration-docs.yaml
@@ -23373,6 +23398,10 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.tutorial-handling-errors
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - *generator_await_propagated_future
         - *generator_await_unflagged_error
         - *generator_await_await_generator_error
@@ -23449,6 +23478,10 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.advanced-sub-applications
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
+          case_id: fastapi.application-callable-signatures.surface
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
         - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
           case_id: fastapi.docs.sub-applications.mount-and-own-openapi
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]

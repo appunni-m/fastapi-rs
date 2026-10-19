@@ -354,6 +354,11 @@ def build_index() -> dict[str, Any]:
     supported_api_symbols = {
         row["id"] for row in atlas["api_candidates"] if row["classification"] == "supported"
     }
+    supported_api_symbols.update(
+        row["id"]
+        for row in atlas.get("reviewed_inherited_api_candidates", [])
+        if row["classification"] == "supported"
+    )
     coverage_by_path: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in atlas["coverage_matrix"]:
         coverage_by_path[row["source_path"]].append(row)

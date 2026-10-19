@@ -1236,6 +1236,22 @@ def _validate_inherited_fixture_reference(
         and observation.get("kind") == "websocket"
         and isinstance(observation.get("selector"), str)
     )
+    observed_short_selectors.update(
+        "python.signature"
+        for probe in case.get("probes", [])
+        if isinstance(probe, dict)
+        and isinstance(probe.get("public_callable"), dict)
+        and (
+            f"{probe['public_callable'].get('module')}.{probe['public_callable'].get('attribute')}"
+        )
+        == operation_id
+        and any(
+            isinstance(observation, dict)
+            and observation.get("kind") == "python_signature"
+            and observation.get("selector") == "signature"
+            for observation in probe.get("observations", [])
+        )
+    )
     construction_observation = case.get("construction_observation")
     if (
         isinstance(construction_observation, dict)
@@ -2357,6 +2373,11 @@ def build_api_surface_contract(
         for candidate in atlas_candidates
         if candidate["classification"] == "supported"
     ]
+    api_symbol_ids.extend(
+        candidate["id"]
+        for candidate in atlas_inherited_candidates
+        if isinstance(candidate, dict) and candidate.get("classification") == "supported"
+    )
     if len(api_symbol_ids) != len(set(api_symbol_ids)):
         raise ContractError("source API contract has duplicate supported symbol IDs")
     unsupported_overlay_operations = set(overlay_operations) - set(api_symbol_ids)
@@ -3297,6 +3318,7 @@ def build_api_surface_contract(
             "fixture_refs": fixture_refs,
             "feature_ids": sorted(feature_ids),
             "observation_selectors": sorted(selectors),
+            "input_workflow_refs": api_input_refs_by_symbol.get(operation_id, []),
         }
         if has_sibling_gap:
             signature_source = operation.get("signature_source")
@@ -3834,6 +3856,11 @@ def validate_api_workflow_public_surface(
         if isinstance(symbol, dict) and isinstance(symbol.get("id"), str)
     ]
     symbols_by_id = {symbol["id"]: symbol for symbol in symbols}
+    inherited_symbols_by_id = {
+        operation["id"]: operation
+        for operation in contract.get("inherited_operations", [])
+        if isinstance(operation, dict) and isinstance(operation.get("id"), str)
+    }
     selected: set[str] = set()
     for case in workflow.get("cases", []):
         selected_in_case: set[str] = set()
@@ -3878,6 +3905,8 @@ def validate_api_workflow_public_surface(
             symbol_id = f"{module}.{attribute}"
             symbol = symbols_by_id.get(symbol_id)
             if symbol is None:
+                symbol = inherited_symbols_by_id.get(symbol_id)
+            if symbol is None:
                 raise ContractError(
                     "direct Python API workflow references a symbol outside the supported "
                     f"source API contract: {symbol_id}"
@@ -3894,6 +3923,7 @@ def validate_api_workflow_public_surface(
                 "async_function",
                 "method",
                 "protocol_method",
+                "inherited_method",
             }
             manifest_callable = symbol.get("kind") in callable_kinds or bool(
                 runtime_kinds & callable_kinds

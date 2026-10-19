@@ -2087,6 +2087,15 @@ fn fastapi_proxy_descriptor_signature(
         .map(|signature| Some(signature.unbind()))
 }
 
+fn starlette_application_method_signature(py: Python<'_>, member: &str) -> PyResult<Py<PyAny>> {
+    let starlette_type = py.import("starlette.applications")?.getattr("Starlette")?;
+    let method = starlette_type.getattr(member)?;
+    py.import("inspect")?
+        .getattr("signature")?
+        .call1((method,))
+        .map(Bound::unbind)
+}
+
 fn fastapi_proxy_descriptor(
     py: Python<'_>,
     member: &str,
@@ -2117,6 +2126,10 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
     module.add_class::<PyFastApiProxyPropertyDescriptor>()?;
     module.add_class::<PyBoundFastApiProxyMember>()?;
 
+    let mut signatures = crate::application_signatures::ApplicationSignatureBuilder::new(module)?;
+    let init_signature = signatures.build_signature(py, "FastAPI.__init__")?;
+    let call_signature = signatures.build_signature(py, "FastAPI.__call__")?;
+
     let native_type = py.get_type::<PyFastApi>();
     let native_members = native_type.getattr("__dict__")?;
     let property_type = py.import("builtins")?.getattr("property")?;
@@ -2128,7 +2141,10 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
             namespace.set_item("__doc__", doc)?;
         }
     }
-    namespace.set_item("__init__", fastapi_proxy_descriptor(py, "__init__", None)?)?;
+    namespace.set_item(
+        "__init__",
+        fastapi_proxy_descriptor(py, "__init__", Some(init_signature))?,
+    )?;
     namespace.set_item(
         "__getattr__",
         fastapi_proxy_descriptor(py, "__getattr__", None)?,
@@ -2141,6 +2157,9 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
         let Ok(member) = key.extract::<String>() else {
             continue;
         };
+        if member == "add_websocket_route" {
+            continue;
+        }
         if matches!(
             member.as_str(),
             "__new__"
@@ -2161,7 +2180,16 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
         let descriptor = if value.is_instance(&property_type)? || value.hasattr("__set__")? {
             fastapi_proxy_property_descriptor(py, &member)?
         } else {
-            let signature = fastapi_proxy_descriptor_signature(py, &value, &native_type)?;
+            let signature = match member.as_str() {
+                "__call__" => Some(call_signature.clone_ref(py)),
+                "add_exception_handler"
+                | "add_middleware"
+                | "add_route"
+                | "host"
+                | "mount"
+                | "url_path_for" => Some(starlette_application_method_signature(py, &member)?),
+                _ => fastapi_proxy_descriptor_signature(py, &value, &native_type)?,
+            };
             fastapi_proxy_descriptor(py, &member, signature)?
         };
         namespace.set_item(member, descriptor)?;

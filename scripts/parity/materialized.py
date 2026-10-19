@@ -344,6 +344,11 @@ def validate_materialized_input_index(
     supported_api_symbols = {
         row["id"] for row in atlas["api_candidates"] if row["classification"] == "supported"
     }
+    supported_api_symbols.update(
+        row["id"]
+        for row in atlas.get("reviewed_inherited_api_candidates", [])
+        if row["classification"] == "supported"
+    )
     workflow_cases: dict[str, dict[str, dict[str, Any]]] = {}
     workflow_schemas: dict[str, str] = {}
     workflow_contracts: dict[str, dict[str, dict[str, Any]]] = {}

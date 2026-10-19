@@ -1247,6 +1247,16 @@ def _trusted_supported_symbols(manifest_sha256: str) -> frozenset[str]:
         and candidate.get("classification") == "supported"
         and isinstance(candidate.get("id"), str)
     }
+    inherited_candidates = atlas.get("reviewed_inherited_api_candidates", [])
+    if not isinstance(inherited_candidates, list):
+        raise WorkerError("compatibility atlas inherited API candidates are malformed")
+    supported.update(
+        candidate["id"]
+        for candidate in inherited_candidates
+        if isinstance(candidate, dict)
+        and candidate.get("classification") == "supported"
+        and isinstance(candidate.get("id"), str)
+    )
     if not supported:
         raise WorkerError("compatibility atlas has no supported API candidates")
     return frozenset(supported)
