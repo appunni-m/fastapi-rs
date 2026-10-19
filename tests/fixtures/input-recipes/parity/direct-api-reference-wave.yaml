@@ -147,6 +147,24 @@ cases:
     - kind: python_return_value
       selector: value
       comparison: exact
+  - probe_id: fastapi-include-router-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.include_router
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-openapi-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.openapi
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
   source_evidence:
   - path: fastapi/routing.py
     kind: upstream_api_definition

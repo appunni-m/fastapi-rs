@@ -7134,9 +7134,9 @@
     {
       "id": "direct-api-reference-wave",
       "input_path": "tests/fixtures/inputs/parity/direct-api-reference-wave.json",
-      "input_sha256": "b4a34ad1c5209f14b7ef5f9b4a00650f3c32317da7704fb08d34ade77878685f",
+      "input_sha256": "627c74af6b45947213028e4a3ac185fc6fdcd1c90980ba42c7aa12c2decd9a30",
       "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml",
-      "recipe_sha256": "eb3834ccab5d54ac0580c4958d33918471be915956cd199fec1d3c30237b9518",
+      "recipe_sha256": "86b354c193366a2ec98a502998ed88d208542df72a4297949b8ef0c53a48eecd",
       "case_ids": [
         "fastapi.direct-api-reference-wave.http-exception-signature",
         "fastapi.direct-api-reference-wave.websocket-exception-signature",
@@ -7217,11 +7217,29 @@
         },
         {
           "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "probe_id": "fastapi-include-router-signature",
+          "symbol_id": "fastapi.applications.FastAPI.include_router",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
           "probe_id": "fastapi-openapi-after-inclusion",
           "symbol_id": "fastapi.applications.FastAPI.openapi",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.include-router-live-openapi",
+          "probe_id": "fastapi-openapi-signature",
+          "symbol_id": "fastapi.applications.FastAPI.openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
           ]
         },
         {

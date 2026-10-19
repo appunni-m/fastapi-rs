@@ -2025,6 +2025,7 @@ const FASTAPI_PROXY_STATE_ATTRIBUTE: &str = "_fastapi_rs_state";
 #[pyclass(name = "_FastAPIProxyDescriptor", module = "fastapi_rs._core")]
 struct PyFastApiProxyDescriptor {
     member: String,
+    signature: Option<Py<PyAny>>,
 }
 
 #[pyclass(name = "_FastAPIProxyPropertyDescriptor", module = "fastapi_rs._core")]
@@ -2072,11 +2073,30 @@ fn fastapi_public_instance(py: Python<'_>, app: &Py<PyFastApi>) -> PyResult<Py<P
     Ok(app.clone_ref(py).into_any())
 }
 
-fn fastapi_proxy_descriptor(py: Python<'_>, member: &str) -> PyResult<Py<PyAny>> {
+fn fastapi_proxy_descriptor_signature(
+    py: Python<'_>,
+    descriptor: &Bound<'_, PyAny>,
+    owner: &Bound<'_, PyAny>,
+) -> PyResult<Option<Py<PyAny>>> {
+    if !descriptor.is_instance_of::<PyOperationRouteDescriptor>() {
+        return Ok(None);
+    }
+    let unbound_callable = descriptor.call_method1("__get__", (py.None(), owner))?;
+    unbound_callable
+        .getattr("__signature__")
+        .map(|signature| Some(signature.unbind()))
+}
+
+fn fastapi_proxy_descriptor(
+    py: Python<'_>,
+    member: &str,
+    signature: Option<Py<PyAny>>,
+) -> PyResult<Py<PyAny>> {
     Py::new(
         py,
         PyFastApiProxyDescriptor {
             member: member.to_owned(),
+            signature,
         },
     )
     .map(Py::into_any)
@@ -2108,8 +2128,11 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
             namespace.set_item("__doc__", doc)?;
         }
     }
-    namespace.set_item("__init__", fastapi_proxy_descriptor(py, "__init__")?)?;
-    namespace.set_item("__getattr__", fastapi_proxy_descriptor(py, "__getattr__")?)?;
+    namespace.set_item("__init__", fastapi_proxy_descriptor(py, "__init__", None)?)?;
+    namespace.set_item(
+        "__getattr__",
+        fastapi_proxy_descriptor(py, "__getattr__", None)?,
+    )?;
 
     for item in native_members.call_method0("items")?.try_iter()? {
         let item = item?.cast_into::<PyTuple>()?;
@@ -2138,7 +2161,8 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
         let descriptor = if value.is_instance(&property_type)? || value.hasattr("__set__")? {
             fastapi_proxy_property_descriptor(py, &member)?
         } else {
-            fastapi_proxy_descriptor(py, &member)?
+            let signature = fastapi_proxy_descriptor_signature(py, &value, &native_type)?;
+            fastapi_proxy_descriptor(py, &member, signature)?
         };
         namespace.set_item(member, descriptor)?;
     }
@@ -2163,6 +2187,13 @@ fn install_fastapi_proxy(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResu
 
 #[pymethods]
 impl PyFastApiProxyDescriptor {
+    #[getter]
+    fn __signature__(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.signature
+            .as_ref()
+            .map(|signature| signature.clone_ref(py))
+    }
+
     #[pyo3(signature = (*args, **kwargs))]
     fn __call__(
         &self,
