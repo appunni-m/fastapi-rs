@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import inspect
+from collections.abc import Callable
 from io import BytesIO
 
 from fastapi import FastAPI, UploadFile
@@ -32,6 +34,16 @@ class _UnexpectedFormattedValue(metaclass=_FormattingMeta):
 
 _UNEXPECTED_VALUE = _UnexpectedValue()
 _UNEXPECTED_FORMATTED_VALUE = _UnexpectedFormattedValue()
+
+
+def _method_introspection(method: Callable[..., object]) -> dict[str, object]:
+    return {
+        "annotations": {name: repr(value) for name, value in method.__annotations__.items()},
+        "doc": inspect.getdoc(method),
+        "is_coroutine_function": inspect.iscoroutinefunction(method),
+        "module": method.__module__,
+        "qualname": method.__qualname__,
+    }
 
 
 def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> FastAPI:
@@ -75,5 +87,22 @@ def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> Fa
             )
             return {"outcome": "rejected", "message": details[0]["msg"]}
         return {"outcome": "accepted"}
+
+    @app.get("/uploadfile-pydantic-contract/introspection")
+    async def introspection() -> dict[str, object]:
+        return {
+            "class": {
+                "annotations": {
+                    name: repr(value) for name, value in UploadFile.__annotations__.items()
+                },
+                "doc": inspect.getdoc(UploadFile),
+            },
+            "methods": {
+                "write": _method_introspection(UploadFile.write),
+                "read": _method_introspection(UploadFile.read),
+                "seek": _method_introspection(UploadFile.seek),
+                "close": _method_introspection(UploadFile.close),
+            },
+        }
 
     return app
