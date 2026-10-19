@@ -76,7 +76,7 @@ installs only the multipart package needed by those cases.
 
 | Package | Version and profile role | Purpose | Language and native components | License evidence |
 |---|---|---|---|---|
-| python-multipart | `0.0.32`; direct dependency in the `standard-multipart` target parity profile | Supplies the multipart parser used by Starlette-RS request form parsing. | Python package; no native component in the locked wheel. | Apache-2.0 ([0.0.32 wheel metadata](https://pypi.org/pypi/python-multipart/0.0.32/json)). |
+| python-multipart | `0.0.32`; direct dependency in the `standard-multipart` target parity profile | Provides optional form-support availability and `parse_options_header` compatibility at the Python request boundary; the pinned Starlette-RS Rust implementation parses multipart request bodies with `multer`. | Python package; no native component in the locked wheel. | Apache-2.0 ([0.0.32 wheel metadata](https://pypi.org/pypi/python-multipart/0.0.32/json)). |
 | email-validator | `2.3.0`; direct dependency in the `email-validation` parity profiles | Enables Pydantic `EmailStr` validation used by FastAPI models. | Python validation library; no native component in the locked wheel. | Unlicense ([2.3.0 wheel metadata](https://pypi.org/pypi/email-validator/2.3.0/json)). |
 | dnspython | `2.8.0`; transitive dependency of `email-validator` in the `email-validation` profiles | Supports optional DNS deliverability checks; the selected syntax acceptance/rejection cases do not exercise DNS queries. | Python DNS toolkit; no native component in the locked wheel. | ISC ([2.8.0 wheel metadata](https://pypi.org/pypi/dnspython/2.8.0/json)). |
 

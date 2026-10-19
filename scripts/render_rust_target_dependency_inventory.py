@@ -610,6 +610,7 @@ path dependency.
 | `httpdate` 1.0.3 | Starlette-RS normal dependency | Formats the `Last-Modified` header for file responses in `starlette-rs/src/file_response.rs`. |
 | `md-5` 0.11.0 | Starlette-RS normal dependency | Computes the ETag for file responses in `starlette-rs/src/file_response.rs`. |
 | `mime_guess` 2.0.5 | Starlette-RS normal dependency | Infers file-response media types from paths in `starlette-rs/src/file_response.rs`. |
+| `multer` 3.1.0 | Starlette-RS normal dependency | Parses streamed `multipart/form-data` request bodies into fields in `starlette-rs/src/multipart.rs`; the Python adapter provides optional availability and `parse_options_header` compatibility. |
 | `serde_json` 1.0.151 | Starlette-RS normal dependency | JSON protocol parsing and output in `starlette-rs/src/bin/starlette-rs-parity-adapter.rs`. |
 | `sha2` 0.11.0 | Starlette-RS normal dependency | SHA-256 dependency-lock identity check in the same parity adapter. |
 | `sha2` 0.11.0 | `fastapi-rs` build dependency | Verifies the metadata-pinned Starlette-RS source tree when building from a source archive; not linked into FastAPI-RS runtime code. |
