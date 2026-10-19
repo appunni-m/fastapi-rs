@@ -4145,7 +4145,7 @@ for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
             ", ".join(workflow["observation_selectors"]),
         )
         function_review = {
-            "feature_ids": ["request-validation"],
+            "feature_ids": function_row.get("feature_ids", ["request-validation"]),
             "observation_selectors": workflow["observation_selectors"],
             "rationale": function_row["rationale"],
             "replace_features": True,

@@ -92,6 +92,47 @@ QUERY_VALIDATION_ALIAS_RECIPE_PATH = (
     "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
 )
 QUERY_VALIDATION_ALIAS_WORKFLOW_ID = "query-validation-alias-list-cases"
+QUERY_REQUIRED_LIST_FUNCTION_CASES = {
+    "test_required_list_str_schema": (
+        "fastapi.request-parameters.query.required-list.plain",
+        ("inspect-openapi",),
+        ("openapi.document", "openapi.paths"),
+    ),
+    "test_required_list_str_missing": (
+        "fastapi.request-parameters.query.required-list.plain",
+        ("plain-direct-missing", "plain-model-missing"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_str": (
+        "fastapi.request-parameters.query.required-list.plain",
+        ("plain-direct-repeated", "plain-model-repeated"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_str_alias_schema": (
+        "fastapi.request-parameters.query.required-list.declared-alias",
+        ("inspect-openapi",),
+        ("openapi.document", "openapi.paths"),
+    ),
+    "test_required_list_alias_missing": (
+        "fastapi.request-parameters.query.required-list.declared-alias",
+        ("alias-direct-missing", "alias-model-missing"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_alias_by_name": (
+        "fastapi.request-parameters.query.required-list.declared-alias",
+        ("alias-direct-field-name", "alias-model-field-name"),
+        ("http.body.bytes", "http.status"),
+    ),
+    "test_required_list_alias_by_alias": (
+        "fastapi.request-parameters.query.required-list.declared-alias",
+        ("alias-direct-wire-name", "alias-model-wire-name"),
+        ("http.body.bytes", "http.status"),
+    ),
+}
+QUERY_REQUIRED_LIST_RECIPE_PATH = (
+    "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml"
+)
+QUERY_REQUIRED_LIST_WORKFLOW_ID = "query-required-list-aliases"
 
 
 def _fail(message: str) -> None:
@@ -1872,12 +1913,18 @@ def validate_compatibility_artifacts(
                     f"case {design.get('id')} has malformed direct workflow selectors or actions",
                 )
                 expected_link = QUERY_VALIDATION_ALIAS_FUNCTION_CASES.get(function_name)
+                expected_workflow_id = QUERY_VALIDATION_ALIAS_WORKFLOW_ID
+                expected_recipe_path = QUERY_VALIDATION_ALIAS_RECIPE_PATH
+                if expected_link is None:
+                    expected_link = QUERY_REQUIRED_LIST_FUNCTION_CASES.get(function_name)
+                    expected_workflow_id = QUERY_REQUIRED_LIST_WORKFLOW_ID
+                    expected_recipe_path = QUERY_REQUIRED_LIST_RECIPE_PATH
                 _require(
                     expected_link is not None
                     and workflow_case
                     == {
-                        "workflow_id": QUERY_VALIDATION_ALIAS_WORKFLOW_ID,
-                        "recipe_path": QUERY_VALIDATION_ALIAS_RECIPE_PATH,
+                        "workflow_id": expected_workflow_id,
+                        "recipe_path": expected_recipe_path,
                         "case_id": expected_link[0],
                         "action_ids": list(expected_link[1]),
                         "observation_selectors": list(expected_link[2]),
@@ -1978,9 +2025,12 @@ def validate_compatibility_artifacts(
                     linked_functions
                     == {
                         function_name: mapping[0]
-                        for function_name, mapping in QUERY_VALIDATION_ALIAS_FUNCTION_CASES.items()
+                        for function_name, mapping in {
+                            **QUERY_VALIDATION_ALIAS_FUNCTION_CASES,
+                            **QUERY_REQUIRED_LIST_FUNCTION_CASES,
+                        }.items()
                     },
-                    "query validation-alias list functions lost or changed direct workflow links",
+                    "query-list functions lost or changed direct workflow links",
                 )
         elif source_row.get("kind") == "documented_feature_page":
             sections = fixture.get("documented_sections")

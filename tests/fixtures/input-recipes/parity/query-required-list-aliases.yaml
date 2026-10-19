@@ -1,0 +1,76 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/query_required_list_aliases.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.query.required-list.plain
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /openapi.json, query_string: '', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: openapi, json_pointers: ['/paths/~1catalog~1direct/get/parameters', '/paths/~1catalog~1model/get/parameters'], comparison: exact}]
+  - action_id: plain-direct-missing
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /catalog/direct, query_string: '', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: plain-model-missing
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /catalog/model, query_string: '', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: plain-direct-repeated
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /catalog/direct, query_string: 'item_names=cedar&item_names=willow', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: plain-model-repeated
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /catalog/model, query_string: 'item_names=cedar&item_names=willow', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_list.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.required-list.declared-alias
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /openapi.json, query_string: '', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: openapi, json_pointers: ['/paths/~1labels~1direct/get/parameters', '/paths/~1labels~1model/get/parameters'], comparison: exact}]
+  - action_id: alias-direct-missing
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /labels/direct, query_string: '', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: alias-model-missing
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /labels/model, query_string: '', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: alias-direct-field-name
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /labels/direct, query_string: 'item_names=cedar&item_names=willow', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: alias-model-field-name
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /labels/model, query_string: 'item_names=cedar&item_names=willow', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: alias-direct-wire-name
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /labels/direct, query_string: 'public_names=cedar&public_names=willow', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: alias-model-wire-name
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /labels/model, query_string: 'public_names=cedar&public_names=willow', root_path: '', headers: [[host, testserver]], client: ['127.0.0.1', 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_list.py
+    kind: upstream_test

@@ -598001,7 +598001,6 @@
       "benchmark_workload_id": null,
       "exclusion_reason": null,
       "feature_ids": [
-        "openapi-docs",
         "request-validation",
         "status-codes"
       ],
@@ -598015,13 +598014,10 @@
             "case_ids": [
               "fastapi.openapi-array-items-query-wire.required-list"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "asgi.send.message_types",
-              "docs.response.body.bytes",
-              "docs.response.headers",
-              "docs.response.status",
               "http.body.bytes",
               "http.headers.ordered",
               "http.status",
@@ -598029,6 +598025,22 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/array-items-query-wire.yaml",
             "workflow_id": "array-items-query-wire"
+          },
+          {
+            "case_ids": [
+              "fastapi.request-parameters.query.required-list.declared-alias",
+              "fastapi.request-parameters.query.required-list.plain"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+            "workflow_id": "query-required-list-aliases"
           },
           {
             "case_ids": [
@@ -598074,58 +598086,189 @@
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-str-schema",
             "end_line": 48,
+            "function_source_ref": {
+              "end_line": 48,
+              "line": 34,
+              "path": "tests/test_request_params/test_query/test_list.py",
+              "sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258"
+            },
             "line": 34,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_required_list_str_schema"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_required_list_str_schema",
+            "workflow_case": {
+              "action_ids": [
+                "inspect-openapi"
+              ],
+              "case_id": "fastapi.request-parameters.query.required-list.plain",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+              "workflow_id": "query-required-list-aliases"
+            }
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-str-missing",
             "end_line": 68,
+            "function_source_ref": {
+              "end_line": 68,
+              "line": 55,
+              "path": "tests/test_request_params/test_query/test_list.py",
+              "sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258"
+            },
             "line": 55,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_required_list_str_missing"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_required_list_str_missing",
+            "workflow_case": {
+              "action_ids": [
+                "plain-direct-missing",
+                "plain-model-missing"
+              ],
+              "case_id": "fastapi.request-parameters.query.required-list.plain",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+              "workflow_id": "query-required-list-aliases"
+            }
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-str",
             "end_line": 79,
+            "function_source_ref": {
+              "end_line": 79,
+              "line": 75,
+              "path": "tests/test_request_params/test_query/test_list.py",
+              "sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258"
+            },
             "line": 75,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_required_list_str"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_required_list_str",
+            "workflow_case": {
+              "action_ids": [
+                "plain-direct-repeated",
+                "plain-model-repeated"
+              ],
+              "case_id": "fastapi.request-parameters.query.required-list.plain",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+              "workflow_id": "query-required-list-aliases"
+            }
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-str-alias-schema",
             "end_line": 120,
+            "function_source_ref": {
+              "end_line": 120,
+              "line": 106,
+              "path": "tests/test_request_params/test_query/test_list.py",
+              "sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258"
+            },
             "line": 106,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_required_list_str_alias_schema"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_required_list_str_alias_schema",
+            "workflow_case": {
+              "action_ids": [
+                "inspect-openapi"
+              ],
+              "case_id": "fastapi.request-parameters.query.required-list.declared-alias",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+              "workflow_id": "query-required-list-aliases"
+            }
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-missing",
             "end_line": 140,
+            "function_source_ref": {
+              "end_line": 140,
+              "line": 127,
+              "path": "tests/test_request_params/test_query/test_list.py",
+              "sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258"
+            },
             "line": 127,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_required_list_alias_missing"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_required_list_alias_missing",
+            "workflow_case": {
+              "action_ids": [
+                "alias-direct-missing",
+                "alias-model-missing"
+              ],
+              "case_id": "fastapi.request-parameters.query.required-list.declared-alias",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+              "workflow_id": "query-required-list-aliases"
+            }
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-by-name",
             "end_line": 163,
+            "function_source_ref": {
+              "end_line": 163,
+              "line": 150,
+              "path": "tests/test_request_params/test_query/test_list.py",
+              "sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258"
+            },
             "line": 150,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_required_list_alias_by_name"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_required_list_alias_by_name",
+            "workflow_case": {
+              "action_ids": [
+                "alias-direct-field-name",
+                "alias-model-field-name"
+              ],
+              "case_id": "fastapi.request-parameters.query.required-list.declared-alias",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+              "workflow_id": "query-required-list-aliases"
+            }
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-by-alias",
             "end_line": 177,
+            "function_source_ref": {
+              "end_line": 177,
+              "line": 173,
+              "path": "tests/test_request_params/test_query/test_list.py",
+              "sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258"
+            },
             "line": 173,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_required_list_alias_by_alias"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_required_list_alias_by_alias",
+            "workflow_case": {
+              "action_ids": [
+                "alias-direct-wire-name",
+                "alias-model-wire-name"
+              ],
+              "case_id": "fastapi.request-parameters.query.required-list.declared-alias",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+              "workflow_id": "query-required-list-aliases"
+            }
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-validation-alias-schema",
@@ -598384,7 +598527,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.missing (actions: direct-missing, model-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.rejects-field-name (actions: direct-field-name, model-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.accepts-wire-name (actions: direct-wire-name, model-wire-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.openapi (actions: openapi-validation-only-parameters; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.missing (actions: direct-missing, model-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-field-name (actions: direct-field-name, model-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-declared-alias (actions: direct-declared-alias, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.accepts-validation-alias (actions: direct-wire-name, model-wire-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.openapi (actions: openapi-both-aliases-parameters; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-alias-values (actions: get-repeated-query-values; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.required-list-missing (actions: get-required-query-list-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-python-name-missing (actions: get-repeated-query-values-by-python-name; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml::fastapi.request-parameters.query.required-list.plain (actions: inspect-openapi, plain-direct-missing, plain-model-missing, plain-direct-repeated, plain-model-repeated; selectors: http.body.bytes, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml::fastapi.request-parameters.query.required-list.declared-alias (actions: inspect-openapi, alias-direct-missing, alias-model-missing, alias-direct-field-name, alias-model-field-name, alias-direct-wire-name, alias-model-wire-name; selectors: http.body.bytes, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.missing (actions: direct-missing, model-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.rejects-field-name (actions: direct-field-name, model-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.accepts-wire-name (actions: direct-wire-name, model-wire-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.openapi (actions: openapi-validation-only-parameters; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.missing (actions: direct-missing, model-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-field-name (actions: direct-field-name, model-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-declared-alias (actions: direct-declared-alias, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.accepts-validation-alias (actions: direct-wire-name, model-wire-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.openapi (actions: openapi-both-aliases-parameters; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-alias-values (actions: get-repeated-query-values; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.required-list-missing (actions: get-required-query-list-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-python-name-missing (actions: get-repeated-query-values-by-python-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml::fastapi.request-parameters.query.required-list.plain (actions: inspect-openapi, plain-direct-missing, plain-direct-repeated, plain-model-missing, plain-model-repeated; selectors: http.body.bytes, http.status, openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml::fastapi.request-parameters.query.required-list.declared-alias (actions: alias-direct-field-name, alias-direct-missing, alias-direct-wire-name, alias-model-field-name, alias-model-missing, alias-model-wire-name, inspect-openapi; selectors: http.body.bytes, http.status, openapi.document, openapi.paths). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 347,
@@ -598580,6 +598723,30 @@
           "workflow_cases": [
             {
               "case_ids": [
+                "fastapi.request-parameters.query.required-list.plain"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.required-list.declared-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml"
+            },
+            {
+              "case_ids": [
                 "fastapi.request-parameters.query.validation-alias-list.validation-only.missing"
               ],
               "observation_selectors": [
@@ -598706,9 +598873,6 @@
       },
       "mapping_status": "partially_mapped",
       "observation_selectors": [
-        "docs.response.body.bytes",
-        "docs.response.headers",
-        "docs.response.status",
         "http.body.bytes",
         "http.body.json",
         "http.headers.ordered",
@@ -598716,7 +598880,6 @@
         "openapi.document",
         "openapi.paths",
         "openapi.request_schema",
-        "python.pydantic_model_result",
         "validation.error_class",
         "validation.error_details"
       ],
@@ -598724,23 +598887,16 @@
       "review_status": "reviewed_partial",
       "selector_evidence": [
         {
-          "feature_id": "openapi-docs",
-          "selectors": [
-            "docs.response.body.bytes",
-            "docs.response.headers",
-            "docs.response.status",
-            "http.body.bytes",
-            "openapi.document",
-            "python.pydantic_model_result"
-          ]
-        },
-        {
           "feature_id": "request-validation",
+          "schema_extension_required": [
+            "openapi.document"
+          ],
           "selectors": [
             "http.body.bytes",
             "http.body.json",
             "http.headers.ordered",
             "http.status",
+            "openapi.document",
             "openapi.request_schema",
             "validation.error_class",
             "validation.error_details"
@@ -598759,56 +598915,6 @@
       "source_path": "tests/test_request_params/test_query/test_list.py",
       "source_sha256": "5935d3979d272c9bebd268b87a3f80741b0ca19a2956d6f54023e83590252258",
       "starlette_rs_contract_mappings": [
-        {
-          "contract_id": "starlette-1.6.0-full",
-          "feature_id": "openapi-docs",
-          "manifest_path": "tests/fixtures/manifest.yaml",
-          "manifest_sha256": "86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029",
-          "operation_refs": [
-            {
-              "contract_id": "starlette-1.6.0-full",
-              "operation_id": "__call__",
-              "relationship": "FastAPI-owned with a generic ASGI outer boundary",
-              "requirement_ids": [
-                "starlette.asgi.get-hello.dispatch"
-              ],
-              "source_path": "starlette.applications.Starlette.__call__",
-              "surface_id": "starlette.applications.Starlette",
-              "target_support": {
-                "python-package": {
-                  "missing_requirements": [],
-                  "reason": null,
-                  "status": "supported"
-                },
-                "rust-native": {
-                  "missing_requirements": [
-                    "starlette.compatibility.full-public-surface",
-                    "starlette.asgi.scope-mutation",
-                    "starlette.asgi.streaming",
-                    "starlette.asgi.python-callables",
-                    "starlette.asgi.http-exception.default-406-detail",
-                    "starlette.asgi.http-exception.no-content-204",
-                    "starlette.asgi.http-exception.not-modified-304",
-                    "starlette.asgi.http-exception.headers-200",
-                    "starlette.asgi.server-error.default-response",
-                    "starlette.asgi.server-error.status-500-handler",
-                    "starlette.asgi.server-error.exception-handler",
-                    "starlette.asgi.server-error.special-key-order",
-                    "starlette.asgi.server-error.debug-traceback",
-                    "starlette.asgi.server-error.response-started",
-                    "starlette.asgi.server-error.background-task-failure",
-                    "starlette.asgi.server-error.handled-http-exception-500"
-                  ],
-                  "reason": "The Rust-native API renders explicit exception details but does not expose the Python HTTPException constructor and its standard-library status-phrase defaults.",
-                  "status": "partial"
-                }
-              }
-            }
-          ],
-          "ownership_boundary": "FastAPI-owned with a generic ASGI outer boundary",
-          "scope_note": "OpenAPI generation, schema projection, and FastAPI docs endpoints are outside the current Starlette-RS slice; only the generic Starlette ASGI dispatch envelope is referenced.",
-          "status": "linked-to-current-contract-slice"
-        },
         {
           "contract_id": "starlette-1.6.0-full",
           "feature_id": "request-validation",
@@ -598869,8 +598975,7 @@
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
-        "streaming-headers-cookies-errors-and-cleanup",
-        "wsgi-static-files-templates-schemas-configuration-testclient"
+        "streaming-headers-cookies-errors-and-cleanup"
       ]
     },
     {

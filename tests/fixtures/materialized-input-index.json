@@ -24734,6 +24734,35 @@
       ]
     },
     {
+      "id": "query-required-list-aliases",
+      "input_path": "tests/fixtures/inputs/parity/query-required-list-aliases.json",
+      "input_sha256": "2127638ac058dbcb8ecf7fbf3ed4c902e33378dbfc44b0cb9444ecd694411b7c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml",
+      "recipe_sha256": "a2f329cacc9b1a34dded37790d1c6be5a78b3d52e2c0a38e04ad6a456b51abc1",
+      "case_ids": [
+        "fastapi.request-parameters.query.required-list.plain",
+        "fastapi.request-parameters.query.required-list.declared-alias"
+      ],
+      "workload_path": "tests/fixtures/workloads/query_required_list_aliases.py",
+      "workload_sha256": "079724f0e700b90a30f68596b3c1959037444b1962cdabda2e93b1bb356b808e",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.request-parameters.query.required-list.plain",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_query/test_list.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-parameters.query.required-list.declared-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_request_params/test_query/test_list.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "query-required-optional-integer-upstream",
       "input_path": "tests/fixtures/inputs/parity/query-required-optional-integer-upstream.json",
       "input_sha256": "58e905a45d01bb1e6b5d6ce719e8115390198b015edc6b7719dd4213cc6e9d1e",
@@ -40195,15 +40224,12 @@
       "fixture_id": "fastapi.test.test-request-params-test-query-test-list",
       "workflow_id": "array-items-query-wire",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.openapi-array-items-query-wire.required-list"
       ],
       "observation_selectors": [
         "asgi.send.message_types",
-        "docs.response.body.bytes",
-        "docs.response.headers",
-        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
@@ -59000,6 +59026,23 @@
       ],
       "observation_selectors": [
         "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_query/test_list.py",
+      "fixture_id": "fastapi.test.test-request-params-test-query-test-list",
+      "workflow_id": "query-required-list-aliases",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameters.query.required-list.declared-alias",
+        "fastapi.request-parameters.query.required-list.plain"
+      ],
+      "observation_selectors": [
         "http.body.bytes",
         "http.status",
         "openapi.document",

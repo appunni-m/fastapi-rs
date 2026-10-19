@@ -721,6 +721,12 @@ _FILE_LIST_FORM_ORDER_CASE = "fastapi.request-uploads.file-form-order.test-file-
 _QUERY_LIST_VALIDATION_ALIAS_RECIPE = (
     "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
 )
+_QUERY_REQUIRED_LIST_RECIPE = "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml"
+_QUERY_REQUIRED_LIST_WORKLOAD = "tests/fixtures/workloads/query_required_list_aliases.py"
+_QUERY_REQUIRED_LIST_CASES = {
+    "fastapi.request-parameters.query.required-list.plain",
+    "fastapi.request-parameters.query.required-list.declared-alias",
+}
 _OPTIONAL_QUERY_LIST_ALIAS_RECIPE = (
     "tests/fixtures/input-recipes/parity/optional-query-list-aliases.yaml"
 )
@@ -1050,6 +1056,7 @@ def _query_list_validation_alias_function_mapping(
     action_ids: list[str],
     observation_selectors: list[str],
     behavior: str,
+    feature_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     test_path = "tests/test_request_params/test_query/test_list.py"
     tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
@@ -1074,6 +1081,7 @@ def _query_list_validation_alias_function_mapping(
             "action_ids": list(action_ids),
             "observation_selectors": list(observation_selectors),
         },
+        "feature_ids": list(feature_ids or ["request-validation"]),
         "rationale": behavior,
         "contract_gate": (
             "Partial input mapping only: independently named direct-list and Query(BaseModel) "
@@ -1081,6 +1089,49 @@ def _query_list_validation_alias_function_mapping(
             "names, and the route-specific OpenAPI parameter projection. The recipe contains "
             "no expected outputs and makes no live parity claim; complete error-detail parsing, "
             "unlisted constraints, and exact TestClient behavior remain outside this mapping. "
+            "Generic query-string parsing remains owned by the separate Starlette 1.6.0 contract."
+        ),
+    }
+
+
+def _query_required_list_function_mapping(
+    function_name: str,
+    case_id: str,
+    action_ids: list[str],
+    observation_selectors: list[str],
+    behavior: str,
+    feature_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    test_path = "tests/test_request_params/test_query/test_list.py"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _QUERY_REQUIRED_LIST_RECIPE,
+            "case_id": case_id,
+            "action_ids": list(action_ids),
+            "observation_selectors": list(observation_selectors),
+        },
+        "feature_ids": list(feature_ids or ["request-validation"]),
+        "rationale": behavior,
+        "contract_gate": (
+            "Partial input mapping only: independent direct-list and Query(BaseModel) routes "
+            "exercise required query-list schemas, missing values, repeated values, and declared "
+            "alias selection. The recipe contains no expected outputs and makes no live parity "
+            "claim; complete error detail and unlisted cases remain outside this mapping. "
             "Generic query-string parsing remains owned by the separate Starlette 1.6.0 contract."
         ),
     }
@@ -1150,6 +1201,58 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
         ),
     },
     "tests/test_request_params/test_query/test_list.py": {
+        "test_required_list_str_schema": _query_required_list_function_mapping(
+            "test_required_list_str_schema",
+            "fastapi.request-parameters.query.required-list.plain",
+            ["inspect-openapi"],
+            ["openapi.document", "openapi.paths"],
+            "The OpenAPI case projects the required list parameter from independent direct and Query(BaseModel) routes.",
+        ),
+        "test_required_list_str_missing": _query_required_list_function_mapping(
+            "test_required_list_str_missing",
+            "fastapi.request-parameters.query.required-list.plain",
+            ["plain-direct-missing", "plain-model-missing"],
+            ["http.body.bytes", "http.status"],
+            "The two missing-value requests exercise required list extraction on direct and Query(BaseModel) routes.",
+            ["request-validation", "status-codes"],
+        ),
+        "test_required_list_str": _query_required_list_function_mapping(
+            "test_required_list_str",
+            "fastapi.request-parameters.query.required-list.plain",
+            ["plain-direct-repeated", "plain-model-repeated"],
+            ["http.body.bytes", "http.status"],
+            "The two requests submit repeated values to independent direct and Query(BaseModel) list routes.",
+        ),
+        "test_required_list_str_alias_schema": _query_required_list_function_mapping(
+            "test_required_list_str_alias_schema",
+            "fastapi.request-parameters.query.required-list.declared-alias",
+            ["inspect-openapi"],
+            ["openapi.document", "openapi.paths"],
+            "The OpenAPI case projects a declared query alias from independent direct and Query(BaseModel) routes.",
+        ),
+        "test_required_list_alias_missing": _query_required_list_function_mapping(
+            "test_required_list_alias_missing",
+            "fastapi.request-parameters.query.required-list.declared-alias",
+            ["alias-direct-missing", "alias-model-missing"],
+            ["http.body.bytes", "http.status"],
+            "The two requests omit the required declared alias on direct and Query(BaseModel) routes.",
+            ["request-validation", "status-codes"],
+        ),
+        "test_required_list_alias_by_name": _query_required_list_function_mapping(
+            "test_required_list_alias_by_name",
+            "fastapi.request-parameters.query.required-list.declared-alias",
+            ["alias-direct-field-name", "alias-model-field-name"],
+            ["http.body.bytes", "http.status"],
+            "The two requests supply the Python field name while the independent routes declare a different wire alias.",
+            ["request-validation", "status-codes"],
+        ),
+        "test_required_list_alias_by_alias": _query_required_list_function_mapping(
+            "test_required_list_alias_by_alias",
+            "fastapi.request-parameters.query.required-list.declared-alias",
+            ["alias-direct-wire-name", "alias-model-wire-name"],
+            ["http.body.bytes", "http.status"],
+            "The two requests supply repeated values under the declared wire alias on both route forms.",
+        ),
         "test_required_list_validation_alias_schema": _query_list_validation_alias_function_mapping(
             "test_required_list_validation_alias_schema",
             "fastapi.request-parameters.query.validation-alias-list.validation-only.openapi",
@@ -1163,6 +1266,7 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["direct-missing", "model-missing"],
             ["http.body.bytes", "http.status"],
             "The input case omits the required validation-alias list from both direct and model-valued routes.",
+            ["request-validation", "status-codes"],
         ),
         "test_required_list_validation_alias_by_name": _query_list_validation_alias_function_mapping(
             "test_required_list_validation_alias_by_name",
@@ -1170,6 +1274,7 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["direct-field-name", "model-field-name"],
             ["http.body.bytes", "http.status"],
             "The input case supplies repeated values under the Python field name instead of the required validation alias.",
+            ["request-validation", "status-codes"],
         ),
         "test_required_list_validation_alias_by_validation_alias": _query_list_validation_alias_function_mapping(
             "test_required_list_validation_alias_by_validation_alias",
@@ -1191,6 +1296,7 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["direct-missing", "model-missing"],
             ["http.body.bytes", "http.status"],
             "The input case omits the required wire value when both declared alias and validation alias are present.",
+            ["request-validation", "status-codes"],
         ),
         "test_required_list_alias_and_validation_alias_by_name": _query_list_validation_alias_function_mapping(
             "test_required_list_alias_and_validation_alias_by_name",
@@ -1198,6 +1304,7 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["direct-field-name", "model-field-name"],
             ["http.body.bytes", "http.status"],
             "The input case uses the Python field name and distinguishes it from both declared aliases.",
+            ["request-validation", "status-codes"],
         ),
         "test_required_list_alias_and_validation_alias_by_alias": _query_list_validation_alias_function_mapping(
             "test_required_list_alias_and_validation_alias_by_alias",
@@ -1205,6 +1312,7 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["direct-declared-alias", "model-declared-alias"],
             ["http.body.bytes", "http.status"],
             "The input case uses the declared alias, which differs from the accepted validation alias.",
+            ["request-validation", "status-codes"],
         ),
         "test_required_list_alias_and_validation_alias_by_validation_alias": _query_list_validation_alias_function_mapping(
             "test_required_list_alias_and_validation_alias_by_validation_alias",
@@ -1751,6 +1859,14 @@ def validate_request_parameter_mappings() -> list[str]:
         errors.append(
             "optional query-list alias recipe does not contain its thirteen reviewed cases"
         )
+    query_required_list_path = PROJECT_ROOT / _QUERY_REQUIRED_LIST_RECIPE
+    query_required_list = yaml.safe_load(query_required_list_path.read_text(encoding="utf-8"))
+    query_required_list_cases = {
+        case.get("case_id"): case for case in query_required_list.get("cases", [])
+    }
+    if set(query_required_list_cases) != _QUERY_REQUIRED_LIST_CASES:
+        errors.append("required query-list recipe does not contain its two reviewed cases")
+    all_query_list_cases = {**optional_query_list_cases, **query_required_list_cases}
     expected_openapi_pointers = {
         "fastapi.request-parameters.query.optional-list.alias.openapi": {
             "/paths/~1optional-alias~1direct/get/parameters",
@@ -1764,9 +1880,17 @@ def validate_request_parameter_mappings() -> list[str]:
             "/paths/~1optional-combined-alias~1direct/get/parameters",
             "/paths/~1optional-combined-alias~1model/get/parameters",
         },
+        "fastapi.request-parameters.query.required-list.plain": {
+            "/paths/~1catalog~1direct/get/parameters",
+            "/paths/~1catalog~1model/get/parameters",
+        },
+        "fastapi.request-parameters.query.required-list.declared-alias": {
+            "/paths/~1labels~1direct/get/parameters",
+            "/paths/~1labels~1model/get/parameters",
+        },
     }
     for case_id, expected_pointers in expected_openapi_pointers.items():
-        case = optional_query_list_cases.get(case_id, {})
+        case = all_query_list_cases.get(case_id, {})
         action = next(
             (
                 action
@@ -1818,6 +1942,10 @@ def validate_request_parameter_mappings() -> list[str]:
         optional_query_list,
         str(optional_query_list_path.relative_to(PROJECT_ROOT)),
     )
+    scan_input_only(
+        query_required_list,
+        str(query_required_list_path.relative_to(PROJECT_ROOT)),
+    )
     if not (PROJECT_ROOT / _TAIL_WAVE_WORKLOAD).is_file():
         errors.append("tail recipe workload file is missing")
     if tail.get("workload", {}).get("file") != _TAIL_WAVE_WORKLOAD:
@@ -1836,6 +1964,10 @@ def validate_request_parameter_mappings() -> list[str]:
         errors.append("optional query-list alias workload file is missing")
     if optional_query_list.get("workload", {}).get("file") != _OPTIONAL_QUERY_LIST_ALIAS_WORKLOAD:
         errors.append("optional query-list alias recipe references a different reviewed workload")
+    if not (PROJECT_ROOT / _QUERY_REQUIRED_LIST_WORKLOAD).is_file():
+        errors.append("required query-list workload file is missing")
+    if query_required_list.get("workload", {}).get("file") != _QUERY_REQUIRED_LIST_WORKLOAD:
+        errors.append("required query-list recipe references a different reviewed workload")
     referenced_tail_cases = {
         row["workflow_case"]["case_id"]
         for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
@@ -1907,6 +2039,30 @@ def validate_request_parameter_mappings() -> list[str]:
         if not referenced_actions <= declared_actions:
             errors.append(
                 f"optional query-list alias mapping references unknown actions for {case_id}: "
+                f"{sorted(referenced_actions - declared_actions)}"
+            )
+    referenced_required_list_cases = {
+        row["workflow_case"]["case_id"]
+        for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
+        for row in rows.values()
+        if row["workflow_case"]["recipe_path"] == _QUERY_REQUIRED_LIST_RECIPE
+    }
+    if referenced_required_list_cases != _QUERY_REQUIRED_LIST_CASES:
+        errors.append("required query-list function mappings do not cover exactly both cases")
+    for case_id, case in query_required_list_cases.items():
+        declared_actions = {action.get("action_id") for action in case.get("actions", [])}
+        referenced_actions = {
+            action_id
+            for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
+            for row in rows.values()
+            if row["workflow_case"]["case_id"] == case_id
+            for action_id in row["workflow_case"]["action_ids"]
+        }
+        if not referenced_actions:
+            errors.append(f"required query-list case has no exact source mapping: {case_id}")
+        if not referenced_actions <= declared_actions:
+            errors.append(
+                f"required query-list mapping references unknown actions for {case_id}: "
                 f"{sorted(referenced_actions - declared_actions)}"
             )
 
