@@ -479,10 +479,34 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     http_exception_namespace.set_item("__module__", "fastapi.exceptions")?;
     http_exception_namespace.set_item(
         "__doc__",
-        "An HTTP exception you can raise in your own code to show errors to the client.\n\n\
-         This is for client errors, invalid authentication, invalid data, etc. Not for server\n\
-         errors in your code.\n\n\
-         Read more about it in the FastAPI docs for Handling Errors.",
+        concat!(
+            "\n",
+            "    An HTTP exception you can raise in your own code to show errors to the client.\n",
+            "\n",
+            "    This is for client errors, invalid authentication, invalid data, etc. Not for server\n",
+            "    errors in your code.\n",
+            "\n",
+            "    Read more about it in the\n",
+            "    [FastAPI docs for Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/).\n",
+            "\n",
+            "    ## Example\n",
+            "\n",
+            "    \x60\x60\x60python\n",
+            "    from fastapi import FastAPI, HTTPException\n",
+            "\n",
+            "    app = FastAPI()\n",
+            "\n",
+            "    items = {\"foo\": \"The Foo Wrestlers\"}\n",
+            "\n",
+            "\n",
+            "    @app.get(\"/items/{item_id}\")\n",
+            "    async def read_item(item_id: str):\n",
+            "        if item_id not in items:\n",
+            "            raise HTTPException(status_code=404, detail=\"Item not found\")\n",
+            "        return {\"item\": items[item_id]}\n",
+            "    \x60\x60\x60\n",
+            "    "
+        ),
     )?;
     let http_exception_type = py.import("builtins")?.getattr("type")?.call1((
         "HTTPException",

@@ -283,6 +283,12 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
                 "same_as_starlette": HTTPException is StarletteHTTPException,
             },
             "signature": str(signature(HTTPException)),
+            "class_metadata": {
+                "module": HTTPException.__module__,
+                "name": HTTPException.__name__,
+                "qualname": HTTPException.__qualname__,
+                "doc": HTTPException.__doc__,
+            },
             "calls": [
                 _http_exception_snapshot(call)
                 for call in factory_input.get("http_exception_calls", [])
