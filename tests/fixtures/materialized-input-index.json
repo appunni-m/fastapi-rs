@@ -2457,18 +2457,32 @@
     {
       "id": "background-tasks-public-api",
       "input_path": "tests/fixtures/inputs/parity/background-tasks-public-api.json",
-      "input_sha256": "7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0",
+      "input_sha256": "8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137",
       "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml",
-      "recipe_sha256": "fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f",
+      "recipe_sha256": "b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765",
       "case_ids": [
         "fastapi.background.background-tasks-class",
-        "fastapi.background.background-tasks-add-task"
+        "fastapi.background.background-tasks-add-task",
+        "fastapi.background.background-tasks-add-task-multiple",
+        "fastapi.background.background-tasks-add-task-invalid"
       ],
       "workload_path": "tests/fixtures/workloads/background_tasks_public_api.py",
-      "workload_sha256": "be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829",
+      "workload_sha256": "a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b",
       "api_definitions": [
         {
           "case_id": "fastapi.background.background-tasks-add-task",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "path": "fastapi/background.py",
+          "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-invalid",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "path": "fastapi/background.py",
+          "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-multiple",
           "symbol_id": "fastapi.background.BackgroundTasks.add_task",
           "path": "fastapi/background.py",
           "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
@@ -2502,7 +2516,8 @@
           "symbol_id": "fastapi.background.BackgroundTasks.add_task",
           "probe_kind": "callable",
           "observation_selectors": [
-            "python.attribute_value"
+            "python.attribute_value",
+            "python.background_task_queue"
           ]
         },
         {
@@ -2512,6 +2527,65 @@
           "probe_kind": "callable",
           "observation_selectors": [
             "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-invalid",
+          "probe_id": "duplicate-func",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.background_task_queue",
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-invalid",
+          "probe_id": "duplicate-self",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.background_task_queue",
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-invalid",
+          "probe_id": "missing-func",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.background_task_queue",
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-invalid",
+          "probe_id": "missing-self-and-func",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-multiple",
+          "probe_id": "first-task-call",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.background_task_queue"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-multiple",
+          "probe_id": "second-task-call",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.background_task_queue"
           ]
         },
         {
@@ -2562,6 +2636,20 @@
         },
         {
           "case_id": "fastapi.background.background-tasks-add-task",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.background.BackgroundTasks.add_task"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-multiple",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.background.BackgroundTasks.add_task"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-invalid",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.background.BackgroundTasks.add_task"

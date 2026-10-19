@@ -550,10 +550,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 087868d5b97dce63e0194134f44f728724aa976fcb69780aef5904771a417d62
+    sha256: 31dbde308e6cb27842a8a2210c79d3a0a8ed9401c4c5ca10de536a40be42d174
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 55
+      selectors: 56
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 0bcd4661e22abda2fd4f6ec328973db9800f3bda7405acb336a0045e9e445361
+    sha256: 7b9bcf66a61d28543781649dda83bae608f0ef8871831982e0c2d3fff3660f6d
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 688
-      cases: 2775
+      cases: 2777
       partial_source_mappings: 1940
 
 contract_metadata:
@@ -1024,6 +1024,21 @@ unresolved:
       with a reviewed canonical symbol from the selected Starlette package.
       The comparator requires the source and target identity relations both be
       true, preventing false/false agreement from passing.
+  python_api_workflow_v9:
+    state: post-call-background-task-queue-observation
+    schema_id: fastapi-rs/python-api-workflow@9
+    schema_path: tests/fixtures/schemas/python-api-workflow-v9.schema.json
+    schema_sha256: e7242930be4038408b1908af6c637902318999a63d0a6cd3bd25e74e0268dc40
+    result_schema_id: fastapi-rs/python-api-workflow-result@11
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v11.schema.json
+    result_schema_sha256: 2aa35a4c2fbaa6ae1107f4b51fada183912dbc7ece60543cf4e5fa6908c5fbfa
+    comparison_schema_id: fastapi-rs/python-api-comparison@9
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v9.schema.json
+    comparison_schema_sha256: d93b32ecb227fef2cb003a630313a4d56e5b985ccaac1a7cc4436cea38933498
+    coverage: >-
+      Adds a read-only post-call projection of the public BackgroundTasks queue,
+      including callback identity, positional and ordered keyword arguments,
+      and sync/async classification; callbacks are never executed by this probe.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -1305,7 +1320,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 184
     symbols_with_operation_fixture_refs: 304
-    operation_fixture_refs: 2282
+    operation_fixture_refs: 2284
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1861,11 +1876,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-class
       probe_id: root-class-is-not-starlette-alias
       probe_kind: callable
@@ -1873,11 +1888,11 @@ api_surface_contract:
       - python.binding_identity
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-class
       probe_id: root-class-signature
       probe_kind: callable
@@ -1886,11 +1901,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-class
       observation_selectors:
       - python.signature
@@ -22423,11 +22438,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-class
       probe_id: module-class-is-not-starlette-alias
       probe_kind: callable
@@ -22435,11 +22450,11 @@ api_surface_contract:
       - python.binding_identity
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-class
       probe_id: module-class-signature
       probe_kind: callable
@@ -22448,11 +22463,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-class
       observation_selectors:
       - python.signature
@@ -22550,11 +22565,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-add-task
       probe_id: add-task-is-not-starlette-method-alias
       probe_kind: callable
@@ -22562,40 +22577,141 @@ api_surface_contract:
       - python.binding_identity
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-add-task
       probe_id: add-task-method-return
       probe_kind: callable
       observation_selectors:
       - python.attribute_value
+      - python.background_task_queue
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-add-task
       probe_id: add-task-method-signature
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-invalid
+      probe_id: duplicate-func
+      probe_kind: callable
+      observation_selectors:
+      - python.background_task_queue
+      - python.call_outcome
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-invalid
+      probe_id: duplicate-self
+      probe_kind: callable
+      observation_selectors:
+      - python.background_task_queue
+      - python.call_outcome
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-invalid
+      probe_id: missing-func
+      probe_kind: callable
+      observation_selectors:
+      - python.background_task_queue
+      - python.call_outcome
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-invalid
+      probe_id: missing-self-and-func
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-multiple
+      probe_id: first-task-call
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+      - python.background_task_queue
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-multiple
+      probe_id: second-task-call
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+      - python.background_task_queue
     operation_fixture_refs:
     - workflow_id: background-tasks-public-api
       input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
-      input_sha256: 7d1f0e9e635a966c26a8ac764a367ae621c33fe528b4459d6a27533e7c4f92b0
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
       recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
-      recipe_sha256: fdae093756bcd99ce4cafa196f85ac363d1868a5d695fafc5ecd71d0775dea2f
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
       workload_path: tests/fixtures/workloads/background_tasks_public_api.py
-      workload_sha256: be8a7ca1122627a3c76f726855f0d9275e7133d0dc86f21cb3fed5ebca454829
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
       case_id: fastapi.background.background-tasks-add-task
       observation_selectors:
       - python.attribute_value
+      - python.background_task_queue
       - python.signature
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-multiple
+      observation_selectors:
+      - python.attribute_value
+      - python.background_task_queue
+    - workflow_id: background-tasks-public-api
+      input_path: tests/fixtures/inputs/parity/background-tasks-public-api.json
+      input_sha256: 8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+      recipe_sha256: b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765
+      workload_path: tests/fixtures/workloads/background_tasks_public_api.py
+      workload_sha256: a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b
+      case_id: fastapi.background.background-tasks-add-task-invalid
+      observation_selectors:
+      - python.background_task_queue
+      - python.call_outcome
     - workflow_id: worker-dispatch
       input_path: tests/fixtures/inputs/parity/worker-dispatch.json
       input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
@@ -22678,7 +22794,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - python.attribute_value
+    - python.background_task_queue
     - python.binding_identity
+    - python.call_outcome
     - python.signature
     operation_scope:
       status: slice-described
@@ -22698,7 +22816,7 @@ api_surface_contract:
       known_gaps:
       - Generic task failure, cancellation, callable-shape, and invalid-call behavior remains Starlette-RS-owned;
         only the selected inherited requirements below are linked here.
-      - FastAPI subclass invalid-call errors and less common dependency-injection combinations remain
+      - Other FastAPI add_task invalid-call shapes and less common dependency-injection combinations remain
         outside the focused cases.
   - id: fastapi.datastructures.Address
     kind: import_binding

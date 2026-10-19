@@ -15071,6 +15071,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
           case_id: fastapi.background.background-tasks-add-task
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+          case_id: fastapi.background.background-tasks-add-task-multiple
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
+          case_id: fastapi.background.background-tasks-add-task-invalid
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
@@ -15082,17 +15086,19 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
           case_id: fastapi.background.task-injection.mixed-sync-async-order
       feature_ids: [dependency-security, response-serialization]
-      observation_selectors: [python.signature, python.binding_identity, python.attribute_value, http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [python.signature, python.binding_identity, python.attribute_value, python.background_task_queue, python.call_outcome, http.status, http.headers.ordered, http.body.bytes]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - Generic task failure, cancellation, callable-shape, and invalid-call behavior remains Starlette-RS-owned; only the selected inherited requirements below are linked here.
-          - FastAPI subclass invalid-call errors and less common dependency-injection combinations remain outside the focused cases.
+          - Other FastAPI add_task invalid-call shapes and less common dependency-injection combinations remain outside the focused cases.
       supported_slice: >-
         The direct API workflow checks the FastAPI override signature, distinct
-        method identity, and forwarding call result; request fixtures observe
-        nested dependency aggregation, mixed sync/async callback order, and
+        method identity, forwarding return value, queued callback/argument
+        projection, insertion order, sync/async classification, and exact
+        missing/duplicate self/func TypeErrors. Request fixtures observe nested
+        dependency aggregation, mixed sync/async callback order, and
         constructor-provided task-sequence execution. Generic scheduling remains
         delegated to Starlette-RS.
 

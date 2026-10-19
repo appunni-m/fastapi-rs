@@ -46,6 +46,7 @@ WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow@5"
 WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow@8"
+WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow@9"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -56,6 +57,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V6_ID,
         WORKFLOW_SCHEMA_V7_ID,
         WORKFLOW_SCHEMA_V8_ID,
+        WORKFLOW_SCHEMA_V9_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -67,6 +69,7 @@ RESULT_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow-result@7"
 RESULT_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow-result@9"
 RESULT_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow-result@10"
+RESULT_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow-result@11"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -76,6 +79,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V6_ID: RESULT_SCHEMA_V8_ID,
     WORKFLOW_SCHEMA_V7_ID: RESULT_SCHEMA_V9_ID,
     WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V10_ID,
+    WORKFLOW_SCHEMA_V9_ID: RESULT_SCHEMA_V11_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
@@ -753,7 +757,7 @@ def _validate_workflow_callables(
             if "binding_identity" in probe or binding_identity_selected:
                 binding_identity = probe.get("binding_identity")
                 if (
-                    workflow.get("schema") != WORKFLOW_SCHEMA_V8_ID
+                    workflow.get("schema") not in {WORKFLOW_SCHEMA_V8_ID, WORKFLOW_SCHEMA_V9_ID}
                     or not binding_identity_selected
                     or len(observations) != 1
                     or "public_callable" not in probe
@@ -767,11 +771,37 @@ def _validate_workflow_callables(
                     or _ATTRIBUTE_PATH.fullmatch(binding_identity["attribute"]) is None
                 ):
                     raise WorkerError(
-                        "cross-module binding identity requires one v8 callable probe"
+                        "cross-module binding identity requires one v8 or v9 callable probe"
+                    )
+            background_task_queue_selected = any(
+                isinstance(observation, dict)
+                and observation.get("kind") == "python_background_task_queue"
+                for observation in observations
+            )
+            if background_task_queue_selected:
+                public_callable = probe.get("public_callable")
+                invocation_selected = any(
+                    isinstance(observation, dict)
+                    and observation.get("kind") in {"python_return_value", "python_call_outcome"}
+                    for observation in observations
+                )
+                if (
+                    workflow.get("schema") != WORKFLOW_SCHEMA_V9_ID
+                    or not isinstance(public_callable, dict)
+                    or public_callable.get("module") != "fastapi.background"
+                    or public_callable.get("attribute") != "BackgroundTasks.add_task"
+                    or "argument_bundle" not in probe
+                    or len(observations) != 2
+                    or not invocation_selected
+                ):
+                    raise WorkerError(
+                        "BackgroundTasks queue observation requires one v9 add_task call "
+                        "and a return or call-outcome observation"
                     )
             if "public_module" in probe:
                 if (
-                    workflow.get("schema") not in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID}
+                    workflow.get("schema")
+                    not in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID, WORKFLOW_SCHEMA_V9_ID}
                     or any(
                         key in probe
                         for key in (
@@ -786,7 +816,8 @@ def _validate_workflow_callables(
                     != {"python_import_path", "python_object_identity"}
                 ):
                     raise WorkerError(
-                        "module identity requires one v7 or v8 module probe with both identity "
+                        "module identity requires one v7, v8, or v9 module probe with both "
+                        "identity "
                         "observations"
                     )
                 module_spec = probe["public_module"]
@@ -896,6 +927,58 @@ async def _make_bundles(factory: Any) -> Mapping[str, Any]:
     if inspect.isawaitable(bundles):
         bundles = await bundles
     return _validate_argument_bundles(bundles)
+
+
+def _background_task_queue_projection(receiver: Any) -> list[dict[str, Any]]:
+    """Project the public BackgroundTasks queue without executing its callbacks."""
+    try:
+        tasks = receiver.tasks
+    except Exception as exc:
+        raise WorkerError("BackgroundTasks receiver has no readable public task queue") from exc
+    if not isinstance(tasks, list):
+        raise WorkerError("BackgroundTasks.tasks must be a list for this selector")
+
+    projected_tasks: list[dict[str, Any]] = []
+    for task in tasks:
+        try:
+            function = task.func
+            args = task.args
+            kwargs = task.kwargs
+            is_async = task.is_async
+            module = function.__module__
+            qualname = function.__qualname__
+        except Exception as exc:
+            raise WorkerError(
+                "queued BackgroundTask does not expose the declared public fields"
+            ) from exc
+        if (
+            not callable(function)
+            or not isinstance(module, str)
+            or not module
+            or not isinstance(qualname, str)
+            or not qualname
+            or not isinstance(args, (list, tuple))
+            or not isinstance(kwargs, Mapping)
+            or any(not isinstance(key, str) for key in kwargs)
+            or type(is_async) is not bool
+        ):
+            raise WorkerError("queued BackgroundTask fields do not match the selector contract")
+        try:
+            projected_args = _json_safe(args)
+            projected_kwargs = [
+                {"name": key, "value": _json_safe(value)} for key, value in kwargs.items()
+            ]
+        except (TypeError, ValueError) as exc:
+            raise WorkerError("queued BackgroundTask arguments must be strict JSON values") from exc
+        projected_tasks.append(
+            {
+                "callable": {"module": module, "qualname": qualname},
+                "args": projected_args,
+                "kwargs": projected_kwargs,
+                "is_async": is_async,
+            }
+        )
+    return projected_tasks
 
 
 async def _run_probe(
@@ -1044,6 +1127,11 @@ async def _run_probe(
                 values = {"parameter_metadata": _parameter_metadata_projection(result)}
             elif observation["kind"] == "python_call_outcome":
                 values = {"outcome": call_outcome}
+            elif observation["kind"] == "python_background_task_queue":
+                args, _ = _get_arguments(bundles, probe["argument_bundle"])
+                if not args:
+                    raise WorkerError("BackgroundTasks queue observation has no receiver argument")
+                values = {"tasks": _background_task_queue_projection(args[0])}
             else:
                 raise WorkerError(f"unsupported direct API observation: {observation['kind']}")
             observations.append({"index": index, "kind": observation["kind"], "values": values})
@@ -1474,6 +1562,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V6_ID,
                 WORKFLOW_SCHEMA_V7_ID,
                 WORKFLOW_SCHEMA_V8_ID,
+                WORKFLOW_SCHEMA_V9_ID,
             },
         )
     )

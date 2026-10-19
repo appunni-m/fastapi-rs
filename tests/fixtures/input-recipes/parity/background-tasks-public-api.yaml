@@ -1,4 +1,4 @@
-schema: fastapi-rs/python-api-workflow@8
+schema: fastapi-rs/python-api-workflow@9
 workload:
   file: tests/fixtures/workloads/background_tasks_public_api.py
   factory: create_argument_bundles
@@ -94,6 +94,104 @@ cases:
         observations:
           - kind: python_return_value
             selector: value
+            comparison: exact
+          - kind: python_background_task_queue
+            selector: tasks
+            comparison: exact
+    source_evidence:
+      - path: fastapi/background.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.background.BackgroundTasks.add_task
+        sha256: 4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205
+      - path: docs/en/docs/reference/background.md
+        kind: upstream_documentation
+        sha256: 895ad7f9418b148b66ecd9a50b66e02bc1bf55a0f4abb0b6db87090ec60122d1
+      - path: docs/en/docs/tutorial/background-tasks.md
+        kind: upstream_documentation
+        sha256: 7a34e7a4a7bd2cb9e0b465588b77cf007b0a5c8bdcf7530ff3619ff6b3642468
+  - case_id: fastapi.background.background-tasks-add-task-multiple
+    probes:
+      - probe_id: first-task-call
+        public_callable:
+          module: fastapi.background
+          attribute: BackgroundTasks.add_task
+        argument_bundle: task-first
+        observations:
+          - kind: python_return_value
+            selector: value
+            comparison: exact
+          - kind: python_background_task_queue
+            selector: tasks
+            comparison: exact
+      - probe_id: second-task-call
+        public_callable:
+          module: fastapi.background
+          attribute: BackgroundTasks.add_task
+        argument_bundle: task-second
+        observations:
+          - kind: python_return_value
+            selector: value
+            comparison: exact
+          - kind: python_background_task_queue
+            selector: tasks
+            comparison: exact
+    source_evidence:
+      - path: fastapi/background.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.background.BackgroundTasks.add_task
+        sha256: 4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205
+      - path: docs/en/docs/reference/background.md
+        kind: upstream_documentation
+        sha256: 895ad7f9418b148b66ecd9a50b66e02bc1bf55a0f4abb0b6db87090ec60122d1
+      - path: docs/en/docs/tutorial/background-tasks.md
+        kind: upstream_documentation
+        sha256: 7a34e7a4a7bd2cb9e0b465588b77cf007b0a5c8bdcf7530ff3619ff6b3642468
+  - case_id: fastapi.background.background-tasks-add-task-invalid
+    probes:
+      - probe_id: missing-func
+        public_callable:
+          module: fastapi.background
+          attribute: BackgroundTasks.add_task
+        argument_bundle: missing-func
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+          - kind: python_background_task_queue
+            selector: tasks
+            comparison: exact
+      - probe_id: missing-self-and-func
+        public_callable:
+          module: fastapi.background
+          attribute: BackgroundTasks.add_task
+        argument_bundle: missing-self-and-func
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+      - probe_id: duplicate-func
+        public_callable:
+          module: fastapi.background
+          attribute: BackgroundTasks.add_task
+        argument_bundle: duplicate-func
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+          - kind: python_background_task_queue
+            selector: tasks
+            comparison: exact
+      - probe_id: duplicate-self
+        public_callable:
+          module: fastapi.background
+          attribute: BackgroundTasks.add_task
+        argument_bundle: duplicate-self
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+          - kind: python_background_task_queue
+            selector: tasks
             comparison: exact
     source_evidence:
       - path: fastapi/background.py

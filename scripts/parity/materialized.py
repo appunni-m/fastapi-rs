@@ -17,6 +17,7 @@ from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_V6_ID,
     API_WORKFLOW_SCHEMA_V7_ID,
     API_WORKFLOW_SCHEMA_V8_ID,
+    API_WORKFLOW_SCHEMA_V9_ID,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
@@ -48,6 +49,7 @@ INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v10.schem
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
+    "python_background_task_queue": "python.background_task_queue",
     "python_binding_identity": "python.binding_identity",
     "python_binding_distinct": "python.binding_identity",
     "python_call_outcome": "python.call_outcome",
@@ -102,6 +104,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     API_WORKFLOW_SCHEMA_V6_ID,
                     API_WORKFLOW_SCHEMA_V7_ID,
                     API_WORKFLOW_SCHEMA_V8_ID,
+                    API_WORKFLOW_SCHEMA_V9_ID,
                 }
                 and probe.get("capture_warnings") is True
             ):
@@ -111,6 +114,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("python.attribute_value")
                 elif observation["kind"] == "python_attribute_value":
                     selectors.add("python.attribute_value")
+                elif observation["kind"] == "python_background_task_queue":
+                    selectors.add("python.background_task_queue")
                 elif observation["kind"] == "python_signature":
                     selectors.add("python.signature")
                 elif observation["kind"] == "python_call_outcome":

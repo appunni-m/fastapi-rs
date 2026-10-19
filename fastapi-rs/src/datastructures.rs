@@ -41,6 +41,56 @@ const BACKGROUND_TASKS_ADD_TASK_DOC: &str = r#"
 #[pyclass(name = "_BackgroundTasksAddTask", module = "fastapi_rs._core", dict)]
 struct BackgroundTasksAddTask;
 
+fn background_task_keyword_present(
+    kwargs: Option<&Bound<'_, PyDict>>,
+    name: &str,
+) -> PyResult<bool> {
+    kwargs
+        .map(|kwargs| kwargs.contains(name))
+        .transpose()
+        .map(|present| present.unwrap_or(false))
+}
+
+fn normalize_background_task_binding_error(
+    py: Python<'_>,
+    args: &Bound<'_, PyTuple>,
+    kwargs: Option<&Bound<'_, PyDict>>,
+    error: PyErr,
+) -> PyResult<PyErr> {
+    if !error.is_instance_of::<PyTypeError>(py) {
+        return Ok(error);
+    }
+
+    let message = error.value(py).str()?.to_string_lossy().into_owned();
+    if message.starts_with("multiple values for argument ") {
+        return Ok(PyTypeError::new_err(format!(
+            "BackgroundTasks.add_task() got {message}"
+        )));
+    }
+
+    if message.starts_with("missing a required argument: ") {
+        let mut missing = Vec::new();
+        if args.is_empty() && !background_task_keyword_present(kwargs, "self")? {
+            missing.push("self");
+        }
+        if args.len() < 2 && !background_task_keyword_present(kwargs, "func")? {
+            missing.push("func");
+        }
+        let message = match missing.as_slice() {
+            [name] => format!(
+                "BackgroundTasks.add_task() missing 1 required positional argument: '{name}'"
+            ),
+            [first, second] => format!(
+                "BackgroundTasks.add_task() missing 2 required positional arguments: '{first}' and '{second}'"
+            ),
+            _ => return Ok(error),
+        };
+        return Ok(PyTypeError::new_err(message));
+    }
+
+    Ok(error)
+}
+
 #[pymethods]
 impl BackgroundTasksAddTask {
     fn __get__(
@@ -67,10 +117,18 @@ impl BackgroundTasksAddTask {
         args: &Bound<'_, PyTuple>,
         kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Py<PyAny>> {
-        let bound_arguments = slf
+        let bound_arguments = match slf
             .bind(py)
             .getattr("__signature__")?
-            .call_method("bind", args, kwargs)?;
+            .call_method("bind", args, kwargs)
+        {
+            Ok(bound_arguments) => bound_arguments,
+            Err(error) => {
+                return Err(normalize_background_task_binding_error(
+                    py, args, kwargs, error,
+                )?);
+            }
+        };
         let bound_args = bound_arguments.getattr("args")?.cast_into::<PyTuple>()?;
         let bound_kwargs = bound_arguments.getattr("kwargs")?.cast_into::<PyDict>()?;
         let instance = bound_args.get_item(0)?;
