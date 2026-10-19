@@ -37955,6 +37955,82 @@
       ]
     },
     {
+      "id": "validation-exception-api-contract",
+      "input_path": "tests/fixtures/inputs/parity/validation-exception-api-contract.json",
+      "input_sha256": "7e9ef2d229ff96a02979284460e8362c2f4c6ed608771b7a425ad1f068726d63",
+      "recipe_path": "tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml",
+      "recipe_sha256": "9c219f562aa4fcf41077321c023c18b8ca01e7a76baf2429024d9b5a09f29f8e",
+      "case_ids": [
+        "fastapi.validation-exceptions.direct-api-contract"
+      ],
+      "workload_path": "tests/fixtures/workloads/validation_exception_api_contract.py",
+      "workload_sha256": "ada6515d30fb30a0d4e134aa50f60249c5f6643d5e34e0946386954193bf10e2",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "symbol_id": "fastapi.exceptions.RequestValidationError",
+          "path": "fastapi/exceptions.py",
+          "sha256": "7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652"
+        },
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "symbol_id": "fastapi.exceptions.WebSocketRequestValidationError",
+          "path": "fastapi/exceptions.py",
+          "sha256": "7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "request-validation-error-constructor-signature",
+          "symbol_id": "fastapi.exceptions.RequestValidationError",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "validation-exception-class-identities",
+          "symbol_id": "fastapi.exceptions.RequestValidationError",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.import_path",
+            "python.object_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "validation-exception-class-identities",
+          "symbol_id": "fastapi.exceptions.WebSocketRequestValidationError",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.import_path",
+            "python.object_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "websocket-request-validation-error-constructor-signature",
+          "symbol_id": "fastapi.exceptions.WebSocketRequestValidationError",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.exceptions.RequestValidationError",
+            "api:fastapi.exceptions.WebSocketRequestValidationError"
+          ]
+        }
+      ]
+    },
+    {
       "id": "webhooks-constructor",
       "input_path": "tests/fixtures/inputs/parity/webhooks-constructor.json",
       "input_sha256": "8c12ed49b9d9882e4bd422a3c082ece2d84caace6f5132043104bedba302f939",

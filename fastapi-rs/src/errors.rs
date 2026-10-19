@@ -340,6 +340,98 @@ fn initialize_validation_exception(
     Ok(())
 }
 
+fn validation_exception_endpoint_context_type<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+    let fields = PyDict::new(py);
+    let string_type = py.get_type::<PyString>();
+    fields.set_item("function", &string_type)?;
+    fields.set_item("path", &string_type)?;
+    fields.set_item("file", &string_type)?;
+    fields.set_item("line", py.get_type::<PyInt>())?;
+
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("total", false)?;
+    let endpoint_context = py
+        .import("typing")?
+        .getattr("TypedDict")?
+        .call(("EndpointContext", fields), Some(&kwargs))?;
+    endpoint_context.setattr("__module__", "fastapi.exceptions")?;
+    Ok(endpoint_context)
+}
+
+fn signature_parameter<'py>(
+    py: Python<'py>,
+    parameter_type: &Bound<'py, PyAny>,
+    name: &str,
+    kind: &Bound<'py, PyAny>,
+    annotation: Option<&Bound<'py, PyAny>>,
+    default: Option<&Bound<'py, PyAny>>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let kwargs = PyDict::new(py);
+    if let Some(annotation) = annotation {
+        kwargs.set_item("annotation", annotation)?;
+    }
+    if let Some(default) = default {
+        kwargs.set_item("default", default)?;
+    }
+    parameter_type.call((name, kind), Some(&kwargs))
+}
+
+fn set_validation_exception_signature(
+    py: Python<'_>,
+    exception_type: &Bound<'_, PyAny>,
+    endpoint_context_type: &Bound<'_, PyAny>,
+    includes_body: bool,
+) -> PyResult<()> {
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let positional_or_keyword = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let sequence_type = py.import("collections.abc")?.getattr("Sequence")?;
+    let any_type = py.import("typing")?.getattr("Any")?;
+    let errors_annotation = sequence_type.call_method1("__class_getitem__", (any_type.clone(),))?;
+    let none_type = py.None().into_bound(py).get_type();
+    let endpoint_context_annotation = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((endpoint_context_type, &none_type))?;
+    let none_value = py.None();
+
+    let parameters = PyList::empty(py);
+    parameters.append(signature_parameter(
+        py,
+        &parameter_type,
+        "errors",
+        &positional_or_keyword,
+        Some(&errors_annotation),
+        None,
+    )?)?;
+    if includes_body {
+        parameters.append(signature_parameter(
+            py,
+            &parameter_type,
+            "body",
+            &keyword_only,
+            Some(&any_type),
+            Some(none_value.bind(py)),
+        )?)?;
+    }
+    parameters.append(signature_parameter(
+        py,
+        &parameter_type,
+        "endpoint_ctx",
+        &keyword_only,
+        Some(&endpoint_context_annotation),
+        Some(none_value.bind(py)),
+    )?)?;
+
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", py.None())?;
+    let signature = inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))?;
+    exception_type.setattr("__signature__", signature)
+}
+
 #[pyclass(name = "_HTTPExceptionInit", module = "fastapi_rs._core", dict)]
 struct HTTPExceptionInit {
     initializer: Py<PyAny>,
@@ -400,6 +492,13 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     set_http_exception_signature(py, &http_exception_type, http_exception_initializer)?;
 
     let validation_exception_type = py.get_type::<ValidationException>();
+    let endpoint_context_type = validation_exception_endpoint_context_type(py)?;
+    set_validation_exception_signature(
+        py,
+        &validation_exception_type,
+        &endpoint_context_type,
+        false,
+    )?;
     validation_exception_type.setattr(
         "__init__",
         Py::new(
@@ -429,6 +528,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?;
 
     let request_exception_type = py.get_type::<RequestValidationError>();
+    set_validation_exception_signature(py, &request_exception_type, &endpoint_context_type, true)?;
     request_exception_type.setattr(
         "__init__",
         Py::new(
@@ -440,6 +540,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?;
 
     let exception_type = py.get_type::<ResponseValidationError>();
+    set_validation_exception_signature(py, &exception_type, &endpoint_context_type, true)?;
     exception_type.setattr(
         "__init__",
         Py::new(
@@ -470,12 +571,19 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         &websocket_exception_type,
         websocket_exception_initializer,
     )?;
+    let websocket_request_exception_type = py.get_type::<WebSocketRequestValidationError>();
+    set_validation_exception_signature(
+        py,
+        &websocket_request_exception_type,
+        &endpoint_context_type,
+        false,
+    )?;
     module.add("HTTPException", http_exception_type)?;
     module.add("ValidationException", validation_exception_type)?;
     module.add("RequestValidationError", request_exception_type)?;
     module.add(
         "WebSocketRequestValidationError",
-        py.get_type::<WebSocketRequestValidationError>(),
+        websocket_request_exception_type,
     )?;
     module.add("ResponseValidationError", exception_type)?;
     module.add("_FastAPIError", py.get_type::<FastAPIError>())?;
