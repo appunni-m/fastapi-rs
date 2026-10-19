@@ -1,0 +1,847 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/optional_body_str_alias_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-body.optional-str-openapi.no-alias
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1schema~1plain~1direct/post/requestBody/content/application~1json/schema
+      - /components/schemas/Body_optional_body_str_plain_direct/properties
+      - /paths/~1schema~1plain~1model/post/requestBody/content/application~1json/schema
+      - /components/schemas/PlainPayload/properties
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.request-body.optional-str-openapi.alias
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1schema~1alias~1direct/post/requestBody/content/application~1json/schema
+      - /components/schemas/Body_optional_body_str_alias_direct/properties
+      - /paths/~1schema~1alias~1model/post/requestBody/content/application~1json/schema
+      - /components/schemas/AliasPayload/properties
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.request-body.optional-str-openapi.validation-alias
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1schema~1validation-alias~1direct/post/requestBody/content/application~1json/schema
+      - /components/schemas/Body_optional_body_str_validation_alias_direct/properties
+      - /paths/~1schema~1validation-alias~1model/post/requestBody/content/application~1json/schema
+      - /components/schemas/ValidationAliasPayload/properties
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.request-body.optional-str-openapi.both-aliases
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1schema~1both-aliases~1direct/post/requestBody/content/application~1json/schema
+      - /components/schemas/Body_optional_body_str_both_aliases_direct/properties
+      - /paths/~1schema~1both-aliases~1model/post/requestBody/content/application~1json/schema
+      - /components/schemas/BothAliasesPayload/properties
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.request-body.optional-str-runtime.alias
+  actions:
+  - action_id: alias-missing-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: alias-missing-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: alias-empty-object-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '2']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: alias-empty-object-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '2']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: alias-by-name-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '13']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: alias-by-name-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '13']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: alias-by-alias-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '19']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: alias-by-alias-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '19']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.request-body.optional-str-runtime.validation-alias
+  actions:
+  - action_id: validation-alias-missing-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: validation-alias-missing-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: validation-alias-empty-object-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '2']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: validation-alias-empty-object-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '2']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: validation-alias-by-name-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '13']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: validation-alias-by-name-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '13']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: validation-alias-by-validation-alias-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '23']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_val_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: validation-alias-by-validation-alias-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/validation-alias/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '23']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_val_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test
+- case_id: fastapi.request-body.optional-str-runtime.both-aliases
+  actions:
+  - action_id: both-aliases-missing-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-missing-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-empty-object-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '2']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-empty-object-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '2']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-by-name-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '13']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-by-name-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '13']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-by-alias-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '19']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-by-alias-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '19']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-by-validation-alias-direct
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/direct
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '23']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_val_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: both-aliases-by-validation-alias-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /schema/both-aliases/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [content-length, '23']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"p_val_alias":"hello"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_optional_str.py
+    kind: upstream_test

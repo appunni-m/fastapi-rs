@@ -452,6 +452,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let websocket_exception_base = py
         .import("starlette.exceptions")?
         .getattr("WebSocketException")?;
+    let websocket_exception_initializer = websocket_exception_base.getattr("__init__")?.unbind();
     let websocket_exception_bases = PyTuple::new(py, [websocket_exception_base])?;
     let websocket_exception_namespace = PyDict::new(py);
     websocket_exception_namespace.set_item("__module__", "fastapi.exceptions")?;
@@ -464,7 +465,11 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         websocket_exception_bases,
         websocket_exception_namespace,
     ))?;
-    set_websocket_exception_signature(py, &websocket_exception_type)?;
+    set_websocket_exception_signature(
+        py,
+        &websocket_exception_type,
+        websocket_exception_initializer,
+    )?;
     module.add("HTTPException", http_exception_type)?;
     module.add("ValidationException", validation_exception_type)?;
     module.add("RequestValidationError", request_exception_type)?;
@@ -649,6 +654,7 @@ fn set_http_exception_signature(
 fn set_websocket_exception_signature(
     py: Python<'_>,
     exception_type: &Bound<'_, PyAny>,
+    initializer: Py<PyAny>,
 ) -> PyResult<()> {
     let inspect = py.import("inspect")?;
     let annotated_doc = py.import("annotated_doc")?.getattr("Doc")?;
@@ -681,20 +687,40 @@ fn set_websocket_exception_signature(
 
     let parameter_type = inspect.getattr("Parameter")?;
     let kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let self_parameter = parameter_type.call(("self", &kind), None)?;
     let code_kwargs = PyDict::new(py);
-    code_kwargs.set_item("annotation", code_annotation)?;
+    code_kwargs.set_item("annotation", &code_annotation)?;
     let code = parameter_type.call(("code", &kind), Some(&code_kwargs))?;
     let reason_kwargs = PyDict::new(py);
-    reason_kwargs.set_item("annotation", reason_annotation)?;
+    reason_kwargs.set_item("annotation", &reason_annotation)?;
     reason_kwargs.set_item("default", py.None())?;
     let reason = parameter_type.call(("reason", &kind), Some(&reason_kwargs))?;
+    let initializer_parameters = PyList::new(py, [self_parameter, code.clone(), reason.clone()])?;
     let parameters = PyList::new(py, [code, reason])?;
     let signature_kwargs = PyDict::new(py);
     signature_kwargs.set_item("return_annotation", py.None())?;
-    let signature = inspect
-        .getattr("Signature")?
-        .call((parameters,), Some(&signature_kwargs))?;
-    exception_type.setattr("__signature__", signature)
+    let signature_type = inspect.getattr("Signature")?;
+    let signature = signature_type.call((parameters,), Some(&signature_kwargs))?;
+    let initializer_signature =
+        signature_type.call((initializer_parameters,), Some(&signature_kwargs))?;
+    exception_type.setattr("__signature__", signature)?;
+
+    let descriptor = Py::new(py, HTTPExceptionInit { initializer })?;
+    let descriptor = descriptor.bind(py);
+    descriptor.setattr("__module__", "fastapi.exceptions")?;
+    descriptor.setattr("__name__", "__init__")?;
+    descriptor.setattr("__qualname__", "WebSocketException.__init__")?;
+    descriptor.setattr("__doc__", py.None())?;
+    descriptor.setattr("__defaults__", PyTuple::new(py, [py.None()])?)?;
+    descriptor.setattr("__signature__", initializer_signature)?;
+
+    let annotations = PyDict::new(py);
+    annotations.set_item("code", code_annotation)?;
+    annotations.set_item("reason", reason_annotation)?;
+    annotations.set_item("return", py.None())?;
+    descriptor.setattr("__annotations__", annotations)?;
+    descriptor.setattr("__type_params__", PyTuple::empty(py))?;
+    exception_type.setattr("__init__", descriptor)
 }
 
 pub(crate) fn response_validation_error(

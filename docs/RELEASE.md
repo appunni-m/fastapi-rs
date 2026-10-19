@@ -154,5 +154,5 @@ FastAPI-RS artifacts. No registry upload, tag, GitHub release, or documentation
 deployment has occurred. Project docs remain repository Markdown, with the
 Rust API reference built by docs.rs after crate publication; there is no
 separate static-site workflow. FastAPI-RS compatibility remains incomplete:
-497 public API target dispositions are unresolved, as described in the README
-and compatibility atlas.
+the current [compatibility atlas](COMPATIBILITY_ATLAS.md) reports 490
+unresolved target dispositions among 497 source-supported public API entries.

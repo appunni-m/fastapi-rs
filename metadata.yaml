@@ -13204,6 +13204,8 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
+          case_id: fastapi.websocket.exception-direct-api-contract
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml
           case_id: fastapi.websocket-exception.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
@@ -13230,8 +13232,9 @@ reviewed_api_contract_overlay:
         - websocket.workload_trace
       supported_slice: >-
         FastAPI 0.141.1 documents `WebSocketException` as a top-level `fastapi`
-        import. The linked direct API case captures its class signature, while
-        the identity workflow records the root-to-public-module relation. The
+        import. Direct API workflows capture both root and `fastapi.exceptions`
+        signatures, the initializer signature, and the module import metadata;
+        the identity workflow records root-to-module class identity. The
         custom-handler workflow also constructs this error and observes its
         code, reason, dispatch, and resulting close event. A constructor-state
         case compares the exception class/MRO, args, string, code, explicit
@@ -13245,8 +13248,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The constructor-state workflow constructs through the documented root import; direct
-            identity of the separately imported fastapi.exceptions module attribute is not observed.
+            Callable object metadata beyond the captured signatures and module path, such as
+            __qualname__ and the full function attribute dictionary, remains unverified.
           - >-
             Constructor inputs and subclass behavior outside the linked signature, snapshot, and
             close cases remain unverified.
@@ -13263,6 +13266,8 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
+          case_id: fastapi.websocket.exception-direct-api-contract
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.constructor-state
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
@@ -13271,6 +13276,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.public-errors.websocket.pre-accept-code-and-reason
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
+        - python.import_path
+        - python.object_identity
         - websocket.close_code
         - websocket.close_reason
         - construction.outcome
@@ -13281,10 +13288,10 @@ reviewed_api_contract_overlay:
         - http.body.bytes
         - python.signature
       supported_slice: >-
-        The linked cases compare the documented constructor signature, a snapshot of the FastAPI
-        exception class/MRO/args/string and code/reason attributes, and the default pre-accept
-        WebSocket close code and reason. They do not establish every constructor input or generic
-        WebSocket state behavior.
+        The linked cases compare direct module import metadata, the class and initializer
+        signatures, a snapshot of the FastAPI exception class/MRO/args/string and code/reason
+        attributes, and the default pre-accept WebSocket close code and reason. They do not
+        establish every constructor input or generic WebSocket state behavior.
     fastapi.exceptions.WebSocketException.__init__:
       target_binding:
         implementation_owner: fastapi-rs
@@ -13310,6 +13317,8 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
+          case_id: fastapi.websocket.exception-direct-api-contract
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.constructor-state
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml

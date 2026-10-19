@@ -707,6 +707,9 @@ _OPTIONAL_LIST_SCHEMA_RECIPE = (
 _OPTIONAL_LIST_SCHEMA_WORKLOAD = (
     "tests/fixtures/workloads/optional_list_openapi_schema_source_review.py"
 )
+_OPTIONAL_BODY_STR_RECIPE = (
+    "tests/fixtures/input-recipes/parity/optional-body-str-alias-review.yaml"
+)
 _OPTIONAL_LIST_SCHEMA_CASES = {
     "fastapi.request-body.optional-list-openapi.no-alias",
     "fastapi.request-body.optional-list-openapi.alias",
@@ -957,6 +960,47 @@ def _optional_list_schema_function_mapping(
             "exact requestBody schema-reference and component properties JSON Pointer projections. "
             "It does not claim request validation, complete OpenAPI output, or the remainder of "
             "the parameterized test's behavior."
+        ),
+    }
+
+
+def _optional_body_str_function_mapping(
+    function_name: str,
+    case_id: str,
+    action_ids: list[str],
+    selectors: list[str],
+    behavior: str,
+) -> dict[str, Any]:
+    test_path = "tests/test_request_params/test_body/test_optional_str.py"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _OPTIONAL_BODY_STR_RECIPE,
+            "case_id": case_id,
+            "action_ids": list(action_ids),
+            "observation_selectors": list(selectors),
+        },
+        "rationale": behavior,
+        "contract_gate": (
+            "Input-only partial mapping to independently declared optional string Body and "
+            "Pydantic-model routes. It records selected status/body or OpenAPI projections, "
+            "not expected outputs or parity; it does not cover every test in the module or "
+            "the complete OpenAPI document. FastAPI owns body-field defaults and alias "
+            "selection; generic request-body handling remains under Starlette 1.6.0."
         ),
     }
 
@@ -1371,6 +1415,151 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             "test_optional_list_alias_and_validation_alias_schema",
             "fastapi.request-body.optional-list-openapi.both-aliases",
             "The pinned schema assertion covers direct Body and BaseModel routes with both aliases; this case projects the validation-alias property selected for each route form.",
+        ),
+    },
+    "tests/test_request_params/test_body/test_optional_str.py": {
+        "test_optional_str_schema": _optional_body_str_function_mapping(
+            "test_optional_str_schema",
+            "fastapi.request-body.optional-str-openapi.no-alias",
+            ["inspect-openapi"],
+            ["openapi.document"],
+            "The pinned schema assertion checks direct optional Body and BaseModel routes without aliases; the selected projections isolate both request-body schema references and component properties.",
+        ),
+        "test_optional_str_alias_schema": _optional_body_str_function_mapping(
+            "test_optional_str_alias_schema",
+            "fastapi.request-body.optional-str-openapi.alias",
+            ["inspect-openapi"],
+            ["openapi.document"],
+            "The pinned schema assertion checks the declared alias on both direct Body and BaseModel routes.",
+        ),
+        "test_optional_alias_missing": _optional_body_str_function_mapping(
+            "test_optional_alias_missing",
+            "fastapi.request-body.optional-str-runtime.alias",
+            ["alias-missing-direct"],
+            ["http.status", "http.body.bytes"],
+            "The direct optional Body route is sent without a request body while a field alias is configured.",
+        ),
+        "test_model_optional_alias_missing": _optional_body_str_function_mapping(
+            "test_model_optional_alias_missing",
+            "fastapi.request-body.optional-str-runtime.alias",
+            ["alias-missing-model"],
+            ["http.status", "http.body.bytes"],
+            "The BaseModel request-body route is sent without a request body while a field alias is configured.",
+        ),
+        "test_model_optional_alias_missing_empty_dict": _optional_body_str_function_mapping(
+            "test_model_optional_alias_missing_empty_dict",
+            "fastapi.request-body.optional-str-runtime.alias",
+            ["alias-empty-object-direct", "alias-empty-object-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test sends an empty JSON object to both direct Body and BaseModel routes with a field alias.",
+        ),
+        "test_optional_alias_by_name": _optional_body_str_function_mapping(
+            "test_optional_alias_by_name",
+            "fastapi.request-body.optional-str-runtime.alias",
+            ["alias-by-name-direct", "alias-by-name-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test submits the Python field name on both routes although the declared alias supplies the wire name.",
+        ),
+        "test_optional_alias_by_alias": _optional_body_str_function_mapping(
+            "test_optional_alias_by_alias",
+            "fastapi.request-body.optional-str-runtime.alias",
+            ["alias-by-alias-direct", "alias-by-alias-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test submits the declared alias on both route forms.",
+        ),
+        "test_optional_validation_alias_schema": _optional_body_str_function_mapping(
+            "test_optional_validation_alias_schema",
+            "fastapi.request-body.optional-str-openapi.validation-alias",
+            ["inspect-openapi"],
+            ["openapi.document"],
+            "The pinned schema assertion checks validation_alias-only projection on both direct Body and BaseModel routes.",
+        ),
+        "test_optional_validation_alias_missing": _optional_body_str_function_mapping(
+            "test_optional_validation_alias_missing",
+            "fastapi.request-body.optional-str-runtime.validation-alias",
+            ["validation-alias-missing-direct"],
+            ["http.status", "http.body.bytes"],
+            "The direct optional Body route is sent without a request body while validation_alias is configured.",
+        ),
+        "test_model_optional_validation_alias_missing": _optional_body_str_function_mapping(
+            "test_model_optional_validation_alias_missing",
+            "fastapi.request-body.optional-str-runtime.validation-alias",
+            ["validation-alias-missing-model"],
+            ["http.status", "http.body.bytes"],
+            "The BaseModel request-body route is sent without a request body while validation_alias is configured.",
+        ),
+        "test_model_optional_validation_alias_missing_empty_dict": _optional_body_str_function_mapping(
+            "test_model_optional_validation_alias_missing_empty_dict",
+            "fastapi.request-body.optional-str-runtime.validation-alias",
+            ["validation-alias-empty-object-direct", "validation-alias-empty-object-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test sends an empty JSON object to both route forms with validation_alias configured.",
+        ),
+        "test_optional_validation_alias_by_name": _optional_body_str_function_mapping(
+            "test_optional_validation_alias_by_name",
+            "fastapi.request-body.optional-str-runtime.validation-alias",
+            ["validation-alias-by-name-direct", "validation-alias-by-name-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test submits the Python field name on both routes while validation_alias selects another wire name.",
+        ),
+        "test_optional_validation_alias_by_validation_alias": _optional_body_str_function_mapping(
+            "test_optional_validation_alias_by_validation_alias",
+            "fastapi.request-body.optional-str-runtime.validation-alias",
+            [
+                "validation-alias-by-validation-alias-direct",
+                "validation-alias-by-validation-alias-model",
+            ],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test submits the validation alias on both route forms.",
+        ),
+        "test_optional_alias_and_validation_alias_schema": _optional_body_str_function_mapping(
+            "test_optional_alias_and_validation_alias_schema",
+            "fastapi.request-body.optional-str-openapi.both-aliases",
+            ["inspect-openapi"],
+            ["openapi.document"],
+            "The pinned schema assertion checks property naming when alias and validation_alias are both declared on both route forms.",
+        ),
+        "test_optional_alias_and_validation_alias_missing": _optional_body_str_function_mapping(
+            "test_optional_alias_and_validation_alias_missing",
+            "fastapi.request-body.optional-str-runtime.both-aliases",
+            ["both-aliases-missing-direct"],
+            ["http.status", "http.body.bytes"],
+            "The direct optional Body route is sent without a request body while both aliases are configured.",
+        ),
+        "test_model_optional_alias_and_validation_alias_missing": _optional_body_str_function_mapping(
+            "test_model_optional_alias_and_validation_alias_missing",
+            "fastapi.request-body.optional-str-runtime.both-aliases",
+            ["both-aliases-missing-model"],
+            ["http.status", "http.body.bytes"],
+            "The BaseModel request-body route is sent without a request body while both aliases are configured.",
+        ),
+        "test_model_optional_alias_and_validation_alias_missing_empty_dict": _optional_body_str_function_mapping(
+            "test_model_optional_alias_and_validation_alias_missing_empty_dict",
+            "fastapi.request-body.optional-str-runtime.both-aliases",
+            ["both-aliases-empty-object-direct", "both-aliases-empty-object-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test sends an empty JSON object to both route forms with both aliases configured.",
+        ),
+        "test_optional_alias_and_validation_alias_by_name": _optional_body_str_function_mapping(
+            "test_optional_alias_and_validation_alias_by_name",
+            "fastapi.request-body.optional-str-runtime.both-aliases",
+            ["both-aliases-by-name-direct", "both-aliases-by-name-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test submits the Python field name on both routes while both aliases are configured.",
+        ),
+        "test_optional_alias_and_validation_alias_by_alias": _optional_body_str_function_mapping(
+            "test_optional_alias_and_validation_alias_by_alias",
+            "fastapi.request-body.optional-str-runtime.both-aliases",
+            ["both-aliases-by-alias-direct", "both-aliases-by-alias-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test submits the declared alias although validation_alias supplies the selected input name.",
+        ),
+        "test_optional_alias_and_validation_alias_by_validation_alias": _optional_body_str_function_mapping(
+            "test_optional_alias_and_validation_alias_by_validation_alias",
+            "fastapi.request-body.optional-str-runtime.both-aliases",
+            ["both-aliases-by-validation-alias-direct", "both-aliases-by-validation-alias-model"],
+            ["http.status", "http.body.bytes"],
+            "The pinned parameterized test submits validation_alias on both route forms while both aliases are configured.",
         ),
     },
 }

@@ -316,8 +316,11 @@ The following checks were run from clean FastAPI-RS commit
 This earlier evidence covers one local macOS arm64 build. Its extracted-sdist
 wheel used the development profile; the current-head release-profile result is
 recorded above. It does not verify other platform artifacts or publishable
-Cargo archives. Contributor licensing authority and the release workflow also
-remain unresolved.
+Cargo archives. Contributor licensing authority was unresolved when this
+evidence was recorded; the maintainer has since confirmed authority to license
+all original FastAPI-RS contributions under MIT, as stated in the
+[Project license](#project-license) section above.
+The release workflow remains unresolved.
 
 ### Previous artifact audit (2026-10-15)
 
