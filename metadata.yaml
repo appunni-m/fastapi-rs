@@ -15610,8 +15610,9 @@ reviewed_api_contract_overlay:
             Linked cases cover selected BytesIO construction and I/O, one multipart validation
             error, OpenAPI contribution, direct schema generation, Starlette base-instance
             acceptance, and selected class/method annotations, docstrings, module names, qualified
-            names, and coroutine metadata. The broader invalid-input matrix and alternate file
-            storage modes remain unverified.
+            names, and coroutine metadata. A direct error case checks one propagated OSError for
+            each async file method and the size increment after a failed write. The broader
+            invalid-input matrix and alternate file storage modes remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15659,6 +15660,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile.pydantic-contract.class-method-introspection
           workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         The public class constructs from a BytesIO-backed file, exposes selected file metadata,
         supports the linked awaited file-operation sequence, generates its Pydantic JSON schema,
@@ -15674,8 +15679,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks the awaited close return and closed state for BytesIO-backed files;
-            other file storage modes and close errors remain unverified.
+            The workflow checks the awaited close return and closed state for BytesIO-backed files,
+            plus propagation of one underlying OSError; other file storage modes and exception
+            types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15700,8 +15706,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Awaited close returns `None` and closes the underlying BytesIO file object.
+        Awaited close returns `None` and closes the underlying BytesIO file object; a selected
+        underlying OSError propagates and leaves the failing file open.
 
     fastapi.datastructures.UploadFile.content_type:
       target_binding:
@@ -15753,6 +15764,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Expose the exact BytesIO object passed to the constructor, supporting direct blocking reads.
 
@@ -15815,7 +15830,8 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             The workflow checks a positive byte count, the default full read, and a read after
-            writing; other sizes, EOF, and file storage modes remain unverified.
+            writing, plus propagation of one underlying OSError; other sizes, EOF, storage modes,
+            and exception types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15840,8 +15856,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes.
+        Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes and
+        propagate a selected underlying OSError.
 
     fastapi.datastructures.UploadFile.seek:
       target_binding:
@@ -15850,7 +15871,8 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             The workflow checks offsets zero and two for BytesIO; negative offsets, large offsets,
-            and other storage modes remain unverified.
+            storage modes, and exception types remain unverified. One underlying OSError is
+            checked for propagation.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15875,8 +15897,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Forward a required byte offset to awaited Starlette `UploadFile.seek`; return `None`.
+        Forward a required byte offset to awaited Starlette `UploadFile.seek`; return `None` and
+        propagate a selected underlying OSError.
 
     fastapi.datastructures.UploadFile.size:
       target_binding:
@@ -15901,9 +15928,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Read an explicitly supplied size, observe its increment on write, and preserve `None` when
-        the size is unknown.
+        the size is unknown. A failed write also preserves Starlette's increment-before-I/O order.
 
     fastapi.datastructures.UploadFile.write:
       target_binding:
@@ -15912,7 +15943,8 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             The workflow checks a one-byte in-place overwrite for BytesIO; appends, longer writes,
-            and other storage modes remain unverified.
+            other storage modes, and exception types remain unverified. One underlying OSError
+            path and its size update are checked.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15937,8 +15969,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Forward bytes to awaited Starlette `UploadFile.write`; return `None`.
+        Forward bytes to awaited Starlette `UploadFile.write`; return `None`. A selected
+        underlying OSError propagates after the observed size increment.
 
     fastapi.exceptions.HTTPException:
       target_binding:

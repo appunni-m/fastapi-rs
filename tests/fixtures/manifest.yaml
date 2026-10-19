@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 7b4251115e4103172d8d5f465daf8f8357899353ac0a2e62c634eb3802efc317
+    sha256: 2d925fc435882de003fc522e21403cb025d437566c55a6eadbe377f8ef85d3aa
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 702
-      cases: 2871
+      workflows: 703
+      cases: 2872
       partial_source_mappings: 1956
 
 contract_metadata:
@@ -1336,7 +1336,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2526
+    operation_fixture_refs: 2533
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -23662,6 +23662,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23694,8 +23708,9 @@ api_surface_contract:
       known_gaps:
       - Linked cases cover selected BytesIO construction and I/O, one multipart validation error, OpenAPI
         contribution, direct schema generation, Starlette base-instance acceptance, and selected class/method
-        annotations, docstrings, module names, qualified names, and coroutine metadata. The broader invalid-input
-        matrix and alternate file storage modes remain unverified.
+        annotations, docstrings, module names, qualified names, and coroutine metadata. A direct error
+        case checks one propagated OSError for each async file method and the size increment after a failed
+        write. The broader invalid-input matrix and alternate file storage modes remain unverified.
   - id: fastapi.datastructures.UploadFile.close
     kind: method
     source_candidate_ref: /api_candidates/319
@@ -23787,6 +23802,20 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23817,8 +23846,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks the awaited close return and closed state for BytesIO-backed files; other
-        file storage modes and close errors remain unverified.
+      - The workflow checks the awaited close return and closed state for BytesIO-backed files, plus propagation
+        of one underlying OSError; other file storage modes and exception types remain unverified.
   - id: fastapi.datastructures.UploadFile.content_type
     kind: field
     source_candidate_ref: /api_candidates/320
@@ -23956,6 +23985,20 @@ api_surface_contract:
       workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
       case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
       observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.status
     identity_workflow_refs: []
@@ -24250,6 +24293,20 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24280,8 +24337,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks a positive byte count, the default full read, and a read after writing; other
-        sizes, EOF, and file storage modes remain unverified.
+      - The workflow checks a positive byte count, the default full read, and a read after writing, plus
+        propagation of one underlying OSError; other sizes, EOF, storage modes, and exception types remain
+        unverified.
   - id: fastapi.datastructures.UploadFile.seek
     kind: method
     source_candidate_ref: /api_candidates/325
@@ -24373,6 +24431,20 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24403,8 +24475,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks offsets zero and two for BytesIO; negative offsets, large offsets, and other
-        storage modes remain unverified.
+      - The workflow checks offsets zero and two for BytesIO; negative offsets, large offsets, storage
+        modes, and exception types remain unverified. One underlying OSError is checked for propagation.
   - id: fastapi.datastructures.UploadFile.size
     kind: field
     source_candidate_ref: /api_candidates/326
@@ -24457,6 +24529,20 @@ api_surface_contract:
       workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
       case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
       observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.status
     identity_workflow_refs: []
@@ -24581,6 +24667,20 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24611,8 +24711,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks a one-byte in-place overwrite for BytesIO; appends, longer writes, and other
-        storage modes remain unverified.
+      - The workflow checks a one-byte in-place overwrite for BytesIO; appends, longer writes, other storage
+        modes, and exception types remain unverified. One underlying OSError path and its size update
+        are checked.
   - id: fastapi.encoders.jsonable_encoder
     kind: function
     source_candidate_ref: /api_candidates/536
