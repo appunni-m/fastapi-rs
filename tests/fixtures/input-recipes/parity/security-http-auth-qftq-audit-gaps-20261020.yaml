@@ -1,0 +1,200 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/security_http_auth_qftq_audit_gaps_20261020.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.http-bearer.case-insensitive-mixed-case
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /bearer/mixed-case
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - bEaReR mixed-case-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.http-digest.optional-missing-authorization
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /digest/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_digest.py
+    kind: upstream_test
+- case_id: fastapi.security.http-digest.optional-scheme-only-authorization
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /digest/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Digest
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_digest.py
+    kind: upstream_test
+- case_id: fastapi.security.http-digest.multi-directive-credential-preservation
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /digest/multi
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - 'Digest username="alice", realm="example", nonce="nonce-1", uri="/digest/multi", response="response-1", qop=auth, nc=00000001, cnonce="client-1"'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_digest.py
+    kind: upstream_test
+- case_id: fastapi.security.http-digest.openapi-operation-security
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1digest~1multi/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_digest.py
+    kind: upstream_test

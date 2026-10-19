@@ -35316,6 +35316,59 @@
       ]
     },
     {
+      "id": "security-http-auth-qftq-audit-gaps-20261020",
+      "input_path": "tests/fixtures/inputs/parity/security-http-auth-qftq-audit-gaps-20261020.json",
+      "input_sha256": "4128d90c3180053325eaa963ff97334d69e0a62f3e45e2bea751ce9d2371bb32",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-http-auth-qftq-audit-gaps-20261020.yaml",
+      "recipe_sha256": "04a008da9bd6da84e9a52b1847cd29ad4c98dd3550d7a1554f77c402198b61ab",
+      "case_ids": [
+        "fastapi.security.http-bearer.case-insensitive-mixed-case",
+        "fastapi.security.http-digest.optional-missing-authorization",
+        "fastapi.security.http-digest.optional-scheme-only-authorization",
+        "fastapi.security.http-digest.multi-directive-credential-preservation",
+        "fastapi.security.http-digest.openapi-operation-security"
+      ],
+      "workload_path": "tests/fixtures/workloads/security_http_auth_qftq_audit_gaps_20261020.py",
+      "workload_sha256": "de70f5d1f3fbf659237941ba6b3da4d4bbf5d99933e61b69e68682358488212e",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.http-bearer.case-insensitive-mixed-case",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.http-digest.optional-missing-authorization",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.http-digest.optional-scheme-only-authorization",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.http-digest.multi-directive-credential-preservation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.http-digest.openapi-operation-security",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_http_digest.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "security-http-base-description-gap-wave",
       "input_path": "tests/fixtures/inputs/parity/security-http-base-description-gap-wave.json",
       "input_sha256": "4a97cf1c3ed57c4fa521692e27328156b407141f9f012cd26521d2dcded40570",
@@ -40267,6 +40320,29 @@
           "requirement_refs": [
             "source:documented-page:tutorial/request-files.md",
             "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uploadfile-pydantic-type-validation",
+      "input_path": "tests/fixtures/inputs/parity/uploadfile-pydantic-type-validation.json",
+      "input_sha256": "74f92c00a53d2e5f9d8446045a7f13e81ab50f67f229f87e8d329eeaa7d9cf69",
+      "recipe_path": "tests/fixtures/input-recipes/parity/uploadfile-pydantic-type-validation.yaml",
+      "recipe_sha256": "e8a0f7d718cc0a3fcb09032d503a4cd3b603dcccc771712048d8467b0e206baa",
+      "case_ids": [
+        "fastapi.uploadfile.pydantic-validation.reject-text-form-value"
+      ],
+      "workload_path": "tests/fixtures/workloads/uploadfile_pydantic_type_validation.py",
+      "workload_sha256": "aa4a187be491d4637ca30e162c965f2cb8140ca2806bb19478777ff212093f2f",
+      "oracle_profile_extension": "standard-multipart",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.uploadfile.pydantic-validation.reject-text-form-value",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/uploadfile.md",
+            "source:documented-page:tutorial/request-files.md"
           ]
         }
       ]
@@ -69771,6 +69847,41 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_security_http_bearer.py",
+      "fixture_id": "fastapi.test.test-security-http-bearer",
+      "workflow_id": "security-http-auth-qftq-audit-gaps-20261020",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.http-bearer.case-insensitive-mixed-case"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_http_digest.py",
+      "fixture_id": "fastapi.test.test-security-http-digest",
+      "workflow_id": "security-http-auth-qftq-audit-gaps-20261020",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.http-digest.multi-directive-credential-preservation",
+        "fastapi.security.http-digest.openapi-operation-security",
+        "fastapi.security.http-digest.optional-missing-authorization",
+        "fastapi.security.http-digest.optional-scheme-only-authorization"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.security"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_security_http_base_description.py",
       "fixture_id": "fastapi.test.test-security-http-base-description",
       "workflow_id": "security-http-base-description-gap-wave",
@@ -73354,6 +73465,34 @@
       "case_ids": [
         "fastapi.uploadfile-io.metadata-and-async-operations",
         "fastapi.uploadfile-io.null-metadata-and-async-operations"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/uploadfile.md",
+      "fixture_id": "fastapi.docs.reference-uploadfile",
+      "workflow_id": "uploadfile-pydantic-type-validation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.uploadfile.pydantic-validation.reject-text-form-value"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "uploadfile-pydantic-type-validation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.uploadfile.pydantic-validation.reject-text-form-value"
       ],
       "observation_selectors": [
         "http.body.bytes",
