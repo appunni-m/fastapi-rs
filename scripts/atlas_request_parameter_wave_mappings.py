@@ -13,6 +13,7 @@ import subprocess
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import yaml
 
@@ -727,6 +728,9 @@ _QUERY_REQUIRED_LIST_CASES = {
     "fastapi.request-parameters.query.required-list.plain",
     "fastapi.request-parameters.query.required-list.declared-alias",
 }
+_QUERY_REQUIRED_OPTIONAL_INTEGER_RECIPE = (
+    "tests/fixtures/input-recipes/parity/query-required-optional-integer-upstream.yaml"
+)
 _OPTIONAL_QUERY_LIST_ALIAS_RECIPE = (
     "tests/fixtures/input-recipes/parity/optional-query-list-aliases.yaml"
 )
@@ -1137,6 +1141,99 @@ def _query_required_list_function_mapping(
     }
 
 
+def _query_required_optional_integer_function_mapping(
+    function_name: str,
+    case_id: str,
+    action_id: str,
+    observation_selectors: list[str],
+    rationale: str,
+) -> dict[str, Any]:
+    """Join one pinned query test to one exact literal GET action."""
+    test_path = "tests/test_query.py"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    calls = [
+        node
+        for node in ast.walk(function)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "client"
+        and node.func.attr == "get"
+    ]
+    if len(calls) != 1 or not calls[0].args:
+        raise ValueError(f"expected one literal client.get request in {test_path}::{function_name}")
+    request = calls[0].args[0]
+    if not isinstance(request, ast.Constant) or not isinstance(request.value, str):
+        raise ValueError(f"expected literal client.get URL in {test_path}::{function_name}")
+
+    case_row = _RECIPE_CASE_INDEX.get(case_id)
+    if case_row is None or case_row["recipe_path"] != _QUERY_REQUIRED_OPTIONAL_INTEGER_RECIPE:
+        raise ValueError(
+            f"unknown query test recipe case for {test_path}::{function_name}: {case_id}"
+        )
+    actions = [
+        action
+        for action in case_row["case"].get("actions", [])
+        if action.get("action_id") == action_id
+    ]
+    case_actions = case_row["case"].get("actions", [])
+    if len(actions) != 1 or len(case_actions) != 1:
+        raise ValueError(
+            f"expected exactly one mapped action {action_id} in query test case {case_id}"
+        )
+    scope = actions[0].get("scope", {})
+    parsed_request = urlsplit(request.value)
+    expected_query = scope.get("query_string") or ""
+    if (
+        actions[0].get("kind") != "http_request"
+        or scope.get("method") != "GET"
+        or parsed_request.path != scope.get("path")
+        or parsed_request.query != expected_query
+        or parsed_request.fragment
+        or parsed_request.scheme
+        or parsed_request.netloc
+    ):
+        raise ValueError(f"source request does not match {case_id}::{action_id}: {request.value!r}")
+    action_observation_selectors = _workflow_selectors(
+        {**case_row["case"], "actions": [actions[0]]}
+    )
+    if not set(observation_selectors) <= set(action_observation_selectors):
+        raise ValueError(f"query test selectors are absent from action {case_id}::{action_id}")
+
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _QUERY_REQUIRED_OPTIONAL_INTEGER_RECIPE,
+            "case_id": case_id,
+            "action_ids": [action_id],
+            "observation_selectors": list(observation_selectors),
+        },
+        "feature_ids": ["request-validation", "status-codes"],
+        "rationale": rationale,
+        "contract_gate": (
+            "Partial input mapping only: the exact literal GET request maps to one independent "
+            "recipe action by method, path, and query string. The case contains request stimuli "
+            "and the selected HTTP status/body observations, not expected outputs or a parity "
+            "result. Only this function's selected response assertions are linked; full parameter "
+            "contracts and generic query parsing remain under their respective FastAPI and "
+            "Starlette 1.6.0 contracts."
+        ),
+    }
+
+
 def _optional_query_list_alias_function_mapping(
     function_name: str,
     case_id: str,
@@ -1177,6 +1274,185 @@ def _optional_query_list_alias_function_mapping(
             "query-string decoding remains owned by Starlette 1.6.0 / Starlette-RS."
         ),
     }
+
+
+_QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS = ["http.body.bytes", "http.status"]
+_QUERY_REQUIRED_OPTIONAL_INTEGER_FUNCTION_ROWS = {
+    "test_query": (
+        "fastapi.query-required-optional-integer.required-missing",
+        "required-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required string query is omitted, exercising its missing-value response.",
+    ),
+    "test_query_query_baz": (
+        "fastapi.query-required-optional-integer.required-value",
+        "required-value",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required string query receives the literal value baz.",
+    ),
+    "test_query_not_declared_baz": (
+        "fastapi.query-required-optional-integer.required-unknown-only",
+        "required-unknown-only",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "Only an undeclared query key is supplied to the required string route.",
+    ),
+    "test_query_optional": (
+        "fastapi.query-required-optional-integer.optional-missing",
+        "optional-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The optional string query is omitted.",
+    ),
+    "test_query_optional_query_baz": (
+        "fastapi.query-required-optional-integer.optional-value",
+        "optional-value",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The optional string query receives the literal value baz.",
+    ),
+    "test_query_optional_not_declared_baz": (
+        "fastapi.query-required-optional-integer.optional-unknown-only",
+        "optional-unknown-only",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "Only an undeclared query key is supplied to the optional string route.",
+    ),
+    "test_query_int": (
+        "fastapi.query-required-optional-integer.required-integer-missing",
+        "required-integer-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required integer query is omitted.",
+    ),
+    "test_query_int_query_42": (
+        "fastapi.query-required-optional-integer.required-integer-valid",
+        "required-integer-valid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required integer query receives a valid integer string.",
+    ),
+    "test_query_int_query_42_5": (
+        "fastapi.query-required-optional-integer.required-integer-decimal-invalid",
+        "required-integer-decimal-invalid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "A decimal-form query value is submitted to the required integer parameter.",
+    ),
+    "test_query_int_query_baz": (
+        "fastapi.query-required-optional-integer.required-integer-text-invalid",
+        "required-integer-text-invalid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "A non-numeric string is submitted to the required integer parameter.",
+    ),
+    "test_query_int_not_declared_baz": (
+        "fastapi.query-required-optional-integer.required-integer-unknown-only",
+        "required-integer-unknown-only",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "Only an undeclared query key is supplied to the required integer route.",
+    ),
+    "test_query_int_optional": (
+        "fastapi.query-required-optional-integer.optional-integer-missing",
+        "optional-integer-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The optional integer query is omitted.",
+    ),
+    "test_query_int_optional_query_50": (
+        "fastapi.query-required-optional-integer.optional-integer-valid",
+        "optional-integer-valid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The optional integer query receives a valid integer string.",
+    ),
+    "test_query_int_optional_query_foo": (
+        "fastapi.query-required-optional-integer.optional-integer-invalid",
+        "optional-integer-invalid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "A non-numeric string is submitted to the optional integer parameter.",
+    ),
+    "test_query_int_default": (
+        "fastapi.query-required-optional-integer.default-integer-missing",
+        "default-integer-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The defaulted integer query is omitted.",
+    ),
+    "test_query_int_default_query_50": (
+        "fastapi.query-required-optional-integer.default-integer-valid",
+        "default-integer-valid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The defaulted integer query receives a valid integer string.",
+    ),
+    "test_query_int_default_query_foo": (
+        "fastapi.query-required-optional-integer.default-integer-invalid",
+        "default-integer-invalid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "A non-numeric string is submitted to the defaulted integer parameter.",
+    ),
+    "test_query_param": (
+        "fastapi.query-required-optional-integer.test-query-param.missing",
+        "param-optional-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The optional query parameter declared with Query is omitted.",
+    ),
+    "test_query_param_query_50": (
+        "fastapi.query-required-optional-integer.test-query-param.value",
+        "param-optional-value",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The optional Query-declared integer receives a valid value.",
+    ),
+    "test_query_param_required": (
+        "fastapi.query-required-optional-integer.test-query-param-required.missing",
+        "param-required-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required Query-declared string parameter is omitted.",
+    ),
+    "test_query_param_required_query_50": (
+        "fastapi.query-required-optional-integer.test-query-param-required.value",
+        "param-required-value",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required Query-declared string parameter receives a value.",
+    ),
+    "test_query_param_required_int": (
+        "fastapi.query-required-optional-integer.test-query-param-required-int.missing",
+        "param-required-int-missing",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required Query-declared integer parameter is omitted.",
+    ),
+    "test_query_param_required_int_query_50": (
+        "fastapi.query-required-optional-integer.test-query-param-required-int.valid",
+        "param-required-int-valid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The required Query-declared integer receives a valid value.",
+    ),
+    "test_query_param_required_int_query_foo": (
+        "fastapi.query-required-optional-integer.test-query-param-required-int.invalid",
+        "param-required-int-invalid",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "A non-numeric string is submitted to the required Query-declared integer.",
+    ),
+    "test_query_frozenset_query_1_query_1_query_2": (
+        "fastapi.query-required-optional-integer.test-query-frozenset-query-1-query-1-query-2",
+        "frozenset-repeated",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "Repeated integer query values are submitted to a frozenset field, including a duplicate.",
+    ),
+    "test_query_list": (
+        "fastapi.query-required-optional-integer.test-query-list.repeated",
+        "list-repeated",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "Repeated values are submitted to the required list query parameter.",
+    ),
+    "test_query_list_empty": (
+        "fastapi.query-required-optional-integer.test-query-list.empty",
+        "list-empty",
+        ["http.status"],
+        "The required list query is omitted; the source function observes only response status.",
+    ),
+    "test_query_list_default": (
+        "fastapi.query-required-optional-integer.test-query-list-default.repeated",
+        "list-default-repeated",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "Repeated values are submitted to a list query parameter with a default.",
+    ),
+    "test_query_list_default_empty": (
+        "fastapi.query-required-optional-integer.test-query-list-default.empty",
+        "list-default-empty",
+        _QUERY_REQUIRED_OPTIONAL_INTEGER_RESPONSE_SELECTORS,
+        "The defaulted list query is omitted.",
+    ),
+}
 
 
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
@@ -1414,6 +1690,14 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["http.body.bytes", "http.status"],
             "The optional combined-alias case supplies repeated values under validation_alias on both route forms.",
         ),
+    },
+    "tests/test_query.py": {
+        function_name: _query_required_optional_integer_function_mapping(
+            function_name, case_id, action_id, selectors, rationale
+        )
+        for function_name, (case_id, action_id, selectors, rationale) in (
+            _QUERY_REQUIRED_OPTIONAL_INTEGER_FUNCTION_ROWS.items()
+        )
     },
     "tests/test_request_params/test_body/test_required_str.py": {
         "test_required_alias_and_validation_alias_by_alias": _tail_function_mapping(
@@ -2065,6 +2349,30 @@ def validate_request_parameter_mappings() -> list[str]:
                 f"required query-list mapping references unknown actions for {case_id}: "
                 f"{sorted(referenced_actions - declared_actions)}"
             )
+
+    query_test_path = "tests/test_query.py"
+    query_function_mappings = REQUEST_PARAMETER_FUNCTION_MAPPINGS.get(query_test_path, {})
+    expected_query_functions = {
+        span["role"].rsplit(" ", 1)[-1] for span in _test_function_spans(query_test_path)
+    }
+    if set(query_function_mappings) != expected_query_functions:
+        errors.append(
+            "query required/optional/integer mappings do not cover exactly every pinned "
+            "tests/test_query.py function"
+        )
+    query_case_ids = [row["workflow_case"]["case_id"] for row in query_function_mappings.values()]
+    expected_query_case_ids = {
+        case_id
+        for case_id, row in _RECIPE_CASE_INDEX.items()
+        if row["recipe_path"] == _QUERY_REQUIRED_OPTIONAL_INTEGER_RECIPE
+    }
+    if len(query_case_ids) != len(expected_query_case_ids) or set(query_case_ids) != (
+        expected_query_case_ids
+    ):
+        errors.append(
+            "query required/optional/integer function mappings do not cover each recipe case "
+            "exactly once"
+        )
 
     function_spans = {
         (

@@ -54,8 +54,12 @@ assignment candidates: the core profile reflects 1,640, with `templating` and
 standard plus `docs-tests` profile reflects 1,642. Both deliberately skip
 `fastapi.__main__`, whose import invokes the CLI. Runtime reflection also
 finds 21 extra module attributes on the `fastapi` root. Metadata classifies 12
-from documented import paths as supported and retains 9 as uncertain; those
-namespace observations are separate from source-defined symbol candidates.
+from documented import paths as supported and retains 9 as uncertain at the
+package-root attribute level. Runtime presence and uses of contained module
+symbols do not by themselves establish that each module object is a stable
+root-level contract; the reviewed source reasons are recorded in
+`metadata.yaml`. Those namespace observations are separate from source-defined
+symbol candidates.
 Reflection records importable module names, callable signatures, exact object
 identity aliases, deprecation metadata, and 49 Pydantic-generated OpenAPI model
 classes with their fields and inherited Pydantic members. These profiles are

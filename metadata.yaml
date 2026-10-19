@@ -305,15 +305,29 @@ runtime_root_namespace_review:
     - id: fastapi.applications
       classification: uncertain
       source_path: fastapi/applications.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/__init__.py:7 reexports the FastAPI class from this module, and
+        the reference documents fastapi.FastAPI. Neither source establishes the
+        module object itself as a supported package-root attribute. Runtime
+        presence is proven, but the root-attribute contract remains unresolved.
     - id: fastapi.background
       classification: uncertain
       source_path: fastapi/background.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/__init__.py:8 reexports BackgroundTasks from this module, and
+        the reference documents the class through fastapi.BackgroundTasks.
+        Neither source establishes the module object itself as a supported
+        package-root attribute, so its root-attribute contract remains
+        unresolved.
     - id: fastapi.concurrency
       classification: uncertain
       source_path: fastapi/concurrency.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/concurrency.py reexports Starlette helpers and defines
+        contextmanager_in_threadpool; FastAPI internals and
+        tests/test_dependency_wrapped.py:8 import helpers from this module.
+        This establishes module-path use, but does not settle whether the
+        runtime-visible package-root module object is a supported contract.
     - id: fastapi.datastructures
       classification: supported
       source_path: fastapi/datastructures.py
@@ -322,7 +336,12 @@ runtime_root_namespace_review:
     - id: fastapi.dependencies
       classification: uncertain
       source_path: fastapi/dependencies/__init__.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/dependencies/__init__.py is empty; FastAPI routing imports its
+        models and utils submodules, while user documentation exposes Depends
+        and Security through root callables. The runtime-visible dependencies
+        package object has no independently established root-attribute
+        contract.
     - id: fastapi.encoders
       classification: supported
       source_path: fastapi/encoders.py
@@ -341,7 +360,11 @@ runtime_root_namespace_review:
     - id: fastapi.logger
       classification: uncertain
       source_path: fastapi/logger.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/logger.py defines the framework logger, which application code
+        imports internally (fastapi/applications.py:15). The pinned root has
+        no explicit logger binding or documented root import path; runtime
+        presence alone does not settle the module object's support status.
     - id: fastapi.middleware
       classification: supported
       source_path: fastapi/middleware/__init__.py
@@ -355,11 +378,19 @@ runtime_root_namespace_review:
     - id: fastapi.param_functions
       classification: uncertain
       source_path: fastapi/param_functions.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/__init__.py:12-20 reexports parameter helper functions from
+        this module, and user documentation imports those helpers from
+        fastapi. The source evidence supports the functions, not the module
+        object as a package-root contract; that status remains unresolved.
     - id: fastapi.params
       classification: uncertain
       source_path: fastapi/params.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/params.py defines parameter metadata classes, and
+        tests/test_params_repr.py:3 imports classes from this module. This is
+        evidence for direct module-path use, but does not settle whether the
+        runtime-visible package-root module object is a supported contract.
     - id: fastapi.requests
       classification: supported
       source_path: fastapi/requests.py
@@ -388,11 +419,20 @@ runtime_root_namespace_review:
     - id: fastapi.types
       classification: uncertain
       source_path: fastapi/types.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        fastapi/types.py defines type aliases consumed by FastAPI implementation
+        modules; the pinned package root does not explicitly bind the module
+        object and user documentation does not establish a root import path.
+        Its runtime-visible root-attribute status remains unresolved.
     - id: fastapi.utils
       classification: uncertain
       source_path: fastapi/utils.py
-      reason: Runtime-visible module attribute without an explicit root binding or documented module import contract; consumer status remains unresolved.
+      reason: >-
+        FastAPI implementation modules import helpers from fastapi/utils.py,
+        and utils.py:80-85 deprecates the dotted function path
+        fastapi.utils.generate_operation_id_for_path. That path is evidence of
+        compatibility use, but does not define the module object's separate
+        package-root status; keep it uncertain.
     - id: fastapi.websockets
       classification: supported
       source_path: fastapi/websockets.py
