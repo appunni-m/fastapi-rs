@@ -5466,18 +5466,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.public-errors.http.constructor-state
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.default-detail-no-headers
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.constructor-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
       feature_ids: [public-api-errors]
-      observation_selectors: [python.import_path, python.object_identity, python.signature, construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [python.import_path, python.object_identity, python.signature, error.args, error.class, error.public_attributes, construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         FastAPI 0.141.1 documents `HTTPException` as a top-level `fastapi` import.
-        The linked direct API cases capture its class signature in the API
-        reference and error-handling tutorial, while the identity workflow
-        records the root-to-public-module relation. The linked ASGI cases also
-        exercise JSON detail, headers, selected unusual statuses, numeric
-        string status preservation, and constructor-state snapshots with
-        explicit and omitted detail/headers. This remains a partial slice;
-        other constructor inputs, status values, Starlette subclasses, and
-        handler behavior are not established.
+        Direct API probes capture its class and annotated initializer
+        signatures, while the identity workflow compares the root and module
+        objects and the Starlette superclass relation. The linked constructor
+        inputs observe omitted and explicit defaults, falsey and JSON detail,
+        headers, mutable fields, args/string/repr, selected status conversion,
+        and Python call-binding errors. Handler integration and behavior for
+        arbitrary user-defined subclasses remain separate contracts.
     fastapi.exception_handlers.request_validation_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: request_validation_exception_handler}
@@ -15467,14 +15470,11 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Constructor-state coverage enters through the documented root import and does not
-            separately compare the object imported from fastapi.exceptions.
+            The constructor workflow covers a selected set of detail types, headers, statuses, and
+            call forms; it does not exhaust every Python value or user-defined exception subclass.
           - >-
-            Unlinked detail types, header values, status values, mutation, and exception subclasses
-            remain unverified.
-          - >-
-            The current comparison receipt is local and not checked in; mapped fixture evidence
-            does not itself establish parity for other builds.
+            FastAPI exception-handler integration and the resulting HTTP response contract remain
+            covered by their separate error-handler operations.
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
@@ -15485,12 +15485,18 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.constructor-state
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.constructor-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
       feature_ids: [public-api-errors]
-      observation_selectors: [construction.exception_class, http.body.bytes]
+      observation_selectors: [python.object_identity, python.signature, error.args, error.class, error.public_attributes, construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes]
       supported_slice: >-
-        One constructor-state case captures the FastAPI exception class/MRO, args, string, status,
-        arbitrary JSON detail, and headers through the public root import. Other constructor and
-        transport behavior remains outside this class-level slice.
+        The root and `fastapi.exceptions` imports resolve to the same class, which subclasses the
+        pinned Starlette exception. Linked input-only cases compare class and initializer
+        signatures, MRO, defaults, selected detail/header/status inputs, mutation, args, string,
+        repr, and call-binding outcomes. Exception-handler integration and arbitrary subclasses
+        remain separate or unproven behavior.
 
     fastapi.exceptions.HTTPException.__init__:
       target_binding:
@@ -15498,11 +15504,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The linked constructor case covers one status/detail/header combination; other values,
-            omitted defaults, and Starlette subclass behavior remain unverified.
-          - >-
-            The current comparison receipt is local and not checked in; mapped fixture evidence
-            does not itself establish parity for other builds.
+            Function-only introspection and every possible Python value or user-defined subclass
+            are not covered by the linked inputs.
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
@@ -15516,11 +15519,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-reference-wave.http-exception-signature
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.constructor-state
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.constructor-contract
       feature_ids: [public-api-errors]
       observation_selectors: [python.signature, construction.exception_class, http.body.bytes]
       supported_slice: >-
-        Constructor requiredness/defaults and unchanged delegation of status, arbitrary detail,
-        and optional headers to Starlette.
+        The required `status_code`, optional `detail` and `headers`, exact Annotated signature,
+        and delegation to the Starlette initializer are compared through the class constructor.
+        Linked calls cover selected defaults, detail/header values, mutations, status conversion,
+        binding errors, and selected direct unbound initializer calls; function-only introspection
+        and exhaustive inputs remain outside this slice.
 
     fastapi.responses.ORJSONResponse:
       rust_binding: fastapi-rs/src/application_runtime.rs::register_orjson_response

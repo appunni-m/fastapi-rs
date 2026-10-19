@@ -1,7 +1,7 @@
 //! Rust-owned exception identities used by FastAPI behavior.
 
 use pyo3::create_exception;
-use pyo3::exceptions::{PyException, PyRuntimeError, PyUserWarning};
+use pyo3::exceptions::{PyException, PyRuntimeError, PyTypeError, PyUserWarning};
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyInt, PyList, PyString, PyTuple};
 
@@ -340,11 +340,48 @@ fn initialize_validation_exception(
     Ok(())
 }
 
+#[pyclass(name = "_HTTPExceptionInit", module = "fastapi_rs._core", dict)]
+struct HTTPExceptionInit {
+    initializer: Py<PyAny>,
+}
+
+#[pymethods]
+impl HTTPExceptionInit {
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        owner: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        match instance {
+            Some(instance) => py
+                .import("types")?
+                .getattr("MethodType")?
+                .call1((slf, instance))
+                .map(Bound::unbind),
+            None if owner.is_some() => Ok(slf.into_any()),
+            None => Err(PyTypeError::new_err("__get__(None, None) is invalid")),
+        }
+    }
+
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let initializer = slf.borrow(py).initializer.clone_ref(py);
+        initializer.bind(py).call(args, kwargs).map(Bound::unbind)
+    }
+}
+
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
     let http_exception_base = py
         .import("starlette.exceptions")?
         .getattr("HTTPException")?;
+    let http_exception_initializer = http_exception_base.getattr("__init__")?.unbind();
     let http_exception_bases = PyTuple::new(py, [http_exception_base])?;
     let http_exception_namespace = PyDict::new(py);
     http_exception_namespace.set_item("__module__", "fastapi.exceptions")?;
@@ -360,7 +397,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         http_exception_bases,
         http_exception_namespace,
     ))?;
-    set_http_exception_signature(py, &http_exception_type)?;
+    set_http_exception_signature(py, &http_exception_type, http_exception_initializer)?;
 
     let validation_exception_type = py.get_type::<ValidationException>();
     validation_exception_type.setattr(
@@ -508,7 +545,11 @@ pub(crate) fn request_validation_error(
     Ok(PyErr::from_value(exception))
 }
 
-fn set_http_exception_signature(py: Python<'_>, exception_type: &Bound<'_, PyAny>) -> PyResult<()> {
+fn set_http_exception_signature(
+    py: Python<'_>,
+    exception_type: &Bound<'_, PyAny>,
+    initializer: Py<PyAny>,
+) -> PyResult<()> {
     let inspect = py.import("inspect")?;
     let annotated_doc = py.import("annotated_doc")?.getattr("Doc")?;
     let annotated = py.import("typing")?.getattr("Annotated")?;
@@ -556,24 +597,53 @@ fn set_http_exception_signature(py: Python<'_>, exception_type: &Bound<'_, PyAny
 
     let parameter_type = inspect.getattr("Parameter")?;
     let kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let self_parameter = parameter_type.call(("self", &kind), None)?;
     let status_kwargs = PyDict::new(py);
-    status_kwargs.set_item("annotation", status_annotation)?;
+    status_kwargs.set_item("annotation", &status_annotation)?;
     let status = parameter_type.call(("status_code", &kind), Some(&status_kwargs))?;
     let detail_kwargs = PyDict::new(py);
-    detail_kwargs.set_item("annotation", detail_annotation)?;
+    detail_kwargs.set_item("annotation", &detail_annotation)?;
     detail_kwargs.set_item("default", py.None())?;
     let detail = parameter_type.call(("detail", &kind), Some(&detail_kwargs))?;
     let headers_kwargs = PyDict::new(py);
-    headers_kwargs.set_item("annotation", headers_annotation)?;
+    headers_kwargs.set_item("annotation", &headers_annotation)?;
     headers_kwargs.set_item("default", py.None())?;
     let headers = parameter_type.call(("headers", &kind), Some(&headers_kwargs))?;
+    let initializer_parameters = PyList::new(
+        py,
+        [
+            self_parameter,
+            status.clone(),
+            detail.clone(),
+            headers.clone(),
+        ],
+    )?;
     let parameters = PyList::new(py, [status, detail, headers])?;
     let signature_kwargs = PyDict::new(py);
     signature_kwargs.set_item("return_annotation", py.None())?;
-    let signature = inspect
-        .getattr("Signature")?
-        .call((parameters,), Some(&signature_kwargs))?;
-    exception_type.setattr("__signature__", signature)
+    let signature_type = inspect.getattr("Signature")?;
+    let signature = signature_type.call((parameters,), Some(&signature_kwargs))?;
+    let initializer_signature =
+        signature_type.call((initializer_parameters,), Some(&signature_kwargs))?;
+    exception_type.setattr("__signature__", signature)?;
+
+    let descriptor = Py::new(py, HTTPExceptionInit { initializer })?;
+    let descriptor = descriptor.bind(py);
+    descriptor.setattr("__module__", "fastapi.exceptions")?;
+    descriptor.setattr("__name__", "__init__")?;
+    descriptor.setattr("__qualname__", "HTTPException.__init__")?;
+    descriptor.setattr("__doc__", py.None())?;
+    descriptor.setattr("__defaults__", PyTuple::new(py, [py.None(), py.None()])?)?;
+    descriptor.setattr("__signature__", initializer_signature)?;
+
+    let annotations = PyDict::new(py);
+    annotations.set_item("status_code", status_annotation)?;
+    annotations.set_item("detail", detail_annotation)?;
+    annotations.set_item("headers", headers_annotation)?;
+    annotations.set_item("return", py.None())?;
+    descriptor.setattr("__annotations__", annotations)?;
+    descriptor.setattr("__type_params__", PyTuple::empty(py))?;
+    exception_type.setattr("__init__", descriptor)
 }
 
 fn set_websocket_exception_signature(

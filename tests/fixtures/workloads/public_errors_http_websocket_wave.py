@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketException
 from fastapi import WebSocketDisconnect as FastAPIWebSocketDisconnect
+from fastapi.exceptions import HTTPException as FastAPIExceptionsHTTPException
 from fastapi.websockets import WebSocketDisconnect as FastAPIWebsocketsWebSocketDisconnect
 from starlette.exceptions import (
     HTTPException as StarletteHTTPException,
@@ -38,6 +39,94 @@ class _FalseyReason(str):
 class _RaisingReason(str):
     def __bool__(self) -> bool:
         raise ValueError("reason truthiness failed")
+
+
+class _FalseyDetail(str):
+    def __bool__(self) -> bool:
+        return False
+
+
+def _http_exception_arguments(
+    call: Mapping[str, Any],
+) -> tuple[tuple[object, ...], dict[str, object]]:
+    args = tuple(call.get("args", []))
+    kwargs = dict(call.get("kwargs", {}))
+    if call.get("detail_behavior") == "falsey-str":
+        kwargs["detail"] = _FalseyDetail("falsey-detail")
+    return args, kwargs
+
+
+def _http_exception_snapshot(call: Mapping[str, Any]) -> dict[str, object]:
+    args, kwargs = _http_exception_arguments(call)
+    try:
+        exception = HTTPException(*args, **kwargs)
+    except Exception as error:
+        error_type = type(error)
+        return {
+            "label": call["label"],
+            "outcome": "error",
+            "exception_class": f"{error_type.__module__}.{error_type.__qualname__}",
+            "exception_message": str(error),
+            "exception_args": list(error.args),
+        }
+
+    for name, value in call.get("mutations", {}).items():
+        setattr(exception, name, value)
+
+    exception_type = type(exception)
+    return {
+        "label": call["label"],
+        "outcome": "returned",
+        "class_module": exception_type.__module__,
+        "class_qualname": exception_type.__qualname__,
+        "mro": [
+            f"{class_type.__module__}.{class_type.__qualname__}"
+            for class_type in exception_type.__mro__
+        ],
+        "args": list(exception.args),
+        "args_types": [type(value).__name__ for value in exception.args],
+        "attributes": vars(exception),
+        "message": str(exception),
+        "repr": repr(exception),
+        "status_code": exception.status_code,
+        "detail": exception.detail,
+        "headers": exception.headers,
+        "is_starlette_subclass": isinstance(exception, StarletteHTTPException),
+    }
+
+
+def _http_exception_init_method_snapshot(call: Mapping[str, Any]) -> dict[str, object]:
+    exception = HTTPException(
+        *call.get("initial_args", []),
+        **call.get("initial_kwargs", {}),
+    )
+    args = tuple(call.get("args", []))
+    kwargs = dict(call.get("kwargs", {}))
+    try:
+        FastAPIExceptionsHTTPException.__init__(exception, *args, **kwargs)
+    except Exception as error:
+        error_type = type(error)
+        return {
+            "label": call["label"],
+            "outcome": "error",
+            "exception_class": f"{error_type.__module__}.{error_type.__qualname__}",
+            "exception_message": str(error),
+            "exception_args": list(error.args),
+            "status_code": exception.status_code,
+            "detail": exception.detail,
+            "headers": exception.headers,
+        }
+
+    return {
+        "label": call["label"],
+        "outcome": "returned",
+        "args": list(exception.args),
+        "status_code": exception.status_code,
+        "detail": exception.detail,
+        "headers": exception.headers,
+        "message": str(exception),
+        "repr": repr(exception),
+    }
 
 
 def _websocket_disconnect_arguments(
@@ -183,6 +272,25 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             "status_code": exception.status_code,
             "detail": exception.detail,
             "headers": exception.headers,
+        }
+
+    @app.get("/errors/http-exception-constructor-contract")
+    async def http_exception_constructor_contract() -> dict[str, object]:
+        return {
+            "identity": {
+                "root_to_module": HTTPException is FastAPIExceptionsHTTPException,
+                "subclass_of_starlette": issubclass(HTTPException, StarletteHTTPException),
+                "same_as_starlette": HTTPException is StarletteHTTPException,
+            },
+            "signature": str(signature(HTTPException)),
+            "calls": [
+                _http_exception_snapshot(call)
+                for call in factory_input.get("http_exception_calls", [])
+            ],
+            "init_method_calls": [
+                _http_exception_init_method_snapshot(call)
+                for call in factory_input.get("http_exception_init_calls", [])
+            ],
         }
 
     @app.get("/errors/websocket-constructor-state")

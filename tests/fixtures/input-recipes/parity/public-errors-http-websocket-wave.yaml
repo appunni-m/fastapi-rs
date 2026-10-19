@@ -392,3 +392,69 @@ cases:
   source_evidence:
   - {path: docs/en/docs/reference/websockets.md, kind: upstream_documentation}
   - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.public-errors.http.constructor-contract
+  factory_input:
+    http_exception_calls:
+    - {label: omitted-detail-and-headers, args: [418], kwargs: {}}
+    - {label: explicit-none-detail, args: [], kwargs: {status_code: 418, detail: null}}
+    - {label: empty-string-detail, args: [], kwargs: {status_code: 418, detail: ''}}
+    - {label: zero-detail, args: [], kwargs: {status_code: 418, detail: 0}}
+    - {label: false-detail, args: [], kwargs: {status_code: 418, detail: false}}
+    - {label: falsey-str-subclass-detail, args: [418], kwargs: {}, detail_behavior: falsey-str}
+    - label: json-detail-and-headers
+      args: [422, {field: display_name, problems: [empty, too_short]}, {X-Exception-Owner: fastapi}]
+      kwargs: {}
+    - {label: empty-headers, args: [403, forbidden, {}], kwargs: {}}
+    - label: mutable-public-fields
+      args: [403, initial, {X-Initial: initial}]
+      kwargs: {}
+      mutations: {status_code: 401, detail: updated, headers: {X-Updated: updated}, marker: visible}
+    - {label: numeric-string-status-with-detail, args: ['204', supplied], kwargs: {}}
+    - {label: invalid-default-status, args: [599], kwargs: {}}
+    - {label: missing-required-status, args: [], kwargs: {}}
+    - {label: too-many-positional, args: [418, detail, {}, extra], kwargs: {}}
+    - {label: unexpected-keyword, args: [418], kwargs: {unrecognized: true}}
+    - {label: duplicate-status-code, args: [418], kwargs: {status_code: 403}}
+    http_exception_init_calls:
+    - label: unbound-init-updates-existing-exception
+      initial_args: [418]
+      initial_kwargs: {detail: initial, headers: {X-Initial: initial}}
+      args: [422, {field: display_name}, {X-Updated: updated}]
+      kwargs: {}
+    - label: unbound-init-missing-status-code
+      initial_args: [418]
+      initial_kwargs: {}
+      args: []
+      kwargs: {}
+    - label: unbound-init-duplicate-status-code
+      initial_args: [418]
+      initial_kwargs: {}
+      args: [422]
+      kwargs: {status_code: 403}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-http-exception-constructor-contract
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /errors/http-exception-constructor-contract
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}
+  - {path: tests/test_starlette_exception.py, kind: upstream_test}
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}

@@ -15,6 +15,15 @@ cases:
     - kind: python_signature
       selector: signature
       comparison: exact
+  - probe_id: http-exception-init-signature
+    public_callable:
+      module: fastapi.exceptions
+      attribute: HTTPException.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
   source_evidence:
   - path: docs/en/docs/reference/exceptions.md
     kind: upstream_documentation
