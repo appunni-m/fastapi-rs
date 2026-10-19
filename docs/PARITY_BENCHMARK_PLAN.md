@@ -53,21 +53,25 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The latest complete direct-ASGI suite is recorded in
-[the 2026-10-19 report](benchmarks/2026-10-19-135805f.md). It completed all
+[the 2026-10-19 report](benchmarks/2026-10-19-7d12d77.md). It completed all
 seven reviewed workloads and passed all 45 selected parity observations on
-FastAPI-RS `135805f9146773cc0b5722596383832f832e4d09`, FastAPI 0.141.1 at
+FastAPI-RS `7d12d779d0f2d22458cd32027a35202b79e0a1c2`, FastAPI 0.141.1 at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338`. The manifest SHA-256 is
-`fec1d84887e682f981837d55071e122e444c5f6060f58bf744714399c266bf9c`. Suite
-receipt `benchmark-results/suite-20261019T083442Z-b46a5b02-128a-4083-aa16-91b3e5547742.json`
+`7a67a7aed6fbf75b2304c8b4c51af36a346786335f613b99084fa96639cd0671`. Suite
+receipt `benchmark-results/suite-20261019T091804Z-650d1f09-bdaf-4cc3-b125-21c3ae0b7f33.json`
 has SHA-256
-`1879e206c5d533bb13c6591366b6de94535afef0134f634f0c7f09d901b94f7d`.
-`make benchmark-contract-check` passes with this current receipt. The seven
-workloads are single-host direct-ASGI measurements; FastAPI-RS median and p95
-were higher in all seven. See the report for complete identities, measurement
-boundaries, per-workload parity counts, timings, and result paths. This does
-not establish full FastAPI parity or a global performance conclusion.
+`48cfdb98223032cdf9beb8a83f717e0af67b0f02c21945053943a6a6745001e8`.
+`make benchmark-contract-check` validates this suite and its referenced
+artifacts. The seven workloads are single-host direct-ASGI measurements;
+FastAPI-RS median and p95 were higher in all seven. See the report for full
+identities, measurement boundaries, per-workload parity counts, timings, and
+result paths. This does not establish full FastAPI parity or a global
+performance conclusion.
+
+The prior report [`2026-10-19-135805f.md`](benchmarks/2026-10-19-135805f.md)
+is historical because it binds the previous manifest and target revision.
 
 The prior suite report [`2026-10-19-8eceda6.md`](benchmarks/2026-10-19-8eceda6.md)
 and its suite receipt are historical because they reference the previous
