@@ -130,29 +130,37 @@ separate hosted site is selected and configured.
 
 ## Current readiness snapshot
 
-Local 0.1.0 artifacts were rebuilt from clean main `b5987b4` on 2026-10-19
-against Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`:
+This snapshot was checked on 2026-10-19 at clean `main` commit
+`4aa588dafe5b1e1f7bcdf9b2b28192434fe62c4d`:
 
-- The sdist validator accepted 202 files; SHA-256:
-  `02cc2f2918aad87672ea5e120a881db7024013e9e9ba2309483d6380105168da`.
-- The extracted sdist rebuilt and passed the wheel validator for the
-  `cp310-abi3-macosx_11_0_arm64` wheel; SHA-256:
-  `00fd5b43216a767a397b4d370b1f22526358f21a621a46c970670aeefc9af64b`.
-- Cargo packaged and verified 32 files (259.1 KiB compressed) in an isolated
-  copy with a local patch to the exact pinned Starlette-RS source; SHA-256:
-  `aa6caf1c9cdfb0d9e52688f7a417165d09c3f19cf7d18374ce67e8e9c8f2a62c`.
-- Twine metadata checks, `make license-artifact-check`, and rustdoc with
-  warnings denied from the extracted Cargo archive passed.
+- `cargo package --list --locked --package fastapi-rs` lists 33 files,
+  including `README.md`, `LICENSE.md`, `THIRD_PARTY_NOTICES.md`, and
+  `Cargo.lock`. This is a file-list check only; no current `.crate` archive
+  was built. The release audit's missing README/license findings are false
+  positives for these parent-relative manifest paths; Cargo's package list
+  confirms both files are included.
+- `cargo info fastapi-rs@0.1.0 --registry crates-io` and
+  `cargo info starlette-rs@0.1.0 --registry crates-io` both report that the
+  exact crate version is not in the registry. PyPI's JSON endpoints for
+  `fastapi-rs` and `starlette-rs-py` returned 404. A missing result does not
+  prove that a name is available or that this project controls it; verify
+  ownership in the maintainer accounts.
+- The configured sibling checkout is Starlette-RS commit
+  `2da349cf90bb5b6f47aaf9b3bd61759e0b3d450c`, on a different branch with local
+  modifications. It is not the pinned source `4139a72449bf5751e8902fb1c7175ee7f191d338`
+  and must not be used to build release artifacts. Keep that checkout intact;
+  prepare a separate clean pinned source before the next local build.
+- The pinned build-tools environment uses CPython 3.12.13. The default shell
+  `python3` is 3.9.6 and is not the release builder.
+- Earlier local sdist, wheel, crate archive, notice, and rustdoc evidence was
+  produced at `b5987b4`. It is historical and does not verify current HEAD.
 
-These checks prove local artifact construction only. The wheel evidence covers
-macOS arm64; other wheel platforms remain unverified. Current registry queries
-found no published `fastapi-rs` or `starlette-rs` 0.1.0 crate, and PyPI returned
-404 for `fastapi-rs` and `starlette-rs-py`. Those responses do not establish
-project-name ownership or availability. Verify ownership in the maintainer
-accounts and publish the Starlette-RS dependencies before attempting the
-FastAPI-RS artifacts. No registry upload, tag, GitHub release, or documentation
-deployment has occurred. Project docs remain repository Markdown, with the
-Rust API reference built by docs.rs after crate publication; there is no
-separate static-site workflow. FastAPI-RS compatibility remains incomplete:
-the current [compatibility atlas](COMPATIBILITY_ATLAS.md) reports 490
-unresolved target dispositions among 497 source-supported public API entries.
+No current release artifact was built, no registry upload or tag was created,
+and no GitHub release or documentation deployment occurred. The repository
+keeps project documentation in Markdown; docs.rs can publish the Rust API
+reference after the crate is available, and there is no separate static-site
+workflow. FastAPI-RS compatibility remains incomplete: the current
+[compatibility atlas](COMPATIBILITY_ATLAS.md) reports 490 unresolved target
+dispositions among 497 source-supported public API entries. Do not describe
+this candidate as a complete FastAPI replacement or as release-ready until the
+compatibility scope and release gates are resolved.
