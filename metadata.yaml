@@ -4927,35 +4927,46 @@ reviewed_api_contract_overlay:
     fastapi.websockets.WebSocket:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
-        - {path: fastapi/websockets.py}
-      observation_selectors: [websocket.messages]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's WebSocket under
-        fastapi.websockets. FastAPI-RS registers the canonical
-        starlette.websockets.WebSocket object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity in a WebSocket message. This scope covers alias
-        exposure and identity; WebSocket behavior remains in the pinned
-        Starlette-RS API contract and is not claimed here.
+        - path: fastapi/websockets.py
+          kind: import-binding
+          line: 1
+          imported_module: starlette.websockets
+          relative_level: 0
+          imported_name: WebSocket
+          alias_spelling: WebSocket
+          local_name: WebSocket
+          target_path: starlette.websockets.WebSocket
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-websocket-alias-identity.yaml
+          case_id: fastapi.websocket.alias-identity-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.import_path, python.object_identity, python.binding_identity, python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+          case_id: fastapi.documented-module.websockets
+          workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+          observation_selectors: [python.import_path, python.object_identity]
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.websocket-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [websocket.messages]
+      feature_ids: [websocket-lifecycle]
+      observation_selectors: [python.import_path, python.object_identity, python.binding_identity, python.signature, websocket.messages]
+      full_contract: >-
+        FastAPI 0.141.1 directly re-exports the exact
+        starlette.websockets.WebSocket object as fastapi.websockets.WebSocket.
+        The isolated API workflow compares its import path, canonical object
+        identity, and exact signature; the documented-module and ASGI identity
+        workflows cover the module binding and root/module/Starlette identity
+        chain. Generic behavior delegates to the six canonical Starlette-RS
+        WebSocket operations protocol-sequence, state-sequence,
+        convenience-sequence, constructor-contract, scope-mapping, and
+        scope-identity-hash-sequence, whose pinned 4139a724 Python-package
+        contracts are supported. This avoids duplicating Starlette's API
+        inventory and does not claim FastAPI route integration beyond the
+        linked identity workflow.
     fastapi.websockets.WebSocketDisconnect:
       target_binding:
         implementation_owner: starlette-rs
@@ -15140,17 +15151,7 @@ reviewed_api_contract_overlay:
     fastapi.WebSocket:
       target_binding:
         implementation_owner: starlette-rs
-        status: unresolved
-        known_gaps:
-          - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
-          - >-
-            The source ownership plan delegates the generic API object to Starlette-RS; no exact
-            canonical sibling operation mapping establishes this FastAPI symbol.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+        status: full-contract-established
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15161,9 +15162,29 @@ reviewed_api_contract_overlay:
           alias_spelling: WebSocket
           local_name: WebSocket
           target_path: fastapi.websockets.WebSocket
-      supported_slice: >-
-        Import identity only: the root binding aliases the FastAPI websocket-module binding,
-        which directly re-exports `starlette.websockets.WebSocket`.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-websocket-alias-identity.yaml
+          case_id: fastapi.websocket.alias-identity-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.binding_identity, python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.websocket-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [websocket.messages]
+      feature_ids: [websocket-lifecycle]
+      observation_selectors: [python.binding_identity, python.signature, websocket.messages]
+      full_contract: >-
+        FastAPI 0.141.1 directly re-exports the exact
+        fastapi.websockets.WebSocket object as fastapi.WebSocket. The isolated
+        API workflow compares this root binding with the canonical
+        starlette.websockets.WebSocket object and checks its exact signature;
+        the ASGI identity workflow checks the root/module/Starlette identity
+        chain. Generic behavior delegates to the six canonical Starlette-RS
+        WebSocket operations protocol-sequence, state-sequence,
+        convenience-sequence, constructor-contract, scope-mapping, and
+        scope-identity-hash-sequence, whose pinned 4139a724 Python-package
+        contracts are supported. This does not claim FastAPI route integration
+        beyond the linked identity workflow.
 
     fastapi.WebSocketDisconnect:
       target_binding:

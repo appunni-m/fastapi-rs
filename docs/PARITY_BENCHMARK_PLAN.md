@@ -52,7 +52,7 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-The current complete direct-ASGI suite is
+The latest recorded complete direct-ASGI suite is
 [`docs/benchmarks/2026-10-19-8eceda6.md`](benchmarks/2026-10-19-8eceda6.md).
 It completed 7/7 declared workloads with all 45 selected parity observations
 passing on FastAPI-RS `8eceda6f867de40cd04eaa71e62270a556fd2a3e`, FastAPI
@@ -66,6 +66,11 @@ has SHA-256
 CPython 3.12.13 / macOS 15.7.7 arm64 run, FastAPI-RS median and p95 latency
 were higher for all seven workloads. This is evidence for those selected
 cases only; it does not establish full FastAPI parity or a global speedup.
+Its manifest SHA-256 (`ad2201cafa88a868d8f1be69c601609b60e8e243f00c9941d16c5e064ad8ebfd`)
+differs from the current manifest SHA-256
+(`646cea6480cc5270d8c1015fa6e6b4e173e08c3ee8686cc57d2cb3c89b5a4614`), so
+the receipt is historical and must be refreshed before it is treated as
+current benchmark evidence.
 
 The preceding seven-workload suite report
 [`2026-10-17-9a4ffe9.md`](benchmarks/2026-10-17-9a4ffe9.md) and its receipt

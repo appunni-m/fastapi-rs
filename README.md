@@ -94,11 +94,13 @@ regions. See the
 [checkpoint report](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
 for that run's identity, scope and remaining schema-order gaps.
 
-The current seven-workload suite passes 45/45 selected parity observations
-at FastAPI-RS `8eceda6` against FastAPI 0.141.1, Starlette 1.6.0, and pinned
-Starlette-RS `4139a724`. FastAPI-RS median and p95 latency were higher in all
-seven measured workloads. See the
-[current benchmark report](docs/benchmarks/2026-10-19-8eceda6.md) and
+The latest recorded seven-workload suite passed 45/45 selected parity
+observations at FastAPI-RS `8eceda6` against FastAPI 0.141.1, Starlette 1.6.0,
+and pinned Starlette-RS `4139a724`. FastAPI-RS median and p95 latency were
+higher in all seven measured workloads. That receipt is bound to an earlier
+manifest and is historical until the suite is refreshed against the current
+manifest. See the
+[latest recorded benchmark report](docs/benchmarks/2026-10-19-8eceda6.md) and
 [benchmark evidence freshness note](docs/PARITY_BENCHMARK_PLAN.md#benchmark-evidence-freshness).
 These selected cases do not establish full API parity or a global performance
 claim.

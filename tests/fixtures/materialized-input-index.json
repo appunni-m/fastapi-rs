@@ -11413,6 +11413,90 @@
       ]
     },
     {
+      "id": "fastapi-websocket-alias-identity",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-websocket-alias-identity.json",
+      "input_sha256": "f31490e7688dd8826b41e54be24ee4100571cc410914a24ff81e694a5323d708",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-websocket-alias-identity.yaml",
+      "recipe_sha256": "f1ca807053fd03c691b801ea32aa29ca42a5163e582a1a0e779fb5e40b75ce53",
+      "case_ids": [
+        "fastapi.websocket.alias-identity-signature"
+      ],
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "symbol_id": "fastapi.WebSocket",
+          "path": "fastapi/__init__.py",
+          "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9"
+        },
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "symbol_id": "fastapi.websockets.WebSocket",
+          "path": "fastapi/websockets.py",
+          "sha256": "e35f6e9dc60e6c42991b461cad7b1c7d04182d25a8135d23ab154c7ad19d47df"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "probe_id": "module-canonical-binding",
+          "symbol_id": "fastapi.websockets.WebSocket",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.binding_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "probe_id": "module-import-identity",
+          "symbol_id": "fastapi.websockets.WebSocket",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.import_path",
+            "python.object_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "probe_id": "module-signature",
+          "symbol_id": "fastapi.websockets.WebSocket",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "probe_id": "root-canonical-binding",
+          "symbol_id": "fastapi.WebSocket",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.binding_identity"
+          ]
+        },
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "probe_id": "root-signature",
+          "symbol_id": "fastapi.WebSocket",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.websocket.alias-identity-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.WebSocket",
+            "api:fastapi.websockets.WebSocket"
+          ]
+        }
+      ]
+    },
+    {
       "id": "first-asgi-request",
       "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
       "input_sha256": "f937e7552eb473629234576db598707748fe0a6570e5b3982022af21d4d86fbe",

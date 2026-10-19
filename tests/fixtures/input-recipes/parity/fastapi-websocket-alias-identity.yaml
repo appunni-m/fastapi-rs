@@ -1,0 +1,74 @@
+schema: fastapi-rs/python-api-workflow@8
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.websocket.alias-identity-signature
+    probes:
+      - probe_id: module-import-identity
+        public_module:
+          module: fastapi.websockets
+          bindings:
+            - WebSocket
+        observations:
+          - kind: python_import_path
+            selector: import_path
+            comparison: exact
+          - kind: python_object_identity
+            selector: object_identity
+            comparison: exact
+      - probe_id: module-canonical-binding
+        public_callable:
+          module: fastapi.websockets
+          attribute: WebSocket
+        argument_bundle: unused
+        binding_identity:
+          module: starlette.websockets
+          attribute: WebSocket
+        observations:
+          - kind: python_binding_identity
+            selector: binding_identity
+            comparison: exact
+      - probe_id: root-canonical-binding
+        public_callable:
+          module: fastapi
+          attribute: WebSocket
+        argument_bundle: unused
+        binding_identity:
+          module: starlette.websockets
+          attribute: WebSocket
+        observations:
+          - kind: python_binding_identity
+            selector: binding_identity
+            comparison: exact
+      - probe_id: module-signature
+        public_callable:
+          module: fastapi.websockets
+          attribute: WebSocket
+        argument_bundle: unused
+        observations:
+          - kind: python_signature
+            selector: signature
+            comparison: exact
+      - probe_id: root-signature
+        public_callable:
+          module: fastapi
+          attribute: WebSocket
+        argument_bundle: unused
+        observations:
+          - kind: python_signature
+            selector: signature
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/reference/websockets.md
+        kind: upstream_documentation
+        sha256: a7c65db4bd585c2057badb95d059d0d34c408fc906721960fa67a7640b7e13d6
+      - path: fastapi/websockets.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.websockets.WebSocket
+        sha256: e35f6e9dc60e6c42991b461cad7b1c7d04182d25a8135d23ab154c7ad19d47df
+      - path: fastapi/__init__.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.WebSocket
+        sha256: 036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9
