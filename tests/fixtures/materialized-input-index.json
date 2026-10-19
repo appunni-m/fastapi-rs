@@ -7544,6 +7544,161 @@
       ]
     },
     {
+      "id": "direct-api-uploadfile-signatures",
+      "input_path": "tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json",
+      "input_sha256": "a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039",
+      "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml",
+      "recipe_sha256": "0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471",
+      "case_ids": [
+        "fastapi.direct-api-uploadfile.root-signature",
+        "fastapi.direct-api-uploadfile.class-signature",
+        "fastapi.direct-api-uploadfile.write-signature",
+        "fastapi.direct-api-uploadfile.read-signature",
+        "fastapi.direct-api-uploadfile.seek-signature",
+        "fastapi.direct-api-uploadfile.close-signature"
+      ],
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.direct-api-uploadfile.class-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile",
+          "path": "fastapi/datastructures.py",
+          "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7"
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.close-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.close",
+          "path": "fastapi/datastructures.py",
+          "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7"
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.read-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.read",
+          "path": "fastapi/datastructures.py",
+          "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7"
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.root-signature",
+          "symbol_id": "fastapi.UploadFile",
+          "path": "fastapi/__init__.py",
+          "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9"
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.seek-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.seek",
+          "path": "fastapi/datastructures.py",
+          "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7"
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.write-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.write",
+          "path": "fastapi/datastructures.py",
+          "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.direct-api-uploadfile.class-signature",
+          "probe_id": "datastructures-uploadfile-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.close-signature",
+          "probe_id": "uploadfile-close-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.close",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.read-signature",
+          "probe_id": "uploadfile-read-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.read",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.root-signature",
+          "probe_id": "root-uploadfile-signature",
+          "symbol_id": "fastapi.UploadFile",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.seek-signature",
+          "probe_id": "uploadfile-seek-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.seek",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.write-signature",
+          "probe_id": "uploadfile-write-signature",
+          "symbol_id": "fastapi.datastructures.UploadFile.write",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.direct-api-uploadfile.root-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.UploadFile"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.class-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.datastructures.UploadFile"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.write-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.datastructures.UploadFile.write"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.read-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.datastructures.UploadFile.read"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.seek-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.datastructures.UploadFile.seek"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-uploadfile.close-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.datastructures.UploadFile.close"
+          ]
+        }
+      ]
+    },
+    {
       "id": "direct-api-warning-sidecar-v8",
       "input_path": "tests/fixtures/inputs/parity/direct-api-warning-sidecar-v8.json",
       "input_sha256": "6dc3911fa6ebc7ec9e355a0b80a65e48192eaba666ec6a19036bc1e0754e9538",

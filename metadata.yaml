@@ -15421,17 +15421,12 @@ reviewed_api_contract_overlay:
     fastapi.UploadFile:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The root alias and constructor signature match the pinned oracle, but method annotations,
+            field annotations, class documentation, Pydantic behavior, and upload operations are not
+            fully established.
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15442,9 +15437,15 @@ reviewed_api_contract_overlay:
           alias_spelling: UploadFile
           local_name: UploadFile
           target_path: fastapi.datastructures.UploadFile
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+          case_id: fastapi.direct-api-uploadfile.root-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
       supported_slice: >-
-        Root export identity only: `fastapi.UploadFile` is the
-        `fastapi.datastructures.UploadFile` class.
+        The root alias resolves to the same class as `fastapi.datastructures.UploadFile`, and its
+        constructor signature matches FastAPI 0.141.1. Method and class metadata parity remains
+        partial.
 
     fastapi.WebSocket:
       target_binding:
@@ -15574,22 +15575,23 @@ reviewed_api_contract_overlay:
     fastapi.datastructures.UploadFile:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The class signature matches the oracle, but the inherited write/read/seek/close method
+            signatures differ in annotation values and Annotated Doc metadata; class attributes,
+            documentation, and Pydantic hooks still need direct contract evidence.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
           symbol: UploadFile
           start_line: 21
           end_line: 150
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+          case_id: fastapi.direct-api-uploadfile.class-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
       supported_slice: >-
         FastAPI subclass recognition and Pydantic hooks: the plain validator accepts Starlette
         `UploadFile` instances, and the generated JSON schema is string/octet-stream; the listed
@@ -15601,13 +15603,8 @@ reviewed_api_contract_overlay:
         status: unresolved
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The direct signature comparison fails: FastAPI returns None, while the target exposes
+            the string annotation "None". Close behavior has no direct identity-checked comparison.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15615,6 +15612,11 @@ reviewed_api_contract_overlay:
           owner: UploadFile
           start_line: 124
           end_line: 130
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+          case_id: fastapi.direct-api-uploadfile.close-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
       supported_slice: >-
         Async close forwarding to the pinned Starlette `UploadFile.close`, returning its result.
 
@@ -15712,13 +15714,9 @@ reviewed_api_contract_overlay:
         status: unresolved
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The direct signature comparison fails: the target exposes a string "int" annotation
+            and omits FastAPI's Annotated Doc metadata for the size parameter; behavior remains
+            unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15726,6 +15724,11 @@ reviewed_api_contract_overlay:
           owner: UploadFile
           start_line: 86
           end_line: 102
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+          case_id: fastapi.direct-api-uploadfile.read-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
       supported_slice: >-
         Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes.
 
@@ -15735,13 +15738,9 @@ reviewed_api_contract_overlay:
         status: unresolved
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The direct signature comparison fails: the target exposes a string "int" annotation
+            and omits FastAPI's Annotated Doc metadata for the offset parameter; behavior remains
+            unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15749,6 +15748,11 @@ reviewed_api_contract_overlay:
           owner: UploadFile
           start_line: 104
           end_line: 122
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+          case_id: fastapi.direct-api-uploadfile.seek-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
       supported_slice: >-
         Forward a required byte offset to awaited Starlette `UploadFile.seek`; return `None`.
 
@@ -15780,13 +15784,9 @@ reviewed_api_contract_overlay:
         status: unresolved
         known_gaps:
           - >-
-            No operation-specific input workflow and observation mapping is linked to this operation.
-          - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The direct signature comparison fails: the target exposes a string "bytes" annotation
+            and omits FastAPI's Annotated Doc metadata for the data parameter; behavior remains
+            unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15794,6 +15794,11 @@ reviewed_api_contract_overlay:
           owner: UploadFile
           start_line: 66
           end_line: 84
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+          case_id: fastapi.direct-api-uploadfile.write-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
       supported_slice: >-
         Forward bytes to awaited Starlette `UploadFile.write`; return `None`.
 

@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 7f281b44b8fed066f2f7e0d06a5afaa79125edd4287d38e228a6b03e969398df
+    sha256: e43cdc11c537e33827953d16825ac439558a3f1c44909d4ff786e5653e87c76d
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 695
-      cases: 2849
+      workflows: 696
+      cases: 2855
       partial_source_mappings: 1946
 
 contract_metadata:
@@ -1318,9 +1318,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 184
-    symbols_with_operation_fixture_refs: 387
-    operation_fixture_refs: 2485
+    symbols_with_direct_api_input_workflow_refs: 190
+    symbols_with_operation_fixture_refs: 393
+    operation_fixture_refs: 2491
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -8607,7 +8607,30 @@ api_surface_contract:
       - openapi.document
       - openapi.paths
       - openapi.request_schema
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.root-signature
+      probe_id: root-uploadfile-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.root-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -8639,6 +8662,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.UploadFile/supported_slice
@@ -8652,16 +8676,12 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/15
         - /api_candidates/315
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Input/workflow references exist, but no exact implementation binding or current comparison result
-        establishes this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The root alias and constructor signature match the pinned oracle, but method annotations, field
+        annotations, class documentation, Pydantic behavior, and upload operations are not fully established.
   - id: fastapi.WebSocket
     kind: import_binding
     source_candidate_ref: /api_candidates/16
@@ -23452,7 +23472,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-uploadfile
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.class-signature
+      probe_id: datastructures-uploadfile-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.class-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23466,6 +23509,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.UploadFile/supported_slice
@@ -23478,15 +23522,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/315
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The class signature matches the oracle, but the inherited write/read/seek/close method signatures
+        differ in annotation values and Annotated Doc metadata; class attributes, documentation, and Pydantic
+        hooks still need direct contract evidence.
   - id: fastapi.datastructures.UploadFile.close
     kind: method
     source_candidate_ref: /api_candidates/319
@@ -23518,7 +23560,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-uploadfile
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.close-signature
+      probe_id: uploadfile-close-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.close-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23532,6 +23597,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.UploadFile.close/supported_slice
@@ -23548,11 +23614,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - 'The direct signature comparison fails: FastAPI returns None, while the target exposes the string
+        annotation "None". Close behavior has no direct identity-checked comparison.'
   - id: fastapi.datastructures.UploadFile.content_type
     kind: field
     source_candidate_ref: /api_candidates/320
@@ -23844,7 +23907,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-uploadfile
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.read-signature
+      probe_id: uploadfile-read-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.read-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23858,6 +23944,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.UploadFile.read/supported_slice
@@ -23874,11 +23961,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - 'The direct signature comparison fails: the target exposes a string "int" annotation and omits
+        FastAPI''s Annotated Doc metadata for the size parameter; behavior remains unverified.'
   - id: fastapi.datastructures.UploadFile.seek
     kind: method
     source_candidate_ref: /api_candidates/325
@@ -23910,7 +23994,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-uploadfile
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.seek-signature
+      probe_id: uploadfile-seek-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.seek-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23924,6 +24031,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.UploadFile.seek/supported_slice
@@ -23940,11 +24048,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - 'The direct signature comparison fails: the target exposes a string "int" annotation and omits
+        FastAPI''s Annotated Doc metadata for the offset parameter; behavior remains unverified.'
   - id: fastapi.datastructures.UploadFile.size
     kind: field
     source_candidate_ref: /api_candidates/326
@@ -24041,7 +24146,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-uploadfile
       fixture_design_ref: /fixture_designs/388
       observation_selectors: *id011
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.write-signature
+      probe_id: uploadfile-write-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-uploadfile-signatures
+      input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
+      input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
+      recipe_sha256: 0ad4c3974e6a386a70ea8789be807c3207b544607c59bd22d78f0495bd1c9471
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.direct-api-uploadfile.write-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24055,6 +24183,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.UploadFile.write/supported_slice
@@ -24071,11 +24200,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - No operation-specific input workflow and observation mapping is linked to this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - 'The direct signature comparison fails: the target exposes a string "bytes" annotation and omits
+        FastAPI''s Annotated Doc metadata for the data parameter; behavior remains unverified.'
   - id: fastapi.encoders.jsonable_encoder
     kind: function
     source_candidate_ref: /api_candidates/536
