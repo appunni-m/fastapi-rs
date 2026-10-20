@@ -36,7 +36,58 @@ def _openapi(
     return _case(test_path, start, end, feature_ids, observation_selectors, rationale, **extra)
 
 
+def _workflow_case(workflow_id, recipe_path, case_id, action_ids, observation_selectors):
+    return {
+        "workflow_id": workflow_id,
+        "recipe_path": recipe_path,
+        "case_id": case_id,
+        "action_ids": list(action_ids),
+        "observation_selectors": list(observation_selectors),
+    }
+
+
+_BIGGER_APPLICATIONS_RECIPE = (
+    "tests/fixtures/input-recipes/parity/router-composition-upstream.yaml"
+)
+_BIGGER_APPLICATIONS_CASE_PREFIX = (
+    "fastapi.test.test-tutorial-test-bigger-applications-test-main."
+)
+_BIGGER_APPLICATIONS_HTTP_SELECTORS = [
+    "http.status",
+    "http.headers.ordered",
+    "http.body.bytes",
+    "http.body.json",
+]
+_BIGGER_APPLICATIONS_OPENAPI_SELECTORS = [
+    "http.status",
+    "docs.response.status",
+    "openapi.document",
+]
+
+
+def _bigger_applications_case(case_slug, action_id, selectors=None):
+    return _workflow_case(
+        "router-composition-upstream",
+        _BIGGER_APPLICATIONS_RECIPE,
+        _BIGGER_APPLICATIONS_CASE_PREFIX + case_slug,
+        [action_id],
+        selectors or _BIGGER_APPLICATIONS_HTTP_SELECTORS,
+    )
+
+
+def _wave_h_bigger_applications_case(case_slug, action_id):
+    return _workflow_case(
+        "documentation-example-review-wave-h",
+        "tests/fixtures/input-recipes/parity/documentation-example-review-wave-h.yaml",
+        "fastapi.documentation-example.wave-h.bigger-applications." + case_slug,
+        [action_id],
+        ["http.status", "http.body.bytes", "http.body.json"],
+    )
+
+
 def _module(supporting_sources, functions, **extra):
+    for function_name, workflow_case in extra.pop("direct_workflow_cases", {}).items():
+        functions[function_name]["workflow_case"] = workflow_case
     return {"supporting_sources": supporting_sources, "functions": functions, **extra}
 
 
@@ -516,14 +567,16 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 ["app-routing", "dependency-security"],
                 ["http.status", "http.body.json"],
                 "The application-wide query-token dependency admits this request; the usernames and response body are application-owned.",
+                stimulus_notes="The source requests `/users?token=jessica` and follows Starlette's trailing-slash redirect; the recipe requests `/users/` directly and does not claim redirect behavior.",
             ),
             "test_users_with_no_token": _case(
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
                 27,
                 39,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "FastAPI reports the missing required query token before the application dependency body runs. Pydantic supplies the missing-field detail under the pinned identity.",
+                stimulus_notes="The source requests `/users` and follows Starlette's trailing-slash redirect; the recipe requests `/users/` directly and does not claim redirect behavior.",
             ),
             "test_users_foo_token_jessica": _case(
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
@@ -538,7 +591,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 48,
                 60,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "The required application-wide query dependency is missing; FastAPI/Pydantic produce the asserted 422 response.",
             ),
             "test_users_me_token_jessica": _case(
@@ -554,7 +607,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 69,
                 81,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "FastAPI reports the missing required application-wide query token; Pydantic owns the exact missing-field detail.",
             ),
             "test_users_token_monica_with_no_jessica": _case(
@@ -564,6 +617,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 ["dependency-security", "public-api-errors"],
                 ["http.status", "http.body.json"],
                 "The dependency graph runs and the app's get_query_token policy raises its custom 400. The custom status/detail are application-owned; FastAPI supplies HTTPException-to-response integration.",
+                stimulus_notes="The source requests `/users?token=monica` and follows Starlette's trailing-slash redirect; the recipe requests `/users/` directly and does not claim redirect behavior.",
             ),
             "test_items_token_jessica": _case(
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
@@ -579,8 +633,9 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 101,
                 113,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "FastAPI reports the missing required application-wide token query parameter before endpoint execution.",
+                stimulus_notes="The source requests `/items` and follows Starlette's trailing-slash redirect; the recipe requests `/items/` directly and does not claim redirect behavior.",
             ),
             "test_items_plumbus_token_jessica": _case(
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
@@ -603,7 +658,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 132,
                 146,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "The route request is rejected because the application-wide query token is absent; FastAPI/Pydantic own the 422 structure.",
             ),
             "test_items_with_invalid_token": _case(
@@ -613,6 +668,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 ["dependency-security", "public-api-errors"],
                 ["http.status", "http.body.json"],
                 "The router's application-defined X-Token rule raises a custom 400; the invalid-token decision and detail text are app-owned.",
+                stimulus_notes="The source requests `/items?token=jessica` and follows Starlette's trailing-slash redirect; the recipe requests `/items/` directly and does not claim redirect behavior.",
             ),
             "test_items_bar_with_invalid_token": _case(
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
@@ -627,7 +683,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 161,
                 173,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "FastAPI reports a missing required header parameter in a router dependency; the exact validation error detail is Pydantic-owned.",
                 stimulus_notes="The ASGI input uses `/items/` directly to isolate the required router-header validation; the source TestClient path `/items` follows Starlette's trailing-slash redirect, which this case does not claim to exercise.",
             ),
@@ -636,7 +692,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 176,
                 188,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "FastAPI rejects the missing required router-level header before item lookup; Pydantic owns the asserted missing-field detail.",
             ),
             "test_root_token_jessica": _case(
@@ -652,7 +708,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 197,
                 209,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "FastAPI rejects the root request for a missing required application-wide query token.",
             ),
             "test_put_no_header": _case(
@@ -660,7 +716,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 212,
                 230,
                 ["request-validation", "dependency-security"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "The request omits both the application-wide query token and router-level required header; FastAPI reports both missing fields before app code runs.",
             ),
             "test_put_invalid_header": _case(
@@ -715,6 +771,83 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                     "request-validation",
                 ],
                 observation_selectors=["http.status", "openapi.document"],
+            ),
+        },
+        direct_workflow_cases={
+            "test_users_token_jessica": _bigger_applications_case(
+                "test-users-token-jessica", "users-authenticated"
+            ),
+            "test_users_with_no_token": _bigger_applications_case(
+                "test-users-with-no-token", "users-missing-token"
+            ),
+            "test_users_foo_token_jessica": _bigger_applications_case(
+                "test-users-foo-token-jessica", "user-authenticated"
+            ),
+            "test_users_foo_with_no_token": _bigger_applications_case(
+                "test-users-foo-with-no-token", "test-users-foo-with-no-token"
+            ),
+            "test_users_me_token_jessica": _wave_h_bigger_applications_case(
+                "users-router", "users-router"
+            ),
+            "test_users_me_with_no_token": _bigger_applications_case(
+                "test-users-me-with-no-token", "test-users-me-with-no-token"
+            ),
+            "test_users_token_monica_with_no_jessica": _bigger_applications_case(
+                "test-users-token-monica-with-no-jessica",
+                "test-users-token-monica-with-no-jessica",
+            ),
+            "test_items_token_jessica": _bigger_applications_case(
+                "test-items-token-jessica", "items-authenticated"
+            ),
+            "test_items_with_no_token_jessica": _bigger_applications_case(
+                "test-items-with-no-token-jessica", "test-items-with-no-token-jessica"
+            ),
+            "test_items_plumbus_token_jessica": _wave_h_bigger_applications_case(
+                "items-router", "items-router"
+            ),
+            "test_items_bar_token_jessica": _bigger_applications_case(
+                "test-items-bar-token-jessica", "test-items-bar-token-jessica"
+            ),
+            "test_items_plumbus_with_no_token": _bigger_applications_case(
+                "test-items-plumbus-with-no-token", "test-items-plumbus-with-no-token"
+            ),
+            "test_items_with_invalid_token": _bigger_applications_case(
+                "test-items-with-invalid-token", "test-items-with-invalid-token"
+            ),
+            "test_items_bar_with_invalid_token": _bigger_applications_case(
+                "test-items-bar-with-invalid-token", "test-items-bar-with-invalid-token"
+            ),
+            "test_items_with_missing_x_token_header": _bigger_applications_case(
+                "test-items-with-missing-x-token-header", "items-missing-router-header"
+            ),
+            "test_items_plumbus_with_missing_x_token_header": _bigger_applications_case(
+                "test-items-plumbus-with-missing-x-token-header",
+                "test-items-plumbus-with-missing-x-token-header",
+            ),
+            "test_root_token_jessica": _bigger_applications_case(
+                "test-root-token-jessica", "test-root-token-jessica"
+            ),
+            "test_root_with_no_token": _bigger_applications_case(
+                "test-root-with-no-token", "test-root-with-no-token"
+            ),
+            "test_put_no_header": _bigger_applications_case(
+                "test-put-no-header", "test-put-no-header"
+            ),
+            "test_put_invalid_header": _bigger_applications_case(
+                "test-put-invalid-header", "test-put-invalid-header"
+            ),
+            "test_put": _bigger_applications_case("test-put", "update-authorized-item"),
+            "test_put_forbidden": _bigger_applications_case(
+                "test-put-forbidden", "update-disallowed-item"
+            ),
+            "test_admin": _bigger_applications_case("test-admin", "prefixed-admin-router"),
+            "test_admin_invalid_header": _bigger_applications_case(
+                "test-admin-invalid-header", "test-admin-invalid-header"
+            ),
+            "test_openapi_schema": _bigger_applications_case(
+                "test-openapi-schema",
+                "inspect-openapi",
+                _BIGGER_APPLICATIONS_OPENAPI_SELECTORS,
             ),
         },
     ),
@@ -1238,7 +1371,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 35,
                 47,
                 ["request-validation"],
-                ["http.status", "http.body.json", "validation.error_details"],
+                ["http.status", "http.body.json"],
                 "FastAPI surfaces a 422 for the invalid dataclass body; the float parsing error type/message/details are Pydantic-owned.",
             ),
             "test_openapi_schema": _openapi(
@@ -1248,6 +1381,29 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 "The snapshot checks FastAPI's request/response operation document for a dataclass model; generated model schema details remain Pydantic-owned.",
                 feature_ids=["openapi-docs", "request-validation", "response-serialization"],
                 observation_selectors=["http.status", "openapi.document"],
+            ),
+        },
+        direct_workflow_cases={
+            "test_post_item": _workflow_case(
+                "dataclasses-tutorial001-upstream",
+                "tests/fixtures/input-recipes/parity/dataclasses-tutorial001-upstream.yaml",
+                "fastapi.dataclasses.tutorial001.test-post-item",
+                ["post-valid-item"],
+                ["http.status", "http.body.bytes", "http.body.json"],
+            ),
+            "test_post_invalid_item": _workflow_case(
+                "dataclasses-tutorial001-upstream",
+                "tests/fixtures/input-recipes/parity/dataclasses-tutorial001-upstream.yaml",
+                "fastapi.dataclasses.tutorial001.test-post-invalid-item",
+                ["post-invalid-item"],
+                ["http.status", "http.body.bytes", "http.body.json"],
+            ),
+            "test_openapi_schema": _workflow_case(
+                "dataclasses-tutorial001-upstream",
+                "tests/fixtures/input-recipes/parity/dataclasses-tutorial001-upstream.yaml",
+                "fastapi.dataclasses.tutorial001.test-openapi-schema",
+                ["read-full-openapi-document"],
+                ["http.status", "docs.response.status", "openapi.document"],
             ),
         },
     ),
@@ -1288,6 +1444,22 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 "The exact OpenAPI snapshot checks the dataclass response schema and route metadata; Pydantic owns the generated model schema details.",
                 feature_ids=["openapi-docs", "response-serialization"],
                 observation_selectors=["http.status", "openapi.document"],
+            ),
+        },
+        direct_workflow_cases={
+            "test_get_item": _workflow_case(
+                "dataclasses-tutorial002-upstream",
+                "tests/fixtures/input-recipes/parity/dataclasses-tutorial002-upstream.yaml",
+                "fastapi.dataclasses.tutorial002.test-get-item",
+                ["get-next-item"],
+                ["http.status", "http.body.bytes", "http.body.json"],
+            ),
+            "test_openapi_schema": _workflow_case(
+                "dataclasses-tutorial002-upstream",
+                "tests/fixtures/input-recipes/parity/dataclasses-tutorial002-upstream.yaml",
+                "fastapi.dataclasses.tutorial002.test-openapi-schema",
+                ["read-full-openapi-document"],
+                ["http.status", "docs.response.status", "openapi.document"],
             ),
         },
     ),
@@ -1342,6 +1514,34 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 "The exact document checks FastAPI's route/request/response schema assembly for nested Pydantic dataclasses.",
                 feature_ids=["openapi-docs", "request-validation", "response-serialization"],
                 observation_selectors=["http.status", "openapi.document"],
+            ),
+        },
+        direct_workflow_cases={
+            "test_post_authors_item": _workflow_case(
+                "pydantic-dataclasses-tutorial003-upstream-wave",
+                "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
+                "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults",
+                ["create-author-items"],
+                ["http.status", "http.body.bytes", "http.body.json"],
+            ),
+            "test_get_authors": _workflow_case(
+                "pydantic-dataclasses-tutorial003-upstream-wave",
+                "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
+                "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults",
+                ["read-authors-with-empty-default-items"],
+                ["http.status", "http.body.bytes", "http.body.json"],
+            ),
+            "test_openapi_schema": _workflow_case(
+                "pydantic-dataclasses-tutorial003-upstream-wave",
+                "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
+                "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults",
+                ["openapi-nested-dataclass-models"],
+                [
+                    "http.status",
+                    "docs.response.status",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
             ),
         },
     ),

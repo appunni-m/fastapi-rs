@@ -4700,6 +4700,72 @@
       ]
     },
     {
+      "id": "dataclasses-tutorial001-upstream",
+      "input_path": "tests/fixtures/inputs/parity/dataclasses-tutorial001-upstream.json",
+      "input_sha256": "86c36f1ce39f43e60ae732a713476ee31efba638b4acbd7e42d41f387fadf69b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dataclasses-tutorial001-upstream.yaml",
+      "recipe_sha256": "ee1695cf7a1799258069b2eaadbdcd1e00811693af2abd7f9ae30cf24500d1ac",
+      "case_ids": [
+        "fastapi.dataclasses.tutorial001.test-post-item",
+        "fastapi.dataclasses.tutorial001.test-post-invalid-item",
+        "fastapi.dataclasses.tutorial001.test-openapi-schema"
+      ],
+      "workload_path": "tests/fixtures/workloads/dataclasses_tutorial001_upstream.py",
+      "workload_sha256": "6cf78aa008ce383df19e164fb1de2ce26c50d42c6f676efb438256b1f874f5b3",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.dataclasses.tutorial001.test-post-item",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_dataclasses/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dataclasses.tutorial001.test-post-invalid-item",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_dataclasses/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dataclasses.tutorial001.test-openapi-schema",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_dataclasses/test_tutorial001.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dataclasses-tutorial002-upstream",
+      "input_path": "tests/fixtures/inputs/parity/dataclasses-tutorial002-upstream.json",
+      "input_sha256": "f4d31910b4dc6c453085a5f0b644d69e8181a9ccef3c197e14b3ac7b7fe9a389",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dataclasses-tutorial002-upstream.yaml",
+      "recipe_sha256": "1208174772b7caf0b523119ae45aa6d9e37b9b90a0f87fb7d7e9ef9e5a6fec7c",
+      "case_ids": [
+        "fastapi.dataclasses.tutorial002.test-get-item",
+        "fastapi.dataclasses.tutorial002.test-openapi-schema"
+      ],
+      "workload_path": "tests/fixtures/workloads/dataclasses_tutorial002_upstream.py",
+      "workload_sha256": "b99dba9a9959d50f9089f79c38c758d7712b9c7bee76c8ca2fd0337d0f5bac67",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.dataclasses.tutorial002.test-get-item",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_dataclasses/test_tutorial002.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dataclasses.tutorial002.test-openapi-schema",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_dataclasses/test_tutorial002.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "datetime-custom-encoder-upstream",
       "input_path": "tests/fixtures/inputs/parity/datetime-custom-encoder-upstream.json",
       "input_sha256": "f24285f72d52debfb8ff6fd8e0c2e9a349f90e32d15bd4f4184558049cd8711f",
@@ -9804,9 +9870,9 @@
     {
       "id": "documentation-example-review-wave-h",
       "input_path": "tests/fixtures/inputs/parity/documentation-example-review-wave-h.json",
-      "input_sha256": "b40abc90c54ecbccf3c8c6c85cdc84b5568bcf17d385d94df7a73118c957c2bc",
+      "input_sha256": "cbd402ad83a4799e9947897d1e15f5eaf7dfb06d9e9713196c2843899c4140a8",
       "recipe_path": "tests/fixtures/input-recipes/parity/documentation-example-review-wave-h.yaml",
-      "recipe_sha256": "188c4825d440a1c8dfb73d4aab4135e3425f1f3d894cabd985e7f345bd5845cb",
+      "recipe_sha256": "256a3bb2c3e326504a0638d0c8e824e85c3d6687b9bf57c846ba324f9ab59be7",
       "case_ids": [
         "fastapi.documentation-example.wave-h.proxy-items-route",
         "fastapi.documentation-example.wave-h.bigger-applications.users-router",
@@ -9836,7 +9902,8 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/bigger_applications/app_an_py310/main.py",
-            "source:documented-example:docs_src/bigger_applications/app_an_py310/routers/users.py"
+            "source:documented-example:docs_src/bigger_applications/app_an_py310/routers/users.py",
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
           ]
         },
         {
@@ -9845,7 +9912,8 @@
           "requirement_refs": [
             "source:documented-example:docs_src/bigger_applications/app_an_py310/dependencies.py",
             "source:documented-example:docs_src/bigger_applications/app_an_py310/main.py",
-            "source:documented-example:docs_src/bigger_applications/app_an_py310/routers/items.py"
+            "source:documented-example:docs_src/bigger_applications/app_an_py310/routers/items.py",
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
           ]
         },
         {
@@ -25596,14 +25664,14 @@
     {
       "id": "pydantic-dataclasses-tutorial003-upstream-wave",
       "input_path": "tests/fixtures/inputs/parity/pydantic-dataclasses-tutorial003-upstream-wave.json",
-      "input_sha256": "2b22eb56c19d8f0cd7579959942f6e730774f6a39e60593c06ce6e4f988ec592",
+      "input_sha256": "4e9d3cb6afee54f42d8d8396d9ea96e35b423c9a35714b7f1ffce7a9aa8d0b1a",
       "recipe_path": "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
-      "recipe_sha256": "7f03451f0fe63b59087f4825129bb1a5054e733cbffcba44a391f6d35f4f93c6",
+      "recipe_sha256": "686ebdcacf03ed3d9de66dafc315c17862a9ecea15c8c7c9bddff367cefbddbc",
       "case_ids": [
         "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults"
       ],
       "workload_path": "tests/fixtures/workloads/pydantic_dataclasses_tutorial003_upstream_wave.py",
-      "workload_sha256": "f12d857542b737414edca4ba4c614e99985065cd6ff318f132c12beb6befe0bf",
+      "workload_sha256": "6cc6b3ffa6ed8c7c7b8f264ad3f5efd4624deccd53a1bb48d749da6b57509cad",
       "case_contracts": [
         {
           "case_id": "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults",
@@ -31490,16 +31558,16 @@
     {
       "id": "response-model-data-filter-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-upstream.json",
-      "input_sha256": "3467fe5a9bd6166eecfba4210adda795a0331cc3f4955a73983a41f177c5f119",
+      "input_sha256": "17078fdd4f0f98f5f77c32c8a64340ad6985acda3f814f0853897267c6d35aa8",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
-      "recipe_sha256": "ced20c920382626f1ab39738ed6c045fd304d2b5eb683813920d3181fbc23034",
+      "recipe_sha256": "c0c0ca6d0c9f714260c3157e11c9513b2141aad8cc288539772c9213fe3af592",
       "case_ids": [
         "fastapi.response-model-data-filter.subclass-input",
         "fastapi.response-model-data-filter.nested-subclass",
         "fastapi.response-model-data-filter.list-of-nested-subclasses"
       ],
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_upstream.py",
-      "workload_sha256": "f9f4c3c1084ad522b3bf17e4426a99835188aad0874a807d9758809659b814ed",
+      "workload_sha256": "a698e587dbb1a82caf6bf4b6a6e648c7c676a44e4f81133b5514d44dde673614",
       "case_contracts": [
         {
           "case_id": "fastapi.response-model-data-filter.subclass-input",
@@ -33010,11 +33078,26 @@
     {
       "id": "router-composition-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-composition-upstream.json",
-      "input_sha256": "073ec6b78bc591b83b983e3c54175ce91173f2a15c5953ad270dcdf97ec58215",
+      "input_sha256": "c42f02155d65c857b7da23c2d6a1bfa402789cfd6fd2ca626f3c7951de167826",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-composition-upstream.yaml",
-      "recipe_sha256": "bf8bd502c29df53468a1afb4707a63402790f9535be8a04a23f0992f158f6084",
+      "recipe_sha256": "61310a021281f2bc3bf7830f83e386a9272c0c8855a29931a416ee61dbaa0b5d",
       "case_ids": [
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-with-no-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-me-with-no-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-monica-with-no-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-no-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-no-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-invalid-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-with-invalid-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-missing-x-token-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-with-no-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-no-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-invalid-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin-invalid-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-openapi-schema",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-with-no-token",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-token-jessica",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-token-jessica",
@@ -33024,10 +33107,115 @@
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin"
       ],
       "workload_path": "tests/fixtures/workloads/router_composition_upstream.py",
-      "workload_sha256": "1b21d14f7a5ae3ec85beb11e01a87d8de0d5c69e4d78976dcc66a4135dee0727",
+      "workload_sha256": "11cb87e93df2da16ee021362f5e17ad344fa4c778b32bb6c3cb49bdb9da89e88",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-jessica",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-with-no-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-me-with-no-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-monica-with-no-jessica",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-no-token-jessica",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-token-jessica",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-no-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-invalid-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-with-invalid-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-missing-x-token-header",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-token-jessica",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-with-no-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-no-header",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-invalid-header",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin-invalid-header",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-openapi-schema",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py"
@@ -46043,6 +46231,43 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_dataclasses/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-dataclasses-test-tutorial001",
+      "workflow_id": "dataclasses-tutorial001-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.status, http.body.bytes, http.body.json, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dataclasses.tutorial001.test-openapi-schema",
+        "fastapi.dataclasses.tutorial001.test-post-invalid-item",
+        "fastapi.dataclasses.tutorial001.test-post-item"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_dataclasses/test_tutorial002.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-dataclasses-test-tutorial002",
+      "workflow_id": "dataclasses-tutorial002-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.body.json, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dataclasses.tutorial002.test-get-item",
+        "fastapi.dataclasses.tutorial002.test-openapi-schema"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_datetime_custom_encoder.py",
       "fixture_id": "fastapi.test.test-datetime-custom-encoder",
       "workflow_id": "datetime-custom-encoder-upstream",
@@ -52161,6 +52386,22 @@
       "observation_selectors": [
         "websocket.event_order",
         "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_bigger_applications/test_main.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main",
+      "workflow_id": "documentation-example-review-wave-h",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.documentation-example.wave-h.bigger-applications.items-router",
+        "fastapi.documentation-example.wave-h.bigger-applications.users-router"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.body.json",
+        "http.status"
       ]
     },
     {
@@ -60624,12 +60865,14 @@
       "fixture_id": "fastapi.test.test-tutorial-test-dataclasses-test-tutorial003",
       "workflow_id": "pydantic-dataclasses-tutorial003-upstream-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.body.json, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults"
       ],
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
+        "http.body.json",
         "http.status",
         "openapi.document",
         "openapi.paths"
@@ -65929,7 +66172,7 @@
       "fixture_id": "fastapi.test.test-response-model-data-filter",
       "workflow_id": "response-model-data-filter-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model-data-filter.list-of-nested-subclasses",
         "fastapi.response-model-data-filter.nested-subclass",
@@ -65937,6 +66180,7 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.body.json",
         "http.status"
       ]
     },
@@ -68249,21 +68493,39 @@
       "fixture_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main",
       "workflow_id": "router-composition-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 23 case(s); observes docs.response.status, http.body.bytes, http.body.json, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin-invalid-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-with-invalid-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-missing-x-token-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-no-token",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-invalid-token",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-missing-x-token-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-no-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-openapi-schema",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-forbidden",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-invalid-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-no-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-with-no-token",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-with-no-token",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-me-with-no-token",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-monica-with-no-jessica",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-with-no-token"
       ],
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
+        "http.body.json",
         "http.headers.ordered",
-        "http.status"
+        "http.status",
+        "openapi.document"
       ]
     },
     {

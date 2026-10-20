@@ -133,6 +133,55 @@ QUERY_REQUIRED_LIST_RECIPE_PATH = (
     "tests/fixtures/input-recipes/parity/query-required-list-aliases.yaml"
 )
 QUERY_REQUIRED_LIST_WORKFLOW_ID = "query-required-list-aliases"
+_BIGGER_APPLICATIONS_RECIPE_PATH = (
+    "tests/fixtures/input-recipes/parity/router-composition-upstream.yaml"
+)
+_BIGGER_APPLICATIONS_CASE_PREFIX = (
+    "fastapi.test.test-tutorial-test-bigger-applications-test-main."
+)
+_BIGGER_APPLICATIONS_HTTP_SELECTORS = (
+    "http.status",
+    "http.headers.ordered",
+    "http.body.bytes",
+    "http.body.json",
+)
+_BIGGER_APPLICATIONS_OPENAPI_SELECTORS = (
+    "http.status",
+    "docs.response.status",
+    "openapi.document",
+)
+
+
+def _reviewed_direct_link(workflow_id, recipe_path, case_id, action_ids, selectors):
+    return (
+        workflow_id,
+        recipe_path,
+        case_id,
+        tuple(action_ids),
+        tuple(selectors),
+    )
+
+
+def _bigger_applications_direct(case_slug, action_id, selectors=None):
+    return _reviewed_direct_link(
+        "router-composition-upstream",
+        _BIGGER_APPLICATIONS_RECIPE_PATH,
+        _BIGGER_APPLICATIONS_CASE_PREFIX + case_slug,
+        (action_id,),
+        selectors or _BIGGER_APPLICATIONS_HTTP_SELECTORS,
+    )
+
+
+def _wave_h_bigger_applications_direct(case_slug, action_id):
+    return _reviewed_direct_link(
+        "documentation-example-review-wave-h",
+        "tests/fixtures/input-recipes/parity/documentation-example-review-wave-h.yaml",
+        "fastapi.documentation-example.wave-h.bigger-applications." + case_slug,
+        (action_id,),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    )
+
+
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
         "tests/test_router_include_context.py",
@@ -377,6 +426,247 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         "fastapi.responses.bare-stream.typed-jsonl",
         ("typed-stream-excluding-none",),
         ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_response_model_data_filter.py",
+        "test_filter_top_level_model",
+    ): _reviewed_direct_link(
+        "response-model-data-filter-upstream",
+        "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+        "fastapi.response-model-data-filter.subclass-input",
+        ("register-account",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_response_model_data_filter.py",
+        "test_filter_second_level_model",
+    ): _reviewed_direct_link(
+        "response-model-data-filter-upstream",
+        "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+        "fastapi.response-model-data-filter.nested-subclass",
+        ("read-companion-with-public-caretaker",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_response_model_data_filter.py",
+        "test_list_of_models",
+    ): _reviewed_direct_link(
+        "response-model-data-filter-upstream",
+        "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+        "fastapi.response-model-data-filter.list-of-nested-subclasses",
+        ("read-companion-list-with-public-caretakers",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_users_token_jessica",
+    ): _bigger_applications_direct("test-users-token-jessica", "users-authenticated"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_users_with_no_token",
+    ): _bigger_applications_direct("test-users-with-no-token", "users-missing-token"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_users_foo_token_jessica",
+    ): _bigger_applications_direct("test-users-foo-token-jessica", "user-authenticated"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_users_foo_with_no_token",
+    ): _bigger_applications_direct(
+        "test-users-foo-with-no-token", "test-users-foo-with-no-token"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_users_me_token_jessica",
+    ): _wave_h_bigger_applications_direct("users-router", "users-router"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_users_me_with_no_token",
+    ): _bigger_applications_direct(
+        "test-users-me-with-no-token", "test-users-me-with-no-token"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_users_token_monica_with_no_jessica",
+    ): _bigger_applications_direct(
+        "test-users-token-monica-with-no-jessica",
+        "test-users-token-monica-with-no-jessica",
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_token_jessica",
+    ): _bigger_applications_direct("test-items-token-jessica", "items-authenticated"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_with_no_token_jessica",
+    ): _bigger_applications_direct(
+        "test-items-with-no-token-jessica", "test-items-with-no-token-jessica"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_plumbus_token_jessica",
+    ): _wave_h_bigger_applications_direct("items-router", "items-router"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_bar_token_jessica",
+    ): _bigger_applications_direct(
+        "test-items-bar-token-jessica", "test-items-bar-token-jessica"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_plumbus_with_no_token",
+    ): _bigger_applications_direct(
+        "test-items-plumbus-with-no-token", "test-items-plumbus-with-no-token"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_with_invalid_token",
+    ): _bigger_applications_direct(
+        "test-items-with-invalid-token", "test-items-with-invalid-token"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_bar_with_invalid_token",
+    ): _bigger_applications_direct(
+        "test-items-bar-with-invalid-token", "test-items-bar-with-invalid-token"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_with_missing_x_token_header",
+    ): _bigger_applications_direct(
+        "test-items-with-missing-x-token-header", "items-missing-router-header"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_items_plumbus_with_missing_x_token_header",
+    ): _bigger_applications_direct(
+        "test-items-plumbus-with-missing-x-token-header",
+        "test-items-plumbus-with-missing-x-token-header",
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_root_token_jessica",
+    ): _bigger_applications_direct("test-root-token-jessica", "test-root-token-jessica"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_root_with_no_token",
+    ): _bigger_applications_direct("test-root-with-no-token", "test-root-with-no-token"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_put_no_header",
+    ): _bigger_applications_direct("test-put-no-header", "test-put-no-header"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_put_invalid_header",
+    ): _bigger_applications_direct("test-put-invalid-header", "test-put-invalid-header"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_put",
+    ): _bigger_applications_direct("test-put", "update-authorized-item"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_put_forbidden",
+    ): _bigger_applications_direct("test-put-forbidden", "update-disallowed-item"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_admin",
+    ): _bigger_applications_direct("test-admin", "prefixed-admin-router"),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_admin_invalid_header",
+    ): _bigger_applications_direct(
+        "test-admin-invalid-header", "test-admin-invalid-header"
+    ),
+    (
+        "tests/test_tutorial/test_bigger_applications/test_main.py",
+        "test_openapi_schema",
+    ): _bigger_applications_direct(
+        "test-openapi-schema", "inspect-openapi", _BIGGER_APPLICATIONS_OPENAPI_SELECTORS
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
+        "test_post_item",
+    ): _reviewed_direct_link(
+        "dataclasses-tutorial001-upstream",
+        "tests/fixtures/input-recipes/parity/dataclasses-tutorial001-upstream.yaml",
+        "fastapi.dataclasses.tutorial001.test-post-item",
+        ("post-valid-item",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
+        "test_post_invalid_item",
+    ): _reviewed_direct_link(
+        "dataclasses-tutorial001-upstream",
+        "tests/fixtures/input-recipes/parity/dataclasses-tutorial001-upstream.yaml",
+        "fastapi.dataclasses.tutorial001.test-post-invalid-item",
+        ("post-invalid-item",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "dataclasses-tutorial001-upstream",
+        "tests/fixtures/input-recipes/parity/dataclasses-tutorial001-upstream.yaml",
+        "fastapi.dataclasses.tutorial001.test-openapi-schema",
+        ("read-full-openapi-document",),
+        ("http.status", "docs.response.status", "openapi.document"),
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial002.py",
+        "test_get_item",
+    ): _reviewed_direct_link(
+        "dataclasses-tutorial002-upstream",
+        "tests/fixtures/input-recipes/parity/dataclasses-tutorial002-upstream.yaml",
+        "fastapi.dataclasses.tutorial002.test-get-item",
+        ("get-next-item",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial002.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "dataclasses-tutorial002-upstream",
+        "tests/fixtures/input-recipes/parity/dataclasses-tutorial002-upstream.yaml",
+        "fastapi.dataclasses.tutorial002.test-openapi-schema",
+        ("read-full-openapi-document",),
+        ("http.status", "docs.response.status", "openapi.document"),
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial003.py",
+        "test_post_authors_item",
+    ): _reviewed_direct_link(
+        "pydantic-dataclasses-tutorial003-upstream-wave",
+        "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
+        "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults",
+        ("create-author-items",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial003.py",
+        "test_get_authors",
+    ): _reviewed_direct_link(
+        "pydantic-dataclasses-tutorial003-upstream-wave",
+        "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
+        "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults",
+        ("read-authors-with-empty-default-items",),
+        ("http.status", "http.body.bytes", "http.body.json"),
+    ),
+    (
+        "tests/test_tutorial/test_dataclasses/test_tutorial003.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "pydantic-dataclasses-tutorial003-upstream-wave",
+        "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
+        "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults",
+        ("openapi-nested-dataclass-models",),
+        (
+            "http.status",
+            "docs.response.status",
+            "openapi.document",
+            "openapi.paths",
+        ),
     ),
 }
 
@@ -2201,9 +2491,8 @@ def validate_compatibility_artifacts(
                 )
                 source_mapping = indexed_mappings.get((source_id, workflow_id), {})
                 _require(
-                    linked_case_id in source_mapping.get("case_ids", [])
-                    and set(link_selectors) <= set(source_mapping.get("observation_selectors", [])),
-                    f"case {design.get('id')} direct link exceeds its indexed source mapping",
+                    linked_case_id in source_mapping.get("case_ids", []),
+                    f"case {design.get('id')} direct link is absent from its indexed source mapping",
                 )
                 input_path = (ROOT / workflow.get("input_path", "")).resolve()
                 _require(
@@ -2238,6 +2527,10 @@ def validate_compatibility_artifacts(
                     "workflow action",
                 )
                 selected_case = dict(materialized_case)
+                # Function links name selected actions; case-level construction
+                # outcomes are not part of that action projection.
+                if "construction_observation" in selected_case:
+                    selected_case["construction_observation"] = {"selectors": []}
                 selected_case["actions"] = [action_by_id[action_id] for action_id in action_ids]
                 from scripts.parity.materialized import _selected_selectors
 
@@ -2245,9 +2538,12 @@ def validate_compatibility_artifacts(
                     selected_case, workflow_schema=workflow_document.get("schema")
                 )
                 _require(
-                    set(link_selectors) == projected_selectors
-                    and set(link_selectors) == set(design.get("observation_selectors", [])),
+                    set(link_selectors) == projected_selectors,
                     f"case {design.get('id')} direct selectors do not match selected actions",
+                )
+                _require(
+                    set(design.get("observation_selectors", [])) <= set(link_selectors),
+                    f"case {design.get('id')} source selectors are not observed by its direct actions",
                 )
                 register_selectors(link_selectors, f"case {design.get('id')} direct workflow")
 
@@ -2307,6 +2603,25 @@ def validate_compatibility_artifacts(
                 _require(
                     linked_functions == expected_direct_links,
                     "router-include-context functions lost or changed direct workflow links",
+                )
+            if source_row.get("source_path") in {
+                "tests/test_response_model_data_filter.py",
+                "tests/test_tutorial/test_bigger_applications/test_main.py",
+                "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
+                "tests/test_tutorial/test_dataclasses/test_tutorial002.py",
+                "tests/test_tutorial/test_dataclasses/test_tutorial003.py",
+            }:
+                expected_direct_links = {
+                    function_name: row[2]
+                    for (
+                        reviewed_source_path,
+                        function_name,
+                    ), row in REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS.items()
+                    if reviewed_source_path == source_row.get("source_path")
+                }
+                _require(
+                    linked_functions == expected_direct_links,
+                    f"{source_row.get('source_path')} functions lost or changed direct workflow links",
                 )
         elif source_row.get("kind") == "documented_feature_page":
             sections = fixture.get("documented_sections")

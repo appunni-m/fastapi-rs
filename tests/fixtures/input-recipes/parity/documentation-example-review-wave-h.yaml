@@ -1,10 +1,11 @@
-schema: fastapi-rs/python-asgi-workflow@3
+schema: fastapi-rs/python-asgi-workflow@14
 workload:
   file: tests/fixtures/workloads/documentation_example_review_wave_h.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.documentation-example.wave-h.proxy-items-route
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -48,6 +49,7 @@ cases:
   - path: docs_src/behind_a_proxy/tutorial001_01_py310.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.bigger-applications.users-router
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -86,13 +88,17 @@ cases:
       selectors:
       - status
       - body
+      - body_json
       comparison: exact
   source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
   - path: docs_src/bigger_applications/app_an_py310/main.py
     kind: upstream_documentation_example
   - path: docs_src/bigger_applications/app_an_py310/routers/users.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.bigger-applications.items-router
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -133,8 +139,11 @@ cases:
       selectors:
       - status
       - body
+      - body_json
       comparison: exact
   source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
   - path: docs_src/bigger_applications/app_an_py310/dependencies.py
     kind: upstream_documentation_example
   - path: docs_src/bigger_applications/app_an_py310/main.py
@@ -142,6 +151,7 @@ cases:
   - path: docs_src/bigger_applications/app_an_py310/routers/items.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.bigger-applications.admin-router
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -191,6 +201,7 @@ cases:
   - path: docs_src/bigger_applications/app_an_py310/main.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.bigger-applications.openapi-projection
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -245,6 +256,7 @@ cases:
   - path: docs_src/bigger_applications/app_an_py310/routers/users.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.dependencies.callable-class
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -290,6 +302,7 @@ cases:
   - path: docs_src/dependencies/tutorial003_py310.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.dependencies.inferred-class
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -333,6 +346,7 @@ cases:
   - path: docs_src/dependencies/tutorial004_an_py310.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.settings.global-projection
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -378,6 +392,7 @@ cases:
   - path: docs_src/settings/tutorial001_py310.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.settings.dependency-projection
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -423,6 +438,7 @@ cases:
   - path: docs_src/settings/app03_py310/main.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.custom-route.timed-dispatch
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -466,6 +482,7 @@ cases:
   - path: docs_src/custom_request_and_route/tutorial003_py310.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.websockets.echo
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]
@@ -513,6 +530,7 @@ cases:
   - path: docs_src/websockets_/tutorial001_py310.py
     kind: upstream_documentation_example
 - case_id: fastapi.documentation-example.wave-h.frontend.explicit-404
+  verification: parity
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]

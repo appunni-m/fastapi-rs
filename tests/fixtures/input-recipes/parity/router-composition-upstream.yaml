@@ -1,10 +1,16 @@
-schema: fastapi-rs/python-asgi-workflow@2
+schema: fastapi-rs/python-asgi-workflow@14
 workload:
   file: tests/fixtures/workloads/router_composition_upstream.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-jessica
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: users-authenticated
     kind: http_request
@@ -38,11 +44,708 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py
     kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-with-no-token
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-users-foo-with-no-token
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/foo
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-me-with-no-token
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-users-me-with-no-token
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-monica-with-no-jessica
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-users-token-monica-with-no-jessica
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/
+      query_string: 'token=monica'
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-no-token-jessica
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-items-with-no-token-jessica
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - fake-super-secret-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-token-jessica
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-items-bar-token-jessica
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/bar
+      query_string: 'token=jessica'
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - fake-super-secret-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-no-token
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-items-plumbus-with-no-token
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/plumbus
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - fake-super-secret-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-invalid-token
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-items-with-invalid-token
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: 'token=jessica'
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - invalid
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-bar-with-invalid-token
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-items-bar-with-invalid-token
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/bar
+      query_string: 'token=jessica'
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - invalid
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-plumbus-with-missing-x-token-header
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-items-plumbus-with-missing-x-token-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/plumbus
+      query_string: 'token=jessica'
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-token-jessica
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-root-token-jessica
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: 'token=jessica'
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-root-with-no-token
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-root-with-no-token
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-no-header
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-put-no-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-invalid-header
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-put-invalid-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - invalid
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin-invalid-header
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: test-admin-invalid-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /admin/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - invalid
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      - body_json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-openapi-schema
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers: ['']
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_bigger_applications/test_main.py
+    kind: upstream_test
+
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-with-no-token
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: users-missing-token
     kind: http_request
@@ -76,11 +779,18 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py
     kind: upstream_test
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-token-jessica
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: user-authenticated
     kind: http_request
@@ -114,11 +824,18 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py
     kind: upstream_test
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-token-jessica
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: items-authenticated
     kind: http_request
@@ -154,11 +871,18 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py
     kind: upstream_test
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-missing-x-token-header
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: items-missing-router-header
     kind: http_request
@@ -192,11 +916,18 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py
     kind: upstream_test
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: update-authorized-item
     kind: http_request
@@ -232,11 +963,18 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py
     kind: upstream_test
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-forbidden
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: update-disallowed-item
     kind: http_request
@@ -272,11 +1010,18 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py
     kind: upstream_test
 - case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: prefixed-admin-router
     kind: http_request
@@ -312,6 +1057,7 @@ cases:
       - status
       - headers
       - body
+      - body_json
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_bigger_applications/test_main.py

@@ -1,9 +1,12 @@
 """Independent ASGI stimuli for included routers and router dependencies."""
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException
 
 
-def create_app() -> FastAPI:
+def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI:
+    del factory_input, event_trace
     async def require_query_token(token: str) -> str:
         if token != "jessica":
             raise HTTPException(status_code=400, detail="No Jessica token provided")
@@ -74,4 +77,9 @@ def create_app() -> FastAPI:
         dependencies=[Depends(require_header_token)],
         responses={418: {"description": "I'm a teapot"}},
     )
+
+    @app.get("/")
+    def read_root():
+        return {"message": "Hello Bigger Applications!"}
+
     return app

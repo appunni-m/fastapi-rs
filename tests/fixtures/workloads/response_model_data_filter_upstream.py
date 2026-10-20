@@ -32,7 +32,7 @@ class CompanionView(BaseModel):
     caretaker: AccountView
 
 
-def create_app() -> FastAPI:
+def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> FastAPI:
     app = FastAPI()
 
     @app.post("/accounts/", response_model=AccountView)

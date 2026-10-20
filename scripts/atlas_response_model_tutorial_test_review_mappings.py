@@ -47,6 +47,22 @@ def _link(
     }
 
 
+def _direct_workflow_case(
+    workflow_id: str,
+    recipe_path: str,
+    case_id: str,
+    action_ids: tuple[str, ...],
+    selectors: tuple[str, ...],
+) -> dict[str, Any]:
+    return {
+        "workflow_id": workflow_id,
+        "recipe_path": recipe_path,
+        "case_id": case_id,
+        "action_ids": list(action_ids),
+        "observation_selectors": list(selectors),
+    }
+
+
 def _function(
     test_path: str,
     start: int,
@@ -57,6 +73,7 @@ def _function(
     links: tuple[dict[str, Any], ...],
     gate: str,
     sources: tuple[dict[str, Any], ...],
+    direct_workflow_case: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     link_notes = "; ".join(
         f"{link['recipe_path']}::{link['case_id']} "
@@ -64,7 +81,7 @@ def _function(
         f"selectors: {', '.join(link['observation_selectors'])})"
         for link in links
     )
-    return {
+    row = {
         "feature_ids": list(feature_ids),
         "observation_selectors": list(selectors),
         "rationale": rationale,
@@ -86,6 +103,9 @@ def _function(
             *sources,
         ],
     }
+    if direct_workflow_case is not None:
+        row["workflow_case"] = direct_workflow_case
+    return row
 
 
 def _module(rationale: str, functions: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -1077,6 +1097,116 @@ RESPONSE_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS = {
                     ),
                     *_OPENAPI_RESPONSE,
                     *_TESTCLIENT,
+                ),
+            ),
+        },
+    ),
+    "tests/test_response_model_data_filter.py": _module(
+        "The three functions assert top-level, nested, and list response-model filtering. Each direct link selects the complete recipe action projection; parsed JSON is source asserted, while status/raw body bytes and the recipe's renamed routes are partial fixture observations.",
+        {
+            "test_filter_top_level_model": _function(
+                "tests/test_response_model_data_filter.py",
+                59,
+                63,
+                ("response-serialization",),
+                ("http.body.json",),
+                "FastAPI applies UserBase as the response model and omits the password field from the UserCreate result.",
+                (
+                    _link(
+                        "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+                        "fastapi.response-model-data-filter.subclass-input",
+                        ("register-account",),
+                        ("http.status", "http.body.bytes", "http.body.json"),
+                    ),
+                ),
+                "The source parses only response.json(); this action also selects status and exact raw body bytes. The input-only recipe expresses the same top-level response-model filtering branch using `/accounts/` instead of the source `/users/` route.",
+                (
+                    _source(
+                        "tests/test_response_model_data_filter.py",
+                        8,
+                        56,
+                        "User response-model classes, route, and TestClient used by the top-level filtering test",
+                    ),
+                    *_ROUTING_SERIALIZATION,
+                    *_TESTCLIENT,
+                    *_STARLETTE_RESPONSES,
+                ),
+                direct_workflow_case=_direct_workflow_case(
+                    "response-model-data-filter-upstream",
+                    "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+                    "fastapi.response-model-data-filter.subclass-input",
+                    ("register-account",),
+                    ("http.status", "http.body.bytes", "http.body.json"),
+                ),
+            ),
+            "test_filter_second_level_model": _function(
+                "tests/test_response_model_data_filter.py",
+                66,
+                72,
+                ("response-serialization",),
+                ("http.body.json",),
+                "FastAPI applies PetOut to a returned PetDB and filters the nested UserDB down to UserBase fields.",
+                (
+                    _link(
+                        "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+                        "fastapi.response-model-data-filter.nested-subclass",
+                        ("read-companion-with-public-caretaker",),
+                        ("http.status", "http.body.bytes", "http.body.json"),
+                    ),
+                ),
+                "The source parses only response.json(); this action also selects status and exact raw body bytes. The fixture's `/companions/1` route expresses the same nested response-model branch as the source `/pets/1` route.",
+                (
+                    _source(
+                        "tests/test_response_model_data_filter.py",
+                        20,
+                        56,
+                        "Nested PetDB/PetOut response models and the source pet route",
+                    ),
+                    *_ROUTING_SERIALIZATION,
+                    *_TESTCLIENT,
+                    *_STARLETTE_RESPONSES,
+                ),
+                direct_workflow_case=_direct_workflow_case(
+                    "response-model-data-filter-upstream",
+                    "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+                    "fastapi.response-model-data-filter.nested-subclass",
+                    ("read-companion-with-public-caretaker",),
+                    ("http.status", "http.body.bytes", "http.body.json"),
+                ),
+            ),
+            "test_list_of_models": _function(
+                "tests/test_response_model_data_filter.py",
+                74,
+                79,
+                ("response-serialization",),
+                ("http.body.json",),
+                "FastAPI applies list[PetOut] to the returned list of PetDB instances and filters each nested owner model.",
+                (
+                    _link(
+                        "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+                        "fastapi.response-model-data-filter.list-of-nested-subclasses",
+                        ("read-companion-list-with-public-caretakers",),
+                        ("http.status", "http.body.bytes", "http.body.json"),
+                    ),
+                ),
+                "The source parses only response.json(); this action also selects status and exact raw body bytes. The fixture's `/companions/` route expresses the same list response-model branch as the source `/pets/` route.",
+                (
+                    _source(
+                        "tests/test_response_model_data_filter.py",
+                        20,
+                        56,
+                        "Nested PetDB/PetOut response models and the source pet-list route",
+                    ),
+                    *_ROUTING_SERIALIZATION,
+                    *_TESTCLIENT,
+                    *_STARLETTE_RESPONSES,
+                ),
+                direct_workflow_case=_direct_workflow_case(
+                    "response-model-data-filter-upstream",
+                    "tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml",
+                    "fastapi.response-model-data-filter.list-of-nested-subclasses",
+                    ("read-companion-list-with-public-caretakers",),
+                    ("http.status", "http.body.bytes", "http.body.json"),
                 ),
             ),
         },

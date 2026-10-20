@@ -18,7 +18,7 @@ class Author:
     items: list[Item] = field(default_factory=list)
 
 
-def create_app() -> FastAPI:
+def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> FastAPI:
     app = FastAPI()
 
     @app.post("/authors/{author_id}/items/", response_model=Author)
@@ -28,14 +28,27 @@ def create_app() -> FastAPI:
     @app.get("/authors/", response_model=list[Author])
     def get_authors():
         return [
-            {"name": "North Echo"},
             {
-                "name": "Violet Frame",
+                "name": "Breaters",
                 "items": [
-                    {"name": "Travel Light"},
                     {
-                        "name": "Glass Signal",
-                        "description": "A field guide for long nights",
+                        "name": "Island In The Moon",
+                        "description": "A place to be playin' and havin' fun",
+                    },
+                    {"name": "Holy Buddies"},
+                ],
+            },
+            {
+                "name": "System of an Up",
+                "items": [
+                    {
+                        "name": "Salt",
+                        "description": "The kombucha mushroom people's favorite",
+                    },
+                    {"name": "Pad Thai"},
+                    {
+                        "name": "Lonely Night",
+                        "description": "The mostests lonliest nightiest of allest",
                     },
                 ],
             },
