@@ -16347,11 +16347,15 @@ reviewed_api_contract_overlay:
           case_id: fastapi.documented-module.responses
           workload_path: tests/fixtures/workloads/documented_core_module_identities.py
           observation_selectors: [python.import_path, python.object_identity]
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml
+          case_id: fastapi.responses.orjson-response.constructor-without-optional-package
+          workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
+          observation_selectors: [python.call_outcome, warnings.category_message]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Successful optional-orjson serialization, constructor warning details, and broader class behavior remain unverified.
+          - Successful optional-orjson serialization and broader class behavior remain unverified.
 
     fastapi.responses.ORJSONResponse.render:
       rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
@@ -16393,19 +16397,23 @@ reviewed_api_contract_overlay:
           case_id: fastapi.custom-response.tutorial001.openapi
           workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml
+          case_id: fastapi.responses.ujson-response.constructor-without-optional-package
+          workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
+          observation_selectors: [python.call_outcome, warnings.category_message]
       feature_ids: [public-api-errors, response-serialization]
       observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message, http.status, openapi.document]
       supported_slice: >-
         Deprecated JSON response subclass with a route-level OpenAPI projection. In the pinned
         base profile without optional `ujson`, the selected request observes the deprecation
         warning and exact missing-dependency assertion before any response is sent. Successful
-        serialization with `ujson` installed, direct construction, and broader class behavior
-        remain unverified.
+        serialization with `ujson` installed and broader class behavior remain unverified. The
+        direct constructor case separately observes its warning and missing-dependency assertion.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Successful serialization with optional `ujson`, direct construction, subclassing, and broader class reflection are not covered by the selected route and OpenAPI cases.
+          - Successful serialization with optional `ujson`, subclassing, and broader class reflection remain unverified.
           - The source warning points to FastAPI's Python routing frame, which has no native target counterpart; the selected parity recipe records and narrowly normalizes the exact pinned source/target warning locations.
 
     fastapi.responses.UJSONResponse.render:

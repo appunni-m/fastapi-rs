@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 0931c1340356c38b15c42a9bcc3fda9ce98b9ee8d1a6993bb3defdb44b1c8d2a
+    sha256: 9837a2b2fb44bede670bf9e6376ae42ff5794f1fb4124840c20d609765095929
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 710
-      cases: 2928
+      workflows: 711
+      cases: 2930
       partial_source_mappings: 1966
 
 contract_metadata:
@@ -1351,7 +1351,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 407
-    operation_fixture_refs: 2617
+    operation_fixture_refs: 2619
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -60139,6 +60139,19 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: optional-json-response-constructors
+      input_path: tests/fixtures/inputs/parity/optional-json-response-constructors.json
+      input_sha256: b932fda994c66ca3a2fc0cca2cc489aef7acdf1cf4e871adb25fffe3b70d4477
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml
+      recipe_sha256: e7ffdf41076e0039245fadd8a5c6238306f69515fc86d0c5bb55bb987cdce16e
+      workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
+      workload_sha256: 7aec2ac7a1e5daccb32e2e4dbb7b3ebc172c5f9eda6b160212f29358267d857f
+      case_id: fastapi.responses.orjson-response.constructor-without-optional-package
+      probe_id: construct-orjson-response
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
     operation_fixture_refs:
     - workflow_id: documented-core-module-identities
       input_path: tests/fixtures/inputs/parity/documented-core-module-identities.json
@@ -60151,6 +60164,17 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: optional-json-response-constructors
+      input_path: tests/fixtures/inputs/parity/optional-json-response-constructors.json
+      input_sha256: b932fda994c66ca3a2fc0cca2cc489aef7acdf1cf4e871adb25fffe3b70d4477
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml
+      recipe_sha256: e7ffdf41076e0039245fadd8a5c6238306f69515fc86d0c5bb55bb987cdce16e
+      workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
+      workload_sha256: 7aec2ac7a1e5daccb32e2e4dbb7b3ebc172c5f9eda6b160212f29358267d857f
+      case_id: fastapi.responses.orjson-response.constructor-without-optional-package
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -60160,8 +60184,10 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.call_outcome
     - python.import_path
     - python.object_identity
+    - python.warnings
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.ORJSONResponse/supported_slice
@@ -60178,8 +60204,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register_orjson_response
       known_gaps:
-      - Successful optional-orjson serialization, constructor warning details, and broader class behavior
-        remain unverified.
+      - Successful optional-orjson serialization and broader class behavior remain unverified.
   - id: fastapi.responses.ORJSONResponse.render
     kind: method
     source_candidate_ref: /api_candidates/1035
@@ -60823,6 +60848,19 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: optional-json-response-constructors
+      input_path: tests/fixtures/inputs/parity/optional-json-response-constructors.json
+      input_sha256: b932fda994c66ca3a2fc0cca2cc489aef7acdf1cf4e871adb25fffe3b70d4477
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml
+      recipe_sha256: e7ffdf41076e0039245fadd8a5c6238306f69515fc86d0c5bb55bb987cdce16e
+      workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
+      workload_sha256: 7aec2ac7a1e5daccb32e2e4dbb7b3ebc172c5f9eda6b160212f29358267d857f
+      case_id: fastapi.responses.ujson-response.constructor-without-optional-package
+      probe_id: construct-ujson-response
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
     operation_fixture_refs:
     - workflow_id: custom-response-tutorial001-upstream
       input_path: tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json
@@ -60855,6 +60893,17 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: optional-json-response-constructors
+      input_path: tests/fixtures/inputs/parity/optional-json-response-constructors.json
+      input_sha256: b932fda994c66ca3a2fc0cca2cc489aef7acdf1cf4e871adb25fffe3b70d4477
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml
+      recipe_sha256: e7ffdf41076e0039245fadd8a5c6238306f69515fc86d0c5bb55bb987cdce16e
+      workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
+      workload_sha256: 7aec2ac7a1e5daccb32e2e4dbb7b3ebc172c5f9eda6b160212f29358267d857f
+      case_id: fastapi.responses.ujson-response.constructor-without-optional-package
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -60866,8 +60915,10 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.document
+    - python.call_outcome
     - python.import_path
     - python.object_identity
+    - python.warnings
     - warnings.category_message
     operation_scope:
       status: slice-described
@@ -60885,8 +60936,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register_ujson_response
       known_gaps:
-      - Successful serialization with optional `ujson`, direct construction, subclassing, and broader
-        class reflection are not covered by the selected route and OpenAPI cases.
+      - Successful serialization with optional `ujson`, subclassing, and broader class reflection remain
+        unverified.
       - The source warning points to FastAPI's Python routing frame, which has no native target counterpart;
         the selected parity recipe records and narrowly normalizes the exact pinned source/target warning
         locations.

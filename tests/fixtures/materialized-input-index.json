@@ -21493,6 +21493,71 @@
       ]
     },
     {
+      "id": "optional-json-response-constructors",
+      "input_path": "tests/fixtures/inputs/parity/optional-json-response-constructors.json",
+      "input_sha256": "b932fda994c66ca3a2fc0cca2cc489aef7acdf1cf4e871adb25fffe3b70d4477",
+      "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml",
+      "recipe_sha256": "e7ffdf41076e0039245fadd8a5c6238306f69515fc86d0c5bb55bb987cdce16e",
+      "case_ids": [
+        "fastapi.responses.orjson-response.constructor-without-optional-package",
+        "fastapi.responses.ujson-response.constructor-without-optional-package"
+      ],
+      "workload_path": "tests/fixtures/workloads/optional_json_response_constructors.py",
+      "workload_sha256": "7aec2ac7a1e5daccb32e2e4dbb7b3ebc172c5f9eda6b160212f29358267d857f",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.responses.orjson-response.constructor-without-optional-package",
+          "symbol_id": "fastapi.responses.ORJSONResponse",
+          "path": "fastapi/responses.py",
+          "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d"
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.constructor-without-optional-package",
+          "symbol_id": "fastapi.responses.UJSONResponse",
+          "path": "fastapi/responses.py",
+          "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.responses.orjson-response.constructor-without-optional-package",
+          "probe_id": "construct-orjson-response",
+          "symbol_id": "fastapi.responses.ORJSONResponse",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.constructor-without-optional-package",
+          "probe_id": "construct-ujson-response",
+          "symbol_id": "fastapi.responses.UJSONResponse",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.responses.orjson-response.constructor-without-optional-package",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.responses.ORJSONResponse"
+          ]
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.constructor-without-optional-package",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.responses.UJSONResponse"
+          ]
+        }
+      ]
+    },
+    {
       "id": "optional-list-openapi-schema-source-review",
       "input_path": "tests/fixtures/inputs/parity/optional-list-openapi-schema-source-review.json",
       "input_sha256": "f6b3728e9e1627c9e4aac09fa5767e5b1d51bdc8e2ab6806972d608bad10b83c",

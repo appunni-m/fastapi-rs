@@ -1,0 +1,40 @@
+schema: fastapi-rs/python-api-workflow@7
+workload:
+  file: tests/fixtures/workloads/optional_json_response_constructors.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.responses.orjson-response.constructor-without-optional-package
+  probes:
+  - probe_id: construct-orjson-response
+    public_callable:
+      module: fastapi.responses
+      attribute: ORJSONResponse
+    argument_bundle: orjson-content
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/responses.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.responses.ORJSONResponse
+    sha256: 04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d
+- case_id: fastapi.responses.ujson-response.constructor-without-optional-package
+  probes:
+  - probe_id: construct-ujson-response
+    public_callable:
+      module: fastapi.responses
+      attribute: UJSONResponse
+    argument_bundle: ujson-content
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/responses.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.responses.UJSONResponse
+    sha256: 04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d
