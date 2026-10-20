@@ -357,6 +357,15 @@ def _build_release_wheel(args: argparse.Namespace, starlette_rs_source: Path) ->
         raise SystemExit(
             f"expected exactly one release wheel in {output_directory}, found {len(wheels)}"
         )
+    normalize_command = [
+        sys.executable,
+        str(ROOT / "scripts/normalize_release_wheel_sbom.py"),
+        "--wheel",
+        str(wheels[0]),
+    ]
+    normalized = subprocess.run(normalize_command, cwd=ROOT, check=False)
+    if normalized.returncode:
+        return normalized.returncode
     check_command = [
         sys.executable,
         str(ROOT / "scripts/check_release_wheel.py"),
@@ -581,6 +590,15 @@ def _build_release_sdist(args: argparse.Namespace, starlette_rs_source: Path) ->
     wheels = sorted(wheel_directory.glob("*.whl"))
     if len(wheels) != 1:
         raise SystemExit(f"expected one rebuilt wheel in {wheel_directory}, found {len(wheels)}")
+    normalize_command = [
+        sys.executable,
+        str(ROOT / "scripts/normalize_release_wheel_sbom.py"),
+        "--wheel",
+        str(wheels[0]),
+    ]
+    normalized = subprocess.run(normalize_command, cwd=ROOT, check=False)
+    if normalized.returncode:
+        return normalized.returncode
     return subprocess.run(
         [sys.executable, str(ROOT / "scripts/check_release_wheel.py"), "--wheel", str(wheels[0])],
         cwd=ROOT,

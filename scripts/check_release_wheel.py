@@ -3,8 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import csv
 import email.parser
 import email.policy
+import hashlib
+import io
+import json
 import re
 import sys
 import zipfile
@@ -12,6 +17,7 @@ from collections import Counter
 from pathlib import Path, PurePosixPath
 
 import tomllib
+from normalize_release_wheel_sbom import validate_sbom_document
 
 ROOT = Path(__file__).resolve().parents[1]
 NATIVE_SUFFIXES = (".so", ".dylib", ".pyd", ".dll")
@@ -38,6 +44,32 @@ def _project_data() -> tuple[dict[str, object], dict[str, object]]:
     if not isinstance(project_data, dict) or not isinstance(maturin_data, dict):
         raise SystemExit("pyproject.toml must configure project and Maturin metadata")
     return project_data, maturin_data
+
+
+def _validate_record(archive: zipfile.ZipFile, names: list[str], record_name: str) -> None:
+    try:
+        text = io.TextIOWrapper(io.BytesIO(archive.read(record_name)), encoding="utf-8", newline="")
+        rows = list(csv.reader(text))
+    except (KeyError, UnicodeDecodeError, csv.Error) as exc:
+        raise SystemExit(f"wheel RECORD is unreadable: {exc}") from exc
+    if any(len(row) != 3 for row in rows):
+        raise SystemExit("wheel RECORD must have exactly three columns per row")
+
+    entries = {row[0]: row[1:] for row in rows}
+    if len(entries) != len(rows) or set(entries) != set(names):
+        raise SystemExit("wheel RECORD paths must list every archive member exactly once")
+    if entries[record_name] != ["", ""]:
+        raise SystemExit("wheel RECORD must leave its own hash and size empty")
+
+    for name in names:
+        if name == record_name:
+            continue
+        expected_hash, expected_size = entries[name]
+        contents = archive.read(name)
+        actual_hash = base64.urlsafe_b64encode(hashlib.sha256(contents).digest())
+        actual_hash = actual_hash.rstrip(b"=").decode("ascii")
+        if expected_hash != f"sha256={actual_hash}" or expected_size != str(len(contents)):
+            raise SystemExit(f"wheel RECORD hash or size is incorrect for {name}")
 
 
 def validate_wheel(wheel_path: Path) -> list[str]:
@@ -67,12 +99,24 @@ def validate_wheel(wheel_path: Path) -> list[str]:
             "__pycache__" in PurePosixPath(name).parts or name.endswith(".pyc") for name in names
         ):
             raise SystemExit("release wheel contains Python bytecode cache files")
+        sbom_names = sorted(
+            name for name in names if ".dist-info/sboms/" in name and name.endswith(".json")
+        )
+        if not any(name.endswith("/fastapi-rs-py.cyclonedx.json") for name in sbom_names):
+            raise SystemExit("release wheel is missing the Rust dependency CycloneDX SBOM")
+        for sbom_name in sbom_names:
+            try:
+                sbom = json.loads(archive.read(sbom_name))
+            except (KeyError, UnicodeDecodeError, ValueError) as exc:
+                raise SystemExit(f"wheel SBOM is unreadable: {sbom_name}: {exc}") from exc
+            validate_sbom_document(sbom, sbom_name)
 
         metadata_paths = [name for name in names if name.endswith(".dist-info/METADATA")]
         wheel_paths = [name for name in names if name.endswith(".dist-info/WHEEL")]
         record_paths = [name for name in names if name.endswith(".dist-info/RECORD")]
         if len(metadata_paths) != 1 or len(wheel_paths) != 1 or len(record_paths) != 1:
             raise SystemExit("wheel must contain exactly one METADATA, WHEEL, and RECORD")
+        _validate_record(archive, names, record_paths[0])
         dist_info = metadata_paths[0].removesuffix("/METADATA")
         try:
             metadata = email.parser.BytesParser(policy=email.policy.default).parsebytes(
