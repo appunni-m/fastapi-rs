@@ -119,10 +119,18 @@ link opens that exact release's PyPI JSON metadata. Purpose is drawn from the
 pinned project/source inventory and lock paths. Language labels and available wheel kinds come from the pinned Starlette-RS
 [locked-dependencies.csv snapshot for 2026-09-27](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/docs/locked-dependencies.csv),
 cross-checked against each exact-release PyPI record. Where native code was not
-established, the cell says so instead of inferring it from a platform wheel. This is a metadata inventory, not a review of archive license files or
-selected installed wheel binaries. In particular, PyPI metadata reports no
-license for `mypy-extensions==1.1.0`; its license remains **unknown** pending
-archive inspection.
+established, the cell says so instead of inferring it from a platform wheel. This is a metadata inventory, not a review of every archive license file or
+selected installed wheel binary. PyPI JSON metadata omits a license for
+`mypy-extensions==1.1.0`, but the pinned [Starlette lock](https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/uv.lock#L1008-L1014)
+selects an sdist with SHA-256
+`52e68efc3284861e772bbcd66823fde5ae21fd2fdb51c62a211403730b916558`.
+FastAPI 0.141.1's [lock](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L2393-L2399)
+selects the same sdist hash, and its inventory records the exact-version
+source archive's `LICENSE` as MIT. The package's
+[1.1.0 `LICENSE`](https://github.com/python/mypy_extensions/blob/1.1.0/LICENSE)
+confirms that classification. This resolves the package-level license
+classification; the lock still does not identify a selected artifact for
+every platform.
 
 | Distribution and locked version | Role, profile, and lock path | Feature purpose; language/native component | Reported license metadata |
 | --- | --- | --- | --- |
@@ -173,7 +181,7 @@ archive inspection.
 | [mkdocstrings-python==2.0.5](https://pypi.org/project/mkdocstrings-python/2.0.5/) | docs direct | Python API documentation handler; implementation/native: Python; universal wheel; native implementation not inferred. | [ISC](https://pypi.org/pypi/mkdocstrings-python/2.0.5/json) |
 | [more-itertools==10.8.0](https://pypi.org/project/more-itertools/10.8.0/) | dev transitive via `twine` → `keyring` → `jaraco-classes` | Transitive dependency required by: jaraco-classes, jaraco-functools; implementation/native: Python; universal wheel; native implementation not inferred. | [MIT](https://pypi.org/pypi/more-itertools/10.8.0/json) |
 | [mypy==2.1.0](https://pypi.org/project/mypy/2.1.0/) | dev direct | Strict type checking; implementation/native: Python; mypyc-compiled distributions are available, but this lock does not select a wheel variant. | [MIT](https://pypi.org/pypi/mypy/2.1.0/json) |
-| [mypy-extensions==1.1.0](https://pypi.org/project/mypy-extensions/1.1.0/) | dev transitive via `mypy`; docs transitive via `black` | Transitive dependency required by: black, mypy; implementation/native: Python; universal wheel; native implementation not inferred. | [Unknown (reported unspecified; archive review pending)](https://pypi.org/pypi/mypy-extensions/1.1.0/json) |
+| [mypy-extensions==1.1.0](https://pypi.org/project/mypy-extensions/1.1.0/) | dev transitive via `mypy`; docs transitive via `black` | Transitive dependency required by: black, mypy; implementation/native: Python; universal wheel; native implementation not inferred. | [MIT (same locked sdist reviewed in the FastAPI source-lock inventory)](https://github.com/python/mypy_extensions/blob/1.1.0/LICENSE) |
 | [nh3==0.3.0](https://pypi.org/project/nh3/0.3.0/) | dev transitive via `twine` → `readme-renderer` | Transitive dependency required by: readme-renderer; implementation/native: Python/Rust classifiers; platform-specific wheels; exact native/runtime component not audited. | [MIT](https://pypi.org/pypi/nh3/0.3.0/json) |
 | [outcome==1.3.0.post0](https://pypi.org/project/outcome/1.3.0.post0/) | dev transitive via `trio` | Transitive dependency required by: trio; implementation/native: Python; universal wheel; native implementation not inferred. | [MIT OR Apache-2.0](https://pypi.org/pypi/outcome/1.3.0.post0/json) |
 | [packaging==26.2](https://pypi.org/project/packaging/26.2/) | dev transitive via `pytest`; docs transitive via `black` | Transitive dependency required by: black, mkdocs, pytest, twine; implementation/native: Python; universal wheel; native implementation not inferred. | [Apache-2.0 OR BSD-2-Clause](https://pypi.org/pypi/packaging/26.2/json) |

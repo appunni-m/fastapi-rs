@@ -178,6 +178,106 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ("inspect-paired-response-classes",),
         ("docs.response.status", "http.status", "openapi.document"),
     ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_app",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-app",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_app_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-app-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_a",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-a",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_a_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-a-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_a_a",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-a-a",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_a_a_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-a-a-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_a_b",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-a-b",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_a_b_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-a-b-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_b",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-b",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_b_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-b-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
 }
 
 

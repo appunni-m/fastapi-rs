@@ -22,6 +22,7 @@ def _case(
     implementation=None,
     additional_sources=(),
     contract_gate=None,
+    workflow_case=None,
 ):
     sources = [_source(test_path, start, end, "upstream test stimulus and asserted behavior")]
     if implementation is not None:
@@ -37,6 +38,8 @@ def _case(
     }
     if contract_gate:
         row["contract_gate"] = contract_gate
+    if workflow_case:
+        row["workflow_case"] = workflow_case
     return row
 
 
@@ -134,7 +137,17 @@ _RESPONSE_CLASS_SELECTION = (
 )
 
 
-def _default_response_class_case(test_path, start, end, rationale, workflow, *, gate):
+_DEFAULT_RESPONSE_CLASS_DOCUMENTATION = _source(
+    "docs/en/docs/advanced/custom-response.md",
+    255,
+    267,
+    "FastAPI documents default_response_class on FastAPI and APIRouter and operation-level overrides",
+)
+
+
+def _default_response_class_case(
+    test_path, start, end, rationale, workflow, *, gate, workflow_case=None
+):
     return _case(
         test_path,
         start,
@@ -144,14 +157,34 @@ def _default_response_class_case(test_path, start, end, rationale, workflow, *, 
         rationale,
         workflow,
         implementation=_RESPONSE_CLASS_SELECTION[0],
-        additional_sources=_RESPONSE_CLASS_SELECTION[1:],
+        additional_sources=(
+            *_RESPONSE_CLASS_SELECTION[1:],
+            *([_DEFAULT_RESPONSE_CLASS_DOCUMENTATION] if workflow_case else []),
+        ),
         contract_gate=(
             f"{gate} Upstream checks content type plus parsed JSON or response bytes; "
             "this workflow additionally compares status, ordered headers, and exact "
             "body bytes. Starlette 1.6.0 owns generic response rendering, headers, "
             "and ASGI transport."
         ),
+        workflow_case=workflow_case,
     )
+
+
+def _default_response_class_router_workflow_case(case_id):
+    return {
+        "workflow_id": "default-response-class-router-upstream",
+        "recipe_path": (
+            "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml"
+        ),
+        "case_id": case_id,
+        "action_ids": ["dispatch"],
+        "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+        ],
+    }
 
 
 _INFERRED_ITERABLE_RESPONSE_POLICY = (
@@ -427,6 +460,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "The application JSON response class is used when the route and included routers do not override it.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-app, action dispatch.",
                 gate="Partial: the workflow observes this application-default route within a broader independently assembled router tree; the source checks parsed JSON and content type. Starlette owns response rendering and header emission.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-app"
+                ),
             ),
             "test_app_override": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -435,6 +471,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "An explicit application path-operation response class overrides the default JSON class.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-app-override, action dispatch.",
                 gate="Partial: the selected direct-ASGI input preserves the route path and PlainTextResponse override; Starlette owns generic plain-text rendering and headers.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-app-override"
+                ),
             ),
             "test_router_a": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -443,6 +482,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "An included router inherits the application's default JSON response class.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-a, action dispatch.",
                 gate="Partial: the case samples one included-router default route; generic JSON response rendering belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-a"
+                ),
             ),
             "test_router_a_override": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -451,6 +493,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "An operation on an included router may explicitly override its inherited response class.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-a-override, action dispatch.",
                 gate="Partial: the case samples one included-router path-operation override; generic plain-text response behavior belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-a-override"
+                ),
             ),
             "test_router_a_a": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -459,6 +504,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A nested router inherits the enclosing default when neither nested router nor operation overrides it.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-a-a, action dispatch.",
                 gate="Partial: the case samples a nested router's inherited JSON response class; generic response rendering belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-a-a"
+                ),
             ),
             "test_router_a_a_override": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -467,6 +515,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A path-operation override remains effective through nested router inclusion.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-a-a-override, action dispatch.",
                 gate="Partial: the case samples a nested operation's explicit plain-text override; Starlette owns generic body/header handling.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-a-a-override"
+                ),
             ),
             "test_router_a_b": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -475,6 +526,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A router-level default supplied during inclusion is applied to its routes.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-a-b, action dispatch.",
                 gate="Partial: the case samples one include_router default override. Response rendering is Starlette-owned.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-a-b"
+                ),
             ),
             "test_router_a_b_override": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -483,6 +537,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A nested router's include-time default supersedes the outer router default.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-a-b-override, action dispatch.",
                 gate="Partial: the case samples one nested include-time default and HTML media type; generic HTML response behavior belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-a-b-override"
+                ),
             ),
             "test_router_b": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -491,6 +548,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "An included router inherits the application's PlainTextResponse default supplied during inclusion.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b, action dispatch.",
                 gate="Partial: FastAPI's include_router default selection is observed; generic plain-text response behavior belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-b"
+                ),
             ),
             "test_router_b_override": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -499,6 +559,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "An operation-level HTML response class overrides an included-router default.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-override, action dispatch.",
                 gate="Partial: the case samples an explicit route override after router-default propagation; generic HTML response behavior belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-b-override"
+                ),
             ),
             "test_router_b_a": _default_response_class_case(
                 "tests/test_default_response_class_router.py",

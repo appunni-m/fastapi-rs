@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: f8dd4f7c6493ecd35240f90b8a84ce9535b2c6e81367a7958984bd6a42955e2b
+    sha256: 523a29d66104031f0aff3aacded91e7a98e8a8371bed932498d243b92abdacf6
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: b56e31bfdd12a9b4ec7d43a728eb404616121d5dc286dca218cb2456b5101895
+    sha256: c8d1f4e41ac4348350d0483dfae2650a64886b7997e063bd640383e0467624a0
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -1335,8 +1335,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
-    symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2552
+    symbols_with_operation_fixture_refs: 400
+    operation_fixture_refs: 2554
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -18683,6 +18683,28 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    operation_fixture_refs:
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: ecea0a295d6b7385f97cbcb6bfe1b8c8e2a69bc5bb6b0eeeeb3e64db253469ec
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: 8761e40c082d537d0c02dcaabbb91f668cbd29d37a23b7f216793c08dad281d4
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
+      case_id: fastapi.lifecycle.router-events-legacy
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -64002,6 +64024,28 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/372
       observation_selectors: *id020
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: router-events-lifespan-upstream
+      input_path: tests/fixtures/inputs/parity/router-events-lifespan-upstream.json
+      input_sha256: ecea0a295d6b7385f97cbcb6bfe1b8c8e2a69bc5bb6b0eeeeb3e64db253469ec
+      recipe_path: tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml
+      recipe_sha256: 8761e40c082d537d0c02dcaabbb91f668cbd29d37a23b7f216793c08dad281d4
+      workload_path: tests/fixtures/workloads/router_events_lifespan_upstream.py
+      workload_sha256: 332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00
+      case_id: fastapi.lifecycle.router-events-legacy
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
