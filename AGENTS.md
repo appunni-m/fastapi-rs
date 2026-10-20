@@ -33,6 +33,9 @@
 - Bench only equivalent work after parity; declare boundary, gate, warmups,
   samples, environment, and ASGI/server/facade/native costs. Preserve notices;
   map every public API to manifest/index and never weaken the contract.
+- Keep `main` current with verified, contract-relevant work. Before stopping,
+  audit local/remote branches and detached worktrees; integrate unique work or
+  record its disposition, and preserve unresolved work.
 
 <!-- BEGIN KATA (managed by `kata init --with-agents`) -->
 Kata is the system of record for intent.
