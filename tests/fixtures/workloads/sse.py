@@ -101,6 +101,24 @@ def _create_default_parent_router_app() -> FastAPI:
     return app
 
 
+def _create_model_input_app(factory_input: dict[str, Any]) -> FastAPI:
+    """Expose model-field values declared by one independent fixture input."""
+    app = FastAPI()
+    events = []
+    for raw_event in factory_input["events"]:
+        event_fields = dict(raw_event)
+        if "item_data" in event_fields:
+            event_fields["data"] = Item(**event_fields.pop("item_data"))
+        events.append(ServerSentEvent(**event_fields))
+
+    @app.get("/items/model-input", response_class=EventSourceResponse)
+    async def stream_model_input() -> AsyncIterator[ServerSentEvent]:
+        for event in events:
+            yield event
+
+    return app
+
+
 def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI:
     """Build routes selected by the independent workflow input."""
     del event_trace
@@ -115,6 +133,8 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
         return _create_default_app_response_class_app()
     if variant == "default-parent-router-response-class":
         return _create_default_parent_router_app()
+    if variant == "model-input":
+        return _create_model_input_app(factory_input)
     if variant != "routes":
         raise ValueError("unsupported SSE workload variant")
 

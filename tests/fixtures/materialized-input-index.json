@@ -38806,9 +38806,9 @@
     {
       "id": "sse",
       "input_path": "tests/fixtures/inputs/parity/sse.json",
-      "input_sha256": "9f4e3afcb98a32b14a544a8adafa53f3bbeaaf5c47e4bc6631747ad61b26d986",
+      "input_sha256": "38d2ae6bed7ce217212f49ee48ae8023701dd9a586fd07744f2533db611e0ec8",
       "recipe_path": "tests/fixtures/input-recipes/parity/sse.yaml",
-      "recipe_sha256": "d1d529d2f2894ef07f72635fdff2f63ade30e0c61f1fc548778fc9a683848ab9",
+      "recipe_sha256": "fb015d3fd5948bec66f1caaad37e566d725db00c73d218d5be9f362677d903f9",
       "case_ids": [
         "fastapi.test.test-sse.test-sse-events-with-fields",
         "fastapi.test.test-sse.test-async-generator-with-model",
@@ -38839,10 +38839,15 @@
         "fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-crlf",
         "fastapi.test.test-sse.test-server-sent-event-negative-retry-rejected",
         "fastapi.test.test-sse.test-server-sent-event-float-retry-rejected",
-        "fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive"
+        "fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive",
+        "fastapi.test.test-sse.test-server-sent-event-data-json-compatible-values",
+        "fastapi.test.test-sse.test-server-sent-event-pydantic-model-data",
+        "fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data",
+        "fastapi.test.test-sse.test-server-sent-event-empty-raw-data",
+        "fastapi.test.test-sse.test-server-sent-event-retry-boundaries"
       ],
       "workload_path": "tests/fixtures/workloads/sse.py",
-      "workload_sha256": "7464c7ceeaca3d06cf10587117a446d6792aa6c22e0cc964ac333caa120bd618",
+      "workload_sha256": "48e38a7267c8c78f3a90e4043aa22fdcdfa62a070d898de80f4787fce4ecd4e4",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-sse.test-sse-events-with-fields",
@@ -39078,6 +39083,46 @@
         },
         {
           "case_id": "fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/sse.md",
+            "source:upstream-test:tests/test_sse.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-sse.test-server-sent-event-data-json-compatible-values",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/sse.md",
+            "source:upstream-test:tests/test_sse.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-sse.test-server-sent-event-pydantic-model-data",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/sse.md",
+            "source:upstream-test:tests/test_sse.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/sse.md",
+            "source:upstream-test:tests/test_sse.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-sse.test-server-sent-event-empty-raw-data",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/sse.md",
+            "source:upstream-test:tests/test_sse.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-sse.test-server-sent-event-retry-boundaries",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:reference/sse.md",
@@ -72677,7 +72722,7 @@
       "fixture_id": "fastapi.docs.reference-sse",
       "workflow_id": "sse",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 30 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 35 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.test.test-sse.test-async-generator-no-annotation",
         "fastapi.test.test-sse.test-async-generator-with-model",
@@ -72693,9 +72738,14 @@
         "fastapi.test.test-sse.test-no-keepalive-when-fast",
         "fastapi.test.test-sse.test-post-method-sse",
         "fastapi.test.test-sse.test-raw-data-sent-without-json-encoding",
+        "fastapi.test.test-sse.test-server-sent-event-data-json-compatible-values",
+        "fastapi.test.test-sse.test-server-sent-event-empty-raw-data",
         "fastapi.test.test-sse.test-server-sent-event-float-retry-rejected",
+        "fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data",
         "fastapi.test.test-sse.test-server-sent-event-negative-retry-rejected",
         "fastapi.test.test-sse.test-server-sent-event-null-id-rejected",
+        "fastapi.test.test-sse.test-server-sent-event-pydantic-model-data",
+        "fastapi.test.test-sse.test-server-sent-event-retry-boundaries",
         "fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-cr",
         "fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-crlf",
         "fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-lf",
@@ -72727,7 +72777,7 @@
       "fixture_id": "fastapi.test.test-sse",
       "workflow_id": "sse",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 30 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 35 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.test.test-sse.test-async-generator-no-annotation",
         "fastapi.test.test-sse.test-async-generator-with-model",
@@ -72743,9 +72793,14 @@
         "fastapi.test.test-sse.test-no-keepalive-when-fast",
         "fastapi.test.test-sse.test-post-method-sse",
         "fastapi.test.test-sse.test-raw-data-sent-without-json-encoding",
+        "fastapi.test.test-sse.test-server-sent-event-data-json-compatible-values",
+        "fastapi.test.test-sse.test-server-sent-event-empty-raw-data",
         "fastapi.test.test-sse.test-server-sent-event-float-retry-rejected",
+        "fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data",
         "fastapi.test.test-sse.test-server-sent-event-negative-retry-rejected",
         "fastapi.test.test-sse.test-server-sent-event-null-id-rejected",
+        "fastapi.test.test-sse.test-server-sent-event-pydantic-model-data",
+        "fastapi.test.test-sse.test-server-sent-event-retry-boundaries",
         "fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-cr",
         "fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-crlf",
         "fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-lf",

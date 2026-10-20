@@ -672,3 +672,138 @@ cases:
   construction_observation: *construction_error
   actions: []
   source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-data-json-compatible-values
+  factory_input:
+    variant: model-input
+    events:
+    - {data: [alpha, 0, false, null, {nested: [true, 1.5]}], event: json-values}
+    - {data: 23, event: integer}
+    - {data: false, event: boolean}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: stream-json-compatible-values
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/model-input
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-pydantic-model-data
+  factory_input:
+    variant: model-input
+    events:
+    - item_data: {name: Portal Gun, description: Pydantic model payload}
+      event: model-data
+  construction_observation: *construction_ok
+  actions:
+  - action_id: stream-pydantic-model-data
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/model-input
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data
+  factory_input:
+    variant: model-input
+    events:
+    - {comment: "alpha\nbeta\r\ngamma\r"}
+    - {data: null, event: no-data}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: stream-comment-lines-and-null-data
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/model-input
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-empty-raw-data
+  factory_input:
+    variant: model-input
+    events:
+    - {raw_data: '', event: empty-raw}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: stream-empty-raw-data
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/model-input
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-retry-boundaries
+  factory_input:
+    variant: model-input
+    events:
+    - {data: zero, retry: 0}
+    - {data: large, retry: 18446744073709551616}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: stream-retry-boundaries
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/model-input
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
