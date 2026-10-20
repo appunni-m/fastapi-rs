@@ -147,60 +147,58 @@ crates.io releases](https://docs.rs/about/builds). Documentation changes are
 released with their Git commit; there is no site deployment command until a
 separate hosted site is selected and configured.
 
-## Readiness snapshot (2026-10-20)
+## Readiness snapshot (2026-10-20; source candidate 674974e)
 
-The clean validation build used commit `e483e93` from a detached local clone.
-The shared checkout still contains uncommitted parity changes. These artifacts
-are validation evidence for that exact source commit, not uploaded or tagged
-release files.
+The clean candidate was `674974e26feffd9764657ca77bd2f5c17d13cd07`, built
+against FastAPI `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338` (source tree SHA-256
+`da4acf9c64ae8df8a9bde0976d1777f5b36d67a6af45c443b0d0f617cad10f48`). These
+artifacts are local preparation evidence, not uploaded or tagged releases.
 
-- The current manifests declare `fastapi-rs` as the one publishable Cargo
-  crate, `fastapi-rs-py` as `publish = false`, and `fastapi-rs` as the Python
-  distribution name. The release plan is one Python wheel; the sdist and wheel
-  rebuilt from it are validation-only outputs.
-- On 2026-10-20, `cargo info starlette-rs@0.1.0 --registry crates-io` could not
-  find the required dependency version. PyPI returned 404 for
-  [`starlette-rs-py==0.1.0`](https://pypi.org/pypi/starlette-rs-py/0.1.0/json)
-  and [`fastapi-rs==0.1.0`](https://pypi.org/pypi/fastapi-rs/0.1.0/json). These
-  responses do not establish registry-name ownership or availability. Release
-  the exact Starlette-RS dependencies first, then recheck the names and
-  versions before publishing FastAPI-RS.
-- On 2026-10-20, the direct CPython 3.12.13 macOS arm64 build from clean commit
-  `e483e93` produced
-  `fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`, SHA-256
-  `e0b1c263ed161995ff5973d4bd04787310429a276f57fcb445efc990337bb693`. The
-  package checker verified its facade, native extension, metadata, SBOM
-  portability, SBOM references, and every `RECORD` hash and size. The notice
-  checker verified the wheel against FastAPI `95f8322` and Starlette-RS
-  `4139a724` and confirmed the Sebastián Ramírez MIT attribution.
-- The same clean commit produced a validation-only source archive with SHA-256
-  `01ea625cbe4e373c722ca1a4838be4aafada6f5202ad9cd6bb9143dd452b7b37`, 202
-  members, and the pinned Starlette-RS tree digest. Its extracted source rebuilt
-  the same macOS arm64 wheel tag with SHA-256
-  `4e5f51add803d6f67adcf2c9f7e2978469c533ab8704b0d7125d5213b33b120a`. Both
-  wheels passed package and notice checks. This remains one platform only.
-- `cargo package --list --locked --package fastapi-rs` listed the intended crate
-  files from clean commit `e483e93`, including README, LICENSE, and third-party
-  notices. No `.crate` archive or registry-consumer check was produced: the
-  required `starlette-rs 0.1.0` is not available from crates.io, and the
-  sandbox could not resolve crates.io during the package attempt. Run
-  `make license-artifact-check` against the exact crate archive once that
-  dependency is published and the archive is built from a clean candidate.
-- The registry probes still do not establish release name ownership:
-  `cargo info starlette-rs@0.1.0 --registry crates-io` did not find the crate;
-  PyPI returned 404 for [`starlette-rs-py==0.1.0`](https://pypi.org/pypi/starlette-rs-py/0.1.0/json)
-  and [`fastapi-rs==0.1.0`](https://pypi.org/pypi/fastapi-rs/0.1.0/json). Release
-  and verify the exact Starlette-RS packages first, then verify ownership and
-  installability before publishing FastAPI-RS.
-- `cargo doc --locked --package fastapi-rs --no-deps` succeeded from clean
-  commit `e483e93` against the pinned Starlette-RS source. Documentation remains
-  repository Markdown with docs.rs as the planned Rust API reference; no
-  static-site or package-publish workflow is configured.
-- The manifest requires dispositions for 497 source-supported public API
-  entries; 7 are supported and 490 remain unresolved. This is not a claim of
-  complete FastAPI compatibility or release readiness.
+- The direct CPython 3.12.13 macOS arm64 wheel is
+  `target/release-wheel-674974e/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`,
+  SHA-256 `91d956099c39c1a52841481325a8a4e5eb6e155b9cf7546d9ca47de8d16c8dae`.
+  The release-wheel checker verified its `fastapi` facade, single native
+  extension, metadata, portable SBOM references, and `RECORD`; the notice
+  checker verified the FastAPI MIT attribution, including Copyright (c) 2018
+  Sebastián Ramírez, and the pinned third-party notices.
+- The validation-only sdist is
+  `target/release-sdist-validation-674974e/fastapi_rs-0.1.0.tar.gz`, SHA-256
+  `3d19e659129c3e1444f8be724c353f9d1138d6c696ff1ee61db8829afbcc889d`.
+  Its validator accepted 202 members and the pinned Starlette-RS source digest.
+  The release-profile wheel rebuilt from that archive passed package and notice
+  checks; SHA-256
+  `dda3d30bce7b158643733c84ad274ebe9670f46aebdd605225b149ede3b519af`. Neither
+  the sdist nor the rebuilt wheel is a planned publish artifact. This confirms
+  macOS arm64 only.
+- Cargo listed 33 package entries, including `Cargo.toml`, `README.md`,
+  `LICENSE.md`, `THIRD_PARTY_NOTICES.md`, and `build.rs`. A local
+  `fastapi-rs-0.1.0.crate` was created with `--no-verify` and a Cargo patch to
+  the pinned Starlette-RS checkout:
+  `target/release-crate-674974e/fastapi-rs-0.1.0.crate`, SHA-256
+  `47479997a4d8b0b4d1b7ee225793ce254b95fce0f5b9b71e4e7343350534008a`. The
+  archive contains 33 files and passed `make license-artifact-check` with the
+  direct wheel. An extracted copy passed offline `cargo check --locked` and
+  warning-denied `cargo doc --locked --no-deps` using the same local Starlette-RS
+  patch. This verifies the archive against the pinned local source, not against
+  a crates.io consumer.
+- Unpatched `cargo package --locked --offline` from the candidate still fails
+  because crates.io has no matching `starlette-rs 0.1.0`. PyPI returned 404 for
+  [starlette-rs-py==0.1.0](https://pypi.org/pypi/starlette-rs-py/0.1.0/json)
+  and [fastapi-rs==0.1.0](https://pypi.org/pypi/fastapi-rs/0.1.0/json); those
+  responses do not establish name ownership or availability. Publish the exact
+  Starlette-RS dependencies and verify package ownership and installability
+  before publishing FastAPI-RS.
+- Warning-denied rustdoc succeeded both through the pinned workspace overlay
+  and from the extracted `.crate`. Project guides remain repository Markdown;
+  docs.rs is the planned Rust API reference after crate publication. There is
+  no static-site deployment workflow. The standard `make build-python` wrapper
+  could not initialize its uv cache in this environment, so the wheel builders
+  ran directly with the already-prepared locked CPython 3.12.13/Maturin tools.
+- The compatibility manifest currently has 7 of 497 required public API
+  dispositions supported; 490 remain unresolved. This is not a claim of full
+  FastAPI compatibility or release readiness.
 
 No package was uploaded; no tag, GitHub release, or documentation deployment
-was created. Release still requires a clean candidate, the Starlette-RS registry
-dependencies, a publishable Cargo archive, platform coverage, and final
-maintainer approval.
+was created. Remaining external gates are registry availability and name
+ownership, broader platform artifacts, and final maintainer approval.
