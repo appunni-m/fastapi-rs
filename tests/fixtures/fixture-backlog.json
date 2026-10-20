@@ -194535,16 +194535,6 @@
               ]
             },
             {
-              "feature_id": "middleware-integrations",
-              "signals": [
-                {
-                  "line": 8,
-                  "source": "content",
-                  "term": "settings"
-                }
-              ]
-            },
-            {
               "feature_id": "public-api-errors",
               "signals": [
                 {
@@ -194609,73 +194599,38 @@
                   "path": "docs/en/docs/tutorial/frontend.md",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
-                }
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "line": 1,
-                  "source": "content",
-                  "term": "path("
                 },
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "file("
-                }
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 11,
-                  "source": "content",
-                  "term": "status_code"
+                  "end_line": 83,
+                  "line": 72,
+                  "path": "tests/test_frontend.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 },
                 {
-                  "line": 11,
-                  "source": "content",
-                  "term": "status code"
+                  "end_line": 2044,
+                  "line": 1899,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
             "app-routing",
-            "middleware-integrations",
-            "public-api-errors",
-            "request-validation",
-            "status-codes"
+            "public-api-errors"
           ],
           "id": "fastapi.test.test-frontend.test-index-fallback-ignores-invalid-q-value",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.paths",
-            "openapi.request_schema",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
-            "warnings.category_message"
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI 0.141.1 adds fallback policy and low-priority frontend routing on top of Starlette static files. The independent waves sample fallback policy, API and included-router precedence, frontend dependency resolution, and construction/deferred directory configuration, plus target-only frontend lookup fault contracts.",
+            "contract_gate": "Input mapping only. It samples the listed FastAPI-owned fallback, route-priority, and configuration paths; it does not claim a complete frontend API contract. File lookup, headers, MIME types, validators, directory redirects, and static response emission are Starlette 1.6.0 behavior under the sibling Starlette-RS contract. The recipe uses direct ASGI observations, not TestClient parity.",
+            "rationale": "An invalid q parameter does not prevent the explicit HTML index fallback from serving an HTML navigation request.",
             "source_evidence": [
               {
                 "end_line": 83,
@@ -194739,64 +194694,30 @@
                 "role": "documented FastAPI app, router, and include_router dependencies on frontend responses",
                 "sha256": "eb513e68941a9d5d001001ee55d3d4235e5a25b613891c5681933fe76ff75d9e",
                 "start_line": 133
+              },
+              {
+                "end_line": 83,
+                "path": "tests/test_frontend.py",
+                "role": "exact upstream FastAPI 0.141.1 test function span",
+                "sha256": "6f6f33ac5cb85ca17e70c6651408c927527099f7eb5ff1b8712d3fea13a272d0",
+                "start_line": 72
+              },
+              {
+                "end_line": 2044,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI frontend static adapter selects fallback files, applies GET/HEAD and Accept gating, and assigns fallback response status",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1899
               }
             ],
-            "stimulus_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-invalid-q-value-index. The recipe supplies only independently authored inputs and observation selectors."
           },
           "selector_evidence": [
             {
               "feature_id": "app-routing",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
-              ]
-            },
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.body.bytes"
               ]
             }
           ],
@@ -194805,12 +194726,9 @@
           "source_line": 72,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-invalid-q-value-index. The recipe supplies only independently authored inputs and observation selectors."
         },
         {
           "feature_evidence": [
@@ -198573,16 +198491,6 @@
               ]
             },
             {
-              "feature_id": "middleware-integrations",
-              "signals": [
-                {
-                  "line": 8,
-                  "source": "content",
-                  "term": "settings"
-                }
-              ]
-            },
-            {
               "feature_id": "public-api-errors",
               "signals": [
                 {
@@ -198647,73 +198555,38 @@
                   "path": "docs/en/docs/tutorial/frontend.md",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
-                }
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "line": 1,
-                  "source": "content",
-                  "term": "path("
                 },
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "file("
-                }
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 12,
-                  "source": "content",
-                  "term": "status_code"
+                  "end_line": 684,
+                  "line": 672,
+                  "path": "tests/test_frontend.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 },
                 {
-                  "line": 12,
-                  "source": "content",
-                  "term": "status code"
+                  "end_line": 2044,
+                  "line": 1899,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
             "app-routing",
-            "middleware-integrations",
-            "public-api-errors",
-            "request-validation",
-            "status-codes"
+            "public-api-errors"
           ],
           "id": "fastapi.test.test-frontend.test-index-fallback-parses-accept-parameters",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.paths",
-            "openapi.request_schema",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
-            "warnings.category_message"
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI 0.141.1 adds fallback policy and low-priority frontend routing on top of Starlette static files. The independent waves sample fallback policy, API and included-router precedence, frontend dependency resolution, and construction/deferred directory configuration, plus target-only frontend lookup fault contracts.",
+            "contract_gate": "Input mapping only. It samples the listed FastAPI-owned fallback, route-priority, and configuration paths; it does not claim a complete frontend API contract. File lookup, headers, MIME types, validators, directory redirects, and static response emission are Starlette 1.6.0 behavior under the sibling Starlette-RS contract. The recipe uses direct ASGI observations, not TestClient parity.",
+            "rationale": "The explicit HTML fallback accepts a media range with charset and nonzero quality parameters.",
             "source_evidence": [
               {
                 "end_line": 684,
@@ -198777,64 +198650,30 @@
                 "role": "documented FastAPI app, router, and include_router dependencies on frontend responses",
                 "sha256": "eb513e68941a9d5d001001ee55d3d4235e5a25b613891c5681933fe76ff75d9e",
                 "start_line": 133
+              },
+              {
+                "end_line": 684,
+                "path": "tests/test_frontend.py",
+                "role": "exact upstream FastAPI 0.141.1 test function span",
+                "sha256": "6f6f33ac5cb85ca17e70c6651408c927527099f7eb5ff1b8712d3fea13a272d0",
+                "start_line": 672
+              },
+              {
+                "end_line": 2044,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI frontend static adapter selects fallback files, applies GET/HEAD and Accept gating, and assigns fallback response status",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1899
               }
             ],
-            "stimulus_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-html-with-charset-quality. The recipe supplies only independently authored inputs and observation selectors."
           },
           "selector_evidence": [
             {
               "feature_id": "app-routing",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
-              ]
-            },
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.body.bytes"
               ]
             }
           ],
@@ -198843,12 +198682,9 @@
           "source_line": 672,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-html-with-charset-quality. The recipe supplies only independently authored inputs and observation selectors."
         },
         {
           "feature_evidence": [
@@ -198864,16 +198700,6 @@
                   "line": 7,
                   "source": "content",
                   "term": "@app.get("
-                }
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "signals": [
-                {
-                  "line": 8,
-                  "source": "content",
-                  "term": "settings"
                 }
               ]
             },
@@ -198942,73 +198768,37 @@
                   "path": "docs/en/docs/tutorial/frontend.md",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
-                }
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "line": 1,
-                  "source": "content",
-                  "term": "path("
                 },
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "file("
-                }
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 11,
-                  "source": "content",
-                  "term": "status_code"
+                  "end_line": 697,
+                  "line": 687,
+                  "path": "tests/test_frontend.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 },
                 {
-                  "line": 11,
-                  "source": "content",
-                  "term": "status code"
+                  "end_line": 2044,
+                  "line": 1899,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
             "app-routing",
-            "middleware-integrations",
-            "public-api-errors",
-            "request-validation",
-            "status-codes"
+            "public-api-errors"
           ],
           "id": "fastapi.test.test-frontend.test-index-fallback-ignores-q-zero-accept",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "openapi.paths",
-            "openapi.request_schema",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
-            "warnings.category_message"
+            "http.status"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI 0.141.1 adds fallback policy and low-priority frontend routing on top of Starlette static files. The independent waves sample fallback policy, API and included-router precedence, frontend dependency resolution, and construction/deferred directory configuration, plus target-only frontend lookup fault contracts.",
+            "contract_gate": "Input mapping only. It samples the listed FastAPI-owned fallback, route-priority, and configuration paths; it does not claim a complete frontend API contract. File lookup, headers, MIME types, validators, directory redirects, and static response emission are Starlette 1.6.0 behavior under the sibling Starlette-RS contract. The recipe uses direct ASGI observations, not TestClient parity.",
+            "rationale": "An explicit HTML media range with quality zero does not select the index fallback.",
             "source_evidence": [
               {
                 "end_line": 697,
@@ -199072,64 +198862,29 @@
                 "role": "documented FastAPI app, router, and include_router dependencies on frontend responses",
                 "sha256": "eb513e68941a9d5d001001ee55d3d4235e5a25b613891c5681933fe76ff75d9e",
                 "start_line": 133
+              },
+              {
+                "end_line": 697,
+                "path": "tests/test_frontend.py",
+                "role": "exact upstream FastAPI 0.141.1 test function span",
+                "sha256": "6f6f33ac5cb85ca17e70c6651408c927527099f7eb5ff1b8712d3fea13a272d0",
+                "start_line": 687
+              },
+              {
+                "end_line": 2044,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI frontend static adapter selects fallback files, applies GET/HEAD and Accept gating, and assigns fallback response status",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1899
               }
             ],
-            "stimulus_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-html-quality-zero. The recipe supplies only independently authored inputs and observation selectors."
           },
           "selector_evidence": [
             {
               "feature_id": "app-routing",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
-              ]
-            },
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.status"
               ]
             }
           ],
@@ -199138,12 +198893,9 @@
           "source_line": 687,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-html-quality-zero. The recipe supplies only independently authored inputs and observation selectors."
         },
         {
           "feature_evidence": [
@@ -199376,16 +199128,6 @@
               ]
             },
             {
-              "feature_id": "middleware-integrations",
-              "signals": [
-                {
-                  "line": 10,
-                  "source": "content",
-                  "term": "settings"
-                }
-              ]
-            },
-            {
               "feature_id": "public-api-errors",
               "signals": [
                 {
@@ -199450,73 +199192,37 @@
                   "path": "docs/en/docs/tutorial/frontend.md",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
-                }
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "line": 2,
-                  "source": "content",
-                  "term": "path("
                 },
                 {
-                  "line": 5,
-                  "source": "content",
-                  "term": "file("
-                }
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 14,
-                  "source": "content",
-                  "term": "status_code"
+                  "end_line": 729,
+                  "line": 716,
+                  "path": "tests/test_frontend.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 },
                 {
-                  "line": 14,
-                  "source": "content",
-                  "term": "status code"
+                  "end_line": 2044,
+                  "line": 1899,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
             "app-routing",
-            "middleware-integrations",
-            "public-api-errors",
-            "request-validation",
-            "status-codes"
+            "public-api-errors"
           ],
           "id": "fastapi.test.test-frontend.test-index-fallback-respects-explicit-xhtml-rejection-with-wildcard",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "openapi.paths",
-            "openapi.request_schema",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
-            "warnings.category_message"
+            "http.status"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI 0.141.1 adds fallback policy and low-priority frontend routing on top of Starlette static files. The independent waves sample fallback policy, API and included-router precedence, frontend dependency resolution, and construction/deferred directory configuration, plus target-only frontend lookup fault contracts.",
+            "contract_gate": "Input mapping only. It samples the listed FastAPI-owned fallback, route-priority, and configuration paths; it does not claim a complete frontend API contract. File lookup, headers, MIME types, validators, directory redirects, and static response emission are Starlette 1.6.0 behavior under the sibling Starlette-RS contract. The recipe uses direct ASGI observations, not TestClient parity.",
+            "rationale": "An explicit XHTML quality-zero rejection overrides an accepted wildcard when choosing the index fallback.",
             "source_evidence": [
               {
                 "end_line": 729,
@@ -199580,64 +199286,29 @@
                 "role": "documented FastAPI app, router, and include_router dependencies on frontend responses",
                 "sha256": "eb513e68941a9d5d001001ee55d3d4235e5a25b613891c5681933fe76ff75d9e",
                 "start_line": 133
+              },
+              {
+                "end_line": 729,
+                "path": "tests/test_frontend.py",
+                "role": "exact upstream FastAPI 0.141.1 test function span",
+                "sha256": "6f6f33ac5cb85ca17e70c6651408c927527099f7eb5ff1b8712d3fea13a272d0",
+                "start_line": 716
+              },
+              {
+                "end_line": 2044,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI frontend static adapter selects fallback files, applies GET/HEAD and Accept gating, and assigns fallback response status",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1899
               }
             ],
-            "stimulus_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-xhtml-quality-zero-with-wildcard. The recipe supplies only independently authored inputs and observation selectors."
           },
           "selector_evidence": [
             {
               "feature_id": "app-routing",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
-              ]
-            },
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.status"
               ]
             }
           ],
@@ -199646,12 +199317,9 @@
           "source_line": 716,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "The source-reviewed recipes use fresh per-case apps, deterministic temporary static directories, and direct ASGI requests. The dependency wave exposes nested dependency order through an injected response header, without using the planned dependency-order selector. The fixed missing-directory input is used only for deferred check_dir error capture. The lookup-fault workflow retains a temporary frontend directory per case and observes public outcomes only."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml, case fastapi.frontend.fallback-routing-surface, actions accept-xhtml-quality-zero-with-wildcard. The recipe supplies only independently authored inputs and observation selectors."
         },
         {
           "feature_evidence": [

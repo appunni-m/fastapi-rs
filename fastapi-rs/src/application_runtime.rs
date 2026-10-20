@@ -8873,11 +8873,24 @@ impl PyApiRouter {
         fallback: Py<PyAny>,
         check_dir: Py<PyAny>,
     ) -> PyResult<()> {
+        let dependencies = self
+            .dependencies
+            .iter()
+            .map(|dependency| dependency.clone_ref(py))
+            .collect::<Vec<_>>();
         let path = normalize_frontend_path(path)?;
         let path = join_frontend_paths(&self.prefix, &path);
         let inner_app = self.inner_app(py)?;
         let mut inner = inner_app.bind(py).borrow_mut();
-        add_frontend_route(&mut inner, py, &path, directory, fallback, check_dir, &[])
+        add_frontend_route(
+            &mut inner,
+            py,
+            &path,
+            directory,
+            fallback,
+            check_dir,
+            &dependencies,
+        )
     }
 
     #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, responses = None, callbacks = None, deprecated = None, include_in_schema = true, generate_unique_id_function = GenerateUniqueIdArgument::Omitted))]
