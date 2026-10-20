@@ -540,6 +540,21 @@ def read_manifest() -> dict[str, Any]:
             "fastapi_extra": None,
             "prepare_target": "parity-prepare-oracle-templates",
         },
+        "json-serializers": {
+            "id": (
+                "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-json-serializers-"
+                "orjson-3.13.0-ujson-6.0.0"
+            ),
+            "base_profile": profile["id"],
+            "lock": {
+                "path": "requirements/json-serializers-cpython-3.12.13.lock",
+                "sha256": "c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86",
+                "profile": "CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0",
+            },
+            "added_packages": {"orjson": "3.13.0", "ujson": "6.0.0"},
+            "fastapi_extra": None,
+            "prepare_target": "parity-prepare-oracle-json-serializers",
+        },
     }
     if manifest.get("oracle_profile_extensions") != expected_extensions:
         raise ContractError(
@@ -626,6 +641,18 @@ def read_manifest() -> dict[str, Any]:
             "added_packages": {"jinja2": "3.1.6", "markupsafe": "3.0.3"},
             "fastapi_extra": "templates",
             "prepare_target": "parity-prepare-target-templates",
+        },
+        "json-serializers": {
+            "id": "fastapi-rs-json-serializers-cpython-3.12.13-orjson-3.13.0-ujson-6.0.0",
+            "base_profile": target["id"],
+            "lock": {
+                "path": "requirements/json-serializers-cpython-3.12.13.lock",
+                "sha256": "c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86",
+                "profile": "CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0",
+            },
+            "added_packages": {"orjson": "3.13.0", "ujson": "6.0.0"},
+            "fastapi_extra": None,
+            "prepare_target": "parity-prepare-target-json-serializers",
         },
     }
     if manifest.get("target_profile_extensions") != expected_target_extensions:

@@ -184707,6 +184707,554 @@
               "feature_id": "response-serialization",
               "signals": [
                 {
+                  "end_line": 41,
+                  "line": 34,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 98,
+                  "line": 40,
+                  "path": "fastapi/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 79,
+                  "line": 20,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
+            },
+            {
+              "feature_id": "status-codes",
+              "signals": [
+                {
+                  "line": 7,
+                  "source": "content",
+                  "term": "status_code"
+                },
+                {
+                  "line": 7,
+                  "source": "content",
+                  "term": "status code"
+                }
+              ]
+            }
+          ],
+          "feature_ids": [
+            "response-serialization",
+            "status-codes"
+          ],
+          "id": "fastapi.test.test-deprecated-responses.test-orjson-response-returns-correct-data",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "http.body.json",
+            "warnings.category_message"
+          ],
+          "reviewed_mapping": {
+            "rationale": "The independent ORJSONResponse case compares the response envelope, serialized bytes, parsed JSON, and deprecation warning.",
+            "source_evidence": [
+              {
+                "end_line": 41,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "upstream test function",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 34
+              },
+              {
+                "end_line": 98,
+                "path": "fastapi/responses.py",
+                "role": "optional renderer imports, deprecation declarations, and serializer calls",
+                "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
+                "start_line": 40
+              },
+              {
+                "end_line": 79,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "optional serializer success and deprecation warning assertions",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 20
+              }
+            ]
+          },
+          "selector_evidence": [
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes",
+                "http.body.json"
+              ]
+            },
+            {
+              "feature_id": "status-codes",
+              "selectors": [
+                "http.status",
+                "http.body.bytes",
+                "http.body.json"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "warnings.category_message"
+              ],
+              "selectors": [
+                "warnings.category_message"
+              ]
+            }
+          ],
+          "source_end_line": 41,
+          "source_function": "test_orjson_response_returns_correct_data",
+          "source_line": 34,
+          "stimulus_design": [
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
+            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+          ],
+          "stimulus_design_notes": null
+        },
+        {
+          "feature_evidence": [
+            {
+              "feature_id": "public-api-errors",
+              "signals": [
+                {
+                  "line": 2,
+                  "source": "content",
+                  "term": "deprecated"
+                },
+                {
+                  "source": "path",
+                  "term": "deprecation"
+                }
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 47,
+                  "line": 45,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 98,
+                  "line": 40,
+                  "path": "fastapi/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 79,
+                  "line": 20,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
+            }
+          ],
+          "feature_ids": [
+            "public-api-errors",
+            "response-serialization"
+          ],
+          "id": "fastapi.test.test-deprecated-responses.test-orjson-response-emits-deprecation-warning",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
+          "observation_selectors": [
+            "python.call_outcome",
+            "warnings.category_message"
+          ],
+          "reviewed_mapping": {
+            "rationale": "The independent constructor case observes the public deprecation warning and missing optional serializer assertion.",
+            "source_evidence": [
+              {
+                "end_line": 47,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "upstream test function",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 45
+              },
+              {
+                "end_line": 98,
+                "path": "fastapi/responses.py",
+                "role": "optional renderer imports, deprecation declarations, and serializer calls",
+                "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
+                "start_line": 40
+              },
+              {
+                "end_line": 79,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "optional serializer success and deprecation warning assertions",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 20
+              }
+            ]
+          },
+          "selector_evidence": [
+            {
+              "feature_id": "public-api-errors",
+              "schema_extension_required": [
+                "python.call_outcome"
+              ],
+              "selectors": [
+                "python.call_outcome",
+                "warnings.category_message"
+              ]
+            }
+          ],
+          "source_end_line": 47,
+          "source_function": "test_orjson_response_emits_deprecation_warning",
+          "source_line": 45,
+          "stimulus_design": [
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+          ],
+          "stimulus_design_notes": null
+        },
+        {
+          "feature_evidence": [
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 73,
+                  "line": 66,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 98,
+                  "line": 40,
+                  "path": "fastapi/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 79,
+                  "line": 20,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
+            },
+            {
+              "feature_id": "status-codes",
+              "signals": [
+                {
+                  "line": 7,
+                  "source": "content",
+                  "term": "status_code"
+                },
+                {
+                  "line": 7,
+                  "source": "content",
+                  "term": "status code"
+                }
+              ]
+            }
+          ],
+          "feature_ids": [
+            "response-serialization",
+            "status-codes"
+          ],
+          "id": "fastapi.test.test-deprecated-responses.test-ujson-response-returns-correct-data",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "http.body.json",
+            "warnings.category_message"
+          ],
+          "reviewed_mapping": {
+            "rationale": "The independent UJSONResponse case compares the response envelope, UTF-8 serialization bytes, parsed JSON, and deprecation warning.",
+            "source_evidence": [
+              {
+                "end_line": 73,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "upstream test function",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 66
+              },
+              {
+                "end_line": 98,
+                "path": "fastapi/responses.py",
+                "role": "optional renderer imports, deprecation declarations, and serializer calls",
+                "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
+                "start_line": 40
+              },
+              {
+                "end_line": 79,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "optional serializer success and deprecation warning assertions",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 20
+              }
+            ]
+          },
+          "selector_evidence": [
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes",
+                "http.body.json"
+              ]
+            },
+            {
+              "feature_id": "status-codes",
+              "selectors": [
+                "http.status",
+                "http.body.bytes",
+                "http.body.json"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "warnings.category_message"
+              ],
+              "selectors": [
+                "warnings.category_message"
+              ]
+            }
+          ],
+          "source_end_line": 73,
+          "source_function": "test_ujson_response_returns_correct_data",
+          "source_line": 66,
+          "stimulus_design": [
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
+            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+          ],
+          "stimulus_design_notes": null
+        },
+        {
+          "feature_evidence": [
+            {
+              "feature_id": "public-api-errors",
+              "signals": [
+                {
+                  "line": 2,
+                  "source": "content",
+                  "term": "deprecated"
+                },
+                {
+                  "source": "path",
+                  "term": "deprecation"
+                }
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 79,
+                  "line": 77,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 98,
+                  "line": 40,
+                  "path": "fastapi/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 79,
+                  "line": 20,
+                  "path": "tests/test_deprecated_responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
+            }
+          ],
+          "feature_ids": [
+            "public-api-errors",
+            "response-serialization"
+          ],
+          "id": "fastapi.test.test-deprecated-responses.test-ujson-response-emits-deprecation-warning",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
+          "observation_selectors": [
+            "python.call_outcome",
+            "warnings.category_message"
+          ],
+          "reviewed_mapping": {
+            "rationale": "The independent constructor case observes the public deprecation warning and missing optional serializer assertion.",
+            "source_evidence": [
+              {
+                "end_line": 79,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "upstream test function",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 77
+              },
+              {
+                "end_line": 98,
+                "path": "fastapi/responses.py",
+                "role": "optional renderer imports, deprecation declarations, and serializer calls",
+                "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
+                "start_line": 40
+              },
+              {
+                "end_line": 79,
+                "path": "tests/test_deprecated_responses.py",
+                "role": "optional serializer success and deprecation warning assertions",
+                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
+                "start_line": 20
+              }
+            ]
+          },
+          "selector_evidence": [
+            {
+              "feature_id": "public-api-errors",
+              "schema_extension_required": [
+                "python.call_outcome"
+              ],
+              "selectors": [
+                "python.call_outcome",
+                "warnings.category_message"
+              ]
+            }
+          ],
+          "source_end_line": 79,
+          "source_function": "test_ujson_response_emits_deprecation_warning",
+          "source_line": 77,
+          "stimulus_design": [
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+          ],
+          "stimulus_design_notes": null
+        }
+      ],
+      "feature_ids": [
+        "public-api-errors",
+        "response-serialization",
+        "status-codes"
+      ],
+      "id": "fastapi.test.test-deprecated-responses",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.deprecated-responses.orjson-success-asgi",
+            "fastapi.deprecated-responses.ujson-success-asgi"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.body.json, http.headers.ordered, http.status, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.headers.ordered",
+            "http.status",
+            "warnings.category_message"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml",
+          "workflow_id": "optional-json-response-serialization"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "error.class",
+        "error.public_attributes",
+        "http.body.bytes",
+        "http.body.json",
+        "http.cookies",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.paths",
+        "python.attribute_value",
+        "python.call_outcome",
+        "python.import_path",
+        "python.object_identity",
+        "python.signature",
+        "response.background_effects",
+        "validation.error_class",
+        "warnings.category_message"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "public-api-errors",
+          "schema_extension_required": [
+            "python.call_outcome"
+          ],
+          "selectors": [
+            "error.class",
+            "error.public_attributes",
+            "python.attribute_value",
+            "python.call_outcome",
+            "python.import_path",
+            "python.object_identity",
+            "python.signature",
+            "warnings.category_message"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.cookies",
+            "http.headers.ordered",
+            "http.status",
+            "response.background_effects",
+            "validation.error_class"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.status",
+            "openapi.paths"
+          ]
+        }
+      ],
+      "source_evidence": {
+        "path": "tests/test_deprecated_responses.py",
+        "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf"
+      },
+      "source_item_id": "upstream-test:tests/test_deprecated_responses.py",
+      "stage": "reviewed partial source-to-input mapping; remaining source behavior is not claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+      ],
+      "stimulus_design_notes": null
+    },
+    {
+      "case_designs": [
+        {
+          "feature_evidence": [
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
                   "end_line": 39,
                   "line": 30,
                   "path": "tests/test_dump_json_fast_path.py",

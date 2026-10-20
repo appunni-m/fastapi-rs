@@ -408,6 +408,97 @@ TEST_REVIEW_MAPPINGS = {
             },
         ],
     },
+    "tests/test_deprecated_responses.py": {
+        "feature_ids": ["response-serialization", "public-api-errors"],
+        "module_observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "http.body.json",
+            "python.call_outcome",
+            "warnings.category_message",
+        ],
+        "rationale": (
+            "The optional ORJSONResponse and UJSONResponse test paths are represented by "
+            "independent input-only cases using the paired serializer profile; constructor "
+            "deprecation warnings and successful ASGI serialization are both observed."
+        ),
+        "supporting_sources": [
+            {
+                "path": "fastapi/responses.py",
+                "start_line": 40,
+                "end_line": 98,
+                "role": "optional renderer imports, deprecation declarations, and serializer calls",
+            },
+            {
+                "path": "tests/test_deprecated_responses.py",
+                "start_line": 20,
+                "end_line": 79,
+                "role": "optional serializer success and deprecation warning assertions",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml",
+                "case_ids": [
+                    "fastapi.deprecated-responses.orjson-success-asgi",
+                    "fastapi.deprecated-responses.ujson-success-asgi",
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "http.body.json",
+                    "warnings.category_message",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml",
+                "case_ids": [
+                    "fastapi.responses.orjson-response.constructor-without-optional-package",
+                    "fastapi.responses.ujson-response.constructor-without-optional-package",
+                ],
+                "observation_selectors": [
+                    "python.call_outcome",
+                    "warnings.category_message",
+                ],
+            },
+        ],
+        "functions": {
+            "test_orjson_response_returns_correct_data": {
+                "feature_ids": ["response-serialization"],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "http.body.json",
+                    "warnings.category_message",
+                ],
+                "rationale": "The independent ORJSONResponse case compares the response envelope, serialized bytes, parsed JSON, and deprecation warning.",
+            },
+            "test_orjson_response_emits_deprecation_warning": {
+                "feature_ids": ["response-serialization", "public-api-errors"],
+                "observation_selectors": ["python.call_outcome", "warnings.category_message"],
+                "rationale": "The independent constructor case observes the public deprecation warning and missing optional serializer assertion.",
+            },
+            "test_ujson_response_returns_correct_data": {
+                "feature_ids": ["response-serialization"],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "http.body.json",
+                    "warnings.category_message",
+                ],
+                "rationale": "The independent UJSONResponse case compares the response envelope, UTF-8 serialization bytes, parsed JSON, and deprecation warning.",
+            },
+            "test_ujson_response_emits_deprecation_warning": {
+                "feature_ids": ["response-serialization", "public-api-errors"],
+                "observation_selectors": ["python.call_outcome", "warnings.category_message"],
+                "rationale": "The independent constructor case observes the public deprecation warning and missing optional serializer assertion.",
+            },
+        },
+    },
 }
 
 
@@ -823,11 +914,6 @@ TEST_EXCLUSIONS = {
         'The module calls pytest.importorskip("orjson") and asserts the exact indented ORJSON response '
         "bytes. No selected locked oracle profile installs orjson, so this optional response implementation "
         "cannot be executed under the selected profile."
-    ),
-    "tests/test_deprecated_responses.py": (
-        "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and "
-        "needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now "
-        "supported, but these optional integrations remain unavailable in the selected profiles."
     ),
     "tests/test_stringified_annotation_dependency_py314.py": (
         "The sole test is guarded by needs_py314 and uses Python 3.14 runtime annotation evaluation. "

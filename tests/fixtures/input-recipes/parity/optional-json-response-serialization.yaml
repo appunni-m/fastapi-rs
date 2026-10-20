@@ -1,0 +1,81 @@
+schema: fastapi-rs/python-asgi-workflow@16
+oracle_profile_extension: json-serializers
+workload:
+  file: tests/fixtures/workloads/optional_json_response_serialization.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.deprecated-responses.orjson-success-asgi
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: get-orjson-response
+    kind: http_request
+    capture_warnings: true
+    warning_location_normalizations:
+    - category: fastapi.exceptions.FastAPIDeprecationWarning
+      message: >-
+        ORJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/
+      source: {filename: fastapi/routing.py, lineno: 144}
+      target: {filename: starlette/middleware/errors.py, lineno: 58}
+      rationale: >-
+        FastAPI emits this warning through its Python routing frame; FastAPI-RS dispatches in Rust, so that frame does not exist. Keep the exact warning identity and observed source/target locations.
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /orjson
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body, body_json], comparison: exact}
+  source_evidence:
+  - {path: tests/test_deprecated_responses.py, kind: upstream_test}
+  verification: parity
+- case_id: fastapi.deprecated-responses.ujson-success-asgi
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: get-ujson-response
+    kind: http_request
+    capture_warnings: true
+    warning_location_normalizations:
+    - category: fastapi.exceptions.FastAPIDeprecationWarning
+      message: >-
+        UJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/
+      source: {filename: fastapi/routing.py, lineno: 144}
+      target: {filename: starlette/middleware/errors.py, lineno: 58}
+      rationale: >-
+        FastAPI emits this warning through its Python routing frame; FastAPI-RS dispatches in Rust, so that frame does not exist. Keep the exact warning identity and observed source/target locations.
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /ujson
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body, body_json], comparison: exact}
+  source_evidence:
+  - {path: tests/test_deprecated_responses.py, kind: upstream_test}
+  verification: parity

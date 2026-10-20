@@ -118,6 +118,18 @@ oracle_profile_extensions:
       markupsafe: 3.0.3
     fastapi_extra: null
     prepare_target: parity-prepare-oracle-templates
+  json-serializers:
+    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0
+    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/json-serializers-cpython-3.12.13.lock
+      sha256: c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86
+      profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
+    added_packages:
+      orjson: 3.13.0
+      ujson: 6.0.0
+    fastapi_extra: null
+    prepare_target: parity-prepare-oracle-json-serializers
 
 target_profile_extensions:
   standard-multipart:
@@ -169,6 +181,18 @@ target_profile_extensions:
       markupsafe: 3.0.3
     fastapi_extra: templates
     prepare_target: parity-prepare-target-templates
+  json-serializers:
+    id: fastapi-rs-json-serializers-cpython-3.12.13-orjson-3.13.0-ujson-6.0.0
+    base_profile: fastapi-rs-python-consumer
+    lock:
+      path: requirements/json-serializers-cpython-3.12.13.lock
+      sha256: c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86
+      profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
+    added_packages:
+      orjson: 3.13.0
+      ujson: 6.0.0
+    fastapi_extra: null
+    prepare_target: parity-prepare-target-json-serializers
 
 target:
   id: fastapi-rs-python-consumer
@@ -501,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 1f678f8c63b6d7e4fb76282a15881b0cca03237e8de0de5c9729bb20244de89f
+    sha256: 7f84e150672223f603fd6950a6ff6ce6e5e3b2b34677b2022324488759b0bad2
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,11 +565,11 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 6426a1ff6a81243e233157e3225e4b1abe8b942c3827e2f725ab1e4f5c9b0519
+    sha256: b3d458045e43455ef6c5daa67c439dde6dd1a9a8e131a25d8dfa74708e7ce090
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
-      designs: 890
-      test_case_designs: 2117
+      designs: 891
+      test_case_designs: 2121
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
@@ -578,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 9837a2b2fb44bede670bf9e6376ae42ff5794f1fb4124840c20d609765095929
+    sha256: 6ba64855d5a6cfcb06c978993958642e7e58df75becdb02fe5dcd84967a52b7f
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
-    schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
+    schema_sha256: 1f65d2e15d68141db5098920454ab925f49d5fbb236af8d03d080aacb21c17f8
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 711
-      cases: 2930
-      partial_source_mappings: 1966
+      workflows: 712
+      cases: 2932
+      partial_source_mappings: 1967
 
 contract_metadata:
   aliases:
@@ -905,7 +929,7 @@ unresolved:
     state: digest-checked-api-definition-evidence-for-asgi-cases; v2-v16-remain-supported
     schema_id: fastapi-rs/python-asgi-workflow@16
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v16.schema.json
-    schema_sha256: 81d21f5c61703ae7cf3b3818e7e21da6ba6be015e7ee5c062fbb4a060d563fa1
+    schema_sha256: d3cb5186943dd9cd37611ea2b3adab41d45e93b6e30044670ac45fdd5ac698a8
     result_schema_id: fastapi-rs/python-asgi-workflow-result@16
     result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v16.schema.json
     result_schema_sha256: c94f2ac379bc206982da1dd01ae568745520f555217146f29459700d11681060
@@ -1351,7 +1375,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 407
-    operation_fixture_refs: 2619
+    operation_fixture_refs: 2623
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -60175,6 +60199,23 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
       - python.warnings
+    - workflow_id: optional-json-response-serialization
+      input_path: tests/fixtures/inputs/parity/optional-json-response-serialization.json
+      input_sha256: e25e2bba65ae356a841860e5e138d794eb279f2fc4905345a281fc5cf0cc81b4
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+      recipe_sha256: d7ae08182cca8f6e8d4e54364084ed3318f584dc131c20ac16a780612e17e608
+      workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+      workload_sha256: 5e0da27da17b03cbe63269bd482af30ae9deb3349780ec5f09dbf3026de656b3
+      case_id: fastapi.deprecated-responses.orjson-success-asgi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -60204,7 +60245,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::register_orjson_response
       known_gaps:
-      - Successful optional-orjson serialization and broader class behavior remain unverified.
+      - Subclassing and broader class reflection remain unverified.
   - id: fastapi.responses.ORJSONResponse.render
     kind: method
     source_candidate_ref: /api_candidates/1035
@@ -60260,6 +60301,23 @@ api_surface_contract:
       case_id: fastapi.responses.orjson-response.missing-optional-render
       observation_selectors:
       - python.call_outcome
+    - workflow_id: optional-json-response-serialization
+      input_path: tests/fixtures/inputs/parity/optional-json-response-serialization.json
+      input_sha256: e25e2bba65ae356a841860e5e138d794eb279f2fc4905345a281fc5cf0cc81b4
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+      recipe_sha256: d7ae08182cca8f6e8d4e54364084ed3318f584dc131c20ac16a780612e17e608
+      workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+      workload_sha256: 5e0da27da17b03cbe63269bd482af30ae9deb3349780ec5f09dbf3026de656b3
+      case_id: fastapi.deprecated-responses.orjson-success-asgi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -60286,7 +60344,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       known_gaps:
-      - Successful serialization when optional orjson is installed and nonstandard values are not covered.
+      - Arbitrary nonstandard values and direct render-signature behavior remain unverified.
   - id: fastapi.responses.PlainTextResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1036
@@ -60904,6 +60962,23 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
       - python.warnings
+    - workflow_id: optional-json-response-serialization
+      input_path: tests/fixtures/inputs/parity/optional-json-response-serialization.json
+      input_sha256: e25e2bba65ae356a841860e5e138d794eb279f2fc4905345a281fc5cf0cc81b4
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+      recipe_sha256: d7ae08182cca8f6e8d4e54364084ed3318f584dc131c20ac16a780612e17e608
+      workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+      workload_sha256: 5e0da27da17b03cbe63269bd482af30ae9deb3349780ec5f09dbf3026de656b3
+      case_id: fastapi.deprecated-responses.ujson-success-asgi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -60989,6 +61064,23 @@ api_surface_contract:
       - construction.exception_message
       - construction.outcome
       - warnings.category_message
+    - workflow_id: optional-json-response-serialization
+      input_path: tests/fixtures/inputs/parity/optional-json-response-serialization.json
+      input_sha256: e25e2bba65ae356a841860e5e138d794eb279f2fc4905345a281fc5cf0cc81b4
+      recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+      recipe_sha256: d7ae08182cca8f6e8d4e54364084ed3318f584dc131c20ac16a780612e17e608
+      workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+      workload_sha256: 5e0da27da17b03cbe63269bd482af30ae9deb3349780ec5f09dbf3026de656b3
+      case_id: fastapi.deprecated-responses.ujson-success-asgi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -61016,8 +61108,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       known_gaps:
-      - Successful optional-`ujson` serialization, arbitrary content, and direct render-signature behavior
-        remain unverified.
+      - Arbitrary content and direct render-signature behavior remain unverified.
       - Warning filename and line differ because Rust-owned dispatch has no FastAPI Python routing frame;
         only the exact observed warning identity and location pair is normalized in the selected recipe.
   - id: fastapi.routing.APIRoute

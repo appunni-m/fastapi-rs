@@ -109,6 +109,27 @@ The table omits marker-dependent edges outside the listed Python conditions. Fas
 
 Source anchors: [FastAPI compatibility module](https://github.com/fastapi/fastapi/blob/0.141.1/fastapi/_compat/v2.py#L18-L37), [dependency extraction](https://github.com/fastapi/fastapi/blob/0.141.1/fastapi/dependencies/utils.py#L70-L86), [parameter declarations](https://github.com/fastapi/fastapi/blob/0.141.1/fastapi/params.py), and [Starlette re-exports](https://github.com/fastapi/fastapi/blob/0.141.1/fastapi/__init__.py).
 
+## Optional source imports
+
+FastAPI 0.141.1 also attempts to import `ujson` and `orjson` in
+[`fastapi/responses.py`](https://github.com/fastapi/fastapi/blob/0.141.1/fastapi/responses.py#L20-L28).
+These are not FastAPI extras and are not installed by its ordinary runtime
+profile. They are used only when the corresponding deprecated response class
+renders a body. The paired input and hash lock in
+[`requirements/json-serializers-cpython-3.12.13.in`](../requirements/json-serializers-cpython-3.12.13.in)
+make that optional behavior reproducible without adding either package to the
+FastAPI-RS runtime requirements.
+
+| Package | Version | Purpose and implementation | License evidence |
+|---|---:|---|---|
+| `orjson` | 3.13.0 | Optional `ORJSONResponse.render`; Python API backed by a Rust extension. FastAPI requests non-string-key and NumPy serialization flags. | [MPL-2.0 AND (Apache-2.0 OR MIT)](https://pypi.org/project/orjson/3.13.0/) |
+| `ujson` | 6.0.0 | Optional `UJSONResponse.render`; Python API backed by a C extension. FastAPI requests UTF-8 output with `ensure_ascii=False`. | [BSD-3-Clause AND TCL](https://pypi.org/project/ujson/6.0.0/) |
+
+Neither package declares Python runtime dependencies in this profile lock. FastAPI
+asserts their presence only when the corresponding deprecated response is
+rendered. The source-backed optional dependency map is in
+[`metadata.yaml`](../metadata.yaml#L155-L194).
+
 ## Optional published extras
 
 These are optional installation profiles, not requirements for importing every FastAPI app. “Via” follows exact extra and nested-extra edges in the pinned lock. Version numbers are resolved values; minimum/range declarations remain in the linked project metadata.

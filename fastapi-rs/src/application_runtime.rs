@@ -226,10 +226,9 @@ impl DeprecatedJsonResponseRenderMethod {
                     .import("operator")?
                     .getattr("or_")?
                     .call1((non_str_keys, serialize_numpy))?;
-                let kwargs = PyDict::new(py);
-                kwargs.set_item("option", options)?;
                 module
-                    .call_method("dumps", (content,), Some(&kwargs))
+                    .getattr("dumps")?
+                    .call((content, py.None(), options), None)
                     .map(Bound::unbind)
             }
         }

@@ -109,6 +109,20 @@ target_runtime:
       prepare_target: parity-prepare-target-templates
       source_profile: FastAPI 0.141.1 with only Jinja2 and MarkupSafe; no standard extra
       starlette_rs_profile: 1.6.0 templates integration
+    json-serializers:
+      id: fastapi-rs-json-serializers-cpython-3.12.13-orjson-3.13.0-ujson-6.0.0
+      base_profile: fastapi-rs-python-consumer
+      lock:
+        path: requirements/json-serializers-cpython-3.12.13.lock
+        sha256: c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86
+        profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
+      added_packages:
+        orjson: 3.13.0
+        ujson: 6.0.0
+      fastapi_extra: null
+      prepare_target: parity-prepare-target-json-serializers
+      source_profile: FastAPI 0.141.1 with its two optional JSON response serializers installed
+      starlette_rs_profile: 1.6.0 core runtime
 
 oracle_profile_extensions:
   email-validation:
@@ -135,6 +149,48 @@ oracle_profile_extensions:
       markupsafe: 3.0.3
     fastapi_extra: null
     prepare_target: parity-prepare-oracle-templates
+  json-serializers:
+    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0
+    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/json-serializers-cpython-3.12.13.lock
+      sha256: c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86
+      profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
+    added_packages:
+      orjson: 3.13.0
+      ujson: 6.0.0
+    fastapi_extra: null
+    prepare_target: parity-prepare-oracle-json-serializers
+
+source_optional_dependencies:
+  schema: fastapi-rs/source-optional-dependency-map@1
+  source_identity:
+    package: FastAPI
+    version: 0.141.1
+    commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+  packages:
+    orjson:
+      version: 3.13.0
+      role: optional-runtime-user-installed
+      fastapi_extra: null
+      import_site: fastapi/responses.py:27-28
+      used_by: fastapi.responses.ORJSONResponse.render
+      purpose: JSON serialization with non-string-key and NumPy serialization flags
+      implementation: Python API backed by a Rust native extension
+      runtime_dependencies: []
+      license: MPL-2.0 AND (Apache-2.0 OR MIT)
+      parity_profile: json-serializers
+    ujson:
+      version: 6.0.0
+      role: optional-runtime-user-installed
+      fastapi_extra: null
+      import_site: fastapi/responses.py:27-28
+      used_by: fastapi.responses.UJSONResponse.render
+      purpose: JSON serialization with ensure_ascii disabled
+      implementation: Python API backed by a C native extension
+      runtime_dependencies: []
+      license: BSD-3-Clause AND TCL
+      parity_profile: json-serializers
 
 fastapi_cli_policy:
   command: fastapi
@@ -16351,11 +16407,15 @@ reviewed_api_contract_overlay:
           case_id: fastapi.responses.orjson-response.constructor-without-optional-package
           workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
           observation_selectors: [python.call_outcome, warnings.category_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+          case_id: fastapi.deprecated-responses.orjson-success-asgi
+          workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, warnings.category_message]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Successful optional-orjson serialization and broader class behavior remain unverified.
+          - Subclassing and broader class reflection remain unverified.
 
     fastapi.responses.ORJSONResponse.render:
       rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
@@ -16374,11 +16434,15 @@ reviewed_api_contract_overlay:
           case_id: fastapi.responses.orjson-response.missing-optional-render
           workload_path: tests/fixtures/workloads/orjson_response_optional_render.py
           observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+          case_id: fastapi.deprecated-responses.orjson-success-asgi
+          workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+          observation_selectors: [http.body.bytes, http.body.json, warnings.category_message]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Successful serialization when optional orjson is installed and nonstandard values are not covered.
+          - Arbitrary nonstandard values and direct render-signature behavior remain unverified.
 
     fastapi.responses.UJSONResponse:
       rust_binding: fastapi-rs/src/application_runtime.rs::register_ujson_response
@@ -16401,14 +16465,18 @@ reviewed_api_contract_overlay:
           case_id: fastapi.responses.ujson-response.constructor-without-optional-package
           workload_path: tests/fixtures/workloads/optional_json_response_constructors.py
           observation_selectors: [python.call_outcome, warnings.category_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+          case_id: fastapi.deprecated-responses.ujson-success-asgi
+          workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, warnings.category_message]
       feature_ids: [public-api-errors, response-serialization]
       observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message, http.status, openapi.document]
       supported_slice: >-
-        Deprecated JSON response subclass with a route-level OpenAPI projection. In the pinned
-        base profile without optional `ujson`, the selected request observes the deprecation
-        warning and exact missing-dependency assertion before any response is sent. Successful
-        serialization with `ujson` installed and broader class behavior remain unverified. The
-        direct constructor case separately observes its warning and missing-dependency assertion.
+        Deprecated JSON response subclass with route-level OpenAPI projection. The pinned base
+        profile compares the deprecation warning and exact missing-dependency assertion; the
+        optional serializer profile compares successful UTF-8 response bytes for a Unicode value.
+        Subclassing and broader class behavior remain unverified. The direct constructor case
+        separately observes its warning and missing-dependency assertion.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -16430,17 +16498,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.custom-response.tutorial001.items-response
           workload_path: tests/fixtures/workloads/custom_response_tutorial001_upstream.py
           observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
+          case_id: fastapi.deprecated-responses.ujson-success-asgi
+          workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
+          observation_selectors: [http.body.bytes, http.body.json, warnings.category_message]
       feature_ids: [public-api-errors, response-serialization]
       observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message]
       supported_slice: >-
         Preserve the exact missing-`ujson` assertion reached when the pinned base-profile request
-        invokes rendering. Successful `ujson.dumps(..., ensure_ascii=False)` bytes, arbitrary
-        content, and direct method signature behavior remain unverified.
+        invokes rendering, and compare successful UTF-8 response bytes when optional `ujson` is
+        installed. Arbitrary content and direct method signature behavior remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Successful optional-`ujson` serialization, arbitrary content, and direct render-signature behavior remain unverified.
+          - Arbitrary content and direct render-signature behavior remain unverified.
           - Warning filename and line differ because Rust-owned dispatch has no FastAPI Python routing frame; only the exact observed warning identity and location pair is normalized in the selected recipe.
 
     fastapi.routing.APIRoute.response_class:

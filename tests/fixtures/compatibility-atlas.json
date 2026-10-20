@@ -77347,7 +77347,7 @@
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 13,
-    "fixture_backlog_items": 890,
+    "fixture_backlog_items": 891,
     "inherited_api_classifications": {
       "private/internal": 4,
       "supported": 9,
@@ -77370,16 +77370,16 @@
     "starlette_subclass_contract_refs": 15,
     "starlette_surface_alias_gaps": 3,
     "starlette_surface_aliases": 26,
-    "test_function_designs": 2117,
-    "test_functions_in_excluded_modules": 87,
+    "test_function_designs": 2121,
+    "test_functions_in_excluded_modules": 83,
     "test_functions_with_individual_exclusion": 10,
-    "test_functions_with_inherited_module_exclusion": 77,
+    "test_functions_with_inherited_module_exclusion": 73,
     "test_modules": 492,
     "test_modules_candidate_links_pending_behavior_review": 0,
-    "test_modules_excluded_from_parity": 40,
-    "test_modules_mapped_to_parity_backlog": 452,
-    "test_modules_with_independent_input_workflow_link": 452,
-    "test_modules_with_reviewed_partial_mapping": 452,
+    "test_modules_excluded_from_parity": 39,
+    "test_modules_mapped_to_parity_backlog": 453,
+    "test_modules_with_independent_input_workflow_link": 453,
+    "test_modules_with_reviewed_partial_mapping": 453,
     "unmatched_documentation_examples": 0
   },
   "coverage_matrix": [
@@ -552108,85 +552108,72 @@
     },
     {
       "benchmark_workload_id": null,
-      "exclusion_reason": "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now supported, but these optional integrations remain unavailable in the selected profiles.",
+      "exclusion_reason": null,
       "feature_ids": [
         "public-api-errors",
+        "response-serialization",
         "status-codes"
       ],
-      "fixture_id": null,
+      "fixture_id": "fastapi.test.test-deprecated-responses",
       "id": "upstream-test:tests/test_deprecated_responses.py",
       "kind": "upstream_test_module",
       "mapping_evidence": {
         "excluded_test_functions": [],
-        "independent_workflow_mappings": [],
-        "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
-        "matched_test_functions": [],
-        "module_excluded_test_functions": [
+        "independent_workflow_mappings": [
           {
-            "disposition": "inherited_module_exclusion",
-            "end_line": 41,
-            "line": 34,
-            "name": "test_orjson_response_returns_correct_data",
-            "reason": "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now supported, but these optional integrations remain unavailable in the selected profiles.",
-            "source_evidence": [
-              {
-                "end_line": 41,
-                "path": "tests/test_deprecated_responses.py",
-                "role": "upstream test function governed by its module exclusion",
-                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
-                "start_line": 34
-              }
-            ]
-          },
-          {
-            "disposition": "inherited_module_exclusion",
-            "end_line": 47,
-            "line": 45,
-            "name": "test_orjson_response_emits_deprecation_warning",
-            "reason": "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now supported, but these optional integrations remain unavailable in the selected profiles.",
-            "source_evidence": [
-              {
-                "end_line": 47,
-                "path": "tests/test_deprecated_responses.py",
-                "role": "upstream test function governed by its module exclusion",
-                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
-                "start_line": 45
-              }
-            ]
-          },
-          {
-            "disposition": "inherited_module_exclusion",
-            "end_line": 73,
-            "line": 66,
-            "name": "test_ujson_response_returns_correct_data",
-            "reason": "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now supported, but these optional integrations remain unavailable in the selected profiles.",
-            "source_evidence": [
-              {
-                "end_line": 73,
-                "path": "tests/test_deprecated_responses.py",
-                "role": "upstream test function governed by its module exclusion",
-                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
-                "start_line": 66
-              }
-            ]
-          },
-          {
-            "disposition": "inherited_module_exclusion",
-            "end_line": 79,
-            "line": 77,
-            "name": "test_ujson_response_emits_deprecation_warning",
-            "reason": "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now supported, but these optional integrations remain unavailable in the selected profiles.",
-            "source_evidence": [
-              {
-                "end_line": 79,
-                "path": "tests/test_deprecated_responses.py",
-                "role": "upstream test function governed by its module exclusion",
-                "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
-                "start_line": 77
-              }
-            ]
+            "case_ids": [
+              "fastapi.deprecated-responses.orjson-success-asgi",
+              "fastapi.deprecated-responses.ujson-success-asgi"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.body.json, http.headers.ordered, http.status, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.body.json",
+              "http.headers.ordered",
+              "http.status",
+              "warnings.category_message"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml",
+            "workflow_id": "optional-json-response-serialization"
           }
         ],
+        "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
+        "matched_test_functions": [
+          {
+            "case_id": "fastapi.test.test-deprecated-responses.test-orjson-response-returns-correct-data",
+            "end_line": 41,
+            "line": 34,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "reviewed_source_candidate",
+            "name": "test_orjson_response_returns_correct_data"
+          },
+          {
+            "case_id": "fastapi.test.test-deprecated-responses.test-orjson-response-emits-deprecation-warning",
+            "end_line": 47,
+            "line": 45,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "reviewed_source_candidate",
+            "name": "test_orjson_response_emits_deprecation_warning"
+          },
+          {
+            "case_id": "fastapi.test.test-deprecated-responses.test-ujson-response-returns-correct-data",
+            "end_line": 73,
+            "line": 66,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "reviewed_source_candidate",
+            "name": "test_ujson_response_returns_correct_data"
+          },
+          {
+            "case_id": "fastapi.test.test-deprecated-responses.test-ujson-response-emits-deprecation-warning",
+            "end_line": 79,
+            "line": 77,
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "reviewed_source_candidate",
+            "name": "test_ujson_response_emits_deprecation_warning"
+          }
+        ],
+        "module_excluded_test_functions": [],
         "module_feature_evidence": [
           {
             "feature_id": "public-api-errors",
@@ -552199,35 +552186,48 @@
           }
         ],
         "reviewed_module_mapping": {
-          "rationale": "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now supported, but these optional integrations remain unavailable in the selected profiles.",
+          "rationale": "The optional ORJSONResponse and UJSONResponse test paths are represented by independent input-only cases using the paired serializer profile; constructor deprecation warnings and successful ASGI serialization are both observed.",
           "supporting_sources": [
             {
-              "end_line": 10,
-              "path": "tests/test_deprecated_responses.py",
-              "role": "The module selects optional ORJSONResponse and UJSONResponse profiles.",
-              "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
-              "start_line": 3
-            },
-            {
-              "end_line": 48,
-              "path": "tests/test_deprecated_responses.py",
-              "role": "ORJSON response and deprecation cases are guarded by needs_orjson.",
-              "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
-              "start_line": 33
+              "end_line": 98,
+              "path": "fastapi/responses.py",
+              "role": "optional renderer imports, deprecation declarations, and serializer calls",
+              "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d",
+              "start_line": 40
             },
             {
               "end_line": 79,
               "path": "tests/test_deprecated_responses.py",
-              "role": "UJSON response and deprecation cases are guarded by needs_ujson.",
+              "role": "optional serializer success and deprecation warning assertions",
               "sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
-              "start_line": 65
+              "start_line": 20
+            }
+          ],
+          "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.deprecated-responses.orjson-success-asgi",
+                "fastapi.deprecated-responses.ujson-success-asgi"
+              ],
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes",
+                "http.body.json",
+                "warnings.category_message"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml"
             },
             {
-              "end_line": 20,
-              "path": "tests/utils.py",
-              "role": "The optional response markers skip when orjson or ujson is unavailable.",
-              "sha256": "948f2008cd2b3f3c89b301d43c46a496169945df1c374d6eeceea63cdbd5bbe3",
-              "start_line": 13
+              "case_ids": [
+                "fastapi.responses.orjson-response.constructor-without-optional-package",
+                "fastapi.responses.ujson-response.constructor-without-optional-package"
+              ],
+              "observation_selectors": [
+                "python.call_outcome",
+                "warnings.category_message"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-constructors.yaml"
             }
           ]
         },
@@ -552235,11 +552235,66 @@
         "test_function_count": 4,
         "unmatched_test_functions": []
       },
-      "mapping_status": "excluded",
-      "observation_selectors": [],
+      "mapping_status": "candidate",
+      "observation_selectors": [
+        "error.class",
+        "error.public_attributes",
+        "http.body.bytes",
+        "http.body.json",
+        "http.cookies",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.paths",
+        "python.attribute_value",
+        "python.call_outcome",
+        "python.import_path",
+        "python.object_identity",
+        "python.signature",
+        "response.background_effects",
+        "validation.error_class",
+        "warnings.category_message"
+      ],
       "review_reason": null,
-      "review_status": "excluded",
-      "selector_evidence": [],
+      "review_status": "reviewed_partial",
+      "selector_evidence": [
+        {
+          "feature_id": "public-api-errors",
+          "schema_extension_required": [
+            "python.call_outcome"
+          ],
+          "selectors": [
+            "error.class",
+            "error.public_attributes",
+            "python.attribute_value",
+            "python.call_outcome",
+            "python.import_path",
+            "python.object_identity",
+            "python.signature",
+            "warnings.category_message"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.cookies",
+            "http.headers.ordered",
+            "http.status",
+            "response.background_effects",
+            "validation.error_class"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.status",
+            "openapi.paths"
+          ]
+        }
+      ],
       "source_path": "tests/test_deprecated_responses.py",
       "source_sha256": "7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf",
       "starlette_rs_contract_mappings": [
@@ -552306,6 +552361,56 @@
         },
         {
           "contract_id": "starlette-1.6.0-full",
+          "feature_id": "response-serialization",
+          "manifest_path": "tests/fixtures/manifest.yaml",
+          "manifest_sha256": "86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029",
+          "operation_refs": [
+            {
+              "contract_id": "starlette-1.6.0-full",
+              "operation_id": "__call__",
+              "relationship": "shared response dispatch boundary",
+              "requirement_ids": [
+                "starlette.asgi.get-hello.dispatch"
+              ],
+              "source_path": "starlette.applications.Starlette.__call__",
+              "surface_id": "starlette.applications.Starlette",
+              "target_support": {
+                "python-package": {
+                  "missing_requirements": [],
+                  "reason": null,
+                  "status": "supported"
+                },
+                "rust-native": {
+                  "missing_requirements": [
+                    "starlette.compatibility.full-public-surface",
+                    "starlette.asgi.scope-mutation",
+                    "starlette.asgi.streaming",
+                    "starlette.asgi.python-callables",
+                    "starlette.asgi.http-exception.default-406-detail",
+                    "starlette.asgi.http-exception.no-content-204",
+                    "starlette.asgi.http-exception.not-modified-304",
+                    "starlette.asgi.http-exception.headers-200",
+                    "starlette.asgi.server-error.default-response",
+                    "starlette.asgi.server-error.status-500-handler",
+                    "starlette.asgi.server-error.exception-handler",
+                    "starlette.asgi.server-error.special-key-order",
+                    "starlette.asgi.server-error.debug-traceback",
+                    "starlette.asgi.server-error.response-started",
+                    "starlette.asgi.server-error.background-task-failure",
+                    "starlette.asgi.server-error.handled-http-exception-500"
+                  ],
+                  "reason": "The Rust-native API renders explicit exception details but does not expose the Python HTTPException constructor and its standard-library status-phrase defaults.",
+                  "status": "partial"
+                }
+              }
+            }
+          ],
+          "ownership_boundary": "shared response dispatch boundary",
+          "scope_note": "The linked operation covers generic Starlette ASGI dispatch; response-model filtering, validation, and serialization remain FastAPI-RS behavior.",
+          "status": "linked-to-current-contract-slice"
+        },
+        {
+          "contract_id": "starlette-1.6.0-full",
           "feature_id": "status-codes",
           "manifest_path": "tests/fixtures/manifest.yaml",
           "manifest_sha256": "86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029",
@@ -552339,7 +552444,11 @@
           "status": "linked-to-current-contract-slice"
         }
       ],
-      "starlette_rs_planning_areas": []
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ]
     },
     {
       "benchmark_workload_id": null,
@@ -747622,7 +747731,7 @@
     }
   },
   "fixture_backlog_ref": {
-    "item_count": 890,
+    "item_count": 891,
     "path": "tests/fixtures/fixture-backlog.json",
     "schema": "fastapi-rs/fixture-backlog@2"
   },

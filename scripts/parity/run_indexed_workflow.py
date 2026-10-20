@@ -55,6 +55,10 @@ PROFILE_PATHS: dict[str | None, tuple[str, str]] = {
         ".venv-oracle-templates/bin/python",
         "target/templates/venv/bin/python",
     ),
+    "json-serializers": (
+        ".venv-oracle-json-serializers/bin/python",
+        "target/json-serializers/venv/bin/python",
+    ),
 }
 ORACLE_PREP_TARGETS = {
     None: "parity-prepare-oracle",
@@ -62,6 +66,7 @@ ORACLE_PREP_TARGETS = {
     "testclient": "parity-prepare-oracle-testclient",
     "email-validation": "parity-prepare-oracle-email-validation",
     "templates": "parity-prepare-oracle-templates",
+    "json-serializers": "parity-prepare-oracle-json-serializers",
 }
 TARGET_PREP_TARGETS = {
     None: "parity-prepare-target",
@@ -69,6 +74,7 @@ TARGET_PREP_TARGETS = {
     "testclient": "parity-prepare-target-testclient",
     "email-validation": "parity-prepare-target-email-validation",
     "templates": "parity-prepare-target-templates",
+    "json-serializers": "parity-prepare-target-json-serializers",
 }
 
 

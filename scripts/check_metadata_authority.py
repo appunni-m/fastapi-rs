@@ -367,10 +367,11 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
         "email-validation",
         "standard-multipart",
         "templates",
+        "json-serializers",
     }:
         raise MetadataError(
             "target runtime optional profiles must declare TestClient, EmailStr, multipart, "
-            "and templates"
+            "templates, and JSON serializers"
         )
     if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(optional_profiles):
         raise MetadataError("manifest target profiles differ from metadata.yaml")
@@ -430,6 +431,17 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
         or manifest_templates_profile != templates_oracle_profile
     ):
         raise MetadataError("templates oracle profile differs from metadata.yaml authority")
+    json_serializers_oracle_profile = metadata.get("oracle_profile_extensions", {}).get(
+        "json-serializers"
+    )
+    manifest_json_serializers_profile = manifest.get("oracle_profile_extensions", {}).get(
+        "json-serializers"
+    )
+    if (
+        not isinstance(json_serializers_oracle_profile, dict)
+        or manifest_json_serializers_profile != json_serializers_oracle_profile
+    ):
+        raise MetadataError("JSON serializers oracle profile differs from metadata.yaml authority")
 
 
 def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:

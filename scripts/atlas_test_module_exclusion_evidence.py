@@ -101,32 +101,6 @@ TEST_MODULE_EXCLUSION_EVIDENCE: dict[str, list[dict[str, Any]]] = {
             "The helper is defined in FastAPI's dependency utility implementation.",
         ),
     ],
-    "tests/test_deprecated_responses.py": [
-        _source(
-            "tests/test_deprecated_responses.py",
-            3,
-            10,
-            "The module selects optional ORJSONResponse and UJSONResponse profiles.",
-        ),
-        _source(
-            "tests/test_deprecated_responses.py",
-            33,
-            48,
-            "ORJSON response and deprecation cases are guarded by needs_orjson.",
-        ),
-        _source(
-            "tests/test_deprecated_responses.py",
-            65,
-            79,
-            "UJSON response and deprecation cases are guarded by needs_ujson.",
-        ),
-        _source(
-            "tests/utils.py",
-            13,
-            20,
-            "The optional response markers skip when orjson or ujson is unavailable.",
-        ),
-    ],
     "tests/test_orjson_response_class.py": [
         _source(
             "tests/test_orjson_response_class.py",

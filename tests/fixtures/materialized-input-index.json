@@ -21558,6 +21558,36 @@
       ]
     },
     {
+      "id": "optional-json-response-serialization",
+      "input_path": "tests/fixtures/inputs/parity/optional-json-response-serialization.json",
+      "input_sha256": "e25e2bba65ae356a841860e5e138d794eb279f2fc4905345a281fc5cf0cc81b4",
+      "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml",
+      "recipe_sha256": "d7ae08182cca8f6e8d4e54364084ed3318f584dc131c20ac16a780612e17e608",
+      "case_ids": [
+        "fastapi.deprecated-responses.orjson-success-asgi",
+        "fastapi.deprecated-responses.ujson-success-asgi"
+      ],
+      "workload_path": "tests/fixtures/workloads/optional_json_response_serialization.py",
+      "workload_sha256": "5e0da27da17b03cbe63269bd482af30ae9deb3349780ec5f09dbf3026de656b3",
+      "oracle_profile_extension": "json-serializers",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.deprecated-responses.orjson-success-asgi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_deprecated_responses.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecated-responses.ujson-success-asgi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_deprecated_responses.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "optional-list-openapi-schema-source-review",
       "input_path": "tests/fixtures/inputs/parity/optional-list-openapi-schema-source-review.json",
       "input_sha256": "f6b3728e9e1627c9e4aac09fa5767e5b1d51bdc8e2ab6806972d608bad10b83c",
@@ -58291,6 +58321,24 @@
         "openapi.document",
         "openapi.paths",
         "openapi.request_schema"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_deprecated_responses.py",
+      "fixture_id": "fastapi.test.test-deprecated-responses",
+      "workflow_id": "optional-json-response-serialization",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.body.json, http.headers.ordered, http.status, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.deprecated-responses.orjson-success-asgi",
+        "fastapi.deprecated-responses.ujson-success-asgi"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.body.json",
+        "http.headers.ordered",
+        "http.status",
+        "warnings.category_message"
       ]
     },
     {
