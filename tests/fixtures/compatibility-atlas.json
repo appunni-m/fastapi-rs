@@ -553148,9 +553148,10 @@
               "fastapi.dependencies.required-parameter-once.openapi",
               "fastapi.dependencies.required-parameter-once.valid"
             ],
-            "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
+              "docs.response.status",
               "http.body.bytes",
               "http.status",
               "openapi.document",
@@ -553181,10 +553182,30 @@
           {
             "case_id": "fastapi.test.test-enforce-once-required-parameter.test-openapi-schema",
             "end_line": 115,
+            "function_source_ref": {
+              "end_line": 115,
+              "line": 40,
+              "path": "tests/test_enforce_once_required_parameter.py",
+              "sha256": "b92f7896eddd9f6cd7d393fb75d72c82829d4db39378acd85953430fe6000888"
+            },
             "line": 40,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
-            "name": "test_openapi_schema"
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "single-openapi-query-parameter"
+              ],
+              "case_id": "fastapi.dependencies.required-parameter-once.openapi",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml",
+              "workflow_id": "dependency-required-parameter-once-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -553192,7 +553213,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml::fastapi.dependencies.required-parameter-once.missing (actions: missing-shared-required-query; selectors: http.status); tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml::fastapi.dependencies.required-parameter-once.valid (actions: one-value-feeds-required-and-optional-dependencies; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml::fastapi.dependencies.required-parameter-once.openapi (actions: single-openapi-query-parameter; selectors: openapi.document, openapi.paths). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml::fastapi.dependencies.required-parameter-once.missing (actions: missing-shared-required-query; selectors: http.status); tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml::fastapi.dependencies.required-parameter-once.valid (actions: one-value-feeds-required-and-optional-dependencies; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml::fastapi.dependencies.required-parameter-once.openapi (actions: single-openapi-query-parameter; selectors: docs.response.status, http.status, openapi.document, openapi.paths). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 26,
@@ -553417,6 +553438,8 @@
                 "fastapi.dependencies.required-parameter-once.openapi"
               ],
               "observation_selectors": [
+                "docs.response.status",
+                "http.status",
                 "openapi.document",
                 "openapi.paths"
               ],

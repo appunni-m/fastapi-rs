@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 2cfdd9fa9142025ceb2c1c99d32a551fdc561324745a27390ee5fd5e4da66c1c
+    sha256: c86b174ae4e136f9d090604355471c3ab6fce536e8ce1c0d365b8c922a698f19
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: c11f5f6f508877bd6ca2ab106fba696b611a0c641cb6215ed413c711c848a58e
+    sha256: 64a64203297f7ef5c75ca242ac650b5232d8fe3ce40d5277dfff3569ded4867a
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,7 +578,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: e58959818372e5d8bd8a3df47c002896af491747de62e8cb620f1e044689fa2a
+    sha256: 3078a598430167e93cdc87815e923a84be44ae39a1e3bfd5d9b770f8ff6c8c96
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -19465,13 +19465,15 @@ api_surface_contract:
       - openapi.document
     - workflow_id: dependency-required-parameter-once-upstream
       input_path: tests/fixtures/inputs/parity/dependency-required-parameter-once-upstream.json
-      input_sha256: dc837536c5413f08715730d834e4963b5fa9e59a417730222851661e8cf5bd0c
+      input_sha256: c21d4c6f1748f491d2d8af9e87c7363baa623d0b126a8ff226dae7965f897684
       recipe_path: tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml
-      recipe_sha256: 248ee1e01217468b928d8145f3f241ee5950ba746acfabdf95015019e6bdfab8
+      recipe_sha256: 19b7006ff96531d0cdbb72bc59871ee3bb8b9b0330331b3d0c757c0c629ef16a
       workload_path: tests/fixtures/workloads/dependency_required_parameter_once_upstream.py
       workload_sha256: c160ca2a7415b9c66e03033ee594eabd206dbc2b5ea3ec26fc96bbd2dd0f2970
       case_id: fastapi.dependencies.required-parameter-once.openapi
       observation_selectors:
+      - docs.response.status
+      - http.status
       - openapi.document
       - openapi.paths
     - workflow_id: request-files-openapi-documented-shapes

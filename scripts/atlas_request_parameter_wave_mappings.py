@@ -1066,6 +1066,85 @@ def _request_http_function_mapping(
     }
 
 
+def _required_parameter_once_openapi_function_mapping() -> dict[str, Any]:
+    """Link the focused OpenAPI parameter projection to its exact source test."""
+    test_path = "tests/test_enforce_once_required_parameter.py"
+    function_name = "test_openapi_schema"
+    case_id = "fastapi.dependencies.required-parameter-once.openapi"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    case_row = _RECIPE_CASE_INDEX.get(case_id)
+    if (
+        case_row is None
+        or case_row["recipe_path"]
+        != "tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml"
+    ):
+        raise ValueError(f"unknown required-parameter OpenAPI case: {case_id}")
+    actions = case_row["case"].get("actions", [])
+    if len(actions) != 1 or actions[0].get("action_id") != "single-openapi-query-parameter":
+        raise ValueError(f"expected one focused OpenAPI action in {case_id}")
+    pointers = [
+        pointer
+        for observation in actions[0].get("observations", [])
+        if observation.get("kind") == "openapi"
+        for pointer in observation.get("json_pointers", [])
+    ]
+    if pointers != ["/paths/~1foo/get/parameters"]:
+        raise ValueError(f"required-parameter OpenAPI case changed its focused projection: {pointers}")
+    selectors = _workflow_selectors(case_row["case"])
+    if selectors != [
+        "docs.response.status",
+        "http.status",
+        "openapi.document",
+        "openapi.paths",
+    ]:
+        raise ValueError(f"required-parameter OpenAPI selectors changed: {selectors}")
+    if not any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "response"
+        and node.func.attr == "json"
+        for node in ast.walk(function)
+    ):
+        raise ValueError(f"expected response.json() assertion in {test_path}::{function_name}")
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": case_row["recipe_path"],
+            "case_id": case_id,
+            "action_ids": ["single-openapi-query-parameter"],
+            "observation_selectors": selectors,
+        },
+        "feature_ids": ["openapi-docs", "status-codes"],
+        "rationale": (
+            "The source asserts status 200 and snapshots the full OpenAPI document; this "
+            "independent case maps the endpoint status and focuses the /foo GET parameter list, "
+            "where the shared required/optional client_id query declaration is represented once."
+        ),
+        "contract_gate": (
+            "Partial input mapping only: the case compares the OpenAPI endpoint status and selected "
+            "parameter-list projection, not the source function's full document snapshot. It "
+            "contains no expected output and makes no parity claim; Pydantic owns core field "
+            "validation, FastAPI owns parameter aggregation and OpenAPI projection, and generic "
+            "ASGI behavior remains under the pinned Starlette 1.6.0 contract."
+        ),
+    }
+
+
 def _path_test_function_mapping(
     function_name: str, case_id: str, behavior: str
 ) -> dict[str, Any]:
@@ -1532,6 +1611,9 @@ _QUERY_REQUIRED_OPTIONAL_INTEGER_FUNCTION_ROWS = {
 
 
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
+    "tests/test_enforce_once_required_parameter.py": {
+        "test_openapi_schema": _required_parameter_once_openapi_function_mapping(),
+    },
     "tests/test_path.py": {
         "test_path_param_le_ge_int_1": _path_test_function_mapping(
             "test_path_param_le_ge_int_1",

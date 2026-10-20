@@ -184,6 +184,21 @@ def _wave_h_bigger_applications_direct(case_slug, action_id):
 
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
+        "tests/test_enforce_once_required_parameter.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "dependency-required-parameter-once-upstream",
+        "tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml",
+        "fastapi.dependencies.required-parameter-once.openapi",
+        ("single-openapi-query-parameter",),
+        (
+            "docs.response.status",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ),
+    ),
+    (
         "tests/test_path.py",
         "test_path_param_le_ge_int_1",
     ): _reviewed_direct_link(
@@ -2592,7 +2607,8 @@ def validate_compatibility_artifacts(
                 source_mapping = indexed_mappings.get((source_id, workflow_id), {})
                 _require(
                     linked_case_id in source_mapping.get("case_ids", []),
-                    f"case {design.get('id')} direct link is absent from its indexed source mapping",
+                    f"case {design.get('id')} direct link is absent from its indexed "
+                    "source mapping",
                 )
                 input_path = (ROOT / workflow.get("input_path", "")).resolve()
                 _require(
@@ -2643,7 +2659,8 @@ def validate_compatibility_artifacts(
                 )
                 _require(
                     set(design.get("observation_selectors", [])) <= set(link_selectors),
-                    f"case {design.get('id')} source selectors are not observed by its direct actions",
+                    f"case {design.get('id')} source selectors are not observed by its "
+                    "direct actions",
                 )
                 register_selectors(link_selectors, f"case {design.get('id')} direct workflow")
 
@@ -2705,6 +2722,7 @@ def validate_compatibility_artifacts(
                     "router-include-context functions lost or changed direct workflow links",
                 )
             if source_row.get("source_path") in {
+                "tests/test_enforce_once_required_parameter.py",
                 "tests/test_response_model_data_filter.py",
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
@@ -2721,7 +2739,8 @@ def validate_compatibility_artifacts(
                 }
                 _require(
                     linked_functions == expected_direct_links,
-                    f"{source_row.get('source_path')} functions lost or changed direct workflow links",
+                    f"{source_row.get('source_path')} functions lost or changed direct "
+                    "workflow links",
                 )
         elif source_row.get("kind") == "documented_feature_page":
             sections = fixture.get("documented_sections")

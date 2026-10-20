@@ -4161,6 +4161,7 @@ for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
             "contract_gate": function_row["contract_gate"],
         }
         if test_path in {
+            "tests/test_enforce_once_required_parameter.py",
             "tests/test_path.py",
             "tests/test_request_params/test_query/test_list.py",
         }:
