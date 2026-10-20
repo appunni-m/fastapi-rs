@@ -9,8 +9,8 @@ use std::sync::{Arc, Mutex, Weak};
 
 use pyo3::exceptions::{
     PyAssertionError, PyAttributeError, PyException, PyKeyError, PyModuleNotFoundError,
-    PyNameError, PyNotImplementedError, PyRuntimeError, PyStopAsyncIteration, PyTypeError,
-    PyValueError,
+    PyNameError, PyNotImplementedError, PyRuntimeError, PyStopAsyncIteration, PyTimeoutError,
+    PyTypeError, PyValueError,
 };
 use pyo3::prelude::*;
 use pyo3::sync::PyOnceLock;
@@ -81,6 +81,15 @@ const ORJSON_RESPONSE_DOC: &str = concat!(
 );
 const FASTAPI_INNER_ASTACK_SCOPE_KEY: &str = "fastapi_inner_astack";
 const FASTAPI_FUNCTION_ASTACK_SCOPE_KEY: &str = "fastapi_function_astack";
+const SSE_KEEPALIVE_INTERVAL_SECONDS: f64 = 15.0;
+const SSE_KEEPALIVE_COMMENT: &[u8] = b": ping\n\n";
+
+fn native_task_coroutine(py: Python<'_>, awaitable: Py<PyAny>) -> PyResult<Py<PyAny>> {
+    py.import("fastapi_rs._core")?
+        .getattr("_run_native_task")?
+        .call1((awaitable,))
+        .map(Bound::unbind)
+}
 
 thread_local! {
     static EFFECTIVE_ROUTE_CONTEXT: RefCell<Option<Py<PyAny>>> = const { RefCell::new(None) };
@@ -15529,6 +15538,7 @@ enum PendingAction {
     FrontendAsgiResponse,
     RouteInvocation,
     Endpoint,
+    SseStreamSetup,
     CustomRouteHandler,
     RouteHandlerFunctionCleanupBeforeResponse,
     RouteHandlerRequestCleanupAfterResponse,
@@ -16237,6 +16247,635 @@ fn is_async_custom_route_handler(py: Python<'_>, handler: &Bound<'_, PyAny>) -> 
         .extract::<bool>()
 }
 
+#[pyclass(
+    name = "_FastApiSseProducerFactory",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct FastApiSseProducerFactory {
+    iterator: Py<PyAny>,
+    sender: Py<PyAny>,
+}
+
+#[pymethods]
+impl FastApiSseProducerFactory {
+    fn __call__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let awaitable = into_python_awaitable(
+            py,
+            FastApiSseProducer {
+                iterator: self.iterator.clone_ref(py),
+                sender: self.sender.clone_ref(py),
+                pending_error: None,
+                stage: FastApiSseProducerStage::Next,
+            },
+        )?;
+        native_task_coroutine(py, awaitable)
+    }
+}
+
+#[derive(Clone, Copy)]
+enum FastApiSseProducerStage {
+    Next,
+    Send,
+    Close,
+}
+
+struct FastApiSseProducer {
+    iterator: Py<PyAny>,
+    sender: Py<PyAny>,
+    pending_error: Option<PyErr>,
+    stage: FastApiSseProducerStage,
+}
+
+impl FastApiSseProducer {
+    fn next(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        self.stage = FastApiSseProducerStage::Next;
+        self.iterator
+            .bind(py)
+            .call_method0("__anext__")
+            .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+    }
+}
+
+impl AwaitableStateMachine for FastApiSseProducer {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => self.next(py),
+            MachineResume::Value(value) => match self.stage {
+                FastApiSseProducerStage::Next => {
+                    self.stage = FastApiSseProducerStage::Send;
+                    self.sender
+                        .bind(py)
+                        .call_method1("send", (value,))
+                        .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+                }
+                FastApiSseProducerStage::Send => self.next(py),
+                FastApiSseProducerStage::Close => match self.pending_error.take() {
+                    Some(error) => Err(error),
+                    None => Ok(MachineAction::Complete(py.None())),
+                },
+            },
+            MachineResume::Error(error)
+                if matches!(self.stage, FastApiSseProducerStage::Next)
+                    && error.is_instance_of::<PyStopAsyncIteration>(py) =>
+            {
+                self.stage = FastApiSseProducerStage::Close;
+                self.sender
+                    .bind(py)
+                    .call_method0("aclose")
+                    .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+            }
+            MachineResume::Error(error) if matches!(self.stage, FastApiSseProducerStage::Close) => {
+                Err(self.pending_error.take().unwrap_or(error))
+            }
+            MachineResume::Error(error) => {
+                self.pending_error = Some(error);
+                self.stage = FastApiSseProducerStage::Close;
+                self.sender
+                    .bind(py)
+                    .call_method0("aclose")
+                    .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+            }
+        }
+    }
+}
+
+#[pyclass(
+    name = "_FastApiSseKeepaliveFactory",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct FastApiSseKeepaliveFactory {
+    receiver: Py<PyAny>,
+    sender: Py<PyAny>,
+}
+
+#[pymethods]
+impl FastApiSseKeepaliveFactory {
+    fn __call__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let awaitable = into_python_awaitable(
+            py,
+            FastApiSseKeepaliveInserter {
+                receiver: self.receiver.clone_ref(py),
+                sender: self.sender.clone_ref(py),
+                timeout_scope: None,
+                pending_error: None,
+                stage: FastApiSseKeepaliveInserterStage::Receive,
+            },
+        )?;
+        native_task_coroutine(py, awaitable)
+    }
+}
+
+#[derive(Clone, Copy)]
+enum FastApiSseKeepaliveInserterStage {
+    Receive,
+    SendData,
+    SendPing,
+    CloseReceiver,
+    CloseSender,
+}
+
+struct FastApiSseKeepaliveInserter {
+    receiver: Py<PyAny>,
+    sender: Py<PyAny>,
+    timeout_scope: Option<Py<PyAny>>,
+    pending_error: Option<PyErr>,
+    stage: FastApiSseKeepaliveInserterStage,
+}
+
+impl FastApiSseKeepaliveInserter {
+    fn receive(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let timeout_scope = py
+            .import("anyio")?
+            .getattr("fail_after")?
+            .call1((SSE_KEEPALIVE_INTERVAL_SECONDS,))?
+            .unbind();
+        timeout_scope.bind(py).call_method0("__enter__")?;
+        let receive = self.receiver.bind(py).call_method0("receive")?.unbind();
+        self.timeout_scope = Some(timeout_scope);
+        self.stage = FastApiSseKeepaliveInserterStage::Receive;
+        Ok(MachineAction::Await(receive))
+    }
+
+    fn exit_timeout_scope(&mut self, py: Python<'_>, error: Option<&PyErr>) -> PyResult<bool> {
+        let Some(timeout_scope) = self.timeout_scope.take() else {
+            return Ok(false);
+        };
+        let result = if let Some(error) = error {
+            let exception_type = error.get_type(py).unbind().into_any();
+            let exception_value = error.value(py).clone().unbind().into_any();
+            let traceback = error
+                .traceback(py)
+                .map(|traceback| traceback.unbind().into_any())
+                .unwrap_or_else(|| py.None());
+            timeout_scope
+                .bind(py)
+                .call_method1("__exit__", (exception_type, exception_value, traceback))
+        } else {
+            timeout_scope
+                .bind(py)
+                .call_method1("__exit__", (py.None(), py.None(), py.None()))
+        };
+        match result {
+            Ok(_) => Ok(false),
+            Err(error) if error.is_instance_of::<PyTimeoutError>(py) => Ok(true),
+            Err(error) => Err(error),
+        }
+    }
+
+    fn close(&mut self, py: Python<'_>, error: Option<PyErr>) -> PyResult<MachineAction> {
+        self.pending_error = error;
+        self.stage = FastApiSseKeepaliveInserterStage::CloseReceiver;
+        self.receiver
+            .bind(py)
+            .call_method0("aclose")
+            .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn close_sender(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        self.stage = FastApiSseKeepaliveInserterStage::CloseSender;
+        self.sender
+            .bind(py)
+            .call_method0("aclose")
+            .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn finish(&mut self, py: Python<'_>, value: Option<Py<PyAny>>) -> PyResult<MachineAction> {
+        match self.pending_error.take() {
+            Some(error) => Err(error),
+            None => Ok(MachineAction::Complete(value.unwrap_or_else(|| py.None()))),
+        }
+    }
+
+    fn is_end_of_stream(py: Python<'_>, error: &PyErr) -> PyResult<bool> {
+        error
+            .value(py)
+            .is_instance(&py.import("anyio")?.getattr("EndOfStream")?)
+    }
+}
+
+impl AwaitableStateMachine for FastApiSseKeepaliveInserter {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => self.receive(py),
+            MachineResume::Value(value) => match self.stage {
+                FastApiSseKeepaliveInserterStage::Receive => {
+                    match self.exit_timeout_scope(py, None) {
+                        Ok(true) => {
+                            self.stage = FastApiSseKeepaliveInserterStage::SendPing;
+                            self.sender
+                                .bind(py)
+                                .call_method1("send", (PyBytes::new(py, SSE_KEEPALIVE_COMMENT),))
+                                .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+                        }
+                        Ok(false) => {
+                            self.stage = FastApiSseKeepaliveInserterStage::SendData;
+                            self.sender
+                                .bind(py)
+                                .call_method1("send", (value,))
+                                .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+                        }
+                        Err(error) => self.close(py, Some(error)),
+                    }
+                }
+                FastApiSseKeepaliveInserterStage::SendData
+                | FastApiSseKeepaliveInserterStage::SendPing => self.receive(py),
+                FastApiSseKeepaliveInserterStage::CloseReceiver => self.close_sender(py),
+                FastApiSseKeepaliveInserterStage::CloseSender => self.finish(py, Some(value)),
+            },
+            MachineResume::Error(error) => match self.stage {
+                FastApiSseKeepaliveInserterStage::Receive => {
+                    match self.exit_timeout_scope(py, Some(&error)) {
+                        Ok(true) => {
+                            self.stage = FastApiSseKeepaliveInserterStage::SendPing;
+                            self.sender
+                                .bind(py)
+                                .call_method1("send", (PyBytes::new(py, SSE_KEEPALIVE_COMMENT),))
+                                .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+                        }
+                        Ok(false) if Self::is_end_of_stream(py, &error)? => self.close(py, None),
+                        Ok(false) => self.close(py, Some(error)),
+                        Err(scope_error) => self.close(py, Some(scope_error)),
+                    }
+                }
+                FastApiSseKeepaliveInserterStage::SendData
+                | FastApiSseKeepaliveInserterStage::SendPing => self.close(py, Some(error)),
+                FastApiSseKeepaliveInserterStage::CloseReceiver => {
+                    self.pending_error.get_or_insert(error);
+                    self.close_sender(py)
+                }
+                FastApiSseKeepaliveInserterStage::CloseSender => self.finish(py, None),
+            },
+        }
+    }
+}
+
+#[derive(Default)]
+struct FastApiSseKeepaliveSession {
+    task_group: Option<Py<PyAny>>,
+    receive_stream: Option<Py<PyAny>>,
+    finished: bool,
+}
+
+#[pyclass(
+    name = "_FastApiSseKeepaliveStream",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct PyFastApiSseKeepaliveStream {
+    producer_iterator: Py<PyAny>,
+    session: Rc<RefCell<FastApiSseKeepaliveSession>>,
+    checkpoint_next: bool,
+}
+
+#[pymethods]
+impl PyFastApiSseKeepaliveStream {
+    #[new]
+    fn new(producer_iterator: Py<PyAny>) -> Self {
+        Self {
+            producer_iterator,
+            session: Rc::new(RefCell::new(FastApiSseKeepaliveSession::default())),
+            checkpoint_next: false,
+        }
+    }
+
+    fn __aiter__(slf: Py<Self>) -> Py<Self> {
+        slf
+    }
+
+    fn start(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            FastApiSseKeepaliveSetup {
+                producer_iterator: self.producer_iterator.clone_ref(py),
+                session: Rc::clone(&self.session),
+                task_group: None,
+                producer_sender: None,
+                producer_receiver: None,
+                keepalive_sender: None,
+                keepalive_receiver: None,
+                stage: FastApiSseKeepaliveSetupStage::Start,
+            },
+        )
+    }
+
+    fn __anext__(&mut self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let checkpoint = if self.checkpoint_next {
+            Some(py.import("anyio")?.getattr("sleep")?.call1((0,))?.unbind())
+        } else {
+            None
+        };
+        self.checkpoint_next = true;
+        into_python_awaitable(
+            py,
+            FastApiSseKeepaliveNext {
+                session: Rc::clone(&self.session),
+                checkpoint,
+                stage: FastApiSseKeepaliveNextStage::Start,
+            },
+        )
+    }
+
+    fn aclose(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            FastApiSseKeepaliveClose {
+                session: Rc::clone(&self.session),
+                pending_error: None,
+                stage: FastApiSseKeepaliveCloseStage::Start,
+            },
+        )
+    }
+}
+
+#[derive(Clone, Copy)]
+enum FastApiSseKeepaliveSetupStage {
+    Start,
+    EnterTaskGroup,
+}
+
+struct FastApiSseKeepaliveSetup {
+    producer_iterator: Py<PyAny>,
+    session: Rc<RefCell<FastApiSseKeepaliveSession>>,
+    task_group: Option<Py<PyAny>>,
+    producer_sender: Option<Py<PyAny>>,
+    producer_receiver: Option<Py<PyAny>>,
+    keepalive_sender: Option<Py<PyAny>>,
+    keepalive_receiver: Option<Py<PyAny>>,
+    stage: FastApiSseKeepaliveSetupStage,
+}
+
+impl FastApiSseKeepaliveSetup {
+    fn start(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let anyio = py.import("anyio")?;
+        let producer_streams = anyio
+            .getattr("create_memory_object_stream")?
+            .call1((1,))?
+            .cast_into::<PyTuple>()?;
+        let producer_sender = producer_streams.get_item(0)?.unbind();
+        let producer_receiver = producer_streams.get_item(1)?.unbind();
+        let keepalive_streams = anyio
+            .getattr("create_memory_object_stream")?
+            .call1((1,))?
+            .cast_into::<PyTuple>()?;
+        let keepalive_sender = keepalive_streams.get_item(0)?.unbind();
+        let keepalive_receiver = keepalive_streams.get_item(1)?.unbind();
+        let task_group = anyio.getattr("create_task_group")?.call0()?.unbind();
+        let enter = task_group.bind(py).call_method0("__aenter__")?.unbind();
+        self.task_group = Some(task_group);
+        self.producer_sender = Some(producer_sender);
+        self.producer_receiver = Some(producer_receiver);
+        self.keepalive_sender = Some(keepalive_sender);
+        self.keepalive_receiver = Some(keepalive_receiver);
+        self.stage = FastApiSseKeepaliveSetupStage::EnterTaskGroup;
+        Ok(MachineAction::Await(enter))
+    }
+
+    fn start_tasks(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let task_group = self
+            .task_group
+            .as_ref()
+            .map(|task_group| task_group.clone_ref(py))
+            .ok_or_else(|| PyRuntimeError::new_err("SSE task group was not initialized"))?;
+        let producer_sender = self
+            .producer_sender
+            .as_ref()
+            .map(|stream| stream.clone_ref(py))
+            .ok_or_else(|| PyRuntimeError::new_err("SSE producer stream was not initialized"))?;
+        let producer_receiver = self
+            .producer_receiver
+            .as_ref()
+            .map(|stream| stream.clone_ref(py))
+            .ok_or_else(|| PyRuntimeError::new_err("SSE producer stream was not initialized"))?;
+        let keepalive_sender = self
+            .keepalive_sender
+            .as_ref()
+            .map(|stream| stream.clone_ref(py))
+            .ok_or_else(|| PyRuntimeError::new_err("SSE keepalive stream was not initialized"))?;
+        let keepalive_receiver = self
+            .keepalive_receiver
+            .as_ref()
+            .map(|stream| stream.clone_ref(py))
+            .ok_or_else(|| PyRuntimeError::new_err("SSE keepalive stream was not initialized"))?;
+        {
+            let mut session = self.session.borrow_mut();
+            session.task_group = Some(task_group.clone_ref(py));
+            session.receive_stream = Some(keepalive_receiver);
+            session.finished = false;
+        }
+        let producer = Py::new(
+            py,
+            FastApiSseProducerFactory {
+                iterator: self.producer_iterator.clone_ref(py),
+                sender: producer_sender,
+            },
+        )?;
+        let inserter = Py::new(
+            py,
+            FastApiSseKeepaliveFactory {
+                receiver: producer_receiver,
+                sender: keepalive_sender,
+            },
+        )?;
+        let producer_factory = producer.bind(py).getattr("__call__")?;
+        let keepalive_factory = inserter.bind(py).getattr("__call__")?;
+        task_group
+            .bind(py)
+            .call_method1("start_soon", (producer_factory,))?;
+        task_group
+            .bind(py)
+            .call_method1("start_soon", (keepalive_factory,))?;
+        Ok(MachineAction::Complete(py.None()))
+    }
+}
+
+impl AwaitableStateMachine for FastApiSseKeepaliveSetup {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => self.start(py),
+            MachineResume::Value(_) => match self.stage {
+                FastApiSseKeepaliveSetupStage::Start => self.start(py),
+                FastApiSseKeepaliveSetupStage::EnterTaskGroup => self.start_tasks(py),
+            },
+            MachineResume::Error(error) => Err(error),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+enum FastApiSseKeepaliveCloseStage {
+    Start,
+    TaskGroup,
+    ReceiveStream,
+}
+
+struct FastApiSseKeepaliveClose {
+    session: Rc<RefCell<FastApiSseKeepaliveSession>>,
+    pending_error: Option<PyErr>,
+    stage: FastApiSseKeepaliveCloseStage,
+}
+
+impl FastApiSseKeepaliveClose {
+    fn finish(&mut self) {
+        let mut session = self.session.borrow_mut();
+        session.finished = true;
+        session.task_group = None;
+        session.receive_stream = None;
+    }
+
+    fn close_receive_stream(
+        &mut self,
+        py: Python<'_>,
+        error: Option<PyErr>,
+    ) -> PyResult<MachineAction> {
+        self.pending_error = error;
+        let receiver = self
+            .session
+            .borrow()
+            .receive_stream
+            .as_ref()
+            .map(|stream| stream.clone_ref(py));
+        let Some(receiver) = receiver else {
+            self.finish();
+            return match self.pending_error.take() {
+                Some(error) => Err(error),
+                None => Ok(MachineAction::Complete(py.None())),
+            };
+        };
+        let close = receiver.bind(py).call_method0("aclose")?.unbind();
+        self.stage = FastApiSseKeepaliveCloseStage::ReceiveStream;
+        Ok(MachineAction::Await(close))
+    }
+
+    fn exit_task_group(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let task_group = self
+            .session
+            .borrow()
+            .task_group
+            .as_ref()
+            .map(|task_group| task_group.clone_ref(py));
+        let Some(task_group) = task_group else {
+            return self.close_receive_stream(py, None);
+        };
+        task_group
+            .bind(py)
+            .getattr("cancel_scope")?
+            .call_method0("cancel")?;
+        let exit = task_group
+            .bind(py)
+            .call_method1("__aexit__", (py.None(), py.None(), py.None()))?
+            .unbind();
+        self.stage = FastApiSseKeepaliveCloseStage::TaskGroup;
+        Ok(MachineAction::Await(exit))
+    }
+}
+
+impl AwaitableStateMachine for FastApiSseKeepaliveClose {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => self.exit_task_group(py),
+            MachineResume::Value(value) => match self.stage {
+                FastApiSseKeepaliveCloseStage::Start => Ok(MachineAction::Complete(value)),
+                FastApiSseKeepaliveCloseStage::TaskGroup => {
+                    self.session.borrow_mut().task_group = None;
+                    self.close_receive_stream(py, None)
+                }
+                FastApiSseKeepaliveCloseStage::ReceiveStream => {
+                    self.finish();
+                    match self.pending_error.take() {
+                        Some(error) => Err(error),
+                        None => Ok(MachineAction::Complete(value)),
+                    }
+                }
+            },
+            MachineResume::Error(error) => match self.stage {
+                FastApiSseKeepaliveCloseStage::TaskGroup => {
+                    self.session.borrow_mut().task_group = None;
+                    self.close_receive_stream(py, Some(error))
+                }
+                FastApiSseKeepaliveCloseStage::ReceiveStream => {
+                    self.finish();
+                    Err(self.pending_error.take().unwrap_or(error))
+                }
+                FastApiSseKeepaliveCloseStage::Start => {
+                    self.finish();
+                    Err(error)
+                }
+            },
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+enum FastApiSseKeepaliveNextStage {
+    Start,
+    Checkpoint,
+    Receive,
+}
+
+struct FastApiSseKeepaliveNext {
+    session: Rc<RefCell<FastApiSseKeepaliveSession>>,
+    checkpoint: Option<Py<PyAny>>,
+    stage: FastApiSseKeepaliveNextStage,
+}
+
+impl FastApiSseKeepaliveNext {
+    fn start(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        if self.session.borrow().finished {
+            return Err(PyStopAsyncIteration::new_err(""));
+        }
+        if let Some(checkpoint) = self.checkpoint.take() {
+            self.stage = FastApiSseKeepaliveNextStage::Checkpoint;
+            return Ok(MachineAction::Await(checkpoint));
+        }
+        self.start_receive(py)
+    }
+
+    fn start_receive(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let receiver = self
+            .session
+            .borrow()
+            .receive_stream
+            .as_ref()
+            .map(|stream| stream.clone_ref(py))
+            .ok_or_else(|| PyRuntimeError::new_err("SSE keepalive stream was not initialized"))?;
+        self.stage = FastApiSseKeepaliveNextStage::Receive;
+        receiver
+            .bind(py)
+            .call_method0("receive")
+            .map(|awaitable| MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn is_end_of_stream(py: Python<'_>, error: &PyErr) -> PyResult<bool> {
+        error
+            .value(py)
+            .is_instance(&py.import("anyio")?.getattr("EndOfStream")?)
+    }
+}
+
+impl AwaitableStateMachine for FastApiSseKeepaliveNext {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => self.start(py),
+            MachineResume::Value(value) => match self.stage {
+                FastApiSseKeepaliveNextStage::Start => self.start(py),
+                FastApiSseKeepaliveNextStage::Checkpoint => self.start_receive(py),
+                FastApiSseKeepaliveNextStage::Receive => Ok(MachineAction::Complete(value)),
+            },
+            MachineResume::Error(error) => match self.stage {
+                FastApiSseKeepaliveNextStage::Receive if Self::is_end_of_stream(py, &error)? => {
+                    self.session.borrow_mut().finished = true;
+                    Err(PyStopAsyncIteration::new_err(""))
+                }
+                FastApiSseKeepaliveNextStage::Start
+                | FastApiSseKeepaliveNextStage::Checkpoint
+                | FastApiSseKeepaliveNextStage::Receive => Err(error),
+            },
+        }
+    }
+}
+
 #[derive(Default)]
 struct FastApiCallOptions {
     forced_route_index: Option<usize>,
@@ -16278,6 +16917,7 @@ struct FastApiCall {
     form_file_reads: VecDeque<FormFileReadPlan>,
     active_form_file_read: Option<FormFileReadPlan>,
     function_close_continuation: Option<FunctionCloseContinuation>,
+    sse_setup_response: Option<Py<PyAny>>,
 }
 
 impl FastApiCall {
@@ -16328,6 +16968,7 @@ impl FastApiCall {
             form_file_reads: VecDeque::new(),
             active_form_file_read: None,
             function_close_continuation: None,
+            sse_setup_response: None,
         }
     }
 
@@ -18493,6 +19134,23 @@ impl FastApiCall {
                     stream_serializer,
                 )?,
             )?;
+            let mut sse_stream_for_setup = None;
+            let stream = if sse_stream {
+                let stream = Py::new(py, PyFastApiSseKeepaliveStream::new(stream.into_any()))?;
+                let request_exit_stack = if let Some(invocation) = self.invocation.as_ref() {
+                    invocation.dependency_exit_stack.clone_ref(py)
+                } else {
+                    route_handler_exit_stacks(py, self.scope.bind(py))?.0
+                };
+                let close = stream.bind(py).getattr("aclose")?;
+                request_exit_stack
+                    .bind(py)
+                    .call_method1("push_async_callback", (close,))?;
+                sse_stream_for_setup = Some(stream.clone_ref(py));
+                stream.into_any()
+            } else {
+                stream.into_any()
+            };
             let response_class = if sse_stream {
                 py.import("starlette.responses")?
                     .getattr("StreamingResponse")?
@@ -18543,6 +19201,12 @@ impl FastApiCall {
                 headers.set_item("X-Accel-Buffering", "no")?;
             }
             merge_injected_response_state(py, &response, injected_response_bound)?;
+            if let Some(stream) = sse_stream_for_setup {
+                self.sse_setup_response = Some(response.clone().unbind());
+                self.pending = Some(PendingAction::SseStreamSetup);
+                let setup = stream.bind(py).call_method0("start")?.unbind();
+                return Ok(MachineAction::Await(setup));
+            }
             return self.start_returned_response(py, &response);
         }
 
@@ -19051,6 +19715,12 @@ impl FastApiCall {
                 Some(PendingAction::FrontendResponse) => self.finish_frontend_response(py, value),
                 Some(PendingAction::FrontendAsgiResponse) => self.close_form_after_response(py),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
+                Some(PendingAction::SseStreamSetup) => {
+                    let response = self.sse_setup_response.take().ok_or_else(|| {
+                        PyRuntimeError::new_err("SSE response setup resumed without a response")
+                    })?;
+                    self.start_returned_response(py, response.bind(py))
+                }
                 Some(PendingAction::CustomRouteHandler) => {
                     self.begin_custom_route_response(py, value)
                 }
@@ -19240,6 +19910,16 @@ impl AwaitableStateMachine for FastApiCall {
 
 /// Registers FastAPI's Rust-owned application type and request markers.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    let native_task_adapter = PyModule::from_code(
+        module.py(),
+        c"async def _run_native_task(awaitable):\n    return await awaitable\n",
+        c"<fastapi-rs-native-task-adapter>",
+        c"_fastapi_rs_native_task_adapter",
+    )?;
+    module.add(
+        "_run_native_task",
+        native_task_adapter.getattr("_run_native_task")?,
+    )?;
     crate::lifespan::register(module)?;
     register_pydantic_schema_generator(module)?;
     let generate_unique_id = wrap_pyfunction!(generate_unique_id, module)?.into_any();

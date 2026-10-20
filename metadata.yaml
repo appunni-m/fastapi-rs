@@ -5109,6 +5109,8 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-async-generator-with-model}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-no-keepalive-when-fast}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-keepalive.yaml, case_id: fastapi.test.test-sse.test-keepalive-ping-async}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-keepalive.yaml, case_id: fastapi.test.test-sse.test-keepalive-ping-sync}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-raw-data-sent-without-json-encoding}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sync-generator-with-model}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-async-generator-no-annotation}
@@ -5131,9 +5133,11 @@ reviewed_api_contract_overlay:
         class and as an app or router default. The linked SSE workflow compares
         selected streamed bodies and headers for async, sync, typed, untyped,
         mapping, raw-event, POST, and included-router cases, plus selected
-        OpenAPI response schemas. It covers immediately available streams only;
-        delayed keepalive, cancellation, disconnect, and generic response
-        construction remain outside this slice.
+        OpenAPI response schemas. The keepalive workflow additionally compares
+        exact response bodies for async and sync streams that idle past the
+        pinned 15-second default interval, including the inserted ping between
+        events. The private interval override, cancellation, disconnect, and
+        generic response construction remain outside this slice.
     fastapi.sse.ServerSentEvent:
       target_binding:
         implementation_owner: fastapi-rs

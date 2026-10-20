@@ -39132,6 +39132,35 @@
       ]
     },
     {
+      "id": "sse-keepalive",
+      "input_path": "tests/fixtures/inputs/parity/sse-keepalive.json",
+      "input_sha256": "3cbe8a21ee29daef6716d4a96957fb4bf5c02445392ef062adb7ab48d3f9cf1f",
+      "recipe_path": "tests/fixtures/input-recipes/parity/sse-keepalive.yaml",
+      "recipe_sha256": "fb86cefa73eb071ecdc5f6743259f716febdbd492f248655aa7f3d466a073ad4",
+      "case_ids": [
+        "fastapi.test.test-sse.test-keepalive-ping-async",
+        "fastapi.test.test-sse.test-keepalive-ping-sync"
+      ],
+      "workload_path": "tests/fixtures/workloads/sse_keepalive.py",
+      "workload_sha256": "2f7fe71d4fb2b33cd55d3b7c5dab18547fb9298f28c87a14e6e1023d77505ffd",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.test.test-sse.test-keepalive-ping-async",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_sse.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-sse.test-keepalive-ping-sync",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_sse.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "sse-module-identity",
       "input_path": "tests/fixtures/inputs/parity/sse-module-identity.json",
       "input_sha256": "298850f41ab0dff61ae3356380d7412d6def3be1d7552fe5a993c28f02d05da6",
@@ -72825,6 +72854,24 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_sse.py",
+      "fixture_id": "fastapi.test.test-sse",
+      "workflow_id": "sse-keepalive",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-sse.test-keepalive-ping-async",
+        "fastapi.test.test-sse.test-keepalive-ping-sync"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

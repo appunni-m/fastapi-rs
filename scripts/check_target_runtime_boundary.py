@@ -24,6 +24,15 @@ DYNAMIC_PYTHON_EXECUTION = re.compile(
     r"\b(?:py|python)\s*\.\s*(?:run|eval)\s*\(|"
     r"\bPyModule\s*::\s*from_code(?:_bound)?\s*\("
 )
+# AnyIO task groups accept only genuine Python coroutine objects. PyO3's
+# native continuation is merely awaitable, so this exact, behavior-free bridge
+# lets AnyIO schedule it without moving stream logic into Python.
+NATIVE_TASK_COROUTINE_BRIDGE = re.compile(
+    r"PyModule\s*::\s*from_code\(\s*module\.py\(\),\s*"
+    r'c"async def _run_native_task\(awaitable\):\\n    return await awaitable\\n",\s*'
+    r'c"<fastapi-rs-native-task-adapter>",\s*'
+    r'c"_fastapi_rs_native_task_adapter",\s*\)\?'
+)
 FASTAPI_MODULE_METADATA_ASSIGNMENT = re.compile(
     r"\.\s*(?:setattr|set_item)\s*\(\s*['\"](?:__module__|module)['\"]\s*,\s*"
     r"(?P<value>['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"]|[A-Za-z_]\w*)\s*,?\s*\)"
@@ -475,12 +484,22 @@ def check_rust_binding_import_boundary() -> None:
                 f"{path.relative_to(PROJECT_ROOT)}:{line}: native bindings cannot import "
                 "the original FastAPI package"
             )
-        dynamic_execution = DYNAMIC_PYTHON_EXECUTION.search(source)
-        if dynamic_execution:
+        approved_task_bridges = list(NATIVE_TASK_COROUTINE_BRIDGE.finditer(source))
+        for dynamic_execution in DYNAMIC_PYTHON_EXECUTION.finditer(source):
+            if (
+                path.name == "application_runtime.rs"
+                and len(approved_task_bridges) == 1
+                and dynamic_execution.start() == approved_task_bridges[0].start()
+            ):
+                continue
             line = source.count("\n", 0, dynamic_execution.start()) + 1
             violations.append(
                 f"{path.relative_to(PROJECT_ROOT)}:{line}: native bindings cannot execute "
                 "dynamic Python code, which bypasses the runtime import boundary"
+            )
+        if path.name == "application_runtime.rs" and len(approved_task_bridges) > 1:
+            violations.append(
+                f"{path.relative_to(PROJECT_ROOT)}: native task coroutine bridge must appear once"
             )
     if violations:
         raise SystemExit("\n".join(violations))

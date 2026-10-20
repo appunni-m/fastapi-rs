@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 77cd2a71e8a3ade6a9e3fa6f0449c93cbbaa6faf646c2177dadf21734ddc93fa
+    sha256: e1e641372a0e8a1c30a55f95fc1924bc20525bcd4080c8b191ca022337b9eee2
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 60f37aa92fe3358faee8655c88c865e086d9b0f97e2dd4939129bc6a558d2c94
+    sha256: 237e53da27c81f874238633bb0de3b3c311f27437e01c2ee7bf41289f2b5b1ba
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 25850c51d484a0a7451fd9cf3345dfdc16e7be17520b2446f13ea113758fe97a
+    sha256: 194e745c7af3d760bdcffd62cdbf3678db0bf6578e22872c828d3a0837dd2da5
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 709
-      cases: 2923
-      partial_source_mappings: 1964
+      workflows: 710
+      cases: 2925
+      partial_source_mappings: 1965
 
 contract_metadata:
   aliases:
@@ -1351,7 +1351,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 400
-    operation_fixture_refs: 2587
+    operation_fixture_refs: 2589
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -76236,6 +76236,34 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/sse.py
       workload_sha256: 48e38a7267c8c78f3a90e4043aa22fdcdfa62a070d898de80f4787fce4ecd4e4
       case_id: fastapi.test.test-sse.test-no-keepalive-when-fast
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: sse-keepalive
+      input_path: tests/fixtures/inputs/parity/sse-keepalive.json
+      input_sha256: 3cbe8a21ee29daef6716d4a96957fb4bf5c02445392ef062adb7ab48d3f9cf1f
+      recipe_path: tests/fixtures/input-recipes/parity/sse-keepalive.yaml
+      recipe_sha256: fb86cefa73eb071ecdc5f6743259f716febdbd492f248655aa7f3d466a073ad4
+      workload_path: tests/fixtures/workloads/sse_keepalive.py
+      workload_sha256: 2f7fe71d4fb2b33cd55d3b7c5dab18547fb9298f28c87a14e6e1023d77505ffd
+      case_id: fastapi.test.test-sse.test-keepalive-ping-async
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: sse-keepalive
+      input_path: tests/fixtures/inputs/parity/sse-keepalive.json
+      input_sha256: 3cbe8a21ee29daef6716d4a96957fb4bf5c02445392ef062adb7ab48d3f9cf1f
+      recipe_path: tests/fixtures/input-recipes/parity/sse-keepalive.yaml
+      recipe_sha256: fb86cefa73eb071ecdc5f6743259f716febdbd492f248655aa7f3d466a073ad4
+      workload_path: tests/fixtures/workloads/sse_keepalive.py
+      workload_sha256: 2f7fe71d4fb2b33cd55d3b7c5dab18547fb9298f28c87a14e6e1023d77505ffd
+      case_id: fastapi.test.test-sse.test-keepalive-ping-sync
       observation_selectors:
       - construction.exception_class
       - construction.exception_message
