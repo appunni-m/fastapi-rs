@@ -5826,6 +5826,7 @@ reviewed_api_contract_overlay:
           end_line: 1281
         - {path: tests/test_additional_responses_custom_model_in_callback.py}
         - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
+        - {path: tests/test_tutorial/test_request_forms/test_tutorial001.py, symbol: test_post_body_form}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.routing.apiroute.constructor-signature
@@ -5877,6 +5878,22 @@ reviewed_api_contract_overlay:
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
           case_id: fastapi.routing.apiroute.asgi.app-json-body-validation-error
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-form-body-success
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-form-body-missing-password
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-form-body-missing-username
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-form-body-empty
           workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
@@ -5937,24 +5954,26 @@ reviewed_api_contract_overlay:
         ASGI workflow maps one typed GET response, a combined response-model
         filter projection, path-mismatch 404, and method-mismatch 405 through a
         direct route call. It observes HTTP status, headers, body, ASGI message
-        order, and surfaced exceptions. Two additional cases invoke the public
-        `APIRoute.app` adapter for a static POST route: one accepts a typed JSON
-        body and serializes its response model, and one returns the FastAPI 422
-        validation response for an invalid integer field. The validation case
-        supplies FastAPI's `RequestValidationError` handler in the ASGI scope,
-        matching the exception-handler context normally installed by a FastAPI
-        application. These cases also compare ordered headers, exact body bytes,
-        parsed JSON, ASGI message order, and surfaced exceptions. They establish
-        only these inputs and this handler context. The workflow also samples
+        order, and surfaced exceptions. Six additional cases invoke the public
+        `APIRoute.app` adapter for static POST routes: one accepts a typed JSON
+        body and serializes its response model, one returns the FastAPI 422
+        validation response for an invalid integer field, and four exercise
+        URL-encoded Form parsing for valid fields, each missing required field,
+        and an empty body. The validation cases supply FastAPI's
+        `RequestValidationError` handler in the ASGI scope, matching the
+        exception-handler context normally installed by a FastAPI application.
+        These cases compare ordered headers, exact body bytes, parsed JSON,
+        ASGI message order, and surfaced exceptions. They establish only these
+        inputs and this handler context. The workflow also samples
         one cached yielded
         dependency shared by route-level and endpoint declarations, its response
         ordering, and request-scope cleanup. A separate case supplies a provider
         object with one dependency mapping and compares the cached yielded
         override's response value and cleanup trace across route-level and
         endpoint-level declarations. Other provider shapes, override errors and
-        signature validation, other body shapes and validation errors, other
-        exception-handler combinations, WebSocket scopes, and other route
-        behavior remain unproven. The reviewed source
+        signature validation, multipart and other body shapes, other validation
+        errors, other exception-handler combinations, WebSocket scopes, and
+        other route behavior remain unproven. The reviewed source
         classification keeps direct
         constructor stability uncertain because upstream documents the route
         customization hook as experimental.
@@ -5963,7 +5982,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description, one provider-backed dependency override, and one callback route; custom response classes, response-model filters beyond the sampled output projection, strict-content-type behavior, and other callback combinations remain unverified.
-          - Standalone APIRoute dispatch is mapped for eight selected HTTP cases, including direct .app invocation with one typed JSON body success and one integer-validation response under a FastAPI RequestValidationError handler; other provider shapes, override errors, body shapes, validation cases, exception-handler combinations, and WebSocket scopes remain unverified.
+          - Standalone APIRoute dispatch is mapped for twelve selected HTTP cases, including direct .app invocation with one typed JSON body success, one integer-validation response, and four URL-encoded Form outcomes under a FastAPI RequestValidationError handler; other provider shapes, override errors, multipart and other body shapes, other validation cases, exception-handler combinations, and WebSocket scopes remain unverified.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
       source_evidence:

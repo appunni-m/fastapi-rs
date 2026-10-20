@@ -14,9 +14,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from contextlib import AsyncExitStack
 from types import SimpleNamespace
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import Depends
+from fastapi import Depends, Form
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
@@ -31,6 +31,10 @@ class ItemResponse(BaseModel):
 class BodyItem(BaseModel):
     item_id: int
     label: str
+
+
+class FormResponse(BaseModel):
+    username: str
 
 
 class FilteredResponse(BaseModel):
@@ -58,6 +62,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
     response_models: dict[str, type[BaseModel]] = {
         "item": ItemResponse,
         "body": BodyItem,
+        "form": FormResponse,
         "filtered": FilteredResponse,
         "dependency": DependencyResponse,
     }
@@ -110,6 +115,13 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
 
         async def endpoint(body: BodyItem) -> BodyItem:
             return body
+    elif factory_input["endpoint"] == "form":
+
+        async def endpoint(
+            username: Annotated[str, Form()],
+            password: Annotated[str, Form()],
+        ) -> dict[str, str]:
+            return {"username": username}
     else:
 
         async def endpoint() -> dict[str, Any]:
