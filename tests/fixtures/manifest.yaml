@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 7f84e150672223f603fd6950a6ff6ce6e5e3b2b34677b2022324488759b0bad2
+    sha256: 735a222acffc79b9834e82a1f8ab1046dc9eab1d264ee85fc3f13d3703adbed8
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: b3d458045e43455ef6c5daa67c439dde6dd1a9a8e131a25d8dfa74708e7ce090
+    sha256: e622cb8e5a282b1bd3df5a1868c3ca3848b4cc808b165c4c4b34fd51c0b2d696
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 6ba64855d5a6cfcb06c978993958642e7e58df75becdb02fe5dcd84967a52b7f
+    sha256: 86fb7685911f1f54ac511536ce2016018603e534e2e6e2b5762cdcc29a33afd2
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 1f65d2e15d68141db5098920454ab925f49d5fbb236af8d03d080aacb21c17f8
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 712
-      cases: 2932
-      partial_source_mappings: 1967
+      workflows: 713
+      cases: 2933
+      partial_source_mappings: 1968
 
 contract_metadata:
   aliases:
@@ -1375,7 +1375,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 407
-    operation_fixture_refs: 2623
+    operation_fixture_refs: 2624
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -62716,6 +62716,23 @@ api_surface_contract:
       - http.body.json
       - http.headers.ordered
       - http.status
+    - workflow_id: apirouter-constructor-enum-tag
+      input_path: tests/fixtures/inputs/parity/apirouter-constructor-enum-tag.json
+      input_sha256: cab3d4b1a76d96e19f0193c7a7ec245b32c2394acd1d24239def1e3117849393
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-enum-tag.yaml
+      recipe_sha256: 499d894c6593e92913956264e1e7d56cf77bc589e78adcfbba76f80fa9469486
+      workload_path: tests/fixtures/workloads/apirouter_constructor_enum_tag.py
+      workload_sha256: 841ecce213b15e0632104da5a81dc1132341ad83f63c12a3fef77c1458285a23
+      case_id: fastapi.routing.apirouter.constructor-enum-tag-openapi
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.json
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: starlette-routing-runtime-upstream
       input_path: tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json
       input_sha256: fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0
@@ -63132,8 +63149,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       known_gaps:
-      - The constructor binding narrows `tags` from `list[str | Enum] | None` to `list[str] | None`; Enum-valued
-        tags acceptance remains unimplemented.
+      - The constructor Enum-tag input covers one string-valued member and its OpenAPI projection; non-string
+        Enum values, interaction with route-level tags, and direct `router.tags` identity remain unproven.
       - Response-field construction must retain source registration and included effective-context timing,
         schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
         fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary

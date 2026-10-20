@@ -7634,8 +7634,8 @@ reviewed_api_contract_overlay:
         routes in an OpenAPI operation. Other unused include options remain
         outside this slice. A plain string-valued Enum in the app-level
         `tags` argument is normalized to its value and emitted on the included
-        operation in `router-enum-app-tag`; route-level Enum tags, router
-        constructor tags, and APIRouter include tags remain outside this slice.
+        operation in `router-enum-app-tag`; route-level Enum tags and APIRouter
+        include tags remain outside this slice.
         An included APIRouter route with an empty path and empty include prefix
         raises `FastAPIError` with the pinned construction message, observed by
         `empty-path-router-include-construction`; that input does not establish
@@ -9145,6 +9145,16 @@ reviewed_api_contract_overlay:
           start_line: 2282
           end_line: 2568
         - path: fastapi/routing.py
+          symbol: add_api_route
+          kind: source-definition
+          start_line: 2889
+          end_line: 2971
+        - path: fastapi/openapi/utils.py
+          symbol: get_openapi_operation_metadata
+          kind: source-definition
+          start_line: 287
+          end_line: 308
+        - path: fastapi/routing.py
           symbol: app
           kind: source-definition
           start_line: 2719
@@ -9210,6 +9220,10 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/apirouter-dependency-overrides-provider-mounted-asgi.yaml
           case_id: fastapi.routing.apirouter.dependency-overrides-provider-mounted-asgi
           workload_path: tests/fixtures/workloads/apirouter_dependency_overrides_provider_asgi.py
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-enum-tag.yaml
+          case_id: fastapi.routing.apirouter.constructor-enum-tag-openapi
+          workload_path: tests/fixtures/workloads/apirouter_constructor_enum_tag.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body_json, openapi.paths]
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
           workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
@@ -9287,8 +9301,13 @@ reviewed_api_contract_overlay:
         `/{version}` prefix and delivers all three path parameters to the
         endpoint in router-prefix-and-nested-composition-upstream. It also
         accepts a non-empty list of string tags, as sampled by
-        router-tag-inheritance-upstream. The constructor also accepts
-        `deprecated` and `include_in_schema`; their behavior is sampled by
+        router-tag-inheritance-upstream. The constructor also accepts a
+        string-valued Enum tag; the
+        `apirouter-constructor-enum-tag-openapi` input observes successful
+        construction, included-route dispatch, and the resulting OpenAPI tag
+        value. Non-string Enum values and direct `router.tags` field identity
+        remain unproven. The constructor also accepts `deprecated` and
+        `include_in_schema`; their behavior is sampled by
         router-schema-policy-upstream. A list of synchronous Depends declarations
         with required scalar query inputs is validated and invoked in router-
         dependencies-isolated. Lifecycle options include legacy startup and
@@ -9349,8 +9368,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The constructor binding narrows `tags` from `list[str | Enum] | None`
-            to `list[str] | None`; Enum-valued tags acceptance remains unimplemented.
+            The constructor Enum-tag input covers one string-valued member and
+            its OpenAPI projection; non-string Enum values, interaction with
+            route-level tags, and direct `router.tags` identity remain unproven.
           - *response_field_lifecycle_gap
           - *response_class_provenance_gap
           - *response_field_serialization_gap

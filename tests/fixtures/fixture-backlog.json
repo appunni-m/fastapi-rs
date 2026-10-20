@@ -15387,6 +15387,19 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.routing.apirouter.constructor-enum-tag-openapi"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-constructor-enum-tag.yaml",
+          "workflow_id": "apirouter-constructor-enum-tag"
+        },
+        {
+          "case_ids": [
             "fastapi.path-operation-configurations.tutorial002b"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -15402,13 +15415,15 @@
       "input_only": true,
       "observation_selectors": [
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ],
       "selector_evidence": [
         {
           "feature_id": "app-routing",
           "selectors": [
-            "http.status"
+            "http.status",
+            "openapi.paths"
           ]
         },
         {
@@ -15448,7 +15463,7 @@
         "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
-      "stimulus_design_notes": "This FastAPI 0.141.1 example assigns Enum members as tags for GET /items/ and GET /users/. The independent case observes HTTP response status and selects the tag arrays for those methods, sampling Enum-to-OpenAPI tag serialization. It does not claim the example's runtime response bodies, other tag forms, or unrelated OpenAPI fields."
+      "stimulus_design_notes": "This FastAPI 0.141.1 example assigns Enum members as tags for GET /items/ and GET /users/. The independent case observes HTTP response status and selects the tag arrays for those methods, sampling Enum-to-OpenAPI tag serialization. A separate APIRouter-constructor input derives the same string-valued Enum behavior through the constructor tag field and route forwarding, with source definitions recorded in the reviewed API overlay; the documentation example itself does not construct a router. These cases do not claim other tag forms or unrelated OpenAPI fields."
     },
     {
       "feature_ids": [

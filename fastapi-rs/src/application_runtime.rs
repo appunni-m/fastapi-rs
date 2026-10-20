@@ -8489,7 +8489,7 @@ impl PyApiRouter {
     fn new(
         py: Python<'_>,
         prefix: &str,
-        tags: Option<Vec<String>>,
+        tags: Option<Vec<FastApiTag>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
         responses: Option<Py<PyAny>>,
@@ -8512,7 +8512,11 @@ impl PyApiRouter {
         let default_route_class = api_route_type(py)?;
         let selected_route_class =
             (!route_class.bind(py).is(&default_route_class)).then(|| route_class.clone_ref(py));
-        let router_tags = tags.unwrap_or_default();
+        let router_tags: Vec<String> = tags
+            .unwrap_or_default()
+            .into_iter()
+            .map(|tag| tag.0)
+            .collect();
         let router_dependencies = dependencies.unwrap_or_default();
         let router_callbacks = match callbacks {
             Some(callbacks) if callbacks.bind(py).is_truthy()? => callbacks,

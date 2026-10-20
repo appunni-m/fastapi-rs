@@ -888,6 +888,27 @@
       ]
     },
     {
+      "id": "apirouter-constructor-enum-tag",
+      "input_path": "tests/fixtures/inputs/parity/apirouter-constructor-enum-tag.json",
+      "input_sha256": "cab3d4b1a76d96e19f0193c7a7ec245b32c2394acd1d24239def1e3117849393",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-constructor-enum-tag.yaml",
+      "recipe_sha256": "499d894c6593e92913956264e1e7d56cf77bc589e78adcfbba76f80fa9469486",
+      "case_ids": [
+        "fastapi.routing.apirouter.constructor-enum-tag-openapi"
+      ],
+      "workload_path": "tests/fixtures/workloads/apirouter_constructor_enum_tag.py",
+      "workload_sha256": "841ecce213b15e0632104da5a81dc1132341ad83f63c12a3fef77c1458285a23",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.constructor-enum-tag-openapi",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/path_operation_configuration/tutorial002b_py310.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "apirouter-constructor-signature",
       "input_path": "tests/fixtures/inputs/parity/apirouter-constructor-signature.json",
       "input_sha256": "afe3be016b3bbf805a6efa3fbb9d711557bb51169e0fc8f35f46396ac9beeee4",
@@ -43135,6 +43156,20 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/path_operation_configuration/tutorial002b_py310.py",
+      "fixture_id": "fastapi.docs-example.path-operation-configuration-tutorial002b-py310",
+      "workflow_id": "apirouter-constructor-enum-tag",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.constructor-enum-tag-openapi"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.paths"
       ]
     },
     {

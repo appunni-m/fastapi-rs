@@ -1079,9 +1079,11 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
         "rationale": (
             "This FastAPI 0.141.1 example assigns Enum members as tags for GET /items/ and "
             "GET /users/. The independent case observes HTTP response status and selects the tag "
-            "arrays for those methods, sampling Enum-to-OpenAPI tag serialization. It does not "
-            "claim the example's runtime response bodies, other tag forms, or unrelated OpenAPI "
-            "fields."
+            "arrays for those methods, sampling Enum-to-OpenAPI tag serialization. A separate "
+            "APIRouter-constructor input derives the same string-valued Enum behavior through the "
+            "constructor tag field and route forwarding, with source definitions recorded in the "
+            "reviewed API overlay; the documentation example itself does not construct a router. "
+            "These cases do not claim other tag forms or unrelated OpenAPI fields."
         ),
         "supporting_sources": [
             {
@@ -1096,7 +1098,12 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002b-upstream.yaml",
                 "case_ids": ["fastapi.path-operation-configurations.tutorial002b"],
                 "observation_selectors": ["http.status", "openapi.document"],
-            }
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-constructor-enum-tag.yaml",
+                "case_ids": ["fastapi.routing.apirouter.constructor-enum-tag-openapi"],
+                "observation_selectors": ["http.status", "openapi.paths"],
+            },
         ],
     },
     "docs_src/path_operation_configuration/tutorial003_py310.py": {
