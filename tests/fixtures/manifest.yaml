@@ -1386,13 +1386,13 @@ api_surface_contract:
       runtime-signature-unavailable: 1
       source-signature-recorded: 6
     target_disposition_counts:
-      supported: 27
-      unresolved: 470
+      supported: 29
+      unresolved: 468
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      full-contract-established: 27
-      slice-described: 461
+      full-contract-established: 29
+      slice-described: 459
     implementation_owner_plans:
       fastapi-rs: 456
       starlette-rs: 32
@@ -1405,7 +1405,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 421
-    operation_fixture_refs: 2644
+    operation_fixture_refs: 2646
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -78385,6 +78385,16 @@ api_surface_contract:
       - python.import_path
       - python.object_identity
       - python.signature
+    - workflow_id: fastapi-templating-core-import-failure
+      input_path: tests/fixtures/inputs/parity/fastapi-templating-core-import-failure.json
+      input_sha256: 4c100affca1ddb23f5c32eb89ddb423ef052984c265a6bf7108087bbb12fd8de
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-core-import-failure.yaml
+      recipe_sha256: dd546f804e26794966c2dac00c8c0e5d4abcbce3ae9531ba05625bca42429f4d
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.templating.core-import-failure
+      observation_selectors:
+      - python.call_outcome
     - workflow_id: fastapi-templating-asgi
       input_path: tests/fixtures/inputs/parity/fastapi-templating-asgi.json
       input_sha256: 7bdc0ed994fc916e124845f567278e9d379cc28b8dd8e26373a33d93d211f40f
@@ -78406,6 +78416,9 @@ api_surface_contract:
     - middleware-integrations
     observation_selectors:
     - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - http.body.bytes
     - http.headers.ordered
     - http.status
@@ -78415,9 +78428,9 @@ api_surface_contract:
     - python.object_identity
     - python.signature
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.templating.Jinja2Templates/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.templating.Jinja2Templates/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.templating.Jinja2Templates
@@ -78426,12 +78439,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1602
-      status: unresolved
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: null
-      known_gaps:
-      - The rendered-template workflow covers one in-memory template and one FastAPI HTTP route; directory
-        loaders, context processors, response options, and failure behavior remain outside this slice.
   - id: fastapi.testclient.TestClient
     kind: import_binding
     source_candidate_ref: /api_candidates/1603
@@ -78529,6 +78539,17 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: fastapi-testclient-module-identity
+      input_path: tests/fixtures/inputs/parity/fastapi-testclient-module-identity.json
+      input_sha256: 2f94d7b173b915bf81129a6a2bdcabe8c7f0ce82fec59c2f126d5a65c40135e2
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-module-identity.yaml
+      recipe_sha256: ae9fcd6e07564742de91948d4feea5d264f3453f03237e6068cfb39794d7a4e5
+      workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+      workload_sha256: 3ee06f1c50c6fc3fd0575e67d49a77514faeea571319474585f5a1965620bafd
+      case_id: fastapi.testclient.module-identity
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: fastapi-testclient-alias-identity
       input_path: tests/fixtures/inputs/parity/fastapi-testclient-alias-identity.json
       input_sha256: 22ed038d0c3fbac63348afec0ce3ba074a9c9f64de4ad6c0e3cee9fb302ae2cd
@@ -78599,10 +78620,11 @@ api_surface_contract:
     - python.object_identity
     - python.signature
     - python.warnings
+    - websocket.messages
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.testclient.TestClient/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.testclient.TestClient/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.testclient.TestClient
@@ -78611,13 +78633,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1603
-      status: unresolved
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: null
-      known_gaps:
-      - The FastAPI-RS workflows cover the direct alias, import fallback warning, missing-client dependency
-        error, and one HTTP/lifespan path; the broader TestClient request, WebSocket, portal, and exception
-        behavior remains Starlette-RS-owned and is not fully established through FastAPI's public alias.
   - id: fastapi.utils.generate_operation_id_for_path
     kind: function
     source_candidate_ref: /api_candidates/1632
