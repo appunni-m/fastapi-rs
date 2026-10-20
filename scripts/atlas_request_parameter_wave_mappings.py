@@ -179,6 +179,8 @@ def _workflow_selectors(case: dict[str, Any]) -> list[str]:
                     selected.add("http.body.bytes")
                     if openapi_endpoint:
                         selected.add("docs.response.body.bytes")
+                if "body_json" in values:
+                    selected.add("http.body.json")
             elif kind == "openapi":
                 pointers = observation.get("json_pointers", [])
                 for pointer in pointers:
@@ -207,6 +209,7 @@ def _recipe_case_index() -> dict[str, dict[str, Any]]:
         if not isinstance(data, dict) or data.get("schema") not in {
             "fastapi-rs/python-asgi-workflow@2",
             "fastapi-rs/python-asgi-workflow@3",
+            "fastapi-rs/python-asgi-workflow@13",
             _API_WORKFLOW_SCHEMA,
         }:
             continue
@@ -528,6 +531,8 @@ def _path_test_function_case_mappings(test_path: str) -> list[dict[str, Any]]:
         if case_id in used_case_ids:
             raise ValueError(f"multiple path tests map to fixture case {case_id}")
         used_case_ids.add(case_id)
+        action_selectors = _workflow_selectors({"actions": requests})
+        has_json_observation = "http.body.json" in action_selectors
         function_case_mappings.append(
             {
                 "source_function": node.name,
@@ -541,10 +546,17 @@ def _path_test_function_case_mappings(test_path: str) -> list[dict[str, Any]]:
                 "recipe_path": case["recipe_path"],
                 "case_id": case_id,
                 "mapping_basis": "exact method and literal request path",
-                "mapping_scope": "request_stimulus_only",
-                "observation_selectors": case["observation_selectors"],
+                "mapping_scope": (
+                    "request_and_parsed_json_response"
+                    if has_json_observation
+                    else "request_stimulus_only"
+                ),
+                "observation_selectors": action_selectors,
                 "scope_note": (
-                    "This link establishes request-stimulus identity; it does not claim "
+                    "The exact independent request selects status, raw bytes, and the full parsed "
+                    "JSON response observed by the upstream response.json() assertion."
+                    if has_json_observation
+                    else "This link establishes request-stimulus identity; it does not claim "
                     "that fixture selectors reproduce the upstream function's assertions."
                 ),
             }
@@ -1054,6 +1066,70 @@ def _request_http_function_mapping(
     }
 
 
+def _path_test_function_mapping(
+    function_name: str, case_id: str, behavior: str
+) -> dict[str, Any]:
+    """Link one exact Path test assertion to its independent ASGI input case."""
+    test_path = "tests/test_path.py"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    case_row = _RECIPE_CASE_INDEX.get(case_id)
+    if (
+        case_row is None
+        or case_row["recipe_path"]
+        != "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml"
+    ):
+        raise ValueError(f"unknown path test recipe case for {function_name}: {case_id}")
+    actions = case_row["case"].get("actions", [])
+    if len(actions) != 1 or actions[0].get("action_id") != "dispatch":
+        raise ValueError(f"expected one dispatch action in {case_id}")
+    selectors = _workflow_selectors({"actions": actions})
+    if not {"http.status", "http.body.bytes", "http.body.json"} <= set(selectors):
+        raise ValueError(f"path test action lacks parsed JSON observations: {case_id}")
+    json_assertions = [
+        node
+        for node in ast.walk(function)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "response"
+        and node.func.attr == "json"
+    ]
+    if not json_assertions:
+        raise ValueError(f"expected response.json() assertion in {test_path}::{function_name}")
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": case_row["recipe_path"],
+            "case_id": case_id,
+            "action_ids": ["dispatch"],
+            "observation_selectors": selectors,
+        },
+        "feature_ids": ["request-validation"],
+        "rationale": behavior,
+        "contract_gate": (
+            "Partial input mapping only: the exact independent path input observes the full parsed "
+            "JSON response, matching the source function's response.json() assertion, plus status "
+            "and raw bytes. This is not a live parity result; path declaration and error projection "
+            "remain FastAPI-owned, Pydantic owns core validation, and route dispatch remains under "
+            "the pinned Starlette 1.6.0 contract."
+        ),
+    }
+
+
 def _query_list_validation_alias_function_mapping(
     function_name: str,
     case_id: str,
@@ -1456,6 +1532,58 @@ _QUERY_REQUIRED_OPTIONAL_INTEGER_FUNCTION_ROWS = {
 
 
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
+    "tests/test_path.py": {
+        "test_path_param_le_ge_int_1": _path_test_function_mapping(
+            "test_path_param_le_ge_int_1",
+            "fastapi.path-boundary.source-json-001",
+            "The inclusive lower endpoint of Path(ge=1, le=3) is accepted.",
+        ),
+        "test_path_param_le_ge_int_3": _path_test_function_mapping(
+            "test_path_param_le_ge_int_3",
+            "fastapi.path-boundary.source-json-002",
+            "The inclusive upper endpoint of Path(ge=1, le=3) is accepted.",
+        ),
+        "test_path_param_maxlength_foobar": _path_test_function_mapping(
+            "test_path_param_maxlength_foobar",
+            "fastapi.path-boundary.source-json-003",
+            "Path(max_length=3) rejects an overlong path value with its validation response.",
+        ),
+        "test_path_param_min_maxlength_f": _path_test_function_mapping(
+            "test_path_param_min_maxlength_f",
+            "fastapi.path-boundary.source-json-004",
+            "Combined minimum and maximum string bounds reject a value below the minimum.",
+        ),
+        "test_path_param_min_maxlength_foo": _path_test_function_mapping(
+            "test_path_param_min_maxlength_foo",
+            "fastapi.path-boundary.source-json-005",
+            "Combined minimum and maximum string bounds accept the value at the maximum.",
+        ),
+        "test_path_param_min_maxlength_foobar": _path_test_function_mapping(
+            "test_path_param_min_maxlength_foobar",
+            "fastapi.path-boundary.source-json-006",
+            "Combined minimum and maximum string bounds reject an overlong value.",
+        ),
+        "test_path_param_lt_int_2": _path_test_function_mapping(
+            "test_path_param_lt_int_2",
+            "fastapi.path-boundary.source-json-007",
+            "Path(lt=3) accepts an integer below its exclusive upper bound.",
+        ),
+        "test_path_param_lt_int_42": _path_test_function_mapping(
+            "test_path_param_lt_int_42",
+            "fastapi.path-boundary.source-json-008",
+            "Path(lt=3) rejects an integer above its exclusive upper bound.",
+        ),
+        "test_path_param_lt_gt_int_4": _path_test_function_mapping(
+            "test_path_param_lt_gt_int_4",
+            "fastapi.path-boundary.source-json-009",
+            "Path(gt=1, lt=3) rejects a value above the exclusive upper bound.",
+        ),
+        "test_path_param_lt_gt_int_0": _path_test_function_mapping(
+            "test_path_param_lt_gt_int_0",
+            "fastapi.path-boundary.source-json-010",
+            "Path(gt=1, lt=3) rejects a value below the exclusive lower bound.",
+        ),
+    },
     "tests/test_request_params/test_header/test_required_str.py": (
         _header_cookie_alias_module_mappings("header", "Header")
     ),

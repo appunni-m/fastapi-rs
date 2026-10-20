@@ -4160,7 +4160,10 @@ for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
             "stimulus_notes": function_note,
             "contract_gate": function_row["contract_gate"],
         }
-        if test_path == "tests/test_request_params/test_query/test_list.py":
+        if test_path in {
+            "tests/test_path.py",
+            "tests/test_request_params/test_query/test_list.py",
+        }:
             function_review["workflow_case"] = {
                 **workflow,
                 "workflow_id": Path(workflow["recipe_path"]).stem.replace("_", "-"),
@@ -11118,6 +11121,16 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 )
         case_designs = []
         used_case_ids: set[str] = set()
+        path_function_mappings = (
+            reviewed_mapping.get("function_case_mappings", [])
+            if rel == "tests/test_path.py"
+            else []
+        )
+        path_function_mappings_by_name = {
+            mapping["source_function"]: mapping for mapping in path_function_mappings
+        }
+        if len(path_function_mappings_by_name) != len(path_function_mappings):
+            raise AtlasError("duplicate path-test input mapping for %s" % rel)
         if not exclusion:
             for test in test_functions:
                 if not test["feature_ids"]:
@@ -11133,10 +11146,20 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "duplicate test fixture ID for %s::%s" % (rel, test["qualified_name"])
                     )
                 used_case_ids.add(case_id)
-                exact_selectors = test.get(
-                    "reviewed_observation_selectors",
-                    reviewed_mapping.get("module_observation_selectors"),
+                path_function_mapping = path_function_mappings_by_name.get(
+                    test["qualified_name"]
                 )
+                if rel == "tests/test_path.py":
+                    exact_selectors = test.get("reviewed_observation_selectors")
+                    if exact_selectors is None and path_function_mapping is not None:
+                        exact_selectors = path_function_mapping["observation_selectors"]
+                    if exact_selectors is None:
+                        exact_selectors = selectors_for(case_features)
+                else:
+                    exact_selectors = test.get(
+                        "reviewed_observation_selectors",
+                        reviewed_mapping.get("module_observation_selectors"),
+                    )
                 if exact_selectors is not None:
                     exact_selectors = selectors_with_exact_http_body(exact_selectors)
                 function_source_ref = None
@@ -11195,7 +11218,16 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             else {}
                         ),
                         "stimulus_design_notes": test.get("reviewed_stimulus_notes")
-                        or reviewed_mapping.get("stimulus_notes"),
+                        or (
+                            "Exact request input: %s::%s. %s"
+                            % (
+                                path_function_mapping["recipe_path"],
+                                path_function_mapping["case_id"],
+                                path_function_mapping["scope_note"],
+                            )
+                            if path_function_mapping is not None
+                            else reviewed_mapping.get("stimulus_notes")
+                        ),
                     }
                 )
         unmatched_test_functions = [

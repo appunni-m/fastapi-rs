@@ -22598,6 +22598,99 @@
       ]
     },
     {
+      "id": "path-boundary-parsed-json",
+      "input_path": "tests/fixtures/inputs/parity/path-boundary-parsed-json.json",
+      "input_sha256": "dd40e7ebe3e4368e838263ada5989ad0c4769b271736142aca8b2b3f92d9f095",
+      "recipe_path": "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+      "recipe_sha256": "eab0a50718694f9dd371db2980e49892664c877ba005d3770af640dc0181c140",
+      "case_ids": [
+        "fastapi.path-boundary.source-json-001",
+        "fastapi.path-boundary.source-json-002",
+        "fastapi.path-boundary.source-json-003",
+        "fastapi.path-boundary.source-json-004",
+        "fastapi.path-boundary.source-json-005",
+        "fastapi.path-boundary.source-json-006",
+        "fastapi.path-boundary.source-json-007",
+        "fastapi.path-boundary.source-json-008",
+        "fastapi.path-boundary.source-json-009",
+        "fastapi.path-boundary.source-json-010"
+      ],
+      "workload_path": "tests/fixtures/workloads/path_boundary_parsed_json.py",
+      "workload_sha256": "d62967243c88a5a4de591053f4831d8151b353648118ec3359ad0955781b14d1",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.path-boundary.source-json-001",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-002",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-003",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-004",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-005",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-006",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-007",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-008",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-009",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.path-boundary.source-json-010",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_path.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "path-gt-zero",
       "input_path": "tests/fixtures/inputs/parity/path-gt-zero.json",
       "input_sha256": "095c90741db7423b998bf1e1d795b6730472a9980788c07c7d49fae186f7f685",
@@ -58223,6 +58316,33 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_path.py",
+      "fixture_id": "fastapi.test.test-path",
+      "workflow_id": "path-boundary-parsed-json",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-boundary.source-json-001",
+        "fastapi.path-boundary.source-json-002",
+        "fastapi.path-boundary.source-json-003",
+        "fastapi.path-boundary.source-json-004",
+        "fastapi.path-boundary.source-json-005",
+        "fastapi.path-boundary.source-json-006",
+        "fastapi.path-boundary.source-json-007",
+        "fastapi.path-boundary.source-json-008",
+        "fastapi.path-boundary.source-json-009",
+        "fastapi.path-boundary.source-json-010"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.body.json",
         "http.status"
       ]
     },

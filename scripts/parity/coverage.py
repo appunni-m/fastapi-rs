@@ -184,6 +184,106 @@ def _wave_h_bigger_applications_direct(case_slug, action_id):
 
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
+        "tests/test_path.py",
+        "test_path_param_le_ge_int_1",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-001",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_le_ge_int_3",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-002",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_maxlength_foobar",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-003",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_min_maxlength_f",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-004",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_min_maxlength_foo",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-005",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_min_maxlength_foobar",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-006",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_lt_int_2",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-007",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_lt_int_42",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-008",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_lt_gt_int_4",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-009",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
+        "tests/test_path.py",
+        "test_path_param_lt_gt_int_0",
+    ): _reviewed_direct_link(
+        "path-boundary-parsed-json",
+        "tests/fixtures/input-recipes/parity/path-boundary-parsed-json.yaml",
+        "fastapi.path-boundary.source-json-010",
+        ("dispatch",),
+        ("http.body.bytes", "http.body.json", "http.status"),
+    ),
+    (
         "tests/test_router_include_context.py",
         "test_url_path_for_uses_effective_context_for_live_included_route",
     ): (
