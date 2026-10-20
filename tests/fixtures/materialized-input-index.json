@@ -2409,17 +2409,21 @@
     {
       "id": "background-tasks-injection-precedence",
       "input_path": "tests/fixtures/inputs/parity/background-tasks-injection-precedence.json",
-      "input_sha256": "14bca1b74fd790db1a1b8c6cab010673b09db6e2983d05734d7849a06e133e83",
+      "input_sha256": "1310e1e685fec53495b1fd095e240cee3f2343f480b6b48a111ef7c8724a32d1",
       "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
-      "recipe_sha256": "ded734586dd2313de7d2681e228c1d2518bcbcbfba25e34ab7e83b2c6b4e80fd",
+      "recipe_sha256": "8e3fed5b21506fcdb974257e084b5fc8f2085ec2a83a754530d63622130be92c",
       "case_ids": [
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
         "fastapi.background.task-injection.mixed-sync-async-order",
         "fastapi.background.constructor.sequence-inherited-execution",
-        "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background"
+        "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background",
+        "fastapi.background.task-list.live-append-during-execution",
+        "fastapi.background.task-execution.failure-short-circuits",
+        "fastapi.background.task-execution.callable-shapes-and-kwargs",
+        "fastapi.background.task-injection.starlette-base-annotation-in-dependency"
       ],
       "workload_path": "tests/fixtures/workloads/background_tasks_injection_precedence.py",
-      "workload_sha256": "aa153fcad74b418f4a36be6a84f867f9dac913d99570893f96a4f294f8253cf0",
+      "workload_sha256": "1d680479dbe300b0340737a5d352996ce4e66fada97dfa4aac366e901d54815f",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
@@ -2451,26 +2455,66 @@
           "requirement_refs": [
             "source:upstream-test:tests/test_response_dependency.py"
           ]
+        },
+        {
+          "case_id": "fastapi.background.task-list.live-append-during-execution",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/background.md",
+            "source:documented-page:tutorial/background-tasks.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.task-execution.failure-short-circuits",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/background.md",
+            "source:documented-page:tutorial/background-tasks.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.task-execution.callable-shapes-and-kwargs",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/background.md",
+            "source:documented-page:tutorial/background-tasks.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/background-tasks.md",
+            "source:upstream-test:tests/test_response_dependency.py"
+          ]
         }
       ]
     },
     {
       "id": "background-tasks-public-api",
       "input_path": "tests/fixtures/inputs/parity/background-tasks-public-api.json",
-      "input_sha256": "8cb5adaffeb7e9fae3ebba6be38bd7ceb0bd307f126839ac8ccfcbe734879137",
+      "input_sha256": "ec8ecba9b592395588f395d8a4bc36dbbd30134fed364e6413a0550f3baac44c",
       "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml",
-      "recipe_sha256": "b755e52cfb3966f3d827d507299a9c1ca22a9394fc7cd0c46cf28e56a927b765",
+      "recipe_sha256": "1d11fdd56b9493ad31ad3dc1f35ec79ed312ca97728e31b23a6b29e5c06b84f8",
       "case_ids": [
         "fastapi.background.background-tasks-class",
         "fastapi.background.background-tasks-add-task",
         "fastapi.background.background-tasks-add-task-multiple",
+        "fastapi.background.background-tasks-constructor-list-and-task-identity",
+        "fastapi.background.background-tasks-add-task-callable-and-kwargs-shapes",
         "fastapi.background.background-tasks-add-task-invalid"
       ],
       "workload_path": "tests/fixtures/workloads/background_tasks_public_api.py",
-      "workload_sha256": "a0d9b2d28f9ac9ff2b363a545b0bdc33e97a9a23fe35f9147e17f2bb73ecf97b",
+      "workload_sha256": "0f48683ba98a26ed10f2be2f31d54a9b975c0dea14a239fad4f33a7180aac109",
       "api_definitions": [
         {
           "case_id": "fastapi.background.background-tasks-add-task",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "path": "fastapi/background.py",
+          "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-callable-and-kwargs-shapes",
           "symbol_id": "fastapi.background.BackgroundTasks.add_task",
           "path": "fastapi/background.py",
           "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
@@ -2496,6 +2540,12 @@
         {
           "case_id": "fastapi.background.background-tasks-class",
           "symbol_id": "fastapi.background.BackgroundTasks",
+          "path": "fastapi/background.py",
+          "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-constructor-list-and-task-identity",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
           "path": "fastapi/background.py",
           "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205"
         }
@@ -2527,6 +2577,26 @@
           "probe_kind": "callable",
           "observation_selectors": [
             "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-callable-and-kwargs-shapes",
+          "probe_id": "bound-method-callback",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.background_task_queue"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-callable-and-kwargs-shapes",
+          "probe_id": "ordered-keyword-callback-input",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.background_task_queue"
           ]
         },
         {
@@ -2623,6 +2693,26 @@
           "observation_selectors": [
             "python.signature"
           ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-constructor-list-and-task-identity",
+          "probe_id": "empty-constructor-sequence-does-not-retain-caller-list",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.background_task_queue"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-constructor-list-and-task-identity",
+          "probe_id": "nonempty-constructor-sequence-copies-list-and-shares-task-objects",
+          "symbol_id": "fastapi.background.BackgroundTasks.add_task",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.background_task_queue"
+          ]
         }
       ],
       "case_contracts": [
@@ -2643,6 +2733,20 @@
         },
         {
           "case_id": "fastapi.background.background-tasks-add-task-multiple",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.background.BackgroundTasks.add_task"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-constructor-list-and-task-identity",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.background.BackgroundTasks.add_task"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.background-tasks-add-task-callable-and-kwargs-shapes",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.background.BackgroundTasks.add_task"
@@ -43972,15 +44076,39 @@
       ]
     },
     {
+      "source_item_id": "documented-page:reference/background.md",
+      "fixture_id": "fastapi.docs.reference-background",
+      "workflow_id": "background-tasks-injection-precedence",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.background.task-execution.callable-shapes-and-kwargs",
+        "fastapi.background.task-execution.failure-short-circuits",
+        "fastapi.background.task-list.live-append-during-execution"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/background-tasks.md",
       "fixture_id": "fastapi.docs.tutorial-background-tasks",
       "workflow_id": "background-tasks-injection-precedence",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.background.task-execution.callable-shapes-and-kwargs",
+        "fastapi.background.task-execution.failure-short-circuits",
+        "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
+        "fastapi.background.task-list.live-append-during-execution",
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
       ],
       "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.status"
       ]
@@ -43990,10 +44118,11 @@
       "fixture_id": "fastapi.test.test-response-dependency",
       "workflow_id": "background-tasks-injection-precedence",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.background.constructor.sequence-inherited-execution",
         "fastapi.background.task-injection.mixed-sync-async-order",
+        "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background",
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
       ],

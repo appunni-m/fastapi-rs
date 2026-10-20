@@ -1149,17 +1149,19 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "response-serialization",
         ],
         "observation_selectors": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
         ],
         "rationale": (
             "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks "
-            "from dependencies. The linked independent cases observe the HTTP response "
-            "and the recorded effects through follow-up requests; they do not claim direct "
-            "import/signature reflection or generic task-execution semantics. FastAPI's "
-            "BackgroundTasks subclass and injection are FastAPI-owned; execution is "
-            "Starlette-owned."
+            "from dependencies. The linked independent cases observe response effects, "
+            "selected callback/keyword forms, a live list append, and one failure "
+            "short-circuit. They do not claim exhaustive callable, cancellation, or "
+            "injection coverage. FastAPI's BackgroundTasks subclass and injection are "
+            "FastAPI-owned; generic execution is Starlette-owned."
         ),
         "workflow_cases": [
             {
@@ -1175,10 +1177,52 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
-                "case_ids": [
-                    "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
+                "case_id": "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
+                "action_ids": ["normal-response", "normal-task-effects"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+                "case_id": "fastapi.background.task-execution.callable-shapes-and-kwargs",
+                "action_ids": ["enqueue-callable-shapes", "observe-callable-shape-effects"],
+                "observation_selectors": [
+                    "asgi.send.message_types",
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+                "case_id": "fastapi.background.task-execution.failure-short-circuits",
+                "action_ids": [
+                    "fail-in-middle-of-task-sequence",
+                    "observe-completed-before-failure-and-skipped-after",
+                ],
+                "observation_selectors": [
+                    "asgi.application_error.exception",
+                    "asgi.send.message_types",
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+                "case_id": "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
+                "action_ids": [
+                    "inject-starlette-base-typed-dependency",
+                    "observe-shared-base-typed-dependency-effects",
                 ],
                 "observation_selectors": ["http.body.bytes", "http.status"],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+                "case_id": "fastapi.background.task-list.live-append-during-execution",
+                "action_ids": ["append-task-while-running", "observe-live-list-mutation-effects"],
+                "observation_selectors": [
+                    "asgi.send.message_types",
+                    "http.body.bytes",
+                    "http.status",
+                ],
             },
         ],
         "supporting_sources": [
