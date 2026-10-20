@@ -41194,9 +41194,9 @@
     {
       "id": "validation-error-context-exact-review",
       "input_path": "tests/fixtures/inputs/parity/validation-error-context-exact-review.json",
-      "input_sha256": "844776e20061fe003c6740904a88d7cff5038f1f9f22c3d0fa8f215accc29ead",
+      "input_sha256": "978de9bffa7f2932aa03fbd00b5779de3c405d08b213896ec2cc27820ccbe496",
       "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
-      "recipe_sha256": "440cd86e49ecc38b37aa651e71b3284d22ca5b5958b5ae3d9edfc1e8cdb761d6",
+      "recipe_sha256": "47ac007038a94558ec3b20a5b5bf6f5e50c724925f4e1afc0afe2cb44950f7d6",
       "case_ids": [
         "fastapi.validation-error-context.exact.request-endpoint",
         "fastapi.validation-error-context.exact.response-endpoint",
@@ -41207,10 +41207,12 @@
         "fastapi.validation-error-context.exact.path-only",
         "fastapi.validation-error-context.exact.empty-context",
         "fastapi.validation-error-context.exact.request-constructor-fields",
-        "fastapi.validation-error-context.exact.websocket-constructor-fields"
+        "fastapi.validation-error-context.exact.websocket-constructor-fields",
+        "fastapi.validation-error-context.exact.base-errors-list",
+        "fastapi.validation-error-context.exact.base-errors-tuple"
       ],
       "workload_path": "tests/fixtures/workloads/validation_error_context_exact_review.py",
-      "workload_sha256": "2a9a3bdf7effd14370872ce23c2761c1be7c6b4864eeb68e3610d0a1734d8a0e",
+      "workload_sha256": "a6a79f77b56d86922a8bc6a8de1ee6eeaf632b17a06a032cffb7f467f3e00a9e",
       "case_contracts": [
         {
           "case_id": "fastapi.validation-error-context.exact.request-endpoint",
@@ -41281,6 +41283,20 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_ws_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-error-context.exact.base-errors-list",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/handling_errors/tutorial005_py310.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-error-context.exact.base-errors-tuple",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/handling_errors/tutorial005_py310.py"
           ]
         }
       ]
@@ -74643,6 +74659,21 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/handling_errors/tutorial005_py310.py",
+      "fixture_id": "fastapi.docs-example.handling-errors-tutorial005-py310",
+      "workflow_id": "validation-error-context-exact-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.validation-error-context.exact.base-errors-list",
+        "fastapi.validation-error-context.exact.base-errors-tuple"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

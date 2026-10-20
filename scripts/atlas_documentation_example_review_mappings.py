@@ -428,8 +428,11 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             "both validation details and the parsed request body, and returns a Pydantic model "
             "for valid input. The independent cases sample invalid-body handling, valid model "
             "input/output, and the related OpenAPI request/422 schemas with a separately named "
-            "model and handler payload. They do not claim the tutorial's exact field names, "
-            "validation records, encoded JSON keys, or complete OpenAPI document."
+            "model and handler payload. A separate direct-method case calls the inherited "
+            "ValidationException.errors() method with list and tuple inputs, then observes the "
+            "returned values, sequence type, and object identity. It does not claim the "
+            "tutorial's exact field names, validation records, encoded JSON keys, or complete "
+            "OpenAPI document."
         ),
         "supporting_sources": [
             {
@@ -458,7 +461,15 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                     "http.headers.ordered",
                     "http.status",
                 ],
-            }
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+                "case_ids": [
+                    "fastapi.validation-error-context.exact.base-errors-list",
+                    "fastapi.validation-error-context.exact.base-errors-tuple",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            },
         ],
     },
     "docs_src/handling_errors/tutorial006_py310.py": {

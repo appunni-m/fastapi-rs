@@ -316,3 +316,63 @@ cases:
       comparison: exact
   source_evidence:
   - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.validation-error-context.exact.base-errors-list
+  factory_input:
+    base_validation_exception:
+      errors: [{marker: list-sequence}]
+      sequence_type: list
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: call-base-errors-method-with-list
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /diagnostics/base-validation-exception-errors
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs_src/handling_errors/tutorial005_py310.py, kind: upstream_documentation_example}
+- case_id: fastapi.validation-error-context.exact.base-errors-tuple
+  factory_input:
+    base_validation_exception:
+      errors: [{marker: tuple-sequence}]
+      sequence_type: tuple
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: call-base-errors-method-with-tuple
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /diagnostics/base-validation-exception-errors
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs_src/handling_errors/tutorial005_py310.py, kind: upstream_documentation_example}

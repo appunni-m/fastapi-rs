@@ -151816,6 +151816,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-body.yaml",
             "workflow_id": "request-validation-body"
+          },
+          {
+            "case_ids": [
+              "fastapi.validation-error-context.exact.base-errors-list",
+              "fastapi.validation-error-context.exact.base-errors-tuple"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+            "workflow_id": "validation-error-context-exact-review"
           }
         ],
         "mapped_documented_pages": [
@@ -151958,7 +151972,7 @@
           "tutorial/handling-errors.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "The FastAPI 0.141.1 example customizes RequestValidationError handling to encode both validation details and the parsed request body, and returns a Pydantic model for valid input. The independent cases sample invalid-body handling, valid model input/output, and the related OpenAPI request/422 schemas with a separately named model and handler payload. They do not claim the tutorial's exact field names, validation records, encoded JSON keys, or complete OpenAPI document.",
+          "rationale": "The FastAPI 0.141.1 example customizes RequestValidationError handling to encode both validation details and the parsed request body, and returns a Pydantic model for valid input. The independent cases sample invalid-body handling, valid model input/output, and the related OpenAPI request/422 schemas with a separately named model and handler payload. A separate direct-method case calls the inherited ValidationException.errors() method with list and tuple inputs, then observes the returned values, sequence type, and object identity. It does not claim the tutorial's exact field names, validation records, encoded JSON keys, or complete OpenAPI document.",
           "source_evidence": [
             {
               "end_line": 15,
@@ -151988,6 +152002,17 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-body.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.validation-error-context.exact.base-errors-list",
+                "fastapi.validation-error-context.exact.base-errors-tuple"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
             }
           ]
         }

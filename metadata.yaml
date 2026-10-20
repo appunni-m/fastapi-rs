@@ -13220,6 +13220,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.validation-error-context.exact.request-constructor-fields
         - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
           case_id: fastapi.validation-error-context.exact.websocket-constructor-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+          case_id: fastapi.validation-error-context.exact.base-errors-list
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+          case_id: fastapi.validation-error-context.exact.base-errors-tuple
       feature_ids: [public-api-errors, request-validation]
       observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -13227,12 +13231,14 @@ reviewed_api_contract_overlay:
         errors() returns the original stored error sequence; the exact response
         includes the serialized errors and a boolean identity observation. The
         three cases vary endpoint context and omitted body/context defaults.
+        Direct ValidationException.errors() calls also check the original
+        sequence identity and sequence type for list and tuple inputs.
         Input-built request and WebSocket validation errors are also rethrown
         through ASGI handlers while the runner observes their errors and public
         fields. The API class export remains a separate partial contract.
-        This does not establish direct method invocation, behavior for other
-        ValidationException subclasses, arbitrary sequence types, or the full
-        exception-class contract.
+        Behavior for other ValidationException subclasses, arbitrary sequence
+        types beyond list and tuple, and the full exception-class contract
+        remain unproven.
     fastapi.exceptions.WebSocketRequestValidationError:
       source_evidence:
         - path: fastapi/exceptions.py

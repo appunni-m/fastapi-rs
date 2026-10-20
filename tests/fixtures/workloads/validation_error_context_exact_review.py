@@ -7,6 +7,7 @@ from fastapi import Depends, FastAPI, Header, Query, Request, WebSocket
 from fastapi.exceptions import (
     RequestValidationError,
     ResponseValidationError,
+    ValidationException,
     WebSocketRequestValidationError,
 )
 from fastapi.responses import PlainTextResponse
@@ -119,5 +120,21 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
                 websocket_constructor["errors"],
                 endpoint_ctx=websocket_constructor["endpoint_ctx"],
             )
+
+    base_validation_exception = factory_input.get("base_validation_exception")
+    if isinstance(base_validation_exception, Mapping):
+        errors = base_validation_exception["errors"]
+        if base_validation_exception["sequence_type"] == "tuple":
+            errors = tuple(errors)
+
+        @app.get("/diagnostics/base-validation-exception-errors")
+        def render_base_validation_exception_errors():
+            error = ValidationException(errors)
+            returned_errors = error.errors()
+            return {
+                "errors": returned_errors,
+                "same_object": returned_errors is errors,
+                "sequence_type": type(returned_errors).__name__,
+            }
 
     return app
