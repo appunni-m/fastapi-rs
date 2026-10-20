@@ -41194,9 +41194,9 @@
     {
       "id": "validation-error-context-exact-review",
       "input_path": "tests/fixtures/inputs/parity/validation-error-context-exact-review.json",
-      "input_sha256": "978de9bffa7f2932aa03fbd00b5779de3c405d08b213896ec2cc27820ccbe496",
+      "input_sha256": "cfd2e2791db3a2f6a4310087c646cb2595bbab843d03aec7dae656ec093cabc7",
       "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
-      "recipe_sha256": "47ac007038a94558ec3b20a5b5bf6f5e50c724925f4e1afc0afe2cb44950f7d6",
+      "recipe_sha256": "af930858c7c441cc3782ff20acb0c631c9f808f19bfa25af3565e060d0bf8adb",
       "case_ids": [
         "fastapi.validation-error-context.exact.request-endpoint",
         "fastapi.validation-error-context.exact.response-endpoint",
@@ -41209,10 +41209,11 @@
         "fastapi.validation-error-context.exact.request-constructor-fields",
         "fastapi.validation-error-context.exact.websocket-constructor-fields",
         "fastapi.validation-error-context.exact.base-errors-list",
-        "fastapi.validation-error-context.exact.base-errors-tuple"
+        "fastapi.validation-error-context.exact.base-errors-tuple",
+        "fastapi.validation-error-context.exact.response-errors-body"
       ],
       "workload_path": "tests/fixtures/workloads/validation_error_context_exact_review.py",
-      "workload_sha256": "a6a79f77b56d86922a8bc6a8de1ee6eeaf632b17a06a032cffb7f467f3e00a9e",
+      "workload_sha256": "84de0893b79a719cd6449734973464ae3a8bc53dcd9de4aead6a389cf374beeb",
       "case_contracts": [
         {
           "case_id": "fastapi.validation-error-context.exact.request-endpoint",
@@ -41297,6 +41298,13 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-example:docs_src/handling_errors/tutorial005_py310.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-error-context.exact.response-errors-body",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_validation_error_context.py"
           ]
         }
       ]
@@ -74681,7 +74689,7 @@
       "fixture_id": "fastapi.test.test-validation-error-context",
       "workflow_id": "validation-error-context-exact-review",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 9 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.validation-error-context.exact.empty-context",
         "fastapi.validation-error-context.exact.mounted-response-endpoint",
@@ -74690,6 +74698,7 @@
         "fastapi.validation-error-context.exact.request-constructor-fields",
         "fastapi.validation-error-context.exact.request-endpoint",
         "fastapi.validation-error-context.exact.response-endpoint",
+        "fastapi.validation-error-context.exact.response-errors-body",
         "fastapi.validation-error-context.exact.websocket-endpoint",
         "fastapi.validation-error-context.exact.websocket-error-fields"
       ],

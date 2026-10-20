@@ -137,4 +137,22 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
                 "sequence_type": type(returned_errors).__name__,
             }
 
+    response_validation_constructor = factory_input.get("response_validation_constructor")
+    if isinstance(response_validation_constructor, Mapping):
+        response_errors = response_validation_constructor["errors"]
+        response_body = response_validation_constructor["body"]
+
+        @app.get("/diagnostics/direct-response-validation-error")
+        def direct_response_validation_error():
+            error = ResponseValidationError(response_errors, body=response_body)
+            returned_errors = error.errors()
+            return {
+                "exception_class": type(error).__name__,
+                "errors": returned_errors,
+                "same_errors_object": returned_errors is response_errors,
+                "sequence_type": type(returned_errors).__name__,
+                "body": error.body,
+                "same_body_object": error.body is response_body,
+            }
+
     return app
