@@ -4516,7 +4516,7 @@ pub(crate) struct PyFastApi {
     debug: bool,
     route_scope_prefix: String,
     is_router_inner: bool,
-    router_tags: Vec<String>,
+    router_tags: Py<PyAny>,
     router_dependencies: Vec<Py<PyAny>>,
     router_callbacks: Py<PyAny>,
     router_route_class: Option<Py<PyAny>>,
@@ -4992,7 +4992,6 @@ pub(crate) struct PyApiRouter {
     default: Option<Py<PyAny>>,
     dependency_overrides_provider: Option<Py<PyAny>>,
     route_class: Py<PyAny>,
-    tags: Vec<String>,
     tag_values: Py<PyAny>,
     deprecated: Option<bool>,
     include_in_schema: bool,
@@ -5508,7 +5507,7 @@ impl PyFastApi {
             debug,
             route_scope_prefix: String::new(),
             is_router_inner: false,
-            router_tags: Vec::new(),
+            router_tags: PyList::empty(py).into_any().unbind(),
             router_dependencies: Vec::new(),
             router_callbacks,
             router_route_class: None,
@@ -8442,16 +8441,13 @@ impl PyApiRouter {
             Some(route_class) => route_class.clone_ref(py),
             None => api_route_type(py)?.unbind(),
         };
-        let tag_values = PyList::new(py, app_state.router_tags.iter())?
-            .into_any()
-            .unbind();
+        let tag_values = app_state.router_tags.clone_ref(py);
         Ok(Self {
             inner,
             prefix: String::new(),
             default: None,
             dependency_overrides_provider: None,
             route_class,
-            tags: app_state.router_tags.clone(),
             tag_values,
             deprecated: app_state.router_deprecated,
             include_in_schema: app_state.router_include_in_schema,
@@ -8521,12 +8517,6 @@ impl PyApiRouter {
             Some(tags) if tags.bind(py).is_truthy()? => tags,
             _ => PyList::empty(py).into_any().unbind(),
         };
-        let router_tags: Vec<String> = tag_values
-            .bind(py)
-            .extract::<Vec<FastApiTag>>()?
-            .into_iter()
-            .map(|tag| tag.0)
-            .collect();
         let router_dependencies = dependencies.unwrap_or_default();
         let router_callbacks = match callbacks {
             Some(callbacks) if callbacks.bind(py).is_truthy()? => callbacks,
@@ -8580,7 +8570,7 @@ impl PyApiRouter {
             let mut inner = inner.bind(py).borrow_mut();
             inner.route_scope_prefix = prefix.to_owned();
             inner.is_router_inner = true;
-            inner.router_tags = router_tags.clone();
+            inner.router_tags = tag_values.clone_ref(py);
             inner.router_dependencies = router_dependencies
                 .iter()
                 .map(|dependency| dependency.clone_ref(py))
@@ -8597,7 +8587,6 @@ impl PyApiRouter {
             default,
             dependency_overrides_provider,
             route_class,
-            tags: router_tags,
             tag_values,
             deprecated,
             include_in_schema,
@@ -8634,6 +8623,13 @@ impl PyApiRouter {
     #[getter]
     fn tags(&self, py: Python<'_>) -> Py<PyAny> {
         self.tag_values.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_tags(&mut self, py: Python<'_>, tags: Py<PyAny>) -> PyResult<()> {
+        self.inner_app(py)?.bind(py).borrow_mut().router_tags = tags.clone_ref(py);
+        self.tag_values = tags;
+        Ok(())
     }
 
     #[getter]
@@ -8962,7 +8958,7 @@ impl PyApiRouter {
             (
                 inner,
                 parent.prefix.clone(),
-                parent.tags.clone(),
+                fastapi_router_tags(parent.tag_values.bind(py))?,
                 parent
                     .dependencies
                     .iter()
@@ -9251,6 +9247,14 @@ fn combined_route_tags(
         tags.extend_from_slice(route_tags);
     }
     Some(tags)
+}
+
+fn fastapi_router_tags(tags: &Bound<'_, PyAny>) -> PyResult<Vec<String>> {
+    Ok(tags
+        .extract::<Vec<FastApiTag>>()?
+        .into_iter()
+        .map(|tag| tag.0)
+        .collect())
 }
 
 fn callback_values(callbacks: &Bound<'_, PyAny>) -> PyResult<Vec<Py<PyAny>>> {
@@ -10999,7 +11003,7 @@ fn operation_decorator(
                     &app.generate_unique_id_function,
                 ],
             ),
-            app.router_tags.clone(),
+            app.router_tags.clone_ref(py),
             app.router_dependencies
                 .iter()
                 .map(|dependency| dependency.clone_ref(py))
@@ -11008,6 +11012,7 @@ fn operation_decorator(
             app.router_include_in_schema,
         )
     };
+    let router_tags = fastapi_router_tags(router_tags.bind(py))?;
     let tags = combined_route_tags(&router_tags, response_model_options.tags.as_deref());
     let mut dependencies = router_dependencies;
     dependencies.extend(response_model_options.dependencies);

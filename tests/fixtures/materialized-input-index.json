@@ -1079,6 +1079,27 @@
       ]
     },
     {
+      "id": "apirouter-tags-post-construction-state",
+      "input_path": "tests/fixtures/inputs/parity/apirouter-tags-post-construction-state.json",
+      "input_sha256": "45bb7750b067e1019192d87ee1369cad7f1bdf2a2ce2af2dd3b07cc307c9ab5b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apirouter-tags-post-construction-state.yaml",
+      "recipe_sha256": "7512911bbf6b873600e54ed4afe0a5db090aeb6c23fac6eb149ad2061e03e4fd",
+      "case_ids": [
+        "fastapi.routing.apirouter.tags.post-construction-state"
+      ],
+      "workload_path": "tests/fixtures/workloads/apirouter_tags_post_construction_state.py",
+      "workload_sha256": "90457116c51440bf31370f4c28f484c304b97e7d1ea814c5c1ef0d01f1737376",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apirouter.tags.post-construction-state",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "app-constructor-route-defaults",
       "input_path": "tests/fixtures/inputs/parity/app-constructor-route-defaults.json",
       "input_sha256": "42ff24fd8c748afc050607798c2dee27da56c8b28577826306dbd695e89602ad",
@@ -43306,6 +43327,24 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "apirouter-tags-post-construction-state",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.body.json, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apirouter.tags.post-construction-state"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

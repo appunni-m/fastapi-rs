@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 8974de762987b2a7adb5fd579f05a11965a1de215fbc952ed5c9d5788b0fd1f8
+    sha256: 75c529a74171efa7ba4f319e829d98f0dfd4dc4453f1cbd83f9fab2237729ba1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: b3fa1d3987ee06689255c7f8ca3490bfc9c7a3b3fac189785bfba195642ef8ce
+    sha256: f9ee266cbd6a0a36f7c679079f4b57ad7c929ce86a0588d32484f25adfd41e5d
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: c7c505f8e96596e08595e00e6cc7af1644b888423103f2a5ff172b4fa5734bdd
+    sha256: 3cfdf1b14116dc58f7bee34f290354a07eddf7229f8a332d6e7e84c8843eab04
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 1f65d2e15d68141db5098920454ab925f49d5fbb236af8d03d080aacb21c17f8
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 713
-      cases: 2933
-      partial_source_mappings: 1968
+      workflows: 714
+      cases: 2934
+      partial_source_mappings: 1969
 
 contract_metadata:
   aliases:
@@ -1375,7 +1375,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 407
-    operation_fixture_refs: 2624
+    operation_fixture_refs: 2625
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -62738,6 +62738,29 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: apirouter-tags-post-construction-state
+      input_path: tests/fixtures/inputs/parity/apirouter-tags-post-construction-state.json
+      input_sha256: 45bb7750b067e1019192d87ee1369cad7f1bdf2a2ce2af2dd3b07cc307c9ab5b
+      recipe_path: tests/fixtures/input-recipes/parity/apirouter-tags-post-construction-state.yaml
+      recipe_sha256: 7512911bbf6b873600e54ed4afe0a5db090aeb6c23fac6eb149ad2061e03e4fd
+      workload_path: tests/fixtures/workloads/apirouter_tags_post_construction_state.py
+      workload_sha256: 90457116c51440bf31370f4c28f484c304b97e7d1ea814c5c1ef0d01f1737376
+      case_id: fastapi.routing.apirouter.tags.post-construction-state
+      observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.body.json
+      - http.status
+      - openapi.document
+      - openapi.paths
     - workflow_id: starlette-routing-runtime-upstream
       input_path: tests/fixtures/inputs/parity/starlette-routing-runtime-upstream.json
       input_sha256: fa337f2a338c94106d6899b52a03db87f236660fc3e72083a73d480787ed92a0
@@ -63154,9 +63177,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       known_gaps:
-      - The constructor tag input covers one string-valued Enum member and constructor field snapshots;
-        non-string Enum values, interaction with route-level tags, post-construction reassignment, and
-        in-place list mutation effects remain unproven.
+      - Constructor tag inputs cover string-valued Enum members, list identity, in-place mutation and
+        reassignment before inclusion, and route-level tag composition with registration-time snapshots.
+        Non-string Enum values, non-list reassignment, and mutation after application inclusion remain
+        unproven.
       - Response-field construction must retain source registration and included effective-context timing,
         schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
         fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary

@@ -9224,6 +9224,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apirouter.constructor-enum-tag-openapi
           workload_path: tests/fixtures/workloads/apirouter_constructor_enum_tag.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.status, http.body_json, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/apirouter-tags-post-construction-state.yaml
+          case_id: fastapi.routing.apirouter.tags.post-construction-state
+          workload_path: tests/fixtures/workloads/apirouter_tags_post_construction_state.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.status, http.body.bytes, http.body.json, openapi.paths]
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-included-starlette-mount-keeps-prefix-runtime-and-url-path-for
           workload_path: tests/fixtures/workloads/starlette_routing_runtime.py
@@ -9306,9 +9310,14 @@ reviewed_api_contract_overlay:
         `apirouter-constructor-enum-tag-openapi` input observes successful
         construction, included-route dispatch, the resulting OpenAPI tag value,
         and the exposed `tags` list type, contents, and identity for default,
-        empty, and non-empty constructor inputs. Non-string Enum values,
-        post-construction `tags` reassignment, and in-place list mutation remain
-        unproven. The constructor also accepts `deprecated` and
+        empty, and non-empty constructor inputs. Post-construction `tags`
+        reassignment and in-place list mutation are exercised by
+        `apirouter-tags-post-construction-state`. It observes
+        constructor-list identity, mutation and list reassignment before
+        inclusion, route-level tag composition, and route tag snapshots at
+        registration through runtime traces and selected OpenAPI paths.
+        Non-string Enum values, non-list reassignment, and mutation after
+        application inclusion remain unproven. The constructor also accepts `deprecated` and
         `include_in_schema`; their behavior is sampled by
         router-schema-policy-upstream. A list of synchronous Depends declarations
         with required scalar query inputs is validated and invoked in router-
@@ -9370,10 +9379,11 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The constructor tag input covers one string-valued Enum member and
-            constructor field snapshots; non-string Enum values, interaction
-            with route-level tags, post-construction reassignment, and in-place
-            list mutation effects remain unproven.
+            Constructor tag inputs cover string-valued Enum members, list
+            identity, in-place mutation and reassignment before inclusion, and
+            route-level tag composition with registration-time snapshots.
+            Non-string Enum values, non-list reassignment, and mutation after
+            application inclusion remain unproven.
           - *response_field_lifecycle_gap
           - *response_class_provenance_gap
           - *response_field_serialization_gap
