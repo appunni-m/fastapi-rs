@@ -54,14 +54,15 @@
     {
       "id": "additional-response-model-openapi",
       "input_path": "tests/fixtures/inputs/parity/additional-response-model-openapi.json",
-      "input_sha256": "30d3d259ac3bf008ac54f9789b54a9eeb98b9c2fb0afe11181fde9830c3385eb",
+      "input_sha256": "9a53d1e3d4e0e8fb0f27a080890bb3e4b215ecbb01120f4d9910ab48f9e3dea7",
       "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-model-openapi.yaml",
-      "recipe_sha256": "b0ddd374acf2cd35d630052f485f96bdd747b8dfde53f728cefe3860b69de034",
+      "recipe_sha256": "16b033b63331d9d62610360e096a5f5f0d94af0806a26729f0a6c0cf712aee23",
       "case_ids": [
-        "fastapi.openapi.additional-response-model"
+        "fastapi.openapi.additional-response-model",
+        "fastapi.openapi.inherited-additional-response-models"
       ],
       "workload_path": "tests/fixtures/workloads/additional_response_model_openapi.py",
-      "workload_sha256": "b2564c1dfaa712a8430f14383aee36164d2444ea470039f30f243b8eddc37c99",
+      "workload_sha256": "981608f1d9b923e3ccf2e7679449a26b92e09961fe2dceb2a60437c8df7ed536",
       "case_contracts": [
         {
           "case_id": "fastapi.openapi.additional-response-model",
@@ -69,6 +70,14 @@
           "requirement_refs": [
             "source:documented-page:advanced/additional-responses.md",
             "source:upstream-test:tests/test_tutorial/test_additional_responses/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.inherited-additional-response-models",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/bigger-applications.md"
           ]
         }
       ]
@@ -42366,9 +42375,26 @@
       "fixture_id": "fastapi.docs.advanced-additional-responses",
       "workflow_id": "additional-response-model-openapi",
       "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi.additional-response-model",
+        "fastapi.openapi.inherited-additional-response-models"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/bigger-applications.md",
+      "fixture_id": "fastapi.docs.tutorial-bigger-applications",
+      "workflow_id": "additional-response-model-openapi",
+      "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.openapi.additional-response-model"
+        "fastapi.openapi.inherited-additional-response-models"
       ],
       "observation_selectors": [
         "docs.response.status",

@@ -47,3 +47,46 @@ cases:
     kind: upstream_documentation
   - path: tests/test_tutorial/test_additional_responses/test_tutorial001.py
     kind: upstream_test
+- case_id: fastapi.openapi.inherited-additional-response-models
+  actions:
+  - action_id: inspect-inherited-additional-response-models
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: GET
+      path: /openapi.json
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1v1~1items/get/responses
+      - /components/schemas
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/bigger-applications.md
+    kind: upstream_documentation
