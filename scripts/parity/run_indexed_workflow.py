@@ -34,7 +34,7 @@ from scripts.parity.process_contract import (
 from scripts.parity.source_identity import fastapi_rs_source_tree_sha256
 
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
-INDEXED_INDEX_SCHEMA = "fastapi-rs/materialized-input-index@10"
+INDEXED_INDEX_SCHEMA = "fastapi-rs/materialized-input-index@11"
 PROCESS_RESULT_DIR = ROOT / "parity-results/indexed"
 
 PROFILE_PATHS: dict[str | None, tuple[str, str]] = {

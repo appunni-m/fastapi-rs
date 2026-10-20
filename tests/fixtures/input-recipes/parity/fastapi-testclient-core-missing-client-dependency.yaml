@@ -1,0 +1,23 @@
+# Run with PARITY_API_PROFILE_EXTENSION empty so the core profiles omit HTTPX and httpx2.
+schema: fastapi-rs/python-api-workflow@11
+workload:
+  file: tests/fixtures/workloads/testclient_missing_dependency.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.testclient.core-missing-client-dependency
+    probes:
+      - probe_id: missing-client-dependency
+        public_callable:
+          module: fastapi.testclient
+          attribute: TestClient
+        argument_bundle: client
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+    source_evidence:
+      - path: fastapi/testclient.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.testclient.TestClient
+        sha256: 9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4

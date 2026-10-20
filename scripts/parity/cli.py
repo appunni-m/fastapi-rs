@@ -43,6 +43,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V14_ID,
     WORKFLOW_SCHEMA_V15_ID,
     WORKFLOW_SCHEMA_V16_ID,
+    WORKFLOW_SCHEMA_V17_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -394,8 +395,9 @@ def target_command(args: argparse.Namespace) -> dict[str, Any]:
         WORKFLOW_SCHEMA_V14_ID,
         WORKFLOW_SCHEMA_V15_ID,
         WORKFLOW_SCHEMA_V16_ID,
+        WORKFLOW_SCHEMA_V17_ID,
     }:
-        raise ContractError("target requires a Python/ASGI v2 through v16 workflow")
+        raise ContractError("target requires a Python/ASGI v2 through v17 workflow")
     python = args.python.absolute()
     if not python.is_file():
         raise ContractError(

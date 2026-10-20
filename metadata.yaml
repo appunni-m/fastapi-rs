@@ -4896,14 +4896,9 @@ reviewed_api_contract_overlay:
         status: unresolved
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
-          - >-
-            The source ownership plan delegates the generic API object to Starlette-RS; no exact
-            canonical sibling operation mapping establishes this FastAPI symbol.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The rendered-template workflow covers one in-memory template and one FastAPI HTTP route;
+            directory loaders, context processors, response options, and failure behavior remain
+            outside this slice.
       source_evidence:
         - path: fastapi/templating.py
           symbol: Jinja2Templates
@@ -4915,29 +4910,37 @@ reviewed_api_contract_overlay:
           alias_spelling: Jinja2Templates
           local_name: Jinja2Templates
           target_path: starlette.templating.Jinja2Templates
-      observation_selectors: [python.binding_identity, python.signature]
+      observation_selectors: [python.binding_identity, python.signature, http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-alias-identity.yaml
+          case_id: fastapi.templating.module-and-alias-identity
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.import_path, python.object_identity, python.binding_identity, python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-templating-asgi.yaml
+          case_id: fastapi.templating.jinja-template-response
+          workload_path: tests/fixtures/workloads/fastapi_templating_asgi.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       supported_slice: >-
         FastAPI 0.141.1 directly re-exports the Starlette Jinja2Templates class.
         The FastAPI-RS templates extra pins only Jinja2 3.1.6 and MarkupSafe
         3.0.3, and its paired templates profile observes the public module's
         import identity, exact object identity with starlette.templating, and
         the source-backed callable signature. The core profile keeps the
-        missing-Jinja2 import failure. Generic template rendering and response
-        behavior remain Starlette-RS-owned and are not claimed by this slice.
+        missing-Jinja2 import failure. A focused ASGI case also checks one
+        FastAPI route returning a rendered in-memory template, with exact
+        response and send-message observations. Starlette-RS owns generic
+        template behavior; this slice does not cover all loaders, context
+        processors, response options, or failure behavior.
     fastapi.testclient.TestClient:
       target_binding:
         implementation_owner: starlette-rs
         status: unresolved
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
-          - >-
-            The source ownership plan delegates the generic API object to Starlette-RS; no exact
-            canonical sibling operation mapping establishes this FastAPI symbol.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The FastAPI-RS workflows cover the direct alias, import fallback warning, missing-client
+            dependency error, and one HTTP/lifespan path; the broader TestClient request, WebSocket,
+            portal, and exception behavior remains Starlette-RS-owned and is not fully established
+            through FastAPI's public alias.
       source_evidence:
         - path: fastapi/testclient.py
           symbol: TestClient
@@ -4949,19 +4952,39 @@ reviewed_api_contract_overlay:
           alias_spelling: TestClient
           local_name: TestClient
           target_path: starlette.testclient.TestClient
-      observation_selectors: [python.binding_identity, python.signature]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-alias-identity.yaml
+          case_id: fastapi.testclient.public-api.alias-identity
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.binding_identity]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-public-alias.yaml
+          case_id: fastapi.testclient.public-api.alias-signature
+          workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+          observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-module-import-fallback-warning.yaml
+          case_id: fastapi.testclient.module-import-fallback-warning
+          workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+          observation_selectors: [python.import_path, python.object_identity, python.warnings]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-core-missing-client-dependency.yaml
+          case_id: fastapi.testclient.core-missing-client-dependency
+          workload_path: tests/fixtures/workloads/testclient_missing_dependency.py
+          observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-testclient-http-lifespan.yaml
+          case_id: fastapi.testclient.http-lifespan.request-context
+          workload_path: tests/fixtures/workloads/fastapi_testclient_http_lifespan.py
+          observation_selectors: [http.status, http.body.bytes, asgi.lifespan.workload_trace]
+      observation_selectors: [python.binding_identity, python.signature, python.import_path, python.object_identity, python.warnings, python.call_outcome, http.status, http.body.bytes, asgi.lifespan.workload_trace]
       supported_slice: >-
         FastAPI 0.141.1 directly re-exports the Starlette TestClient class. Its
         optional standard extras include httpx for the test client; pinned
         Starlette 1.6.0 imports httpx2 when available and falls back to httpx
-        with a deprecation warning. This describes the FastAPI source alias and
-        optional availability. FastAPI-RS exposes the alias through a direct
-        `starlette.testclient` re-export; its `testclient` extra installs the
-        HTTPX version range supported by pinned Starlette-RS. The direct API
-        workflow maps public binding identity and signature observations to the
-        canonical `starlette.testclient.TestClient` object in each isolated
-        process. Generic request, WebSocket, and lifespan behavior are
-        Starlette-RS-owned; full TestClient behavior parity is not established.
+        with a deprecation warning. The identity-checked API workflows compare
+        the alias, signature, exact fallback warning, and core-profile missing
+        dependency error. The paired TestClient profile also compares one
+        request and lifespan path. FastAPI-RS exposes the alias through a direct
+        `starlette.testclient` re-export; generic request, WebSocket, and
+        lifespan behavior remains Starlette-RS-owned, and the linked sample
+        does not establish the full TestClient behavior contract.
     fastapi.websockets.WebSocket:
       target_binding:
         implementation_owner: starlette-rs

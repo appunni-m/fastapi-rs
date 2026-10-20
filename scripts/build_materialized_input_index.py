@@ -150,6 +150,7 @@ from scripts.parity.contract import (
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V16_ID,
+    WORKFLOW_SCHEMA_V17_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -166,7 +167,7 @@ INPUT_DIR = ROOT / "tests/fixtures/inputs/parity"
 FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 INDEX_SCHEMA = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
-INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v10.schema.json"
+INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v11.schema.json"
 
 _REVIEWED_PAGE_SECTION_MAPPINGS = (
     DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
@@ -478,7 +479,11 @@ def build_index() -> dict[str, Any]:
                         for source in candidate_sources
                     )
                     if (
-                        workflow["schema"] != WORKFLOW_SCHEMA_V16_ID
+                        workflow["schema"]
+                        not in {
+                            WORKFLOW_SCHEMA_V16_ID,
+                            WORKFLOW_SCHEMA_V17_ID,
+                        }
                         or evidence["symbol_id"] not in supported_api_symbols
                         or not source_matches_candidate
                     ):

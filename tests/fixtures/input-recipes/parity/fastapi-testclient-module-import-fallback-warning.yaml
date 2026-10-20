@@ -1,0 +1,27 @@
+# Run with PARITY_API_PROFILE_EXTENSION=testclient to select the HTTPX-only fallback profile.
+schema: fastapi-rs/python-api-workflow@11
+workload:
+  file: tests/fixtures/workloads/documented_core_module_identities.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.testclient.module-import-fallback-warning
+    probes:
+      - probe_id: module-import-fallback-warning
+        public_module:
+          module: fastapi.testclient
+          bindings:
+            - TestClient
+        capture_warnings: true
+        observations:
+          - kind: python_import_path
+            selector: import_path
+            comparison: exact
+          - kind: python_object_identity
+            selector: object_identity
+            comparison: exact
+    source_evidence:
+      - path: fastapi/testclient.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.testclient.TestClient
+        sha256: 9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4

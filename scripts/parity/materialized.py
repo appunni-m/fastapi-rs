@@ -19,6 +19,7 @@ from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_V8_ID,
     API_WORKFLOW_SCHEMA_V9_ID,
     API_WORKFLOW_SCHEMA_V10_ID,
+    API_WORKFLOW_SCHEMA_V11_ID,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
@@ -35,6 +36,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V14_ID,
     WORKFLOW_SCHEMA_V15_ID,
     WORKFLOW_SCHEMA_V16_ID,
+    WORKFLOW_SCHEMA_V17_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -47,7 +49,7 @@ from scripts.parity.process_contract import (
     load_process_workflow,
 )
 
-INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v10.schema.json"
+INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v11.schema.json"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
@@ -109,6 +111,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     API_WORKFLOW_SCHEMA_V8_ID,
                     API_WORKFLOW_SCHEMA_V9_ID,
                     API_WORKFLOW_SCHEMA_V10_ID,
+                    API_WORKFLOW_SCHEMA_V11_ID,
                 }
                 and probe.get("capture_warnings") is True
             ):
@@ -153,6 +156,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V14_ID,
         WORKFLOW_SCHEMA_V15_ID,
         WORKFLOW_SCHEMA_V16_ID,
+        WORKFLOW_SCHEMA_V17_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -173,6 +177,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V14_ID,
             WORKFLOW_SCHEMA_V15_ID,
             WORKFLOW_SCHEMA_V16_ID,
+            WORKFLOW_SCHEMA_V17_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -194,6 +199,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V14_ID,
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
+                WORKFLOW_SCHEMA_V17_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -443,7 +449,11 @@ def validate_materialized_input_index(
                         for source in candidate_sources
                     )
                     if (
-                        workflow["schema"] != WORKFLOW_SCHEMA_V16_ID
+                        workflow["schema"]
+                        not in {
+                            WORKFLOW_SCHEMA_V16_ID,
+                            WORKFLOW_SCHEMA_V17_ID,
+                        }
                         or symbol_id not in supported_api_symbols
                         or not source_matches_candidate
                     ):
@@ -562,6 +572,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V14_ID,
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
+                WORKFLOW_SCHEMA_V17_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)
@@ -570,7 +581,7 @@ def validate_materialized_input_index(
                         f"materialized input index: invalid case contract {case_id}: {exc}"
                     ) from exc
             elif "verification" in case or "fault" in case:
-                _fail(f"verification lanes require Python/ASGI workflow v7 through v16: {case_id}")
+                _fail(f"verification lanes require Python/ASGI workflow v7 through v17: {case_id}")
             if indexed_contracts[case_id]["verification"] != expected_mode:
                 _fail(f"indexed verification lane differs from workflow: {case_id}")
             if expected_mode == "fault-contract" and indexed_contracts[case_id].get(

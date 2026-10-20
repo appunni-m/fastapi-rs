@@ -48,6 +48,7 @@ WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow@9"
 WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow@10"
+WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow@11"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -60,6 +61,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
         WORKFLOW_SCHEMA_V10_ID,
+        WORKFLOW_SCHEMA_V11_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -73,6 +75,7 @@ RESULT_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow-result@9"
 RESULT_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow-result@10"
 RESULT_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow-result@11"
 RESULT_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow-result@12"
+RESULT_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow-result@13"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -84,6 +87,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V9_ID: RESULT_SCHEMA_V11_ID,
     WORKFLOW_SCHEMA_V10_ID: RESULT_SCHEMA_V12_ID,
+    WORKFLOW_SCHEMA_V11_ID: RESULT_SCHEMA_V13_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
@@ -148,7 +152,11 @@ def _error_record(error: Exception) -> dict[str, str]:
     }
 
 
-def _warning_filename(filename: str, fastapi_root: Path) -> str:
+def _warning_filename(
+    filename: str,
+    fastapi_root: Path,
+    starlette_package_root: Path | None = None,
+) -> str:
     """Normalize warning paths to stable repository or package-relative names."""
     warning_path = Path(filename)
     resolved_path = warning_path.resolve()
@@ -159,6 +167,14 @@ def _warning_filename(filename: str, fastapi_root: Path) -> str:
         pass
     else:
         return PurePosixPath("fastapi", *package_relative.parts).as_posix()
+
+    if starlette_package_root is not None:
+        try:
+            package_relative = resolved_path.relative_to(starlette_package_root.resolve())
+        except ValueError:
+            pass
+        else:
+            return PurePosixPath("starlette", *package_relative.parts).as_posix()
 
     try:
         repository_relative = resolved_path.relative_to(ROOT.resolve())
@@ -179,12 +195,16 @@ def _warning_filename(filename: str, fastapi_root: Path) -> str:
     return resolved_path.name
 
 
-def _warning_record(warning: warnings.WarningMessage, fastapi_root: Path) -> dict[str, Any]:
+def _warning_record(
+    warning: warnings.WarningMessage,
+    fastapi_root: Path,
+    starlette_package_root: Path | None = None,
+) -> dict[str, Any]:
     category = warning.category
     return {
         "category": f"{category.__module__}.{category.__qualname__}",
         "message": str(warning.message),
-        "filename": _warning_filename(warning.filename, fastapi_root),
+        "filename": _warning_filename(warning.filename, fastapi_root, starlette_package_root),
         "lineno": warning.lineno,
     }
 
@@ -623,11 +643,28 @@ def _resolve_public_attribute_value(spec: dict[str, str], fastapi_root: Path) ->
     return value
 
 
-def _public_module_observations(probe: dict[str, Any], fastapi_root: Path) -> list[dict[str, Any]]:
+def _public_module_observations(
+    probe: dict[str, Any],
+    fastapi_root: Path,
+    starlette_package_root: Path | None = None,
+    *,
+    captured_warnings: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     """Project module import metadata and reviewed same-process identity relations."""
     specification = probe["public_module"]
     module_name = specification["module"]
-    module = importlib.import_module(module_name)
+    if captured_warnings is None:
+        module = importlib.import_module(module_name)
+    else:
+        try:
+            with warnings.catch_warnings(record=True) as emitted:
+                warnings.simplefilter("always")
+                module = importlib.import_module(module_name)
+        finally:
+            captured_warnings.extend(
+                _warning_record(warning, fastapi_root, starlette_package_root)
+                for warning in emitted
+            )
     module_file = getattr(module, "__file__", None)
     if module_file is None or not _is_under(Path(module_file), fastapi_root / "fastapi"):
         raise WorkerError(f"public module is outside the selected FastAPI package: {module_name}")
@@ -776,20 +813,25 @@ def _validate_workflow_callables(
                 for observation in observations
             )
             if class_docstring_selected and (
-                workflow.get("schema") != WORKFLOW_SCHEMA_V10_ID
+                workflow.get("schema") not in {WORKFLOW_SCHEMA_V10_ID, WORKFLOW_SCHEMA_V11_ID}
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
                 or "public_attribute" in probe
             ):
                 raise WorkerError(
-                    "class docstring observation requires one v10 public-callable probe"
+                    "class docstring observation requires one v10 or v11 public-callable probe"
                 )
             if "binding_identity" in probe or binding_identity_selected:
                 binding_identity = probe.get("binding_identity")
                 if (
                     workflow.get("schema")
-                    not in {WORKFLOW_SCHEMA_V8_ID, WORKFLOW_SCHEMA_V9_ID, WORKFLOW_SCHEMA_V10_ID}
+                    not in {
+                        WORKFLOW_SCHEMA_V8_ID,
+                        WORKFLOW_SCHEMA_V9_ID,
+                        WORKFLOW_SCHEMA_V10_ID,
+                        WORKFLOW_SCHEMA_V11_ID,
+                    }
                     or not binding_identity_selected
                     or len(observations) != 1
                     or "public_callable" not in probe
@@ -803,7 +845,7 @@ def _validate_workflow_callables(
                     or _ATTRIBUTE_PATH.fullmatch(binding_identity["attribute"]) is None
                 ):
                     raise WorkerError(
-                        "cross-module binding identity requires one v8, v9, or v10 callable probe"
+                        "cross-module binding identity requires one v8 through v11 callable probe"
                     )
             background_task_queue_selected = any(
                 isinstance(observation, dict)
@@ -818,7 +860,12 @@ def _validate_workflow_callables(
                     for observation in observations
                 )
                 if (
-                    workflow.get("schema") not in {WORKFLOW_SCHEMA_V9_ID, WORKFLOW_SCHEMA_V10_ID}
+                    workflow.get("schema")
+                    not in {
+                        WORKFLOW_SCHEMA_V9_ID,
+                        WORKFLOW_SCHEMA_V10_ID,
+                        WORKFLOW_SCHEMA_V11_ID,
+                    }
                     or not isinstance(public_callable, dict)
                     or public_callable.get("module") != "fastapi.background"
                     or public_callable.get("attribute") != "BackgroundTasks.add_task"
@@ -827,7 +874,8 @@ def _validate_workflow_callables(
                     or not invocation_selected
                 ):
                     raise WorkerError(
-                        "BackgroundTasks queue observation requires one v9 or v10 add_task call "
+                        "BackgroundTasks queue observation requires v9 through v11, "
+                        "one add_task call "
                         "and a return or call-outcome observation"
                     )
             if "public_module" in probe:
@@ -838,6 +886,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V8_ID,
                         WORKFLOW_SCHEMA_V9_ID,
                         WORKFLOW_SCHEMA_V10_ID,
+                        WORKFLOW_SCHEMA_V11_ID,
                     }
                     or any(
                         key in probe
@@ -845,15 +894,18 @@ def _validate_workflow_callables(
                             "public_callable",
                             "public_attribute",
                             "argument_bundle",
-                            "capture_warnings",
                         )
+                    )
+                    or (
+                        "capture_warnings" in probe
+                        and workflow.get("schema") != WORKFLOW_SCHEMA_V11_ID
                     )
                     or len(observations) != 2
                     or {row.get("kind") for row in observations if isinstance(row, dict)}
                     != {"python_import_path", "python_object_identity"}
                 ):
                     raise WorkerError(
-                        "module identity requires one v7 through v10 module probe with both "
+                        "module identity requires one v7 through v11 module probe with both "
                         "identity "
                         "observations"
                     )
@@ -1030,21 +1082,34 @@ async def _run_probe(
     structural_signatures: bool = False,
 ) -> dict[str, Any]:
     if "public_module" in probe:
+        capture_import_warnings = probe.get("capture_warnings") is True
+        captured_warnings: list[dict[str, Any]] = []
         try:
-            return {
+            probe_result = {
                 "probe_id": probe["probe_id"],
                 "status": "completed",
-                "observations": _public_module_observations(probe, fastapi_root),
+                "observations": _public_module_observations(
+                    probe,
+                    fastapi_root,
+                    starlette_package_root,
+                    captured_warnings=(captured_warnings if capture_import_warnings else None),
+                ),
             }
+            if capture_import_warnings:
+                probe_result["warnings"] = captured_warnings
+            return probe_result
         except WorkerError:
             raise
         except Exception as exc:
-            return {
+            probe_result = {
                 "probe_id": probe["probe_id"],
                 "status": "product_error",
                 "error": _error_record(exc),
                 "observations": [],
             }
+            if capture_import_warnings:
+                probe_result["warnings"] = captured_warnings
+            return probe_result
     capture_warnings = probe.get("capture_warnings") is True
     captured_warnings: list[dict[str, Any]] = []
     try:
@@ -1608,6 +1673,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
+                WORKFLOW_SCHEMA_V11_ID,
             },
         )
     )
