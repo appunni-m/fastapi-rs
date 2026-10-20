@@ -15612,8 +15612,8 @@ reviewed_api_contract_overlay:
             acceptance, and selected class/method annotations, docstrings, module names, qualified
             names, and coroutine metadata. A direct error case checks one propagated OSError for
             each async file method and the size increment after a failed write. The broader
-            invalid-input types beyond the standard None/scalar/container sample and storage types
-            beyond BytesIO and SpooledTemporaryFile remain unverified.
+            invalid-input types beyond current samples, unusual header combinations, and storage
+            types beyond BytesIO and SpooledTemporaryFile remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15673,6 +15673,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.spooled-storage-thresholds
           workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         The public class constructs from BytesIO and SpooledTemporaryFile objects, exposes selected
         file metadata, supports the linked awaited file-operation sequence, generates its Pydantic
@@ -15681,8 +15685,10 @@ reviewed_api_contract_overlay:
         linked custom type cases observe validator diagnostics, including Python format-protocol
         behavior for one custom metaclass. A sample invalid-input matrix covers None, boolean,
         integer, string, bytes, list, and mapping values. A selected introspection case compares
-        class and method annotations, docstrings, module and qualified names, and coroutine flags;
-        other file-object types and invalid-input values remain outside this partial slice.
+        class and method annotations, docstrings, module and qualified names, and coroutine flags.
+        Constructor and property cases compare omitted headers, duplicate case-insensitive content-type
+        values, and reassignment of file, filename, size, and headers; other file types and input values
+        remain outside this partial slice.
 
     fastapi.datastructures.UploadFile.close:
       target_binding:
@@ -15726,6 +15732,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.spooled-storage-thresholds
           workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Awaited close returns `None` and closes BytesIO and spooled file objects; a selected
         underlying OSError propagates and leaves the failing file open.
@@ -15736,8 +15746,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Values are checked for one explicit lower-case content-type header and for absent
-            content-type; other header spellings and duplicate values remain unverified.
+            Values are checked for absent content-type and uppercase duplicate content-type headers;
+            other raw spellings, duplicate orderings, and value encodings remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15753,9 +15763,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Read `content_type` from an explicit lower-case header and return `None` when that header
-        is absent.
+        Read `content_type` from explicit lower-case and uppercase duplicate headers, returning the
+        first matching value, and return `None` when no content-type header is present.
 
     fastapi.datastructures.UploadFile.file:
       target_binding:
@@ -15764,7 +15778,8 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             Object identity and blocking reads are checked for BytesIO and SpooledTemporaryFile
-            before and after rollover; other file object types remain unverified.
+            before and after rollover, plus file-field reassignment; other file object types remain
+            unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15788,8 +15803,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.spooled-storage-thresholds
           workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Expose the exact BytesIO or SpooledTemporaryFile object passed to the constructor, including
+        Expose and allow reassignment of the supplied BytesIO or SpooledTemporaryFile object, with
         direct reads before and after rollover.
 
     fastapi.datastructures.UploadFile.filename:
@@ -15798,7 +15817,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks an explicit string and `None`; additional filename values and
+            The workflow checks explicit, `None`, and reassigned filename values; other values and
             parser-provided filename edge cases remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
@@ -15815,8 +15834,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Read the explicit constructor filename, including the `None` value.
+        Read explicit and `None` constructor filenames and observe a reassigned filename value.
 
     fastapi.datastructures.UploadFile.headers:
       target_binding:
@@ -15824,8 +15847,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            One lower-case content-type plus one additional header and the empty headers case are
-            checked; casing and duplicate-header behavior remain unverified.
+            Default empty, explicit, uppercase duplicate, and reassigned headers are checked; other
+            raw encodings and duplicate orderings remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15841,8 +15864,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Read the supplied `Headers` values and return the empty headers mapping for the default case.
+        Read supplied and default-empty headers, preserve an uppercase duplicate raw sequence, and
+        replace the header object through the public field.
 
     fastapi.datastructures.UploadFile.read:
       target_binding:
@@ -15884,6 +15912,10 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
           case_id: fastapi.uploadfile-io.spooled-storage-thresholds
           workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
           observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes and
@@ -15942,9 +15974,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks explicit, incremented, and unknown sizes plus writes at spooled
-            threshold equality, crossing, and pre-rollover; parser-computed and other sizes remain
-            unverified.
+            The workflow checks explicit, reassigned, incremented, and unknown sizes plus writes at
+            spooled threshold equality, crossing, and pre-rollover; parser-computed and other sizes
+            remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15968,10 +16000,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.spooled-storage-thresholds
           workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        Read an explicitly supplied size, observe its increment on successful and failed writes, and
-        preserve `None` when the size is unknown. Spooled-file writes at threshold equality, across
-        threshold, and after rollover are included.
+        Read explicitly supplied, reassigned, incremented, and unknown size values. Spooled-file writes
+        at threshold equality, across threshold, and after rollover are included.
 
     fastapi.datastructures.UploadFile.write:
       target_binding:

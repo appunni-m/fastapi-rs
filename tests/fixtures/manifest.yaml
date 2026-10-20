@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 4c863119c2a905a9cd0ea9b40ad87db619b3ab181ba1cf57d5891e397cd4fc03
+    sha256: e65d0464a0aa23d4609df5e14ea95f0c7fb49b831b9ac15f7cbd68c783f297ce
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 704
-      cases: 2874
+      workflows: 705
+      cases: 2875
       partial_source_mappings: 1956
 
 contract_metadata:
@@ -1336,7 +1336,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2541
+    operation_fixture_refs: 2549
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -23704,6 +23704,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23738,8 +23752,8 @@ api_surface_contract:
         contribution, direct schema generation, Starlette base-instance acceptance, and selected class/method
         annotations, docstrings, module names, qualified names, and coroutine metadata. A direct error
         case checks one propagated OSError for each async file method and the size increment after a failed
-        write. The broader invalid-input types beyond the standard None/scalar/container sample and storage
-        types beyond BytesIO and SpooledTemporaryFile remain unverified.
+        write. The broader invalid-input types beyond current samples, unusual header combinations, and
+        storage types beyond BytesIO and SpooledTemporaryFile remain unverified.
   - id: fastapi.datastructures.UploadFile.close
     kind: method
     source_candidate_ref: /api_candidates/319
@@ -23859,6 +23873,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23946,6 +23974,20 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23975,8 +24017,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Values are checked for one explicit lower-case content-type header and for absent content-type;
-        other header spellings and duplicate values remain unverified.
+      - Values are checked for absent content-type and uppercase duplicate content-type headers; other
+        raw spellings, duplicate orderings, and value encodings remain unverified.
   - id: fastapi.datastructures.UploadFile.file
     kind: field
     source_candidate_ref: /api_candidates/321
@@ -24059,6 +24101,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24089,7 +24145,7 @@ api_surface_contract:
       rust_binding: null
       known_gaps:
       - Object identity and blocking reads are checked for BytesIO and SpooledTemporaryFile before and
-        after rollover; other file object types remain unverified.
+        after rollover, plus file-field reassignment; other file object types remain unverified.
   - id: fastapi.datastructures.UploadFile.filename
     kind: field
     source_candidate_ref: /api_candidates/322
@@ -24144,6 +24200,20 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24173,7 +24243,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks an explicit string and `None`; additional filename values and parser-provided
+      - The workflow checks explicit, `None`, and reassigned filename values; other values and parser-provided
         filename edge cases remain unverified.
   - id: fastapi.datastructures.UploadFile.headers
     kind: field
@@ -24229,6 +24299,20 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24258,8 +24342,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - One lower-case content-type plus one additional header and the empty headers case are checked;
-        casing and duplicate-header behavior remain unverified.
+      - Default empty, explicit, uppercase duplicate, and reassigned headers are checked; other raw encodings
+        and duplicate orderings remain unverified.
   - id: fastapi.datastructures.UploadFile.read
     kind: method
     source_candidate_ref: /api_candidates/324
@@ -24373,6 +24457,20 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
       workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
       case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
       - construction.exception_message
@@ -24646,6 +24744,20 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24675,8 +24787,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks explicit, incremented, and unknown sizes plus writes at spooled threshold
-        equality, crossing, and pre-rollover; parser-computed and other sizes remain unverified.
+      - The workflow checks explicit, reassigned, incremented, and unknown sizes plus writes at spooled
+        threshold equality, crossing, and pre-rollover; parser-computed and other sizes remain unverified.
   - id: fastapi.datastructures.UploadFile.write
     kind: method
     source_candidate_ref: /api_candidates/327
