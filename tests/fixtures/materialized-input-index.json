@@ -40849,9 +40849,9 @@
     {
       "id": "validation-exception-api-contract",
       "input_path": "tests/fixtures/inputs/parity/validation-exception-api-contract.json",
-      "input_sha256": "6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f",
+      "input_sha256": "5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284",
       "recipe_path": "tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml",
-      "recipe_sha256": "4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f",
+      "recipe_sha256": "08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354",
       "case_ids": [
         "fastapi.validation-exceptions.direct-api-contract"
       ],
@@ -40872,6 +40872,15 @@
         }
       ],
       "api_probes": [
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "request-validation-error-class-docstring",
+          "symbol_id": "fastapi.exceptions.RequestValidationError",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
         {
           "case_id": "fastapi.validation-exceptions.direct-api-contract",
           "probe_id": "request-validation-error-constructor-signature",

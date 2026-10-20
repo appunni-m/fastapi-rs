@@ -95,7 +95,7 @@ A field absent or omitted by source exclusion contributes no output slot.
 
 Schema's complete declared alias-key sequence (models123-204):
 
-```
+```text
 $schema, $vocabulary, $id, $anchor, $dynamicAnchor, $ref, $dynamicRef,
 $defs, $comment, allOf, anyOf, oneOf, not, if, then, else,
 dependentSchemas, prefixItems, items, contains, properties,

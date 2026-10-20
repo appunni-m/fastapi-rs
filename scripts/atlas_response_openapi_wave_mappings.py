@@ -187,6 +187,22 @@ def _default_response_class_router_workflow_case(case_id):
     }
 
 
+def _default_response_class_application_workflow_case():
+    return {
+        "workflow_id": "default-response-class-precedence-wave",
+        "recipe_path": (
+            "tests/fixtures/input-recipes/parity/default-response-class-precedence-wave.yaml"
+        ),
+        "case_id": "fastapi.test.test-default-response-class.test-app",
+        "action_ids": ["application-default"],
+        "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+        ],
+    }
+
+
 _INFERRED_ITERABLE_RESPONSE_POLICY = (
     _source(
         "fastapi/routing.py",
@@ -215,7 +231,7 @@ _INFERRED_ITERABLE_RESPONSE_POLICY = (
 )
 
 
-def _inferred_iterable_policy_case(test_path, start, end, rationale, workflow):
+def _inferred_iterable_policy_case(test_path, start, end, rationale, workflow, workflow_case):
     return _case(
         test_path,
         start,
@@ -234,6 +250,7 @@ def _inferred_iterable_policy_case(test_path, start, end, rationale, workflow):
             "source model's field names or payload. Pydantic owns model-level "
             "validation and serialization."
         ),
+        workflow_case=workflow_case,
     )
 
 
@@ -440,6 +457,7 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "FastAPI uses the configured application response class when an operation does not declare one.",
                 "Use default-response-class-precedence-wave.yaml case fastapi.test.test-default-response-class.test-app, action application-default. The workload uses a deterministic JSONResponse subclass with a distinctive media type; the source test's optional ORJSON encoding is not exercised.",
                 gate="Partial: the source uses optional ORJSONResponse, while the independent input samples application-level class selection with a custom JSONResponse subclass. It does not claim ORJSON rendering parity; generic response headers/body emission belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_application_workflow_case(),
             ),
             "test_app_override": _default_response_class_case(
                 "tests/test_default_response_class.py",
@@ -448,6 +466,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "An explicit path-operation response class takes precedence over the application default.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-app-override, action dispatch. The recipe links this same plain-text override input to the upstream function.",
                 gate="Partial: the source app uses optional ORJSONResponse, but the independent route explicitly selects PlainTextResponse and therefore samples the same precedence without ORJSON. Plain-text response encoding and headers belong to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-app-override"
+                ),
             ),
         }
     },
@@ -570,6 +591,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A nested router with no local override inherits its parent's include-time default.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a, action dispatch.",
                 gate="Partial: the case samples a nested inherited PlainTextResponse selection; Starlette owns generic response rendering.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-b-a"
+                ),
             ),
             "test_router_b_a_override": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -578,6 +602,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "An operation-level HTML response class overrides the inherited nested-router default.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-override, action dispatch.",
                 gate="Partial: the case samples a nested operation override; generic HTML response output belongs to Starlette 1.6.0.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-b-a-override"
+                ),
             ),
             "test_router_b_a_c": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -586,6 +613,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A deeper router with no local route override inherits the default supplied at its inclusion edge.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c, action dispatch.",
                 gate="Partial: the case samples one three-level router inheritance path; Starlette owns generic HTML response behavior.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-b-a-c"
+                ),
             ),
             "test_router_b_a_c_override": _default_response_class_case(
                 "tests/test_default_response_class_router.py",
@@ -594,6 +624,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A path-operation response class has final precedence over nested include defaults.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c-override, action dispatch.",
                 gate="Partial: the case samples a deepest-level custom response override; FastAPI selects the class while Starlette supplies generic rendering and transport.",
+                workflow_case=_default_response_class_router_workflow_case(
+                    "fastapi.test.test-default-response-class-router.test-router-b-a-c-override"
+                ),
             ),
         }
     },
@@ -605,6 +638,13 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 115,
                 "FastAPI infers an Iterable[Model] response model from the endpoint return annotation and applies response_model_exclude_unset to every item.",
                 "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-unset, action exclude-unset-from-inferred-iterable.",
+                workflow_case={
+                    "workflow_id": "response-model-inferred-iterable-policies",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+                    "case_id": "fastapi.response-model.inferred-iterable.exclude-unset",
+                    "action_ids": ["exclude-unset-from-inferred-iterable"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
             ),
             "test_return_iterable_exclude_defaults": _inferred_iterable_policy_case(
                 "tests/test_skip_defaults.py",
@@ -612,6 +652,13 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 120,
                 "FastAPI applies response_model_exclude_defaults to every item of an inferred Iterable[Model] response.",
                 "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-defaults, action exclude-defaults-from-inferred-iterable.",
+                workflow_case={
+                    "workflow_id": "response-model-inferred-iterable-policies",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+                    "case_id": "fastapi.response-model.inferred-iterable.exclude-defaults",
+                    "action_ids": ["exclude-defaults-from-inferred-iterable"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
             ),
             "test_return_iterable_exclude_none": _inferred_iterable_policy_case(
                 "tests/test_skip_defaults.py",
@@ -619,6 +666,13 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 125,
                 "FastAPI applies response_model_exclude_none to every item of an inferred Iterable[Model] response.",
                 "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-none, action exclude-none-from-inferred-iterable.",
+                workflow_case={
+                    "workflow_id": "response-model-inferred-iterable-policies",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+                    "case_id": "fastapi.response-model.inferred-iterable.exclude-none",
+                    "action_ids": ["exclude-none-from-inferred-iterable"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
             ),
         }
     },
@@ -849,7 +903,7 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 56,
                 61,
                 ["response-serialization"],
-                ["http.status"],
+                ["http.body.bytes", "http.headers.ordered", "http.status"],
                 "A typed JSONL stream serializes each item and omits None values under the configured response model.",
                 "Use stream-bare-type-upstream.yaml case fastapi.responses.bare-stream.typed-jsonl, action typed-stream-excluding-none.",
                 implementation=_source(
@@ -858,7 +912,18 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                     510,
                     "FastAPI validates and serializes each stream item",
                 ),
-                contract_gate="The source parses JSON lines and checks per-item filtering/content type; the recipe's exact byte body and headers are stronger and the current mapping has no JSONL item/header selectors. Generic streaming send behavior is Starlette-owned.",
+                contract_gate="The upstream test asserts decoded JSON lines and content type; the paired, identity-checked workflow reproduces its route, item shape, value, and exclude-none configuration, then compares status, ordered headers, and exact response bytes between source and target for that fixture. This establishes exact output for the selected case, not every typed JSONL stream. FastAPI owns per-item validation/filtering; Starlette 1.6.0 owns generic streaming output and headers.",
+                workflow_case={
+                    "workflow_id": "stream-bare-type-upstream",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/stream-bare-type-upstream.yaml",
+                    "case_id": "fastapi.responses.bare-stream.typed-jsonl",
+                    "action_ids": ["typed-stream-excluding-none"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                },
             ),
             "test_jsonl_router_typed_openapi_schema": _case(
                 "tests/test_stream_bare_type.py",

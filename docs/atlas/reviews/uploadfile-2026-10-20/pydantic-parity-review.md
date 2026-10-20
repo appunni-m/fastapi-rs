@@ -19,7 +19,7 @@ The checked source revisions are FastAPI 0.141.1 `95f8322ee1dcda7ceace7b1c4f6c99
 
 ## Formatting finding
 
-FastAPI's pinned [`UploadFile._validate`](../../../../fastapi/fastapi/datastructures.py) raises `ValueError(f"Expected UploadFile, received: {type(value)}")` for non-Starlette values. The Rust implementation in `fastapi-rs/src/datastructures.rs` changed the type object's conversion from PyO3 `.repr()` to `.str()`.
+FastAPI's pinned [`UploadFile._validate`](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/datastructures.py#L133) raises `ValueError(f"Expected UploadFile, received: {type(value)}")` for non-Starlette values. The Rust implementation in `fastapi-rs/src/datastructures.rs` changed the type object's conversion from PyO3 `.repr()` to `.str()`.
 
 That change fixes the tested distinction. The workload's `_DisagreeingMeta` returns `custom-str-type` from `__str__` and `custom-repr-type` from `__repr__`, with no `__format__` override. The oracle and target results both report the exact response message `Value error, Expected UploadFile, received: custom-str-type`; the prior `repr()` path would select the other spelling.
 

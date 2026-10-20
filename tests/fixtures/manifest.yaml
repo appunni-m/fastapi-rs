@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 523a29d66104031f0aff3aacded91e7a98e8a8371bed932498d243b92abdacf6
+    sha256: 8a9e0f0ef995f3dd88208fa381f2504c9d4332cf8b678d7208f36a399f991ece
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: c8d1f4e41ac4348350d0483dfae2650a64886b7997e063bd640383e0467624a0
+    sha256: 9101da1b3a0e2550ddf2e777540da7966660a9a86ff2c7be5904546e307daf32
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -550,7 +550,7 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 31dbde308e6cb27842a8a2210c79d3a0a8ed9401c4c5ca10de536a40be42d174
+    sha256: d788acbf9357ccdd9fd9a03fc52cae7769eaf6532c4738920da790fa3976c865
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
       selectors: 56
@@ -578,7 +578,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: dcc76218d5fbc9ca581eec1d672637d1ad2c46aa6050192e4512c50049fe08aa
+    sha256: 316b965f2a43e59711611c93abfa59008dd37c9380a13cbfc33c941c10186440
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1055,6 +1055,21 @@ unresolved:
       Adds a read-only post-call projection of the public BackgroundTasks queue,
       including callback identity, positional and ordered keyword arguments,
       and sync/async classification; callbacks are never executed by this probe.
+  python_api_workflow_v10:
+    state: public-class-docstring-observation
+    schema_id: fastapi-rs/python-api-workflow@10
+    schema_path: tests/fixtures/schemas/python-api-workflow-v10.schema.json
+    schema_sha256: 7ea95a8c2dfe5dd952eb211e51cc10059e30df0b3767e890aa8777755d16f731
+    result_schema_id: fastapi-rs/python-api-workflow-result@12
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v12.schema.json
+    result_schema_sha256: d5ac2675bb62a0b5d4ef5de269742f8bdfdfbbdbb187a76216842cc1b18da286
+    comparison_schema_id: fastapi-rs/python-api-comparison@10
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v10.schema.json
+    comparison_schema_sha256: e774b3eb62bc684ccc08845033db42ef525595757711653b1cb77ffc281a8332
+    coverage: >-
+      Adds a non-invoking exact projection of a reviewed public class's
+      `__doc__` value. The v10 observation is restricted to public classes and
+      emits the value without expected outputs in the input recipe.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -26607,9 +26622,21 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
+      workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
+      workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
+      case_id: fastapi.validation-exceptions.direct-api-contract
+      probe_id: request-validation-error-class-docstring
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: validation-exception-api-contract
+      input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
+      recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract
@@ -26619,9 +26646,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract
@@ -26631,9 +26658,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract
@@ -26643,9 +26670,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract
@@ -26776,6 +26803,7 @@ api_surface_contract:
     - http.body.json
     - http.headers.ordered
     - http.status
+    - python.attribute_value
     - python.call_outcome
     - python.import_path
     - python.object_identity
@@ -27346,9 +27374,9 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract
@@ -27359,9 +27387,9 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract
@@ -27371,9 +27399,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract
@@ -27383,9 +27411,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: validation-exception-api-contract
       input_path: tests/fixtures/inputs/parity/validation-exception-api-contract.json
-      input_sha256: 6610193f18702ec0d2849ccb262aa7e78ab744b52d4c4282c0d3a5c9673a5b2f
+      input_sha256: 5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284
       recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
-      recipe_sha256: 4c736af66c7cb1bb5c933efdd5495108b356cc62602ef1a14c4290a8a5c9cf0f
+      recipe_sha256: 08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354
       workload_path: tests/fixtures/workloads/validation_exception_api_contract.py
       workload_sha256: 78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70
       case_id: fastapi.validation-exceptions.direct-api-contract

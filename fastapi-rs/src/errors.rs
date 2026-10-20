@@ -552,6 +552,8 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?;
 
     let request_exception_type = py.get_type::<RequestValidationError>();
+    // The pinned FastAPI class has no authored class docstring.
+    request_exception_type.setattr("__doc__", py.None())?;
     set_validation_exception_signature(py, &request_exception_type, &endpoint_context_type, true)?;
     request_exception_type.setattr(
         "__init__",

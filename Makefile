@@ -404,7 +404,7 @@ parity-compare: ## Compare live source/target result artifacts exactly
 parity-compare-email-validation: ## Compare completed EmailStr oracle/target artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_EMAIL_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
 
-signature-workflow-migration-check: ## Require active signature recipes to use a supported API workflow (v5-v8)
+signature-workflow-migration-check: ## Require active signature recipes to use a supported API workflow (v5-v10)
 	$(PYTHON) scripts/migrate_signature_workflows.py
 
 parity-api-validate: parity-inputs signature-workflow-migration-check ## Validate a direct public Python API workflow

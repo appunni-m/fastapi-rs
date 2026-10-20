@@ -1,6 +1,7 @@
 # Direct API import identity and constructor signatures for the two documented
 # FastAPI validation exception classes.
-schema: fastapi-rs/python-api-workflow@8
+# v10 reads the class docstring without constructing the reviewed public class.
+schema: fastapi-rs/python-api-workflow@10
 workload:
   file: tests/fixtures/workloads/validation_exception_api_contract.py
   factory: create_argument_bundles
@@ -29,6 +30,16 @@ cases:
         observations:
           - kind: python_signature
             selector: signature
+            comparison: exact
+      # FastAPI declares no class docstring, so this probes the public class's __doc__ value.
+      - probe_id: request-validation-error-class-docstring
+        public_callable:
+          module: fastapi.exceptions
+          attribute: RequestValidationError
+        argument_bundle: unused
+        observations:
+          - kind: python_class_docstring
+            selector: value
             comparison: exact
       - probe_id: websocket-request-validation-error-constructor-signature
         public_callable:

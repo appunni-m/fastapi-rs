@@ -47,6 +47,7 @@ WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow@9"
+WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow@10"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -58,6 +59,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V7_ID,
         WORKFLOW_SCHEMA_V8_ID,
         WORKFLOW_SCHEMA_V9_ID,
+        WORKFLOW_SCHEMA_V10_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -70,6 +72,7 @@ RESULT_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow-result@8"
 RESULT_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow-result@9"
 RESULT_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow-result@10"
 RESULT_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow-result@11"
+RESULT_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow-result@12"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -80,6 +83,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V7_ID: RESULT_SCHEMA_V9_ID,
     WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V10_ID,
     WORKFLOW_SCHEMA_V9_ID: RESULT_SCHEMA_V11_ID,
+    WORKFLOW_SCHEMA_V10_ID: RESULT_SCHEMA_V12_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
@@ -766,10 +770,26 @@ def _validate_workflow_callables(
                 }
                 for observation in observations
             )
+            class_docstring_selected = any(
+                isinstance(observation, dict)
+                and observation.get("kind") == "python_class_docstring"
+                for observation in observations
+            )
+            if class_docstring_selected and (
+                workflow.get("schema") != WORKFLOW_SCHEMA_V10_ID
+                or len(observations) != 1
+                or "public_callable" not in probe
+                or "argument_bundle" not in probe
+                or "public_attribute" in probe
+            ):
+                raise WorkerError(
+                    "class docstring observation requires one v10 public-callable probe"
+                )
             if "binding_identity" in probe or binding_identity_selected:
                 binding_identity = probe.get("binding_identity")
                 if (
-                    workflow.get("schema") not in {WORKFLOW_SCHEMA_V8_ID, WORKFLOW_SCHEMA_V9_ID}
+                    workflow.get("schema")
+                    not in {WORKFLOW_SCHEMA_V8_ID, WORKFLOW_SCHEMA_V9_ID, WORKFLOW_SCHEMA_V10_ID}
                     or not binding_identity_selected
                     or len(observations) != 1
                     or "public_callable" not in probe
@@ -783,7 +803,7 @@ def _validate_workflow_callables(
                     or _ATTRIBUTE_PATH.fullmatch(binding_identity["attribute"]) is None
                 ):
                     raise WorkerError(
-                        "cross-module binding identity requires one v8 or v9 callable probe"
+                        "cross-module binding identity requires one v8, v9, or v10 callable probe"
                     )
             background_task_queue_selected = any(
                 isinstance(observation, dict)
@@ -798,7 +818,7 @@ def _validate_workflow_callables(
                     for observation in observations
                 )
                 if (
-                    workflow.get("schema") != WORKFLOW_SCHEMA_V9_ID
+                    workflow.get("schema") not in {WORKFLOW_SCHEMA_V9_ID, WORKFLOW_SCHEMA_V10_ID}
                     or not isinstance(public_callable, dict)
                     or public_callable.get("module") != "fastapi.background"
                     or public_callable.get("attribute") != "BackgroundTasks.add_task"
@@ -807,13 +827,18 @@ def _validate_workflow_callables(
                     or not invocation_selected
                 ):
                     raise WorkerError(
-                        "BackgroundTasks queue observation requires one v9 add_task call "
+                        "BackgroundTasks queue observation requires one v9 or v10 add_task call "
                         "and a return or call-outcome observation"
                     )
             if "public_module" in probe:
                 if (
                     workflow.get("schema")
-                    not in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID, WORKFLOW_SCHEMA_V9_ID}
+                    not in {
+                        WORKFLOW_SCHEMA_V7_ID,
+                        WORKFLOW_SCHEMA_V8_ID,
+                        WORKFLOW_SCHEMA_V9_ID,
+                        WORKFLOW_SCHEMA_V10_ID,
+                    }
                     or any(
                         key in probe
                         for key in (
@@ -828,7 +853,7 @@ def _validate_workflow_callables(
                     != {"python_import_path", "python_object_identity"}
                 ):
                     raise WorkerError(
-                        "module identity requires one v7, v8, or v9 module probe with both "
+                        "module identity requires one v7 through v10 module probe with both "
                         "identity "
                         "observations"
                     )
@@ -1036,6 +1061,9 @@ async def _run_probe(
         has_attribute_value_observation = any(
             observation["kind"] == "python_attribute_value" for observation in probe["observations"]
         )
+        has_class_docstring_observation = any(
+            observation["kind"] == "python_class_docstring" for observation in probe["observations"]
+        )
         has_signature_observation = any(
             observation["kind"] == "python_signature" for observation in probe["observations"]
         )
@@ -1114,6 +1142,10 @@ async def _run_probe(
                 if not _is_strict_json_value(attribute_value):
                     raise ValueError("public attribute value is not strict JSON")
                 values = {"value": _json_safe(attribute_value)}
+            elif observation["kind"] == "python_class_docstring":
+                if not has_class_docstring_observation or not inspect.isclass(function):
+                    raise WorkerError("class docstring observation requires a public Python class")
+                values = {"value": _json_safe(function.__doc__)}
             elif observation["kind"] in {
                 "python_binding_identity",
                 "python_binding_distinct",
@@ -1575,6 +1607,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V7_ID,
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
             },
         )
     )

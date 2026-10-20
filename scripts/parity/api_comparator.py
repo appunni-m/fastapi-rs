@@ -21,6 +21,7 @@ WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-api-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-api-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow@9"
+WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow@10"
 
 
 def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
@@ -162,8 +163,11 @@ def compare_api_workflow_results(
             if binding_identity_selected and workflow_schema_id not in {
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
             }:
-                raise ContractError("cross-module binding identity requires API workflow v8 or v9")
+                raise ContractError(
+                    "cross-module binding identity requires API workflow v8, v9, or v10"
+                )
             if binding_identity_selected and (
                 source_status != "completed" or target_status != "completed"
             ):
@@ -186,6 +190,7 @@ def compare_api_workflow_results(
                 WORKFLOW_SCHEMA_V7_ID,
                 WORKFLOW_SCHEMA_V8_ID,
                 WORKFLOW_SCHEMA_V9_ID,
+                WORKFLOW_SCHEMA_V10_ID,
             }:
                 if probe_spec.get("capture_warnings") is True:
                     source_warnings = source_probe.get("warnings")

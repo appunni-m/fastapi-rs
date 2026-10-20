@@ -278,6 +278,106 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ("dispatch",),
         ("http.body.bytes", "http.headers.ordered", "http.status"),
     ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_b_a",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-b-a",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_b_a_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-b-a-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_b_a_c",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-b-a-c",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class_router.py",
+        "test_router_b_a_c_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-router-b-a-c-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class.py",
+        "test_app",
+    ): (
+        "default-response-class-precedence-wave",
+        "tests/fixtures/input-recipes/parity/default-response-class-precedence-wave.yaml",
+        "fastapi.test.test-default-response-class.test-app",
+        ("application-default",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_default_response_class.py",
+        "test_app_override",
+    ): (
+        "default-response-class-router-upstream",
+        "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+        "fastapi.test.test-default-response-class-router.test-app-override",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_skip_defaults.py",
+        "test_return_iterable_exclude_unset",
+    ): (
+        "response-model-inferred-iterable-policies",
+        "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+        "fastapi.response-model.inferred-iterable.exclude-unset",
+        ("exclude-unset-from-inferred-iterable",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_skip_defaults.py",
+        "test_return_iterable_exclude_defaults",
+    ): (
+        "response-model-inferred-iterable-policies",
+        "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+        "fastapi.response-model.inferred-iterable.exclude-defaults",
+        ("exclude-defaults-from-inferred-iterable",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_skip_defaults.py",
+        "test_return_iterable_exclude_none",
+    ): (
+        "response-model-inferred-iterable-policies",
+        "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+        "fastapi.response-model.inferred-iterable.exclude-none",
+        ("exclude-none-from-inferred-iterable",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_stream_bare_type.py",
+        "test_jsonl_router_typed_stream",
+    ): (
+        "stream-bare-type-upstream",
+        "tests/fixtures/input-recipes/parity/stream-bare-type-upstream.yaml",
+        "fastapi.responses.bare-stream.typed-jsonl",
+        ("typed-stream-excluding-none",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
 }
 
 

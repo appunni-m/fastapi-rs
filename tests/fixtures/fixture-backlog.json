@@ -162011,6 +162011,13 @@
                   "path": "fastapi/routing.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 267,
+                  "line": 255,
+                  "path": "docs/en/docs/advanced/custom-response.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -162018,6 +162025,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 129,
+            "line": 125,
+            "path": "tests/test_default_response_class.py",
+            "sha256": "10dd66c68f842f85bbd9b985aef91926d332630448d8af41cba3ffc6fe0999e1"
+          },
           "id": "fastapi.test.test-default-response-class.test-app",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -162096,9 +162109,29 @@
                 "role": "APIRouter.include_router creates and stores the inherited router context",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 3296
+              },
+              {
+                "end_line": 267,
+                "path": "docs/en/docs/advanced/custom-response.md",
+                "role": "FastAPI documents default_response_class on FastAPI and APIRouter and operation-level overrides",
+                "sha256": "590d22726236c1954e8dde69e2d842fd69ade6952fe46f43e3c3309799368f9d",
+                "start_line": 255
               }
             ],
-            "stimulus_notes": "Use default-response-class-precedence-wave.yaml case fastapi.test.test-default-response-class.test-app, action application-default. The workload uses a deterministic JSONResponse subclass with a distinctive media type; the source test's optional ORJSON encoding is not exercised."
+            "stimulus_notes": "Use default-response-class-precedence-wave.yaml case fastapi.test.test-default-response-class.test-app, action application-default. The workload uses a deterministic JSONResponse subclass with a distinctive media type; the source test's optional ORJSON encoding is not exercised.",
+            "workflow_case": {
+              "action_ids": [
+                "application-default"
+              ],
+              "case_id": "fastapi.test.test-default-response-class.test-app",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-precedence-wave.yaml",
+              "workflow_id": "default-response-class-precedence-wave"
+            }
           },
           "selector_evidence": [
             {
@@ -162116,7 +162149,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use default-response-class-precedence-wave.yaml case fastapi.test.test-default-response-class.test-app, action application-default. The workload uses a deterministic JSONResponse subclass with a distinctive media type; the source test's optional ORJSON encoding is not exercised."
+          "stimulus_design_notes": "Use default-response-class-precedence-wave.yaml case fastapi.test.test-default-response-class.test-app, action application-default. The workload uses a deterministic JSONResponse subclass with a distinctive media type; the source test's optional ORJSON encoding is not exercised.",
+          "workflow_case": {
+            "action_ids": [
+              "application-default"
+            ],
+            "case_id": "fastapi.test.test-default-response-class.test-app",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-precedence-wave.yaml",
+            "workflow_id": "default-response-class-precedence-wave"
+          }
         },
         {
           "feature_evidence": [
@@ -162185,6 +162231,13 @@
                   "path": "fastapi/routing.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 267,
+                  "line": 255,
+                  "path": "docs/en/docs/advanced/custom-response.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -162192,6 +162245,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 136,
+            "line": 132,
+            "path": "tests/test_default_response_class.py",
+            "sha256": "10dd66c68f842f85bbd9b985aef91926d332630448d8af41cba3ffc6fe0999e1"
+          },
           "id": "fastapi.test.test-default-response-class.test-app-override",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -162266,9 +162325,29 @@
                 "role": "APIRouter.include_router creates and stores the inherited router context",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 3296
+              },
+              {
+                "end_line": 267,
+                "path": "docs/en/docs/advanced/custom-response.md",
+                "role": "FastAPI documents default_response_class on FastAPI and APIRouter and operation-level overrides",
+                "sha256": "590d22726236c1954e8dde69e2d842fd69ade6952fe46f43e3c3309799368f9d",
+                "start_line": 255
               }
             ],
-            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-app-override, action dispatch. The recipe links this same plain-text override input to the upstream function."
+            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-app-override, action dispatch. The recipe links this same plain-text override input to the upstream function.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-default-response-class-router.test-app-override",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+              "workflow_id": "default-response-class-router-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -162286,7 +162365,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-app-override, action dispatch. The recipe links this same plain-text override input to the upstream function."
+          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-app-override, action dispatch. The recipe links this same plain-text override input to the upstream function.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.test.test-default-response-class-router.test-app-override",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+            "workflow_id": "default-response-class-router-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -165401,6 +165493,13 @@
                   "path": "fastapi/routing.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 267,
+                  "line": 255,
+                  "path": "docs/en/docs/advanced/custom-response.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -165408,6 +165507,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 185,
+            "line": 181,
+            "path": "tests/test_default_response_class_router.py",
+            "sha256": "48f7c08b5ed7e46052582411b43bf269000d71e04ee551a6f8bf6588fbdcae9a"
+          },
           "id": "fastapi.test.test-default-response-class-router.test-router-b-a",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -165482,9 +165587,29 @@
                 "role": "APIRouter.include_router creates and stores the inherited router context",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 3296
+              },
+              {
+                "end_line": 267,
+                "path": "docs/en/docs/advanced/custom-response.md",
+                "role": "FastAPI documents default_response_class on FastAPI and APIRouter and operation-level overrides",
+                "sha256": "590d22726236c1954e8dde69e2d842fd69ade6952fe46f43e3c3309799368f9d",
+                "start_line": 255
               }
             ],
-            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a, action dispatch."
+            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a, action dispatch.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+              "workflow_id": "default-response-class-router-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -165502,7 +165627,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a, action dispatch."
+          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a, action dispatch.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+            "workflow_id": "default-response-class-router-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -165571,6 +165709,13 @@
                   "path": "fastapi/routing.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 267,
+                  "line": 255,
+                  "path": "docs/en/docs/advanced/custom-response.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -165578,6 +165723,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 192,
+            "line": 188,
+            "path": "tests/test_default_response_class_router.py",
+            "sha256": "48f7c08b5ed7e46052582411b43bf269000d71e04ee551a6f8bf6588fbdcae9a"
+          },
           "id": "fastapi.test.test-default-response-class-router.test-router-b-a-override",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -165652,9 +165803,29 @@
                 "role": "APIRouter.include_router creates and stores the inherited router context",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 3296
+              },
+              {
+                "end_line": 267,
+                "path": "docs/en/docs/advanced/custom-response.md",
+                "role": "FastAPI documents default_response_class on FastAPI and APIRouter and operation-level overrides",
+                "sha256": "590d22726236c1954e8dde69e2d842fd69ade6952fe46f43e3c3309799368f9d",
+                "start_line": 255
               }
             ],
-            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-override, action dispatch."
+            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-override, action dispatch.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a-override",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+              "workflow_id": "default-response-class-router-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -165672,7 +165843,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-override, action dispatch."
+          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-override, action dispatch.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a-override",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+            "workflow_id": "default-response-class-router-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -165741,6 +165925,13 @@
                   "path": "fastapi/routing.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 267,
+                  "line": 255,
+                  "path": "docs/en/docs/advanced/custom-response.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -165748,6 +165939,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 199,
+            "line": 195,
+            "path": "tests/test_default_response_class_router.py",
+            "sha256": "48f7c08b5ed7e46052582411b43bf269000d71e04ee551a6f8bf6588fbdcae9a"
+          },
           "id": "fastapi.test.test-default-response-class-router.test-router-b-a-c",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -165822,9 +166019,29 @@
                 "role": "APIRouter.include_router creates and stores the inherited router context",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 3296
+              },
+              {
+                "end_line": 267,
+                "path": "docs/en/docs/advanced/custom-response.md",
+                "role": "FastAPI documents default_response_class on FastAPI and APIRouter and operation-level overrides",
+                "sha256": "590d22726236c1954e8dde69e2d842fd69ade6952fe46f43e3c3309799368f9d",
+                "start_line": 255
               }
             ],
-            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c, action dispatch."
+            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c, action dispatch.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a-c",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+              "workflow_id": "default-response-class-router-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -165842,7 +166059,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c, action dispatch."
+          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c, action dispatch.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a-c",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+            "workflow_id": "default-response-class-router-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -165911,6 +166141,13 @@
                   "path": "fastapi/routing.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 267,
+                  "line": 255,
+                  "path": "docs/en/docs/advanced/custom-response.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -165918,6 +166155,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 206,
+            "line": 202,
+            "path": "tests/test_default_response_class_router.py",
+            "sha256": "48f7c08b5ed7e46052582411b43bf269000d71e04ee551a6f8bf6588fbdcae9a"
+          },
           "id": "fastapi.test.test-default-response-class-router.test-router-b-a-c-override",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -165992,9 +166235,29 @@
                 "role": "APIRouter.include_router creates and stores the inherited router context",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 3296
+              },
+              {
+                "end_line": 267,
+                "path": "docs/en/docs/advanced/custom-response.md",
+                "role": "FastAPI documents default_response_class on FastAPI and APIRouter and operation-level overrides",
+                "sha256": "590d22726236c1954e8dde69e2d842fd69ade6952fe46f43e3c3309799368f9d",
+                "start_line": 255
               }
             ],
-            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c-override, action dispatch."
+            "stimulus_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c-override, action dispatch.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a-c-override",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+              "workflow_id": "default-response-class-router-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -166012,7 +166275,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c-override, action dispatch."
+          "stimulus_design_notes": "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c-override, action dispatch.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.test.test-default-response-class-router.test-router-b-a-c-override",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
+            "workflow_id": "default-response-class-router-upstream"
+          }
         }
       ],
       "feature_ids": [
@@ -422971,6 +423247,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 115,
+            "line": 113,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-iterable-exclude-unset",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -423040,7 +423322,19 @@
                 "start_line": 190
               }
             ],
-            "stimulus_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-unset, action exclude-unset-from-inferred-iterable."
+            "stimulus_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-unset, action exclude-unset-from-inferred-iterable.",
+            "workflow_case": {
+              "action_ids": [
+                "exclude-unset-from-inferred-iterable"
+              ],
+              "case_id": "fastapi.response-model.inferred-iterable.exclude-unset",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+              "workflow_id": "response-model-inferred-iterable-policies"
+            }
           },
           "selector_evidence": [
             {
@@ -423057,7 +423351,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-unset, action exclude-unset-from-inferred-iterable."
+          "stimulus_design_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-unset, action exclude-unset-from-inferred-iterable.",
+          "workflow_case": {
+            "action_ids": [
+              "exclude-unset-from-inferred-iterable"
+            ],
+            "case_id": "fastapi.response-model.inferred-iterable.exclude-unset",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+            "workflow_id": "response-model-inferred-iterable-policies"
+          }
         },
         {
           "feature_evidence": [
@@ -423126,6 +423432,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 120,
+            "line": 118,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-iterable-exclude-defaults",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -423195,7 +423507,19 @@
                 "start_line": 190
               }
             ],
-            "stimulus_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-defaults, action exclude-defaults-from-inferred-iterable."
+            "stimulus_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-defaults, action exclude-defaults-from-inferred-iterable.",
+            "workflow_case": {
+              "action_ids": [
+                "exclude-defaults-from-inferred-iterable"
+              ],
+              "case_id": "fastapi.response-model.inferred-iterable.exclude-defaults",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+              "workflow_id": "response-model-inferred-iterable-policies"
+            }
           },
           "selector_evidence": [
             {
@@ -423212,7 +423536,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-defaults, action exclude-defaults-from-inferred-iterable."
+          "stimulus_design_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-defaults, action exclude-defaults-from-inferred-iterable.",
+          "workflow_case": {
+            "action_ids": [
+              "exclude-defaults-from-inferred-iterable"
+            ],
+            "case_id": "fastapi.response-model.inferred-iterable.exclude-defaults",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+            "workflow_id": "response-model-inferred-iterable-policies"
+          }
         },
         {
           "feature_evidence": [
@@ -423281,6 +423617,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 125,
+            "line": 123,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-iterable-exclude-none",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -423350,7 +423692,19 @@
                 "start_line": 190
               }
             ],
-            "stimulus_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-none, action exclude-none-from-inferred-iterable."
+            "stimulus_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-none, action exclude-none-from-inferred-iterable.",
+            "workflow_case": {
+              "action_ids": [
+                "exclude-none-from-inferred-iterable"
+              ],
+              "case_id": "fastapi.response-model.inferred-iterable.exclude-none",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+              "workflow_id": "response-model-inferred-iterable-policies"
+            }
           },
           "selector_evidence": [
             {
@@ -423367,7 +423721,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-none, action exclude-none-from-inferred-iterable."
+          "stimulus_design_notes": "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-none, action exclude-none-from-inferred-iterable.",
+          "workflow_case": {
+            "action_ids": [
+              "exclude-none-from-inferred-iterable"
+            ],
+            "case_id": "fastapi.response-model.inferred-iterable.exclude-none",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+            "workflow_id": "response-model-inferred-iterable-policies"
+          }
         }
       ],
       "feature_ids": [
@@ -431053,14 +431419,22 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 61,
+            "line": 56,
+            "path": "tests/test_stream_bare_type.py",
+            "sha256": "b67cea3e3d7bc3b51261e481689af933b4ac5dbffd4d33ce40eaa4f7e0efba36"
+          },
           "id": "fastapi.test.test-stream-bare-type.test-jsonl-router-typed-stream",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
             "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "The source parses JSON lines and checks per-item filtering/content type; the recipe's exact byte body and headers are stronger and the current mapping has no JSONL item/header selectors. Generic streaming send behavior is Starlette-owned.",
+            "contract_gate": "The upstream test asserts decoded JSON lines and content type; the paired, identity-checked workflow reproduces its route, item shape, value, and exclude-none configuration, then compares status, ordered headers, and exact response bytes between source and target for that fixture. This establishes exact output for the selected case, not every typed JSONL stream. FastAPI owns per-item validation/filtering; Starlette 1.6.0 owns generic streaming output and headers.",
             "rationale": "A typed JSONL stream serializes each item and omits None values under the configured response model.",
             "source_evidence": [
               {
@@ -431106,12 +431480,27 @@
                 "start_line": 490
               }
             ],
-            "stimulus_notes": "Use stream-bare-type-upstream.yaml case fastapi.responses.bare-stream.typed-jsonl, action typed-stream-excluding-none."
+            "stimulus_notes": "Use stream-bare-type-upstream.yaml case fastapi.responses.bare-stream.typed-jsonl, action typed-stream-excluding-none.",
+            "workflow_case": {
+              "action_ids": [
+                "typed-stream-excluding-none"
+              ],
+              "case_id": "fastapi.responses.bare-stream.typed-jsonl",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/stream-bare-type-upstream.yaml",
+              "workflow_id": "stream-bare-type-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "response-serialization",
               "selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
                 "http.status"
               ]
             }
@@ -431122,7 +431511,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use stream-bare-type-upstream.yaml case fastapi.responses.bare-stream.typed-jsonl, action typed-stream-excluding-none."
+          "stimulus_design_notes": "Use stream-bare-type-upstream.yaml case fastapi.responses.bare-stream.typed-jsonl, action typed-stream-excluding-none.",
+          "workflow_case": {
+            "action_ids": [
+              "typed-stream-excluding-none"
+            ],
+            "case_id": "fastapi.responses.bare-stream.typed-jsonl",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/stream-bare-type-upstream.yaml",
+            "workflow_id": "stream-bare-type-upstream"
+          }
         },
         {
           "feature_evidence": [
