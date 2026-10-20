@@ -30494,9 +30494,9 @@
     {
       "id": "request-validation-error-details-wave",
       "input_path": "tests/fixtures/inputs/parity/request-validation-error-details-wave.json",
-      "input_sha256": "5939f83391603bcf9c667acd5c7c28639b3684b6052614e1b84bc35c4f480413",
+      "input_sha256": "4f29def83279e3660f1a9432a25c0c00753e8dc9701cd67154e1f22998c15c34",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml",
-      "recipe_sha256": "92d93929f0f731ca8fbf0d1dd563d9f0c2021124def5bd86ade710f3552bf563",
+      "recipe_sha256": "178f7025d6dbd963f74327b566e8aa96decf807e66b505dd966c2caf68860f8d",
       "case_ids": [
         "fastapi.request-validation-error-details.multi-location-default-422",
         "fastapi.request-validation-error-details.rethrowing-handler"
@@ -40806,9 +40806,9 @@
     {
       "id": "validation-error-context-exact-review",
       "input_path": "tests/fixtures/inputs/parity/validation-error-context-exact-review.json",
-      "input_sha256": "fe84e9db5c6cb1f9b1fa19ecf5ecb593f1a63d0a1cd46a69b97afb2bd97ab022",
+      "input_sha256": "844776e20061fe003c6740904a88d7cff5038f1f9f22c3d0fa8f215accc29ead",
       "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
-      "recipe_sha256": "cbc0cb8439c3d5deba6dfd57f10fca81bee324c675a559cf0a5a24cb7990207f",
+      "recipe_sha256": "440cd86e49ecc38b37aa651e71b3284d22ca5b5958b5ae3d9edfc1e8cdb761d6",
       "case_ids": [
         "fastapi.validation-error-context.exact.request-endpoint",
         "fastapi.validation-error-context.exact.response-endpoint",
@@ -40817,10 +40817,12 @@
         "fastapi.validation-error-context.exact.mounted-response-endpoint",
         "fastapi.validation-error-context.exact.mounted-websocket-endpoint",
         "fastapi.validation-error-context.exact.path-only",
-        "fastapi.validation-error-context.exact.empty-context"
+        "fastapi.validation-error-context.exact.empty-context",
+        "fastapi.validation-error-context.exact.request-constructor-fields",
+        "fastapi.validation-error-context.exact.websocket-constructor-fields"
       ],
       "workload_path": "tests/fixtures/workloads/validation_error_context_exact_review.py",
-      "workload_sha256": "60c68c66b30b5023da11e9eb4e296c887bc1657a140fb0a036f8f60be18486a0",
+      "workload_sha256": "2a9a3bdf7effd14370872ce23c2761c1be7c6b4864eeb68e3610d0a1734d8a0e",
       "case_contracts": [
         {
           "case_id": "fastapi.validation-error-context.exact.request-endpoint",
@@ -40877,6 +40879,20 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_validation_error_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-error-context.exact.request-constructor-fields",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_validation_error_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-error-context.exact.websocket-constructor-fields",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_ws_router.py"
           ]
         }
       ]
@@ -74096,12 +74112,13 @@
       "fixture_id": "fastapi.test.test-validation-error-context",
       "workflow_id": "validation-error-context-exact-review",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 8 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 9 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.validation-error-context.exact.empty-context",
         "fastapi.validation-error-context.exact.mounted-response-endpoint",
         "fastapi.validation-error-context.exact.mounted-websocket-endpoint",
         "fastapi.validation-error-context.exact.path-only",
+        "fastapi.validation-error-context.exact.request-constructor-fields",
         "fastapi.validation-error-context.exact.request-endpoint",
         "fastapi.validation-error-context.exact.response-endpoint",
         "fastapi.validation-error-context.exact.websocket-endpoint",
@@ -74124,8 +74141,9 @@
       "fixture_id": "fastapi.test.test-ws-router",
       "workflow_id": "validation-error-context-exact-review",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.validation-error-context.exact.websocket-constructor-fields",
         "fastapi.validation-error-context.exact.websocket-error-fields"
       ],
       "observation_selectors": [

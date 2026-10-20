@@ -232,3 +232,87 @@ cases:
     - {kind: http_response, selectors: [status, body], comparison: exact}
   source_evidence:
   - {path: tests/test_validation_error_context.py, kind: upstream_test}
+- case_id: fastapi.validation-error-context.exact.request-constructor-fields
+  factory_input:
+    request_constructor:
+      errors:
+      - {type: missing, loc: [body, name], msg: Field required, input: null}
+      body: {name: null}
+      endpoint_ctx:
+        function: direct_request_error
+        path: GET /diagnostics/direct-request-error
+        file: fixture-input.py
+        line: 42
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: raise-populated-request-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /diagnostics/direct-request-error
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+    - kind: application_error
+      selector: error_public_attributes
+      attributes: [args, body, endpoint_ctx, endpoint_function, endpoint_path, endpoint_file, endpoint_line]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_validation_error_context.py, kind: upstream_test}
+- case_id: fastapi.validation-error-context.exact.websocket-constructor-fields
+  factory_input:
+    websocket_constructor:
+      errors:
+      - {type: missing, loc: [path, item_id], msg: Field required, input: invalid}
+      endpoint_ctx:
+        function: direct_websocket_error
+        path: WS /ws/diagnostics/direct-validation-error
+        file: fixture-input.py
+        line: 58
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: raise-populated-websocket-error
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /ws/diagnostics/direct-validation-error
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: workflow complete}
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+    - kind: application_error
+      selector: error_public_attributes
+      attributes: [args, endpoint_ctx, endpoint_function, endpoint_path, endpoint_file, endpoint_line]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}

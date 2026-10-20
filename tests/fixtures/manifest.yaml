@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 77c570768c549d2d06618afd139ee547f41deb5ac32e31d221eb5b6231912093
+    sha256: cef612fb2fd0134825278861f83edc54868e85a6126ff0b2afb50d54f17f46f3
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: bc2b8dab57e0dea67b6dfc965765220dc681e8bd22860d862cac8685541be760
+    sha256: ef811aa21084b7123ea4d5b9be288bed6d6bde7e57262f41c21f09236d67d045
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,13 +578,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 2e9cec98925689872b73306ce09ad9606edafd970ca23a609ebf7a2290009fbc
+    sha256: 52bf8037f9bfcd6eabf24d7105cfb885f8038122687ebb87d9ab1d477771fb1a
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 706
-      cases: 2882
+      cases: 2884
       partial_source_mappings: 1959
 
 contract_metadata:
@@ -1351,7 +1351,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 400
-    operation_fixture_refs: 2570
+    operation_fixture_refs: 2576
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -27105,11 +27105,44 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: request-validation-error-details-wave
+      input_path: tests/fixtures/inputs/parity/request-validation-error-details-wave.json
+      input_sha256: 4f29def83279e3660f1a9432a25c0c00753e8dc9701cd67154e1f22998c15c34
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml
+      recipe_sha256: 178f7025d6dbd963f74327b566e8aa96decf807e66b505dd966c2caf68860f8d
+      workload_path: tests/fixtures/workloads/request_validation_error_details_wave.py
+      workload_sha256: ed520f22df0b590bbaedb937b7c48f720bbc5cfe03a1cb2c3963532803f5a138
+      case_id: fastapi.request-validation-error-details.rethrowing-handler
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - validation.error_class
+      - validation.error_details
+    - workflow_id: validation-error-context-exact-review
+      input_path: tests/fixtures/inputs/parity/validation-error-context-exact-review.json
+      input_sha256: 844776e20061fe003c6740904a88d7cff5038f1f9f22c3d0fa8f215accc29ead
+      recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+      recipe_sha256: 440cd86e49ecc38b37aa651e71b3284d22ca5b5958b5ae3d9edfc1e8cdb761d6
+      workload_path: tests/fixtures/workloads/validation_error_context_exact_review.py
+      workload_sha256: 2a9a3bdf7effd14370872ce23c2761c1be7c6b4864eeb68e3610d0a1734d8a0e
+      case_id: fastapi.validation-error-context.exact.request-constructor-fields
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - validation.error_class
+      - validation.error_details
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
     - request-validation
     observation_selectors:
+    - asgi.application_error.exception
     - construction.exception_class
     - construction.exception_message
     - construction.outcome
@@ -27269,6 +27302,54 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: request-validation-error-details-wave
+      input_path: tests/fixtures/inputs/parity/request-validation-error-details-wave.json
+      input_sha256: 4f29def83279e3660f1a9432a25c0c00753e8dc9701cd67154e1f22998c15c34
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml
+      recipe_sha256: 178f7025d6dbd963f74327b566e8aa96decf807e66b505dd966c2caf68860f8d
+      workload_path: tests/fixtures/workloads/request_validation_error_details_wave.py
+      workload_sha256: ed520f22df0b590bbaedb937b7c48f720bbc5cfe03a1cb2c3963532803f5a138
+      case_id: fastapi.request-validation-error-details.rethrowing-handler
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - validation.error_class
+      - validation.error_details
+    - workflow_id: validation-error-context-exact-review
+      input_path: tests/fixtures/inputs/parity/validation-error-context-exact-review.json
+      input_sha256: 844776e20061fe003c6740904a88d7cff5038f1f9f22c3d0fa8f215accc29ead
+      recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+      recipe_sha256: 440cd86e49ecc38b37aa651e71b3284d22ca5b5958b5ae3d9edfc1e8cdb761d6
+      workload_path: tests/fixtures/workloads/validation_error_context_exact_review.py
+      workload_sha256: 2a9a3bdf7effd14370872ce23c2761c1be7c6b4864eeb68e3610d0a1734d8a0e
+      case_id: fastapi.validation-error-context.exact.request-constructor-fields
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - validation.error_class
+      - validation.error_details
+    - workflow_id: validation-error-context-exact-review
+      input_path: tests/fixtures/inputs/parity/validation-error-context-exact-review.json
+      input_sha256: 844776e20061fe003c6740904a88d7cff5038f1f9f22c3d0fa8f215accc29ead
+      recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+      recipe_sha256: 440cd86e49ecc38b37aa651e71b3284d22ca5b5958b5ae3d9edfc1e8cdb761d6
+      workload_path: tests/fixtures/workloads/validation_error_context_exact_review.py
+      workload_sha256: 2a9a3bdf7effd14370872ce23c2761c1be7c6b4864eeb68e3610d0a1734d8a0e
+      case_id: fastapi.validation-error-context.exact.websocket-constructor-fields
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - validation.error_class
+      - validation.error_details
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -27290,6 +27371,7 @@ api_surface_contract:
     - docs.response.body.bytes
     - docs.response.headers
     - docs.response.status
+    - error.public_attributes
     - http.body.bytes
     - http.headers.ordered
     - http.status
@@ -27298,6 +27380,7 @@ api_surface_contract:
     - openapi.request_schema
     - python.signature
     - python.warnings
+    - validation.error_details
     - warnings.category_message
     - websocket.close_code
     - websocket.close_reason
@@ -27809,12 +27892,28 @@ api_surface_contract:
       - websocket.workload_trace
     - workflow_id: validation-error-context-exact-review
       input_path: tests/fixtures/inputs/parity/validation-error-context-exact-review.json
-      input_sha256: fe84e9db5c6cb1f9b1fa19ecf5ecb593f1a63d0a1cd46a69b97afb2bd97ab022
+      input_sha256: 844776e20061fe003c6740904a88d7cff5038f1f9f22c3d0fa8f215accc29ead
       recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
-      recipe_sha256: cbc0cb8439c3d5deba6dfd57f10fca81bee324c675a559cf0a5a24cb7990207f
+      recipe_sha256: 440cd86e49ecc38b37aa651e71b3284d22ca5b5958b5ae3d9edfc1e8cdb761d6
       workload_path: tests/fixtures/workloads/validation_error_context_exact_review.py
-      workload_sha256: 60c68c66b30b5023da11e9eb4e296c887bc1657a140fb0a036f8f60be18486a0
+      workload_sha256: 2a9a3bdf7effd14370872ce23c2761c1be7c6b4864eeb68e3610d0a1734d8a0e
       case_id: fastapi.validation-error-context.exact.websocket-error-fields
+      observation_selectors:
+      - asgi.application_error.exception
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - validation.error_class
+      - validation.error_details
+    - workflow_id: validation-error-context-exact-review
+      input_path: tests/fixtures/inputs/parity/validation-error-context-exact-review.json
+      input_sha256: 844776e20061fe003c6740904a88d7cff5038f1f9f22c3d0fa8f215accc29ead
+      recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+      recipe_sha256: 440cd86e49ecc38b37aa651e71b3284d22ca5b5958b5ae3d9edfc1e8cdb761d6
+      workload_path: tests/fixtures/workloads/validation_error_context_exact_review.py
+      workload_sha256: 2a9a3bdf7effd14370872ce23c2761c1be7c6b4864eeb68e3610d0a1734d8a0e
+      case_id: fastapi.validation-error-context.exact.websocket-constructor-fields
       observation_selectors:
       - asgi.application_error.exception
       - construction.exception_class

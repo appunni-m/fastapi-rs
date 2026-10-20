@@ -13141,7 +13141,11 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-validation-handler.form-body
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
           case_id: fastapi.request-validation-handler.manual-structured-errors
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml
+          case_id: fastapi.request-validation-error-details.rethrowing-handler
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+          case_id: fastapi.validation-error-context.exact.request-constructor-fields
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception, validation.error_details, error.public_attributes]
       error_contract_ids: [fastapi.exceptions.RequestValidationError]
       supported_slice: >-
         Partial native error-object slice: constructors preserve errors, body,
@@ -13152,8 +13156,10 @@ reviewed_api_contract_overlay:
         taking precedence over a registered server-error handler. A manually
         raised structured error also checks default handler encoding of a tuple
         location, nested Decimal/datetime/UUID/Enum values, and a ValueError
-        context. Other error records, WebSocket validation, overrides, and other
-        ValidationException subclasses remain outside this slice.
+        context. A direct public-constructor case rethrows an input-built
+        RequestValidationError and compares its body, endpoint context, and
+        derived fields. Other error records, WebSocket validation, overrides,
+        and other ValidationException subclasses remain outside this slice.
     fastapi.exceptions.ValidationException.errors:
       target_binding:
         implementation_owner: fastapi-rs
@@ -13189,13 +13195,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.validation-error-object.empty-context
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-object.yaml
           case_id: fastapi.validation-error-object.omitted-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml
+          case_id: fastapi.request-validation-error-details.rethrowing-handler
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+          case_id: fastapi.validation-error-context.exact.request-constructor-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+          case_id: fastapi.validation-error-context.exact.websocket-constructor-fields
       feature_ids: [public-api-errors, request-validation]
-      observation_selectors: [http.status, http.body.bytes]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception, validation.error_details, error.public_attributes]
       supported_slice: >-
         For RequestValidationError instances built by the linked workload,
         errors() returns the original stored error sequence; the exact response
         includes the serialized errors and a boolean identity observation. The
         three cases vary endpoint context and omitted body/context defaults.
+        Input-built request and WebSocket validation errors are also rethrown
+        through ASGI handlers while the runner observes their errors and public
+        fields. The API class export remains a separate partial contract.
         This does not establish direct method invocation, behavior for other
         ValidationException subclasses, arbitrary sequence types, or the full
         exception-class contract.
@@ -13233,6 +13248,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.websocket-validation.constructor-override-close
         - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
           case_id: fastapi.validation-error-context.exact.websocket-error-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
+          case_id: fastapi.validation-error-context.exact.websocket-constructor-fields
       feature_ids: [public-api-errors, request-validation, websocket-lifecycle]
       observation_selectors:
         - construction.outcome
@@ -13259,8 +13276,11 @@ reviewed_api_contract_overlay:
         identity/state behavior. A separate input-driven ASGI case rethrows a
         WebSocket validation error caused by invalid path, query, and header
         dependency values, then observes its class, details, args, endpoint
-        context, and derived endpoint fields. This fixture mapping is not a
-        parity result and does not establish behavior beyond those inputs.
+        context, and derived endpoint fields. A direct public-constructor case
+        now supplies errors and a populated endpoint context in the input,
+        rethrows that instance through the handler, and observes those same
+        fields. This fixture mapping is not a parity result and does not
+        establish behavior beyond those inputs.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract

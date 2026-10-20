@@ -43,7 +43,9 @@ async def _websocket_context_dependency(
 
 
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
-    del factory_input, event_trace
+    del event_trace
+    request_constructor = factory_input.get("request_constructor")
+    websocket_constructor = factory_input.get("websocket_constructor")
     app = FastAPI()
     sub_app = FastAPI()
     _register_handlers(app)
@@ -97,5 +99,25 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             endpoint_ctx={},
         )
         return PlainTextResponse(str(error))
+
+    if isinstance(request_constructor, Mapping):
+
+        @app.get("/diagnostics/direct-request-error")
+        async def direct_request_error() -> None:
+            raise RequestValidationError(
+                request_constructor["errors"],
+                body=request_constructor["body"],
+                endpoint_ctx=request_constructor["endpoint_ctx"],
+            )
+
+    if isinstance(websocket_constructor, Mapping):
+
+        @app.websocket("/ws/diagnostics/direct-validation-error")
+        async def direct_websocket_error(websocket: WebSocket) -> None:
+            del websocket
+            raise WebSocketRequestValidationError(
+                websocket_constructor["errors"],
+                endpoint_ctx=websocket_constructor["endpoint_ctx"],
+            )
 
     return app
