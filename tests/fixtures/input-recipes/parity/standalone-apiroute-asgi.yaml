@@ -671,3 +671,154 @@ cases:
       - path: tests/test_tutorial/test_request_forms/test_tutorial001.py
         kind: upstream_test
     verification: parity
+
+  # Maps the request-files tutorial's File[bytes] success and missing-file cases.
+  - case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success
+    factory_input:
+      route_path: /files/
+      methods: [POST]
+      endpoint: file-bytes
+      invoke_route_app: true
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: post-multipart-file-to-route-app
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /files/
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+            - [content-type, multipart/form-data; boundary=fastapi-rs-boundary]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\r\nContent-Type: text/plain\r\n\r\n<file content>\r\n--fastapi-rs-boundary--\r\n"
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body, body_json]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/tutorial/request-files.md
+        kind: upstream_documentation
+      - path: tests/test_tutorial/test_request_files/test_tutorial001.py
+        kind: upstream_test
+    verification: parity
+
+  - case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing
+    factory_input:
+      route_path: /files/
+      methods: [POST]
+      endpoint: file-bytes
+      invoke_route_app: true
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: post-without-required-file-to-route-app
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /files/
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body, body_json]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/tutorial/request-files.md
+        kind: upstream_documentation
+      - path: tests/test_tutorial/test_request_files/test_tutorial001.py
+        kind: upstream_test
+    verification: parity
+
+  # Maps test_post_upload_file, preserving the uploaded filename.
+  - case_id: fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success
+    factory_input:
+      route_path: /uploadfile/
+      methods: [POST]
+      endpoint: upload-file
+      invoke_route_app: true
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: post-uploadfile-to-route-app
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /uploadfile/
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+            - [content-type, multipart/form-data; boundary=fastapi-rs-boundary]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\r\nContent-Type: text/plain\r\n\r\n<file content>\r\n--fastapi-rs-boundary--\r\n"
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body, body_json]
+            comparison: exact
+          - kind: asgi_send
+            selector: message_types
+            comparison: ordered
+          - kind: application_error
+            selector: exception
+            comparison: exact
+    source_evidence:
+      - path: docs/en/docs/tutorial/request-files.md
+        kind: upstream_documentation
+      - path: tests/test_tutorial/test_request_files/test_tutorial001.py
+        kind: upstream_test
+    verification: parity

@@ -39470,9 +39470,9 @@
     {
       "id": "standalone-apiroute-asgi",
       "input_path": "tests/fixtures/inputs/parity/standalone-apiroute-asgi.json",
-      "input_sha256": "4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a",
+      "input_sha256": "f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e",
       "recipe_path": "tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml",
-      "recipe_sha256": "23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b",
+      "recipe_sha256": "b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d",
       "case_ids": [
         "fastapi.routing.apiroute.asgi.direct-success",
         "fastapi.routing.apiroute.asgi.response-model-filters",
@@ -39485,10 +39485,13 @@
         "fastapi.routing.apiroute.asgi.app-form-body-success",
         "fastapi.routing.apiroute.asgi.app-form-body-missing-password",
         "fastapi.routing.apiroute.asgi.app-form-body-missing-username",
-        "fastapi.routing.apiroute.asgi.app-form-body-empty"
+        "fastapi.routing.apiroute.asgi.app-form-body-empty",
+        "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success",
+        "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing",
+        "fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success"
       ],
       "workload_path": "tests/fixtures/workloads/standalone_apiroute_asgi.py",
-      "workload_sha256": "c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d",
+      "workload_sha256": "d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1",
       "oracle_profile_extension": "standard-multipart",
       "case_contracts": [
         {
@@ -39575,6 +39578,30 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_tutorial/test_request_forms/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py"
           ]
         }
       ]
@@ -73247,6 +73274,29 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "standalone-apiroute-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.body.json, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing",
+        "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success",
+        "fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.body.json",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_dependency_contextvars.py",
       "fixture_id": "fastapi.test.test-dependency-contextvars",
       "workflow_id": "standalone-apiroute-asgi",
@@ -73342,6 +73392,25 @@
       "case_ids": [
         "fastapi.routing.apiroute.asgi.app-json-body-success",
         "fastapi.routing.apiroute.asgi.app-json-body-validation-error"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.body.json",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial001",
+      "workflow_id": "standalone-apiroute-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.body.json, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing",
+        "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success",
+        "fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success"
       ],
       "observation_selectors": [
         "asgi.send.message_types",

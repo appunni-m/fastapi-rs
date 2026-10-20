@@ -3804,6 +3804,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
         - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
         - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_post_form_no_body}
+        - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_post_file}
         - {path: tests/test_request_params/test_file/test_required.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
         - {path: tests/test_request_params/test_file/test_required.py, symbol: test_required_alias_and_validation_alias_schema}
         - {path: tests/test_request_params/test_file/test_list.py, symbol: test_list_alias_and_validation_alias_by_validation_alias}
@@ -3813,6 +3815,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.schema-extra-example.openapi-examples.file-placement
         - recipe_path: tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml
           case_id: fastapi.request-files.openapi-documented-shapes
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.file
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml
@@ -3827,8 +3837,10 @@ reviewed_api_contract_overlay:
         Partial native slice: File accepts a string validation_alias; it takes
         precedence over alias for upload-field lookup, missing-field error
         locations, and the OpenAPI request schema. Identity-checked inputs cover
-        byte and UploadFile values plus repeated uploads. Non-string
-        AliasPath/AliasChoices, serialization_alias, and other FieldInfo
+        byte and UploadFile values plus repeated uploads. The standalone
+        APIRoute.app cases compare one File[bytes] multipart success, its
+        missing-required-file validation response, and one UploadFile upload.
+        Other non-string AliasPath/AliasChoices, serialization_alias, and FieldInfo
         options remain outside this slice. The request-files
         documentation workflow also projects the exact requestBody and
         referenced component schemas for its documented bytes and UploadFile
@@ -5827,6 +5839,10 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_custom_model_in_callback.py}
         - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
         - {path: tests/test_tutorial/test_request_forms/test_tutorial001.py, symbol: test_post_body_form}
+        - {path: docs/en/docs/tutorial/request-files.md}
+        - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_post_form_no_body}
+        - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_post_file}
+        - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_post_upload_file}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.routing.apiroute.constructor-signature
@@ -5896,6 +5912,18 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.asgi.app-form-body-empty
           workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
@@ -5954,12 +5982,14 @@ reviewed_api_contract_overlay:
         ASGI workflow maps one typed GET response, a combined response-model
         filter projection, path-mismatch 404, and method-mismatch 405 through a
         direct route call. It observes HTTP status, headers, body, ASGI message
-        order, and surfaced exceptions. Six additional cases invoke the public
+        order, and surfaced exceptions. Nine additional cases invoke the public
         `APIRoute.app` adapter for static POST routes: one accepts a typed JSON
         body and serializes its response model, one returns the FastAPI 422
         validation response for an invalid integer field, and four exercise
         URL-encoded Form parsing for valid fields, each missing required field,
-        and an empty body. The validation cases supply FastAPI's
+        and an empty body. Three additional inputs exercise multipart File[bytes]
+        success and missing-file validation plus UploadFile filename handling.
+        The validation cases supply FastAPI's
         `RequestValidationError` handler in the ASGI scope, matching the
         exception-handler context normally installed by a FastAPI application.
         These cases compare ordered headers, exact body bytes, parsed JSON,
@@ -5971,7 +6001,8 @@ reviewed_api_contract_overlay:
         object with one dependency mapping and compares the cached yielded
         override's response value and cleanup trace across route-level and
         endpoint-level declarations. Other provider shapes, override errors and
-        signature validation, multipart and other body shapes, other validation
+        signature validation, other multipart field shapes, optional or multiple
+        uploads, other body shapes, other validation
         errors, other exception-handler combinations, WebSocket scopes, and
         other route behavior remain unproven. The reviewed source
         classification keeps direct
@@ -5982,7 +6013,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - Standalone construction supports the mapped common and selected OpenAPI-facing options, including explicit description, one provider-backed dependency override, and one callback route; custom response classes, response-model filters beyond the sampled output projection, strict-content-type behavior, and other callback combinations remain unverified.
-          - Standalone APIRoute dispatch is mapped for twelve selected HTTP cases, including direct .app invocation with one typed JSON body success, one integer-validation response, and four URL-encoded Form outcomes under a FastAPI RequestValidationError handler; other provider shapes, override errors, multipart and other body shapes, other validation cases, exception-handler combinations, and WebSocket scopes remain unverified.
+          - Standalone APIRoute dispatch is mapped for fifteen selected HTTP cases, including direct .app invocation with one typed JSON body success, one integer-validation response, four URL-encoded Form outcomes, and three multipart File/UploadFile outcomes under the FastAPI RequestValidationError handler where applicable; other provider shapes, override errors, other multipart field shapes, optional or multiple uploads, other body shapes, other validation cases, exception-handler combinations, and WebSocket scopes remain unverified.
     fastapi.routing.iter_route_contexts:
       rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
       source_evidence:
@@ -15651,6 +15682,8 @@ reviewed_api_contract_overlay:
           alias_spelling: UploadFile
           local_name: UploadFile
           target_path: fastapi.datastructures.UploadFile
+        - {path: docs/en/docs/tutorial/request-files.md}
+        - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_post_upload_file}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
           case_id: fastapi.root-alias-identity.http-reexports
@@ -15676,6 +15709,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-uploads.request-files.openapi-schema
           workload_path: tests/fixtures/workloads/request_uploads.py
           observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+          case_id: fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success
+          workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, asgi.send.message_types, asgi.application_error.exception]
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-type-validation.yaml
           case_id: fastapi.uploadfile.pydantic-validation.reject-text-form-value
           workload_path: tests/fixtures/workloads/uploadfile_pydantic_type_validation.py
@@ -15721,8 +15758,9 @@ reviewed_api_contract_overlay:
         and four method signatures match FastAPI 0.141.1. The linked cases sample class and method
         metadata, Pydantic schema and validation, selected invalid values, BytesIO and spooled-file
         operations, metadata mutation, propagated I/O errors, OpenAPI contribution, and multipart
-        request-object identity. This remains a partial contract; see the canonical module-class
-        overlay for the exact supported slice and remaining gaps.
+        request-object identity. A standalone APIRoute.app case also observes one UploadFile
+        multipart request and its original filename. This remains a partial contract; see the
+        canonical module-class overlay for the exact supported slice and remaining gaps.
 
     fastapi.WebSocket:
       target_binding:

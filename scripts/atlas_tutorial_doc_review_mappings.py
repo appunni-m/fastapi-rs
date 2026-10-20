@@ -1811,7 +1811,26 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "case_id": "fastapi.request-files.openapi-documented-shapes",
                 "action_ids": ["inspect-documented-request-schemas"],
                 "observation_selectors": ["openapi.document", "openapi.paths"],
-            }
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml",
+                "case_ids": [
+                    "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing",
+                    "fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success",
+                    "fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success",
+                ],
+                "observation_selectors": [
+                    "asgi.application_error.exception",
+                    "asgi.send.message_types",
+                    "construction.exception_class",
+                    "construction.exception_message",
+                    "construction.outcome",
+                    "http.body.bytes",
+                    "http.body.json",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            },
         ],
         "supporting_sources": [
             {

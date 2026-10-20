@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 23fbe8fae6765ac879f5125ead47e2b1698c0fb9f36efe1e33690fe11243c261
+    sha256: 98e70158c2affa8db5b4a8cf34f7cf13c7456f71a1b3ae6fc795a6673ecc390f
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 9f291a9909da1bb61c8238fc922ba1621e91d908bb86399a479eaf7bb5536f89
+    sha256: b53667a4ff44822b1f448604f225e9f394c7cc54503a886f5752c409df31a0cf
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 5384ea40ecf6ff5f6cf97132ef3f78e363fcb15c7dd839e43f81edddeff0cf2d
+    sha256: 5a53dc7408f47130d7ad4bd4dab8bb30e032c580bb0b05dddac0c94fcdc96e74
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 717
-      cases: 2943
-      partial_source_mappings: 1971
+      cases: 2946
+      partial_source_mappings: 1973
 
 contract_metadata:
   aliases:
@@ -1405,7 +1405,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 421
-    operation_fixture_refs: 2664
+    operation_fixture_refs: 2670
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -6052,6 +6052,42 @@ api_surface_contract:
       observation_selectors:
       - openapi.document
       - openapi.paths
+    - workflow_id: standalone-apiroute-asgi
+      input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
+      recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
+      workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
+      case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+    - workflow_id: standalone-apiroute-asgi
+      input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
+      recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
+      workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
+      case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
     - workflow_id: parameter-factory-signatures
       input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
       input_sha256: a11788eb6f3ada7a89f3a2cb3f0ba7ce90da527586bf6c39a17f9c958935961d
@@ -8885,6 +8921,24 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: standalone-apiroute-asgi
+      input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
+      recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
+      workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
+      case_id: fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
     - workflow_id: uploadfile-pydantic-type-validation
       input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-type-validation.json
       input_sha256: 74f92c00a53d2e5f9d8446045a7f13e81ab50f67f229f87e8d329eeaa7d9cf69
@@ -61597,11 +61651,11 @@ api_surface_contract:
       - python.attribute_value
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.direct-success
       observation_selectors:
       - asgi.application_error.exception
@@ -61615,11 +61669,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.response-model-filters
       observation_selectors:
       - asgi.application_error.exception
@@ -61633,11 +61687,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.path-mismatch-404
       observation_selectors:
       - asgi.application_error.exception
@@ -61650,11 +61704,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.method-mismatch-405
       observation_selectors:
       - asgi.application_error.exception
@@ -61667,11 +61721,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.route-dependency-and-cleanup
       observation_selectors:
       - asgi.application_error.exception
@@ -61684,11 +61738,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.route-dependency-provider-override
       observation_selectors:
       - asgi.application_error.exception
@@ -61701,11 +61755,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.app-json-body-success
       observation_selectors:
       - asgi.application_error.exception
@@ -61719,11 +61773,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.app-json-body-validation-error
       observation_selectors:
       - asgi.application_error.exception
@@ -61737,11 +61791,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.app-form-body-success
       observation_selectors:
       - asgi.application_error.exception
@@ -61755,11 +61809,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.app-form-body-missing-password
       observation_selectors:
       - asgi.application_error.exception
@@ -61773,11 +61827,11 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.app-form-body-missing-username
       observation_selectors:
       - asgi.application_error.exception
@@ -61791,12 +61845,66 @@ api_surface_contract:
       - http.status
     - workflow_id: standalone-apiroute-asgi
       input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
-      input_sha256: 4c30c44ff079750dbb67f0841762d27bdd5a07ef1d233a446609eb249d753a3a
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
       recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
-      recipe_sha256: 23f1dccdeb10a66255e1aae184acdda2a80eb5e6844251820874fdb34ed7559b
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
       workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
-      workload_sha256: c8711eeb0488d8ddeb766354e51949d9c49bf10eaae7335dacf1485e2ef36c6d
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
       case_id: fastapi.routing.apiroute.asgi.app-form-body-empty
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+    - workflow_id: standalone-apiroute-asgi
+      input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
+      recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
+      workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
+      case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-success
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+    - workflow_id: standalone-apiroute-asgi
+      input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
+      recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
+      workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
+      case_id: fastapi.routing.apiroute.asgi.app-multipart-file-bytes-missing
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+    - workflow_id: standalone-apiroute-asgi
+      input_path: tests/fixtures/inputs/parity/standalone-apiroute-asgi.json
+      input_sha256: f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e
+      recipe_path: tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml
+      recipe_sha256: b5ab89db78f36edd97c697a5ac031cf65b6633ff3daae4742a853fe34a00dd1d
+      workload_path: tests/fixtures/workloads/standalone_apiroute_asgi.py
+      workload_sha256: d4e2e2d1e564a8b79016a02fdffb0faaff245e4b4294551f23fbcbb7db6ff2e1
+      case_id: fastapi.routing.apiroute.asgi.app-multipart-uploadfile-success
       observation_selectors:
       - asgi.application_error.exception
       - asgi.send.message_types
@@ -61985,11 +62093,12 @@ api_surface_contract:
         explicit description, one provider-backed dependency override, and one callback route; custom
         response classes, response-model filters beyond the sampled output projection, strict-content-type
         behavior, and other callback combinations remain unverified.
-      - Standalone APIRoute dispatch is mapped for twelve selected HTTP cases, including direct .app invocation
-        with one typed JSON body success, one integer-validation response, and four URL-encoded Form outcomes
-        under a FastAPI RequestValidationError handler; other provider shapes, override errors, multipart
-        and other body shapes, other validation cases, exception-handler combinations, and WebSocket scopes
-        remain unverified.
+      - Standalone APIRoute dispatch is mapped for fifteen selected HTTP cases, including direct .app
+        invocation with one typed JSON body success, one integer-validation response, four URL-encoded
+        Form outcomes, and three multipart File/UploadFile outcomes under the FastAPI RequestValidationError
+        handler where applicable; other provider shapes, override errors, other multipart field shapes,
+        optional or multiple uploads, other body shapes, other validation cases, exception-handler combinations,
+        and WebSocket scopes remain unverified.
   - id: fastapi.routing.APIRoute.get_route_handler
     kind: method
     source_candidate_ref: /api_candidates/1063

@@ -16,7 +16,7 @@ from contextlib import AsyncExitStack
 from types import SimpleNamespace
 from typing import Annotated, Any
 
-from fastapi import Depends, Form
+from fastapi import Depends, File, Form, UploadFile
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
@@ -122,6 +122,14 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
             password: Annotated[str, Form()],
         ) -> dict[str, str]:
             return {"username": username}
+    elif factory_input["endpoint"] == "file-bytes":
+
+        async def endpoint(file: Annotated[bytes, File()]):
+            return {"file_size": len(file)}
+    elif factory_input["endpoint"] == "upload-file":
+
+        async def endpoint(file: UploadFile):
+            return {"filename": file.filename}
     else:
 
         async def endpoint() -> dict[str, Any]:
@@ -144,12 +152,11 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
     if "response_model_exclude_none" in factory_input:
         route_options["response_model_exclude_none"] = factory_input["response_model_exclude_none"]
 
+    response_model_name = factory_input.get("response_model")
+    if response_model_name is not None:
+        route_options["response_model"] = response_models[response_model_name]
     route = APIRoute(
-        factory_input["route_path"],
-        endpoint,
-        methods=factory_input["methods"],
-        response_model=response_models[factory_input["response_model"]],
-        **route_options,
+        factory_input["route_path"], endpoint, methods=factory_input["methods"], **route_options
     )
 
     async def standalone_route(scope: Any, receive: Any, send: Any) -> None:
