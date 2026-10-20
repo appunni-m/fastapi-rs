@@ -147,58 +147,55 @@ crates.io releases](https://docs.rs/about/builds). Documentation changes are
 released with their Git commit; there is no site deployment command until a
 separate hosted site is selected and configured.
 
-## Readiness snapshot (2026-10-20; source candidate 674974e)
+## Readiness snapshot (2026-10-20; source candidate 4806541)
 
-The clean candidate was `674974e26feffd9764657ca77bd2f5c17d13cd07`, built
-against FastAPI `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` and Starlette-RS
+The clean `main` candidate was
+`4806541ad10787c5fef3476c469ddff95932850a`, built against FastAPI
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` and Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338` (source tree SHA-256
 `da4acf9c64ae8df8a9bde0976d1777f5b36d67a6af45c443b0d0f617cad10f48`). These
 artifacts are local preparation evidence, not uploaded or tagged releases.
 
 - The direct CPython 3.12.13 macOS arm64 wheel is
-  `target/release-wheel-674974e/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`,
-  SHA-256 `91d956099c39c1a52841481325a8a4e5eb6e155b9cf7546d9ca47de8d16c8dae`.
+  `target/release-wheel-4806541/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`,
+  SHA-256 `064c90fcbee2d5d5f05af6a7993f41f8a234af52fcd4cf7929a2290146edb6c9`.
   The release-wheel checker verified its `fastapi` facade, single native
-  extension, metadata, portable SBOM references, and `RECORD`; the notice
-  checker verified the FastAPI MIT attribution, including Copyright (c) 2018
-  Sebastián Ramírez, and the pinned third-party notices.
+  extension, metadata, portable SBOM references, and `RECORD`.
 - The validation-only sdist is
-  `target/release-sdist-validation-674974e/fastapi_rs-0.1.0.tar.gz`, SHA-256
-  `3d19e659129c3e1444f8be724c353f9d1138d6c696ff1ee61db8829afbcc889d`.
+  `target/release-sdist-validation-4806541/fastapi_rs-0.1.0.tar.gz`, SHA-256
+  `be49c9781aa4890f721a90b39ac0c5ca3857375a1ea200148e2ae6fd5abc7fa8`.
   Its validator accepted 202 members and the pinned Starlette-RS source digest.
-  The release-profile wheel rebuilt from that archive passed package and notice
-  checks; SHA-256
-  `dda3d30bce7b158643733c84ad274ebe9670f46aebdd605225b149ede3b519af`. Neither
-  the sdist nor the rebuilt wheel is a planned publish artifact. This confirms
-  macOS arm64 only.
-- Cargo listed 33 package entries, including `Cargo.toml`, `README.md`,
-  `LICENSE.md`, `THIRD_PARTY_NOTICES.md`, and `build.rs`. A local
-  `fastapi-rs-0.1.0.crate` was created with `--no-verify` and a Cargo patch to
-  the pinned Starlette-RS checkout:
-  `target/release-crate-674974e/fastapi-rs-0.1.0.crate`, SHA-256
-  `47479997a4d8b0b4d1b7ee225793ce254b95fce0f5b9b71e4e7343350534008a`. The
-  archive contains 33 files and passed `make license-artifact-check` with the
-  direct wheel. An extracted copy passed offline `cargo check --locked` and
-  warning-denied `cargo doc --locked --no-deps` using the same local Starlette-RS
-  patch. This verifies the archive against the pinned local source, not against
-  a crates.io consumer.
-- Unpatched `cargo package --locked --offline` from the candidate still fails
-  because crates.io has no matching `starlette-rs 0.1.0`. PyPI returned 404 for
+  The release-profile wheel rebuilt from that archive passed package checks at
+  `target/release-sdist-validation-wheels-4806541/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`,
+  SHA-256 `632e783b1fe205724837cbfa9ceea4d85b8d6dfcd5734c8c20c46d96b48b2676`.
+  Neither the sdist nor rebuilt wheel is a planned publish artifact. This
+  validates macOS arm64 only.
+- The local Cargo archive is
+  `target/release-crate-build-4806541/package/fastapi-rs-0.1.0.crate`, SHA-256
+  `68ac4b71663f82b6a1620e0aaefecc138285ad005a14c4c3c37d8a4b028e1ad7`. Cargo
+  packaged 32 files with a local patch to the pinned Starlette-RS checkout.
+  The extracted archive passed offline `cargo check --locked` and warning-denied
+  `cargo doc --locked --no-deps` with that same local source patch. This verifies
+  the archive against the pinned local source, not against a crates.io
+  consumer.
+- `make license-artifact-check` passed on the direct wheel and Cargo archive.
+  It verified the complete FastAPI MIT attribution, including Copyright (c)
+  2018 Sebastián Ramírez, and the pinned third-party notices. Warning-denied
+  rustdoc also succeeded through the pinned workspace overlay and generated
+  `target/doc/fastapi_rs/index.html`.
+- The unpatched offline Cargo package attempt cannot resolve `starlette-rs`
+  0.1.0 from the local crates.io index, so this local archive used a path patch.
+  PyPI returned 404 for
   [starlette-rs-py==0.1.0](https://pypi.org/pypi/starlette-rs-py/0.1.0/json)
   and [fastapi-rs==0.1.0](https://pypi.org/pypi/fastapi-rs/0.1.0/json); those
-  responses do not establish name ownership or availability. Publish the exact
-  Starlette-RS dependencies and verify package ownership and installability
-  before publishing FastAPI-RS.
-- Warning-denied rustdoc succeeded both through the pinned workspace overlay
-  and from the extracted `.crate`. Project guides remain repository Markdown;
-  docs.rs is the planned Rust API reference after crate publication. There is
-  no static-site deployment workflow. The standard `make build-python` wrapper
-  could not initialize its uv cache in this environment, so the wheel builders
-  ran directly with the already-prepared locked CPython 3.12.13/Maturin tools.
-- The compatibility manifest currently has 7 of 497 required public API
-  dispositions supported; 490 remain unresolved. This is not a claim of full
-  FastAPI compatibility or release readiness.
+  responses do not establish name ownership or availability. Confirm registry
+  publication and project ownership for each dependency before publishing.
+- Project guides remain repository Markdown; docs.rs is the planned Rust API
+  reference after crate publication. There is no static-site deployment
+  workflow. The compatibility manifest currently has 7 of 497 required public
+  API dispositions supported; 490 remain unresolved. This is not a claim of
+  full FastAPI compatibility or release readiness.
 
 No package was uploaded; no tag, GitHub release, or documentation deployment
-was created. Remaining external gates are registry availability and name
+was created. Remaining gates are registry dependency publication and name
 ownership, broader platform artifacts, and final maintainer approval.
