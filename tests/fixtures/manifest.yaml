@@ -578,7 +578,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: e65d0464a0aa23d4609df5e14ea95f0c7fb49b831b9ac15f7cbd68c783f297ce
+    sha256: 5e9524a0d15893531cb7aaaefb4c7fee350be5f49e196b5c64f80b8d37284caf
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1325,8 +1325,8 @@ api_surface_contract:
       full-contract-established: 7
       slice-described: 481
     implementation_owner_plans:
-      fastapi-rs: 457
-      starlette-rs: 31
+      fastapi-rs: 456
+      starlette-rs: 32
     inherited_implementation_owner_plans:
       fastapi-rs: 8
       starlette-rs: 1
@@ -23706,11 +23706,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
@@ -23875,11 +23875,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
@@ -23976,11 +23976,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
@@ -24008,17 +24008,21 @@ api_surface_contract:
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.datastructures.UploadFile.content_type
-      implementation_owner: fastapi-rs
+      implementation_owner: starlette-rs
       implementation_owner_evidence:
-        kind: fastapi_owned_or_adapter
+        kind: reviewed_inherited_starlette_member
         source_candidate_refs:
         - /api_candidates/320
+        reviewed_source_evidence_refs:
+        - /reviewed_api_contract_overlay/operations/fastapi.datastructures.UploadFile.content_type/source_evidence/1
       status: partial-contract
       disposition: unresolved
       rust_binding: null
       known_gaps:
       - Values are checked for absent content-type and uppercase duplicate content-type headers; other
         raw spellings, duplicate orderings, and value encodings remain unverified.
+      - FastAPI inherits the read-only content_type property from Starlette. Exact assignment error behavior
+        belongs to Starlette-RS and remains a compatibility gap in the pinned target descriptor.
   - id: fastapi.datastructures.UploadFile.file
     kind: field
     source_candidate_ref: /api_candidates/321
@@ -24103,11 +24107,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
@@ -24202,11 +24206,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
@@ -24301,11 +24305,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
@@ -24465,11 +24469,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class
@@ -24746,11 +24750,11 @@ api_surface_contract:
       - http.status
     - workflow_id: uploadfile-metadata-edges
       input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
-      input_sha256: 9a6eb0b0b4170fe8a11048807058de481297627f4fcca96a278733c0a205478f
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
       recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
-      recipe_sha256: 2746a0cc3b642abec9e982db373bc0633df80fdc1baef895f007bf20b718f794
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
       workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
-      workload_sha256: 5af37ce53bbf0f12e60b4a3e18e44abc18a1e97a0bfdfbb2c5f1b5b7b234bd16
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
       case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
       observation_selectors:
       - construction.exception_class

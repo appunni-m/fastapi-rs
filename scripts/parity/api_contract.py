@@ -1425,6 +1425,44 @@ def _implementation_owner_plan(
     return "fastapi-rs", "fastapi_owned_or_adapter", source_refs
 
 
+def _reviewed_inherited_starlette_owner_evidence(
+    candidate: dict[str, Any],
+    reviewed_operation: dict[str, Any],
+) -> list[str]:
+    """Return source refs for a reviewed Starlette-owned inherited field/value."""
+    target_binding = reviewed_operation.get("target_binding", {})
+    if (
+        target_binding.get("implementation_owner") != "starlette-rs"
+        or candidate.get("kind") not in {"field", "value"}
+    ):
+        return []
+
+    parts = candidate.get("id", "").split(".")
+    if len(parts) < 3:
+        return []
+    expected_owner, expected_symbol = parts[-2:]
+    for index, evidence in enumerate(reviewed_operation.get("source_evidence", [])):
+        if (
+            isinstance(evidence, dict)
+            and evidence.get("source_authority") == "Starlette 1.6.0"
+            and evidence.get("kind") == "source-definition"
+            and evidence.get("owner") == expected_owner
+            and evidence.get("symbol") == expected_symbol
+            and isinstance(evidence.get("path"), str)
+            and evidence["path"].startswith("starlette/")
+        ):
+            return [
+                _pointer(
+                    "reviewed_api_contract_overlay",
+                    "operations",
+                    candidate["id"],
+                    "source_evidence",
+                    index,
+                )
+            ]
+    return []
+
+
 def _reviewed_deprecation_references(
     rules: list[Any],
     *,
@@ -3524,6 +3562,12 @@ def build_api_surface_contract(
             candidate_indexes=candidate_indexes,
         )
         reviewed_target_binding = reviewed_operation.get("target_binding")
+        inherited_starlette_owner_refs = _reviewed_inherited_starlette_owner_evidence(
+            candidate, reviewed_operation
+        )
+        if inherited_starlette_owner_refs:
+            implementation_owner = "starlette-rs"
+            owner_reason = "reviewed_inherited_starlette_member"
         if (
             reviewed_target_binding is not None
             and reviewed_target_binding["implementation_owner"] != implementation_owner
@@ -3623,6 +3667,11 @@ def build_api_surface_contract(
             "implementation_owner_evidence": {
                 "kind": owner_reason,
                 "source_candidate_refs": owner_source_refs,
+                **(
+                    {"reviewed_source_evidence_refs": inherited_starlette_owner_refs}
+                    if inherited_starlette_owner_refs
+                    else {}
+                ),
             },
             "status": target_binding_status,
             "disposition": target_disposition(target_binding_status),

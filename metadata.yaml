@@ -15742,18 +15742,29 @@ reviewed_api_contract_overlay:
 
     fastapi.datastructures.UploadFile.content_type:
       target_binding:
-        implementation_owner: fastapi-rs
+        implementation_owner: starlette-rs
         status: partial-contract
         known_gaps:
           - >-
             Values are checked for absent content-type and uppercase duplicate content-type headers;
             other raw spellings, duplicate orderings, and value encodings remain unverified.
+          - >-
+            FastAPI inherits the read-only content_type property from Starlette. Exact assignment
+            error behavior belongs to Starlette-RS and remains a compatibility gap in the pinned
+            target descriptor.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
           symbol: UploadFile
           start_line: 21
           end_line: 150
+        - path: starlette/datastructures.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: UploadFile
+          symbol: content_type
+          start_line: 433
+          end_line: 434
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-metadata.yaml
           case_id: fastapi.uploadfile-io.metadata-and-async-operations

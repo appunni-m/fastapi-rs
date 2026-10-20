@@ -71,4 +71,21 @@ def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> Fa
             "close_returned_none": close_result is None,
         }
 
+    @app.get("/uploadfile-metadata-edges/content-type-read-only")
+    async def content_type_read_only() -> dict[str, object]:
+        upload = UploadFile(
+            BytesIO(b"maple"),
+            headers=Headers({"content-type": "text/plain"}),
+        )
+        try:
+            upload.content_type = "application/json"
+        except AttributeError as error:
+            return {
+                "assignment": "rejected",
+                "exception_class": type(error).__name__,
+                "exception_message": str(error),
+                "content_type": upload.content_type,
+            }
+        return {"assignment": "accepted", "content_type": upload.content_type}
+
     return app
