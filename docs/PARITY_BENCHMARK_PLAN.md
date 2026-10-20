@@ -53,23 +53,25 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The latest completed direct-ASGI suite is recorded in
-[the 2026-10-19 report](benchmarks/2026-10-19-7d12d77.md), but it is now
-historical because the manifest changed. It completed all seven reviewed
-workloads and passed all 45 selected parity observations on FastAPI-RS
-`7d12d779d0f2d22458cd32027a35202b79e0a1c2`, FastAPI 0.141.1 at
+[the 2026-10-20 report](benchmarks/2026-10-20-153c76e.md). It completed all
+seven reviewed workloads and passed all 45 selected parity observations on
+FastAPI-RS `153c76e7f473183c93547442a4264906fdc890bb`, FastAPI 0.141.1 at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
-`4139a72449bf5751e8902fb1c7175ee7f191d338`. The manifest SHA-256 is
-`7a67a7aed6fbf75b2304c8b4c51af36a346786335f613b99084fa96639cd0671`. Suite
-receipt archived at
-`benchmark-results/archive/stale-manifest-20261019/suite-20261019T091804Z-650d1f09-bdaf-4cc3-b125-21c3ae0b7f33.json`
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. The fixture manifest SHA-256 is
+`898aa7d00e392a2ae347ca64bba01cf2f2a5f9169c2253cc00eee75cf6b11077`. Suite
+receipt `benchmark-results/suite-20261020T061134Z-036c5b6e-81f7-4319-870c-648488f307a2.json`
 has SHA-256
-`48cfdb98223032cdf9beb8a83f717e0af67b0f02c21945053943a6a6745001e8`.
-Its seven workloads are single-host direct-ASGI measurements; FastAPI-RS
-median and p95 were higher in all seven. See the report for full identities,
-measurement boundaries, per-workload parity counts, timings, and result paths.
-The measurements do not establish full FastAPI parity or a global performance
-conclusion. They are not current-manifest evidence.
+`9492e5dfc8098009ee111c5fc1dad660ff0bce091a50a7a8cc5a09af665a122a`.
+FastAPI-RS median and p95 latency were higher in all seven measured workloads.
+The report records the exact boundaries, environment, parity counts, timing
+settings, and per-workload result paths. This is a selected direct-ASGI
+workload set; it does not establish full FastAPI parity or a broader
+performance conclusion.
+
+The 2026-10-19 report remains historical because it binds an earlier target
+and fixture manifest. Its suite receipt is archived at
+`benchmark-results/archive/stale-manifest-20261019/suite-20261019T091804Z-650d1f09-bdaf-4cc3-b125-21c3ae0b7f33.json`.
 
 The prior report [`2026-10-19-135805f.md`](benchmarks/2026-10-19-135805f.md)
 is historical because it binds the previous manifest and target revision.
