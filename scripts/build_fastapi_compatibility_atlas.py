@@ -6818,6 +6818,22 @@ def reviewed_section_action_ids(
     """Return exact reviewed action scopes per case for a page workflow mapping."""
     expected_cases = set(case_ids)
     selected: dict[str, set[str]] = {case_id: set() for case_id in case_ids}
+    page_review = DOC_PAGE_REVIEW_MAPPINGS.get(page_rel, {})
+    page_workflows = page_review.get("workflow_cases", [])
+    for mapping in page_workflows:
+        if not isinstance(mapping, dict):
+            continue
+        mapped_cases = mapping.get("case_ids")
+        if mapped_cases is None and isinstance(mapping.get("case_id"), str):
+            mapped_cases = [mapping["case_id"]]
+        if (
+            mapping.get("recipe_path") == recipe_path
+            and isinstance(mapping.get("action_ids"), list)
+            and isinstance(mapped_cases, list)
+            and set(mapped_cases).issubset(expected_cases)
+        ):
+            for case_id in mapped_cases:
+                selected[case_id].update(mapping["action_ids"])
     for (section_page, _anchor), mapping in DOC_SECTION_CASE_MAPPINGS.items():
         mapped_cases = mapping.get("case_ids") if isinstance(mapping, dict) else None
         if (

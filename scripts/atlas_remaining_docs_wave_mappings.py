@@ -5042,25 +5042,32 @@ DOC_PAGE_REVIEW_MAPPINGS = {
 DOC_PAGE_REVIEW_MAPPINGS["reference/background.md"] = {
     "replace_features": True,
     "feature_ids": ["app-routing", "dependency-security", "response-serialization"],
-    "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+    "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+    ],
     "rationale": (
         "FastAPI injects its BackgroundTasks subclass into a path operation and "
-        "delegates task storage to Starlette. The exact linked HTTP case schedules "
-        "one task and reads state afterward; it observes only raw HTTP body, headers, "
-        "and status."
+        "delegates task storage to Starlette. The linked workflows observe request "
+        "injection and effects, plus selected inherited list, failure, callback, and "
+        "keyword-argument behavior. FastAPI's page documents the integration surface; "
+        "the pinned Starlette 1.6.0 source owns generic task execution."
     ),
     "stimulus_notes": (
-        "The linked input uses the documented BackgroundTasks route parameter, "
-        "then reads the task's state in a follow-up request. The recorded selectors "
-        "are input observations, not expected outputs or parity claims."
+        "The linked inputs use the documented BackgroundTasks route parameter and "
+        "observe task effects with follow-up requests. Additional cases exercise a "
+        "live task-list append, failure short-circuit, and selected callback shapes. "
+        "The recorded selectors are input observations, not expected outputs or parity claims."
     ),
     "contract_gate": (
-        "Partial page coverage: the one route-injection case makes its task effect "
-        "visible through a later raw response body, but does not select a direct "
-        "background-effects projection. Dependency-function injection, multiple-task "
-        "ordering, task failures, and sync/async task execution remain unobserved. "
-        "The direct response.background_effects selector is planned. Starlette 1.6.0 "
-        "owns task collection and post-send execution."
+        "Partial page coverage: linked input-only cases observe route injection, "
+        "task effects, live list append, one sequential failure short-circuit, and "
+        "selected callback and keyword shapes. They do not exhaust cancellation or "
+        "all injection combinations. Starlette 1.6.0 owns task collection and "
+        "post-send execution; direct response.background_effects projection remains unselected."
     ),
     "workflow_cases": [
         {
@@ -5076,7 +5083,55 @@ DOC_PAGE_REVIEW_MAPPINGS["reference/background.md"] = {
                 "One path-operation injection schedules one task, then observes the "
                 "task's state through a follow-up HTTP response."
             ),
-        }
+        },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+            "case_id": "fastapi.background.task-list.live-append-during-execution",
+            "action_ids": ["append-task-while-running", "observe-live-list-mutation-effects"],
+            "observation_selectors": [
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status",
+            ],
+            "scope_note": (
+                "Two requests observe a live task-list append and its resulting effect. "
+                "This samples inherited Starlette iteration behavior only."
+            ),
+        },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+            "case_id": "fastapi.background.task-execution.failure-short-circuits",
+            "action_ids": [
+                "fail-in-middle-of-task-sequence",
+                "observe-completed-before-failure-and-skipped-after",
+            ],
+            "observation_selectors": [
+                "asgi.application_error.exception",
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status",
+            ],
+            "scope_note": (
+                "Two requests observe the response-send sequence, one task failure, and "
+                "which recorded effects ran before and after it. This samples one "
+                "inherited failure path only."
+            ),
+        },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+            "case_id": "fastapi.background.task-execution.callable-shapes-and-kwargs",
+            "action_ids": ["enqueue-callable-shapes", "observe-callable-shape-effects"],
+            "observation_selectors": [
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status",
+            ],
+            "scope_note": (
+                "Two requests observe effects from selected bound, async-callable, and "
+                "partial callback forms with keyword arguments. This is a sample, not "
+                "an exhaustive callable-shape contract."
+            ),
+        },
     ],
     "supporting_sources": [
         {

@@ -139,6 +139,12 @@ from scripts.atlas_documentation_section_case_mappings_ui_clients_20261015 impor
 from scripts.atlas_events_documentation_section_review_mappings_20261015 import (
     DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
 )
+from scripts.atlas_remaining_docs_wave_mappings import (
+    DOC_PAGE_REVIEW_MAPPINGS as REMAINING_DOC_PAGE_REVIEW_MAPPINGS,
+)
+from scripts.atlas_tutorial_doc_review_mappings import (
+    DOC_PAGE_REVIEW_MAPPINGS as TUTORIAL_DOC_PAGE_REVIEW_MAPPINGS,
+)
 from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
@@ -216,6 +222,25 @@ def _reviewed_page_case_selectors(source_path: str, recipe_path: str, case_id: s
             if mapped_page != page_rel or mapping.get("status") == "excluded":
                 continue
             if mapping.get("recipe_path") == recipe_path and case_id in mapping.get("case_ids", []):
+                selectors.update(mapping["observation_selectors"])
+    for page_mappings in (
+        REMAINING_DOC_PAGE_REVIEW_MAPPINGS,
+        TUTORIAL_DOC_PAGE_REVIEW_MAPPINGS,
+    ):
+        page_review = page_mappings.get(page_rel)
+        if not isinstance(page_review, dict):
+            continue
+        for mapping in page_review.get("workflow_cases", []):
+            if not isinstance(mapping, dict) or mapping.get("recipe_path") != recipe_path:
+                continue
+            mapped_cases = mapping.get("case_ids")
+            if mapped_cases is None and isinstance(mapping.get("case_id"), str):
+                mapped_cases = [mapping["case_id"]]
+            if (
+                isinstance(mapped_cases, list)
+                and case_id in mapped_cases
+                and isinstance(mapping.get("observation_selectors"), list)
+            ):
                 selectors.update(mapping["observation_selectors"])
     return selectors
 

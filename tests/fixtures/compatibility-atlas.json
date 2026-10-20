@@ -84719,6 +84719,8 @@
             ],
             "fixture_id": "fastapi.docs.tutorial-background-tasks",
             "observation_selectors": [
+              "asgi.application_error.exception",
+              "asgi.send.message_types",
               "http.body.bytes",
               "http.headers.ordered",
               "http.status"
@@ -84754,6 +84756,17 @@
                   "http.body.bytes",
                   "http.headers.ordered",
                   "http.status"
+                ]
+              },
+              {
+                "feature_id": null,
+                "schema_extension_required": [
+                  "asgi.application_error.exception",
+                  "asgi.send.message_types"
+                ],
+                "selectors": [
+                  "asgi.application_error.exception",
+                  "asgi.send.message_types"
                 ]
               }
             ],
@@ -84793,6 +84806,8 @@
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
@@ -84830,6 +84845,17 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
+          ],
+          "selectors": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
           ]
         }
       ],
@@ -85245,6 +85271,8 @@
             ],
             "fixture_id": "fastapi.docs.tutorial-background-tasks",
             "observation_selectors": [
+              "asgi.application_error.exception",
+              "asgi.send.message_types",
               "http.body.bytes",
               "http.headers.ordered",
               "http.status"
@@ -85280,6 +85308,17 @@
                   "http.body.bytes",
                   "http.headers.ordered",
                   "http.status"
+                ]
+              },
+              {
+                "feature_id": null,
+                "schema_extension_required": [
+                  "asgi.application_error.exception",
+                  "asgi.send.message_types"
+                ],
+                "selectors": [
+                  "asgi.application_error.exception",
+                  "asgi.send.message_types"
                 ]
               }
             ],
@@ -85318,6 +85357,8 @@
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
@@ -85355,6 +85396,17 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
+          ],
+          "selectors": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
           ]
         }
       ],
@@ -85765,6 +85817,8 @@
             ],
             "fixture_id": "fastapi.docs.tutorial-background-tasks",
             "observation_selectors": [
+              "asgi.application_error.exception",
+              "asgi.send.message_types",
               "http.body.bytes",
               "http.headers.ordered",
               "http.status"
@@ -85800,6 +85854,17 @@
                   "http.body.bytes",
                   "http.headers.ordered",
                   "http.status"
+                ]
+              },
+              {
+                "feature_id": null,
+                "schema_extension_required": [
+                  "asgi.application_error.exception",
+                  "asgi.send.message_types"
+                ],
+                "selectors": [
+                  "asgi.application_error.exception",
+                  "asgi.send.message_types"
                 ]
               }
             ],
@@ -85838,6 +85903,8 @@
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
@@ -85875,6 +85942,17 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
+          ],
+          "selectors": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
           ]
         }
       ],
@@ -339237,7 +339315,7 @@
         }
       ],
       "candidate_selector_scope": {
-        "contract_gate": "Partial page coverage: the one route-injection case makes its task effect visible through a later raw response body, but does not select a direct background-effects projection. Dependency-function injection, multiple-task ordering, task failures, and sync/async task execution remain unobserved. The direct response.background_effects selector is planned. Starlette 1.6.0 owns task collection and post-send execution.",
+        "contract_gate": "Partial page coverage: linked input-only cases observe route injection, task effects, live list append, one sequential failure short-circuit, and selected callback and keyword shapes. They do not exhaust cancellation or all injection combinations. Starlette 1.6.0 owns task collection and post-send execution; direct response.background_effects projection remains unselected.",
         "unobserved_reviewed_selector_claims": [],
         "workflow_scope_notes": [
           {
@@ -339248,6 +339326,33 @@
             "case_id": "fastapi.docs.reference-wave.http.background-task-injection",
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
             "scope_note": "One path-operation injection schedules one task, then observes the task's state through a follow-up HTTP response."
+          },
+          {
+            "action_ids": [
+              "append-task-while-running",
+              "observe-live-list-mutation-effects"
+            ],
+            "case_id": "fastapi.background.task-list.live-append-during-execution",
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+            "scope_note": "Two requests observe a live task-list append and its resulting effect. This samples inherited Starlette iteration behavior only."
+          },
+          {
+            "action_ids": [
+              "fail-in-middle-of-task-sequence",
+              "observe-completed-before-failure-and-skipped-after"
+            ],
+            "case_id": "fastapi.background.task-execution.failure-short-circuits",
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+            "scope_note": "Two requests observe the response-send sequence, one task failure, and which recorded effects ran before and after it. This samples one inherited failure path only."
+          },
+          {
+            "action_ids": [
+              "enqueue-callable-shapes",
+              "observe-callable-shape-effects"
+            ],
+            "case_id": "fastapi.background.task-execution.callable-shapes-and-kwargs",
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+            "scope_note": "Two requests observe effects from selected bound, async-callable, and partial callback forms with keyword arguments. This is a sample, not an exhaustive callable-shape contract."
           }
         ]
       },
@@ -339555,6 +339660,23 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.background.task-execution.callable-shapes-and-kwargs",
+              "fastapi.background.task-execution.failure-short-circuits",
+              "fastapi.background.task-list.live-append-during-execution"
+            ],
+            "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.application_error.exception",
+              "asgi.send.message_types",
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+            "workflow_id": "background-tasks-injection-precedence"
+          },
+          {
+            "case_ids": [
               "fastapi.docs.reference-wave.http.background-task-injection"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -339586,8 +339708,8 @@
         "page_feature_evidence": [],
         "related_usage_sources": [],
         "reviewed_source_mapping": {
-          "contract_gate": "Partial page coverage: the one route-injection case makes its task effect visible through a later raw response body, but does not select a direct background-effects projection. Dependency-function injection, multiple-task ordering, task failures, and sync/async task execution remain unobserved. The direct response.background_effects selector is planned. Starlette 1.6.0 owns task collection and post-send execution.",
-          "rationale": "FastAPI injects its BackgroundTasks subclass into a path operation and delegates task storage to Starlette. The exact linked HTTP case schedules one task and reads state afterward; it observes only raw HTTP body, headers, and status.",
+          "contract_gate": "Partial page coverage: linked input-only cases observe route injection, task effects, live list append, one sequential failure short-circuit, and selected callback and keyword shapes. They do not exhaust cancellation or all injection combinations. Starlette 1.6.0 owns task collection and post-send execution; direct response.background_effects projection remains unselected.",
+          "rationale": "FastAPI injects its BackgroundTasks subclass into a path operation and delegates task storage to Starlette. The linked workflows observe request injection and effects, plus selected inherited list, failure, callback, and keyword-argument behavior. FastAPI's page documents the integration surface; the pinned Starlette 1.6.0 source owns generic task execution.",
           "source_evidence": [
             {
               "end_line": 11,
@@ -339630,7 +339752,7 @@
               "start_line": 163
             }
           ],
-          "stimulus_notes": "The linked input uses the documented BackgroundTasks route parameter, then reads the task's state in a follow-up request. The recorded selectors are input observations, not expected outputs or parity claims.",
+          "stimulus_notes": "The linked inputs use the documented BackgroundTasks route parameter and observe task effects with follow-up requests. Additional cases exercise a live task-list append, failure short-circuit, and selected callback shapes. The recorded selectors are input observations, not expected outputs or parity claims.",
           "workflow_cases": [
             {
               "action_ids": [
@@ -339645,6 +339767,49 @@
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
               "scope_note": "One path-operation injection schedules one task, then observes the task's state through a follow-up HTTP response."
+            },
+            {
+              "action_ids": [
+                "append-task-while-running",
+                "observe-live-list-mutation-effects"
+              ],
+              "case_id": "fastapi.background.task-list.live-append-during-execution",
+              "observation_selectors": [
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+              "scope_note": "Two requests observe a live task-list append and its resulting effect. This samples inherited Starlette iteration behavior only."
+            },
+            {
+              "action_ids": [
+                "fail-in-middle-of-task-sequence",
+                "observe-completed-before-failure-and-skipped-after"
+              ],
+              "case_id": "fastapi.background.task-execution.failure-short-circuits",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+              "scope_note": "Two requests observe the response-send sequence, one task failure, and which recorded effects ran before and after it. This samples one inherited failure path only."
+            },
+            {
+              "action_ids": [
+                "enqueue-callable-shapes",
+                "observe-callable-shape-effects"
+              ],
+              "case_id": "fastapi.background.task-execution.callable-shapes-and-kwargs",
+              "observation_selectors": [
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+              "scope_note": "Two requests observe effects from selected bound, async-callable, and partial callback forms with keyword arguments. This is a sample, not an exhaustive callable-shape contract."
             }
           ]
         },
@@ -339652,6 +339817,8 @@
       },
       "mapping_status": "candidate",
       "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
@@ -339681,6 +339848,17 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
+          ],
+          "selectors": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
           ]
         }
       ],
@@ -420988,11 +421166,17 @@
           },
           {
             "case_ids": [
+              "fastapi.background.task-execution.callable-shapes-and-kwargs",
+              "fastapi.background.task-execution.failure-short-circuits",
+              "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
+              "fastapi.background.task-list.live-append-during-execution",
               "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
+              "asgi.application_error.exception",
+              "asgi.send.message_types",
               "http.body.bytes",
               "http.status"
             ],
@@ -421159,7 +421343,7 @@
         "page_feature_evidence": [],
         "related_usage_sources": [],
         "reviewed_source_mapping": {
-          "rationale": "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks from dependencies. The linked independent cases observe the HTTP response and the recorded effects through follow-up requests; they do not claim direct import/signature reflection or generic task-execution semantics. FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; execution is Starlette-owned.",
+          "rationale": "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks from dependencies. The linked independent cases observe response effects, selected callback/keyword forms, a live list append, and one failure short-circuit. They do not claim exhaustive callable, cancellation, or injection coverage. FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; generic execution is Starlette-owned.",
           "source_evidence": [
             {
               "end_line": 74,
@@ -421200,10 +421384,64 @@
               "recipe_path": "tests/fixtures/input-recipes/parity/docs-http-behaviors.yaml"
             },
             {
-              "case_ids": [
-                "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
+              "action_ids": [
+                "normal-response",
+                "normal-task-effects"
               ],
+              "case_id": "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
               "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml"
+            },
+            {
+              "action_ids": [
+                "enqueue-callable-shapes",
+                "observe-callable-shape-effects"
+              ],
+              "case_id": "fastapi.background.task-execution.callable-shapes-and-kwargs",
+              "observation_selectors": [
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml"
+            },
+            {
+              "action_ids": [
+                "fail-in-middle-of-task-sequence",
+                "observe-completed-before-failure-and-skipped-after"
+              ],
+              "case_id": "fastapi.background.task-execution.failure-short-circuits",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "asgi.send.message_types",
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml"
+            },
+            {
+              "action_ids": [
+                "inject-starlette-base-typed-dependency",
+                "observe-shared-base-typed-dependency-effects"
+              ],
+              "case_id": "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml"
+            },
+            {
+              "action_ids": [
+                "append-task-while-running",
+                "observe-live-list-mutation-effects"
+              ],
+              "case_id": "fastapi.background.task-list.live-append-during-execution",
+              "observation_selectors": [
+                "asgi.send.message_types",
                 "http.body.bytes",
                 "http.status"
               ],
@@ -421215,6 +421453,8 @@
       },
       "mapping_status": "candidate",
       "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
@@ -421252,6 +421492,17 @@
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
+          ],
+          "selectors": [
+            "asgi.application_error.exception",
+            "asgi.send.message_types"
           ]
         }
       ],
@@ -603659,10 +603910,11 @@
             "case_ids": [
               "fastapi.background.constructor.sequence-inherited-execution",
               "fastapi.background.task-injection.mixed-sync-async-order",
+              "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
               "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background",
               "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
             ],
-            "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
