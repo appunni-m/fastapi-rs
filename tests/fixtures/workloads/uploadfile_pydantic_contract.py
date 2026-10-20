@@ -34,6 +34,15 @@ class _UnexpectedFormattedValue(metaclass=_FormattingMeta):
 
 _UNEXPECTED_VALUE = _UnexpectedValue()
 _UNEXPECTED_FORMATTED_VALUE = _UnexpectedFormattedValue()
+_STANDARD_INVALID_VALUES: dict[str, object] = {
+    "none": None,
+    "boolean": True,
+    "integer": 42,
+    "string": "not an upload",
+    "bytes": b"not an upload",
+    "list": [],
+    "mapping": {},
+}
 
 
 def _method_introspection(method: Callable[..., object]) -> dict[str, object]:
@@ -79,6 +88,20 @@ def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> Fa
     async def reject_custom_format_type() -> dict[str, str]:
         try:
             TypeAdapter(UploadFile).validate_python(_UNEXPECTED_FORMATTED_VALUE)
+        except ValidationError as error:
+            details = error.errors(
+                include_url=False,
+                include_context=False,
+                include_input=False,
+            )
+            return {"outcome": "rejected", "message": details[0]["msg"]}
+        return {"outcome": "accepted"}
+
+    @app.post("/uploadfile-pydantic-contract/reject-standard-invalid-type")
+    async def reject_standard_invalid_type(payload: dict[str, object]) -> dict[str, str]:
+        value = _STANDARD_INVALID_VALUES[str(payload["kind"])]
+        try:
+            TypeAdapter(UploadFile).validate_python(value)
         except ValidationError as error:
             details = error.errors(
                 include_url=False,

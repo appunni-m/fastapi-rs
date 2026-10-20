@@ -245,3 +245,114 @@ cases:
     kind: upstream_api_definition
     symbol_id: fastapi.datastructures.UploadFile.close
     sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+- case_id: fastapi.uploadfile.pydantic-contract.reject-standard-invalid-types
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: reject-none
+    kind: http_request
+    scope: &uploadfile_pydantic_invalid_scope
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /uploadfile-pydantic-contract/reject-standard-invalid-type
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"kind":"none"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-boolean
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"boolean"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-integer
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"integer"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-string
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"string"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-bytes
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"bytes"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-list
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"list"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-mapping
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"mapping"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.datastructures.UploadFile
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7

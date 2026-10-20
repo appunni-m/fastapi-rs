@@ -40406,18 +40406,19 @@
     {
       "id": "uploadfile-pydantic-contract",
       "input_path": "tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json",
-      "input_sha256": "f5bf8c1e51274e9ab7427715baf6188070148034e123e11787414e22caa15884",
+      "input_sha256": "61170b498000f779fce393733774d89faae35f97c04369d7173473e63ca9ed0b",
       "recipe_path": "tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml",
-      "recipe_sha256": "b30da9c53509a520f0182a87c2fdebe62b3cda16f6511da0cf559637c498d001",
+      "recipe_sha256": "e1587df02c5f8db6174765f6eb41fa801df00abfa9fa72a4c3a19b65cb61a59f",
       "case_ids": [
         "fastapi.uploadfile.pydantic-contract.json-schema",
         "fastapi.uploadfile.pydantic-contract.accept-starlette-base",
         "fastapi.uploadfile.pydantic-contract.reject-custom-type",
         "fastapi.uploadfile.pydantic-contract.reject-custom-format-type",
-        "fastapi.uploadfile.pydantic-contract.class-method-introspection"
+        "fastapi.uploadfile.pydantic-contract.class-method-introspection",
+        "fastapi.uploadfile.pydantic-contract.reject-standard-invalid-types"
       ],
       "workload_path": "tests/fixtures/workloads/uploadfile_pydantic_contract.py",
-      "workload_sha256": "197eb1efde5446b2f53e10c82ce91a03f1957fe2efb0e00d68c3d6d2eb855ddd",
+      "workload_sha256": "9eb65619f2f6325cd471dc43078d462c268f4e0e92c3f446e4802c19f77396c7",
       "api_definitions": [
         {
           "case_id": "fastapi.uploadfile.pydantic-contract.accept-starlette-base",
@@ -40472,6 +40473,12 @@
           "symbol_id": "fastapi.datastructures.UploadFile",
           "path": "fastapi/datastructures.py",
           "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7"
+        },
+        {
+          "case_id": "fastapi.uploadfile.pydantic-contract.reject-standard-invalid-types",
+          "symbol_id": "fastapi.datastructures.UploadFile",
+          "path": "fastapi/datastructures.py",
+          "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7"
         }
       ],
       "case_contracts": [
@@ -40512,6 +40519,13 @@
             "api:fastapi.datastructures.UploadFile.read",
             "api:fastapi.datastructures.UploadFile.seek",
             "api:fastapi.datastructures.UploadFile.write"
+          ]
+        },
+        {
+          "case_id": "fastapi.uploadfile.pydantic-contract.reject-standard-invalid-types",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.datastructures.UploadFile"
           ]
         }
       ]

@@ -15612,8 +15612,8 @@ reviewed_api_contract_overlay:
             acceptance, and selected class/method annotations, docstrings, module names, qualified
             names, and coroutine metadata. A direct error case checks one propagated OSError for
             each async file method and the size increment after a failed write. The broader
-            invalid-input matrix and storage types beyond BytesIO and SpooledTemporaryFile
-            remain unverified.
+            invalid-input types beyond the standard None/scalar/container sample and storage types
+            beyond BytesIO and SpooledTemporaryFile remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -15661,6 +15661,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile.pydantic-contract.class-method-introspection
           workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.reject-standard-invalid-types
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
           case_id: fastapi.uploadfile-io.propagates-file-operation-errors
           workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
@@ -15675,9 +15679,10 @@ reviewed_api_contract_overlay:
         JSON schema, and accepts a Starlette UploadFile base instance through TypeAdapter. The
         spooled-file cases compare threshold equality, crossing, and an already-rolled file. The
         linked custom type cases observe validator diagnostics, including Python format-protocol
-        behavior for one custom metaclass. A selected introspection case compares class and method
-        annotations, docstrings, module and qualified names, and coroutine flags; other file-object
-        types and the broader invalid-input matrix remain outside this partial slice.
+        behavior for one custom metaclass. A sample invalid-input matrix covers None, boolean,
+        integer, string, bytes, list, and mapping values. A selected introspection case compares
+        class and method annotations, docstrings, module and qualified names, and coroutine flags;
+        other file-object types and invalid-input values remain outside this partial slice.
 
     fastapi.datastructures.UploadFile.close:
       target_binding:
