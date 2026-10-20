@@ -152,9 +152,7 @@ def normalize_wheel(wheel_path: Path) -> None:
         members = {info.filename: archive.read(info.filename) for info in infos}
 
     sbom_names = sorted(
-        name
-        for name in members
-        if ".dist-info/sboms/" in name and name.endswith(".json")
+        name for name in members if ".dist-info/sboms/" in name and name.endswith(".json")
     )
     for name in sbom_names:
         try:
@@ -165,9 +163,7 @@ def normalize_wheel(wheel_path: Path) -> None:
         _collect_local_components(document, replacements)
         _rewrite_local_references(document, replacements)
         validate_sbom_document(document, name)
-        members[name] = (json.dumps(document, indent=2, ensure_ascii=False) + "\n").encode(
-            "utf-8"
-        )
+        members[name] = (json.dumps(document, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
     record_names = [name for name in members if name.endswith(".dist-info/RECORD")]
     if len(record_names) != 1:

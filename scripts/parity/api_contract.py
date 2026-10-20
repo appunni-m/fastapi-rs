@@ -1431,10 +1431,9 @@ def _reviewed_inherited_starlette_owner_evidence(
 ) -> list[str]:
     """Return source refs for a reviewed Starlette-owned inherited field/value."""
     target_binding = reviewed_operation.get("target_binding", {})
-    if (
-        target_binding.get("implementation_owner") != "starlette-rs"
-        or candidate.get("kind") not in {"field", "value"}
-    ):
+    if target_binding.get("implementation_owner") != "starlette-rs" or candidate.get(
+        "kind"
+    ) not in {"field", "value"}:
         return []
 
     parts = candidate.get("id", "").split(".")
