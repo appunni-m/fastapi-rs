@@ -604928,11 +604928,14 @@
               "fastapi.response-model-return-annotation-gaps.explicit-model-over-annotation",
               "fastapi.response-model-return-annotation-gaps.explicit-submodel-extra",
               "fastapi.response-model-return-annotation-gaps.forward-reference-list",
+              "fastapi.response-model-return-annotation-gaps.inferred-list",
               "fastapi.response-model-return-annotation-gaps.inferred-submodel-extra",
+              "fastapi.response-model-return-annotation-gaps.inferred-union-item",
+              "fastapi.response-model-return-annotation-gaps.inferred-union-user",
               "fastapi.response-model-return-annotation-gaps.invalid-inferred-model-validation",
               "fastapi.response-model-return-annotation-gaps.jsonresponse-annotation"
             ],
-            "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
@@ -605221,7 +605224,7 @@
             "end_line": 451,
             "line": 445,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_no_response_model_annotation_list_of_model"
           },
           {
@@ -605253,7 +605256,7 @@
             "end_line": 478,
             "line": 475,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_no_response_model_annotation_union_return_model1"
           },
           {
@@ -605261,7 +605264,7 @@
             "end_line": 484,
             "line": 481,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_no_response_model_annotation_union_return_model2"
           },
           {
@@ -605441,21 +605444,9 @@
               }
             },
             {
-              "reason": "Ordinary list and union controls are already included in the focused recipe; only the separately uncovered quoted forward reference is added here.",
+              "reason": "The explicit response_model list and union controls are covered by the existing focused recipe. Inferred list and union return annotations are independently sampled in this supplemental wave.",
               "scope": "wave_only",
               "test_functions": {
-                "test_no_response_model_annotation_list_of_model": [
-                  445,
-                  451
-                ],
-                "test_no_response_model_annotation_union_return_model1": [
-                  475,
-                  478
-                ],
-                "test_no_response_model_annotation_union_return_model2": [
-                  481,
-                  484
-                ],
                 "test_response_model_list_of_model_no_annotation": [
                   436,
                   442
@@ -605486,6 +605477,39 @@
             }
           ],
           "workflow_cases": [
+            {
+              "action_ids": [
+                "serve-inferred-list"
+              ],
+              "case_id": "fastapi.response-model-return-annotation-gaps.inferred-list",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml"
+            },
+            {
+              "action_ids": [
+                "serve-inferred-union-user"
+              ],
+              "case_id": "fastapi.response-model-return-annotation-gaps.inferred-union-user",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml"
+            },
+            {
+              "action_ids": [
+                "serve-inferred-union-item"
+              ],
+              "case_id": "fastapi.response-model-return-annotation-gaps.inferred-union-item",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml"
+            },
             {
               "action_ids": [
                 "serve-forward-reference-list"

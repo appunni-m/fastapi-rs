@@ -357623,53 +357623,6 @@
         {
           "feature_evidence": [
             {
-              "feature_id": "public-api-errors",
-              "signals": [
-                {
-                  "end_line": 451,
-                  "line": 445,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 53,
-                  "line": 50,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 281,
-                  "line": 278,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 1114,
-                  "line": 1081,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 338,
-                  "line": 301,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 739,
-                  "line": 711,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                }
-              ]
-            },
-            {
               "feature_id": "response-serialization",
               "signals": [
                 {
@@ -357681,50 +357634,21 @@
                   "term": "response model"
                 }
               ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "status_code"
-                },
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "status code"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "public-api-errors",
-            "response-serialization",
-            "status-codes"
+            "response-serialization"
           ],
           "id": "fastapi.test.test-response-model-as-return-annotation.test-no-response-model-annotation-list-of-model",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.cookies",
-            "http.headers.ordered",
             "http.status",
-            "openapi.paths",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "response.background_effects",
-            "validation.error_class",
-            "warnings.category_message"
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "This supplemental wave reviews high-value return-annotation gaps: quoted forward references, submodel and extra-field filtering, explicit response-model precedence, JSONResponse annotation passthrough, invalid response-model output, and invalid inferred response-field construction. It claims only the selected behavior.",
+            "contract_gate": "Partial: The source compares parsed response JSON; this workflow compares exact body bytes. The byte-format comparison adds wire detail, and Pydantic owns model serialization.",
+            "rationale": "FastAPI infers list[User] from the endpoint return annotation without an explicit response_model and projects returned DatabaseUser instances to User fields.",
             "source_evidence": [
               {
                 "end_line": 451,
@@ -357767,42 +357691,30 @@
                 "role": "FastAPI bypasses response-model serialization for returned Response instances and serializes other endpoint values",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 711
+              },
+              {
+                "end_line": 451,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "pinned FastAPI 0.141.1 upstream test function test_no_response_model_annotation_list_of_model and its assertions",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 445
+              },
+              {
+                "end_line": 205,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "upstream route annotation, response-model declaration, and return value",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 199
               }
             ],
-            "stimulus_notes": "Use the independently authored cases in tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml. They intentionally omit the upstream OpenAPI snapshot, basic pass-through controls, response_model=None matrix, plain Response case, and list/union matrix; some are already sampled by the existing focused recipe. The construction-only error uses a separate recipe and workload."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml case fastapi.response-model-return-annotation-gaps.inferred-list, action serve-inferred-list; the workload at tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py uses new paths and values and stores no expected response."
           },
           "selector_evidence": [
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
-              ]
-            },
             {
               "feature_id": "response-serialization",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.cookies",
-                "http.body.bytes",
-                "http.body.json",
-                "response.background_effects",
-                "validation.error_class"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.body.bytes"
               ]
             }
           ],
@@ -357810,11 +357722,9 @@
           "source_function": "test_no_response_model_annotation_list_of_model",
           "source_line": 445,
           "stimulus_design": [
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use the independently authored cases in tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml. They intentionally omit the upstream OpenAPI snapshot, basic pass-through controls, response_model=None matrix, plain Response case, and list/union matrix; some are already sampled by the existing focused recipe. The construction-only error uses a separate recipe and workload."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml case fastapi.response-model-return-annotation-gaps.inferred-list, action serve-inferred-list; the workload at tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py uses new paths and values and stores no expected response."
         },
         {
           "feature_evidence": [
@@ -358317,53 +358227,6 @@
         {
           "feature_evidence": [
             {
-              "feature_id": "public-api-errors",
-              "signals": [
-                {
-                  "end_line": 478,
-                  "line": 475,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 53,
-                  "line": 50,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 281,
-                  "line": 278,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 1114,
-                  "line": 1081,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 338,
-                  "line": 301,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 739,
-                  "line": 711,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                }
-              ]
-            },
-            {
               "feature_id": "response-serialization",
               "signals": [
                 {
@@ -358375,50 +358238,21 @@
                   "term": "response model"
                 }
               ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "status_code"
-                },
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "status code"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "public-api-errors",
-            "response-serialization",
-            "status-codes"
+            "response-serialization"
           ],
           "id": "fastapi.test.test-response-model-as-return-annotation.test-no-response-model-annotation-union-return-model1",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.cookies",
-            "http.headers.ordered",
             "http.status",
-            "openapi.paths",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "response.background_effects",
-            "validation.error_class",
-            "warnings.category_message"
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "This supplemental wave reviews high-value return-annotation gaps: quoted forward references, submodel and extra-field filtering, explicit response-model precedence, JSONResponse annotation passthrough, invalid response-model output, and invalid inferred response-field construction. It claims only the selected behavior.",
+            "contract_gate": "Partial: The source compares parsed response JSON; this workflow compares exact body bytes. The byte-format comparison adds wire detail, and Pydantic owns union validation and serialization.",
+            "rationale": "FastAPI infers User | Item from the return annotation and serializes a returned DatabaseUser through the inferred response field.",
             "source_evidence": [
               {
                 "end_line": 478,
@@ -358461,42 +358295,30 @@
                 "role": "FastAPI bypasses response-model serialization for returned Response instances and serializes other endpoint values",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 711
+              },
+              {
+                "end_line": 478,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "pinned FastAPI 0.141.1 upstream test function test_no_response_model_annotation_union_return_model1 and its assertions",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 475
+              },
+              {
+                "end_line": 234,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "upstream route annotation, response-model declaration, and return value",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 231
               }
             ],
-            "stimulus_notes": "Use the independently authored cases in tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml. They intentionally omit the upstream OpenAPI snapshot, basic pass-through controls, response_model=None matrix, plain Response case, and list/union matrix; some are already sampled by the existing focused recipe. The construction-only error uses a separate recipe and workload."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml case fastapi.response-model-return-annotation-gaps.inferred-union-user, action serve-inferred-union-user; the workload at tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py uses new paths and values and stores no expected response."
           },
           "selector_evidence": [
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
-              ]
-            },
             {
               "feature_id": "response-serialization",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.cookies",
-                "http.body.bytes",
-                "http.body.json",
-                "response.background_effects",
-                "validation.error_class"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.body.bytes"
               ]
             }
           ],
@@ -358504,61 +358326,12 @@
           "source_function": "test_no_response_model_annotation_union_return_model1",
           "source_line": 475,
           "stimulus_design": [
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use the independently authored cases in tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml. They intentionally omit the upstream OpenAPI snapshot, basic pass-through controls, response_model=None matrix, plain Response case, and list/union matrix; some are already sampled by the existing focused recipe. The construction-only error uses a separate recipe and workload."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml case fastapi.response-model-return-annotation-gaps.inferred-union-user, action serve-inferred-union-user; the workload at tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py uses new paths and values and stores no expected response."
         },
         {
           "feature_evidence": [
-            {
-              "feature_id": "public-api-errors",
-              "signals": [
-                {
-                  "end_line": 484,
-                  "line": 481,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 53,
-                  "line": 50,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 281,
-                  "line": 278,
-                  "path": "tests/test_response_model_as_return_annotation.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 1114,
-                  "line": 1081,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 338,
-                  "line": 301,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 739,
-                  "line": 711,
-                  "path": "fastapi/routing.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                }
-              ]
-            },
             {
               "feature_id": "response-serialization",
               "signals": [
@@ -358571,50 +358344,21 @@
                   "term": "response model"
                 }
               ]
-            },
-            {
-              "feature_id": "status-codes",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "status_code"
-                },
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "status code"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "public-api-errors",
-            "response-serialization",
-            "status-codes"
+            "response-serialization"
           ],
           "id": "fastapi.test.test-response-model-as-return-annotation.test-no-response-model-annotation-union-return-model2",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.cookies",
-            "http.headers.ordered",
             "http.status",
-            "openapi.paths",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "response.background_effects",
-            "validation.error_class",
-            "warnings.category_message"
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "This supplemental wave reviews high-value return-annotation gaps: quoted forward references, submodel and extra-field filtering, explicit response-model precedence, JSONResponse annotation passthrough, invalid response-model output, and invalid inferred response-field construction. It claims only the selected behavior.",
+            "contract_gate": "Partial: The source compares parsed response JSON; this workflow compares exact body bytes. The byte-format comparison adds wire detail, and Pydantic owns union validation and serialization.",
+            "rationale": "FastAPI infers User | Item from the return annotation and serializes a returned Item through the inferred response field.",
             "source_evidence": [
               {
                 "end_line": 484,
@@ -358657,42 +358401,30 @@
                 "role": "FastAPI bypasses response-model serialization for returned Response instances and serializes other endpoint values",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
                 "start_line": 711
+              },
+              {
+                "end_line": 484,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "pinned FastAPI 0.141.1 upstream test function test_no_response_model_annotation_union_return_model2 and its assertions",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 481
+              },
+              {
+                "end_line": 239,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "upstream route annotation, response-model declaration, and return value",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 236
               }
             ],
-            "stimulus_notes": "Use the independently authored cases in tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml. They intentionally omit the upstream OpenAPI snapshot, basic pass-through controls, response_model=None matrix, plain Response case, and list/union matrix; some are already sampled by the existing focused recipe. The construction-only error uses a separate recipe and workload."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml case fastapi.response-model-return-annotation-gaps.inferred-union-item, action serve-inferred-union-item; the workload at tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py uses new paths and values and stores no expected response."
           },
           "selector_evidence": [
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
-              ]
-            },
             {
               "feature_id": "response-serialization",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.cookies",
-                "http.body.bytes",
-                "http.body.json",
-                "response.background_effects",
-                "validation.error_class"
-              ]
-            },
-            {
-              "feature_id": "status-codes",
-              "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json",
-                "openapi.paths"
+                "http.body.bytes"
               ]
             }
           ],
@@ -358700,11 +358432,9 @@
           "source_function": "test_no_response_model_annotation_union_return_model2",
           "source_line": 481,
           "stimulus_design": [
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
-            "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use the independently authored cases in tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml. They intentionally omit the upstream OpenAPI snapshot, basic pass-through controls, response_model=None matrix, plain Response case, and list/union matrix; some are already sampled by the existing focused recipe. The construction-only error uses a separate recipe and workload."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml case fastapi.response-model-return-annotation-gaps.inferred-union-item, action serve-inferred-union-item; the workload at tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py uses new paths and values and stores no expected response."
         },
         {
           "feature_evidence": [
@@ -359523,11 +359253,14 @@
             "fastapi.response-model-return-annotation-gaps.explicit-model-over-annotation",
             "fastapi.response-model-return-annotation-gaps.explicit-submodel-extra",
             "fastapi.response-model-return-annotation-gaps.forward-reference-list",
+            "fastapi.response-model-return-annotation-gaps.inferred-list",
             "fastapi.response-model-return-annotation-gaps.inferred-submodel-extra",
+            "fastapi.response-model-return-annotation-gaps.inferred-union-item",
+            "fastapi.response-model-return-annotation-gaps.inferred-union-user",
             "fastapi.response-model-return-annotation-gaps.invalid-inferred-model-validation",
             "fastapi.response-model-return-annotation-gaps.jsonresponse-annotation"
           ],
-          "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "http.body.bytes",

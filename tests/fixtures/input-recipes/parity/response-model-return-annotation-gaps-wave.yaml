@@ -7,6 +7,78 @@ workload:
   factory: create_app
   instantiate_per_case: true
 cases:
+- case_id: fastapi.response-model-return-annotation-gaps.inferred-list
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:199-205.
+  # Source test_no_response_model_annotation_list_of_model: 445-451.
+  actions:
+  - action_id: serve-inferred-list
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inferred-list
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.inferred-union-user
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:231-234.
+  # Source test_no_response_model_annotation_union_return_model1: 475-478.
+  actions:
+  - action_id: serve-inferred-union-user
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inferred-union-user
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.inferred-union-item
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:236-239.
+  # Source test_no_response_model_annotation_union_return_model2: 481-484.
+  actions:
+  - action_id: serve-inferred-union-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inferred-union-item
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
 - case_id: fastapi.response-model-return-annotation-gaps.forward-reference-list
   # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:207-212.
   # Source test_no_response_model_annotation_forward_ref_list_of_model: 454-460.

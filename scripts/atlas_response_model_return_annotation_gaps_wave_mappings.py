@@ -168,13 +168,10 @@ RESPONSE_MODEL_RETURN_ANNOTATION_GAP_WAVE_MAPPINGS = {
             {
                 "test_functions": {
                     "test_response_model_list_of_model_no_annotation": [436, 442],
-                    "test_no_response_model_annotation_list_of_model": [445, 451],
                     "test_response_model_union_no_annotation_return_model1": [463, 466],
                     "test_response_model_union_no_annotation_return_model2": [469, 472],
-                    "test_no_response_model_annotation_union_return_model1": [475, 478],
-                    "test_no_response_model_annotation_union_return_model2": [481, 484],
                 },
-                "reason": "Ordinary list and union controls are already included in the focused recipe; only the separately uncovered quoted forward reference is added here.",
+                "reason": "The explicit response_model list and union controls are covered by the existing focused recipe. Inferred list and union return annotations are independently sampled in this supplemental wave.",
             },
             {
                 "test_functions": {
@@ -185,6 +182,42 @@ RESPONSE_MODEL_RETURN_ANNOTATION_GAP_WAVE_MAPPINGS = {
             },
         ],
         "functions": {
+            "test_no_response_model_annotation_list_of_model": _function(
+                "test_no_response_model_annotation_list_of_model",
+                445,
+                451,
+                199,
+                205,
+                "fastapi.response-model-return-annotation-gaps.inferred-list",
+                "serve-inferred-list",
+                _HTTP,
+                "FastAPI infers list[User] from the endpoint return annotation without an explicit response_model and projects returned DatabaseUser instances to User fields.",
+                "The source compares parsed response JSON; this workflow compares exact body bytes. The byte-format comparison adds wire detail, and Pydantic owns model serialization.",
+            ),
+            "test_no_response_model_annotation_union_return_model1": _function(
+                "test_no_response_model_annotation_union_return_model1",
+                475,
+                478,
+                231,
+                234,
+                "fastapi.response-model-return-annotation-gaps.inferred-union-user",
+                "serve-inferred-union-user",
+                _HTTP,
+                "FastAPI infers User | Item from the return annotation and serializes a returned DatabaseUser through the inferred response field.",
+                "The source compares parsed response JSON; this workflow compares exact body bytes. The byte-format comparison adds wire detail, and Pydantic owns union validation and serialization.",
+            ),
+            "test_no_response_model_annotation_union_return_model2": _function(
+                "test_no_response_model_annotation_union_return_model2",
+                481,
+                484,
+                236,
+                239,
+                "fastapi.response-model-return-annotation-gaps.inferred-union-item",
+                "serve-inferred-union-item",
+                _HTTP,
+                "FastAPI infers User | Item from the return annotation and serializes a returned Item through the inferred response field.",
+                "The source compares parsed response JSON; this workflow compares exact body bytes. The byte-format comparison adds wire detail, and Pydantic owns union validation and serialization.",
+            ),
             "test_no_response_model_annotation_forward_ref_list_of_model": _function(
                 "test_no_response_model_annotation_forward_ref_list_of_model",
                 454,

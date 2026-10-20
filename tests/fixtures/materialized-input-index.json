@@ -32006,10 +32006,13 @@
     {
       "id": "response-model-return-annotation-gaps-wave",
       "input_path": "tests/fixtures/inputs/parity/response-model-return-annotation-gaps-wave.json",
-      "input_sha256": "77f4b45374bac30a635fb217f781b16115dd91b089e2ccd52d40fc40b3be8a35",
+      "input_sha256": "136ab7c36a4d9b8643ab236167beab78633ed6087876267fe6eedb0f4fc04f4a",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-gaps-wave.yaml",
-      "recipe_sha256": "f97633c61fed712ee98939838cc673fe6c3a6d1525ceebd5db4ca6208e381091",
+      "recipe_sha256": "39b73e5f7c352ef8ab02a487a2aa5c23ababfdfa429cf0395f0a6f85e22cf79e",
       "case_ids": [
+        "fastapi.response-model-return-annotation-gaps.inferred-list",
+        "fastapi.response-model-return-annotation-gaps.inferred-union-user",
+        "fastapi.response-model-return-annotation-gaps.inferred-union-item",
         "fastapi.response-model-return-annotation-gaps.forward-reference-list",
         "fastapi.response-model-return-annotation-gaps.explicit-dict-extra",
         "fastapi.response-model-return-annotation-gaps.explicit-submodel-extra",
@@ -32019,8 +32022,29 @@
         "fastapi.response-model-return-annotation-gaps.invalid-inferred-model-validation"
       ],
       "workload_path": "tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py",
-      "workload_sha256": "d52e34e1ce94946f8fb7e839377b5292252734d5e83a80c3a7a6c7a209bb5599",
+      "workload_sha256": "97170018e23669017c6812358410093084000b9f0e0b21867cfea1db6d576c9a",
       "case_contracts": [
+        {
+          "case_id": "fastapi.response-model-return-annotation-gaps.inferred-list",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_model_as_return_annotation.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-model-return-annotation-gaps.inferred-union-user",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_model_as_return_annotation.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-model-return-annotation-gaps.inferred-union-item",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_model_as_return_annotation.py"
+          ]
+        },
         {
           "case_id": "fastapi.response-model-return-annotation-gaps.forward-reference-list",
           "verification": "parity",
@@ -66574,13 +66598,16 @@
       "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
       "workflow_id": "response-model-return-annotation-gaps-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model-return-annotation-gaps.explicit-dict-extra",
         "fastapi.response-model-return-annotation-gaps.explicit-model-over-annotation",
         "fastapi.response-model-return-annotation-gaps.explicit-submodel-extra",
         "fastapi.response-model-return-annotation-gaps.forward-reference-list",
+        "fastapi.response-model-return-annotation-gaps.inferred-list",
         "fastapi.response-model-return-annotation-gaps.inferred-submodel-extra",
+        "fastapi.response-model-return-annotation-gaps.inferred-union-item",
+        "fastapi.response-model-return-annotation-gaps.inferred-union-user",
         "fastapi.response-model-return-annotation-gaps.invalid-inferred-model-validation",
         "fastapi.response-model-return-annotation-gaps.jsonresponse-annotation"
       ],

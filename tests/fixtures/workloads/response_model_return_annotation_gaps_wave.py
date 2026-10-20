@@ -22,6 +22,21 @@ class Item(BaseModel):
 def create_app() -> FastAPI:
     app = FastAPI()
 
+    @app.get("/inferred-list")
+    def inferred_list() -> list[User]:
+        return [
+            DatabaseUser(name="Gale", surname="Vale", credential_digest="list-secret-a"),
+            DatabaseUser(name="Nova", surname="Elm", credential_digest="list-secret-b"),
+        ]
+
+    @app.get("/inferred-union-user")
+    def inferred_union_user() -> User | Item:
+        return DatabaseUser(name="Orin", surname="Park", credential_digest="union-secret")
+
+    @app.get("/inferred-union-item")
+    def inferred_union_item() -> User | Item:
+        return Item(name="Perry", price=12.5)
+
     @app.get("/forward-reference-list")
     def forward_reference_list() -> "list[User]":
         return [
