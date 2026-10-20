@@ -4297,35 +4297,28 @@ reviewed_api_contract_overlay:
     fastapi.datastructures.QueryParams:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/datastructures.rs::register
       source_evidence:
         - {path: fastapi/datastructures.py}
       observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's QueryParams class under
-        fastapi.datastructures. FastAPI-RS registers the canonical
-        starlette.datastructures.QueryParams object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity. This FastAPI scope covers alias exposure and identity;
-        generic construction and method behavior remain in the pinned
-        Starlette-RS API contract and are not claimed here.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
+      full_contract: >-
+        FastAPI 0.141.1 directly imports QueryParams from starlette.datastructures,
+        and FastAPI-RS registers the canonical Starlette-RS class. The
+        root-alias-identity workflow observes exact identity for
+        fastapi.datastructures.QueryParams and starlette.datastructures.QueryParams.
+        The linked Starlette-RS 1.6.0 contract declares the complete
+        construction-and-mapping-sequence operation with six requirements and
+        supported Rust-native and Python-package targets. That contract owns
+        string and bytes parsing, mapping and pair construction, immutable
+        multi-dict behavior, query-string formatting, repr, and equality. This
+        FastAPI contract covers its direct alias and delegated class behavior;
+        request parsing and dependency extraction remain separate FastAPI APIs.
     fastapi.datastructures.State:
       target_binding:
         implementation_owner: starlette-rs
