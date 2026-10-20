@@ -728,6 +728,11 @@ def main() -> int:
         help="build the Rust workspace without installing the Python extension",
     )
     parser.add_argument(
+        "--rustdoc",
+        action="store_true",
+        help="build the fastapi-rs API documentation against the pinned Starlette-RS source",
+    )
+    parser.add_argument(
         "--fault-injection",
         action="store_true",
         help="build into target/fault-injection without replacing the normal extension",
@@ -761,6 +766,7 @@ def main() -> int:
             (
                 args.clippy,
                 args.build_rust,
+                args.rustdoc,
                 args.release_wheel,
                 args.release_sdist,
                 args.fault_injection,
@@ -769,7 +775,7 @@ def main() -> int:
         > 1
     ):
         parser.error(
-            "--clippy, --build-rust, --release-wheel, --release-sdist, "
+            "--clippy, --build-rust, --rustdoc, --release-wheel, --release-sdist, "
             "and --fault-injection are exclusive"
         )
     if args.fault_injection and args.python is None:
@@ -856,6 +862,27 @@ def main() -> int:
                 "--workspace",
                 "--all-features",
             ]
+            return subprocess.run(
+                command, cwd=overlay_root, env=environment, check=False
+            ).returncode
+
+        if args.rustdoc:
+            if target_python is None:
+                raise SystemExit("--rustdoc requires a prepared build-tools interpreter")
+            environment["PYO3_PYTHON"] = str(target_python)
+            environment["RUSTDOCFLAGS"] = "-D warnings"
+            command = [
+                *cargo_command,
+                "doc",
+                "--manifest-path",
+                str(overlay_root / "Cargo.toml"),
+                "--locked",
+                "--offline",
+                "--package",
+                "fastapi-rs",
+                "--no-deps",
+            ]
+            print(f"building fastapi-rs rustdoc against Starlette-RS source {starlette_rs_source}")
             return subprocess.run(
                 command, cwd=overlay_root, env=environment, check=False
             ).returncode

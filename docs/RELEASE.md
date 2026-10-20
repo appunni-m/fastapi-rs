@@ -134,9 +134,11 @@ provides CPython 3.12.13:
 
 ```sh
 make build-tools-prepare
-PYO3_PYTHON=.venv-build-tools/bin/python \
-  RUSTC_WRAPPER=/usr/bin/env CARGO_NET_OFFLINE=true \
-  cargo doc --locked --package fastapi-rs --no-deps
+RUSTC_WRAPPER=/usr/bin/env CARGO_NET_OFFLINE=true \
+  .venv/bin/python scripts/build_target_extension.py \
+    --rustdoc \
+    --python "$PWD/.venv-build-tools/bin/python" \
+    --starlette-rs-source "$STARLETTE_RS_SOURCE"
 open target/doc/fastapi_rs/index.html
 ```
 
