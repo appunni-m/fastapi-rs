@@ -4803,38 +4803,46 @@ reviewed_api_contract_overlay:
     fastapi.responses.Response:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
-        - {path: fastapi/responses.py}
+        - path: fastapi/responses.py
+          kind: import-binding
+          line: 11
+          imported_module: starlette.responses
+          relative_level: 0
+          imported_name: Response
+          alias_spelling: Response
+          local_name: Response
+          target_path: starlette.responses.Response
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's Response under
-        fastapi.responses. FastAPI-RS registers the canonical
-        starlette.responses.Response object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity. The `fastapi.responses.response-direct-asgi` input
-        constructs the alias directly and invokes that instance as the ASGI
-        application, comparing status, ordered headers, body bytes, and send
-        message types. This covers the FastAPI-facing alias construction and
-        invocation slice; the broader generic response contract remains owned
-        by the pinned Starlette-RS API contract.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/documented-core-module-identities.yaml
+          case_id: fastapi.documented-module.responses
+          workload_path: tests/fixtures/workloads/documented_core_module_identities.py
+          observation_selectors: [python.import_path, python.object_identity]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-response-direct-asgi.yaml
+          case_id: fastapi.responses.response-direct-asgi
+          workload_path: tests/fixtures/workloads/fastapi_response_direct_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
+      full_contract: >-
+        FastAPI 0.141.1 binds `fastapi.responses.Response` directly to the exact
+        `starlette.responses.Response` object. The root-alias workflow checks the
+        FastAPI module-to-Starlette identity chain, the documented-module workflow
+        checks the public import path and object identity, and the direct ASGI
+        workflow constructs this public alias and compares status, ordered headers,
+        body bytes, and send-message types. FastAPI-RS exposes the same canonical
+        Starlette-RS object. Its complete generic class contract is linked through
+        `metadata.yaml` `starlette_rs.surface_aliases` to the pinned
+        `starlette.responses.Response` surface: `typing-consumer`, `asgi-call`, and
+        `consumer-construction` are all supported for the Python package with 54
+        declared requirements. This covers the complete Response class behavior
+        without duplicating Starlette's API inventory; it does not claim unrelated
+        FastAPI route behavior.
     fastapi.responses.StreamingResponse:
       target_binding:
         implementation_owner: starlette-rs
@@ -7155,26 +7163,52 @@ reviewed_api_contract_overlay:
     fastapi.Response:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
-        - {path: fastapi/__init__.py}
-        - {path: fastapi/responses.py}
+        - path: fastapi/__init__.py
+          kind: import-binding
+          line: 22
+          imported_module: responses
+          relative_level: 1
+          imported_name: Response
+          alias_spelling: Response
+          local_name: Response
+          target_path: fastapi.responses.Response
+        - path: fastapi/responses.py
+          kind: import-binding
+          line: 11
+          imported_module: starlette.responses
+          relative_level: 0
+          imported_name: Response
+          alias_spelling: Response
+          local_name: Response
+          target_path: starlette.responses.Response
       feature_ids: [response-serialization]
       observation_selectors: [python.import_path, python.object_identity]
-      supported_slice: >-
-        Native FastAPI export is an identity-preserving re-export of
-        starlette.responses.Response from the pinned Starlette-RS runtime.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-response-direct-asgi.yaml
+          case_id: fastapi.responses.response-direct-asgi
+          workload_path: tests/fixtures/workloads/fastapi_response_direct_asgi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
+      full_contract: >-
+        FastAPI 0.141.1 re-exports `fastapi.responses.Response` as the root
+        `fastapi.Response` binding, and the module alias is the exact
+        `starlette.responses.Response` class. The root-alias workflow checks
+        root-to-module, root-to-Starlette, and module-to-Starlette object identity;
+        the direct ASGI workflow exercises construction and invocation through the
+        public module alias. FastAPI-RS exposes the same canonical Starlette-RS
+        object. The complete class behavior delegates to the pinned
+        `starlette.responses.Response` surface linked by `metadata.yaml`
+        `starlette_rs.surface_aliases`; its `typing-consumer`, `asgi-call`, and
+        `consumer-construction` operations are supported for the Python package
+        with 54 declared requirements. The alias adds no FastAPI-specific class
+        behavior, so this claim does not duplicate Starlette's API inventory or
+        extend to FastAPI route integration.
     fastapi.APIRouter:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
