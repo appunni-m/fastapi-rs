@@ -83,6 +83,127 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "x-document-owner": "compatibility",
             },
         },
+        "openapi-components-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "Components field", "version": "1.0"},
+                "components": {
+                    "schemas": {
+                        "Pet": {
+                            "type": "object",
+                            "properties": {"name": {"type": "string"}},
+                        }
+                    }
+                },
+            },
+        },
+        "openapi-external-docs-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "External docs field", "version": "1.0"},
+                "externalDocs": {
+                    "description": "The full API reference",
+                    "url": "https://docs.example.test/reference",
+                },
+            },
+        },
+        "openapi-info-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {
+                    "title": "Field Guide",
+                    "version": "2.4",
+                    "summary": "Input-defined metadata",
+                    "contact": {
+                        "name": "API team",
+                        "url": "https://example.test/team",
+                    },
+                },
+            },
+        },
+        "openapi-json-schema-dialect-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "JSON Schema dialect field", "version": "1.0"},
+                "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+            },
+        },
+        "openapi-version-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "OpenAPI version field", "version": "1.0"},
+            },
+        },
+        "openapi-paths-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "Paths field", "version": "1.0"},
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "operationId": "listPets",
+                            "responses": {"200": {"description": "A page of pets"}},
+                        }
+                    }
+                },
+            },
+        },
+        "openapi-security-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "Security field", "version": "1.0"},
+                "security": [{"OAuth2": ["pets:read"]}],
+            },
+        },
+        "openapi-servers-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "Servers field", "version": "1.0"},
+                "servers": [
+                    {
+                        "url": "https://api.example.test/v1",
+                        "description": "Production API",
+                    }
+                ],
+            },
+        },
+        "openapi-tags-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "Tags field", "version": "1.0"},
+                "tags": [
+                    {
+                        "name": "pets",
+                        "description": "Pet operations",
+                        "externalDocs": {
+                            "description": "Pet documentation",
+                            "url": "https://docs.example.test/pets",
+                        },
+                    }
+                ],
+            },
+        },
+        "openapi-webhooks-field": {
+            "args": [],
+            "kwargs": {
+                "openapi": "3.1.0",
+                "info": {"title": "Webhooks field", "version": "1.0"},
+                "webhooks": {
+                    "newSubscription": {
+                        "$ref": "#/components/pathItems/newSubscription"
+                    }
+                },
+            },
+        },
         "reference": {
             "args": [],
             "kwargs": {
