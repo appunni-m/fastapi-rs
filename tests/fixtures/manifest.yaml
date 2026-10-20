@@ -501,7 +501,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: b0bdb576751019d2f0245a597c5156c822ae03370106815ddf385aabe68aa62c
+    sha256: f8dd4f7c6493ecd35240f90b8a84ce9535b2c6e81367a7958984bd6a42955e2b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -541,7 +541,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: abeeae2d11bf51a304265dad5e20cc4e89117bac8e670e7438fb4a7f70427333
+    sha256: b56e31bfdd12a9b4ec7d43a728eb404616121d5dc286dca218cb2456b5101895
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -578,14 +578,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 5e9524a0d15893531cb7aaaefb4c7fee350be5f49e196b5c64f80b8d37284caf
+    sha256: dcc76218d5fbc9ca581eec1d672637d1ad2c46aa6050192e4512c50049fe08aa
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 7f1c3daa65325c43bf5e2422dc45b1cfd28377e3b7f240e89e42aa884c4fdd84
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 705
-      cases: 2875
-      partial_source_mappings: 1956
+      workflows: 706
+      cases: 2876
+      partial_source_mappings: 1958
 
 contract_metadata:
   aliases:
@@ -1336,7 +1336,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 398
-    operation_fixture_refs: 2549
+    operation_fixture_refs: 2552
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -8023,6 +8023,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: uploadfile-request-injection-identity
+      input_path: tests/fixtures/inputs/parity/uploadfile-request-injection-identity.json
+      input_sha256: d32bcc88a9c5c8db51f9dd69f6ce52b138af730a438e9e14efab63504db547e3
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-request-injection-identity.yaml
+      recipe_sha256: 90b97475ffcd4fdb857a045f5a713a031231d7cf51f7ca9ca8f7f336c9b68a14
+      workload_path: tests/fixtures/workloads/uploadfile_request_injection_identity.py
+      workload_sha256: 71dc984d684b0a22b02805f06fab22de77b46d3b83a293b75a36146aabce2019
+      case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -8681,6 +8692,17 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-request-injection-identity
+      input_path: tests/fixtures/inputs/parity/uploadfile-request-injection-identity.json
+      input_sha256: d32bcc88a9c5c8db51f9dd69f6ce52b138af730a438e9e14efab63504db547e3
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-request-injection-identity.yaml
+      recipe_sha256: 90b97475ffcd4fdb857a045f5a713a031231d7cf51f7ca9ca8f7f336c9b68a14
+      workload_path: tests/fixtures/workloads/uploadfile_request_injection_identity.py
+      workload_sha256: 71dc984d684b0a22b02805f06fab22de77b46d3b83a293b75a36146aabce2019
+      case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -8730,9 +8752,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The root alias, constructor signature, selected metadata values, and BytesIO-backed asynchronous
-        operations are checked; exact method and field annotations, class documentation, Pydantic hooks,
-        and other file storage modes remain unverified.
+      - The root alias, constructor signature, selected metadata values, BytesIO-backed asynchronous operations,
+        and one parsed multipart object's identity through route injection are checked; exact method and
+        field annotations, class documentation, full Pydantic hook behavior, and other file storage modes
+        remain unverified.
   - id: fastapi.WebSocket
     kind: import_binding
     source_candidate_ref: /api_candidates/16
@@ -23566,6 +23589,17 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
       workload_sha256: fc6018d67f48ef0f74273cdd5eea029af5c25a475129f2972f55743809721c82
       case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-request-injection-identity
+      input_path: tests/fixtures/inputs/parity/uploadfile-request-injection-identity.json
+      input_sha256: d32bcc88a9c5c8db51f9dd69f6ce52b138af730a438e9e14efab63504db547e3
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-request-injection-identity.yaml
+      recipe_sha256: 90b97475ffcd4fdb857a045f5a713a031231d7cf51f7ca9ca8f7f336c9b68a14
+      workload_path: tests/fixtures/workloads/uploadfile_request_injection_identity.py
+      workload_sha256: 71dc984d684b0a22b02805f06fab22de77b46d3b83a293b75a36146aabce2019
+      case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
       observation_selectors:
       - http.body.bytes
       - http.status

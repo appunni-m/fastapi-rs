@@ -1,0 +1,48 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/uploadfile_request_injection_identity.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
+  actions:
+  - action_id: upload-file-and-observe-parser-identity
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /uploadfile-request-injection
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiRsUploadBoundaryV1
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiRsUploadBoundaryV1\r\nContent-Disposition: form-data; name=\"upload\"; filename=\"report.txt\"\r\nContent-Type: text/plain\r\n\r\nfield report\r\n--FastapiRsUploadBoundaryV1--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial001_02.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation

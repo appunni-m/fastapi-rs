@@ -40597,6 +40597,29 @@
       ]
     },
     {
+      "id": "uploadfile-request-injection-identity",
+      "input_path": "tests/fixtures/inputs/parity/uploadfile-request-injection-identity.json",
+      "input_sha256": "d32bcc88a9c5c8db51f9dd69f6ce52b138af730a438e9e14efab63504db547e3",
+      "recipe_path": "tests/fixtures/input-recipes/parity/uploadfile-request-injection-identity.yaml",
+      "recipe_sha256": "90b97475ffcd4fdb857a045f5a713a031231d7cf51f7ca9ca8f7f336c9b68a14",
+      "case_ids": [
+        "fastapi.uploadfile.request-injection-identity.parser-object-preserved"
+      ],
+      "workload_path": "tests/fixtures/workloads/uploadfile_request_injection_identity.py",
+      "workload_sha256": "71dc984d684b0a22b02805f06fab22de77b46d3b83a293b75a36146aabce2019",
+      "oracle_profile_extension": "standard-multipart",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.uploadfile.request-injection-identity.parser-object-preserved",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001_02.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "uploadfile-spooled-storage",
       "input_path": "tests/fixtures/inputs/parity/uploadfile-spooled-storage.json",
       "input_sha256": "c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca",
@@ -73840,6 +73863,34 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.uploadfile.pydantic-validation.reject-text-form-value"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "uploadfile-request-injection-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.uploadfile.request-injection-identity.parser-object-preserved"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_request_files/test_tutorial001_02.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial001-02",
+      "workflow_id": "uploadfile-request-injection-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.uploadfile.request-injection-identity.parser-object-preserved"
       ],
       "observation_selectors": [
         "http.body.bytes",

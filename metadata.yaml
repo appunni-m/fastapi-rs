@@ -4036,6 +4036,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.additional-response-field-lifecycle.second-additional-hook-retry
           workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-request-injection-identity.yaml
+          case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
+          workload_path: tests/fixtures/workloads/uploadfile_request_injection_identity.py
+          observation_selectors: [http.status, http.body.bytes]
       feature_ids: [app-routing, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
@@ -15445,9 +15449,10 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The root alias, constructor signature, selected metadata values, and BytesIO-backed
-            asynchronous operations are checked; exact method and field annotations, class
-            documentation, Pydantic hooks, and other file storage modes remain unverified.
+            The root alias, constructor signature, selected metadata values, BytesIO-backed
+            asynchronous operations, and one parsed multipart object's identity through route
+            injection are checked; exact method and field annotations, class documentation, full
+            Pydantic hook behavior, and other file storage modes remain unverified.
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15471,10 +15476,15 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-request-injection-identity.yaml
+          case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
+          workload_path: tests/fixtures/workloads/uploadfile_request_injection_identity.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         The root alias resolves to the same class as `fastapi.datastructures.UploadFile`, and its
-        constructor signature matches FastAPI 0.141.1. The four method signatures also match;
-        class and method metadata parity remains partial.
+        constructor signature matches FastAPI 0.141.1. The four method signatures also match. One
+        multipart route case checks that the uploaded object injected by FastAPI is the same object
+        available from the request's parsed form; class and method metadata parity remains partial.
 
     fastapi.WebSocket:
       target_binding:
@@ -15633,6 +15643,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.null-metadata-and-async-operations
           workload_path: tests/fixtures/workloads/uploadfile_io_metadata.py
           observation_selectors: [http.body.bytes, http.status]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-request-injection-identity.yaml
+          case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
+          workload_path: tests/fixtures/workloads/uploadfile_request_injection_identity.py
+          observation_selectors: [http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/request-uploads.yaml
           case_id: fastapi.request-uploads.request-files.openapi-schema
           workload_path: tests/fixtures/workloads/request_uploads.py
@@ -15687,8 +15701,9 @@ reviewed_api_contract_overlay:
         integer, string, bytes, list, and mapping values. A selected introspection case compares
         class and method annotations, docstrings, module and qualified names, and coroutine flags.
         Constructor and property cases compare omitted headers, duplicate case-insensitive content-type
-        values, and reassignment of file, filename, size, and headers; other file types and input values
-        remain outside this partial slice.
+        values, and reassignment of file, filename, size, and headers. A multipart route case checks
+        that FastAPI injects the exact UploadFile object exposed by Request.form(); other file types
+        and input values remain outside this partial slice.
 
     fastapi.datastructures.UploadFile.close:
       target_binding:
