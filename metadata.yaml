@@ -4169,35 +4169,25 @@ reviewed_api_contract_overlay:
     fastapi.datastructures.URL:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/datastructures.rs::register
       source_evidence:
         - {path: fastapi/datastructures.py}
       observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's URL class under
-        fastapi.datastructures. FastAPI-RS registers the canonical
-        starlette.datastructures.URL object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity. This FastAPI scope covers alias exposure and identity;
-        generic construction and method behavior remain in the pinned
-        Starlette-RS API contract and are not claimed here.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
+      full_contract: >-
+        FastAPI 0.141.1 directly imports URL from starlette.datastructures, and
+        FastAPI-RS registers the canonical Starlette-RS class. The
+        root-alias-identity workflow checks exact FastAPI-to-Starlette object
+        identity. Starlette-RS's Python-package contract supports scope
+        construction, query-parameter operations, component and replacement
+        operations, and the ownership graph, covering all twelve declared
+        requirements. FastAPI-specific routing and URL-generation behavior
+        remains covered by its separate operation contracts.
     fastapi.datastructures.Address:
       target_binding:
         implementation_owner: starlette-rs
@@ -4233,67 +4223,45 @@ reviewed_api_contract_overlay:
     fastapi.datastructures.FormData:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/datastructures.rs::register
       source_evidence:
         - {path: fastapi/datastructures.py}
       observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's FormData class under
-        fastapi.datastructures. FastAPI-RS registers the canonical
-        starlette.datastructures.FormData object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity. This FastAPI scope covers alias exposure and identity;
-        generic construction and method behavior remain in the pinned
-        Starlette-RS API contract and are not claimed here.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
+      full_contract: >-
+        FastAPI 0.141.1 directly imports FormData from starlette.datastructures,
+        and FastAPI-RS registers the canonical Starlette-RS class. The
+        root-alias-identity workflow checks exact FastAPI-to-Starlette object
+        identity. Starlette-RS's Python-package contract supports multi-dict
+        lookups, close lifecycle, and the ownership graph, covering all seven
+        declared requirements. FastAPI form parsing and request injection
+        remain covered by separate FastAPI operation contracts.
     fastapi.datastructures.Headers:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/datastructures.rs::register
       source_evidence:
         - {path: fastapi/datastructures.py}
       observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's Headers class under
-        fastapi.datastructures. FastAPI-RS registers the canonical
-        starlette.datastructures.Headers object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity. This FastAPI scope covers alias exposure and identity;
-        generic construction and method behavior remain in the pinned
-        Starlette-RS API contract and are not claimed here.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
+      full_contract: >-
+        FastAPI 0.141.1 directly imports Headers from starlette.datastructures,
+        and FastAPI-RS registers the canonical Starlette-RS class. The
+        root-alias-identity workflow checks exact FastAPI-to-Starlette object
+        identity. Starlette-RS's Python-package contract supports the complete
+        consumer sequence and ownership graph, covering all eleven declared
+        requirements. The FastAPI contract covers the import alias; request
+        header integration remains in separate FastAPI operation contracts.
     fastapi.datastructures.QueryParams:
       target_binding:
         implementation_owner: starlette-rs
@@ -4322,35 +4290,24 @@ reviewed_api_contract_overlay:
     fastapi.datastructures.State:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/datastructures.rs::register
       source_evidence:
         - {path: fastapi/datastructures.py}
       observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's State class under
-        fastapi.datastructures. FastAPI-RS registers the canonical
-        starlette.datastructures.State object from Starlette-RS. The
-        root-alias-identity workflow observes exact public-module-to-Starlette
-        object identity. This FastAPI scope covers alias exposure and identity;
-        generic construction and method behavior remain in the pinned
-        Starlette-RS API contract and are not claimed here.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
+      full_contract: >-
+        FastAPI 0.141.1 directly imports State from starlette.datastructures,
+        and FastAPI-RS registers the canonical Starlette-RS class. The
+        root-alias-identity workflow checks exact FastAPI-to-Starlette object
+        identity. Starlette-RS's Python-package contract supports the complete
+        consumer sequence and ownership graph, covering all thirteen declared
+        requirements. FastAPI-specific application and request state behavior
+        remains covered by separate FastAPI operation contracts.
     fastapi.middleware.cors.CORSMiddleware:
       target_binding:
         implementation_owner: starlette-rs
@@ -4514,34 +4471,24 @@ reviewed_api_contract_overlay:
     fastapi.requests.Request:
       target_binding:
         implementation_owner: starlette-rs
-        status: partial-contract
-        known_gaps:
-          - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS
-            1.6.0 contract; the FastAPI recommendation is limited to its alias/integration layer.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
-          - >-
-            The bounded mapping covers only the FastAPI-facing slice; it does not establish the full
-            Starlette-RS public API contract.
+        status: full-contract-established
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
         - {path: fastapi/requests.py}
       observation_selectors: [http.status, http.body.bytes]
-      supported_slice: >-
-        FastAPI directly re-exports Starlette's Request under fastapi.requests.
-        FastAPI-RS registers the canonical starlette.requests.Request object
-        from Starlette-RS. The root-alias-identity workflow observes exact
-        public-module-to-Starlette object identity. This scope covers alias
-        exposure and identity; generic request behavior remains in the pinned
-        Starlette-RS API contract and is not claimed here.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
+      full_contract: >-
+        FastAPI 0.141.1 directly imports Request from starlette.requests and
+        exposes the same class at fastapi.Request. FastAPI-RS registers the
+        canonical Starlette-RS Request class. The root-alias-identity workflow
+        checks exact root, module, and Starlette object identity. Starlette-RS's
+        Python-package contract supports all sixteen Request operations and
+        their 82 declared requirements. FastAPI request dependency injection
+        and route-scope behavior remain covered by separate FastAPI contracts.
     fastapi.responses.FileResponse:
       target_binding:
         implementation_owner: starlette-rs

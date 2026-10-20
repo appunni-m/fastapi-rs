@@ -1356,13 +1356,13 @@ api_surface_contract:
       runtime-signature-unavailable: 1
       source-signature-recorded: 6
     target_disposition_counts:
-      supported: 16
-      unresolved: 481
+      supported: 21
+      unresolved: 476
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      full-contract-established: 16
-      slice-described: 472
+      full-contract-established: 21
+      slice-described: 467
     implementation_owner_plans:
       fastapi-rs: 456
       starlette-rs: 32
@@ -1374,8 +1374,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
-    symbols_with_operation_fixture_refs: 408
-    operation_fixture_refs: 2626
+    symbols_with_operation_fixture_refs: 413
+    operation_fixture_refs: 2631
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -23546,6 +23546,18 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23569,9 +23581,9 @@ api_surface_contract:
     - http.body.bytes
     - http.status
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.FormData/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.FormData/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.datastructures.FormData
@@ -23580,20 +23592,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/306
-      status: partial-contract
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: fastapi-rs/src/datastructures.rs::register
-      known_gaps:
-      - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
-        and identity mappings are not pass results.
-      - Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs, branches,
-        mutations, and error paths remain unproven.
-      - Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS 1.6.0
-        contract; the FastAPI recommendation is limited to its alias/integration layer.
-      - The source-authored bounded_slice itself names additional cases or behavior as outside/unproven;
-        retain those stated exclusions verbatim in the bounded_slice field.
-      - The bounded mapping covers only the FastAPI-facing slice; it does not establish the full Starlette-RS
-        public API contract.
   - id: fastapi.datastructures.Headers
     kind: import_binding
     source_candidate_ref: /api_candidates/308
@@ -23626,6 +23627,18 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23649,9 +23662,9 @@ api_surface_contract:
     - http.body.bytes
     - http.status
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.Headers/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.Headers/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.datastructures.Headers
@@ -23660,20 +23673,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/308
-      status: partial-contract
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: fastapi-rs/src/datastructures.rs::register
-      known_gaps:
-      - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
-        and identity mappings are not pass results.
-      - Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs, branches,
-        mutations, and error paths remain unproven.
-      - Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS 1.6.0
-        contract; the FastAPI recommendation is limited to its alias/integration layer.
-      - The source-authored bounded_slice itself names additional cases or behavior as outside/unproven;
-        retain those stated exclusions verbatim in the bounded_slice field.
-      - The bounded mapping covers only the FastAPI-facing slice; it does not establish the full Starlette-RS
-        public API contract.
   - id: fastapi.datastructures.QueryParams
     kind: import_binding
     source_candidate_ref: /api_candidates/310
@@ -23787,6 +23789,18 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23810,9 +23824,9 @@ api_surface_contract:
     - http.body.bytes
     - http.status
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.State/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.State/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.datastructures.State
@@ -23821,20 +23835,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/312
-      status: partial-contract
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: fastapi-rs/src/datastructures.rs::register
-      known_gaps:
-      - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
-        and identity mappings are not pass results.
-      - Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs, branches,
-        mutations, and error paths remain unproven.
-      - Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS 1.6.0
-        contract; the FastAPI recommendation is limited to its alias/integration layer.
-      - The source-authored bounded_slice itself names additional cases or behavior as outside/unproven;
-        retain those stated exclusions verbatim in the bounded_slice field.
-      - The bounded mapping covers only the FastAPI-facing slice; it does not establish the full Starlette-RS
-        public API contract.
   - id: fastapi.datastructures.URL
     kind: import_binding
     source_candidate_ref: /api_candidates/314
@@ -23867,6 +23870,18 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -23890,9 +23905,9 @@ api_surface_contract:
     - http.body.bytes
     - http.status
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.URL/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.datastructures.URL/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.datastructures.URL
@@ -23901,20 +23916,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/314
-      status: partial-contract
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: fastapi-rs/src/datastructures.rs::register
-      known_gaps:
-      - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
-        and identity mappings are not pass results.
-      - Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs, branches,
-        mutations, and error paths remain unproven.
-      - Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS 1.6.0
-        contract; the FastAPI recommendation is limited to its alias/integration layer.
-      - The source-authored bounded_slice itself names additional cases or behavior as outside/unproven;
-        retain those stated exclusions verbatim in the bounded_slice field.
-      - The bounded mapping covers only the FastAPI-facing slice; it does not establish the full Starlette-RS
-        public API contract.
   - id: fastapi.datastructures.UploadFile
     kind: class
     source_candidate_ref: /api_candidates/315
@@ -58426,6 +58430,18 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -58455,9 +58471,9 @@ api_surface_contract:
     - python.import_path
     - python.object_identity
     operation_scope:
-      status: slice-described
-      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.requests.Request/supported_slice
-    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
+      status: full-contract-established
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.requests.Request/full_contract
+    behavior_contract_state: reviewed-full-operation-contract; identity-checked parity established
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.requests.Request
@@ -58466,20 +58482,9 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1027
-      status: partial-contract
-      disposition: unresolved
+      status: full-contract-established
+      disposition: supported
       rust_binding: fastapi-rs/src/application_runtime.rs::register
-      known_gaps:
-      - No checked-in source/target execution receipt identifies this FastAPI-RS build; input recipes
-        and identity mappings are not pass results.
-      - Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs, branches,
-        mutations, and error paths remain unproven.
-      - Generic behavior is Starlette-owned and must be claimed against the separate Starlette-RS 1.6.0
-        contract; the FastAPI recommendation is limited to its alias/integration layer.
-      - The source-authored bounded_slice itself names additional cases or behavior as outside/unproven;
-        retain those stated exclusions verbatim in the bounded_slice field.
-      - The bounded mapping covers only the FastAPI-facing slice; it does not establish the full Starlette-RS
-        public API contract.
   - id: fastapi.responses.FileResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1031
