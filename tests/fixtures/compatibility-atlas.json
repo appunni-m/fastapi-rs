@@ -30806,7 +30806,7 @@
           "source-declaration",
           "member-exposure-unresolved"
         ],
-        "reason": "The pinned source defines FastAPIDeprecationWarning and release notes announce it by name, but the published docs do not establish fastapi.exceptions.FastAPIDeprecationWarning as a consumer import path. Keep this import candidate uncertain; warning behavior evidence does not promote the API classification.",
+        "reason": "FastAPI 0.141.1 defines this custom warning and announces it in the 0.127.1 release notes. Upstream tests import fastapi.exceptions.FastAPIDeprecationWarning and use it in warning filters and pytest.warns (tests/test_regex_deprecated_body.py:5,14; tests/test_deprecated_responses.py:5,46,78), establishing importability and warning behavior. The pinned user-facing API docs do not publish a dedicated consumer contract for the warning class, so retain the source candidate as uncertain. This makes no FastAPI-RS support or parity claim.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 252,
@@ -76956,7 +76956,7 @@
         "uncertain": 26
       }
     },
-    "sha256": "8d13ca937a2ca6eb596e5677a92c3635bb802e1a045ea5ce66a9ecccb3939dca",
+    "sha256": "3c021586f9d12a1569db64e7c10bcf8ae86a0bb332bee55ba552b7b0e7eda6a0",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
@@ -746511,6 +746511,36 @@
             "symbol": "FastAPIDeprecationWarning"
           },
           {
+            "kind": "upstream-test-import",
+            "line": 5,
+            "path": "tests/test_regex_deprecated_body.py",
+            "statement": "from fastapi.exceptions import FastAPIDeprecationWarning"
+          },
+          {
+            "kind": "upstream-test-use",
+            "line": 14,
+            "path": "tests/test_regex_deprecated_body.py",
+            "statement": "pytest.warns(FastAPIDeprecationWarning)"
+          },
+          {
+            "kind": "upstream-test-import",
+            "line": 5,
+            "path": "tests/test_deprecated_responses.py",
+            "statement": "from fastapi.exceptions import FastAPIDeprecationWarning"
+          },
+          {
+            "kind": "upstream-test-use",
+            "line": 46,
+            "path": "tests/test_deprecated_responses.py",
+            "statement": "pytest.warns(FastAPIDeprecationWarning, match=\"ORJSONResponse is deprecated\")"
+          },
+          {
+            "kind": "upstream-test-use",
+            "line": 78,
+            "path": "tests/test_deprecated_responses.py",
+            "statement": "pytest.warns(FastAPIDeprecationWarning, match=\"UJSONResponse is deprecated\")"
+          },
+          {
             "kind": "release-note",
             "line": 1073,
             "path": "docs/en/docs/release-notes.md",
@@ -746518,7 +746548,7 @@
             "statement": "Add a custom FastAPIDeprecationWarning."
           }
         ],
-        "rationale": "The source defines this custom warning and the release notes name it, but do not establish a consumer-facing import path. Keep the candidate uncertain; the separate fastapi.responses alias is private/internal."
+        "rationale": "The pinned source defines a custom UserWarning, the release notes name it, and upstream tests import it from fastapi.exceptions and use it in warning filters and pytest.warns. Those tests establish importability and warning use, but do not replace a user-facing API contract; retain this warning-only candidate as uncertain. The separate fastapi.responses alias remains private/internal."
       },
       "id": "fastapi.exceptions.FastAPIDeprecationWarning",
       "observation_selectors": [

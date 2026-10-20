@@ -1966,7 +1966,7 @@
         "member-exposure-unresolved"
       ],
       "id": "fastapi.exceptions.FastAPIDeprecationWarning",
-      "reason": "The pinned source defines FastAPIDeprecationWarning and release notes announce it by name, but the published docs do not establish fastapi.exceptions.FastAPIDeprecationWarning as a consumer import path. Keep this import candidate uncertain; warning behavior evidence does not promote the API classification.",
+      "reason": "FastAPI 0.141.1 defines this custom warning and announces it in the 0.127.1 release notes. Upstream tests import fastapi.exceptions.FastAPIDeprecationWarning and use it in warning filters and pytest.warns (tests/test_regex_deprecated_body.py:5,14; tests/test_deprecated_responses.py:5,46,78), establishing importability and warning behavior. The pinned user-facing API docs do not publish a dedicated consumer contract for the warning class, so retain the source candidate as uncertain. This makes no FastAPI-RS support or parity claim.",
       "recommendation": "uncertain",
       "source": {
         "line": 252,

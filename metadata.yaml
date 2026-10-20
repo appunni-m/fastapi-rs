@@ -725,7 +725,7 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: 8d13ca937a2ca6eb596e5677a92c3635bb802e1a045ea5ce66a9ecccb3939dca
+  sha256: 3c021586f9d12a1569db64e7c10bcf8ae86a0bb332bee55ba552b7b0e7eda6a0
   source_identity:
     package: FastAPI
     version: 0.141.1
@@ -24305,15 +24305,38 @@ reviewed_api_contract_overlay:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain
       rationale: >-
-        The source defines this custom warning and the release notes name it,
-        but do not establish a consumer-facing import path. Keep the candidate
-        uncertain; the separate fastapi.responses alias is private/internal.
+        The pinned source defines a custom UserWarning, the release notes name
+        it, and upstream tests import it from fastapi.exceptions and use it in
+        warning filters and pytest.warns. Those tests establish importability
+        and warning use, but do not replace a user-facing API contract; retain
+        this warning-only candidate as uncertain. The separate
+        fastapi.responses alias remains private/internal.
       evidence:
         - kind: source-definition
           path: fastapi/exceptions.py
           symbol: FastAPIDeprecationWarning
           start_line: 252
           end_line: 256
+        - kind: upstream-test-import
+          path: tests/test_regex_deprecated_body.py
+          line: 5
+          statement: from fastapi.exceptions import FastAPIDeprecationWarning
+        - kind: upstream-test-use
+          path: tests/test_regex_deprecated_body.py
+          line: 14
+          statement: pytest.warns(FastAPIDeprecationWarning)
+        - kind: upstream-test-import
+          path: tests/test_deprecated_responses.py
+          line: 5
+          statement: from fastapi.exceptions import FastAPIDeprecationWarning
+        - kind: upstream-test-use
+          path: tests/test_deprecated_responses.py
+          line: 46
+          statement: 'pytest.warns(FastAPIDeprecationWarning, match="ORJSONResponse is deprecated")'
+        - kind: upstream-test-use
+          path: tests/test_deprecated_responses.py
+          line: 78
+          statement: 'pytest.warns(FastAPIDeprecationWarning, match="UJSONResponse is deprecated")'
         - kind: release-note
           path: docs/en/docs/release-notes.md
           line: 1073
