@@ -17,11 +17,18 @@ from types import SimpleNamespace
 from typing import Any
 
 from fastapi import Depends
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class ItemResponse(BaseModel):
+    item_id: int
+    label: str
+
+
+class BodyItem(BaseModel):
     item_id: int
     label: str
 
@@ -50,6 +57,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
     """Construct one APIRoute from recipe inputs and return its ASGI call."""
     response_models: dict[str, type[BaseModel]] = {
         "item": ItemResponse,
+        "body": BodyItem,
         "filtered": FilteredResponse,
         "dependency": DependencyResponse,
     }
@@ -98,6 +106,10 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
             response_model=DependencyTraceResponse,
         )
         route_options["dependencies"] = [Depends(route_dependency)]
+    elif factory_input["endpoint"] == "body":
+
+        async def endpoint(body: BodyItem) -> BodyItem:
+            return body
     else:
 
         async def endpoint() -> dict[str, Any]:
@@ -131,6 +143,12 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> Callabl
     async def standalone_route(scope: Any, receive: Any, send: Any) -> None:
         trace_action = scope["path"] == "/_workload-trace" and trace_route is not None
         route_to_call: Any = trace_route if trace_action else route
+        if factory_input.get("invoke_route_app"):
+            route_to_call = route.app
+            scope["starlette.exception_handlers"] = (
+                {RequestValidationError: request_validation_exception_handler},
+                {},
+            )
 
         async def trace_send(message: dict[str, Any]) -> None:
             if factory_input["endpoint"] == "dependency" and not trace_action:

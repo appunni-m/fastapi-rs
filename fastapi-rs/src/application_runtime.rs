@@ -4801,6 +4801,13 @@ struct PyApiRouteAsgiApp {
     dependency_overrides_provider: Option<Py<PyAny>>,
 }
 
+#[pyclass(name = "_APIRouteAsgiCore", module = "fastapi_rs._core")]
+struct PyApiRouteAsgiCore {
+    owner: Py<PyFastApi>,
+    route_index: usize,
+    dependency_overrides_provider: Option<Py<PyAny>>,
+}
+
 #[pyclass(name = "_FastAPIRouteHandler", module = "fastapi_rs._core")]
 struct PyFastApiRouteHandler {
     route: Py<PyAny>,
@@ -4904,6 +4911,76 @@ impl PyFastApiAsgiApp {
 
 #[pymethods]
 impl PyApiRouteAsgiApp {
+    fn __call__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        let (owner, route_index, dependency_overrides_provider) = {
+            let app = slf.bind(py).borrow();
+            (
+                app.owner.clone_ref(py),
+                app.route_index,
+                app.dependency_overrides_provider
+                    .as_ref()
+                    .map(|provider| provider.clone_ref(py)),
+            )
+        };
+        let has_exception_handlers = scope
+            .bind(py)
+            .call_method1("__contains__", ("starlette.exception_handlers",))?
+            .extract::<bool>()?;
+        if !has_exception_handlers {
+            return fastapi_route_core_call(
+                py,
+                owner,
+                route_index,
+                scope,
+                receive,
+                send,
+                dependency_overrides_provider,
+            );
+        }
+
+        let exception_handler_context = scope.bind(py).get_item("starlette.exception_handlers")?;
+        let exception_handler_context = exception_handler_context.cast::<PyTuple>()?;
+        let handlers = PyDict::new(py);
+        handlers.call_method1("update", (exception_handler_context.get_item(0)?,))?;
+        handlers.call_method1("update", (exception_handler_context.get_item(1)?,))?;
+        if handlers.len() == 0 {
+            return fastapi_route_core_call(
+                py,
+                owner,
+                route_index,
+                scope,
+                receive,
+                send,
+                dependency_overrides_provider,
+            );
+        }
+
+        let core = Py::new(
+            py,
+            PyApiRouteAsgiCore {
+                owner,
+                route_index,
+                dependency_overrides_provider,
+            },
+        )?;
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("handlers", &handlers)?;
+        let middleware = py
+            .import("starlette.middleware.exceptions")?
+            .getattr("ExceptionMiddleware")?
+            .call((core,), Some(&kwargs))?;
+        middleware.call1((scope, receive, send)).map(Bound::unbind)
+    }
+}
+
+#[pymethods]
+impl PyApiRouteAsgiCore {
     fn __call__(
         &self,
         py: Python<'_>,
@@ -19956,6 +20033,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyFastApiAsgiApp>()?;
     module.add_class::<PyApiRouteAsgiApp>()?;
+    module.add_class::<PyApiRouteAsgiCore>()?;
     module.add_class::<PyFastApiRouteHandler>()?;
     module.add_class::<PyFastApiRequestCleanup>()?;
     module.add_class::<PyMiddlewareDecorator>()?;

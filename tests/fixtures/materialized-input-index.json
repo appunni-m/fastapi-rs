@@ -39470,19 +39470,21 @@
     {
       "id": "standalone-apiroute-asgi",
       "input_path": "tests/fixtures/inputs/parity/standalone-apiroute-asgi.json",
-      "input_sha256": "e33d04f36f74361d0d526e79e55c98d24daf26417446b0c9061e86898a781ebf",
+      "input_sha256": "358b13904e61b073bdc36ac9855062dc8718905f0bdae998270d169f8b191b91",
       "recipe_path": "tests/fixtures/input-recipes/parity/standalone-apiroute-asgi.yaml",
-      "recipe_sha256": "e4bf3f39602bbaa3dd9f2c19ffd2fad6c26106d3c1f24d3d53dca1f3353617a1",
+      "recipe_sha256": "906629f7fb9765f0132865b0a73b520544ad3f10fd23732816b2c911a7e369c2",
       "case_ids": [
         "fastapi.routing.apiroute.asgi.direct-success",
         "fastapi.routing.apiroute.asgi.response-model-filters",
         "fastapi.routing.apiroute.asgi.path-mismatch-404",
         "fastapi.routing.apiroute.asgi.method-mismatch-405",
         "fastapi.routing.apiroute.asgi.route-dependency-and-cleanup",
-        "fastapi.routing.apiroute.asgi.route-dependency-provider-override"
+        "fastapi.routing.apiroute.asgi.route-dependency-provider-override",
+        "fastapi.routing.apiroute.asgi.app-json-body-success",
+        "fastapi.routing.apiroute.asgi.app-json-body-validation-error"
       ],
       "workload_path": "tests/fixtures/workloads/standalone_apiroute_asgi.py",
-      "workload_sha256": "4c22f96ea05a42af4a73708be96b2e4870424eb8a8c3a63dac7d8a664eee3ec1",
+      "workload_sha256": "0318df54ac03fc6dc67fcff970807fdddcc544d40960255479ea4b531bc5dea7",
       "case_contracts": [
         {
           "case_id": "fastapi.routing.apiroute.asgi.direct-success",
@@ -39526,6 +39528,20 @@
           "requirement_refs": [
             "source:upstream-test:tests/test_dependency_overrides.py",
             "source:upstream-test:tests/test_dependency_yield_scope.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.app-json-body-success",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_body/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.asgi.app-json-body-validation-error",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_body/test_tutorial001.py"
           ]
         }
       ]
@@ -73280,6 +73296,24 @@
       "observation_selectors": [
         "asgi.send.message_types",
         "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_body/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-body-test-tutorial001",
+      "workflow_id": "standalone-apiroute-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.body.json, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.asgi.app-json-body-success",
+        "fastapi.routing.apiroute.asgi.app-json-body-validation-error"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.body.json",
         "http.headers.ordered",
         "http.status"
       ]
