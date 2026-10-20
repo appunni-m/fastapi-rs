@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 735a222acffc79b9834e82a1f8ab1046dc9eab1d264ee85fc3f13d3703adbed8
+    sha256: 8974de762987b2a7adb5fd579f05a11965a1de215fbc952ed5c9d5788b0fd1f8
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: e622cb8e5a282b1bd3df5a1868c3ca3848b4cc808b165c4c4b34fd51c0b2d696
+    sha256: b3fa1d3987ee06689255c7f8ca3490bfc9c7a3b3fac189785bfba195642ef8ce
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,7 +602,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@10
-    sha256: 86fb7685911f1f54ac511536ce2016018603e534e2e6e2b5762cdcc29a33afd2
+    sha256: c7c505f8e96596e08595e00e6cc7af1644b888423103f2a5ff172b4fa5734bdd
     schema_path: tests/fixtures/schemas/materialized-input-index-v10.schema.json
     schema_sha256: 1f65d2e15d68141db5098920454ab925f49d5fbb236af8d03d080aacb21c17f8
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -62718,13 +62718,18 @@ api_surface_contract:
       - http.status
     - workflow_id: apirouter-constructor-enum-tag
       input_path: tests/fixtures/inputs/parity/apirouter-constructor-enum-tag.json
-      input_sha256: cab3d4b1a76d96e19f0193c7a7ec245b32c2394acd1d24239def1e3117849393
+      input_sha256: f7438d37e4d7b7eb6b26271eb59806a02df5d9f7402709ac9f167de3db4fcfdd
       recipe_path: tests/fixtures/input-recipes/parity/apirouter-constructor-enum-tag.yaml
-      recipe_sha256: 499d894c6593e92913956264e1e7d56cf77bc589e78adcfbba76f80fa9469486
+      recipe_sha256: 331f90758173c6442d926593351341095646811a3830a2752dfe903f2746dacc
       workload_path: tests/fixtures/workloads/apirouter_constructor_enum_tag.py
-      workload_sha256: 841ecce213b15e0632104da5a81dc1132341ad83f63c12a3fef77c1458285a23
+      workload_sha256: 05896b66c7ca50e047195bd14046150fa48dc560085bb9bf81aca2a041f7457a
       case_id: fastapi.routing.apirouter.constructor-enum-tag-openapi
       observation_selectors:
+      - asgi.lifespan.application_errors
+      - asgi.lifespan.event_order
+      - asgi.lifespan.shutdown
+      - asgi.lifespan.startup
+      - asgi.lifespan.workload_trace
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
@@ -63149,8 +63154,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       known_gaps:
-      - The constructor Enum-tag input covers one string-valued member and its OpenAPI projection; non-string
-        Enum values, interaction with route-level tags, and direct `router.tags` identity remain unproven.
+      - The constructor tag input covers one string-valued Enum member and constructor field snapshots;
+        non-string Enum values, interaction with route-level tags, post-construction reassignment, and
+        in-place list mutation effects remain unproven.
       - Response-field construction must retain source registration and included effective-context timing,
         schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
         fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary

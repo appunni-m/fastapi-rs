@@ -1081,8 +1081,9 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             "GET /users/. The independent case observes HTTP response status and selects the tag "
             "arrays for those methods, sampling Enum-to-OpenAPI tag serialization. A separate "
             "APIRouter-constructor input derives the same string-valued Enum behavior through the "
-            "constructor tag field and route forwarding, with source definitions recorded in the "
-            "reviewed API overlay; the documentation example itself does not construct a router. "
+            "constructor tag field and route forwarding, and observes the exposed tag-list value "
+            "and input-list identity, with source definitions recorded in the reviewed API overlay; "
+            "the documentation example itself does not construct a router. "
             "These cases do not claim other tag forms or unrelated OpenAPI fields."
         ),
         "supporting_sources": [

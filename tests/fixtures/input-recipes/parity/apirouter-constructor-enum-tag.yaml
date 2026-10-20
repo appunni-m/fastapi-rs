@@ -11,6 +11,25 @@ cases:
       selectors: [outcome, exception_class, exception_message]
       comparison: exact
     actions:
+      - action_id: constructor-tags-field-state
+        kind: lifespan
+        events: [lifespan.startup, lifespan.shutdown]
+        observations:
+          - kind: asgi_lifespan
+            selector: event_order
+            comparison: ordered
+          - kind: asgi_lifespan
+            selector: startup
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: shutdown
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: application_errors
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: workload_trace
+            comparison: ordered
       - action_id: included-route-dispatches
         kind: http_request
         scope:

@@ -11,7 +11,16 @@ class OperationTags(Enum):
 
 
 def create_app(_factory_input: dict[str, Any], _event_trace: list[str]) -> FastAPI:
-    router = APIRouter(tags=[OperationTags.items])
+    default_router = APIRouter()
+    _event_trace.append(f"default:{type(default_router.tags).__name__}:{default_router.tags!r}")
+
+    empty_tags = []
+    empty_router = APIRouter(tags=empty_tags)
+    _event_trace.append(f"empty:{empty_router.tags is empty_tags}:{empty_router.tags!r}")
+
+    tags = [OperationTags.items]
+    router = APIRouter(tags=tags)
+    _event_trace.append(f"enum:{type(router.tags).__name__}:{router.tags is tags}:{router.tags!r}")
 
     @router.get("/items")
     def read_items():

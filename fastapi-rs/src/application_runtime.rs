@@ -4993,6 +4993,7 @@ pub(crate) struct PyApiRouter {
     dependency_overrides_provider: Option<Py<PyAny>>,
     route_class: Py<PyAny>,
     tags: Vec<String>,
+    tag_values: Py<PyAny>,
     deprecated: Option<bool>,
     include_in_schema: bool,
     dependencies: Vec<Py<PyAny>>,
@@ -8441,6 +8442,9 @@ impl PyApiRouter {
             Some(route_class) => route_class.clone_ref(py),
             None => api_route_type(py)?.unbind(),
         };
+        let tag_values = PyList::new(py, app_state.router_tags.iter())?
+            .into_any()
+            .unbind();
         Ok(Self {
             inner,
             prefix: String::new(),
@@ -8448,6 +8452,7 @@ impl PyApiRouter {
             dependency_overrides_provider: None,
             route_class,
             tags: app_state.router_tags.clone(),
+            tag_values,
             deprecated: app_state.router_deprecated,
             include_in_schema: app_state.router_include_in_schema,
             dependencies: app_state
@@ -8489,7 +8494,7 @@ impl PyApiRouter {
     fn new(
         py: Python<'_>,
         prefix: &str,
-        tags: Option<Vec<FastApiTag>>,
+        tags: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: ResponseClassArgument,
         responses: Option<Py<PyAny>>,
@@ -8512,8 +8517,13 @@ impl PyApiRouter {
         let default_route_class = api_route_type(py)?;
         let selected_route_class =
             (!route_class.bind(py).is(&default_route_class)).then(|| route_class.clone_ref(py));
-        let router_tags: Vec<String> = tags
-            .unwrap_or_default()
+        let tag_values = match tags {
+            Some(tags) if tags.bind(py).is_truthy()? => tags,
+            _ => PyList::empty(py).into_any().unbind(),
+        };
+        let router_tags: Vec<String> = tag_values
+            .bind(py)
+            .extract::<Vec<FastApiTag>>()?
             .into_iter()
             .map(|tag| tag.0)
             .collect();
@@ -8588,6 +8598,7 @@ impl PyApiRouter {
             dependency_overrides_provider,
             route_class,
             tags: router_tags,
+            tag_values,
             deprecated,
             include_in_schema,
             dependencies: router_dependencies,
@@ -8618,6 +8629,11 @@ impl PyApiRouter {
     #[getter]
     fn prefix(&self) -> &str {
         &self.prefix
+    }
+
+    #[getter]
+    fn tags(&self, py: Python<'_>) -> Py<PyAny> {
+        self.tag_values.clone_ref(py)
     }
 
     #[getter]
