@@ -1405,7 +1405,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 421
-    operation_fixture_refs: 2646
+    operation_fixture_refs: 2658
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -8819,6 +8819,17 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     - workflow_id: direct-api-uploadfile-signatures
       input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
       input_sha256: a5e0b82be320201d5ad57b181ae86ca0e7e6ccaa18fc24807983aea5b9f4e039
@@ -8860,6 +8871,155 @@ api_surface_contract:
       workload_sha256: 71dc984d684b0a22b02805f06fab22de77b46d3b83a293b75a36146aabce2019
       case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
       observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: request-uploads
+      input_path: tests/fixtures/inputs/parity/request-uploads.json
+      input_sha256: 1c5c247f56bb6da55754c9cad2324a439a5d52ebdbf54b17ffbed19ac0536e01
+      recipe_path: tests/fixtures/input-recipes/parity/request-uploads.yaml
+      recipe_sha256: 01ad9402f835a9785083b1693ef44309e8be3cc18a9483954369a3f2c0de908b
+      workload_path: tests/fixtures/workloads/request_uploads.py
+      workload_sha256: cd2ce85961119e92f97822cc67d7e2a73ae7f3f5c12177317f6aa6cacd940ec9
+      case_id: fastapi.request-uploads.request-files.openapi-schema
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+    - workflow_id: uploadfile-pydantic-type-validation
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-type-validation.json
+      input_sha256: 74f92c00a53d2e5f9d8446045a7f13e81ab50f67f229f87e8d329eeaa7d9cf69
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-type-validation.yaml
+      recipe_sha256: e8a0f7d718cc0a3fcb09032d503a4cd3b603dcccc771712048d8467b0e206baa
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_type_validation.py
+      workload_sha256: aa4a187be491d4637ca30e162c965f2cb8140ca2806bb19478777ff212093f2f
+      case_id: fastapi.uploadfile.pydantic-validation.reject-text-form-value
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: 61170b498000f779fce393733774d89faae35f97c04369d7173473e63ca9ed0b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: e1587df02c5f8db6174765f6eb41fa801df00abfa9fa72a4c3a19b65cb61a59f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: 9eb65619f2f6325cd471dc43078d462c268f4e0e92c3f446e4802c19f77396c7
+      case_id: fastapi.uploadfile.pydantic-contract.json-schema
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: 61170b498000f779fce393733774d89faae35f97c04369d7173473e63ca9ed0b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: e1587df02c5f8db6174765f6eb41fa801df00abfa9fa72a4c3a19b65cb61a59f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: 9eb65619f2f6325cd471dc43078d462c268f4e0e92c3f446e4802c19f77396c7
+      case_id: fastapi.uploadfile.pydantic-contract.accept-starlette-base
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: 61170b498000f779fce393733774d89faae35f97c04369d7173473e63ca9ed0b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: e1587df02c5f8db6174765f6eb41fa801df00abfa9fa72a4c3a19b65cb61a59f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: 9eb65619f2f6325cd471dc43078d462c268f4e0e92c3f446e4802c19f77396c7
+      case_id: fastapi.uploadfile.pydantic-contract.reject-custom-type
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: 61170b498000f779fce393733774d89faae35f97c04369d7173473e63ca9ed0b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: e1587df02c5f8db6174765f6eb41fa801df00abfa9fa72a4c3a19b65cb61a59f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: 9eb65619f2f6325cd471dc43078d462c268f4e0e92c3f446e4802c19f77396c7
+      case_id: fastapi.uploadfile.pydantic-contract.reject-custom-format-type
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: 61170b498000f779fce393733774d89faae35f97c04369d7173473e63ca9ed0b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: e1587df02c5f8db6174765f6eb41fa801df00abfa9fa72a4c3a19b65cb61a59f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: 9eb65619f2f6325cd471dc43078d462c268f4e0e92c3f446e4802c19f77396c7
+      case_id: fastapi.uploadfile.pydantic-contract.class-method-introspection
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-pydantic-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-pydantic-contract.json
+      input_sha256: 61170b498000f779fce393733774d89faae35f97c04369d7173473e63ca9ed0b
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+      recipe_sha256: e1587df02c5f8db6174765f6eb41fa801df00abfa9fa72a4c3a19b65cb61a59f
+      workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+      workload_sha256: 9eb65619f2f6325cd471dc43078d462c268f4e0e92c3f446e4802c19f77396c7
+      case_id: fastapi.uploadfile.pydantic-contract.reject-standard-invalid-types
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-io-failure-contract
+      input_path: tests/fixtures/inputs/parity/uploadfile-io-failure-contract.json
+      input_sha256: b503b78525961d593554168002a4d522ac2ab1026f477fe4cddf8f18a992e096
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+      recipe_sha256: 3dd0f440e120ec31c44fbdc328e304398597ef6e443e27a9fce589cb5dd8b784
+      workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+      workload_sha256: aca0a0faa145d72b63c1822c293208db530c59f1c3a886f6a1e838a52fe27ddb
+      case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-spooled-storage
+      input_path: tests/fixtures/inputs/parity/uploadfile-spooled-storage.json
+      input_sha256: c27eb41c997e078b66d8813358233766b8db162c7079f31a457e06c3476471ca
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+      recipe_sha256: 39c1a369234c14e49209da337cda082264b56a1ac8577ef3bc8fcd6570c581ed
+      workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+      workload_sha256: 00dab72e3a0887defa6974957f90bff4dcf89ce1c8e4512a553f59a8f16a9b88
+      case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: uploadfile-metadata-edges
+      input_path: tests/fixtures/inputs/parity/uploadfile-metadata-edges.json
+      input_sha256: 9006253b0e5fbceb1095a14a6c037ced573977e84cc5c90439d5e6a8f3bd7a34
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+      recipe_sha256: 0451286526823d60daede82d16ed1db26993ef2952f957d6b00682f0b43fed8f
+      workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+      workload_sha256: b92fdb5ba68e187ae25a46e7103a038f4cfb6e064067e3da5778735e41a4d799
+      case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
       - http.body.bytes
       - http.status
     identity_workflow_refs:
@@ -8911,10 +9071,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The root alias, constructor signature, selected metadata values, BytesIO-backed asynchronous operations,
-        and one parsed multipart object's identity through route injection are checked; exact method and
-        field annotations, class documentation, full Pydantic hook behavior, and other file storage modes
-        remain unverified.
+      - The cases below sample the public root class but do not exhaust every BinaryIO type, Pydantic
+        input or serialization mode, multipart edge, header encoding/order, or file operation failure.
+        See the canonical `fastapi.datastructures.UploadFile` contract for selected class-level coverage
+        and its remaining gaps.
   - id: fastapi.WebSocket
     kind: import_binding
     source_candidate_ref: /api_candidates/16

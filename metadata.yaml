@@ -15601,10 +15601,10 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The root alias, constructor signature, selected metadata values, BytesIO-backed
-            asynchronous operations, and one parsed multipart object's identity through route
-            injection are checked; exact method and field annotations, class documentation, full
-            Pydantic hook behavior, and other file storage modes remain unverified.
+            The cases below sample the public root class but do not exhaust every BinaryIO type,
+            Pydantic input or serialization mode, multipart edge, header encoding/order, or file
+            operation failure. See the canonical `fastapi.datastructures.UploadFile` contract for
+            selected class-level coverage and its remaining gaps.
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -15616,6 +15616,10 @@ reviewed_api_contract_overlay:
           local_name: UploadFile
           target_path: fastapi.datastructures.UploadFile
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-uploadfile-signatures.yaml
           case_id: fastapi.direct-api-uploadfile.root-signature
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
@@ -15632,11 +15636,57 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile.request-injection-identity.parser-object-preserved
           workload_path: tests/fixtures/workloads/uploadfile_request_injection_identity.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/request-uploads.yaml
+          case_id: fastapi.request-uploads.request-files.openapi-schema
+          workload_path: tests/fixtures/workloads/request_uploads.py
+          observation_selectors: [http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-type-validation.yaml
+          case_id: fastapi.uploadfile.pydantic-validation.reject-text-form-value
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_type_validation.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.json-schema
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.accept-starlette-base
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.reject-custom-type
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.reject-custom-format-type
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.class-method-introspection
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.reject-standard-invalid-types
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-io-failure-contract.yaml
+          case_id: fastapi.uploadfile-io.propagates-file-operation-errors
+          workload_path: tests/fixtures/workloads/uploadfile_io_failure_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-spooled-storage.yaml
+          case_id: fastapi.uploadfile-io.spooled-storage-thresholds
+          workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-metadata-edges.yaml
+          case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
+          workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
+          observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        The root alias resolves to the same class as `fastapi.datastructures.UploadFile`, and its
-        constructor signature matches FastAPI 0.141.1. The four method signatures also match. One
-        multipart route case checks that the uploaded object injected by FastAPI is the same object
-        available from the request's parsed form; class and method metadata parity remains partial.
+        The root alias is the same class as `fastapi.datastructures.UploadFile`. Its constructor
+        and four method signatures match FastAPI 0.141.1. The linked cases sample class and method
+        metadata, Pydantic schema and validation, selected invalid values, BytesIO and spooled-file
+        operations, metadata mutation, propagated I/O errors, OpenAPI contribution, and multipart
+        request-object identity. This remains a partial contract; see the canonical module-class
+        overlay for the exact supported slice and remaining gaps.
 
     fastapi.WebSocket:
       target_binding:
