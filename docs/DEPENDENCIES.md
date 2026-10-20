@@ -80,6 +80,27 @@ installs only the multipart package needed by those cases.
 | email-validator | `2.3.0`; direct dependency in the `email-validation` parity profiles | Enables Pydantic `EmailStr` validation used by FastAPI models. | Python validation library; no native component in the locked wheel. | Unlicense ([2.3.0 wheel metadata](https://pypi.org/pypi/email-validator/2.3.0/json)). |
 | dnspython | `2.8.0`; transitive dependency of `email-validator` in the `email-validation` profiles | Supports optional DNS deliverability checks; the selected syntax acceptance/rejection cases do not exercise DNS queries. | Python DNS toolkit; no native component in the locked wheel. | ISC ([2.8.0 wheel metadata](https://pypi.org/pypi/dnspython/2.8.0/json)). |
 
+## Hash-locked parity profile: JSON response serializers
+
+The `json-serializers` profile is a paired CPython 3.12.13 parity environment,
+not a published FastAPI-RS extra. `pyproject.toml` declares only `testclient`
+and `templates`, and `metadata.yaml` records `fastapi_extra: null` for this
+profile. The profile lock extends the base target runtime lock with
+`orjson==3.13.0` and `ujson==6.0.0`; it is defined by the
+[profile input](../requirements/json-serializers-cpython-3.12.13.in) and
+[hash lock](../requirements/json-serializers-cpython-3.12.13.lock).
+
+The packages enable selected parity for FastAPI's deprecated
+`ORJSONResponse.render` and `UJSONResponse.render` paths. They are optional
+imports used by the corresponding response classes, not dependencies declared
+by the FastAPI-RS package. The selected versions declare no additional runtime
+packages in the profile lock.
+
+| Package | Version and profile role | Purpose | Language and native components | License evidence |
+|---|---|---|---|---|
+| `orjson` | `3.13.0`; added only to the `json-serializers` parity profile | Serializes `ORJSONResponse` content with FastAPI's non-string-key and NumPy options. | Python API backed by a Rust native extension. | MPL-2.0 AND (Apache-2.0 OR MIT) ([3.13.0 PyPI metadata](https://pypi.org/project/orjson/3.13.0/)). |
+| `ujson` | `6.0.0`; added only to the `json-serializers` parity profile | Serializes `UJSONResponse` content as UTF-8 with `ensure_ascii=False`. | Python API backed by a C native extension. | BSD-3-Clause AND TCL ([6.0.0 PyPI metadata](https://pypi.org/project/ujson/6.0.0/)). |
+
 Dependency signature resolution also uses the pinned Pydantic 2.13.4 private
 `pydantic._internal._typing_extra.try_eval_type` helper through PyO3. It
 resolves string annotations from `inspect.signature` in the unwrapped

@@ -115,6 +115,30 @@ licensed ([3.0.3 wheel metadata](https://pypi.org/pypi/MarkupSafe/3.0.3/json)).
 The profile enables the `fastapi.templating.Jinja2Templates` alias. Its input
 workflow checks alias identity and signature; generic template rendering
 remains owned by Starlette-RS.
+
+### JSON response serializer parity profile
+
+The paired CPython 3.12.13 `json-serializers` profile adds `orjson==3.13.0`
+and `ujson==6.0.0` to the locked parity environment. These are not declared as
+FastAPI-RS optional extras or base runtime dependencies; the package metadata
+declares only `testclient` and `templates`. The profile enables selected parity
+for FastAPI's deprecated `ORJSONResponse` and `UJSONResponse` rendering paths.
+Both packages have no additional runtime dependencies in this profile and are
+installed as separate distributions by the parity profile.
+
+| Package | Implementation | License evidence |
+|---|---|---|
+| `orjson==3.13.0` | Python API backed by a Rust native extension. | `MPL-2.0 AND (Apache-2.0 OR MIT)` in [PyPI's 3.13.0 release metadata](https://pypi.org/project/orjson/3.13.0/). |
+| `ujson==6.0.0` | Python API backed by a C native extension. | `BSD-3-Clause AND TCL` in [PyPI's 6.0.0 release metadata](https://pypi.org/project/ujson/6.0.0/). |
+
+The hash-locked profile is
+[`requirements/json-serializers-cpython-3.12.13.lock`](../requirements/json-serializers-cpython-3.12.13.lock);
+its input and selected FastAPI import sites are recorded in
+[`metadata.yaml`](../metadata.yaml) and the
+[dependency atlas](dependency-atlas.md#optional-source-imports). These license
+expressions apply to the separately installed package distributions; they do
+not change FastAPI-RS's MIT license.
+
 `maturin==1.14.1` is pinned as the Python build backend, and its separate
 CPython 3.12.13 build-tool closure is hash-locked in
 [`requirements/build-tools-cpython-3.12.13.lock`](../requirements/build-tools-cpython-3.12.13.lock).
