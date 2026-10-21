@@ -6635,13 +6635,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.deprecation.generate-operation-id-missing-path-format
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
           case_id: fastapi.deprecation.generate-operation-id-missing-name
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-invalid-method
       feature_ids: [openapi-docs]
       observation_selectors: [python.attribute_value, python.call_outcome, python.warnings]
       supported_slice: >-
         The deprecated direct helper's truthy explicit-operation-ID return, None fallback,
         empty-string fallback, and missing operation_id/path_format/name errors are compared,
-        including captured warning sidecars; the helper is not used internally. Other route
-        attribute types and non-string method, path, and name errors remain unreviewed.
+        including the non-string method.lower() error and captured warning sidecars; the helper
+        is not used internally. Other route attribute types and non-string operation_id, name,
+        and path_format errors remain unreviewed.
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       source_evidence:
         - {path: fastapi/openapi/utils.py, symbol: generate_operation_id}
@@ -6649,7 +6652,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Non-string operation_id, name, path_format, and method values and their error behavior remain unreviewed.
+          - Non-string operation_id, name, and path_format values and their error behavior remain unreviewed.
     fastapi.openapi.utils.get_openapi:
       rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       source_evidence:
@@ -6811,16 +6814,19 @@ reviewed_api_contract_overlay:
           - The linked fixtures cover empty routes, metadata options, simple static GET routes, primary response-model schemas in both modes, RouteContext security and request schemas, a simple webhook registered for GET, and mutations to methods and additional responses; other method/webhook combinations, invalid arguments, metadata validation errors, and remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-for-path
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-for-path-invalid-method
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
             Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
+            branches, mutation of mutable arguments, non-string name/path inputs, and error paths
+            remain unproven.
         rust_binding: "fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path"
       supported_slice: >-
         Deprecated direct helper that returns the documented name+path slug with lowercase
@@ -6829,7 +6835,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/utils.py, symbol: generate_operation_id_for_path}
       feature_ids: [openapi-docs]
-      observation_selectors: [python.call_outcome]
+      observation_selectors: [python.call_outcome, python.warnings]
     fastapi.FastAPI:
       target_binding:
         implementation_owner: fastapi-rs

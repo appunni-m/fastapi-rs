@@ -95,6 +95,17 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "method": "GET",
             },
         },
+        "operation-id-invalid-method": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(
+                    operation_id=None,
+                    name="read_item",
+                    path_format="/items",
+                ),
+                "method": 42,
+            },
+        },
         "operation-id-for-path": {
             "args": [],
             "kwargs": {
@@ -102,5 +113,9 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "path": "/v1/items/{item_id}",
                 "method": "PATCH",
             },
+        },
+        "operation-id-for-path-invalid-method": {
+            "args": [],
+            "kwargs": {"name": "read-item", "path": "/v1/items", "method": 42},
         },
     }

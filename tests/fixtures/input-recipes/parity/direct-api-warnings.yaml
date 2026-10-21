@@ -374,6 +374,23 @@ cases:
     kind: upstream_api_definition
     sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
     symbol_id: fastapi.openapi.utils.generate_operation_id
+- case_id: fastapi.deprecation.generate-operation-id-invalid-method
+  probes:
+  - probe_id: generate-operation-id-invalid-method
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: generate_operation_id
+    argument_bundle: operation-id-invalid-method
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.generate_operation_id
 - case_id: fastapi.deprecation.generate-operation-id-for-path
   probes:
   - probe_id: generate-operation-id-for-path
@@ -385,6 +402,23 @@ cases:
     observations:
     - kind: python_return_value
       selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/utils.py
+    kind: upstream_api_definition
+    sha256: 0d7d15ae73307d5b19c51cfc222b50e36736fbef9f0f398566479131947650ca
+    symbol_id: fastapi.utils.generate_operation_id_for_path
+- case_id: fastapi.deprecation.generate-operation-id-for-path-invalid-method
+  probes:
+  - probe_id: generate-operation-id-for-path-invalid-method
+    public_callable:
+      module: fastapi.utils
+      attribute: generate_operation_id_for_path
+    argument_bundle: operation-id-for-path-invalid-method
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
       comparison: exact
   source_evidence:
   - path: fastapi/utils.py

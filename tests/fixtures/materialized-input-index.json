@@ -7975,7 +7975,7 @@
         "fastapi.direct-api.v8-warning-sidecar.query-example"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
-      "workload_sha256": "523ba23e1cde4fdc56595b5376541b62d49491a553279a84431f8444c5605175",
+      "workload_sha256": "52b1a3ff515456c1ecc035276f4bd61cbb6c0c7410b8bc3266ff0c6cf2b32c69",
       "api_definitions": [
         {
           "case_id": "fastapi.direct-api.v8-warning-sidecar.query-example",
@@ -8010,9 +8010,9 @@
     {
       "id": "direct-api-warnings",
       "input_path": "tests/fixtures/inputs/parity/direct-api-warnings.json",
-      "input_sha256": "c1cfab923f63d542b17fafea9996e3c858f227ac4494eee4844de907d3008e71",
+      "input_sha256": "7a18df1afd3abd27f7f24e67e36474fc9a11bff6e759de81938088b6065272d5",
       "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-warnings.yaml",
-      "recipe_sha256": "1cf639e8f8259ee2dbbd1a35b487a17741518294d827c9272385029a67553c7d",
+      "recipe_sha256": "3f8656c2b736450d2f3eebdbcd03e629f57e45d0b70bae4cdb72340fc2508853",
       "case_ids": [
         "fastapi.deprecation.query-example-warning",
         "fastapi.deprecation.query-regex-warning",
@@ -8034,10 +8034,12 @@
         "fastapi.deprecation.generate-operation-id-missing-operation-id",
         "fastapi.deprecation.generate-operation-id-missing-path-format",
         "fastapi.deprecation.generate-operation-id-missing-name",
-        "fastapi.deprecation.generate-operation-id-for-path"
+        "fastapi.deprecation.generate-operation-id-invalid-method",
+        "fastapi.deprecation.generate-operation-id-for-path",
+        "fastapi.deprecation.generate-operation-id-for-path-invalid-method"
       ],
       "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
-      "workload_sha256": "523ba23e1cde4fdc56595b5376541b62d49491a553279a84431f8444c5605175",
+      "workload_sha256": "52b1a3ff515456c1ecc035276f4bd61cbb6c0c7410b8bc3266ff0c6cf2b32c69",
       "api_definitions": [
         {
           "case_id": "fastapi.deprecation.body-example-warning",
@@ -8110,6 +8112,18 @@
           "symbol_id": "fastapi.utils.generate_operation_id_for_path",
           "path": "fastapi/utils.py",
           "sha256": "0d7d15ae73307d5b19c51cfc222b50e36736fbef9f0f398566479131947650ca"
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-for-path-invalid-method",
+          "symbol_id": "fastapi.utils.generate_operation_id_for_path",
+          "path": "fastapi/utils.py",
+          "sha256": "0d7d15ae73307d5b19c51cfc222b50e36736fbef9f0f398566479131947650ca"
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-invalid-method",
+          "symbol_id": "fastapi.openapi.utils.generate_operation_id",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
         },
         {
           "case_id": "fastapi.deprecation.generate-operation-id-missing-name",
@@ -8284,6 +8298,26 @@
           "probe_kind": "callable",
           "observation_selectors": [
             "python.attribute_value",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-for-path-invalid-method",
+          "probe_id": "generate-operation-id-for-path-invalid-method",
+          "symbol_id": "fastapi.utils.generate_operation_id_for_path",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-invalid-method",
+          "probe_id": "generate-operation-id-invalid-method",
+          "symbol_id": "fastapi.openapi.utils.generate_operation_id",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
             "python.warnings"
           ]
         },
@@ -8526,7 +8560,21 @@
           ]
         },
         {
+          "case_id": "fastapi.deprecation.generate-operation-id-invalid-method",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.generate_operation_id"
+          ]
+        },
+        {
           "case_id": "fastapi.deprecation.generate-operation-id-for-path",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.utils.generate_operation_id_for_path"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-for-path-invalid-method",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.utils.generate_operation_id_for_path"

@@ -15,11 +15,7 @@ fn generate_operation_id_for_path(
     method: &Bound<'_, PyAny>,
 ) -> PyResult<Py<PyAny>> {
     emit_warning(py, OPERATION_ID_FOR_PATH_WARNING, 1)?;
-    let operation_id = operation_id(
-        name.str()?.to_str()?,
-        path.str()?.to_str()?,
-        method.str()?.to_str()?,
-    );
+    let operation_id = operation_id(name, path, method)?;
     Ok(PyString::new(py, &operation_id).into_any().unbind())
 }
 
@@ -39,17 +35,19 @@ fn generate_operation_id(
     let path = route.getattr("path_format")?;
     let name = route.getattr("name")?;
     emit_warning_explicit(py)?;
-    let operation_id = operation_id(
-        name.str()?.to_str()?,
-        path.str()?.to_str()?,
-        method.str()?.to_str()?,
-    );
+    let operation_id = operation_id(&name, &path, method)?;
     Ok(PyString::new(py, &operation_id).into_any().unbind())
 }
 
-fn operation_id(name: &str, path: &str, method: &str) -> String {
-    let operation_name = format!("{name}{path}");
-    let mut normalized = String::with_capacity(operation_name.len() + method.len() + 1);
+fn operation_id(
+    name: &Bound<'_, PyAny>,
+    path: &Bound<'_, PyAny>,
+    method: &Bound<'_, PyAny>,
+) -> PyResult<String> {
+    let name = name.str()?;
+    let path = path.str()?;
+    let operation_name = format!("{}{}", name.to_str()?, path.to_str()?);
+    let mut normalized = String::with_capacity(operation_name.len() + 1);
     normalized.extend(operation_name.chars().map(|character| {
         if character == '_' || character.is_alphanumeric() {
             character
@@ -57,9 +55,10 @@ fn operation_id(name: &str, path: &str, method: &str) -> String {
             '_'
         }
     }));
+    let method = method.getattr("lower")?.call0()?;
     normalized.push('_');
-    normalized.push_str(&method.to_lowercase());
-    normalized
+    normalized.push_str(method.str()?.to_str()?);
+    Ok(normalized)
 }
 
 fn emit_warning(py: Python<'_>, message: &str, stacklevel: usize) -> PyResult<()> {
