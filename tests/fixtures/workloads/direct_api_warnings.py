@@ -60,6 +60,41 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "method": "POST",
             },
         },
+        "operation-id-empty-string": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(
+                    operation_id="",
+                    name="empty_id",
+                    path_format="/items/{item_id}",
+                ),
+                "method": "PATCH",
+            },
+        },
+        "operation-id-missing-operation-id": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(name="read_item", path_format="/items"),
+                "method": "GET",
+            },
+        },
+        "operation-id-missing-path-format": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(operation_id=None, name="read_item"),
+                "method": "GET",
+            },
+        },
+        "operation-id-missing-name": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(
+                    operation_id=None,
+                    path_format="/items/{item_id}",
+                ),
+                "method": "GET",
+            },
+        },
         "operation-id-for-path": {
             "args": [],
             "kwargs": {

@@ -306,6 +306,74 @@ cases:
     kind: upstream_api_definition
     sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
     symbol_id: fastapi.openapi.utils.generate_operation_id
+- case_id: fastapi.deprecation.generate-operation-id-empty-string
+  probes:
+  - probe_id: generate-operation-id-empty-string
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: generate_operation_id
+    argument_bundle: operation-id-empty-string
+    capture_warnings: true
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.generate_operation_id
+- case_id: fastapi.deprecation.generate-operation-id-missing-operation-id
+  probes:
+  - probe_id: generate-operation-id-missing-operation-id
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: generate_operation_id
+    argument_bundle: operation-id-missing-operation-id
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.generate_operation_id
+- case_id: fastapi.deprecation.generate-operation-id-missing-path-format
+  probes:
+  - probe_id: generate-operation-id-missing-path-format
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: generate_operation_id
+    argument_bundle: operation-id-missing-path-format
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.generate_operation_id
+- case_id: fastapi.deprecation.generate-operation-id-missing-name
+  probes:
+  - probe_id: generate-operation-id-missing-name
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: generate_operation_id
+    argument_bundle: operation-id-missing-name
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.generate_operation_id
 - case_id: fastapi.deprecation.generate-operation-id-for-path
   probes:
   - probe_id: generate-operation-id-for-path

@@ -36,9 +36,9 @@ fn generate_operation_id(
         return Ok(route_operation_id.unbind());
     }
 
-    emit_warning_explicit(py)?;
-    let name = route.getattr("name")?;
     let path = route.getattr("path_format")?;
+    let name = route.getattr("name")?;
+    emit_warning_explicit(py)?;
     let operation_id = operation_id(
         name.str()?.to_str()?,
         path.str()?.to_str()?,

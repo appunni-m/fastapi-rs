@@ -6627,13 +6627,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.deprecation.generate-operation-id-explicit-route
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
           case_id: fastapi.deprecation.generate-operation-id-fallback-route
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-empty-string
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-missing-operation-id
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-missing-path-format
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-missing-name
       feature_ids: [openapi-docs]
-      observation_selectors: [python.attribute_value, python.warnings]
+      observation_selectors: [python.attribute_value, python.call_outcome, python.warnings]
       supported_slice: >-
-        The deprecated direct helper's truthy explicit-operation-ID return and None fallback return
-        are compared, including captured warning sidecars; the helper is not used internally.
-        Empty-string operation IDs, other falsey values, unusual route attributes, and error behavior
-        remain unreviewed.
+        The deprecated direct helper's truthy explicit-operation-ID return, None fallback,
+        empty-string fallback, and missing operation_id/path_format/name errors are compared,
+        including captured warning sidecars; the helper is not used internally. Other route
+        attribute types and non-string method, path, and name errors remain unreviewed.
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       source_evidence:
         - {path: fastapi/openapi/utils.py, symbol: generate_operation_id}
@@ -6641,8 +6649,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The exact Falsey empty-string operation_id branch and malformed or missing route attributes are not covered.
-          - Other route attribute types, methods, paths, and their error behavior remain unreviewed.
+          - Non-string operation_id, name, path_format, and method values and their error behavior remain unreviewed.
     fastapi.openapi.utils.get_openapi:
       rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       source_evidence:
