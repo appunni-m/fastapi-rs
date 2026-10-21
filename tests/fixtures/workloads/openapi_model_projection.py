@@ -73,6 +73,25 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "x-document-owner": "compatibility",
             },
         },
+        "info-all-fields": {
+            "args": [],
+            "kwargs": {
+                "title": "Field Guide",
+                "version": "2.4",
+                "summary": "Input-defined summary",
+                "description": "Input-defined description",
+                "termsOfService": "https://example.test/terms",
+                "contact": {
+                    "name": "API team",
+                    "url": "https://example.test/team",
+                },
+                "license": {
+                    "name": "MIT",
+                    "identifier": "MIT",
+                    "url": "https://opensource.org/license/mit/",
+                },
+            },
+        },
         "openapi": {
             "args": [],
             "kwargs": {

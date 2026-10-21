@@ -17216,7 +17216,7 @@
         "fastapi.openapi-models.example.populated-extra-key"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_model_projection.py",
-      "workload_sha256": "2978114eda92f2dbc08f14ee6ecd71ba6371844aad4e659f19557d29bdce3e91",
+      "workload_sha256": "dc10ad2bbaa8ad808a267c160c397c60ccc9b23da432aa003676f969db4f873d",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.example.empty-construction",
@@ -18780,9 +18780,9 @@
     {
       "id": "openapi-model-result-public-api",
       "input_path": "tests/fixtures/inputs/parity/openapi-model-result-public-api.json",
-      "input_sha256": "612160146a3d8a3f46e8b106603e076026edf1a5e5a8a63b46f297d3d97f55b7",
+      "input_sha256": "0eee145e8673d2cd861f2eadc7ab99ba5825d54b73fb1a4a939d2c7f407b0a7b",
       "recipe_path": "tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml",
-      "recipe_sha256": "dbb5579e82514e525baece51b9dd5378c8485f2c24cfe665747ca1d08a6d9ab6",
+      "recipe_sha256": "0754b84de0405944c6b589a7b2d1469b783a87c7c682b9c84fd6d73c95ce5835",
       "case_ids": [
         "fastapi.openapi-models.encoding.default-values",
         "fastapi.openapi-models.encoding.model-result",
@@ -18791,6 +18791,7 @@
         "fastapi.openapi-models.contact.default-values",
         "fastapi.openapi-models.contact.invalid-email",
         "fastapi.openapi-models.info.model-result",
+        "fastapi.openapi-models.info.all-fields-result",
         "fastapi.openapi-models.openapi.model-result",
         "fastapi.openapi-models.openapi.components-field",
         "fastapi.openapi-models.openapi.external-docs-field",
@@ -18814,7 +18815,7 @@
         "fastapi.openapi-models.components.model-result"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_model_projection.py",
-      "workload_sha256": "2978114eda92f2dbc08f14ee6ecd71ba6371844aad4e659f19557d29bdce3e91",
+      "workload_sha256": "dc10ad2bbaa8ad808a267c160c397c60ccc9b23da432aa003676f969db4f873d",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.api-key.model-result",
@@ -18867,6 +18868,12 @@
         {
           "case_id": "fastapi.openapi-models.encoding.model-result",
           "symbol_id": "fastapi.openapi.models.Encoding",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.info.all-fields-result",
+          "symbol_id": "fastapi.openapi.models.Info",
           "path": "fastapi/openapi/models.py",
           "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
         },
@@ -19062,6 +19069,15 @@
           "case_id": "fastapi.openapi-models.encoding.model-result",
           "probe_id": "encoding-model-result",
           "symbol_id": "fastapi.openapi.models.Encoding",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.info.all-fields-result",
+          "probe_id": "info-all-fields-result",
+          "symbol_id": "fastapi.openapi.models.Info",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.pydantic_model_result"
@@ -19290,6 +19306,14 @@
         },
         {
           "case_id": "fastapi.openapi-models.info.model-result",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.Info",
+            "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.info.all-fields-result",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.openapi.models.Info",
@@ -58231,7 +58255,7 @@
       "fixture_id": "fastapi.docs.reference-openapi-models",
       "workflow_id": "openapi-model-result-public-api",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 28 case(s); observes python.call_outcome, python.pydantic_model_result. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 29 case(s); observes python.call_outcome, python.pydantic_model_result. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.openapi-models.api-key.model-result",
         "fastapi.openapi-models.components.model-result",
@@ -58242,6 +58266,7 @@
         "fastapi.openapi-models.encoding.default-values",
         "fastapi.openapi-models.encoding.invalid-explode",
         "fastapi.openapi-models.encoding.model-result",
+        "fastapi.openapi-models.info.all-fields-result",
         "fastapi.openapi-models.info.model-result",
         "fastapi.openapi-models.media-type.default-values",
         "fastapi.openapi-models.media-type.invalid-schema",
