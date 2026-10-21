@@ -24,6 +24,8 @@
 - Map recursive dependencies by feature, purpose, version, native/language
   parts, license, and runtime/optional/build/dev role. Author parity recipes as
   YAML under `tests/fixtures/input-recipes/`; include no expected outputs.
+  Generated JSON under `tests/fixtures/inputs/` and `parity-results/` is ignored
+  evidence; commit recipes and reviewed metadata, never generated inputs/results.
   After recipe edits run `make parity-inputs parity-index-update parity-validate`
   and exercise public interfaces in identity-checked isolated processes.
 - After atlas or exclusion changes run `make compatibility-atlas-update`.
