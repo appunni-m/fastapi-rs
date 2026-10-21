@@ -1404,8 +1404,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
-    symbols_with_operation_fixture_refs: 448
-    operation_fixture_refs: 2724
+    symbols_with_operation_fixture_refs: 453
+    operation_fixture_refs: 2735
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -54910,6 +54910,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id015
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.populated
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -54935,16 +54956,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/881
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Exact aggregate XML model dumps cover the default and populated field value; standalone field
+        operations, coercion boundaries, and validation errors remain unproven.
   - id: fastapi.openapi.models.XML.name
     kind: field
     source_candidate_ref: /api_candidates/882
@@ -54976,6 +54993,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id015
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.populated
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -55001,16 +55039,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/882
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Exact aggregate XML model dumps cover the default and populated field value; standalone field
+        operations, coercion boundaries, and validation errors remain unproven.
   - id: fastapi.openapi.models.XML.namespace
     kind: field
     source_candidate_ref: /api_candidates/883
@@ -55042,6 +55076,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id015
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.populated
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -55067,16 +55122,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/883
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Exact aggregate XML model dumps cover the default and populated field value; standalone field
+        operations, coercion boundaries, and validation errors remain unproven.
   - id: fastapi.openapi.models.XML.prefix
     kind: field
     source_candidate_ref: /api_candidates/884
@@ -55108,6 +55159,27 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id015
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.populated
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -55133,16 +55205,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/884
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Exact aggregate XML model dumps cover the default and populated field value; standalone field
+        operations, coercion boundaries, and validation errors remain unproven.
   - id: fastapi.openapi.models.XML.wrapped
     kind: field
     source_candidate_ref: /api_candidates/885
@@ -55174,6 +55242,37 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id015
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.defaults
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.populated
+      observation_selectors:
+      - python.pydantic_model_result
+    - workflow_id: openapi-auxiliary-models-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-auxiliary-models-public-api.json
+      input_sha256: 21db0fcba21381ae9ad2f0a3fbbc5e9219533152760f6a94d09bfd91717a3eb4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+      recipe_sha256: 19358bd1a7b0cddc7f855126cfc61db1c758c85cc79995cb685aca265e0c7162
+      workload_path: tests/fixtures/workloads/openapi_auxiliary_models_projection.py
+      workload_sha256: 4ee52c23a124f26296a129d7e9aa576084a5cd912543be363cf4428b4c971e49
+      case_id: fastapi.openapi-models.xml.invalid-wrapped
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -55199,16 +55298,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/885
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Exact aggregate XML model dumps cover the default and populated field value and one invalid wrapped
+        value; standalone field operations and other coercion boundaries remain unproven.
   - id: fastapi.openapi.utils.generate_operation_id
     kind: function
     source_candidate_ref: /api_candidates/930

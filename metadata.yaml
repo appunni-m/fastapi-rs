@@ -23766,19 +23766,21 @@ reviewed_api_contract_overlay:
       observation_selectors: [python.signature, python.pydantic_model_result, python.call_outcome]
 
     fastapi.openapi.models.XML.attribute:
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
-          - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Exact aggregate XML model dumps cover the default and populated field value; standalone
+            field operations, coercion boundaries, and validation errors remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -23790,19 +23792,21 @@ reviewed_api_contract_overlay:
         default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
 
     fastapi.openapi.models.XML.name:
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
-          - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Exact aggregate XML model dumps cover the default and populated field value; standalone
+            field operations, coercion boundaries, and validation errors remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -23814,19 +23818,21 @@ reviewed_api_contract_overlay:
         default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
 
     fastapi.openapi.models.XML.namespace:
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
-          - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Exact aggregate XML model dumps cover the default and populated field value; standalone
+            field operations, coercion boundaries, and validation errors remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -23838,19 +23844,21 @@ reviewed_api_contract_overlay:
         default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
 
     fastapi.openapi.models.XML.prefix:
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.populated
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
-          - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Exact aggregate XML model dumps cover the default and populated field value; standalone
+            field operations, coercion boundaries, and validation errors remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -23862,19 +23870,23 @@ reviewed_api_contract_overlay:
         default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
 
     fastapi.openapi.models.XML.wrapped:
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.populated
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-auxiliary-models-public-api.yaml
+          case_id: fastapi.openapi-models.xml.invalid-wrapped
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.pydantic_model_result, python.call_outcome]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[XML].fields
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
-          - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Exact aggregate XML model dumps cover the default and populated field value and one invalid
+            wrapped value; standalone field operations and other coercion boundaries remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
