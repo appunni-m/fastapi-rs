@@ -5480,6 +5480,8 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.starlette-base-detail-and-header
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
+          case_id: fastapi.public-errors.http.starlette-subclass-default-handler
+        - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.bodyless-status-with-detail
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.http.informational-status-with-detail
@@ -5500,15 +5502,17 @@ reviewed_api_contract_overlay:
         it from a registered Starlette HTTPException handler. The tutorial
         workflow observes its 409 response, while the public-errors workflow
         observes structured FastAPI detail and headers, the Starlette base
-        exception and headers, and body suppression for statuses 199, 204, 205,
-        and 304. An additional request observes how a numeric string status is
-        converted for the body rule but preserved for Response construction,
-        including the exact dispatch exception. A separate root-module input
-        records coroutine-function classification and inspect.signature, and confirms the default FastAPI
-        handler map references the same callable. This remains a partial
-        contract: it does not establish Python-function identity/type, every
-        body-allowed status or detail value, arbitrary Starlette exception
-        subclasses beyond the base class, or unusual runtime argument types.
+        exception and headers, one user-defined Starlette HTTPException
+        subclass dispatched through the default handler, and body suppression
+        for statuses 199, 204, 205, and 304. An additional request observes how
+        a numeric string status is converted for the body rule but preserved
+        for Response construction, including the exact dispatch exception. A
+        separate root-module input records coroutine-function classification
+        and inspect.signature, and confirms the default FastAPI handler map
+        references the same callable. This remains a partial contract: it does
+        not establish Python-function identity/type, every body-allowed status
+        or detail value, custom subclass-handler precedence, or unusual runtime
+        argument types.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -5516,7 +5520,7 @@ reviewed_api_contract_overlay:
         known_gaps:
           - Python function identity and function-only introspection are not established.
           - All body-allowed status codes and detail value types are not covered.
-          - Arbitrary Starlette HTTPException subclasses beyond the base class are not covered.
+          - Custom handler precedence for HTTPException subclasses is not covered.
           - Unusual runtime status-code and request argument types are not covered.
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/handling-errors.md

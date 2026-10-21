@@ -25987,9 +25987,9 @@
     {
       "id": "public-errors-http-websocket-wave",
       "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
-      "input_sha256": "3c44f8cfe9799fe3bf964cb1a99a98f9cda8b7659efbdb0a5dba4b3552847265",
+      "input_sha256": "565d64a79ccddd9351038d90adcf419c8d78eeda281997d7ae687cfbb7cbf8a5",
       "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-      "recipe_sha256": "a7b16069e77c5504be2f5d28a7748513b8f83602848a1a657592257edd59236c",
+      "recipe_sha256": "4059453c0e938590be764d4abd3b072950b134c3184768066695f99e5cac4636",
       "case_ids": [
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.starlette-base-detail-and-header",
@@ -26005,10 +26005,11 @@
         "fastapi.public-errors.websocket.default-reason-empty",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason",
         "fastapi.public-errors.websocket-disconnect.constructor-contract",
-        "fastapi.public-errors.http.constructor-contract"
+        "fastapi.public-errors.http.constructor-contract",
+        "fastapi.public-errors.http.starlette-subclass-default-handler"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "68bb204e179b395c4d9b6e00497c8c0533c7eb704e5dd7158df274b6ef6ad784",
+      "workload_sha256": "6c962253b0308d162191876232eceb820c548abded85ee828e0895a6a59fb26f",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -26126,6 +26127,15 @@
         },
         {
           "case_id": "fastapi.public-errors.http.constructor-contract",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:upstream-test:tests/test_exception_handlers.py",
+            "source:upstream-test:tests/test_starlette_exception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.public-errors.http.starlette-subclass-default-handler",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:tutorial/handling-errors.md",
@@ -61594,7 +61604,7 @@
       "fixture_id": "fastapi.docs.tutorial-handling-errors",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 8 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 9 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.bodyless-status-with-detail",
         "fastapi.public-errors.http.constructor-contract",
@@ -61603,7 +61613,8 @@
         "fastapi.public-errors.http.not-modified-status-with-detail",
         "fastapi.public-errors.http.numeric-string-status",
         "fastapi.public-errors.http.reset-content-status-with-detail",
-        "fastapi.public-errors.http.starlette-base-detail-and-header"
+        "fastapi.public-errors.http.starlette-base-detail-and-header",
+        "fastapi.public-errors.http.starlette-subclass-default-handler"
       ],
       "observation_selectors": [
         "asgi.application_error.exception",
@@ -61620,9 +61631,10 @@
       "fixture_id": "fastapi.test.test-exception-handlers",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.public-errors.http.constructor-contract"
+        "fastapi.public-errors.http.constructor-contract",
+        "fastapi.public-errors.http.starlette-subclass-default-handler"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -61634,7 +61646,7 @@
       "fixture_id": "fastapi.test.test-starlette-exception",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 10 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 11 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.bodyless-status-with-detail",
         "fastapi.public-errors.http.constructor-contract",
@@ -61645,7 +61657,8 @@
         "fastapi.public-errors.http.not-modified-status-with-detail",
         "fastapi.public-errors.http.numeric-string-status",
         "fastapi.public-errors.http.reset-content-status-with-detail",
-        "fastapi.public-errors.http.starlette-base-detail-and-header"
+        "fastapi.public-errors.http.starlette-base-detail-and-header",
+        "fastapi.public-errors.http.starlette-subclass-default-handler"
       ],
       "observation_selectors": [
         "http.body.bytes",

@@ -503,3 +503,38 @@ cases:
   - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}
   - {path: tests/test_starlette_exception.py, kind: upstream_test}
   - {path: tests/test_exception_handlers.py, kind: upstream_test}
+- case_id: fastapi.public-errors.http.starlette-subclass-default-handler
+  factory_input:
+    starlette_http_exception_subclass:
+      status_code: 406
+      detail: {kind: restricted, source: derived-starlette-exception}
+      headers:
+        X-Failure-Origin: starlette-derived
+        X-Error-Variant: user-subclass
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-derived-starlette-http-exception
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /errors/starlette-subclass
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}
+  - {path: tests/test_starlette_exception.py, kind: upstream_test}
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}

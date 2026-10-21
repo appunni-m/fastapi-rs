@@ -226,6 +226,19 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             headers={"X-Failure-Origin": "starlette"},
         )
 
+    @app.get("/errors/starlette-subclass")
+    async def starlette_http_exception_subclass() -> None:
+        values = factory_input["starlette_http_exception_subclass"]
+
+        class DerivedStarletteHTTPException(StarletteHTTPException):
+            pass
+
+        raise DerivedStarletteHTTPException(
+            status_code=values["status_code"],
+            detail=values["detail"],
+            headers=values["headers"],
+        )
+
     @app.get("/errors/bodyless")
     async def bodyless_http_error() -> None:
         raise HTTPException(
