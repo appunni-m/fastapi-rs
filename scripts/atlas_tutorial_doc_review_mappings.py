@@ -1972,9 +1972,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         ],
         "rationale": (
             "The page explicitly distinguishes decorator status_code from function/request "
-            "parameters and documents response/OpenAPI status behavior. The request-validation "
-            "match is a false positive. It also explicitly documents FastAPI's direct Starlette "
-            "status re-export."
+            "parameters and documents response/OpenAPI status behavior, including FastAPI's "
+            "no-body response entry for 204. The request-validation match is a false positive. "
+            "It also explicitly documents FastAPI's direct Starlette status re-export."
         ),
         "supporting_sources": [
             {
@@ -1995,6 +1995,18 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "end_line": 5,
                 "role": "FastAPI root status re-export",
             },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-204-openapi.yaml",
+                "case_ids": ["fastapi.response.openapi-204-omits-content"],
+                "observation_selectors": [
+                    "docs.response.status",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            }
         ],
         "starlette_contract_sources": [
             {

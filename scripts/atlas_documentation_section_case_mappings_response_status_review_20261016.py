@@ -250,17 +250,17 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
         (
             "Each linked case has one action. The selected cases observe one endpoint's "
             "explicit 201 response and its OpenAPI response entry. They do not exercise every "
-            "decorator or IntEnum value, or the "
-            "bodyless-status/OpenAPI note for codes such as 204. The separate existing 204 "
-            "OpenAPI case lacks this tutorial page as upstream_documentation source evidence "
-            "and is not projected here."
+            "decorator or IntEnum value. The separate 204 bodyless-response case is mapped at "
+            "the page level through its own recipe and is not part of this section row."
         ),
         (
             "FastAPI 0.141.1 normalizes IntEnum route status values "
             "(fastapi/routing.py:1029-1032), uses the route or temporary Response status for "
             "runtime responses (fastapi/routing.py:357-372), and builds OpenAPI response "
-            "entries from route metadata (fastapi/openapi/utils.py:403-419). Starlette 1.6.0 "
-            "owns emitted HTTP response behavior."
+            "entries from route metadata (fastapi/openapi/utils.py:403-419). The pinned "
+            "tutorial's no-body claim at docs/en/docs/tutorial/response-status-code.md:34-38 is "
+            "linked to a separate 204 case at the page level. Starlette 1.6.0 owns emitted HTTP "
+            "response behavior."
         ),
     ),
     ("tutorial/response-status-code.md", "about-http-status-codes"): _excluded(
