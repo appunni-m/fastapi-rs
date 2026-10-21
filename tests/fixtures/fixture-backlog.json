@@ -169067,13 +169067,17 @@
             "dependency-security",
             "websocket-lifecycle"
           ],
+          "function_source_ref": {
+            "end_line": 73,
+            "line": 66,
+            "path": "tests/test_dependency_after_yield_websockets.py",
+            "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add"
+          },
           "id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "websocket.messages",
-            "websocket.event_order",
-            "websocket.close_code"
+            "websocket.messages"
           ],
           "reviewed_mapping": {
             "contract_gate": "Partial: the workflow uses an independent route/session trace and closes through a direct ASGI peer event, not Starlette TestClient's WebSocketSession API.",
@@ -169129,15 +169133,26 @@
                 "start_line": 566
               }
             ],
-            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.websocket-yield-cleanup (websocket.messages, websocket.event_order, websocket.close_code, http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.websocket-yield-cleanup (websocket.messages, websocket.event_order, websocket.close_code, http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+            "workflow_case": {
+              "action_ids": [
+                "receive-inventory"
+              ],
+              "case_id": "fastapi.dependencies.websocket-yield-cleanup",
+              "observation_selectors": [
+                "websocket.messages",
+                "websocket.event_order",
+                "websocket.close_code"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+              "workflow_id": "dependency-wave-lifecycle"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.messages",
-                "websocket.event_order",
-                "websocket.close_code"
+                "websocket.messages"
               ]
             }
           ],
@@ -169148,7 +169163,20 @@
             "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
             "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
           ],
-          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.websocket-yield-cleanup (websocket.messages, websocket.event_order, websocket.close_code, http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.websocket-yield-cleanup (websocket.messages, websocket.event_order, websocket.close_code, http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+          "workflow_case": {
+            "action_ids": [
+              "receive-inventory"
+            ],
+            "case_id": "fastapi.dependencies.websocket-yield-cleanup",
+            "observation_selectors": [
+              "websocket.messages",
+              "websocket.event_order",
+              "websocket.close_code"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+            "workflow_id": "dependency-wave-lifecycle"
+          }
         },
         {
           "feature_evidence": [
@@ -169220,17 +169248,21 @@
             "asgi-error-propagation",
             "websocket-lifecycle"
           ],
+          "function_source_ref": {
+            "end_line": 79,
+            "line": 76,
+            "path": "tests/test_dependency_after_yield_websockets.py",
+            "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add"
+          },
           "id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "websocket.messages",
-            "websocket.event_order",
             "asgi.application_error.exception"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: the workflow uses an independently authored cleanup exception and a direct disconnect event; it checks propagation shape, not the source's exact endpoint/helper objects or TestClient session mechanics.",
-            "rationale": "A yielded WebSocket dependency raises during cleanup; the case records both ASGI WebSocket events and the surfaced exception.",
+            "contract_gate": "Partial: the independent workload uses the same closed-session failure shape with different route/session helpers, and direct ASGI events differ from Starlette TestClient session mechanics.",
+            "rationale": "The yielded session is already closed, so the WebSocket endpoint raises ValueError while iterating it; the test checks the exception type and message.",
             "source_evidence": [
               {
                 "end_line": 79,
@@ -169282,20 +169314,26 @@
                 "start_line": 566
               }
             ],
-            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml::fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken (application_error.exception, websocket.event_order, websocket.messages). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml::fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken (application_error.exception, websocket.event_order, websocket.messages). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+            "workflow_case": {
+              "action_ids": [
+                "broken-session-websocket"
+              ],
+              "case_id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml",
+              "workflow_id": "dependency-after-yield-websocket-broken-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "asgi-error-propagation",
               "selectors": [
                 "asgi.application_error.exception"
-              ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "selectors": [
-                "websocket.messages",
-                "websocket.event_order"
               ]
             }
           ],
@@ -169306,7 +169344,20 @@
             "Trigger an application exception during ASGI dispatch and observe its qualified class, exact message, and protocol events.",
             "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
           ],
-          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml::fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken (application_error.exception, websocket.event_order, websocket.messages). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml::fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken (application_error.exception, websocket.event_order, websocket.messages). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+          "workflow_case": {
+            "action_ids": [
+              "broken-session-websocket"
+            ],
+            "case_id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
+            "observation_selectors": [
+              "asgi.application_error.exception",
+              "websocket.event_order",
+              "websocket.messages"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml",
+            "workflow_id": "dependency-after-yield-websocket-broken-upstream"
+          }
         }
       ],
       "feature_ids": [

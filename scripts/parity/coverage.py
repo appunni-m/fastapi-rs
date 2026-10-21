@@ -182,6 +182,30 @@ def _wave_h_bigger_applications_direct(case_slug, action_id):
 
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
+        "tests/test_dependency_after_yield_websockets.py",
+        "test_websocket_dependency_after_yield",
+    ): _reviewed_direct_link(
+        "dependency-wave-lifecycle",
+        "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+        "fastapi.dependencies.websocket-yield-cleanup",
+        ("receive-inventory",),
+        ("websocket.messages", "websocket.event_order", "websocket.close_code"),
+    ),
+    (
+        "tests/test_dependency_after_yield_websockets.py",
+        "test_websocket_dependency_after_yield_broken",
+    ): _reviewed_direct_link(
+        "dependency-after-yield-websocket-broken-upstream",
+        "tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml",
+        "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
+        ("broken-session-websocket",),
+        (
+            "asgi.application_error.exception",
+            "websocket.event_order",
+            "websocket.messages",
+        ),
+    ),
+    (
         "tests/test_callable_endpoint.py",
         "test_partial",
     ): _reviewed_direct_link(

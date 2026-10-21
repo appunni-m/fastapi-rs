@@ -636,7 +636,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "tests/test_dependency_after_yield_websockets.py",
                 "test_websocket_dependency_after_yield",
                 ["dependency-security", "websocket-lifecycle"],
-                ["websocket.messages", "websocket.event_order", "websocket.close_code"],
+                ["websocket.messages"],
                 "A yielded dependency remains active through the WebSocket endpoint and is cleaned up after disconnect.",
                 [
                     _case_link(
@@ -653,13 +653,24 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ],
                 "Partial: the workflow uses an independent route/session trace and closes through a direct ASGI peer event, not Starlette TestClient's WebSocketSession API.",
                 (_WEBSOCKET_ROUTE, _DEPENDENCY_SOLVER),
+                workflow_case={
+                    "workflow_id": "dependency-wave-lifecycle",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+                    "case_id": "fastapi.dependencies.websocket-yield-cleanup",
+                    "action_ids": ["receive-inventory"],
+                    "observation_selectors": [
+                        "websocket.messages",
+                        "websocket.event_order",
+                        "websocket.close_code",
+                    ],
+                },
             ),
             "test_websocket_dependency_after_yield_broken": _review(
                 "tests/test_dependency_after_yield_websockets.py",
                 "test_websocket_dependency_after_yield_broken",
                 ["asgi-error-propagation", "websocket-lifecycle"],
-                ["websocket.messages", "websocket.event_order", "asgi.application_error.exception"],
-                "A yielded WebSocket dependency raises during cleanup; the case records both ASGI WebSocket events and the surfaced exception.",
+                ["asgi.application_error.exception"],
+                "The yielded session is already closed, so the WebSocket endpoint raises ValueError while iterating it; the test checks the exception type and message.",
                 [
                     _case_link(
                         "tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml",
@@ -671,8 +682,19 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         ],
                     )
                 ],
-                "Partial: the workflow uses an independently authored cleanup exception and a direct disconnect event; it checks propagation shape, not the source's exact endpoint/helper objects or TestClient session mechanics.",
+                "Partial: the independent workload uses the same closed-session failure shape with different route/session helpers, and direct ASGI events differ from Starlette TestClient session mechanics.",
                 (_WEBSOCKET_ROUTE, _DEPENDENCY_SOLVER),
+                workflow_case={
+                    "workflow_id": "dependency-after-yield-websocket-broken-upstream",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml",
+                    "case_id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
+                    "action_ids": ["broken-session-websocket"],
+                    "observation_selectors": [
+                        "asgi.application_error.exception",
+                        "websocket.event_order",
+                        "websocket.messages",
+                    ],
+                },
             ),
         },
     ),

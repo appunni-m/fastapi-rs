@@ -546185,18 +546185,56 @@
           {
             "case_id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield",
             "end_line": 73,
+            "function_source_ref": {
+              "end_line": 73,
+              "line": 66,
+              "path": "tests/test_dependency_after_yield_websockets.py",
+              "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add"
+            },
             "line": 66,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_websocket_dependency_after_yield"
+            "name": "test_websocket_dependency_after_yield",
+            "workflow_case": {
+              "action_ids": [
+                "receive-inventory"
+              ],
+              "case_id": "fastapi.dependencies.websocket-yield-cleanup",
+              "observation_selectors": [
+                "websocket.messages",
+                "websocket.event_order",
+                "websocket.close_code"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+              "workflow_id": "dependency-wave-lifecycle"
+            }
           },
           {
             "case_id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
             "end_line": 79,
+            "function_source_ref": {
+              "end_line": 79,
+              "line": 76,
+              "path": "tests/test_dependency_after_yield_websockets.py",
+              "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add"
+            },
             "line": 76,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_websocket_dependency_after_yield_broken"
+            "name": "test_websocket_dependency_after_yield_broken",
+            "workflow_case": {
+              "action_ids": [
+                "broken-session-websocket"
+              ],
+              "case_id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-after-yield-websocket-broken-upstream.yaml",
+              "workflow_id": "dependency-after-yield-websocket-broken-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
