@@ -51,6 +51,7 @@ WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow@9"
 WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow@10"
 WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow@11"
 WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow@12"
+WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow@13"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -65,6 +66,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V10_ID,
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
+        WORKFLOW_SCHEMA_V13_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -80,6 +82,7 @@ RESULT_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow-result@11"
 RESULT_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow-result@12"
 RESULT_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow-result@13"
 RESULT_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow-result@14"
+RESULT_SCHEMA_V15_ID = "fastapi-rs/python-api-workflow-result@15"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -93,6 +96,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V10_ID: RESULT_SCHEMA_V12_ID,
     WORKFLOW_SCHEMA_V11_ID: RESULT_SCHEMA_V13_ID,
     WORKFLOW_SCHEMA_V12_ID: RESULT_SCHEMA_V14_ID,
+    WORKFLOW_SCHEMA_V13_ID: RESULT_SCHEMA_V15_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
@@ -828,8 +832,13 @@ def _validate_workflow_callables(
                 and observation.get("kind") == "python_literal_type_alias"
                 for observation in observations
             )
+            exception_instance_selected = any(
+                isinstance(observation, dict)
+                and observation.get("kind") == "python_exception_instance"
+                for observation in observations
+            )
             if literal_type_alias_selected and (
-                workflow.get("schema") != WORKFLOW_SCHEMA_V12_ID
+                workflow.get("schema") not in {WORKFLOW_SCHEMA_V12_ID, WORKFLOW_SCHEMA_V13_ID}
                 or len(observations) != 1
                 or "public_attribute" not in probe
                 or "public_callable" in probe
@@ -837,18 +846,34 @@ def _validate_workflow_callables(
                 or "argument_bundle" in probe
             ):
                 raise WorkerError(
-                    "Literal type alias observation requires one v12 public-attribute probe"
+                    "Literal type alias observation requires one v12 or v13 public-attribute probe"
+                )
+            if exception_instance_selected and (
+                workflow.get("schema") != WORKFLOW_SCHEMA_V13_ID
+                or len(observations) != 1
+                or "public_callable" not in probe
+                or "argument_bundle" not in probe
+                or "public_attribute" in probe
+                or "public_module" in probe
+            ):
+                raise WorkerError(
+                    "exception instance observation requires one v13 public-callable probe"
                 )
             if class_docstring_selected and (
                 workflow.get("schema")
-                not in {WORKFLOW_SCHEMA_V10_ID, WORKFLOW_SCHEMA_V11_ID, WORKFLOW_SCHEMA_V12_ID}
+                not in {
+                    WORKFLOW_SCHEMA_V10_ID,
+                    WORKFLOW_SCHEMA_V11_ID,
+                    WORKFLOW_SCHEMA_V12_ID,
+                    WORKFLOW_SCHEMA_V13_ID,
+                }
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
                 or "public_attribute" in probe
             ):
                 raise WorkerError(
-                    "class docstring observation requires one v10 through v12 public-callable probe"
+                    "class docstring observation requires one v10 through v13 public-callable probe"
                 )
             if "binding_identity" in probe or binding_identity_selected:
                 binding_identity = probe.get("binding_identity")
@@ -860,6 +885,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V10_ID,
                         WORKFLOW_SCHEMA_V11_ID,
                         WORKFLOW_SCHEMA_V12_ID,
+                        WORKFLOW_SCHEMA_V13_ID,
                     }
                     or not binding_identity_selected
                     or len(observations) != 1
@@ -874,7 +900,7 @@ def _validate_workflow_callables(
                     or _ATTRIBUTE_PATH.fullmatch(binding_identity["attribute"]) is None
                 ):
                     raise WorkerError(
-                        "cross-module binding identity requires one v8 through v12 callable probe"
+                        "cross-module binding identity requires one v8 through v13 callable probe"
                     )
             background_task_queue_selected = any(
                 isinstance(observation, dict)
@@ -895,6 +921,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V10_ID,
                         WORKFLOW_SCHEMA_V11_ID,
                         WORKFLOW_SCHEMA_V12_ID,
+                        WORKFLOW_SCHEMA_V13_ID,
                     }
                     or not isinstance(public_callable, dict)
                     or public_callable.get("module") != "fastapi.background"
@@ -904,7 +931,7 @@ def _validate_workflow_callables(
                     or not invocation_selected
                 ):
                     raise WorkerError(
-                        "BackgroundTasks queue observation requires v9 through v12, "
+                        "BackgroundTasks queue observation requires v9 through v13, "
                         "one add_task call "
                         "and a return or call-outcome observation"
                     )
@@ -918,6 +945,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V10_ID,
                         WORKFLOW_SCHEMA_V11_ID,
                         WORKFLOW_SCHEMA_V12_ID,
+                        WORKFLOW_SCHEMA_V13_ID,
                     }
                     or any(
                         key in probe
@@ -930,14 +958,18 @@ def _validate_workflow_callables(
                     or (
                         "capture_warnings" in probe
                         and workflow.get("schema")
-                        not in {WORKFLOW_SCHEMA_V11_ID, WORKFLOW_SCHEMA_V12_ID}
+                        not in {
+                            WORKFLOW_SCHEMA_V11_ID,
+                            WORKFLOW_SCHEMA_V12_ID,
+                            WORKFLOW_SCHEMA_V13_ID,
+                        }
                     )
                     or len(observations) != 2
                     or {row.get("kind") for row in observations if isinstance(row, dict)}
                     != {"python_import_path", "python_object_identity"}
                 ):
                     raise WorkerError(
-                        "module identity requires one v7 through v12 module probe with both "
+                        "module identity requires one v7 through v13 module probe with both "
                         "identity "
                         "observations"
                     )
@@ -983,6 +1015,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V5_ID,
                     WORKFLOW_SCHEMA_V7_ID,
                     WORKFLOW_SCHEMA_V12_ID,
+                    WORKFLOW_SCHEMA_V13_ID,
                 }
                 or len(observations) != 1
                 or "public_callable" not in probe
@@ -998,7 +1031,12 @@ def _validate_workflow_callables(
             )
             if parameter_metadata_selected and (
                 workflow.get("schema")
-                not in {WORKFLOW_SCHEMA_V6_ID, WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V12_ID}
+                not in {
+                    WORKFLOW_SCHEMA_V6_ID,
+                    WORKFLOW_SCHEMA_V7_ID,
+                    WORKFLOW_SCHEMA_V12_ID,
+                    WORKFLOW_SCHEMA_V13_ID,
+                }
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
@@ -1186,6 +1224,10 @@ async def _run_probe(
             observation["kind"] == "python_pydantic_model_result"
             for observation in probe["observations"]
         )
+        has_exception_instance_observation = any(
+            observation["kind"] == "python_exception_instance"
+            for observation in probe["observations"]
+        )
         has_parameter_metadata_observation = any(
             observation["kind"] == "python_parameter_metadata"
             for observation in probe["observations"]
@@ -1208,6 +1250,7 @@ async def _run_probe(
             has_return_value_observation
             or has_pydantic_model_result_observation
             or has_parameter_metadata_observation
+            or has_exception_instance_observation
         ):
             args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
             result = await _invoke_public_callable(
@@ -1294,6 +1337,28 @@ async def _run_probe(
                 values = {"value": projected}
                 if nonfinite_floats:
                     values["nonfinite_floats"] = nonfinite_floats
+            elif observation["kind"] == "python_exception_instance":
+                if not isinstance(result, BaseException):
+                    raise WorkerError(
+                        "exception instance observation requires a returned exception"
+                    )
+                public_attributes = {}
+                for name in observation["attributes"]:
+                    try:
+                        attribute_value = getattr(result, name)
+                    except AttributeError:
+                        raise WorkerError(
+                            f"selected public exception attribute is missing: {name}"
+                        ) from None
+                    public_attributes[name] = _json_safe(attribute_value)
+                error_type = type(result)
+                values = {
+                    "class": f"{error_type.__module__}.{error_type.__qualname__}",
+                    "args": _json_safe(result.args),
+                    "message": str(result),
+                    "representation": repr(result),
+                    "attributes": public_attributes,
+                }
             elif observation["kind"] == "python_parameter_metadata":
                 values = {"parameter_metadata": _parameter_metadata_projection(result)}
             elif observation["kind"] == "python_call_outcome":
@@ -1737,6 +1802,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
+                WORKFLOW_SCHEMA_V13_ID,
             },
         )
     )

@@ -13618,6 +13618,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
           case_id: fastapi.websocket.exception-direct-api-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-instance.yaml
+          case_id: fastapi.websocket.exception-instance.root-default-reason
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml
           case_id: fastapi.websocket-exception.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
@@ -13636,6 +13638,7 @@ reviewed_api_contract_overlay:
         - python.import_path
         - python.object_identity
         - python.signature
+        - python.exception_instance
         - python.attribute_value
         - construction.exception_class
         - construction.exception_message
@@ -13656,7 +13659,10 @@ reviewed_api_contract_overlay:
         reason, base-class relationship, and selected initializer metadata
         fields (`__module__`, `__name__`, `__qualname__`, `__doc__`,
         `__defaults__`, `__kwdefaults__`, `__annotations__`, `__type_params__`,
-        `__text_signature__`, and `__dict__`). The value-formatting case
+        `__text_signature__`, and `__dict__`). A focused direct-constructor
+        workflow also compares returned instance class, args, message,
+        representation, code, and reason for explicit and omitted-reason inputs
+        through the module and root imports. The value-formatting case
         observes omitted and falsey reason normalization, base and derived
         string/repr formatting, and public code/reason mutation; the close case
         observes the default empty reason during rejection. Callable metadata
@@ -13688,6 +13694,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
           case_id: fastapi.websocket.exception-direct-api-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-instance.yaml
+          case_id: fastapi.websocket.exception-instance.submodule-explicit-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-instance.yaml
+          case_id: fastapi.websocket.exception-instance.root-default-reason
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.constructor-state
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
@@ -13709,11 +13719,14 @@ reviewed_api_contract_overlay:
         - http.headers.ordered
         - http.body.bytes
         - python.signature
+        - python.exception_instance
         - python.attribute_value
       supported_slice: >-
         The linked cases compare direct module import metadata, the class and initializer
         signatures, selected initializer callable metadata fields, a snapshot of the FastAPI
-        exception class/MRO/args/string and code/reason attributes, omitted and falsey reason
+        exception class/MRO/args/string and code/reason attributes, direct returned-instance
+        class/args/message/representation/code/reason observations for explicit and omitted
+        reason inputs, omitted and falsey reason
         normalization, base and derived string/repr formatting, mutable code/reason fields, and
         the default pre-accept WebSocket close code and reason. They do not establish initializer
         metadata mutation, every constructor input, or generic WebSocket state behavior.
@@ -13734,7 +13747,9 @@ reviewed_api_contract_overlay:
         reasons to the empty string. The direct API and constructor-state cases compare the
         initializer signature and selected metadata fields (`__module__`, `__name__`,
         `__qualname__`, `__doc__`, `__defaults__`, `__kwdefaults__`, `__annotations__`,
-        `__type_params__`, `__text_signature__`, and `__dict__`).
+        `__type_params__`, and `__text_signature__`, and the focused constructor workflow
+        compares returned instance class, args, message, representation, code, and reason for
+        explicit and omitted-reason inputs.
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
@@ -13747,6 +13762,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
           case_id: fastapi.websocket.exception-direct-api-contract
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-instance.yaml
+          case_id: fastapi.websocket.exception-instance.submodule-explicit-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-instance.yaml
+          case_id: fastapi.websocket.exception-instance.root-default-reason
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
           case_id: fastapi.public-errors.websocket.constructor-state
         - recipe_path: tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml
@@ -13763,6 +13782,7 @@ reviewed_api_contract_overlay:
         - websocket.close_code
         - websocket.close_reason
         - websocket.event_order
+        - python.exception_instance
     fastapi.security.APIKeyCookie:
       target_binding:
         implementation_owner: fastapi-rs

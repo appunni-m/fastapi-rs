@@ -72,11 +72,16 @@ uncertain warning class or its internal aliases.
 
 ## Highest-impact gap and input-only boundary
 
-The direct WebSocket constructor workflow still selects call outcome rather
-than instance fields. An input-only ASGI case now exercises a route with
-invalid path, query, and header-dependency values and the existing rethrowing
-handler pattern. It selects the exception class/message, validation details,
-`args`, `endpoint_ctx`, and derived endpoint fields. The case lives in
+The direct WebSocket constructor gap is now covered by the input-only direct
+API workflow `websocket-exception-instance.yaml`. Its
+`python.exception_instance` selector compares returned class, `args`, message,
+representation, and selected `code`/`reason` fields. One case supplies explicit
+code and reason through `fastapi.exceptions.WebSocketException`; the other
+omits reason through the root `fastapi.WebSocketException` re-export. A separate
+input-only ASGI case exercises a route with invalid path, query, and
+header-dependency values and the existing rethrowing handler pattern. It
+selects the exception class/message, validation details, `args`, `endpoint_ctx`,
+and derived endpoint fields. The case lives in
 `tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml`
 as `fastapi.validation-error-context.exact.websocket-error-fields`; its
 workload is `tests/fixtures/workloads/validation_error_context_exact_review.py`.
@@ -111,6 +116,15 @@ support for these classes or for the broader error API.
   and `tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml`.
 
 ## Focused parity evidence
+
+An identity-checked direct-constructor comparison passed 2/2 on CPython 3.12.13
+against FastAPI 0.141.1 (`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`),
+Starlette 1.6.0 (`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`), and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. Its comparison ID, artifact hash,
+input and manifest hashes, target source-tree hash, and binary hash are recorded
+in the open Kata error-contract issue; generated result artifacts remain in the
+ignored `parity-results` tree. This evidence covers only these two constructor
+inputs for the compared target build.
 
 At FastAPI-RS `0ed6a592e812c9d0f19a154c43ce83d8e8c84029`, the current
 `public-errors-http-websocket-wave` comparison passed 16/16. Comparison

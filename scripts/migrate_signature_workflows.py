@@ -15,7 +15,7 @@ RECIPE_ROOT = ROOT / "tests/fixtures/input-recipes/parity"
 OLD_SCHEMA = re.compile(r"^fastapi-rs/python-api-workflow@([1-4])$")
 SCHEMA_LINE = re.compile(r"(?m)^schema: fastapi-rs/python-api-workflow@[1-4]\s*$")
 NEW_SCHEMA = "fastapi-rs/python-api-workflow@5"
-CURRENT_SCHEMA = re.compile(r"^fastapi-rs/python-api-workflow@(?:[5-9]|1[0-2])$")
+CURRENT_SCHEMA = re.compile(r"^fastapi-rs/python-api-workflow@(?:[5-9]|1[0-3])$")
 
 
 def _contains_signature(value: Any) -> bool:
@@ -60,7 +60,7 @@ def main() -> int:
             names = ", ".join(path.relative_to(ROOT).as_posix() for path in recipes)
             print(f"signature recipes require workflow v5 migration: {names}", file=sys.stderr)
             return 1
-        print("all active signature recipes use supported workflow v5-v12")
+        print("all active signature recipes use supported workflow v5-v13")
         return 0
     for path in recipes:
         source = path.read_text(encoding="utf-8")
