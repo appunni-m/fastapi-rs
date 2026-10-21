@@ -38,7 +38,7 @@ uncertain warning class or its internal aliases.
 
 ## Current workflow coverage
 
-- `public-errors-http-websocket-wave.yaml` has 14 cases. It covers FastAPI and
+- `public-errors-http-websocket-wave.yaml` has 16 cases. It covers FastAPI and
   Starlette HTTP exception dispatch, bodyless/status edge cases, constructor
   snapshots, WebSocket close behavior, and `WebSocketDisconnect` constructor
   inputs. HTTP cases compare construction outcome/class/message and exact
@@ -55,8 +55,10 @@ uncertain warning class or its internal aliases.
   class identity, signatures, and constructor returned/raised outcome.
 - `websocket-validation-handler-wave.yaml` has four default/custom handler
   cases and compares close code/reason, event order, messages, and workload
-  trace. `validation-error-context-exact-review.yaml` has root and mounted
-  WebSocket rethrow cases, but selects only `validation_error_class`.
+  trace. `validation-error-context-exact-review.yaml` has 13 cases. Root and
+  mounted WebSocket rethrow cases select only `validation_error_class`; direct
+  request and WebSocket validation-error construction cases additionally
+  select exception details, `args`, body, and endpoint context fields.
 - Response validation has focused, multi-error, and uncovered-wave workflows.
   These observe the application error’s validation class/details; the focused
   case also selects public attributes. `ResponseValidationError` remains
@@ -78,9 +80,10 @@ as `fastapi.validation-error-context.exact.websocket-error-fields`; its
 workload is `tests/fixtures/workloads/validation_error_context_exact_review.py`.
 The existing default-close case remains separate for the 1008/reason contract.
 
-The recipe passes validation and the indexed workflow matches 8/8 cases. The
-new observation is included in that live comparison; the result does not
-establish full FastAPI-RS support for this class or for the broader error API.
+At target commit `0ed6a592e812c9d0f19a154c43ce83d8e8c84029` and the current
+manifest, the indexed workflow matches 13/13 cases. The comparison includes
+the constructor field observations; it does not establish full FastAPI-RS
+support for these classes or for the broader error API.
 
 ## Source evidence and ownership boundary
 
@@ -107,11 +110,30 @@ establish full FastAPI-RS support for this class or for the broader error API.
 
 ## Focused parity evidence
 
-The indexed 8-case workflow has passed an identity-checked oracle/target
-comparison against FastAPI 0.141.1, Starlette 1.6.0, and the pinned
-Starlette-RS contract. Its exact run and target identities are recorded on
-Kata issue `r17z`; the comparison artifact remains in the ignored
-`parity-results` directory.
+At FastAPI-RS `0ed6a592e812c9d0f19a154c43ce83d8e8c84029`, the current
+`public-errors-http-websocket-wave` comparison passed 16/16. Comparison
+`parity-results/comparisons/cc58568d-3ea2-4b13-a088-6ac455fb8e85.json`
+(SHA-256 `ffe1c1f0154bee97c3491bb2d207501b8c501134d3ab7194f8b31a353712fe1c`)
+binds input SHA-256
+`565d64a79ccddd9351038d90adcf419c8d78eeda281997d7ae687cfbb7cbf8a5` and
+manifest SHA-256
+`f67678c11d87b35d56d5d5b04c78b40cf8251faeb9865e8b405cdc7aa296705b`.
+
+The `validation-error-context-exact-review` workflow passed 13/13 at the same
+target, source pins, and manifest. Comparison
+`parity-results/comparisons/3588cad3-d433-4fe8-98d8-c3ab1cdf3655.json`
+(SHA-256 `0c416bf32050124d70ff4b12d598bf45882782f5d0600258314cbc2c4b3ae985`)
+binds input SHA-256
+`cfd2e2791db3a2f6a4310087c646cb2595bbab843d03aec7dae656ec093cabc7`.
+
+Both runs used FastAPI 0.141.1 at
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. The target source-tree SHA-256 is
+`81021c0d646f53c5813380c92d11afdbce711302951f9d9b706bb3806340216b`; its
+combined target-binary SHA-256 is
+`94923c52126048117452d9e721b63bbe7e4ced7014550feffe52f2a38acab9b8`.
+Generated comparison artifacts remain in the ignored `parity-results` tree.
 
 This is bounded workflow evidence. The complete 42-candidate source-backed
 error audit, remaining operation mappings, and full FastAPI-RS compatibility
