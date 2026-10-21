@@ -781,16 +781,16 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: 3c021586f9d12a1569db64e7c10bcf8ae86a0bb332bee55ba552b7b0e7eda6a0
+  sha256: d78f9c3d609b4cf6ed4a673fbe17b3718e6371bbe4a9fd0a8a71107e7f800669
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
     candidates: 183
-    supported: 30
+    supported: 35
     private_or_internal: 127
-    uncertain: 26
+    uncertain: 21
   candidate_ids_sha256: 0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd
 
 classification_atlas:
@@ -24180,6 +24180,174 @@ reviewed_api_contract_overlay:
         known_gaps:
           - The linked inputs cover omitted placeholders and one concrete class but do not establish explicit None, deletion, or arbitrary response providers.
           - Mutation after a router has already been included and every nested precedence combination remain unproven.
+
+    fastapi.applications.FastAPI.openapi_tags:
+      source_evidence:
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: openapi_tags, owner: FastAPI, initializer: __init__, start_line: 882, end_line: 882}
+        - {path: fastapi/applications.py, kind: source-use, symbol: openapi, start_line: 1084, end_line: 1103}
+        - {path: docs/en/docs/tutorial/metadata.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json, openapi.document]
+      feature_ids: [openapi-docs]
+      observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json, openapi.document]
+      supported_slice: >-
+        The constructor stores the documented `openapi_tags` value on the app;
+        the linked case reads that public field and observes the generated
+        top-level OpenAPI tags, including nested external documentation. Empty
+        and invalid values, reassignment after OpenAPI caching, and arbitrary
+        mutable tag values remain outside this slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi_tags
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The linked case establishes one populated value; default, empty, invalid, mutation, and deletion behavior remain unverified.
+
+    fastapi.applications.FastAPI.root_path:
+      source_evidence:
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: root_path, owner: FastAPI, initializer: __init__, start_line: 949, end_line: 949}
+        - {path: fastapi/applications.py, kind: source-use, symbol: __call__, start_line: 1160, end_line: 1163}
+        - {path: docs/en/docs/advanced/behind-a-proxy.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.configured-over-incoming-scope
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.precedence-and-server-gate
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.mutable-public-attributes
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
+      feature_ids: [openapi-docs]
+      observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
+      supported_slice: >-
+        The documented constructor setting is retained as `app.root_path` and
+        applied to incoming ASGI scope before dispatch. Linked cases read the
+        public field, compare configured-versus-incoming precedence, observe
+        the request scope, and exercise a post-construction public-field update.
+        Other value types, deletion, mounted-app interactions, and all proxy
+        server combinations remain outside this slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::root_path
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - String configuration, precedence, selected mutation, and request-scope behavior are sampled; invalid values, deletion, and the full mounted/proxy matrix remain unverified.
+
+    fastapi.applications.FastAPI.root_path_in_servers:
+      source_evidence:
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: root_path_in_servers, owner: FastAPI, initializer: __init__, start_line: 883, end_line: 883}
+        - {path: fastapi/applications.py, kind: source-use, symbol: setup, start_line: 1105, end_line: 1118}
+        - {path: docs/en/docs/advanced/behind-a-proxy.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.configured-over-incoming-scope
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.precedence-and-server-gate
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.mutable-public-attributes
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial-review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
+      feature_ids: [openapi-docs]
+      observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
+      supported_slice: >-
+        The documented Boolean setting is retained on the public app and gates
+        insertion of the request root path into generated OpenAPI servers. The
+        linked cases observe enabled and disabled behavior, including an
+        updated public attribute. Other runtime types and every server-list
+        collision or cache interaction remain outside this slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::root_path_in_servers
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Enabled/disabled Boolean behavior and one mutation are sampled; invalid values, deletion, all cache boundaries, and server collisions remain unverified.
+
+    fastapi.applications.FastAPI.separate_input_output_schemas:
+      source_evidence:
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: separate_input_output_schemas, owner: FastAPI, initializer: __init__, start_line: 890, end_line: 890}
+        - {path: fastapi/applications.py, kind: source-use, symbol: openapi, start_line: 1084, end_line: 1103}
+        - {path: docs/en/docs/how-to/separate-openapi-schemas.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-create-item.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.split
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-input-output-schemas-runtime.yaml
+          case_id: fastapi.openapi-separate-input-output-schemas.runtime-computed-field.shared
+          workload_path: tests/fixtures/workloads/separate_input_output_schemas_runtime.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/separate-openapi-schemas-tutorial002-upstream.yaml
+          case_id: fastapi.test.test-tutorial-test-separate-openapi-schemas-test-tutorial002.shared-model-requests-and-openapi
+          workload_path: tests/fixtures/workloads/separate_openapi_schemas_tutorial002_upstream.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+      feature_ids: [openapi-docs, response-serialization]
+      observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, http.body.json, openapi.document, openapi.paths]
+      supported_slice: >-
+        The documented Boolean constructor setting controls validation-versus-
+        serialization schema selection in OpenAPI. Linked cases compare true
+        and false for request/response models and computed fields, plus the
+        tutorial's shared-model request and schema behavior. Direct attribute
+        introspection, reassignment, invalid values, and the full Pydantic model
+        feature matrix remain outside this slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::separate_input_output_schemas
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Selected schema/runtime models are covered, but direct field introspection, mutation, arbitrary model features, and all OpenAPI references remain unverified.
+
+    fastapi.applications.FastAPI.servers:
+      source_evidence:
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: servers, owner: FastAPI, initializer: __init__, start_line: 889, end_line: 889}
+        - {path: fastapi/applications.py, kind: source-use, symbol: openapi, start_line: 1084, end_line: 1103}
+        - {path: docs/en/docs/advanced/behind-a-proxy.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.existing-server-deduplicated
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+          case_id: fastapi.applications.root-path.request-local-server-isolation
+          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-configured-servers-reference-review.yaml
+          case_id: fastapi.openapi.openapi-cache-root-path.caller-servers-remain-unchanged-review
+          workload_path: tests/fixtures/workloads/openapi_configured_servers_reference_review.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document]
+      feature_ids: [openapi-docs]
+      observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
+      supported_slice: >-
+        The constructor retains configured servers on the public app and
+        OpenAPI generation combines them with a request root path without
+        mutating the caller's server list. Linked cases observe server output,
+        deduplication, request-local isolation, and the original configured
+        values. Empty/malformed entries, arbitrary mutation/deletion, and all
+        server precedence combinations remain outside this slice.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::servers
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Configured server values, selected OpenAPI outputs, and caller-list preservation are sampled; empty, malformed, reassignment, deletion, and full precedence behavior remain unverified.
 
   inherited_candidate_reviews:
     fastapi.routing.APIRouter.host:
