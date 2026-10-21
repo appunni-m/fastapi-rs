@@ -185,9 +185,9 @@ artifacts are local preparation evidence, not uploaded or tagged releases.
   2018 Sebastián Ramírez, and the pinned third-party notices. Rustdoc succeeded
   through the pinned workspace overlay and generated
   `target/doc/fastapi_rs/index.html`.
-- The compatibility manifest currently has 29 supported and 468 unresolved
-  dispositions out of 497 source-supported public API entries. This is not full
-  FastAPI compatibility or a readiness claim for a direct replacement. The
+- The compatibility manifest currently has 29 supported and 473 unresolved
+  target dispositions out of 502 source-supported public API entries. This is
+  not full FastAPI compatibility or a direct replacement readiness claim. The
   local environment did not have Twine installed, so `twine check` remains
   unverified.
 - Project guides remain repository Markdown; docs.rs is the planned Rust API
