@@ -39,6 +39,38 @@ cases:
   source_evidence:
   - {path: tests/test_ws_router.py, kind: upstream_test}
   - {path: tests/test_dependency_after_yield_websockets.py, kind: upstream_test}
+- case_id: fastapi.websocket-validation.default-handler-multi-field-close
+  factory_input: {custom_validation_handler: false}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: invalid-path-query-header-default-close
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /depends-multiple-validate/not-an-integer
+      query_string: required_query=not-an-integer
+      root_path: ''
+      headers: [[host, testserver], [x-required, not-an-integer]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+    - {kind: websocket, selector: workload_trace, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
 - case_id: fastapi.websocket-validation.missing-required-query-dependency
   factory_input: {custom_validation_handler: false}
   construction_observation:

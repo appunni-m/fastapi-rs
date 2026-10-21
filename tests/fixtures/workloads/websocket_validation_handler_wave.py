@@ -83,6 +83,16 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
     ) -> None:
         del websocket, _dependency, _lease
 
+    @app.websocket("/depends-multiple-validate/{item_id}")
+    async def multiple_field_validation_endpoint(
+        websocket: WebSocket,
+        item_id: int,
+        required_query: Annotated[int, Query()],
+        x_required: Annotated[int, Header()],
+        _lease: None = Depends(websocket_validation_lease),
+    ) -> None:
+        del websocket, item_id, required_query, x_required, _lease
+
     @app.websocket("/ws/{item_id}")
     async def path_validation_endpoint(websocket: WebSocket, item_id: int) -> None:
         await websocket.accept()

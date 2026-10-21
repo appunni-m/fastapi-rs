@@ -43081,23 +43081,31 @@
     {
       "id": "websocket-validation-handler-wave",
       "input_path": "tests/fixtures/inputs/parity/websocket-validation-handler-wave.json",
-      "input_sha256": "6d08d0890f50f52b8b3727d57378ee925c45fa11e4a99de2ada233364850d56d",
+      "input_sha256": "7d43da0001de63d0d27b7ebdccab150cac0bcf331fd5cec1b63d292e7779a089",
       "recipe_path": "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",
-      "recipe_sha256": "5c2d7ca883d3aa90c08bee5e8525d81f392c8af3a5eb3247609a5d5326705a13",
+      "recipe_sha256": "ee3ecdbcca6584b534701f53c5c2838729f84c9afaf5268ab55b8dfe6eecfd9a",
       "case_ids": [
         "fastapi.websocket-validation.default-handler-close",
+        "fastapi.websocket-validation.default-handler-multi-field-close",
         "fastapi.websocket-validation.missing-required-query-dependency",
         "fastapi.websocket-validation.custom-handler-close",
         "fastapi.websocket-validation.constructor-override-close"
       ],
       "workload_path": "tests/fixtures/workloads/websocket_validation_handler_wave.py",
-      "workload_sha256": "da16002284571517de51173717b9d2b3436751f277c7522b881aeb138f0478a0",
+      "workload_sha256": "0ca7de8791fe2194f75a54530aceb6a6166ef5f6e3a1662388f24c16f2cf4625",
       "case_contracts": [
         {
           "case_id": "fastapi.websocket-validation.default-handler-close",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_dependency_after_yield_websockets.py",
+            "source:upstream-test:tests/test_ws_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.websocket-validation.default-handler-multi-field-close",
+          "verification": "parity",
+          "requirement_refs": [
             "source:upstream-test:tests/test_ws_router.py"
           ]
         },
@@ -76601,11 +76609,12 @@
       "fixture_id": "fastapi.test.test-ws-router",
       "workflow_id": "websocket-validation-handler-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.websocket-validation.constructor-override-close",
         "fastapi.websocket-validation.custom-handler-close",
         "fastapi.websocket-validation.default-handler-close",
+        "fastapi.websocket-validation.default-handler-multi-field-close",
         "fastapi.websocket-validation.missing-required-query-dependency"
       ],
       "observation_selectors": [

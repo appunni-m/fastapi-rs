@@ -792967,8 +792967,8 @@
             "construction.exception_message"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: the independent input omits the required Header and observes the WebSocket close/event selectors. Generic WebSocket session behavior remains Starlette-RS-owned.",
-            "rationale": "A missing required Header in a FastAPI WebSocket dependency raises WebSocketRequestValidationError; the default FastAPI handler closes with the policy-violation code.",
+            "contract_gate": "Partial: one input reproduces the upstream missing-Header stimulus; a second source-derived input combines invalid path, query, and Header fields and compares the exact public close reason. FastAPI's dependency aggregation and default handler are source-backed; generic WebSocket session behavior remains Starlette-RS-owned.",
+            "rationale": "The upstream test verifies that a missing required Header in a FastAPI WebSocket dependency closes with the policy-violation code. A second independent input adds invalid path, query, and Header values together to observe the default handler's encoded multi-error close reason.",
             "source_evidence": [
               {
                 "end_line": 233,
@@ -793076,7 +793076,7 @@
                 "start_line": 29
               }
             ],
-            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.default-handler-close (websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.default-handler-close (websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message); tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.default-handler-multi-field-close (websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
           },
           "selector_evidence": [
             {
@@ -793113,7 +793113,7 @@
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
           ],
-          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.default-handler-close (websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.default-handler-close (websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message); tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.default-handler-multi-field-close (websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
         },
         {
           "feature_evidence": [
@@ -793768,9 +793768,10 @@
             "fastapi.websocket-validation.constructor-override-close",
             "fastapi.websocket-validation.custom-handler-close",
             "fastapi.websocket-validation.default-handler-close",
+            "fastapi.websocket-validation.default-handler-multi-field-close",
             "fastapi.websocket-validation.missing-required-query-dependency"
           ],
-          "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 5 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "construction.exception_class",
@@ -793981,6 +793982,7 @@
             "fastapi.websocket-validation.constructor-override-close",
             "fastapi.websocket-validation.custom-handler-close",
             "fastapi.websocket-validation.default-handler-close",
+            "fastapi.websocket-validation.default-handler-multi-field-close",
             "fastapi.websocket-validation.missing-required-query-dependency"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",

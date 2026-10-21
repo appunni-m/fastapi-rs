@@ -1412,15 +1412,20 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "test_depend_validation",
                 ["request-validation", "public-api-errors", "websocket-lifecycle"],
                 _WS_FULL,
-                "A missing required Header in a FastAPI WebSocket dependency raises WebSocketRequestValidationError; the default FastAPI handler closes with the policy-violation code.",
+                "The upstream test verifies that a missing required Header in a FastAPI WebSocket dependency closes with the policy-violation code. A second independent input adds invalid path, query, and Header values together to observe the default handler's encoded multi-error close reason.",
                 [
                     _case_link(
                         "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",
                         "fastapi.websocket-validation.default-handler-close",
                         _WS_FULL,
-                    )
+                    ),
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",
+                        "fastapi.websocket-validation.default-handler-multi-field-close",
+                        _WS_FULL,
+                    ),
                 ],
-                "Partial: the independent input omits the required Header and observes the WebSocket close/event selectors. Generic WebSocket session behavior remains Starlette-RS-owned.",
+                "Partial: one input reproduces the upstream missing-Header stimulus; a second source-derived input combines invalid path, query, and Header fields and compares the exact public close reason. FastAPI's dependency aggregation and default handler are source-backed; generic WebSocket session behavior remains Starlette-RS-owned.",
                 (
                     _WEBSOCKET_ROUTE,
                     _WEBSOCKET_RESOLUTION,
