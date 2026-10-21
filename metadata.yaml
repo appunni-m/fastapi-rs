@@ -6448,14 +6448,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
-          - >-
-            Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutations, and error paths remain unproven.
-          - >-
-            The source-authored bounded_slice itself names additional cases or behavior as
-            outside/unproven; retain those stated exclusions verbatim in the bounded_slice field.
+            These cases do not cover every ENCODERS_BY_TYPE member, recursive/cyclic graphs,
+            every arbitrary-object conversion path, all validation failures, or optional Pydantic
+            types and third-party serialization protocols.
         rust_binding: "fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__"
       supported_slice: >-
         Direct-call behavior is bounded to the listed encoder recipes: signature, recursive
@@ -6465,6 +6460,35 @@ reviewed_api_contract_overlay:
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       source_evidence:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.tutorial.datetime-model
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.mapping.include
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.mapping.exclude
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.model.alias
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.model.defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.model.exclude-unset
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.model.exclude-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.custom-encoder.exact-type
+        - recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
+          case_id: fastapi.jsonable-encoder.custom-encoder.base-type
+        - recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-atlas-wave.yaml
+          case_id: fastapi.jsonable-encoder-atlas-wave.output-matrix
+        - recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-atlas-wave.yaml
+          case_id: fastapi.jsonable-encoder-atlas-wave.unsupported-value-error
+        - recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-atlas-wave.yaml
+          case_id: fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection
+        - recipe_path: tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml
+          case_id: fastapi.jsonable-encoder.pydantic-undefined
+        - recipe_path: tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml
+          case_id: fastapi.jsonable-encoder.pydantic-core-urls
       feature_ids: [python-data-encoding]
       observation_selectors: [python.attribute_value, python.signature, python.call_outcome]
     fastapi.openapi.docs.get_swagger_ui_html:
