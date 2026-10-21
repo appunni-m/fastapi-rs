@@ -136,9 +136,7 @@ QUERY_REQUIRED_LIST_WORKFLOW_ID = "query-required-list-aliases"
 _BIGGER_APPLICATIONS_RECIPE_PATH = (
     "tests/fixtures/input-recipes/parity/router-composition-upstream.yaml"
 )
-_BIGGER_APPLICATIONS_CASE_PREFIX = (
-    "fastapi.test.test-tutorial-test-bigger-applications-test-main."
-)
+_BIGGER_APPLICATIONS_CASE_PREFIX = "fastapi.test.test-tutorial-test-bigger-applications-test-main."
 _BIGGER_APPLICATIONS_HTTP_SELECTORS = (
     "http.status",
     "http.headers.ordered",
@@ -183,6 +181,16 @@ def _wave_h_bigger_applications_direct(case_slug, action_id):
 
 
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
+    (
+        "tests/test_callable_endpoint.py",
+        "test_partial",
+    ): _reviewed_direct_link(
+        "callable-endpoint-partial-upstream",
+        "tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml",
+        "fastapi.test.test-callable-endpoint.test-partial",
+        ("bind-partial-query",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
     (
         "tests/test_enforce_once_required_parameter.py",
         "test_openapi_schema",
@@ -782,9 +790,7 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_users_foo_with_no_token",
-    ): _bigger_applications_direct(
-        "test-users-foo-with-no-token", "test-users-foo-with-no-token"
-    ),
+    ): _bigger_applications_direct("test-users-foo-with-no-token", "test-users-foo-with-no-token"),
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_users_me_token_jessica",
@@ -792,9 +798,7 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_users_me_with_no_token",
-    ): _bigger_applications_direct(
-        "test-users-me-with-no-token", "test-users-me-with-no-token"
-    ),
+    ): _bigger_applications_direct("test-users-me-with-no-token", "test-users-me-with-no-token"),
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_users_token_monica_with_no_jessica",
@@ -819,9 +823,7 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_items_bar_token_jessica",
-    ): _bigger_applications_direct(
-        "test-items-bar-token-jessica", "test-items-bar-token-jessica"
-    ),
+    ): _bigger_applications_direct("test-items-bar-token-jessica", "test-items-bar-token-jessica"),
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_items_plumbus_with_no_token",
@@ -884,9 +886,7 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_admin_invalid_header",
-    ): _bigger_applications_direct(
-        "test-admin-invalid-header", "test-admin-invalid-header"
-    ),
+    ): _bigger_applications_direct("test-admin-invalid-header", "test-admin-invalid-header"),
     (
         "tests/test_tutorial/test_bigger_applications/test_main.py",
         "test_openapi_schema",

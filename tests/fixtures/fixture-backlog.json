@@ -158578,13 +158578,18 @@
             "app-routing",
             "dependency-security"
           ],
+          "function_source_ref": {
+            "end_line": 24,
+            "line": 21,
+            "path": "tests/test_callable_endpoint.py",
+            "sha256": "8853842f8ab4d8923d75321005ee6c86961dbcea9f0ab136a2e910b3df0ed7a5"
+          },
           "id": "fastapi.test.test-callable-endpoint.test-partial",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
             "http.status",
-            "http.body.bytes",
-            "http.body.json"
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
             "contract_gate": "Partial: the workflow uses a fresh endpoint and query value; it covers partial-call binding and public route dispatch, not the source's exact function or TestClient convenience.",
@@ -158612,7 +158617,20 @@
                 "start_line": 271
               }
             ],
-            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml::fastapi.test.test-callable-endpoint.test-partial (http_response.status, http_response.headers, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml::fastapi.test.test-callable-endpoint.test-partial (http_response.status, http_response.headers, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+            "workflow_case": {
+              "action_ids": [
+                "bind-partial-query"
+              ],
+              "case_id": "fastapi.test.test-callable-endpoint.test-partial",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml",
+              "workflow_id": "callable-endpoint-partial-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -158626,8 +158644,7 @@
               "feature_id": "dependency-security",
               "selectors": [
                 "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.body.bytes"
               ]
             }
           ],
@@ -158638,7 +158655,20 @@
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
             "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
           ],
-          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml::fastapi.test.test-callable-endpoint.test-partial (http_response.status, http_response.headers, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml::fastapi.test.test-callable-endpoint.test-partial (http_response.status, http_response.headers, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+          "workflow_case": {
+            "action_ids": [
+              "bind-partial-query"
+            ],
+            "case_id": "fastapi.test.test-callable-endpoint.test-partial",
+            "observation_selectors": [
+              "http.status",
+              "http.headers.ordered",
+              "http.body.bytes"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml",
+            "workflow_id": "callable-endpoint-partial-upstream"
+          }
         }
       ],
       "feature_ids": [

@@ -284,7 +284,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "tests/test_callable_endpoint.py",
                 "test_partial",
                 ["app-routing", "dependency-security"],
-                ["http.status", "http.body.json"],
+                ["http.status", "http.body.bytes"],
                 "FastAPI registers a functools.partial endpoint and supplies its remaining query argument.",
                 [
                     _case_link(
@@ -302,6 +302,17 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         "FastAPI inspects callable endpoint signatures while building dependency nodes",
                     ),
                 ),
+                workflow_case={
+                    "workflow_id": "callable-endpoint-partial-upstream",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/callable-endpoint-partial-upstream.yaml",
+                    "case_id": "fastapi.test.test-callable-endpoint.test-partial",
+                    "action_ids": ["bind-partial-query"],
+                    "observation_selectors": [
+                        "http.status",
+                        "http.headers.ordered",
+                        "http.body.bytes",
+                    ],
+                },
             )
         },
     ),
