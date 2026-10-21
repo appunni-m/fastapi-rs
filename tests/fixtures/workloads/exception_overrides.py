@@ -14,6 +14,12 @@ def create_app() -> FastAPI:
     class DerivedOrderException(StarletteHTTPException):
         pass
 
+    class DerivedFirstOrderException(DerivedOrderException, LookupError):
+        pass
+
+    class LookupFirstOrderException(LookupError, DerivedOrderException):
+        pass
+
     @app.exception_handler(RequestValidationError)
     async def handle_invalid_request(
         request: Request, exc: RequestValidationError
@@ -44,6 +50,16 @@ def create_app() -> FastAPI:
 
     app.add_exception_handler(DerivedOrderException, handle_derived_http_exception)
 
+    async def handle_lookup_error(request: Request, exc: LookupError) -> JSONResponse:
+        del request, exc
+        return JSONResponse(
+            content={"handler": "lookup", "detail": "LookupError handler selected."},
+            status_code=409,
+            headers={"X-Failure-Origin": "lookup-order"},
+        )
+
+    app.add_exception_handler(LookupError, handle_lookup_error)
+
     @app.get("/orders/{order_id}")
     async def read_order(order_id: int) -> dict[str, int]:
         if order_id == 3:
@@ -56,6 +72,22 @@ def create_app() -> FastAPI:
             status_code=409,
             detail="Derived order handler must take precedence.",
             headers={"X-Failure-Origin": "derived-order"},
+        )
+
+    @app.get("/orders/mixed-derived-first")
+    async def read_mixed_derived_first() -> None:
+        raise DerivedFirstOrderException(
+            status_code=409,
+            detail="DerivedOrderException appears first in the MRO.",
+            headers={"X-Failure-Origin": "derived-first"},
+        )
+
+    @app.get("/orders/mixed-lookup-first")
+    async def read_mixed_lookup_first() -> None:
+        raise LookupFirstOrderException(
+            status_code=409,
+            detail="LookupError appears first in the MRO.",
+            headers={"X-Failure-Origin": "lookup-first"},
         )
 
     return app

@@ -11072,18 +11072,20 @@
     {
       "id": "exception-overrides",
       "input_path": "tests/fixtures/inputs/parity/exception-overrides.json",
-      "input_sha256": "56fa77245be785d3955c5ff571372acb9e6ca4e7bd756fc6b098b29a7e5a1411",
+      "input_sha256": "299b0606c5a9c1917af88afa7bf7a51b9f563455b19e9a22572d73ea9ed38eb2",
       "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
-      "recipe_sha256": "0514b489ce25b33105c1cea5afa8341999cee8c58f2c06732dd888a1bda65a91",
+      "recipe_sha256": "e9c083e9c8588afd26ae5565e4eb0125061b9ff33ca8263bef5de2e06efe254c",
       "case_ids": [
         "fastapi.docs.handling-errors.overridden-validation-error",
         "fastapi.docs.handling-errors.overridden-http-error",
         "fastapi.docs.handling-errors.subclass-handler-precedence",
+        "fastapi.docs.handling-errors.multiple-inheritance-derived-first",
+        "fastapi.docs.handling-errors.multiple-inheritance-lookup-first",
         "fastapi.docs.handling-errors.overrides-openapi",
         "fastapi.docs.handling-errors.override-success"
       ],
       "workload_path": "tests/fixtures/workloads/exception_overrides.py",
-      "workload_sha256": "0e120fced2ff6a30f9a9e6323b8e6e9085c59f454a04f5a8990e8f3d02363d3b",
+      "workload_sha256": "babe0dbf19b7b1bdea268f7ba22a393202a325e29d68dce7050a7dc4999fb218",
       "case_contracts": [
         {
           "case_id": "fastapi.docs.handling-errors.overridden-validation-error",
@@ -11105,6 +11107,24 @@
         },
         {
           "case_id": "fastapi.docs.handling-errors.subclass-handler-precedence",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:upstream-test:tests/test_exception_handlers.py",
+            "source:upstream-test:tests/test_starlette_exception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.handling-errors.multiple-inheritance-derived-first",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:upstream-test:tests/test_exception_handlers.py",
+            "source:upstream-test:tests/test_starlette_exception.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.handling-errors.multiple-inheritance-lookup-first",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:tutorial/handling-errors.md",
@@ -53509,8 +53529,10 @@
       "fixture_id": "fastapi.docs.tutorial-handling-errors",
       "workflow_id": "exception-overrides",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.docs.handling-errors.multiple-inheritance-derived-first",
+        "fastapi.docs.handling-errors.multiple-inheritance-lookup-first",
         "fastapi.docs.handling-errors.overridden-http-error",
         "fastapi.docs.handling-errors.overridden-validation-error",
         "fastapi.docs.handling-errors.override-success",
@@ -53532,8 +53554,10 @@
       "fixture_id": "fastapi.test.test-exception-handlers",
       "workflow_id": "exception-overrides",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.docs.handling-errors.multiple-inheritance-derived-first",
+        "fastapi.docs.handling-errors.multiple-inheritance-lookup-first",
         "fastapi.docs.handling-errors.subclass-handler-precedence"
       ],
       "observation_selectors": [
@@ -53546,8 +53570,10 @@
       "fixture_id": "fastapi.test.test-starlette-exception",
       "workflow_id": "exception-overrides",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.docs.handling-errors.multiple-inheritance-derived-first",
+        "fastapi.docs.handling-errors.multiple-inheritance-lookup-first",
         "fastapi.docs.handling-errors.subclass-handler-precedence"
       ],
       "observation_selectors": [
