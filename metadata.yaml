@@ -1107,12 +1107,15 @@ starlette_rs:
             - starlette.responses.Response.asgi-call.background-sync-task
             - starlette.responses.Response.asgi-call.background-task-order
             - starlette.responses.Response.asgi-call.background-task-sequence-constructor
+            - starlette.responses.Response.asgi-call.background-task-late-failure-stops
       scope_note: >-
         The target links inherited task-list attributes and the sibling's generic
         add_task lookup, sync/async dispatch, sequential execution, and sequence
         construction requirements without duplicating Starlette's API inventory.
-        FastAPI's dependency aggregation and subclass registration API remain
-        FastAPI-owned.
+        The FastAPI workload also verifies that a later task failure propagates
+        after an earlier task completes and prevents the following task from
+        starting. FastAPI's dependency aggregation and subclass registration API
+        remain FastAPI-owned.
     fastapi.datastructures.UploadFile:
       starlette_symbol: starlette.datastructures.UploadFile
       target_refs:
