@@ -602,13 +602,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 01502a63133ddd7a2020453dbaf2cb65603f81c5623bb68f7f036c88f5b7542b
+    sha256: 687d9cfe6ce8ae15a6ae08b33b71e8495b727a9716be993ba42eb3377f4fc690
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 719
-      cases: 2979
+      cases: 2980
       partial_source_mappings: 1983
 
 contract_metadata:
@@ -1125,6 +1125,21 @@ unresolved:
       Preserves v10 direct API observations and adds ordered warning capture for
       public module imports, allowing optional dependency fallback warnings to
       be compared as public outcomes without storing oracle results in inputs.
+  python_api_workflow_v12:
+    state: direct-literal-type-alias-observation; v1-v12-remain-supported
+    schema_id: fastapi-rs/python-api-workflow@12
+    schema_path: tests/fixtures/schemas/python-api-workflow-v12.schema.json
+    schema_sha256: a196e44e3af17f8fd0c673221efbd96e3d3117fb983e82405de4ddfbf95716d7
+    result_schema_id: fastapi-rs/python-api-workflow-result@14
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v14.schema.json
+    result_schema_sha256: 574731e4c0def75d04d4b6d7288f5b97ed4902fb23f698e5816924372480496d
+    comparison_schema_id: fastapi-rs/python-api-comparison@12
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v12.schema.json
+    comparison_schema_sha256: d38f91a5f00949026c3f9d0e8f6400e2cb33640f3ca470e170c116d29d90fe89
+    coverage: >-
+      Preserves direct API observations through v11 and adds a strict public
+      typing.Literal alias projection of its origin and JSON-safe ordered
+      arguments, without storing expected values in the input recipe.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -1405,8 +1420,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
-    symbols_with_operation_fixture_refs: 460
-    operation_fixture_refs: 2800
+    symbols_with_operation_fixture_refs: 461
+    operation_fixture_refs: 2802
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -30678,9 +30693,9 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -30690,9 +30705,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -30702,9 +30717,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -30714,9 +30729,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.invalid-value
@@ -30886,9 +30901,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -30896,9 +30911,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.invalid-value
@@ -31107,9 +31122,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -31117,9 +31132,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.invalid-value
@@ -31326,9 +31341,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -31535,9 +31550,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -31757,9 +31772,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -31767,9 +31782,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.invalid-value
@@ -31978,9 +31993,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -32187,9 +32202,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -32396,9 +32411,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.api-key-in.accepted-values
@@ -32562,9 +32577,9 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -32574,9 +32589,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.invalid-union-input
@@ -32713,9 +32728,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -32723,9 +32738,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.invalid-union-input
@@ -33466,9 +33481,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -33476,9 +33491,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.invalid-union-input
@@ -42845,9 +42860,9 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -42857,9 +42872,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -42869,9 +42884,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -42881,9 +42896,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -42893,9 +42908,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.invalid-value
@@ -42905,9 +42920,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter.in-python-field-name
@@ -43044,9 +43059,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -43054,9 +43069,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter.in-python-field-name
@@ -43064,9 +43079,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.invalid-value
@@ -43172,9 +43187,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -43182,9 +43197,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter.in-python-field-name
@@ -43192,9 +43207,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.invalid-value
@@ -43278,9 +43293,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -44263,9 +44278,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -44273,9 +44288,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.invalid-value
@@ -44348,9 +44363,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -44421,9 +44436,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -44494,9 +44509,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -44567,9 +44582,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
@@ -46987,9 +47002,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -46999,9 +47014,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.invalid-recursive-value
@@ -47011,9 +47026,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47023,9 +47038,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47035,9 +47050,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47047,9 +47062,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47059,9 +47074,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47071,9 +47086,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47083,9 +47098,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47095,9 +47110,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47107,9 +47122,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.invalid-value
@@ -47309,9 +47324,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -47319,9 +47334,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.invalid-value
@@ -47329,9 +47344,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -47339,9 +47354,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.invalid-recursive-value
@@ -47424,9 +47439,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -47507,9 +47522,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -47690,9 +47705,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -47953,9 +47968,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -48196,9 +48211,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -48379,9 +48394,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -49082,9 +49097,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -49845,9 +49860,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -49928,9 +49943,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -50941,9 +50956,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -51024,9 +51039,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -51347,9 +51362,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -51357,9 +51372,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.invalid-recursive-value
@@ -51880,9 +51895,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -52053,9 +52068,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.accepted-values
@@ -52063,9 +52078,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-type.invalid-value
@@ -52649,9 +52664,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.accepted-recursive-inputs
@@ -52659,9 +52674,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.schema-or-bool.invalid-recursive-value
@@ -52731,6 +52746,18 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id016
     input_workflow_refs:
+    - workflow_id: openapi-alias-enum-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
+      workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
+      workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
+      case_id: fastapi.openapi-models.schema-type.literal-alias
+      probe_id: schema-type-literal-alias
+      probe_kind: attribute
+      observation_selectors:
+      - python.attribute_value
     - workflow_id: openapi-model-module-identity
       input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
       input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
@@ -52744,6 +52771,28 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    operation_fixture_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
+    - workflow_id: openapi-alias-enum-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
+      workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
+      workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
+      case_id: fastapi.openapi-models.schema-type.literal-alias
+      observation_selectors:
+      - python.attribute_value
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -52754,6 +52803,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.attribute_value
     - python.call_outcome
     - python.import_path
     - python.object_identity
@@ -52771,16 +52821,14 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/856
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::GraphDefinition::Alias
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Direct alias import, the exact typing.Literal origin, and its seven arguments are observed. Schema.type
+        consumer validation is tracked as a separate field contract; other consumers are not tested.
+      - Runtime representation across the full supported Python-version range and the complete set of
+        type-alias introspection behavior remain unverified.
   - id: fastapi.openapi.models.SecurityBase
     kind: class
     source_candidate_ref: /api_candidates/857
@@ -53452,9 +53500,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -53462,9 +53510,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.invalid-union-input
@@ -53684,9 +53732,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -53895,9 +53943,9 @@ api_surface_contract:
       - python.pydantic_model_result
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -53970,9 +54018,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -54043,9 +54091,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs
@@ -54116,9 +54164,9 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
-      input_sha256: 82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65
+      input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
       recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
-      recipe_sha256: 6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85
+      recipe_sha256: 60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926
       workload_path: tests/fixtures/workloads/openapi_alias_enum_projection.py
       workload_sha256: 648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62
       case_id: fastapi.openapi-models.security-scheme.accepted-union-inputs

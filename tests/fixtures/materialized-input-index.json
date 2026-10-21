@@ -16447,9 +16447,9 @@
     {
       "id": "openapi-alias-enum-public-api",
       "input_path": "tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json",
-      "input_sha256": "82941e6da38cc73d3323da6b1e2b3d231418fa987ed0d138e92ef530840b9a65",
+      "input_sha256": "a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f",
       "recipe_path": "tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml",
-      "recipe_sha256": "6ea05d14e1c88867cabb719503c497cfa0675d61f45f88279f0268a48ee55f85",
+      "recipe_sha256": "60f9c88346a2a3bab902c5baef1bb7e09886a12c207356da852a031f9fdec926",
       "case_ids": [
         "fastapi.openapi-models.schema-type.accepted-values",
         "fastapi.openapi-models.schema-type.invalid-value",
@@ -16461,7 +16461,8 @@
         "fastapi.openapi-models.api-key-in.accepted-values",
         "fastapi.openapi-models.api-key-in.invalid-value",
         "fastapi.openapi-models.security-scheme.accepted-union-inputs",
-        "fastapi.openapi-models.security-scheme.invalid-union-input"
+        "fastapi.openapi-models.security-scheme.invalid-union-input",
+        "fastapi.openapi-models.schema-type.literal-alias"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_alias_enum_projection.py",
       "workload_sha256": "648fb70882d2cc039f2bb6ddbefa9931dc68ab0e0908d3497c189c36be1ebc62",
@@ -16517,6 +16518,12 @@
         {
           "case_id": "fastapi.openapi-models.schema-type.invalid-value",
           "symbol_id": "fastapi.openapi.models.Schema",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.literal-alias",
+          "symbol_id": "fastapi.openapi.models.SchemaType",
           "path": "fastapi/openapi/models.py",
           "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
         },
@@ -16724,6 +16731,15 @@
           ]
         },
         {
+          "case_id": "fastapi.openapi-models.schema-type.literal-alias",
+          "probe_id": "schema-type-literal-alias",
+          "symbol_id": "fastapi.openapi.models.SchemaType",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
           "case_id": "fastapi.openapi-models.security-scheme.accepted-union-inputs",
           "probe_id": "components-security-schemes",
           "symbol_id": "fastapi.openapi.models.Components",
@@ -16820,6 +16836,13 @@
           "requirement_refs": [
             "api:fastapi.openapi.models.Components",
             "source:documented-page:reference/openapi/models.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema-type.literal-alias",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.models.SchemaType"
           ]
         }
       ]

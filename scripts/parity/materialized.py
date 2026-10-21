@@ -20,6 +20,7 @@ from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_V9_ID,
     API_WORKFLOW_SCHEMA_V10_ID,
     API_WORKFLOW_SCHEMA_V11_ID,
+    API_WORKFLOW_SCHEMA_V12_ID,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
@@ -59,6 +60,7 @@ API_OBSERVATION_SELECTORS = {
     "python_call_outcome": "python.call_outcome",
     "python_class_docstring": "python.attribute_value",
     "python_import_path": "python.import_path",
+    "python_literal_type_alias": "python.attribute_value",
     "python_object_identity": "python.object_identity",
     "python_return_value": "python.attribute_value",
     "python_pydantic_model_result": "python.pydantic_model_result",
@@ -112,6 +114,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     API_WORKFLOW_SCHEMA_V9_ID,
                     API_WORKFLOW_SCHEMA_V10_ID,
                     API_WORKFLOW_SCHEMA_V11_ID,
+                    API_WORKFLOW_SCHEMA_V12_ID,
                 }
                 and probe.get("capture_warnings") is True
             ):
@@ -120,6 +123,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 if observation["kind"] == "python_return_value":
                     selectors.add("python.attribute_value")
                 elif observation["kind"] == "python_attribute_value":
+                    selectors.add("python.attribute_value")
+                elif observation["kind"] == "python_literal_type_alias":
                     selectors.add("python.attribute_value")
                 elif observation["kind"] == "python_class_docstring":
                     selectors.add("python.attribute_value")

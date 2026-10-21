@@ -23295,17 +23295,16 @@ reviewed_api_contract_overlay:
     fastapi.openapi.models.SchemaType:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
         known_gaps:
           - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
+            Direct alias import, the exact typing.Literal origin, and its seven arguments are observed.
+            Schema.type consumer validation is tracked as a separate field contract; other consumers are
+            not tested.
           - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Runtime representation across the full supported Python-version range and the complete set of
+            type-alias introspection behavior remain unverified.
+        rust_binding: fastapi-rs/src/openapi_models.rs::GraphDefinition::Alias
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: module-value
@@ -23313,9 +23312,20 @@ reviewed_api_contract_overlay:
           start_line: 118
           end_line: 120
       supported_slice: >-
-        Module type-alias binding only: SchemaType is Literal["array", "boolean", "integer",
-        "null", "number", "object", "string"]; type identity/consumer behavior is not
-        established by a direct input.
+        Direct module identity/import and the public typing.get_origin/get_args projection are mapped. The
+        alias is typing.Literal["array", "boolean", "integer", "null", "number", "object", "string"].
+        Schema.type consumer validation remains linked to its separate field contract.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+          case_id: fastapi.openapi-models.module-identity
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
+          case_id: fastapi.openapi-models.schema-type.literal-alias
+      feature_ids:
+        - openapi-docs
+      observation_selectors:
+        - python.import_path
+        - python.object_identity
+        - python.attribute_value
 
     fastapi.openapi.models.SecurityScheme:
       target_binding:
