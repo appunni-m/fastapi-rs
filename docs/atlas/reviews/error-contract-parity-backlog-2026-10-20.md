@@ -61,9 +61,11 @@ uncertain warning class or its internal aliases.
   select exception details, `args`, body, and endpoint context fields.
 - Response validation has focused, multi-error, and uncovered-wave workflows.
   These observe the application error’s validation class/details; the focused
-  case also selects public attributes. `ResponseValidationError` remains
-  private/internal in the candidate inventory, so these are runtime error
-  observations rather than a public import claim.
+  case also selects public attributes. The 10-case uncovered wave passed
+  10/10 at FastAPI-RS `2abe8842447448dc16696375cb67e110564cca85` against the
+  current manifest. `ResponseValidationError` remains private/internal in the
+  candidate inventory, so these are runtime error observations rather than a
+  public import claim.
 - The direct warning workflows contain 17 cases plus one sidecar case. Their
   `capture_warnings` inputs add `python.warnings` to the selector set in
   `scripts/parity/materialized.py:77-82`.
@@ -132,6 +134,16 @@ Both runs used FastAPI 0.141.1 at
 `4139a72449bf5751e8902fb1c7175ee7f191d338`. The target source-tree SHA-256 is
 `81021c0d646f53c5813380c92d11afdbce711302951f9d9b706bb3806340216b`; its
 combined target-binary SHA-256 is
+`94923c52126048117452d9e721b63bbe7e4ced7014550feffe52f2a38acab9b8`.
+The response-validation uncovered wave also passed 10/10 at target commit
+`2abe8842447448dc16696375cb67e110564cca85`. Comparison
+`parity-results/comparisons/8bba6520-8674-4bb5-a3e3-6204eb90a4bb.json`
+(SHA-256 `8a6e088276813cda79d9b274387026ce5bb76c4b10b5aa1304058459cfd1c180`)
+binds input SHA-256
+`5e8c166dc5c6507ffc9816bdc7a4c305873dad39b37beb3a2f5190d754fce161` and the
+same manifest and source pins. Its target source-tree SHA-256 is
+`a5ecb519676891377be174a8f2c1e87b54f71a8f608424b72f9baab123ebed63`; its
+target-binary SHA-256 is
 `94923c52126048117452d9e721b63bbe7e4ced7014550feffe52f2a38acab9b8`.
 Generated comparison artifacts remain in the ignored `parity-results` tree.
 
