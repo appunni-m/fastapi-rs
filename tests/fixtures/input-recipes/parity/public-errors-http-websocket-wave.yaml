@@ -449,6 +449,11 @@ cases:
       args: [403, initial, {X-Initial: initial}]
       kwargs: {}
       mutations: {status_code: 401, detail: updated, headers: {X-Updated: updated}, marker: visible}
+    - label: mutable-derived-public-fields
+      args: [403, initial, {X-Initial: initial}]
+      kwargs: {}
+      exception_subclass: true
+      mutations: {status_code: 401, detail: updated, headers: {X-Updated: updated}, marker: visible}
     - {label: numeric-string-status-with-detail, args: ['204', supplied], kwargs: {}}
     - {label: invalid-default-status, args: [599], kwargs: {}}
     - {label: missing-required-status, args: [], kwargs: {}}

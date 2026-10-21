@@ -69,8 +69,14 @@ def _http_exception_arguments(
 
 def _http_exception_snapshot(call: Mapping[str, Any]) -> dict[str, object]:
     args, kwargs = _http_exception_arguments(call)
+    exception_class: type[HTTPException] = HTTPException
+    if call.get("exception_subclass"):
+        class DerivedHTTPException(HTTPException):
+            pass
+
+        exception_class = DerivedHTTPException
     try:
-        exception = HTTPException(*args, **kwargs)
+        exception = exception_class(*args, **kwargs)
     except Exception as error:
         error_type = type(error)
         return {

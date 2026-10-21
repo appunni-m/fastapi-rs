@@ -5591,8 +5591,9 @@ reviewed_api_contract_overlay:
         objects and the Starlette superclass relation. The linked constructor
         inputs observe omitted and explicit defaults, falsey and JSON detail,
         headers, mutable fields, args/string/repr, selected status conversion,
-        and Python call-binding errors. Handler integration and behavior for
-        arbitrary user-defined subclasses remain separate contracts.
+        and Python call-binding errors. One derived class is checked for dynamic
+        repr naming and mutable inherited fields; overridden subclass
+        constructors and exception-handler integration remain separate.
     fastapi.exception_handlers.request_validation_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: request_validation_exception_handler}
@@ -16450,8 +16451,9 @@ reviewed_api_contract_overlay:
         The root and `fastapi.exceptions` imports resolve to the same class, which subclasses the
         pinned Starlette exception. Linked input-only cases compare class and initializer
         signatures, MRO, defaults, selected detail/header/status inputs, mutation, args, string,
-        repr, and call-binding outcomes. Exception-handler integration and arbitrary subclasses
-        remain separate or unproven behavior.
+        repr, and call-binding outcomes, including one derived class with mutable inherited fields.
+        Exception-handler integration and overridden or otherwise arbitrary subclass behavior
+        remain separate or unproven.
 
     fastapi.exceptions.HTTPException.__init__:
       target_binding:
@@ -16459,8 +16461,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Function-only introspection and every possible Python value or user-defined subclass
-            are not covered by the linked inputs.
+            Function-only introspection, exhaustive Python values, and subclasses overriding
+            constructor behavior are not covered by the linked inputs.
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
