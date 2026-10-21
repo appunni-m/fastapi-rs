@@ -52,41 +52,36 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-The latest current-main, current-manifest direct-ASGI measurement is the
-[14-case first-slice refresh](benchmarks/2026-10-21-f4600d2.md). It passed
-14/14 selected parity observations at FastAPI-RS
-`f4600d2b4d5d08543ac46f74589ed9b636a5a65e` with FastAPI 0.141.1, Starlette
-1.6.0, and Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`. Its
-manifest SHA-256 is
-`b12e8958101b3f4edd225ad67b6d744a157da6bddd4372764db3d7623ff74eba`. In this
-scenario FastAPI-RS measured 1.164× FastAPI median latency and 1.309× p95
-latency. It covers one of seven declared workloads and does not refresh the
-full suite or establish a general performance conclusion.
+The latest focused first-slice parity comparison passed 14/14 selected
+observations on FastAPI-RS `f9a345fdce889c6a837b188367b1c43a1acdf331` with
+FastAPI 0.141.1, Starlette 1.6.0, and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. Its comparison is
+`parity-results/comparisons/4706de12-4e64-4780-a36d-636d9c3f737e.json` (SHA-256
+`fff67e79b6ed951243d8a2edc6cf1739be2b2162f5b16a52291c494876a2a016`).
+
+The latest current-main, current-manifest direct-ASGI timing evidence is the
+[seven-workload refresh](benchmarks/2026-10-22-f9a345f.md). All seven workloads
+completed with fresh identity-checked parity gates: 48/48 selected
+observations. The runs bind FastAPI-RS `f9a345fdce889c6a837b188367b1c43a1acdf331`,
+FastAPI 0.141.1, Starlette 1.6.0, and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`; the fixture manifest SHA-256 is
+`56bce10094c595950b07eaeda7283a4b8c5088af54ce4414034fbfb670cacd4e`. The suite
+receipt is `benchmark-results/suite-20261021T220513Z-5b324b01-f174-4afa-9ffb-91f1441878c7.json`
+(SHA-256 `82e4ba3ccde3c028a500eee7cab7dedee4ce0dc5fc5b64dab3d712b594e3c7a0`).
+FastAPI-RS median and p95 latency exceeded FastAPI's in all seven workloads.
+This is a single-host direct-ASGI result, not a full-parity or general
+performance claim.
 
 The earlier [large-response-model refresh](benchmarks/2026-10-21-57aec8c.md)
 passed its one-case gate at a prior target and manifest; it is historical to
 current main.
 
-The latest completed seven-workload direct-ASGI suite is recorded in
-[the 2026-10-21 report](benchmarks/2026-10-21-8c7eb97.md). It completed all
-seven reviewed workloads and passed all 45 selected parity observations on
-FastAPI-RS 8c7eb970cabd5fee871bc0a9fcf1691b9d4014f3, FastAPI 0.141.1 at
-95f8322ee1dcda7ceace7b1c4f6c9915b36d748f, Starlette 1.6.0 at
-4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and Starlette-RS
-4139a72449bf5751e8902fb1c7175ee7f191d338. The fixture manifest SHA-256 is
-f67678c11d87b35d56d5d5b04c78b40cf8251faeb9865e8b405cdc7aa296705b. Suite
-receipt benchmark-results/suite-20261021T053534Z-3b38e3b4-06a9-4420-853d-2005a79921fa.json
-has SHA-256
-1a2715291047b44cf19ad9e83b0032693651d9bdf79375b525149b04753e785a.
-FastAPI-RS median latency was higher in all seven workloads; p95 was higher in
-six, with the distinct-query-alias workload's FastAPI p95 influenced by large
-outliers. The report records identities, direct-ASGI boundaries, timing
-policy, parity counts, and per-workload result paths. This selected workload
-set was valid for its recorded revision but is historical to current main
-because it binds the prior target and manifest. It does not establish full
-FastAPI parity or a broader performance conclusion. The earlier same-day suite
-is historical because it binds the previous target and manifest; its receipt is preserved under
-benchmark-results/archive/stale-manifest-20261021-before-8c7eb97/.
+The previous completed seven-workload suite is recorded in
+[the 2026-10-21 report](benchmarks/2026-10-21-8c7eb97.md). It binds FastAPI-RS
+`8c7eb970cabd5fee871bc0a9fcf1691b9d4014f3` and the previous fixture manifest,
+so it is historical to current main. Its receipt is preserved under
+`benchmark-results/stale/`; the current suite and its evidence are recorded in
+the 2026-10-22 report above.
 The 2026-10-19 report remains historical because it binds an earlier target
 and fixture manifest. Its suite receipt is archived at
 `benchmark-results/archive/stale-manifest-20261019/suite-20261019T091804Z-650d1f09-bdaf-4cc3-b125-21c3ae0b7f33.json`.
