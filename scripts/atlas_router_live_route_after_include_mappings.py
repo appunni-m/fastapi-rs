@@ -26,9 +26,7 @@ _OPENAPI_CACHE_RECIPE = (
 )
 _OPENAPI_CACHE_WORKLOAD = "tests/fixtures/workloads/router_openapi_cache_after_include.py"
 _OPENAPI_CACHE_CASE = "fastapi.router.include-context.openapi-cache-after-live-route"
-_OPENAPI_NESTED_CACHE_CASE = (
-    "fastapi.router.include-context.openapi-cache-after-nested-live-route"
-)
+_OPENAPI_NESTED_CACHE_CASE = "fastapi.router.include-context.openapi-cache-after-nested-live-route"
 _RUNTIME_ACTION = "dispatch-late-route"
 _OPENAPI_ACTION = "project-openapi-late-route"
 _SELECTORS = ["http.status", "http.body.bytes", "openapi.document"]

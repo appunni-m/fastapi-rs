@@ -12917,12 +12917,6 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": "The standard source profile identifies fastapi-cli 0.0.32 and the input-only fastapi-cli-process-workflow.yaml records argv, isolated cwd, controlled environment, timeout, source digests, and exit/stdout/stderr selectors for the upstream missing-path case. The source atlas classifies fastapi.cli.main as private/internal; its upstream monkeypatch test is explicitly excluded, while the documented fastapi console command is mapped. The target console entrypoint remains unimplemented, so parity is unresolved; auto-discovery, configured entrypoints, run/reload options, and server launch behaviors also remain unmapped.",
         },
         {
-            "id": "fastapi-testclient-public-alias",
-            "status": "live-optional-profile-and-direct-alias; sibling-signature-parity-pending",
-            "question": "Can the pinned Starlette-RS TestClient signature match Starlette 1.6.0 exactly while FastAPI-RS keeps the source-defined direct alias?",
-            "evidence": "FastAPI 0.141.1 defines fastapi/testclient.py as a direct re-export of starlette.testclient.TestClient. FastAPI-RS now exposes the same public path through a direct Starlette-RS re-export and a hashed HTTPX 0.28.1 optional profile; identity-checked CPython 3.12.13 oracle and target probes complete. Exact signature comparison reaches the observation and finds three sibling-owned annotation differences: source app ASGIApp vs target Any, backend Literal['asyncio', 'trio'] vs str, and cookies httpx._types.CookieTypes | None vs Any. Parameter names/kinds, defaults including tuple client=('testclient', 50000), remaining annotations, and return annotation match. Keep generic client behavior and signature in Starlette-RS; FastAPI-RS must remain a direct alias without a wrapper.",
-        },
-        {
             "id": "fastapi-security-module-runtime-surface",
             "status": "two-case-identity-checked-parity-passing; broader-security-contract-pending",
             "question": "Does FastAPI-RS expose the documented `fastapi.security` module and preserve `HTTPBearer` subclass overrides for missing-credential responses?",
