@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use crate::encoding::{JsonableEncoderInput, JsonableEncoderOptions, jsonable_encoder};
 use pyo3::exceptions::{PyKeyError, PyUserWarning, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyModule, PySet, PyString, PyTuple};
+use pyo3::types::{PyBool, PyDict, PyList, PyModule, PySet, PyString, PyTuple};
 
 /// One OpenAPI parameter extracted from a FastAPI operation.
 pub(crate) struct OpenApiParameter {
@@ -963,12 +963,6 @@ fn normalize_parameter_schema<'py>(
                 continue;
             }
         }
-        if key == "exclusiveMinimum" && !item.is_instance_of::<PyBool>() {
-            if let Ok(number) = item.extract::<f64>() {
-                result.set_item(key, PyFloat::new(py, number))?;
-                continue;
-            }
-        }
         let item = normalize_parameter_schema_value(py, &key, &item)?;
         result.set_item(&key, item)?;
         if key == "type" && fastapi_binary_bytes_schema {
@@ -1095,12 +1089,6 @@ fn normalize_schema_with_order<'py>(
                 if let Ok(reference) = item.extract::<String>() {
                     let reference = reference.replace("#/$defs/", "#/components/schemas/");
                     result.set_item(key, reference)?;
-                    continue;
-                }
-            }
-            if key == "exclusiveMinimum" && !item.is_instance_of::<PyBool>() {
-                if let Ok(number) = item.extract::<f64>() {
-                    result.set_item(key, PyFloat::new(py, number))?;
                     continue;
                 }
             }
