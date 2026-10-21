@@ -567,7 +567,13 @@ def build_index() -> dict[str, Any]:
                 if source_id is None:
                     continue
                 coverage = next(row for row in atlas["coverage_matrix"] if row["id"] == source_id)
-                source_selectors = set(coverage["observation_selectors"])
+                if coverage.get("kind") == "upstream_test_module":
+                    source_selectors = set(
+                        coverage.get("candidate_observation_selectors")
+                        or coverage["observation_selectors"]
+                    )
+                else:
+                    source_selectors = set(coverage["observation_selectors"])
                 if evidence["kind"] == "upstream_documentation":
                     reviewed_page_selectors = _reviewed_page_case_selectors(
                         evidence["path"], workflow_ref["recipe_path"], case["case_id"]

@@ -1847,6 +1847,8 @@ def validate_compatibility_artifacts(
     )
     selector_ids: set[str] = set()
     selector_patterns: list[re.Pattern[str]] = []
+    selector_support_by_id: dict[str, str] = {}
+    selector_pattern_support: list[tuple[re.Pattern[str], str]] = []
     for selector in selector_specs:
         _require(
             isinstance(selector.get("projection"), str) and bool(selector["projection"].strip()),
@@ -1875,6 +1877,7 @@ def validate_compatibility_artifacts(
                 "selector IDs must be unique",
             )
             selector_ids.add(identifier)
+            selector_support_by_id[identifier] = selector["workflow_support"]
         else:
             _require(
                 isinstance(selector.get("id_pattern"), str)
@@ -1882,9 +1885,11 @@ def validate_compatibility_artifacts(
                 "parameterized selector requires an ID template and pattern",
             )
             try:
-                selector_patterns.append(re.compile(selector["pattern"]))
+                pattern = re.compile(selector["pattern"])
             except re.error as exc:
                 raise ContractError("compatibility atlas: invalid selector pattern") from exc
+            selector_patterns.append(pattern)
+            selector_pattern_support.append((pattern, selector["workflow_support"]))
 
     def selector_is_defined(identifier: str) -> bool:
         return identifier in selector_ids or any(
@@ -1905,6 +1910,23 @@ def validate_compatibility_artifacts(
             _require(
                 "http.body.bytes" in values,
                 f"{context} selects JSON without the exact HTTP body bytes",
+            )
+
+    def register_observed_selectors(values: Any, context: str) -> None:
+        register_selectors(values, context)
+        for identifier in values:
+            supports = []
+            if identifier in selector_support_by_id:
+                supports.append(selector_support_by_id[identifier])
+            supports.extend(
+                support
+                for pattern, support in selector_pattern_support
+                if pattern.fullmatch(identifier)
+            )
+            _require(
+                bool(supports) and all(support in {"supported", "partial"} for support in supports),
+                f"{context} claims a selector without supported or partial workflow evidence: "
+                f"{identifier}",
             )
 
     for family in atlas.get("feature_families", []):
@@ -2524,6 +2546,57 @@ def validate_compatibility_artifacts(
                     isinstance(workflow_mappings, list),
                     f"source {identifier} workflow mappings are malformed",
                 )
+                if row.get("kind") == "upstream_test_module":
+                    candidate_selectors = row.get("candidate_observation_selectors")
+                    candidate_evidence = row.get("candidate_selector_evidence")
+                    _require(
+                        isinstance(candidate_selectors, list) and bool(candidate_selectors),
+                        f"source {identifier} has no candidate selector list",
+                    )
+                    _require(
+                        isinstance(candidate_evidence, list) and bool(candidate_evidence),
+                        f"source {identifier} has no candidate selector evidence",
+                    )
+                    register_selectors(candidate_selectors, f"source {identifier} candidates")
+                    for evidence in candidate_evidence:
+                        _require(
+                            isinstance(evidence, dict)
+                            and isinstance(evidence.get("selectors"), list)
+                            and bool(evidence["selectors"]),
+                            f"source {identifier} has malformed candidate selector evidence",
+                        )
+                        register_selectors(
+                            evidence["selectors"], f"source {identifier} candidate evidence"
+                        )
+                    expected_observed_selectors = sorted(
+                        {
+                            selector
+                            for workflow_mapping in workflow_mappings
+                            for selector in workflow_mapping.get("observation_selectors", [])
+                        }
+                    )
+                    _require(
+                        row.get("observation_selectors") == expected_observed_selectors,
+                        f"source {identifier} observation selectors differ from linked workflows",
+                    )
+                    expected_selector_evidence = [
+                        {
+                            "workflow_id": workflow_mapping["workflow_id"],
+                            "recipe_path": workflow_mapping["recipe_path"],
+                            "case_ids": workflow_mapping["case_ids"],
+                            "selectors": workflow_mapping["observation_selectors"],
+                        }
+                        for workflow_mapping in workflow_mappings
+                    ]
+                    _require(
+                        row.get("selector_evidence") == expected_selector_evidence,
+                        f"source {identifier} selector evidence differs from linked workflows",
+                    )
+                    register_observed_selectors(
+                        row["observation_selectors"], f"source {identifier} observed"
+                    )
+                else:
+                    register_selectors(row["observation_selectors"], f"source {identifier}")
                 for workflow_mapping in workflow_mappings:
                     _require(
                         isinstance(workflow_mapping, dict)
@@ -2532,7 +2605,7 @@ def validate_compatibility_artifacts(
                         and bool(workflow_mapping.get("observation_selectors")),
                         f"source {identifier} has an incomplete workflow mapping",
                     )
-                    register_selectors(
+                    register_observed_selectors(
                         workflow_mapping["observation_selectors"],
                         f"source {identifier} workflow mapping",
                     )
@@ -2613,10 +2686,80 @@ def validate_compatibility_artifacts(
     indexed_workflows = {
         row.get("id"): row for row in materialized_input_index.get("workflows", [])
     }
+    indexed_mapping_rows = materialized_input_index.get("mappings", [])
     indexed_mappings = {
-        (row.get("source_item_id"), row.get("workflow_id")): row
-        for row in materialized_input_index.get("mappings", [])
+        (row.get("source_item_id"), row.get("workflow_id")): row for row in indexed_mapping_rows
     }
+    _require(
+        len(indexed_mappings) == len(indexed_mapping_rows),
+        "materialized input index has duplicate source/workflow mappings",
+    )
+    for source_row in coverage_rows:
+        if source_row.get("kind") not in FIXTURE_KINDS:
+            continue
+        source_id = source_row.get("id")
+        declared_mappings = source_row.get("mapping_evidence", {}).get(
+            "independent_workflow_mappings", []
+        )
+        declared_by_workflow = {
+            mapping.get("workflow_id"): mapping
+            for mapping in declared_mappings
+            if isinstance(mapping, dict)
+        }
+        indexed_by_workflow = {
+            workflow_id: mapping
+            for (mapped_source_id, workflow_id), mapping in indexed_mappings.items()
+            if mapped_source_id == source_id
+        }
+        _require(
+            len(declared_by_workflow) == len(declared_mappings)
+            and set(declared_by_workflow) == set(indexed_by_workflow),
+            f"source {source_id} workflow links differ from the materialized index",
+        )
+        for workflow_id, mapping in declared_by_workflow.items():
+            indexed_mapping = indexed_by_workflow[workflow_id]
+            workflow = indexed_workflows.get(workflow_id)
+            _require(
+                isinstance(workflow, dict)
+                and mapping.get("recipe_path") == workflow.get("recipe_path")
+                and mapping.get("case_ids") == indexed_mapping.get("case_ids")
+                and mapping.get("observation_selectors")
+                == indexed_mapping.get("observation_selectors")
+                and mapping.get("coverage_status") == indexed_mapping.get("coverage_status")
+                and mapping.get("coverage_scope") == indexed_mapping.get("coverage_scope")
+                and source_row.get("fixture_id") == indexed_mapping.get("fixture_id"),
+                f"source {source_id} workflow {workflow_id} claim differs from the index",
+            )
+            _require(
+                set(mapping.get("case_ids", [])) <= set(workflow.get("case_ids", [])),
+                f"source {source_id} workflow {workflow_id} claims unknown case IDs",
+            )
+            register_observed_selectors(
+                mapping.get("observation_selectors"),
+                f"source {source_id} workflow {workflow_id}",
+            )
+        if source_row.get("kind") == "upstream_test_module":
+            expected_observed_selectors = sorted(
+                {
+                    selector
+                    for mapping in declared_mappings
+                    for selector in mapping.get("observation_selectors", [])
+                }
+            )
+            expected_selector_evidence = [
+                {
+                    "workflow_id": mapping["workflow_id"],
+                    "recipe_path": mapping["recipe_path"],
+                    "case_ids": mapping["case_ids"],
+                    "selectors": mapping["observation_selectors"],
+                }
+                for mapping in declared_mappings
+            ]
+            _require(
+                source_row.get("observation_selectors") == expected_observed_selectors
+                and source_row.get("selector_evidence") == expected_selector_evidence,
+                f"source {source_id} summary selectors differ from its indexed workflows",
+            )
     fixture_by_source: dict[str, dict[str, Any]] = {}
     fixture_ids: set[str] = set()
     case_ids: set[str] = set()
@@ -2661,6 +2804,20 @@ def validate_compatibility_artifacts(
             source_row.get("mapping_status") != "excluded",
             f"fixture {fixture_id} belongs to an excluded source",
         )
+        if source_row.get("kind") == "upstream_test_module":
+            _require(
+                fixture.get("observation_selectors") == source_row.get("observation_selectors")
+                and fixture.get("selector_evidence") == source_row.get("selector_evidence")
+                and fixture.get("candidate_observation_selectors")
+                == source_row.get("candidate_observation_selectors")
+                and fixture.get("candidate_selector_evidence")
+                == source_row.get("candidate_selector_evidence"),
+                f"test module fixture {fixture_id} selectors differ from its coverage row",
+            )
+            register_selectors(
+                fixture.get("candidate_observation_selectors"),
+                f"test module fixture {fixture_id} candidate selectors",
+            )
         evidence = fixture.get("source_evidence")
         evidence_rows = [evidence] if isinstance(evidence, dict) else evidence
         _require(

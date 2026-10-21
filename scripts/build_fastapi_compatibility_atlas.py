@@ -11233,9 +11233,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "duplicate test fixture ID for %s::%s" % (rel, test["qualified_name"])
                     )
                 used_case_ids.add(case_id)
-                path_function_mapping = path_function_mappings_by_name.get(
-                    test["qualified_name"]
-                )
+                path_function_mapping = path_function_mappings_by_name.get(test["qualified_name"])
                 if rel == "tests/test_path.py":
                     exact_selectors = test.get("reviewed_observation_selectors")
                     if exact_selectors is None and path_function_mapping is not None:
@@ -11413,14 +11411,40 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             mapping_status = "candidate"
         else:
             mapping_status = "review_required"
-        module_selector_set = set(selectors)
-        module_selector_set.update(reviewed_mapping.get("module_observation_selectors", []))
-        module_selector_set.update(
+        candidate_module_selector_set = set(selectors)
+        candidate_module_selector_set.update(
+            reviewed_mapping.get("module_observation_selectors", [])
+        )
+        candidate_module_selector_set.update(
             selector
             for function_mapping in reviewed_function_mappings.values()
             for selector in function_mapping.get("observation_selectors", [])
         )
-        module_selectors = selectors_with_exact_http_body(sorted(module_selector_set))
+        candidate_module_selectors = selectors_with_exact_http_body(
+            sorted(candidate_module_selector_set)
+        )
+        observed_module_selectors = sorted(
+            {
+                selector
+                for workflow_mapping in independent_workflow_mappings
+                for selector in workflow_mapping["observation_selectors"]
+            }
+        )
+        module_selector_evidence = [
+            {
+                "workflow_id": workflow_mapping["workflow_id"],
+                "recipe_path": workflow_mapping["recipe_path"],
+                "case_ids": workflow_mapping["case_ids"],
+                "selectors": workflow_mapping["observation_selectors"],
+            }
+            for workflow_mapping in independent_workflow_mappings
+        ]
+        candidate_module_selector_evidence = selector_evidence(
+            features,
+            candidate_module_selectors
+            if "module_observation_selectors" in reviewed_mapping
+            else None,
+        )
         coverage_items.append(
             {
                 "id": item_id,
@@ -11430,15 +11454,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "feature_ids": features,
                 "fixture_id": fixture_id if not exclusion and case_designs else None,
                 "benchmark_workload_id": fixture_id if is_benchmark else None,
-                "observation_selectors": [] if exclusion else module_selectors,
-                "selector_evidence": []
+                "observation_selectors": [] if exclusion else observed_module_selectors,
+                "selector_evidence": [] if exclusion else module_selector_evidence,
+                "candidate_observation_selectors": [] if exclusion else candidate_module_selectors,
+                "candidate_selector_evidence": []
                 if exclusion
-                else selector_evidence(
-                    features,
-                    module_selectors
-                    if "module_observation_selectors" in reviewed_mapping
-                    else None,
-                ),
+                else candidate_module_selector_evidence,
                 "starlette_rs_planning_areas": [] if exclusion else starlette_areas_for(features),
                 "exclusion_reason": exclusion,
                 "mapping_status": mapping_status,
@@ -11551,13 +11572,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "input_only": True,
                     "stimulus_design": stimulus_for(features),
                     "stimulus_design_notes": reviewed_mapping.get("stimulus_notes"),
-                    "observation_selectors": module_selectors,
-                    "selector_evidence": selector_evidence(
-                        features,
-                        module_selectors
-                        if "module_observation_selectors" in reviewed_mapping
-                        else None,
-                    ),
+                    "observation_selectors": observed_module_selectors,
+                    "selector_evidence": module_selector_evidence,
+                    "candidate_observation_selectors": candidate_module_selectors,
+                    "candidate_selector_evidence": candidate_module_selector_evidence,
                     "feature_ids": features,
                     "case_designs": case_designs,
                     "independent_workflow_mappings": independent_workflow_mappings,
