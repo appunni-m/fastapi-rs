@@ -1,4 +1,5 @@
-schema: fastapi-rs/python-api-workflow@8
+# v10 adds direct class-docstring observations without invoking the class.
+schema: fastapi-rs/python-api-workflow@10
 workload:
   file: tests/fixtures/workloads/direct_api_reference_wave.py
   factory: create_argument_bundles
@@ -26,6 +27,15 @@ cases:
         observations:
           - kind: python_signature
             selector: signature
+            comparison: exact
+      - probe_id: module-class-docstring
+        public_callable:
+          module: fastapi.exceptions
+          attribute: WebSocketException
+        argument_bundle: unused
+        observations:
+          - kind: python_class_docstring
+            selector: value
             comparison: exact
       - probe_id: module-init-signature
         public_callable:

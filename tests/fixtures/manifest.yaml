@@ -602,7 +602,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: cb8d072450572f68830bc81ec1a929175c055f2f9792de2e9a801a347bb1714f
+    sha256: 0f2f7b8b9e19be3ca3d8e6435becdaa18c6f0832a3e7d0066c0e3ce1e61a367d
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -9537,9 +9537,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: websocket-exception-api-contract
       input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
-      input_sha256: 9c1b3e9aad647746885937bc4fb51380bfd88f85be1e9d14254f92aeac1c693b
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
       recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
-      recipe_sha256: 04c4717780305e944f3da7e54105932431771cba39e6e2611ffef4149bb9a258
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.websocket.exception-direct-api-contract
@@ -9560,13 +9560,14 @@ api_surface_contract:
       - python.signature
     - workflow_id: websocket-exception-api-contract
       input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
-      input_sha256: 9c1b3e9aad647746885937bc4fb51380bfd88f85be1e9d14254f92aeac1c693b
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
       recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
-      recipe_sha256: 04c4717780305e944f3da7e54105932431771cba39e6e2611ffef4149bb9a258
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.websocket.exception-direct-api-contract
       observation_selectors:
+      - python.attribute_value
       - python.import_path
       - python.object_identity
       - python.signature
@@ -9664,6 +9665,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.attribute_value
     - python.import_path
     - python.object_identity
     - python.signature
@@ -27877,9 +27879,9 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: websocket-exception-api-contract
       input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
-      input_sha256: 9c1b3e9aad647746885937bc4fb51380bfd88f85be1e9d14254f92aeac1c693b
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
       recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
-      recipe_sha256: 04c4717780305e944f3da7e54105932431771cba39e6e2611ffef4149bb9a258
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.websocket.exception-direct-api-contract
@@ -27890,9 +27892,21 @@ api_surface_contract:
       - python.object_identity
     - workflow_id: websocket-exception-api-contract
       input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
-      input_sha256: 9c1b3e9aad647746885937bc4fb51380bfd88f85be1e9d14254f92aeac1c693b
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
       recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
-      recipe_sha256: 04c4717780305e944f3da7e54105932431771cba39e6e2611ffef4149bb9a258
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
+      case_id: fastapi.websocket.exception-direct-api-contract
+      probe_id: module-class-docstring
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: websocket-exception-api-contract
+      input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.websocket.exception-direct-api-contract
@@ -27913,13 +27927,14 @@ api_surface_contract:
       - python.signature
     - workflow_id: websocket-exception-api-contract
       input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
-      input_sha256: 9c1b3e9aad647746885937bc4fb51380bfd88f85be1e9d14254f92aeac1c693b
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
       recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
-      recipe_sha256: 04c4717780305e944f3da7e54105932431771cba39e6e2611ffef4149bb9a258
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.websocket.exception-direct-api-contract
       observation_selectors:
+      - python.attribute_value
       - python.import_path
       - python.object_identity
       - python.signature
@@ -27982,6 +27997,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.attribute_value
     - python.import_path
     - python.object_identity
     - python.signature
@@ -28051,9 +28067,9 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: websocket-exception-api-contract
       input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
-      input_sha256: 9c1b3e9aad647746885937bc4fb51380bfd88f85be1e9d14254f92aeac1c693b
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
       recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
-      recipe_sha256: 04c4717780305e944f3da7e54105932431771cba39e6e2611ffef4149bb9a258
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.websocket.exception-direct-api-contract
@@ -28074,13 +28090,14 @@ api_surface_contract:
       - python.signature
     - workflow_id: websocket-exception-api-contract
       input_path: tests/fixtures/inputs/parity/websocket-exception-api-contract.json
-      input_sha256: 9c1b3e9aad647746885937bc4fb51380bfd88f85be1e9d14254f92aeac1c693b
+      input_sha256: d6c514d5c6f5953eb8125bfef06cabb53ef30d8d33f2b345fed503d7e5637de2
       recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-api-contract.yaml
-      recipe_sha256: 04c4717780305e944f3da7e54105932431771cba39e6e2611ffef4149bb9a258
+      recipe_sha256: 0d7a235d4f393e0f569910f96fb4eea63cb80c8050f4b5bf3f84f7a82880e92b
       workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
       workload_sha256: d4b7c3189e8246a095106ab4c2c8f9aade8cd17d9173897cf8bbefee90f780bc
       case_id: fastapi.websocket.exception-direct-api-contract
       observation_selectors:
+      - python.attribute_value
       - python.import_path
       - python.object_identity
       - python.signature
