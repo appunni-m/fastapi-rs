@@ -1404,8 +1404,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
-    symbols_with_operation_fixture_refs: 453
-    operation_fixture_refs: 2735
+    symbols_with_operation_fixture_refs: 454
+    operation_fixture_refs: 2737
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -55357,12 +55357,34 @@ api_surface_contract:
       observation_selectors:
       - python.attribute_value
       - python.warnings
+    operation_fixture_refs:
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 9f06de42fe7fed19e7282cd24cfaaa16ca25f8534197c679ace071129a5aa5ea
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: 38a8d68a27ab9774ce811db709474ec204bde6a36971dfe75e6c43477e6c7ef1
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: b1c2d98beeda85111dfccb984b33479f753a0f3845eb8e5ea4cc8d71f5be8709
+      case_id: fastapi.deprecation.generate-operation-id-explicit-route
+      observation_selectors:
+      - python.attribute_value
+      - python.warnings
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 9f06de42fe7fed19e7282cd24cfaaa16ca25f8534197c679ace071129a5aa5ea
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: 38a8d68a27ab9774ce811db709474ec204bde6a36971dfe75e6c43477e6c7ef1
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: b1c2d98beeda85111dfccb984b33479f753a0f3845eb8e5ea4cc8d71f5be8709
+      case_id: fastapi.deprecation.generate-operation-id-fallback-route
+      observation_selectors:
+      - python.attribute_value
+      - python.warnings
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
     observation_selectors:
     - python.attribute_value
-    - python.call_outcome
     - python.warnings
     operation_scope:
       status: slice-described
@@ -55376,16 +55398,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/930
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       known_gaps:
-      - No exact operation-specific input workflow, case, or observation selector is linked for this model
-        member.
-      - The audit did not establish an operation-level Rust binding; any listed implementation location
-        is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The exact Falsey empty-string operation_id branch and malformed or missing route attributes are
+        not covered.
+      - Other route attribute types, methods, paths, and their error behavior remain unreviewed.
   - id: fastapi.openapi.utils.get_openapi
     kind: function
     source_candidate_ref: /api_candidates/938

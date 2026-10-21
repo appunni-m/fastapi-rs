@@ -6619,27 +6619,27 @@ reviewed_api_contract_overlay:
         known_gaps:
           - The inputs do not compare object identity, mutation persistence, or the full mapping behavior across multiple helper calls.
     fastapi.openapi.utils.generate_operation_id:
-      target_binding:
-        implementation_owner: fastapi-rs
-        status: unresolved
-        known_gaps:
-          - >-
-            No exact operation-specific input workflow, case, or observation selector is linked for this
-            model member.
-          - >-
-            The audit did not establish an operation-level Rust binding; any listed implementation
-            location is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-explicit-route
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-fallback-route
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.attribute_value, python.warnings]
       supported_slice: >-
-        Deprecated direct helper only: warn, return an explicit route operation ID when present,
-        otherwise use the path fallback; it is not used internally.
+        The deprecated direct helper's truthy explicit-operation-ID return and None fallback return
+        are compared, including captured warning sidecars; the helper is not used internally.
+        Empty-string operation IDs, other falsey values, unusual route attributes, and error behavior
+        remain unreviewed.
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       source_evidence:
         - {path: fastapi/openapi/utils.py, symbol: generate_operation_id}
-      feature_ids: [openapi-docs]
-      observation_selectors: [python.call_outcome]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The exact Falsey empty-string operation_id branch and malformed or missing route attributes are not covered.
+          - Other route attribute types, methods, paths, and their error behavior remain unreviewed.
     fastapi.openapi.utils.get_openapi:
       rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       source_evidence:
