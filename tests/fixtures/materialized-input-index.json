@@ -25987,9 +25987,9 @@
     {
       "id": "public-errors-http-websocket-wave",
       "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
-      "input_sha256": "2348ecbb591f0c842e90fc55439e0c74622f1b2962524f87af97fa12a253361f",
+      "input_sha256": "623b21aa9d49d03efef721956aae6ed01f6fc99d5b9d8893766fc2ebd7dacbf8",
       "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-      "recipe_sha256": "87abacfc4e10053d5d309a7f7d72ebc3ecc94f3da45ff1a54659a1fafe88970e",
+      "recipe_sha256": "fc556705e5f5dc880d0491645fd3cda1cc4493715daf50573d9959c2109e768e",
       "case_ids": [
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.starlette-base-detail-and-header",
@@ -26001,13 +26001,14 @@
         "fastapi.public-errors.http.constructor-state",
         "fastapi.public-errors.http.default-detail-no-headers",
         "fastapi.public-errors.websocket.constructor-state",
+        "fastapi.public-errors.websocket.value-formatting",
         "fastapi.public-errors.websocket.default-reason-empty",
         "fastapi.public-errors.websocket.pre-accept-code-and-reason",
         "fastapi.public-errors.websocket-disconnect.constructor-contract",
         "fastapi.public-errors.http.constructor-contract"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "c747682f5433cb13a91710f5061084cdbc5f34fcc887940fb74f2da636dad716",
+      "workload_sha256": "afca853df3becca7a56430d0ff725247e96b47918659e70ba634ca580f804834",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -26083,6 +26084,14 @@
         },
         {
           "case_id": "fastapi.public-errors.websocket.constructor-state",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/exceptions.md",
+            "source:upstream-test:tests/test_ws_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.public-errors.websocket.value-formatting",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:reference/exceptions.md",
@@ -61560,12 +61569,13 @@
       "fixture_id": "fastapi.docs.reference-exceptions",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.http.constructor-state",
         "fastapi.public-errors.http.default-detail-no-headers",
         "fastapi.public-errors.websocket.constructor-state",
-        "fastapi.public-errors.websocket.pre-accept-code-and-reason"
+        "fastapi.public-errors.websocket.pre-accept-code-and-reason",
+        "fastapi.public-errors.websocket.value-formatting"
       ],
       "observation_selectors": [
         "construction.exception_class",
@@ -61663,11 +61673,12 @@
       "fixture_id": "fastapi.test.test-ws-router",
       "workflow_id": "public-errors-http-websocket-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.public-errors.websocket-disconnect.constructor-contract",
         "fastapi.public-errors.websocket.constructor-state",
-        "fastapi.public-errors.websocket.pre-accept-code-and-reason"
+        "fastapi.public-errors.websocket.pre-accept-code-and-reason",
+        "fastapi.public-errors.websocket.value-formatting"
       ],
       "observation_selectors": [
         "construction.exception_class",

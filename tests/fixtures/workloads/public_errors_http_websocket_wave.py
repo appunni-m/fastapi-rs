@@ -31,6 +31,17 @@ def _exception_snapshot(exception: Exception) -> dict[str, object]:
     }
 
 
+def _websocket_exception_value_snapshot(
+    exception: WebSocketException,
+) -> dict[str, object]:
+    return {
+        **_exception_snapshot(exception),
+        "representation": repr(exception),
+        "code": exception.code,
+        "reason": exception.reason,
+    }
+
+
 class _FalseyReason(str):
     def __bool__(self) -> bool:
         return False
@@ -313,6 +324,40 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             },
             "code": exception.code,
             "reason": exception.reason,
+        }
+
+    @app.get("/errors/websocket-value-formatting")
+    async def websocket_exception_value_formatting() -> dict[str, object]:
+        values = factory_input["websocket_exception_value_formatting"]
+        omitted_reason = WebSocketException(code=values["omitted_code"])
+        falsey_reason = WebSocketException(
+            code=values["falsey_code"], reason=_FalseyReason(values["falsey_reason"])
+        )
+        explicit = WebSocketException(
+            code=values["explicit_code"], reason=values["explicit_reason"]
+        )
+        explicit_before = _websocket_exception_value_snapshot(explicit)
+        explicit.code = values["mutated_code"]
+        explicit.reason = values["mutated_reason"]
+        explicit_after = _websocket_exception_value_snapshot(explicit)
+
+        class DerivedWebSocketException(WebSocketException):
+            pass
+
+        derived = DerivedWebSocketException(
+            code=values["derived_code"], reason=values["derived_reason"]
+        )
+        derived_before = _websocket_exception_value_snapshot(derived)
+        derived.code = values["derived_mutated_code"]
+        derived.reason = values["derived_mutated_reason"]
+        derived_after = _websocket_exception_value_snapshot(derived)
+        return {
+            "omitted_reason": _websocket_exception_value_snapshot(omitted_reason),
+            "falsey_reason": _websocket_exception_value_snapshot(falsey_reason),
+            "explicit_before_mutation": explicit_before,
+            "explicit_after_mutation": explicit_after,
+            "derived_before_mutation": derived_before,
+            "derived_after_mutation": derived_after,
         }
 
     @app.get("/errors/websocket-disconnect-constructor-state")
