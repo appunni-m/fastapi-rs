@@ -26452,9 +26452,9 @@
     {
       "id": "public-errors-http-websocket-wave",
       "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
-      "input_sha256": "565d64a79ccddd9351038d90adcf419c8d78eeda281997d7ae687cfbb7cbf8a5",
+      "input_sha256": "81513420cb9c635e90cb3b5d280340dcfd3f8539c9073ad8053c8355b4af9a0a",
       "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
-      "recipe_sha256": "4059453c0e938590be764d4abd3b072950b134c3184768066695f99e5cac4636",
+      "recipe_sha256": "45db52193d9b9aab2aa4b40bb66dc1a6524a8a0d1fa65ab7c39b0e4af32c41ce",
       "case_ids": [
         "fastapi.public-errors.http.fastapi-json-detail-and-header",
         "fastapi.public-errors.http.starlette-base-detail-and-header",
@@ -26474,7 +26474,7 @@
         "fastapi.public-errors.http.starlette-subclass-default-handler"
       ],
       "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
-      "workload_sha256": "6c962253b0308d162191876232eceb820c548abded85ee828e0895a6a59fb26f",
+      "workload_sha256": "b9702296d14b752137ad9cb382f107b83bd66dda83eb02fba4fd05787643c69b",
       "case_contracts": [
         {
           "case_id": "fastapi.public-errors.http.fastapi-json-detail-and-header",
@@ -36133,12 +36133,13 @@
     {
       "id": "security-dependencies",
       "input_path": "tests/fixtures/inputs/parity/security-dependencies.json",
-      "input_sha256": "40ad7c6324fdf336621325625504515f1c3d02fc5580c02b593f3638c92147e2",
+      "input_sha256": "dedd3f2fe1636067ebb86135157dfd8c20671757154f44c196e21a68983df17a",
       "recipe_path": "tests/fixtures/input-recipes/parity/security-dependencies.yaml",
-      "recipe_sha256": "fe97c026985f2516c14305e0208d62a930b7002b43a58fc76f7609f5eeaf683d",
+      "recipe_sha256": "e70f7bd54952a7031bc7f40312b1ee817db9929c3408a52a0f64d1fb00f94d21",
       "case_ids": [
         "fastapi.docs.security.api-key-required-missing",
         "fastapi.docs.security.api-key-required-provided",
+        "fastapi.docs.security.api-key-header-duplicate-values",
         "fastapi.docs.security.api-key-optional-missing",
         "fastapi.docs.security.api-key-optional-provided",
         "fastapi.docs.security.bearer-required-missing",
@@ -36162,6 +36163,14 @@
         },
         {
           "case_id": "fastapi.docs.security.api-key-required-provided",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:reference/security/index.md",
+            "source:upstream-test:tests/test_security_api_key_header.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.security.api-key-header-duplicate-values",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:reference/security/index.md",
@@ -71830,8 +71839,9 @@
       "fixture_id": "fastapi.docs.reference-security-index",
       "workflow_id": "security-dependencies",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 11 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 12 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.docs.security.api-key-header-duplicate-values",
         "fastapi.docs.security.api-key-optional-missing",
         "fastapi.docs.security.api-key-optional-provided",
         "fastapi.docs.security.api-key-required-missing",
@@ -71883,8 +71893,9 @@
       "fixture_id": "fastapi.test.test-security-api-key-header",
       "workflow_id": "security-dependencies",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.docs.security.api-key-header-duplicate-values",
         "fastapi.docs.security.api-key-required-missing",
         "fastapi.docs.security.api-key-required-provided",
         "fastapi.docs.security.openapi"

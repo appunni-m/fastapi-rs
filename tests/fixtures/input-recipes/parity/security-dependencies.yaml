@@ -86,6 +86,50 @@ cases:
     kind: upstream_documentation
   - path: tests/test_security_api_key_header.py
     kind: upstream_test
+- case_id: fastapi.docs.security.api-key-header-duplicate-values
+  actions:
+  - action_id: private-key-with-repeated-header-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /archive/private
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-archive-key
+        - vault-pass
+      - - x-archive-key
+        - alternate-pass
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_api_key_header.py
+    kind: upstream_test
 - case_id: fastapi.docs.security.api-key-optional-missing
   actions:
   - action_id: context-key-missing

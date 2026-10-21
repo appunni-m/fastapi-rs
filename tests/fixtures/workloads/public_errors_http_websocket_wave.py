@@ -42,6 +42,31 @@ def _websocket_exception_value_snapshot(
     }
 
 
+def _json_metadata_value(value: object) -> object:
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, Mapping):
+        return {str(key): _json_metadata_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_metadata_value(item) for item in value]
+    return str(value)
+
+
+def _websocket_exception_initializer_metadata(
+    field_names: list[str],
+) -> dict[str, object]:
+    initializer = WebSocketException.__init__
+    metadata = {
+        name: {
+            "exists": hasattr(initializer, name),
+            "value": _json_metadata_value(getattr(initializer, name, None)),
+        }
+        for name in field_names
+    }
+    metadata["signature"] = str(signature(initializer))
+    return metadata
+
+
 class _FalseyReason(str):
     def __bool__(self) -> bool:
         return False
@@ -71,6 +96,7 @@ def _http_exception_snapshot(call: Mapping[str, Any]) -> dict[str, object]:
     args, kwargs = _http_exception_arguments(call)
     exception_class: type[HTTPException] = HTTPException
     if call.get("exception_subclass"):
+
         class DerivedHTTPException(HTTPException):
             pass
 
@@ -341,6 +367,9 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
                 "qualname": WebSocketException.__qualname__,
                 "doc": WebSocketException.__doc__,
             },
+            "initializer_metadata": _websocket_exception_initializer_metadata(
+                factory_input["websocket_exception_initializer_fields"]
+            ),
             "code": exception.code,
             "reason": exception.reason,
         }

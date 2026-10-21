@@ -259,7 +259,18 @@ cases:
   - {path: docs/en/docs/reference/exceptions.md, kind: upstream_documentation}
   - {path: tests/test_starlette_exception.py, kind: upstream_test}
 - case_id: fastapi.public-errors.websocket.constructor-state
-  factory_input: {}
+  factory_input:
+    websocket_exception_initializer_fields:
+    - __module__
+    - __name__
+    - __qualname__
+    - __doc__
+    - __defaults__
+    - __kwdefaults__
+    - __annotations__
+    - __type_params__
+    - __text_signature__
+    - __dict__
   construction_observation:
     kind: construction
     selectors: [outcome, exception_class, exception_message]

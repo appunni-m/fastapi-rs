@@ -13599,22 +13599,26 @@ reviewed_api_contract_overlay:
         custom-handler workflow also constructs this error and observes its
         code, reason, dispatch, and resulting close event. A constructor-state
         case compares the exception class/MRO, args, string, code, explicit
-        reason, and base-class relationship. The value-formatting case observes
-        omitted and falsey reason normalization, base and derived string/repr
-        formatting, and public code/reason mutation; the close case observes
-        the default empty reason during rejection. Other constructor values
-        and generic WebSocket state behavior remain outside this partial slice.
+        reason, base-class relationship, and selected initializer metadata
+        fields (`__module__`, `__name__`, `__qualname__`, `__doc__`,
+        `__defaults__`, `__kwdefaults__`, `__annotations__`, `__type_params__`,
+        `__text_signature__`, and `__dict__`). The value-formatting case
+        observes omitted and falsey reason normalization, base and derived
+        string/repr formatting, and public code/reason mutation; the close case
+        observes the default empty reason during rejection. Callable metadata
+        mutation, other constructor values, and generic WebSocket state
+        behavior remain outside this partial slice.
     fastapi.exceptions.WebSocketException:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            Callable object metadata beyond the captured signatures and module path, such as
-            __qualname__ and the full function attribute dictionary, remains unverified.
+            Mutation behavior of initializer callable metadata remains unverified; the linked
+            constructor-state case snapshots only the selected callable metadata fields.
           - >-
-            Constructor inputs and subclass behavior outside the linked signature, snapshots,
-            value-formatting case, and close cases remain unverified.
+            Constructor inputs and subclass behavior outside the linked signature, selected
+            snapshots, value-formatting case, and close cases remain unverified.
           - >-
             The current comparison receipt is local and not checked in; mapped fixture evidence
             does not itself establish parity for other builds.
@@ -13654,24 +13658,29 @@ reviewed_api_contract_overlay:
         - python.attribute_value
       supported_slice: >-
         The linked cases compare direct module import metadata, the class and initializer
-        signatures, a snapshot of the FastAPI exception class/MRO/args/string and code/reason
-        attributes, omitted and falsey reason normalization, base and derived string/repr
-        formatting, mutable code/reason fields, and the default pre-accept WebSocket close code
-        and reason. They do not establish every constructor input or generic WebSocket state behavior.
+        signatures, selected initializer callable metadata fields, a snapshot of the FastAPI
+        exception class/MRO/args/string and code/reason attributes, omitted and falsey reason
+        normalization, base and derived string/repr formatting, mutable code/reason fields, and
+        the default pre-accept WebSocket close code and reason. They do not establish initializer
+        metadata mutation, every constructor input, or generic WebSocket state behavior.
     fastapi.exceptions.WebSocketException.__init__:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            Other constructor values, reason subclasses, mutations, and derived exception
-            behavior outside the linked value-formatting case remain unverified.
+            Other constructor values, reason subclasses, callable metadata mutation, and derived
+            exception behavior outside the linked constructor and value-formatting cases remain
+            unverified.
           - >-
             The current comparison receipt is local and not checked in; mapped fixture evidence
             does not itself establish parity for other builds.
       supported_slice: >-
         Forward required close code and optional reason to Starlette, which normalizes falsey
-        reasons to the empty string.
+        reasons to the empty string. The direct API and constructor-state cases compare the
+        initializer signature and selected metadata fields (`__module__`, `__name__`,
+        `__qualname__`, `__doc__`, `__defaults__`, `__kwdefaults__`, `__annotations__`,
+        `__type_params__`, `__text_signature__`, and `__dict__`).
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
@@ -13767,11 +13776,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Direct alias-object identity and behavior outside those cases remain unverified; live
-            identity-bound parity is pending.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Invalid constructor values and less common truthy/falsey parameter combinations remain
+            unverified.
         rust_binding: "fastapi-rs/src/security.rs::PyApiKeyHeader"
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader
       source_evidence:
@@ -13791,6 +13797,20 @@ reviewed_api_contract_overlay:
           start_line: 147
           end_line: 232
       fixture_refs: &api_key_header_fixtures
+        - recipe_path: tests/fixtures/input-recipes/parity/security-dependencies.yaml
+          case_id: fastapi.docs.security.api-key-required-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/security-dependencies.yaml
+          case_id: fastapi.docs.security.api-key-required-provided
+        - recipe_path: tests/fixtures/input-recipes/parity/security-dependencies.yaml
+          case_id: fastapi.docs.security.api-key-header-duplicate-values
+        - recipe_path: tests/fixtures/input-recipes/parity/security-dependencies.yaml
+          case_id: fastapi.docs.security.api-key-optional-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/security-dependencies.yaml
+          case_id: fastapi.docs.security.api-key-optional-provided
+        - recipe_path: tests/fixtures/input-recipes/parity/security-dependencies.yaml
+          case_id: fastapi.docs.security.openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
           case_id: fastapi.security.api-key-header-description.test-security-api-key
         - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
@@ -13810,11 +13830,13 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Partial Rust-owned API-key dependency slice for the documented
         `fastapi.security` export. The selected input cases cover header
-        extraction, required missing-key responses, descriptions and scheme
-        names, and OpenAPI security scheme and requirement output, including a
-        configured header name. Direct alias-object identity and behavior
-        outside those cases remain unverified; live identity-bound parity is
-        pending.
+        extraction, required and optional missing-key outcomes, empty and
+        repeated header values, configured descriptions and scheme names, and
+        OpenAPI security scheme and requirement output. The root-alias identity
+        workflow checks that `fastapi.security.APIKeyHeader` and
+        `fastapi.security.api_key.APIKeyHeader` are the same object. Invalid
+        constructor values and less common parameter combinations remain
+        unverified.
     fastapi.security.APIKeyQuery:
       target_binding:
         implementation_owner: fastapi-rs
@@ -13968,11 +13990,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Selected OpenAPI cases cover the header scheme and operation requirement; other constructor
-            validation and direct identity checks remain unverified.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Invalid constructor values and less common truthy/falsey parameter combinations remain
+            unverified.
         rust_binding: "fastapi-rs/src/security.rs::PyApiKeyHeader"
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader
       source_evidence:
@@ -13990,19 +14009,17 @@ reviewed_api_contract_overlay:
         setting. Its awaitable reads the named header, returns its value,
         returns None for a missing optional key, and raises the documented 401
         APIKey challenge for a missing required key. Selected OpenAPI cases
-        cover the header scheme and operation requirement; other constructor
-        validation and direct identity checks remain unverified.
+        cover default and configured scheme names, the header scheme and
+        operation requirements, and `auto_error=False`. Invalid constructor
+        values and less common parameter combinations remain unverified.
     fastapi.security.api_key.APIKeyHeader.__call__:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            Callable and bound-method introspection, optional-header behavior, and header normalization
-            edges are unverified.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Direct callable and bound-method introspection and manual invocation outside FastAPI
+            dependency resolution remain unverified.
         rust_binding: "fastapi-rs/src/security.rs::PyApiKeyHeader::__call__"
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::__call__
       source_evidence:
@@ -14016,20 +14033,17 @@ reviewed_api_contract_overlay:
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         Selected HTTP cases cover a configured header, a missing required key,
-        and the 401 APIKey challenge. Callable and bound-method introspection,
-        optional-header behavior, and header normalization edges are
-        unverified.
+        a missing optional key, an empty value, a repeated header field, and
+        the 401 APIKey challenge. Direct callable and bound-method
+        introspection and manual invocation remain unverified.
     fastapi.security.api_key.APIKeyHeader.__init__:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            Constructor `Annotated`/`Doc` annotations, complete signature metadata, invalid argument
-            outcomes, and other parameter combinations remain partial or unverified.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Invalid constructor values and less common truthy/falsey parameter combinations remain
+            unverified.
         rust_binding: "fastapi-rs/src/security.rs::PyApiKeyHeader::new"
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::new
       source_evidence:
@@ -14044,10 +14058,9 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Partial constructor slice accepts the required keyword-only header
         name, optional scheme name and description, and `auto_error`. Selected
-        request and OpenAPI cases exercise those values. Constructor
-        `Annotated`/`Doc` annotations, complete signature metadata, invalid
-        argument outcomes, and other parameter combinations remain partial or
-        unverified.
+        exact-signature probes, request cases, and OpenAPI cases exercise those
+        values. Invalid constructor values and less common truthy/falsey
+        parameter combinations remain unverified.
     fastapi.security.api_key.APIKeyQuery:
       target_binding:
         implementation_owner: fastapi-rs

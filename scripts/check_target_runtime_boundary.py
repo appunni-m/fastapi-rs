@@ -41,6 +41,12 @@ FASTAPI_MODULE_METADATA_CONST = re.compile(
     r"\bconst\s+(?P<name>[A-Za-z_]\w*)\s*:\s*&\s*(?:'static\s+)?str\s*=\s*"
     r"(?P<value>['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"])\s*;"
 )
+FASTAPI_MODULE_METADATA_GETTER = re.compile(
+    r"#\s*\[\s*getter\s*\(\s*__module__\s*\)\s*\]\s*"
+    r"fn\s+[A-Za-z_]\w*\s*\(\s*&self\s*\)\s*"
+    r"->\s*&\s*'static\s+str\s*\{\s*"
+    r"(?P<value>['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"])\s*\}"
+)
 FASTAPI_LOGGER_NAME = re.compile(
     r"\b(?:py|python)\s*\.\s*import\(\s*['\"]logging['\"]\s*\)\s*\?\s*"
     r"\.\s*getattr\(\s*['\"]getLogger['\"]\s*\)\s*\?\s*"
@@ -475,6 +481,7 @@ def check_rust_binding_import_boundary() -> None:
             if (
                 _is_fastapi_module_metadata(source, match.start())
                 or _is_fastapi_module_metadata_const(source, match.start())
+                or _is_fastapi_module_metadata_getter(source, match.start())
                 or _is_fastapi_logger_name(source, match.start())
                 or _is_fastapi_target_package_bootstrap(source, match.start())
             ):
@@ -596,6 +603,13 @@ def _is_fastapi_module_metadata_const(source: str, offset: int) -> bool:
     return all(
         match.start() == declaration.start("name") or match.start() in metadata_values
         for match in identifier.finditer(source)
+    )
+
+
+def _is_fastapi_module_metadata_getter(source: str, offset: int) -> bool:
+    """Allow a literal only as the complete return value of a module getter."""
+    return any(
+        match.start("value") == offset for match in FASTAPI_MODULE_METADATA_GETTER.finditer(source)
     )
 
 

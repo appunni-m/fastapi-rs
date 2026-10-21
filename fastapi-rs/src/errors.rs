@@ -468,6 +468,91 @@ impl HTTPExceptionInit {
     }
 }
 
+#[pyclass(name = "_WebSocketExceptionInit", module = "fastapi_rs._core", dict)]
+struct WebSocketExceptionInit {
+    initializer: Py<PyAny>,
+    signature: Py<PyAny>,
+    defaults: Py<PyTuple>,
+    annotations: Py<PyDict>,
+    type_params: Py<PyTuple>,
+}
+
+#[pymethods]
+impl WebSocketExceptionInit {
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        owner: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        match instance {
+            Some(instance) => py
+                .import("types")?
+                .getattr("MethodType")?
+                .call1((slf, instance))
+                .map(Bound::unbind),
+            None if owner.is_some() => Ok(slf.into_any()),
+            None => Err(PyTypeError::new_err("__get__(None, None) is invalid")),
+        }
+    }
+
+    #[getter(__module__)]
+    fn get_module(&self) -> &'static str {
+        "fastapi.exceptions"
+    }
+
+    #[getter(__name__)]
+    fn get_name(&self) -> &'static str {
+        "__init__"
+    }
+
+    #[getter(__qualname__)]
+    fn get_qualname(&self) -> &'static str {
+        "WebSocketException.__init__"
+    }
+
+    #[getter(__doc__)]
+    fn get_doc(&self, py: Python<'_>) -> Py<PyAny> {
+        py.None()
+    }
+
+    #[getter(__defaults__)]
+    fn get_defaults(&self, py: Python<'_>) -> Py<PyTuple> {
+        self.defaults.clone_ref(py)
+    }
+
+    #[getter(__kwdefaults__)]
+    fn get_keyword_defaults(&self, py: Python<'_>) -> Py<PyAny> {
+        py.None()
+    }
+
+    #[getter(__annotations__)]
+    fn get_annotations(&self, py: Python<'_>) -> Py<PyDict> {
+        self.annotations.clone_ref(py)
+    }
+
+    #[getter(__type_params__)]
+    fn get_type_params(&self, py: Python<'_>) -> Py<PyTuple> {
+        self.type_params.clone_ref(py)
+    }
+
+    #[getter(__signature__)]
+    fn get_signature(&self, py: Python<'_>) -> Py<PyAny> {
+        self.signature.clone_ref(py)
+    }
+
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let initializer = slf.borrow(py).initializer.clone_ref(py);
+        initializer.bind(py).call(args, kwargs).map(Bound::unbind)
+    }
+}
+
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
     let http_exception_base = py
@@ -880,21 +965,20 @@ fn set_websocket_exception_signature(
         signature_type.call((initializer_parameters,), Some(&signature_kwargs))?;
     exception_type.setattr("__signature__", signature)?;
 
-    let descriptor = Py::new(py, HTTPExceptionInit { initializer })?;
-    let descriptor = descriptor.bind(py);
-    descriptor.setattr("__module__", "fastapi.exceptions")?;
-    descriptor.setattr("__name__", "__init__")?;
-    descriptor.setattr("__qualname__", "WebSocketException.__init__")?;
-    descriptor.setattr("__doc__", py.None())?;
-    descriptor.setattr("__defaults__", PyTuple::new(py, [py.None()])?)?;
-    descriptor.setattr("__signature__", initializer_signature)?;
-
     let annotations = PyDict::new(py);
     annotations.set_item("code", code_annotation)?;
     annotations.set_item("reason", reason_annotation)?;
     annotations.set_item("return", py.None())?;
-    descriptor.setattr("__annotations__", annotations)?;
-    descriptor.setattr("__type_params__", PyTuple::empty(py))?;
+    let descriptor = Py::new(
+        py,
+        WebSocketExceptionInit {
+            initializer,
+            signature: initializer_signature.unbind(),
+            defaults: PyTuple::new(py, [py.None()])?.unbind(),
+            annotations: annotations.unbind(),
+            type_params: PyTuple::empty(py).unbind(),
+        },
+    )?;
     exception_type.setattr("__init__", descriptor)
 }
 
