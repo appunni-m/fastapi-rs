@@ -6499,10 +6499,12 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/openapi/docs.py, symbol: get_swagger_ui_html}
         - {path: tests/test_local_docs.py}
+        - {path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial003.py}
         - {path: tests/test_swagger_ui_init_oauth.py}
         - {path: tests/test_swagger_ui_escape.py}
         - {path: tests/test_no_swagger_ui_redirect.py}
         - {path: tests/test_custom_swagger_ui_redirect.py}
+        - {path: docs/en/docs/how-to/configure-swagger-ui.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
           case_id: fastapi.openapi.docs.public-api.swagger-ui-signature
@@ -6524,6 +6526,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs-ui.swagger-parameters.override-default
         - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml
           case_id: fastapi.docs-ui.swagger-parameters.nested-theme
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction
+          observation_selectors:
+            [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
       feature_ids: [openapi-docs]
       observation_selectors: [python.signature, http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
@@ -8458,6 +8464,18 @@ reviewed_api_contract_overlay:
           initializer: __init__
           start_line: 888
           end_line: 888
+        - path: fastapi/applications.py
+          kind: source-use
+          symbol: setup
+          start_line: 1105
+          end_line: 1158
+        - path: fastapi/openapi/docs.py
+          kind: source-definition
+          symbol: get_swagger_ui_html
+          start_line: 40
+          end_line: 194
+        - {path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial003.py}
+        - {path: docs/en/docs/how-to/configure-swagger-ui.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.defaults
@@ -8465,19 +8483,25 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.configured
           observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       feature_ids: [openapi-docs]
-      observation_selectors: [http.status, http.body.json]
+      observation_selectors: [http.status, http.body.json, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        The pinned constructor stores `swagger_ui_parameters`; the linked
-        input-only cases compare default and configured public values from an
-        ASGI endpoint. Swagger UI option rendering remains outside this field
-        slice.
+        The pinned constructor stores `swagger_ui_parameters`, and the `/docs`
+        route reads the current instance value when it handles a request before
+        passing it to `get_swagger_ui_html`. The linked input-only case
+        reassigns the mapping after construction and compares the exact `/docs`
+        response status, headers, and body bytes; the pinned helper combines
+        those options with its defaults. Upstream documentation and test
+        evidence cover the parameter rendering contract.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::swagger_ui_parameters
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Default and configured reads are covered; reassignment, deletion, and Swagger UI rendering remain unverified.
+          - Deletion and non-mapping reassignment remain unverified.
     fastapi.applications.FastAPI.state:
       source_evidence:
         - path: fastapi/applications.py

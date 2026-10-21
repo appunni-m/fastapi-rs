@@ -15,6 +15,7 @@ def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> Fas
     summary_after_openapi = options.pop("_summary_after_openapi", _UNSET)
     contact_after_init = options.pop("_contact_after_init", _UNSET)
     contact_after_openapi = options.pop("_contact_after_openapi", _UNSET)
+    swagger_ui_parameters_after_init = options.pop("_swagger_ui_parameters_after_init", _UNSET)
     delete_contact_after_init = options.pop("_delete_contact_after_init", False)
     openapi_after_contact_deletion = options.pop("_openapi_after_contact_deletion", False)
     delete_contact_after_openapi = options.pop("_delete_contact_after_openapi", False)
@@ -23,6 +24,8 @@ def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> Fas
         app.summary = summary_after_init
     if contact_after_init is not _UNSET:
         app.contact = contact_after_init
+    if swagger_ui_parameters_after_init is not _UNSET:
+        app.swagger_ui_parameters = swagger_ui_parameters_after_init
 
     @app.get("/_observe/application-attributes")
     def observe_application_attributes() -> dict[str, Any]:

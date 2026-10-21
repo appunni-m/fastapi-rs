@@ -1,6 +1,26 @@
 """FastAPI page workflow links requiring independent source selectors."""
 
 DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L = {
+    "how-to/configure-swagger-ui.md": [
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
+            "case_ids": [
+                "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+            ],
+            "observation_selectors": [
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+            ],
+            "scope_note": (
+                "The application reassigns Swagger UI parameters after construction, then "
+                "compares the exact `/docs` response status, ordered headers, and body bytes."
+            ),
+        },
+    ],
     "advanced/openapi-webhooks.md": [
         {
             "recipe_path": ("tests/fixtures/input-recipes/parity/webhooks-truthy-non-router.yaml"),

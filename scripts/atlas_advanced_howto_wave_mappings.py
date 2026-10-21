@@ -331,6 +331,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         ["openapi-docs"],
         [
             "docs.response.status",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -923,6 +926,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 40,
                 194,
                 "FastAPI creates Swagger UI HTML and merges `swagger_ui_parameters` with defaults.",
+            ),
+            _source(
+                "fastapi/applications.py",
+                888,
+                888,
+                "FastAPI stores the constructor-provided Swagger UI parameter mapping before the input workflow reassigns it.",
             ),
             _source(
                 "fastapi/applications.py",

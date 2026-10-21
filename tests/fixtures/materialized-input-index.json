@@ -1152,9 +1152,9 @@
     {
       "id": "application-attributes",
       "input_path": "tests/fixtures/inputs/parity/application-attributes.json",
-      "input_sha256": "eb30fbd75026670c605edea998dcfd899852188db39d8cca55172d50331ad5e7",
+      "input_sha256": "db743eae87610064146e2f4ced80a3807f4121764edd40a5d66dee7b23ffb234",
       "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
-      "recipe_sha256": "089426ceefc91058b9ac8d58db4eca91924b5a08e41b796c78c97e030cf3bb7c",
+      "recipe_sha256": "6794e6782a716faa4270f1887085cb6fb89f4c16f5346b6a556496574bf725a2",
       "case_ids": [
         "fastapi.application.attributes.defaults",
         "fastapi.application.attributes.configured",
@@ -1166,10 +1166,11 @@
         "fastapi.application.attributes.empty-summary",
         "fastapi.application.attributes.summary-mutation-after-openapi-cache",
         "fastapi.application.attributes.empty-docs-url",
-        "fastapi.application.attributes.empty-redoc-url"
+        "fastapi.application.attributes.empty-redoc-url",
+        "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
       ],
       "workload_path": "tests/fixtures/workloads/application_attributes.py",
-      "workload_sha256": "decc8bf1e9e5205d722643476624c0555dcfa181a4b0f77b834c0f6320ee9fdf",
+      "workload_sha256": "535f044871ee23b59aba95a7f39cfeb3b9353874449383d1d09e4bdcd43378e1",
       "case_contracts": [
         {
           "case_id": "fastapi.application.attributes.defaults",
@@ -1247,6 +1248,14 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/configure-swagger-ui.md",
+            "source:upstream-test:tests/test_tutorial/test_configure_swagger_ui/test_tutorial003.py"
           ]
         }
       ]
@@ -44164,6 +44173,24 @@
       ]
     },
     {
+      "source_item_id": "documented-page:how-to/configure-swagger-ui.md",
+      "fixture_id": "fastapi.docs.how-to-configure-swagger-ui",
+      "workflow_id": "application-attributes",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:how-to/extending-openapi.md",
       "fixture_id": "fastapi.docs.how-to-extending-openapi",
       "workflow_id": "application-attributes",
@@ -44204,6 +44231,21 @@
         "construction.exception_message",
         "construction.outcome",
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_configure_swagger_ui/test_tutorial003.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-configure-swagger-ui-test-tutorial003",
+      "workflow_id": "application-attributes",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

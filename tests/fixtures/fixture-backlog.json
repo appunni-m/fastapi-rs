@@ -67013,7 +67013,15 @@
       "candidate_selector_scope": {
         "contract_gate": "Partial: generated HTML/config serialization is sampled, but no browser executes the JavaScript. Syntax highlighting and every JavaScript-only option, theme combination, CDN asset, OAuth flow, and escaping edge are not covered by these cases.",
         "unobserved_reviewed_selector_claims": [],
-        "workflow_scope_notes": []
+        "workflow_scope_notes": [
+          {
+            "case_ids": [
+              "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
+            "scope_note": "The application reassigns Swagger UI parameters after construction, then compares the exact `/docs` response status, ordered headers, and body bytes."
+          }
+        ]
       },
       "contract_gate": "Partial: generated HTML/config serialization is sampled, but no browser executes the JavaScript. Syntax highlighting and every JavaScript-only option, theme combination, CDN asset, OAuth flow, and escaping edge are not covered by these cases.",
       "documented_sections": [
@@ -67620,6 +67628,23 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
+          "workflow_id": "application-attributes"
+        },
+        {
+          "case_ids": [
             "fastapi.atlas-openapi-tutorial.default-parameter-override",
             "fastapi.atlas-openapi-tutorial.default-parameter-route",
             "fastapi.atlas-openapi-tutorial.nested-theme-configuration",
@@ -67694,6 +67719,9 @@
       ],
       "input_only": true,
       "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
@@ -67718,6 +67746,13 @@
             "role": "FastAPI creates Swagger UI HTML and merges `swagger_ui_parameters` with defaults.",
             "sha256": "3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa",
             "start_line": 40
+          },
+          {
+            "end_line": 888,
+            "path": "fastapi/applications.py",
+            "role": "FastAPI stores the constructor-provided Swagger UI parameter mapping before the input workflow reassigns it.",
+            "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+            "start_line": 888
           },
           {
             "end_line": 1137,
@@ -67794,6 +67829,21 @@
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml"
+          },
+          {
+            "case_ids": [
+              "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+            ],
+            "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
+            "scope_note": "The application reassigns Swagger UI parameters after construction, then compares the exact `/docs` response status, ordered headers, and body bytes."
           }
         ]
       },
@@ -67809,10 +67859,16 @@
         {
           "feature_id": null,
           "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
             "http.headers.ordered",
             "http.status"
           ],
           "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
             "http.headers.ordered",
             "http.status"
           ]
@@ -67850,6 +67906,13 @@
           "start_line": 40
         },
         {
+          "end_line": 888,
+          "path": "fastapi/applications.py",
+          "role": "FastAPI stores the constructor-provided Swagger UI parameter mapping before the input workflow reassigns it.",
+          "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+          "start_line": 888
+        },
+        {
           "end_line": 1137,
           "path": "fastapi/applications.py",
           "role": "FastAPI docs route passes URLs and configured parameters into its HTML helper.",
@@ -67882,7 +67945,15 @@
       "stimulus_design": [
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
       ],
-      "workflow_scope_notes": []
+      "workflow_scope_notes": [
+        {
+          "case_ids": [
+            "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
+          "scope_note": "The application reassigns Swagger UI parameters after construction, then compares the exact `/docs` response status, ordered headers, and body bytes."
+        }
+      ]
     },
     {
       "candidate_observation_selectors": [
@@ -527779,6 +527850,20 @@
       ],
       "id": "fastapi.test.test-tutorial-test-configure-swagger-ui-test-tutorial003",
       "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
+          "workflow_id": "application-attributes"
+        },
         {
           "case_ids": [
             "fastapi.atlas-openapi-tutorial.default-parameter-override",
