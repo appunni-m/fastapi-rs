@@ -1405,7 +1405,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 431
-    operation_fixture_refs: 2680
+    operation_fixture_refs: 2686
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -2084,6 +2084,35 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 3424fc0b0fcd86e4ea49983dc34d8501b1b7bab2c8351dd077c5e225e537c879
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: 2b19ec26592de106b7525976eae77c9858d6cd20230be81038892f84927f10c9
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: c27c552b57d84e23d29a46425fd872449ba7a81ca2f03b305b4965180502400a
+      case_id: fastapi.background.task-execution.cancelled-during-background-await
+      observation_selectors:
+      - asgi.cancellation.cancelled_caught
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 3424fc0b0fcd86e4ea49983dc34d8501b1b7bab2c8351dd077c5e225e537c879
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: 2b19ec26592de106b7525976eae77c9858d6cd20230be81038892f84927f10c9
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: c27c552b57d84e23d29a46425fd872449ba7a81ca2f03b305b4965180502400a
+      case_id: fastapi.background.task-injection.default-instance-is-not-reused
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -2109,6 +2138,7 @@ api_surface_contract:
     - response-serialization
     observation_selectors:
     - asgi.application_error.exception
+    - asgi.cancellation.cancelled_caught
     - asgi.send.message_types
     - construction.exception_class
     - construction.exception_message
@@ -2135,8 +2165,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
       known_gaps:
-      - The linked cases sample live-list append and one failure short-circuit; cancellation, other failure
-        forms, and exhaustive injection combinations remain outside the declared scope.
+      - The linked cases sample live-list append, one failure short-circuit, one cancellation path, and
+        default-instance isolation; other failure/cancellation forms and exhaustive injection combinations
+        remain outside the declared scope.
   - id: fastapi.Body
     kind: import_binding
     source_candidate_ref: /api_candidates/2
@@ -23099,6 +23130,35 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 3424fc0b0fcd86e4ea49983dc34d8501b1b7bab2c8351dd077c5e225e537c879
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: 2b19ec26592de106b7525976eae77c9858d6cd20230be81038892f84927f10c9
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: c27c552b57d84e23d29a46425fd872449ba7a81ca2f03b305b4965180502400a
+      case_id: fastapi.background.task-execution.cancelled-during-background-await
+      observation_selectors:
+      - asgi.cancellation.cancelled_caught
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 3424fc0b0fcd86e4ea49983dc34d8501b1b7bab2c8351dd077c5e225e537c879
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: 2b19ec26592de106b7525976eae77c9858d6cd20230be81038892f84927f10c9
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: c27c552b57d84e23d29a46425fd872449ba7a81ca2f03b305b4965180502400a
+      case_id: fastapi.background.task-injection.default-instance-is-not-reused
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23106,6 +23166,7 @@ api_surface_contract:
     - response-serialization
     observation_selectors:
     - asgi.application_error.exception
+    - asgi.cancellation.cancelled_caught
     - asgi.send.message_types
     - construction.exception_class
     - construction.exception_message
@@ -23134,7 +23195,8 @@ api_surface_contract:
       known_gaps:
       - The runner observes caller-list detachment and shared task-object mutation indirectly through
         queue projection; direct list identity is not selected.
-      - Cancellation and exhaustive request-injection forms remain unverified.
+      - Cancellation while one injected async task awaits and default-instance isolation are covered only
+        by selected cases; other cancellation timing and exhaustive request-injection forms remain unverified.
   - id: fastapi.background.BackgroundTasks.add_task
     kind: method
     source_candidate_ref: /api_candidates/275
@@ -23538,6 +23600,35 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 3424fc0b0fcd86e4ea49983dc34d8501b1b7bab2c8351dd077c5e225e537c879
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: 2b19ec26592de106b7525976eae77c9858d6cd20230be81038892f84927f10c9
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: c27c552b57d84e23d29a46425fd872449ba7a81ca2f03b305b4965180502400a
+      case_id: fastapi.background.task-execution.cancelled-during-background-await
+      observation_selectors:
+      - asgi.cancellation.cancelled_caught
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: background-tasks-injection-precedence
+      input_path: tests/fixtures/inputs/parity/background-tasks-injection-precedence.json
+      input_sha256: 3424fc0b0fcd86e4ea49983dc34d8501b1b7bab2c8351dd077c5e225e537c879
+      recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+      recipe_sha256: 2b19ec26592de106b7525976eae77c9858d6cd20230be81038892f84927f10c9
+      workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+      workload_sha256: c27c552b57d84e23d29a46425fd872449ba7a81ca2f03b305b4965180502400a
+      case_id: fastapi.background.task-injection.default-instance-is-not-reused
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23576,10 +23667,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
       known_gaps:
-      - Generic task failure, cancellation, callable-shape, and invalid-call behavior remains Starlette-RS-owned;
-        only the selected inherited requirements below are linked here.
-      - Other FastAPI add_task invalid-call shapes and less common dependency-injection combinations remain
-        outside the focused cases.
+      - Generic scheduling, failure, and cancellation behavior is Starlette-RS-owned; the current identity-checked
+        cases cover selected callable forms, one failure path, and one cancellation path only.
+      - Other add_task invalid-call shapes and dependency-injection combinations remain outside the focused
+        cases.
   - id: fastapi.datastructures.Address
     kind: import_binding
     source_candidate_ref: /api_candidates/293

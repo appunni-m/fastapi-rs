@@ -15600,14 +15600,25 @@ reviewed_api_contract_overlay:
           case_id: fastapi.background.task-execution.callable-shapes-and-kwargs
         - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
           case_id: fastapi.background.task-injection.starlette-base-annotation-in-dependency
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.background.task-execution.cancelled-during-background-await
+          workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+          observation_selectors: [asgi.cancellation.cancelled_caught, http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.background.task-injection.default-instance-is-not-reused
+          workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+          observation_selectors: [http.status, http.body.bytes]
       feature_ids: [dependency-security, response-serialization]
-      observation_selectors: [python.signature, python.binding_identity, python.attribute_value, python.background_task_queue, python.call_outcome, http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+      observation_selectors: [python.signature, python.binding_identity, python.attribute_value, python.background_task_queue, python.call_outcome, http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, asgi.cancellation.cancelled_caught, construction.outcome, construction.exception_class, construction.exception_message]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Generic task failure, cancellation, callable-shape, and invalid-call behavior remains Starlette-RS-owned; only the selected inherited requirements below are linked here.
-          - Other FastAPI add_task invalid-call shapes and less common dependency-injection combinations remain outside the focused cases.
+          - >-
+            Generic scheduling, failure, and cancellation behavior is Starlette-RS-owned; the
+            current identity-checked cases cover selected callable forms, one failure path, and
+            one cancellation path only.
+          - Other add_task invalid-call shapes and dependency-injection combinations remain outside the focused cases.
       supported_slice: >-
         The direct API workflow checks the FastAPI override signature, distinct
         method identity, forwarding return value, queued callback/argument
@@ -15615,8 +15626,9 @@ reviewed_api_contract_overlay:
         missing/duplicate self/func TypeErrors. Request fixtures observe nested
         dependency aggregation, mixed sync/async callback order, constructor task
         sequences, live task-list append, one failure short-circuit, selected
-        callback shapes, and Starlette-base injection from a dependency. Generic
-        scheduling remains delegated to Starlette-RS.
+        callback shapes, cancellation during one async task, request-scoped
+        injection despite a default instance, and Starlette-base injection from
+        a dependency. Generic scheduling remains delegated to Starlette-RS.
 
     fastapi.BackgroundTasks:
       rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
@@ -15645,20 +15657,32 @@ reviewed_api_contract_overlay:
           case_id: fastapi.background.task-execution.callable-shapes-and-kwargs
         - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
           case_id: fastapi.background.task-injection.starlette-base-annotation-in-dependency
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.background.task-execution.cancelled-during-background-await
+          workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+          observation_selectors: [asgi.cancellation.cancelled_caught, http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.background.task-injection.default-instance-is-not-reused
+          workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+          observation_selectors: [http.status, http.body.bytes]
       feature_ids: [app-routing, dependency-security, response-serialization]
-      observation_selectors: [python.signature, python.binding_identity, http.status, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+      observation_selectors: [python.signature, python.binding_identity, http.status, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, asgi.cancellation.cancelled_caught, construction.outcome, construction.exception_class, construction.exception_message]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The linked cases sample live-list append and one failure short-circuit; cancellation, other failure forms, and exhaustive injection combinations remain outside the declared scope.
+          - >-
+            The linked cases sample live-list append, one failure short-circuit, one cancellation
+            path, and default-instance isolation; other failure/cancellation forms and exhaustive
+            injection combinations remain outside the declared scope.
       supported_slice: >-
         The root binding exposes the FastAPI-owned subclass with the pinned
         constructor signature; direct identity and request workflows cover its
         FastAPI module alias, constructor-provided task sequences, nested task
         aggregation, explicit-response precedence, mixed callback order, live
         task-list append, selected callback execution, one failure short-circuit,
-        and a Starlette-base annotation in a dependency.
+        one cancellation path, default-instance isolation, and a Starlette-base
+        annotation in a dependency.
         Inherited task semantics remain delegated to the explicit Starlette-RS
         crosswalk.
 
@@ -15887,19 +15911,31 @@ reviewed_api_contract_overlay:
           case_id: fastapi.background.task-execution.callable-shapes-and-kwargs
         - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
           case_id: fastapi.background.task-injection.starlette-base-annotation-in-dependency
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.background.task-execution.cancelled-during-background-await
+          workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+          observation_selectors: [asgi.cancellation.cancelled_caught, http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml
+          case_id: fastapi.background.task-injection.default-instance-is-not-reused
+          workload_path: tests/fixtures/workloads/background_tasks_injection_precedence.py
+          observation_selectors: [http.status, http.body.bytes]
       feature_ids: [app-routing, dependency-security, response-serialization]
-      observation_selectors: [python.signature, python.binding_identity, python.background_task_queue, http.status, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+      observation_selectors: [python.signature, python.binding_identity, python.background_task_queue, http.status, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, asgi.cancellation.cancelled_caught, construction.outcome, construction.exception_class, construction.exception_message]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - The runner observes caller-list detachment and shared task-object mutation indirectly through queue projection; direct list identity is not selected.
-          - Cancellation and exhaustive request-injection forms remain unverified.
+          - >-
+            Cancellation while one injected async task awaits and default-instance isolation are
+            covered only by selected cases; other cancellation timing and exhaustive
+            request-injection forms remain unverified.
       supported_slice: >-
         FastAPI's class is a subclass of the pinned Starlette BackgroundTasks
         class; linked cases compare constructor signatures, shallow task-object
         sharing with caller-list detachment, constructor task execution, live
-        list append, selected callback forms, failure short-circuiting, and
+        list append, selected callback forms, failure short-circuiting, one
+        cancellation path, default-instance isolation across two requests, and
         inherited-base injection effects. The contract remains partial.
 
     fastapi.datastructures.UploadFile:
