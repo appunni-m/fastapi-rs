@@ -121,6 +121,17 @@ Recipes contain stimuli only, never expected output. Oracle artifacts under
 `parity-results/` are per-run evidence; the atlas and manifest record fixture
 scope and runner capability, not pass/fail results.
 
+The `fastapi-rs` crate also exposes an initial Python-free Rust service surface
+at `fastapi_rs::native`. It registers typed Rust handlers on Starlette-RS's
+server-neutral native service and provides bounded JSON-body, JSON-response,
+and streaming-response helpers. The default feature graph excludes PyO3; the
+`python` feature enables the implementation used by `fastapi-rs-py`. This
+native route slice does not implement Python FastAPI's complete validation,
+dependency-injection, Pydantic, or OpenAPI contracts, and it does not claim
+parity with the Python API. CI runs
+`cargo check --package fastapi-rs --no-default-features --locked` and rejects
+PyO3 packages from that resolved normal/build dependency graph.
+
 An earlier OpenAPI response-contract checkpoint passed 214 selected normal
 cases and six separate fault contracts; its incremental coverage added 42 Rust
 regions. See the

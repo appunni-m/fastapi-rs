@@ -200,6 +200,7 @@ impl FastApiOperationRouter {
 
     /// Rebuilds route matching in an effective order while retaining stable
     /// operation indexes for callers that already hold route metadata.
+    #[cfg(feature = "python")]
     pub(crate) fn set_route_order(&mut self, route_order: &[usize]) -> bool {
         if route_order.len() != self.operations.len() {
             return false;
@@ -366,6 +367,7 @@ impl FastApiOperationRouter {
     /// Matching and root-path handling use Starlette-RS's public route-table
     /// API. Encoded method tokens preserve FastAPI's exact method semantics.
     #[must_use]
+    #[cfg(feature = "python")]
     pub(crate) fn find_slash_redirect_path(
         &self,
         path: &str,

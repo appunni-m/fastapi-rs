@@ -16,15 +16,23 @@ source_tree_sha256 = "da4acf9c64ae8df8a9bde0976d1777f5b36d67a6af45c443b0d0f617ca
 
 [features]
 default = []
-fault-injection = []
+python = ["dep:base64", "dep:pyo3"]
+fault-injection = ["python"]
 
 [lib]
 name = "fastapi_rs"
 
 [dependencies]
-base64.workspace = true
-pyo3.workspace = true
+base64 = { workspace = true, optional = true }
+pyo3 = { workspace = true, optional = true }
+bytes.workspace = true
+http.workspace = true
+http-body.workspace = true
+http-body-util.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 starlette-rs.workspace = true
+tower-service.workspace = true
 
 [build-dependencies]
 sha2.workspace = true

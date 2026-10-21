@@ -42,8 +42,11 @@ separate manifest operation when callers can invoke or inspect it separately.
 FastAPI-RS has one target profile: the Python consumer surface imported as
 `fastapi`. The `fastapi-rs` crate owns its behavior; `fastapi-rs-py` packages
 the thin PyO3 boundary. Rust implementation details are not a second FastAPI
-target or additional Python API surface. This document is an audit aid; it is
-not a second manifest or an execution result.
+target or additional Python API surface. The same `fastapi-rs` crate also
+exposes an additive Rust service API under `fastapi_rs::native`; that API is
+outside the FastAPI Python manifest and makes no claim of full Python FastAPI
+parity. This document is an audit aid; it is not a second manifest or an
+execution result.
 
 Runtime namespace reflection complements the AST inventory in
 [`runtime-api-surface-core.json`](../tests/fixtures/runtime-api-surface-core.json)
