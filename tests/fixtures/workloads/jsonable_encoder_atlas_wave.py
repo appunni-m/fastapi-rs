@@ -4,13 +4,16 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
-from pathlib import PurePath, PurePosixPath, PureWindowsPath
+import ipaddress
+from pathlib import Path, PurePath, PurePosixPath, PureWindowsPath
+import re
 from typing import TypedDict
+from uuid import UUID
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field, SecretBytes, SecretStr, field_serializer
 from pydantic.v1 import BaseModel as PydanticV1BaseModel
 from pydantic_core import PydanticUndefined as Undefined
 
@@ -258,4 +261,45 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "nested.deque-models": {"args": [deque([ChildModel(tag="larch")])], "kwargs": {}},
         "undefined.value": {"args": [{"amount": Undefined}], "kwargs": {}},
         "color.core": {"args": [{"shade": Color("blue")}], "kwargs": {}},
+        "builtin.bytes": {"args": [b"encoder bytes"], "kwargs": {}},
+        "builtin.date": {"args": [date(2024, 5, 6)], "kwargs": {}},
+        "builtin.datetime": {"args": [datetime(2024, 5, 6, 7, 8, 9, 123456)], "kwargs": {}},
+        "builtin.time": {"args": [time(7, 8, 9, 123456)], "kwargs": {}},
+        "builtin.timedelta": {"args": [timedelta(seconds=2.25)], "kwargs": {}},
+        "builtin.enum": {"args": [CustomStatus.OPEN], "kwargs": {}},
+        "builtin.ipv4-address": {"args": [ipaddress.IPv4Address("192.0.2.8")], "kwargs": {}},
+        "builtin.ipv4-interface": {
+            "args": [ipaddress.IPv4Interface("192.0.2.8/24")],
+            "kwargs": {},
+        },
+        "builtin.ipv4-network": {
+            "args": [ipaddress.IPv4Network("192.0.2.0/24")],
+            "kwargs": {},
+        },
+        "builtin.ipv6-address": {"args": [ipaddress.IPv6Address("2001:db8::8")], "kwargs": {}},
+        "builtin.ipv6-interface": {
+            "args": [ipaddress.IPv6Interface("2001:db8::8/64")],
+            "kwargs": {},
+        },
+        "builtin.ipv6-network": {
+            "args": [ipaddress.IPv6Network("2001:db8::/64")],
+            "kwargs": {},
+        },
+        "builtin.path": {"args": [Path("records/pet.json")], "kwargs": {}},
+        "builtin.pattern": {"args": [re.compile(r"^pet-[0-9]+$")], "kwargs": {}},
+        "builtin.secret-bytes": {"args": [SecretBytes(b"secret")], "kwargs": {}},
+        "builtin.secret-string": {"args": [SecretStr("secret")], "kwargs": {}},
+        "builtin.uuid": {
+            "args": [UUID("12345678-1234-5678-1234-567812345678")],
+            "kwargs": {},
+        },
+        "container.set": {"args": [{3, 1, 2}], "kwargs": {}},
+        "container.frozenset": {"args": [frozenset({3, 1, 2})], "kwargs": {}},
+        "container.tuple": {"args": [("alpha", "beta")], "kwargs": {}},
+        "container.generator": {"args": [(item for item in (1, 2, 3))], "kwargs": {}},
+        "primitive.string": {"args": ["json value"], "kwargs": {}},
+        "primitive.integer": {"args": [42], "kwargs": {}},
+        "primitive.float": {"args": [2.5], "kwargs": {}},
+        "primitive.boolean": {"args": [True], "kwargs": {}},
+        "primitive.none": {"args": [None], "kwargs": {}},
     }

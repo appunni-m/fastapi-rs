@@ -6448,15 +6448,18 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            These cases do not cover every ENCODERS_BY_TYPE member, recursive/cyclic graphs,
-            every arbitrary-object conversion path, all validation failures, or optional Pydantic
-            types and third-party serialization protocols.
+            Registry inputs cover the standard entries and the Pydantic Core Url/AnyUrl and
+            Color entries; NameEmail and optional pydantic_extra_types.Color remain unprobed.
+            Recursive/cyclic graphs, every arbitrary-object conversion path, all validation
+            failures, and third-party serialization protocols also remain uncovered.
         rust_binding: "fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__"
       supported_slice: >-
         Direct-call behavior is bounded to the listed encoder recipes: signature, recursive
-        JSON-compatible output for their dataclass/Pydantic/mapping inputs, alias and exclusion
-        options, exact/base custom encoders, and the selected unsupported-value/Pydantic-v1
-        errors; unselected third-party object protocols remain outside scope.
+        JSON-compatible output for their dataclass/Pydantic/mapping/container inputs, covered
+        built-in type conversions, alias and exclusion options, exact/base custom encoders,
+        Pydantic Core Url/AnyUrl conversion, and the selected unsupported-value/Pydantic-v1
+        errors; NameEmail, optional extra Color, and unselected third-party object protocols
+        remain outside scope.
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       source_evidence:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
