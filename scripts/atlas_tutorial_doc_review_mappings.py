@@ -1163,8 +1163,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks "
             "from dependencies. The linked independent cases observe response effects, "
             "selected callback/keyword forms, a live list append, one failure "
-            "short-circuit, and cancellation while an injected async task awaits. They "
-            "do not claim exhaustive callable, cancellation, or injection coverage. "
+            "short-circuit, cancellation while an injected async task awaits, and "
+            "request-scoped injection across two requests despite a parameter default. "
+            "They do not claim exhaustive callable, cancellation, or injection coverage. "
             "FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; generic "
             "execution and cancellation propagation are Starlette-owned."
         ),
@@ -1234,6 +1235,16 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+                "case_id": "fastapi.background.task-injection.default-instance-is-not-reused",
+                "action_ids": [
+                    "inject-over-default-background-tasks-on-first-request",
+                    "inject-over-default-background-tasks-on-second-request",
+                    "observe-default-parameter-task-effects",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
                 "case_id": "fastapi.background.task-list.live-append-during-execution",
                 "action_ids": ["append-task-while-running", "observe-live-list-mutation-effects"],
                 "observation_selectors": [
@@ -1255,6 +1266,18 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "start_line": 5,
                 "end_line": 61,
                 "role": "FastAPI BackgroundTasks subclass and documented add_task wrapper",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 360,
+                "end_line": 384,
+                "role": "special-parameter classification for BackgroundTasks subclasses",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 715,
+                "end_line": 730,
+                "role": "request-scoped creation and injection of the shared BackgroundTasks collection",
             },
         ],
         "starlette_contract_sources": [

@@ -14,6 +14,7 @@ def create_app(factory_input: dict[str, object], _workload_trace: list[str]) -> 
     del factory_input, _workload_trace
     app = FastAPI()
     task_events: list[str] = []
+    default_background_tasks = BackgroundTasks()
 
     def record_task(label: str) -> None:
         task_events.append(label)
@@ -123,6 +124,13 @@ def create_app(factory_input: dict[str, object], _workload_trace: list[str]) -> 
 
         background_tasks.add_task(wait_until_cancelled)
         return {"kind": "cancellation"}
+
+    @app.get("/default-background-tasks")
+    async def use_request_background_tasks_with_default(
+        background_tasks: BackgroundTasks = default_background_tasks,
+    ) -> dict[str, bool]:
+        background_tasks.add_task(record_task, "request-scoped-default-parameter")
+        return {"uses_default_instance": background_tasks is default_background_tasks}
 
     @app.get("/callable-shapes")
     async def execute_callable_shapes(background_tasks: BackgroundTasks) -> dict[str, str]:

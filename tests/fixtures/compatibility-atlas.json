@@ -421456,6 +421456,20 @@
                     "path": "fastapi/background.py",
                     "source": "reviewed-source-span",
                     "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 384,
+                    "line": 360,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 730,
+                    "line": 715,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
                   }
                 ],
                 "source_path": "docs/en/docs/tutorial/background-tasks.md"
@@ -421534,6 +421548,20 @@
                     "path": "fastapi/background.py",
                     "source": "reviewed-source-span",
                     "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 384,
+                    "line": 360,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 730,
+                    "line": 715,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
                   }
                 ],
                 "source_path": "docs/en/docs/tutorial/background-tasks.md"
@@ -421556,6 +421584,20 @@
                     "end_line": 61,
                     "line": 5,
                     "path": "fastapi/background.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 384,
+                    "line": 360,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 730,
+                    "line": 715,
+                    "path": "fastapi/dependencies/utils.py",
                     "source": "reviewed-source-span",
                     "term": "curated public-reference review"
                   }
@@ -421717,6 +421759,20 @@
                     "path": "fastapi/background.py",
                     "source": "reviewed-source-span",
                     "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 384,
+                    "line": 360,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 730,
+                    "line": 715,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
                   }
                 ],
                 "source_path": "docs/en/docs/tutorial/background-tasks.md"
@@ -421780,6 +421836,20 @@
                     "path": "fastapi/background.py",
                     "source": "reviewed-source-span",
                     "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 384,
+                    "line": 360,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
+                  },
+                  {
+                    "end_line": 730,
+                    "line": 715,
+                    "path": "fastapi/dependencies/utils.py",
+                    "source": "reviewed-source-span",
+                    "term": "curated public-reference review"
                   }
                 ],
                 "source_path": "docs/en/docs/tutorial/background-tasks.md"
@@ -421809,11 +421879,12 @@
               "fastapi.background.task-execution.callable-shapes-and-kwargs",
               "fastapi.background.task-execution.cancelled-during-background-await",
               "fastapi.background.task-execution.failure-short-circuits",
+              "fastapi.background.task-injection.default-instance-is-not-reused",
               "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
               "fastapi.background.task-list.live-append-during-execution",
               "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
             ],
-            "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, asgi.cancellation.cancelled_caught, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 7 case(s); observes asgi.application_error.exception, asgi.cancellation.cancelled_caught, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "asgi.application_error.exception",
@@ -421985,7 +422056,7 @@
         "page_feature_evidence": [],
         "related_usage_sources": [],
         "reviewed_source_mapping": {
-          "rationale": "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks from dependencies. The linked independent cases observe response effects, selected callback/keyword forms, a live list append, one failure short-circuit, and cancellation while an injected async task awaits. They do not claim exhaustive callable, cancellation, or injection coverage. FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; generic execution and cancellation propagation are Starlette-owned.",
+          "rationale": "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks from dependencies. The linked independent cases observe response effects, selected callback/keyword forms, a live list append, one failure short-circuit, cancellation while an injected async task awaits, and request-scoped injection across two requests despite a parameter default. They do not claim exhaustive callable, cancellation, or injection coverage. FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; generic execution and cancellation propagation are Starlette-owned.",
           "source_evidence": [
             {
               "end_line": 74,
@@ -422000,6 +422071,20 @@
               "role": "FastAPI BackgroundTasks subclass and documented add_task wrapper",
               "sha256": "4c00f301eb613806aaa55bdc918b934f77383bd3751da150cac1423edd0cb205",
               "start_line": 5
+            },
+            {
+              "end_line": 384,
+              "path": "fastapi/dependencies/utils.py",
+              "role": "special-parameter classification for BackgroundTasks subclasses",
+              "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+              "start_line": 360
+            },
+            {
+              "end_line": 730,
+              "path": "fastapi/dependencies/utils.py",
+              "role": "request-scoped creation and injection of the shared BackgroundTasks collection",
+              "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+              "start_line": 715
             }
           ],
           "starlette_contract_authority": "1.6.0",
@@ -422084,6 +422169,19 @@
               "case_id": "fastapi.background.task-execution.cancelled-during-background-await",
               "observation_selectors": [
                 "asgi.cancellation.cancelled_caught",
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml"
+            },
+            {
+              "action_ids": [
+                "inject-over-default-background-tasks-on-first-request",
+                "inject-over-default-background-tasks-on-second-request",
+                "observe-default-parameter-task-effects"
+              ],
+              "case_id": "fastapi.background.task-injection.default-instance-is-not-reused",
+              "observation_selectors": [
                 "http.body.bytes",
                 "http.status"
               ],

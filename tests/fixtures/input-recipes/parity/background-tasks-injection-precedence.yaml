@@ -462,3 +462,61 @@ cases:
   source_evidence:
   - path: docs/en/docs/tutorial/background-tasks.md
     kind: upstream_documentation
+- case_id: fastapi.background.task-injection.default-instance-is-not-reused
+  factory_input: {}
+  construction_observation: *background-task-construction
+  actions:
+  - action_id: inject-over-default-background-tasks-on-first-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: *background-task-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /default-background-tasks
+      query_string: ''
+      root_path: ''
+      headers: *background-task-headers
+      client: *background-task-client
+      server: *background-task-server
+    receive_events: *background-task-empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: inject-over-default-background-tasks-on-second-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: *background-task-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /default-background-tasks
+      query_string: ''
+      root_path: ''
+      headers: *background-task-headers
+      client: *background-task-client
+      server: *background-task-server
+    receive_events: *background-task-empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: observe-default-parameter-task-effects
+    kind: http_request
+    scope:
+      type: http
+      asgi: *background-task-asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /events
+      query_string: ''
+      root_path: ''
+      headers: *background-task-headers
+      client: *background-task-client
+      server: *background-task-server
+    receive_events: *background-task-empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - path: docs/en/docs/tutorial/background-tasks.md
+    kind: upstream_documentation
