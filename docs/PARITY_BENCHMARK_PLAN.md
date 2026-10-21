@@ -53,23 +53,24 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The latest completed direct-ASGI suite is recorded in
-[the 2026-10-21 report](benchmarks/2026-10-21-94865f9.md). It completed all
+[the 2026-10-21 report](benchmarks/2026-10-21-8c7eb97.md). It completed all
 seven reviewed workloads and passed all 45 selected parity observations on
-FastAPI-RS 94865f9948611f707bfe47262b14be46b2bfa07b, FastAPI 0.141.1 at
+FastAPI-RS 8c7eb970cabd5fee871bc0a9fcf1691b9d4014f3, FastAPI 0.141.1 at
 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f, Starlette 1.6.0 at
 4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and Starlette-RS
 4139a72449bf5751e8902fb1c7175ee7f191d338. The fixture manifest SHA-256 is
-8a5dc27eb5bbf2450bc14bd2eb7f8f9bc14b56003a1111b42ee5be8d51cdf9b9. Suite
-receipt benchmark-results/suite-20261021T000900Z-cd0b3bac-1a8f-45e1-b470-d05e1aecd78b.json
+f67678c11d87b35d56d5d5b04c78b40cf8251faeb9865e8b405cdc7aa296705b. Suite
+receipt benchmark-results/suite-20261021T053534Z-3b38e3b4-06a9-4420-853d-2005a79921fa.json
 has SHA-256
-f72f4ff26ff2f855dcc728be7fe7b7348cfccabccc896d263bf0cc1bdca75ca1.
-FastAPI-RS median and p95 latency were higher in all seven measured workloads.
-The report records identities, the direct-ASGI boundary, timing policy,
-parity counts, and per-workload result paths. This selected workload set does
-not establish full FastAPI parity or a broader performance conclusion. The
-older 2026-10-20 report binds a previous target and manifest; its stale
-root-level suite receipt is preserved under
-benchmark-results/archive/stale-manifest-20261020/.
+1a2715291047b44cf19ad9e83b0032693651d9bdf79375b525149b04753e785a.
+FastAPI-RS median latency was higher in all seven workloads; p95 was higher in
+six, with the distinct-query-alias workload's FastAPI p95 influenced by large
+outliers. The report records identities, direct-ASGI boundaries, timing
+policy, parity counts, and per-workload result paths. This selected workload
+set does not establish full FastAPI parity or a broader performance
+conclusion. The earlier same-day suite is historical because it binds the
+previous target and manifest; its receipt is preserved under
+benchmark-results/archive/stale-manifest-20261021-before-8c7eb97/.
 The 2026-10-19 report remains historical because it binds an earlier target
 and fixture manifest. Its suite receipt is archived at
 `benchmark-results/archive/stale-manifest-20261019/suite-20261019T091804Z-650d1f09-bdaf-4cc3-b125-21c3ae0b7f33.json`.
@@ -90,11 +91,11 @@ pass-through `fastapi` facade, isolated workers, and an exact comparator. The
 `make parity-first-slice` command runs both pinned products and stores the
 comparison in ignored `parity-results/`; CI runs this gate. The latest
 identity-checked first-slice comparison passed 13/13 at FastAPI-RS
-`135805f9146773cc0b5722596383832f832e4d09` with FastAPI 0.141.1, Starlette
+`8c7eb970cabd5fee871bc0a9fcf1691b9d4014f3` with FastAPI 0.141.1, Starlette
 1.6.0, and Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`; comparison
-receipt `parity-results/comparisons/ea1e603b-5d4c-4486-95ad-a9a07fb0cbc3.json`
+receipt `parity-results/comparisons/ab90820d-cf0d-482c-8135-ffc422232ac3.json`
 binds manifest SHA-256
-`fec1d84887e682f981837d55071e122e444c5f6060f58bf744714399c266bf9c`. This
+`f67678c11d87b35d56d5d5b04c78b40cf8251faeb9865e8b405cdc7aa296705b`. This
 validates only the declared first slice. It does not establish broader API or
 feature parity. Broader parity remains incomplete.
 
