@@ -53,6 +53,81 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 "x-registry": {"owner": "fastapi-rs", "revision": 1},
             },
         },
+        "components-all-fields": {
+            "args": [],
+            "kwargs": {
+                "schemas": {
+                    "Pet": {"title": "Pet", "type": "object"},
+                    "PetRef": {"$ref": "#/components/schemas/Pet"},
+                },
+                "responses": {
+                    "Ok": {"description": "OK"},
+                    "OkRef": {"$ref": "#/components/responses/Ok"},
+                },
+                "parameters": {
+                    "Limit": {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {"type": "integer"},
+                    },
+                    "LimitRef": {"$ref": "#/components/parameters/Limit"},
+                },
+                "examples": {
+                    "Pet": {"summary": "A pet", "value": {"id": 1}},
+                    "PetRef": {"$ref": "#/components/examples/Pet"},
+                },
+                "requestBodies": {
+                    "CreatePet": {
+                        "description": "A pet to create",
+                        "content": {
+                            "application/json": {
+                                "schema": {"type": "object"},
+                            }
+                        },
+                    },
+                    "CreatePetRef": {"$ref": "#/components/requestBodies/CreatePet"},
+                },
+                "headers": {
+                    "Trace": {
+                        "description": "Trace identifier",
+                        "schema": {"type": "string"},
+                    },
+                    "TraceRef": {"$ref": "#/components/headers/Trace"},
+                },
+                "securitySchemes": {
+                    "ApiKey": {
+                        "type": "apiKey",
+                        "in": "header",
+                        "name": "X-API-Key",
+                    },
+                    "ApiKeyRef": {"$ref": "#/components/securitySchemes/ApiKey"},
+                },
+                "links": {
+                    "Next": {
+                        "operationId": "listPets",
+                        "parameters": {"cursor": "$response.body#/cursor"},
+                    },
+                    "NextRef": {"$ref": "#/components/links/Next"},
+                },
+                "callbacks": {
+                    "OnEvent": {
+                        "/events": {
+                            "post": {
+                                "responses": {"204": {"description": "No Content"}}
+                            }
+                        }
+                    },
+                    "OnEventRef": {"$ref": "#/components/callbacks/OnEvent"},
+                },
+                "pathItems": {
+                    "Reusable": {
+                        "get": {"responses": {"200": {"description": "OK"}}}
+                    },
+                    "ReusableRef": {"$ref": "#/components/pathItems/Reusable"},
+                },
+                "x-registry": {"owner": "fastapi-rs", "revision": 2},
+            },
+        },
         "api-key": {
             "args": [],
             "kwargs": {
