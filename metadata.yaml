@@ -7526,6 +7526,7 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_openapi_cache_updates_after_live_route_addition}
+        - {path: tests/test_router_include_context.py, symbol: test_nested_router_added_after_parent_inclusion_is_live}
         - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for}
         - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for}
@@ -7568,6 +7569,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.router.include-context.openapi-cache-after-live-route
           workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
           observation_selectors: [http.status, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
         - recipe_path: tests/fixtures/input-recipes/parity/router-repeated-inclusion-openapi-path-set.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-openapi-path-set
           workload_path: tests/fixtures/workloads/repeated_deep_router_inclusions_upstream.py
@@ -8720,6 +8725,8 @@ reviewed_api_contract_overlay:
           end_line: 1103
         - path: tests/test_router_include_context.py
           symbol: test_openapi_cache_updates_after_live_route_addition
+        - path: tests/test_router_include_context.py
+          symbol: test_nested_router_added_after_parent_inclusion_is_live
         - path: tests/test_extra_routes.py
           symbol: test_openapi_schema
         - path: tests/test_tutorial/test_request_files/test_tutorial001.py
@@ -8897,6 +8904,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.router.include-context.openapi-cache-after-live-route
           workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
           observation_selectors: [http.status, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema, warnings.category_message]
       supported_slice: >-
@@ -8915,12 +8926,14 @@ reviewed_api_contract_overlay:
         the next openapi() call regenerates the schema and subsequent calls
         reuse the new object. The input workflow reports cache identity through
         response booleans and compares the OpenAPI paths before and after route
-        registration. The built-in endpoint uses this canonical cache and adds
+        registration. A child router included through a parent before app
+        inclusion also invalidates the same cache when a route is added to that
+        child; the input compares cache identity before and after mutation and
+        observes the composed `/api/child/later` path. The built-in endpoint uses this canonical cache and adds
         a request root-path server to a shallow response copy without persisting
         it, as covered by openapi-cache-root-path. Assigning custom
         openapi_schema values, per-instance replacement of the openapi method,
-        late mutation of already-included routers, callback declarations on
-        path operations, and complete
+        deeper nested mutation shapes, callback declarations on path operations, and complete
         OpenAPI parity remain outside this slice. The root-path fixture selects
         configured-prefix fallback and precedence, ASGI scope propagation,
         mutable `root_path` and `root_path_in_servers` attributes, and automatic
@@ -8960,6 +8973,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_ws_router.py}
         - {path: tests/test_strict_content_type_nested.py}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
+        - {path: tests/test_router_include_context.py, symbol: test_nested_router_added_after_parent_inclusion_is_live}
         - {path: tests/test_router_include_context.py, symbol: test_no_prefix_include_validation_sees_effective_starlette_route_path}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_empty_router.py, symbol: test_include_empty}
@@ -9126,6 +9140,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.router.include-context.openapi-cache-after-live-route
           workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
           observation_selectors: [http.status, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
         - {recipe_path: tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml, case_id: fastapi.request.strict-content-type.app-and-nested-upstream}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-self-include-construction}
         - {recipe_path: tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml, case_id: fastapi.routing.router-transitive-cycle-include-construction}
@@ -9541,6 +9559,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_openapi_cache_updates_after_live_route_addition}
+        - {path: tests/test_router_include_context.py, symbol: test_nested_router_added_after_parent_inclusion_is_live}
         - {path: tests/test_router_include_context.py, symbol: test_later_full_match_wins_over_earlier_included_partial_match}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
@@ -9607,6 +9626,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.router.include-context.openapi-cache-after-live-route
           workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
           observation_selectors: [http.status, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+          case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+          workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-

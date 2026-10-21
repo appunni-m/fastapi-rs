@@ -1002,6 +1002,20 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
             "openapi.paths",
         ),
     ),
+    (
+        "tests/test_router_include_context.py",
+        "test_nested_router_added_after_parent_inclusion_is_live",
+    ): _reviewed_direct_link(
+        "router-openapi-cache-after-include",
+        "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+        "fastapi.router.include-context.openapi-cache-after-nested-live-route",
+        (
+            "observe-openapi-before-nested-route",
+            "add-nested-child-route-after-openapi-cache",
+            "observe-openapi-after-nested-child-route",
+        ),
+        ("http.status", "http.body.bytes", "openapi.document", "openapi.paths"),
+    ),
 }
 
 

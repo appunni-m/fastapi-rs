@@ -35050,17 +35050,25 @@
     {
       "id": "router-openapi-cache-after-include",
       "input_path": "tests/fixtures/inputs/parity/router-openapi-cache-after-include.json",
-      "input_sha256": "035acc097fc5a7fc992e0edaf4e1d66f2e290228b734d43fab7e90d1dc30a5de",
+      "input_sha256": "f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
-      "recipe_sha256": "d9b800700040699c3e462349243b1d23b66d2c0e49758da03dc419a2131fbed7",
+      "recipe_sha256": "8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2",
       "case_ids": [
-        "fastapi.router.include-context.openapi-cache-after-live-route"
+        "fastapi.router.include-context.openapi-cache-after-live-route",
+        "fastapi.router.include-context.openapi-cache-after-nested-live-route"
       ],
       "workload_path": "tests/fixtures/workloads/router_openapi_cache_after_include.py",
-      "workload_sha256": "d008079175d99da2bd385e9a264aeaa2e8aa662f33fecf6680e296d5f42a1885",
+      "workload_sha256": "d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323",
       "case_contracts": [
         {
           "case_id": "fastapi.router.include-context.openapi-cache-after-live-route",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.router.include-context.openapi-cache-after-nested-live-route",
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_router_include_context.py"
@@ -70773,11 +70781,13 @@
       "fixture_id": "fastapi.test.test-router-include-context",
       "workflow_id": "router-openapi-cache-after-include",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.router.include-context.openapi-cache-after-live-route"
+        "fastapi.router.include-context.openapi-cache-after-live-route",
+        "fastapi.router.include-context.openapi-cache-after-nested-live-route"
       ],
       "observation_selectors": [
+        "http.body.bytes",
         "http.status",
         "openapi.document",
         "openapi.paths"

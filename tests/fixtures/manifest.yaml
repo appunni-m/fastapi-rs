@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: f785e441b25c74fa5ee9d4e4a76aced8dda6a29c265420a79ce49d24818d742d
+    sha256: f0587578f2117cdc6011b0bf3fac50194c18327162d8c5ea5e42659333bafad5
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: faf0e35471beae3ce514eca8dfe361df5970210265de472cae4fe5aa429eea4b
+    sha256: b09371f6db3e1a92865066dfb0bcc5e7ffa52e57aa5ac56030914b677f45e43c
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,13 +602,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 7a2e2bec74da39558261ea87f914cd942b5c05199a2788091ebef29911b7abda
+    sha256: 027e8c0d4f49e322b3a723928e5fb334b84aeaf588399e0bd9164f0b82acaede
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 719
-      cases: 2977
+      cases: 2978
       partial_source_mappings: 1983
 
 contract_metadata:
@@ -1406,7 +1406,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 455
-    operation_fixture_refs: 2777
+    operation_fixture_refs: 2781
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -18010,13 +18010,26 @@ api_surface_contract:
       - http.status
     - workflow_id: router-openapi-cache-after-include
       input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
-      input_sha256: 035acc097fc5a7fc992e0edaf4e1d66f2e290228b734d43fab7e90d1dc30a5de
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
       recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
-      recipe_sha256: d9b800700040699c3e462349243b1d23b66d2c0e49758da03dc419a2131fbed7
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
       workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
-      workload_sha256: d008079175d99da2bd385e9a264aeaa2e8aa662f33fecf6680e296d5f42a1885
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
       case_id: fastapi.router.include-context.openapi-cache-after-live-route
       observation_selectors:
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-openapi-cache-after-include
+      input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
+      recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
+      workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
+      case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+      observation_selectors:
+      - http.body.bytes
       - http.status
       - openapi.document
       - openapi.paths
@@ -20068,13 +20081,26 @@ api_surface_contract:
       - warnings.category_message
     - workflow_id: router-openapi-cache-after-include
       input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
-      input_sha256: 035acc097fc5a7fc992e0edaf4e1d66f2e290228b734d43fab7e90d1dc30a5de
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
       recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
-      recipe_sha256: d9b800700040699c3e462349243b1d23b66d2c0e49758da03dc419a2131fbed7
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
       workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
-      workload_sha256: d008079175d99da2bd385e9a264aeaa2e8aa662f33fecf6680e296d5f42a1885
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
       case_id: fastapi.router.include-context.openapi-cache-after-live-route
       observation_selectors:
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-openapi-cache-after-include
+      input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
+      recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
+      workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
+      case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+      observation_selectors:
+      - http.body.bytes
       - http.status
       - openapi.document
       - openapi.paths
@@ -65814,13 +65840,26 @@ api_surface_contract:
       - http.status
     - workflow_id: router-openapi-cache-after-include
       input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
-      input_sha256: 035acc097fc5a7fc992e0edaf4e1d66f2e290228b734d43fab7e90d1dc30a5de
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
       recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
-      recipe_sha256: d9b800700040699c3e462349243b1d23b66d2c0e49758da03dc419a2131fbed7
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
       workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
-      workload_sha256: d008079175d99da2bd385e9a264aeaa2e8aa662f33fecf6680e296d5f42a1885
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
       case_id: fastapi.router.include-context.openapi-cache-after-live-route
       observation_selectors:
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-openapi-cache-after-include
+      input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
+      recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
+      workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
+      case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+      observation_selectors:
+      - http.body.bytes
       - http.status
       - openapi.document
       - openapi.paths
@@ -66392,13 +66431,26 @@ api_surface_contract:
       - construction.outcome
     - workflow_id: router-openapi-cache-after-include
       input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
-      input_sha256: 035acc097fc5a7fc992e0edaf4e1d66f2e290228b734d43fab7e90d1dc30a5de
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
       recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
-      recipe_sha256: d9b800700040699c3e462349243b1d23b66d2c0e49758da03dc419a2131fbed7
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
       workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
-      workload_sha256: d008079175d99da2bd385e9a264aeaa2e8aa662f33fecf6680e296d5f42a1885
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
       case_id: fastapi.router.include-context.openapi-cache-after-live-route
       observation_selectors:
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: router-openapi-cache-after-include
+      input_path: tests/fixtures/inputs/parity/router-openapi-cache-after-include.json
+      input_sha256: f99489afe6f2f89384ec62e80b070e2920d3b42a959f872ae6094afb174a1aaa
+      recipe_path: tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml
+      recipe_sha256: 8f309ea48f5ca74ba903e07a2c1160e9700d79b05b10c61399abdbe0013d54e2
+      workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
+      workload_sha256: d1084472dbfc226db03eaa2696cbe2a5a001fc926508d42de8cbaeb25c414323
+      case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
+      observation_selectors:
+      - http.body.bytes
       - http.status
       - openapi.document
       - openapi.paths

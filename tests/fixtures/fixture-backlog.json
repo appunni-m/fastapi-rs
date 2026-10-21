@@ -378573,24 +378573,24 @@
             "openapi-docs",
             "status-codes"
           ],
+          "function_source_ref": {
+            "end_line": 283,
+            "line": 266,
+            "path": "tests/test_router_include_context.py",
+            "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109"
+          },
           "id": "fastapi.test.test-router-include-context.test-nested-router-added-after-parent-inclusion-is-live",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "docs.response.body.bytes",
-            "docs.response.headers",
-            "docs.response.status",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
+            "http.body.bytes",
             "openapi.document",
-            "openapi.paths",
-            "python.pydantic_model_result",
-            "route.match"
+            "openapi.paths"
           ],
           "reviewed_mapping": {
-            "rationale": "A route is added to an APIRouter after FastAPI has included that router. The public ASGI request checks that the new prefixed route dispatches and receives the include-level dependency; a focused OpenAPI projection checks that the include-level tag and response declaration apply to the late route.",
+            "contract_gate": "Partial: this checks one two-level inclusion and route mutation after the OpenAPI cache is primed. The identity booleans and selected /api/child/later path are input observations; they are not copied upstream assertions. Other inclusion depths, mutations, and the complete OpenAPI document remain open.",
+            "rationale": "The input primes FastAPI.openapi() after a child router is included through a parent router, then adds a route to that child. The public response reports cache reuse before mutation, a new schema object after mutation, reuse of the refreshed object, and the composed path.",
             "source_evidence": [
               {
                 "end_line": 283,
@@ -378641,28 +378641,38 @@
                 "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
                 "start_line": 1070
               }
-            ]
+            ],
+            "workflow_case": {
+              "action_ids": [
+                "observe-openapi-before-nested-route",
+                "add-nested-child-route-after-openapi-cache",
+                "observe-openapi-after-nested-child-route"
+              ],
+              "case_id": "fastapi.router.include-context.openapi-cache-after-nested-live-route",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+              "workflow_id": "router-openapi-cache-after-include"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "app-routing",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
                 "http.body.bytes",
-                "route.match",
                 "openapi.paths"
               ]
             },
             {
               "feature_id": "openapi-docs",
               "selectors": [
-                "openapi.document",
-                "python.pydantic_model_result",
-                "docs.response.status",
-                "docs.response.headers",
-                "docs.response.body.bytes",
-                "http.body.bytes"
+                "http.body.bytes",
+                "openapi.document"
               ]
             },
             {
@@ -378670,7 +378680,6 @@
               "selectors": [
                 "http.status",
                 "http.body.bytes",
-                "http.body.json",
                 "openapi.paths"
               ]
             }
@@ -378683,7 +378692,23 @@
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": null,
+          "workflow_case": {
+            "action_ids": [
+              "observe-openapi-before-nested-route",
+              "add-nested-child-route-after-openapi-cache",
+              "observe-openapi-after-nested-child-route"
+            ],
+            "case_id": "fastapi.router.include-context.openapi-cache-after-nested-live-route",
+            "observation_selectors": [
+              "http.status",
+              "http.body.bytes",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+            "workflow_id": "router-openapi-cache-after-include"
+          }
         },
         {
           "feature_evidence": [
@@ -383945,11 +383970,13 @@
         },
         {
           "case_ids": [
-            "fastapi.router.include-context.openapi-cache-after-live-route"
+            "fastapi.router.include-context.openapi-cache-after-live-route",
+            "fastapi.router.include-context.openapi-cache-after-nested-live-route"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "http.body.bytes",
             "http.status",
             "openapi.document",
             "openapi.paths"
@@ -384427,10 +384454,12 @@
         },
         {
           "case_ids": [
-            "fastapi.router.include-context.openapi-cache-after-live-route"
+            "fastapi.router.include-context.openapi-cache-after-live-route",
+            "fastapi.router.include-context.openapi-cache-after-nested-live-route"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
           "selectors": [
+            "http.body.bytes",
             "http.status",
             "openapi.document",
             "openapi.paths"

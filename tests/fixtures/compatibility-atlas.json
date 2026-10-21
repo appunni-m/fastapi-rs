@@ -593636,26 +593636,6 @@
               ]
             },
             {
-              "name": "test_nested_router_added_after_parent_inclusion_is_live",
-              "reason": "Live nested-router mutation is not represented by an existing input case.",
-              "source_evidence": [
-                {
-                  "end_line": 283,
-                  "path": "tests/test_router_include_context.py",
-                  "role": "pinned FastAPI test stimulus and asserted behavior for this exact function",
-                  "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109",
-                  "start_line": 266
-                },
-                {
-                  "end_line": 3319,
-                  "path": "fastapi/routing.py",
-                  "role": "FastAPI rejects cyclic router inclusion, validates empty prefixes, and merges included routes/lifespans",
-                  "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                  "start_line": 3268
-                }
-              ]
-            },
-            {
               "name": "test_no_prefix_include_validation_rejects_empty_effective_api_route_path",
               "reason": "The focused empty-path public construction behavior is represented by test_empty_router.test_include_empty; this direct internal context variant is not a separate public case.",
               "source_evidence": [
@@ -594412,11 +594392,13 @@
           },
           {
             "case_ids": [
-              "fastapi.router.include-context.openapi-cache-after-live-route"
+              "fastapi.router.include-context.openapi-cache-after-live-route",
+              "fastapi.router.include-context.openapi-cache-after-nested-live-route"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
+              "http.body.bytes",
               "http.status",
               "openapi.document",
               "openapi.paths"
@@ -594587,10 +594569,32 @@
           {
             "case_id": "fastapi.test.test-router-include-context.test-nested-router-added-after-parent-inclusion-is-live",
             "end_line": 283,
+            "function_source_ref": {
+              "end_line": 283,
+              "line": 266,
+              "path": "tests/test_router_include_context.py",
+              "sha256": "60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109"
+            },
             "line": 266,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
-            "name": "test_nested_router_added_after_parent_inclusion_is_live"
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_nested_router_added_after_parent_inclusion_is_live",
+            "workflow_case": {
+              "action_ids": [
+                "observe-openapi-before-nested-route",
+                "add-nested-child-route-after-openapi-cache",
+                "observe-openapi-after-nested-child-route"
+              ],
+              "case_id": "fastapi.router.include-context.openapi-cache-after-nested-live-route",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
+              "workflow_id": "router-openapi-cache-after-include"
+            }
           },
           {
             "case_id": "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths",
@@ -594938,19 +594942,6 @@
             }
           ],
           "wave_scope_review_exclusions": [
-            {
-              "reason": "This wave adds a direct route to an already included APIRouter; it does not add a child router to an already included parent.",
-              "scope": "wave_only",
-              "source_evidence": [
-                {
-                  "end_line": 284,
-                  "path": "tests/test_router_include_context.py",
-                  "start_line": 266
-                }
-              ],
-              "source_function": "test_nested_router_added_after_parent_inclusion_is_live",
-              "source_path": "tests/test_router_include_context.py"
-            },
             {
               "reason": "Repeated nested inclusion prefixes and several concrete paths are outside this focused case.",
               "scope": "wave_only",
@@ -595376,10 +595367,12 @@
         },
         {
           "case_ids": [
-            "fastapi.router.include-context.openapi-cache-after-live-route"
+            "fastapi.router.include-context.openapi-cache-after-live-route",
+            "fastapi.router.include-context.openapi-cache-after-nested-live-route"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/router-openapi-cache-after-include.yaml",
           "selectors": [
+            "http.body.bytes",
             "http.status",
             "openapi.document",
             "openapi.paths"
