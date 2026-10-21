@@ -3217,6 +3217,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
           case_id: fastapi.applications.exception-handler.decorator
+        - recipe_path: tests/fixtures/input-recipes/parity/exception-overrides.yaml
+          case_id: fastapi.docs.handling-errors.subclass-handler-precedence
+          workload_path: tests/fixtures/workloads/exception_overrides.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
           case_id: fastapi.request-validation-handler.path-error
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
@@ -24415,6 +24419,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.add-exception-handler.status-code
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
           case_id: fastapi.applications.exception-handler.decorator
+        - recipe_path: tests/fixtures/input-recipes/parity/exception-overrides.yaml
+          case_id: fastapi.docs.handling-errors.subclass-handler-precedence
+          workload_path: tests/fixtures/workloads/exception_overrides.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       feature_ids: [public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:

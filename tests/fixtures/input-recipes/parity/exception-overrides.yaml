@@ -92,6 +92,48 @@ cases:
     kind: upstream_documentation_example
   - path: tests/test_tutorial/test_handling_errors/test_tutorial004.py
     kind: upstream_test
+- case_id: fastapi.docs.handling-errors.subclass-handler-precedence
+  actions:
+  - action_id: dispatch-derived-exception-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /orders/derived
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: tests/test_exception_handlers.py
+    kind: upstream_test
+  - path: tests/test_starlette_exception.py
+    kind: upstream_test
 - case_id: fastapi.docs.handling-errors.overrides-openapi
   actions:
   - action_id: inspect-overridden-handler-openapi

@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Order Error Overrides", version="1.0.0")
+
+    class DerivedOrderException(StarletteHTTPException):
+        pass
 
     @app.exception_handler(RequestValidationError)
     async def handle_invalid_request(
@@ -29,10 +32,30 @@ def create_app() -> FastAPI:
             content=f"Order error: {exc.detail}",
         )
 
+    async def handle_derived_http_exception(
+        request: Request, exc: DerivedOrderException
+    ) -> JSONResponse:
+        del request
+        return JSONResponse(
+            content={"handler": "derived", "detail": exc.detail},
+            status_code=exc.status_code,
+            headers=exc.headers,
+        )
+
+    app.add_exception_handler(DerivedOrderException, handle_derived_http_exception)
+
     @app.get("/orders/{order_id}")
     async def read_order(order_id: int) -> dict[str, int]:
         if order_id == 3:
             raise HTTPException(status_code=418, detail="Order is temporarily locked.")
         return {"order_id": order_id}
+
+    @app.get("/orders/derived")
+    async def read_derived_order() -> None:
+        raise DerivedOrderException(
+            status_code=409,
+            detail="Derived order handler must take precedence.",
+            headers={"X-Failure-Origin": "derived-order"},
+        )
 
     return app

@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: d3a1f10b8138f1b25d688b23a659150532ac8a020a821f6f37877c44649c6246
+    sha256: 1021b4fd661412d2993f487498e6668049be83fdd0377cdf839a2d239262d7d1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 1cb2e0a2d2f365280bad17bf2c4f0a1cb1c9398e4a099657374c406e6b3e3f08
+    sha256: 21c9ca9a4bf150e71d0fa1c3c6319024bdaf29e3b84b717e5c99f51c8158cc73
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 7adeea4e0aa4e5ccc38943d0104f76a5111b7c92e6e38c69db143e53313f5b1b
+    sha256: 8cd1daea57297efacabee0f2ba49181209d1a4f8f89f16bc517f0846c8290d10
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 717
-      cases: 2960
-      partial_source_mappings: 1973
+      cases: 2961
+      partial_source_mappings: 1975
 
 contract_metadata:
   aliases:
@@ -1405,7 +1405,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 431
-    operation_fixture_refs: 2690
+    operation_fixture_refs: 2691
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -15118,6 +15118,18 @@ api_surface_contract:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: exception-overrides
+      input_path: tests/fixtures/inputs/parity/exception-overrides.json
+      input_sha256: 56fa77245be785d3955c5ff571372acb9e6ca4e7bd756fc6b098b29a7e5a1411
+      recipe_path: tests/fixtures/input-recipes/parity/exception-overrides.yaml
+      recipe_sha256: 0514b489ce25b33105c1cea5afa8341999cee8c58f2c06732dd888a1bda65a91
+      workload_path: tests/fixtures/workloads/exception_overrides.py
+      workload_sha256: 0e120fced2ff6a30f9a9e6323b8e6e9085c59f454a04f5a8990e8f3d02363d3b
+      case_id: fastapi.docs.handling-errors.subclass-handler-precedence
+      observation_selectors:
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -81479,6 +81491,13 @@ api_surface_contract:
     - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
       case_id: fastapi.applications.exception-handler.decorator
       workload_path: tests/fixtures/workloads/inherited_exception_handler_registration.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/exception-overrides.yaml
+      case_id: fastapi.docs.handling-errors.subclass-handler-precedence
+      workload_path: tests/fixtures/workloads/exception_overrides.py
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered

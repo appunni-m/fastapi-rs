@@ -11072,17 +11072,18 @@
     {
       "id": "exception-overrides",
       "input_path": "tests/fixtures/inputs/parity/exception-overrides.json",
-      "input_sha256": "e8ab10053bef5820afade38dbf67368e1408197a726223de0bf5abcdb668105b",
+      "input_sha256": "56fa77245be785d3955c5ff571372acb9e6ca4e7bd756fc6b098b29a7e5a1411",
       "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
-      "recipe_sha256": "3830b0a85a0b3feddb39c659e3ddd42e53cd019a5757f99112d692bbacac3c20",
+      "recipe_sha256": "0514b489ce25b33105c1cea5afa8341999cee8c58f2c06732dd888a1bda65a91",
       "case_ids": [
         "fastapi.docs.handling-errors.overridden-validation-error",
         "fastapi.docs.handling-errors.overridden-http-error",
+        "fastapi.docs.handling-errors.subclass-handler-precedence",
         "fastapi.docs.handling-errors.overrides-openapi",
         "fastapi.docs.handling-errors.override-success"
       ],
       "workload_path": "tests/fixtures/workloads/exception_overrides.py",
-      "workload_sha256": "d8aa8a72e98b9cd4c5736294ac8f392c4609cef4dc533e7a23f94160316d586b",
+      "workload_sha256": "0e120fced2ff6a30f9a9e6323b8e6e9085c59f454a04f5a8990e8f3d02363d3b",
       "case_contracts": [
         {
           "case_id": "fastapi.docs.handling-errors.overridden-validation-error",
@@ -11100,6 +11101,15 @@
             "source:documented-example:docs_src/handling_errors/tutorial004_py310.py",
             "source:documented-page:tutorial/handling-errors.md",
             "source:upstream-test:tests/test_tutorial/test_handling_errors/test_tutorial004.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.docs.handling-errors.subclass-handler-precedence",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:upstream-test:tests/test_exception_handlers.py",
+            "source:upstream-test:tests/test_starlette_exception.py"
           ]
         },
         {
@@ -53499,12 +53509,13 @@
       "fixture_id": "fastapi.docs.tutorial-handling-errors",
       "workflow_id": "exception-overrides",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs.handling-errors.overridden-http-error",
         "fastapi.docs.handling-errors.overridden-validation-error",
         "fastapi.docs.handling-errors.override-success",
-        "fastapi.docs.handling-errors.overrides-openapi"
+        "fastapi.docs.handling-errors.overrides-openapi",
+        "fastapi.docs.handling-errors.subclass-handler-precedence"
       ],
       "observation_selectors": [
         "docs.response.headers",
@@ -53514,6 +53525,35 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_exception_handlers.py",
+      "fixture_id": "fastapi.test.test-exception-handlers",
+      "workflow_id": "exception-overrides",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.handling-errors.subclass-handler-precedence"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_starlette_exception.py",
+      "fixture_id": "fastapi.test.test-starlette-exception",
+      "workflow_id": "exception-overrides",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.handling-errors.subclass-handler-precedence"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
