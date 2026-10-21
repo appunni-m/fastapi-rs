@@ -351,6 +351,83 @@ cases:
     - kind: http_response
       selectors: [status, body]
       comparison: exact
+  - action_id: reject-float
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"float"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-bytearray
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"bytearray"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-tuple
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"tuple"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-set
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"set"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-frozenset
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"frozenset"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-complex
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"complex"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: reject-object
+    kind: http_request
+    scope: *uploadfile_pydantic_invalid_scope
+    receive_events:
+    - type: http.request
+      body: '{"kind":"object"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
   source_evidence:
   - path: fastapi/datastructures.py
     kind: upstream_api_definition

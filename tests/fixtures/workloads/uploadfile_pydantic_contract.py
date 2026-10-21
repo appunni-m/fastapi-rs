@@ -38,10 +38,17 @@ _STANDARD_INVALID_VALUES: dict[str, object] = {
     "none": None,
     "boolean": True,
     "integer": 42,
+    "float": 3.5,
     "string": "not an upload",
     "bytes": b"not an upload",
+    "bytearray": bytearray(b"not an upload"),
     "list": [],
     "mapping": {},
+    "tuple": (),
+    "set": set(),
+    "frozenset": frozenset(),
+    "complex": complex(1, 2),
+    "object": object(),
 }
 
 
