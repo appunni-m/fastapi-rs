@@ -3135,21 +3135,6 @@ def validate_compatibility_artifacts(
                 section_status = section.get("review_status")
                 feature_ids = section.get("feature_ids")
                 observation_selectors = section.get("observation_selectors")
-                if section_status == "excluded" and not feature_ids:
-                    _require(
-                        not observation_selectors,
-                        f"featureless excluded section in {fixture_id} cannot claim selectors",
-                    )
-                else:
-                    _require(
-                        bool(feature_ids),
-                        f"documented section in {fixture_id} has no feature mapping",
-                    )
-                    _require(
-                        bool(observation_selectors),
-                        f"documented section in {fixture_id} has no selectors",
-                    )
-                    register_selectors(observation_selectors, f"documented section in {fixture_id}")
                 _reject_output_values(section, f"documented section in {fixture_id}")
                 _require(
                     section_status in {"pending", "reviewed_partial", "excluded"},
@@ -3163,9 +3148,62 @@ def validate_compatibility_artifacts(
                 if section_status == "reviewed_partial":
                     _require(
                         bool(section_mappings)
+                        and bool(feature_ids)
+                        and bool(observation_selectors)
+                        and bool(section.get("selector_evidence"))
                         and bool(section.get("review_rationale"))
                         and not section.get("exclusion_reason"),
                         f"reviewed documented section in {fixture_id} lacks mapping evidence",
+                    )
+                    expected_section_selectors = sorted(
+                        {
+                            selector
+                            for mapping in section_mappings
+                            for selector in mapping.get("observation_selectors", [])
+                        }
+                    )
+                    expected_section_evidence = [
+                        {
+                            "workflow_id": mapping["workflow_id"],
+                            "recipe_path": mapping["recipe_path"],
+                            "case_ids": mapping["case_ids"],
+                            "selectors": mapping["observation_selectors"],
+                        }
+                        for mapping in section_mappings
+                    ]
+                    _require(
+                        observation_selectors == expected_section_selectors
+                        and section.get("selector_evidence") == expected_section_evidence,
+                        f"reviewed documented section in {fixture_id} selectors differ "
+                        "from its workflow cases",
+                    )
+                    candidate_selectors = section.get("candidate_observation_selectors")
+                    candidate_evidence = section.get("candidate_selector_evidence")
+                    _require(
+                        isinstance(candidate_selectors, list)
+                        and bool(candidate_selectors)
+                        and isinstance(candidate_evidence, list)
+                        and bool(candidate_evidence),
+                        f"reviewed documented section in {fixture_id} lacks candidate evidence",
+                    )
+                    register_selectors(
+                        candidate_selectors,
+                        f"documented section in {fixture_id} candidate selectors",
+                    )
+                    for evidence in candidate_evidence:
+                        _require(
+                            isinstance(evidence, dict)
+                            and isinstance(evidence.get("selectors"), list)
+                            and bool(evidence["selectors"]),
+                            f"documented section in {fixture_id} has malformed candidate evidence",
+                        )
+                        register_selectors(
+                            evidence["selectors"],
+                            f"documented section in {fixture_id} candidate evidence",
+                        )
+                    register_observed_selectors(
+                        observation_selectors,
+                        f"documented section in {fixture_id} observed selectors",
                     )
                     for mapping in section_mappings:
                         _require(
@@ -3177,7 +3215,7 @@ def validate_compatibility_artifacts(
                             f"reviewed documented section in {fixture_id} "
                             "has an incomplete workflow link",
                         )
-                        register_selectors(
+                        register_observed_selectors(
                             mapping.get("observation_selectors"),
                             f"documented section workflow in {fixture_id}",
                         )
@@ -3199,16 +3237,43 @@ def validate_compatibility_artifacts(
                         )
                 elif section_status == "excluded":
                     _require(
-                        bool(section.get("exclusion_reason")) and not section_mappings,
+                        bool(section.get("exclusion_reason"))
+                        and not section_mappings
+                        and not observation_selectors
+                        and not section.get("selector_evidence")
+                        and not section.get("candidate_observation_selectors")
+                        and not section.get("candidate_selector_evidence"),
                         f"excluded documented section in {fixture_id} needs a reason "
-                        "and no workflow links",
+                        "and no workflow or selector claims",
                     )
                 else:
                     _require(
-                        not section_mappings and not section.get("exclusion_reason"),
+                        not section_mappings
+                        and not section.get("exclusion_reason")
+                        and not observation_selectors
+                        and not section.get("selector_evidence"),
                         f"pending documented section in {fixture_id} cannot claim "
                         "coverage or exclusion",
                     )
+                    candidate_selectors = section.get("candidate_observation_selectors")
+                    candidate_evidence = section.get("candidate_selector_evidence")
+                    if feature_ids:
+                        _require(
+                            isinstance(candidate_selectors, list)
+                            and bool(candidate_selectors)
+                            and isinstance(candidate_evidence, list)
+                            and bool(candidate_evidence),
+                            f"pending documented section in {fixture_id} lacks candidate selectors",
+                        )
+                        register_selectors(
+                            candidate_selectors,
+                            f"pending documented section in {fixture_id} candidates",
+                        )
+                    else:
+                        _require(
+                            not candidate_selectors and not candidate_evidence,
+                            f"featureless pending section in {fixture_id} has candidate selectors",
+                        )
         elif source_row.get("kind") == "documented_python_example_source":
             source_mapping = source_row.get("mapping_evidence", {})
             _require(

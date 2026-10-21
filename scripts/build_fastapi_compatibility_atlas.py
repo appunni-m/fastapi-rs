@@ -11814,6 +11814,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                                 "feature_evidence": [],
                                 "observation_selectors": [],
                                 "selector_evidence": [],
+                                "candidate_observation_selectors": [],
+                                "candidate_selector_evidence": [],
                                 "review_status": "excluded",
                                 "independent_workflow_mappings": [],
                                 "exclusion_reason": reviewed_section_mapping.get(
@@ -11868,6 +11870,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "feature_evidence": [],
                             "observation_selectors": [],
                             "selector_evidence": [],
+                            "candidate_observation_selectors": [],
+                            "candidate_selector_evidence": [],
                             "review_status": "excluded",
                             "independent_workflow_mappings": [],
                             "exclusion_reason": page_exclusion,
@@ -11999,6 +12003,28 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     section_review_status = "reviewed_partial"
                     section_exclusion_reason = None
                     section_review_rationale = reviewed_section_mapping["rationale"]
+            candidate_section_selectors = (
+                selectors_for(section_features) if section_review_status != "excluded" else []
+            )
+            candidate_section_selector_evidence = (
+                selector_evidence(section_features) if section_review_status != "excluded" else []
+            )
+            observed_section_selectors = sorted(
+                {
+                    selector
+                    for workflow_mapping in section_workflow_mappings
+                    for selector in workflow_mapping["observation_selectors"]
+                }
+            )
+            observed_section_selector_evidence = [
+                {
+                    "workflow_id": workflow_mapping["workflow_id"],
+                    "recipe_path": workflow_mapping["recipe_path"],
+                    "case_ids": workflow_mapping["case_ids"],
+                    "selectors": workflow_mapping["observation_selectors"],
+                }
+                for workflow_mapping in section_workflow_mappings
+            ]
             documented_sections.append(
                 {
                     "heading": heading["text"],
@@ -12006,8 +12032,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "end_line": end_line,
                     "feature_ids": section_features,
                     "feature_evidence": section_evidence,
-                    "observation_selectors": selectors_for(section_features),
-                    "selector_evidence": selector_evidence(section_features),
+                    "observation_selectors": observed_section_selectors,
+                    "selector_evidence": observed_section_selector_evidence,
+                    "candidate_observation_selectors": candidate_section_selectors,
+                    "candidate_selector_evidence": candidate_section_selector_evidence,
                     "review_status": section_review_status,
                     "independent_workflow_mappings": section_workflow_mappings,
                     "exclusion_reason": section_exclusion_reason,
