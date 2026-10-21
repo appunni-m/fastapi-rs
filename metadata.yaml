@@ -17198,7 +17198,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Other security-scheme variants, invalid nested shapes, defaults, and complete validation error details remain unproven.
+          - Remaining defaults, OAuth2 flow combinations, invalid nested shapes, and complete validation error details remain unproven.
         rust_binding: fastapi-rs/src/openapi_models.rs::GRAPH[Components].fields
       source_evidence:
         - path: fastapi/openapi/models.py
@@ -17207,9 +17207,10 @@ reviewed_api_contract_overlay:
           start_line: 399
           end_line: 410
       supported_slice: >-
-        Existing workflows compare accepted APIKey and Reference inputs and one invalid value; the
-        all-fields Components model dump adds nested round-trip coverage. Other scheme variants,
-        defaults, and validation errors remain outside this sample.
+        The Components model dump compares APIKey, HTTPBase, HTTPBearer, OAuth2 password-flow,
+        OpenIdConnect, and Reference values; a separate case compares an invalid discriminator
+        outcome. Other OAuth2 flow combinations, defaults, invalid nested shapes, and complete
+        validation error details remain outside this sample.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
           case_id: fastapi.openapi-models.components.all-fields-result
