@@ -1075,6 +1075,60 @@ def _verify_source_ref(
         _require(sha256_file(path) == expected, f"{label} source digest is stale")
 
 
+def _verify_exclusion_sources(
+    fastapi_source: Path,
+    starlette_source: Path,
+    sources: Any,
+    label: str,
+    *,
+    expected_path: str | None = None,
+    expected_sha256: str | None = None,
+) -> None:
+    _require(
+        isinstance(sources, list)
+        and bool(sources)
+        and all(isinstance(source, dict) for source in sources),
+        f"{label} has no source evidence",
+    )
+    exact_source = False
+    for source in sources:
+        start_line = source.get("start_line")
+        end_line = source.get("end_line")
+        _require(
+            isinstance(source.get("role"), str)
+            and bool(source["role"].strip())
+            and isinstance(start_line, int)
+            and not isinstance(start_line, bool)
+            and isinstance(end_line, int)
+            and not isinstance(end_line, bool),
+            f"{label} has an invalid source span or role",
+        )
+        source_root = (
+            starlette_source
+            if str(source.get("source_authority", "")).startswith("Starlette")
+            else fastapi_source
+        )
+        _verify_source_ref(
+            source_root,
+            {
+                "path": source.get("path"),
+                "line": start_line,
+                "end_line": end_line,
+                "sha256": source.get("sha256"),
+            },
+            f"{label} source",
+            digest_key="sha256",
+        )
+        exact_source = exact_source or (
+            source.get("path") == expected_path and source.get("sha256") == expected_sha256
+        )
+    if expected_path is not None:
+        _require(
+            exact_source,
+            f"{label} does not reference its exact source file and digest",
+        )
+
+
 def _validate_starlette_behavior_crosswalks(
     atlas: dict[str, Any], fastapi_source: Path, edges: list[dict[str, Any]]
 ) -> None:
@@ -2529,6 +2583,53 @@ def validate_compatibility_artifacts(
                     row.get("fixture_id") is None,
                     f"excluded source {identifier} unexpectedly has a fixture",
                 )
+                mapping = row.get("mapping_evidence", {})
+                if row.get("kind") == "upstream_test_module":
+                    module_review = mapping.get("reviewed_module_mapping")
+                    if module_review is not None:
+                        rationale = module_review.get("rationale")
+                        source_evidence = module_review.get("supporting_sources")
+                    else:
+                        module_review = mapping.get("app_dependency_wave_scope_review", {}).get(
+                            "module", {}
+                        )
+                        rationale = module_review.get("reason")
+                        source_evidence = module_review.get("source_evidence")
+                    _require(
+                        isinstance(rationale, str) and bool(rationale.strip()),
+                        f"excluded test module {identifier} has no reviewed rationale",
+                    )
+                    _verify_exclusion_sources(
+                        fastapi_source,
+                        starlette_source,
+                        source_evidence,
+                        f"excluded test module {identifier}",
+                        expected_path=row.get("source_path"),
+                        expected_sha256=row.get("source_sha256"),
+                    )
+                elif row.get("kind") == "documented_feature_page":
+                    page_review = mapping.get("reviewed_source_mapping", {})
+                    rationale = page_review.get("rationale")
+                    _require(
+                        isinstance(rationale, str) and bool(rationale.strip()),
+                        f"excluded documentation page {identifier} has no reviewed rationale",
+                    )
+                    _verify_exclusion_sources(
+                        fastapi_source,
+                        starlette_source,
+                        page_review.get("source_evidence"),
+                        f"excluded documentation page {identifier}",
+                        expected_path=row.get("source_path"),
+                        expected_sha256=row.get("source_sha256"),
+                    )
+                    starlette_evidence = mapping.get("starlette_source_evidence", [])
+                    if starlette_evidence:
+                        _verify_exclusion_sources(
+                            fastapi_source,
+                            starlette_source,
+                            starlette_evidence,
+                            f"excluded documentation page {identifier} Starlette evidence",
+                        )
             else:
                 review_status = row.get("review_status")
                 _require(
