@@ -127,16 +127,16 @@ regions. See the
 [checkpoint report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
 for that run's identity, scope and remaining schema-order gaps.
 
-The latest recorded seven-workload suite passed 45/45 selected parity
-observations at FastAPI-RS `8eceda6` against FastAPI 0.141.1, Starlette 1.6.0,
-and pinned Starlette-RS `4139a724`. FastAPI-RS median and p95 latency were
-higher in all seven measured workloads. That receipt is bound to an earlier
-manifest and is historical until the suite is refreshed against the current
-manifest. See the
-[latest recorded benchmark report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-19-8eceda6.md) and
+The latest complete seven-workload suite passed 45/45 selected parity
+observations at FastAPI-RS `8c7eb97`; it binds an earlier manifest and is
+historical to the current contract. One workload has since been refreshed at
+main `57aec8c`: the large-response-model case passed 1/1 parity observations,
+with FastAPI-RS median/p95 latency at 1.123×/1.224× FastAPI on this host. That
+single workload does not replace the full suite or establish a global
+performance claim. See the
+[single-workload report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-21-57aec8c.md),
+[latest complete suite report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-21-8c7eb97.md), and
 [benchmark evidence freshness note](https://github.com/appunni-m/fastapi-rs/blob/main/docs/PARITY_BENCHMARK_PLAN.md#benchmark-evidence-freshness).
-These selected cases do not establish full API parity or a global performance
-claim.
 
 Use `make parity-prepare-oracle` for the core environment and
 `make parity-validate` to check source evidence and workflow links. The

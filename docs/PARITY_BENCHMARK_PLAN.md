@@ -52,7 +52,17 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-The latest completed direct-ASGI suite is recorded in
+The latest current-main, current-manifest measurement is the one-workload
+[large-response-model refresh](benchmarks/2026-10-21-57aec8c.md). It passed
+1/1 selected parity observations at FastAPI-RS
+`57aec8ce9804f7e2c6284a18c86a5eeac5cf6008` with FastAPI 0.141.1, Starlette
+1.6.0, and Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`. Its
+manifest SHA-256 is
+`6fcf1c2a57e4a7bcd77a4ae3380b3777ec0932a9c4270644602dbf6d65257549`. This
+refresh covers one of seven declared workloads only; the full suite remains
+stale to the current manifest.
+
+The latest completed seven-workload direct-ASGI suite is recorded in
 [the 2026-10-21 report](benchmarks/2026-10-21-8c7eb97.md). It completed all
 seven reviewed workloads and passed all 45 selected parity observations on
 FastAPI-RS 8c7eb970cabd5fee871bc0a9fcf1691b9d4014f3, FastAPI 0.141.1 at
@@ -67,9 +77,10 @@ FastAPI-RS median latency was higher in all seven workloads; p95 was higher in
 six, with the distinct-query-alias workload's FastAPI p95 influenced by large
 outliers. The report records identities, direct-ASGI boundaries, timing
 policy, parity counts, and per-workload result paths. This selected workload
-set does not establish full FastAPI parity or a broader performance
-conclusion. The earlier same-day suite is historical because it binds the
-previous target and manifest; its receipt is preserved under
+set was valid for its recorded revision but is historical to current main
+because it binds the prior target and manifest. It does not establish full
+FastAPI parity or a broader performance conclusion. The earlier same-day suite
+is historical because it binds the previous target and manifest; its receipt is preserved under
 benchmark-results/archive/stale-manifest-20261021-before-8c7eb97/.
 The 2026-10-19 report remains historical because it binds an earlier target
 and fixture manifest. Its suite receipt is archived at
