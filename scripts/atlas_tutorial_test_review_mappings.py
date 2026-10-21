@@ -46,12 +46,8 @@ def _workflow_case(workflow_id, recipe_path, case_id, action_ids, observation_se
     }
 
 
-_BIGGER_APPLICATIONS_RECIPE = (
-    "tests/fixtures/input-recipes/parity/router-composition-upstream.yaml"
-)
-_BIGGER_APPLICATIONS_CASE_PREFIX = (
-    "fastapi.test.test-tutorial-test-bigger-applications-test-main."
-)
+_BIGGER_APPLICATIONS_RECIPE = "tests/fixtures/input-recipes/parity/router-composition-upstream.yaml"
+_BIGGER_APPLICATIONS_CASE_PREFIX = "fastapi.test.test-tutorial-test-bigger-applications-test-main."
 _BIGGER_APPLICATIONS_HTTP_SELECTORS = [
     "http.status",
     "http.headers.ordered",

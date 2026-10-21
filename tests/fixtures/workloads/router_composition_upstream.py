@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException
 
 def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI:
     del factory_input, event_trace
+
     async def require_query_token(token: str) -> str:
         if token != "jessica":
             raise HTTPException(status_code=400, detail="No Jessica token provided")

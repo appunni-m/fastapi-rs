@@ -111,18 +111,12 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 },
                 "callbacks": {
                     "OnEvent": {
-                        "/events": {
-                            "post": {
-                                "responses": {"204": {"description": "No Content"}}
-                            }
-                        }
+                        "/events": {"post": {"responses": {"204": {"description": "No Content"}}}}
                     },
                     "OnEventRef": {"$ref": "#/components/callbacks/OnEvent"},
                 },
                 "pathItems": {
-                    "Reusable": {
-                        "get": {"responses": {"200": {"description": "OK"}}}
-                    },
+                    "Reusable": {"get": {"responses": {"200": {"description": "OK"}}}},
                     "ReusableRef": {"$ref": "#/components/pathItems/Reusable"},
                 },
                 "x-registry": {"owner": "fastapi-rs", "revision": 2},
@@ -291,11 +285,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "kwargs": {
                 "openapi": "3.1.0",
                 "info": {"title": "Webhooks field", "version": "1.0"},
-                "webhooks": {
-                    "newSubscription": {
-                        "$ref": "#/components/pathItems/newSubscription"
-                    }
-                },
+                "webhooks": {"newSubscription": {"$ref": "#/components/pathItems/newSubscription"}},
             },
         },
         "reference": {

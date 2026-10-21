@@ -1075,8 +1075,7 @@ def _required_parameter_once_openapi_function_mapping() -> dict[str, Any]:
     matches = [
         node
         for node in tree.body
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and node.name == function_name
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
     ]
     if len(matches) != 1:
         raise ValueError(f"expected exact source function {function_name} in {test_path}")
@@ -1098,7 +1097,9 @@ def _required_parameter_once_openapi_function_mapping() -> dict[str, Any]:
         for pointer in observation.get("json_pointers", [])
     ]
     if pointers != ["/paths/~1foo/get/parameters"]:
-        raise ValueError(f"required-parameter OpenAPI case changed its focused projection: {pointers}")
+        raise ValueError(
+            f"required-parameter OpenAPI case changed its focused projection: {pointers}"
+        )
     selectors = _workflow_selectors(case_row["case"])
     if selectors != [
         "docs.response.status",
@@ -1145,17 +1146,14 @@ def _required_parameter_once_openapi_function_mapping() -> dict[str, Any]:
     }
 
 
-def _path_test_function_mapping(
-    function_name: str, case_id: str, behavior: str
-) -> dict[str, Any]:
+def _path_test_function_mapping(function_name: str, case_id: str, behavior: str) -> dict[str, Any]:
     """Link one exact Path test assertion to its independent ASGI input case."""
     test_path = "tests/test_path.py"
     tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
     matches = [
         node
         for node in tree.body
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and node.name == function_name
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
     ]
     if len(matches) != 1:
         raise ValueError(f"expected exact source function {function_name} in {test_path}")

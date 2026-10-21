@@ -5947,6 +5947,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.starlette-route-inheritance
           workload_path: tests/fixtures/workloads/routing_upstream.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/callable-endpoint-partial-generators.yaml
+          case_id: fastapi.routing.callable-generator.partial-sync-instance
+          workload_path: tests/fixtures/workloads/callable_endpoint_partial_generators.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/callable-endpoint-partial-generators.yaml
+          case_id: fastapi.routing.callable-generator.partial-async-instance
+          workload_path: tests/fixtures/workloads/callable_endpoint_partial_generators.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
         - *generate_unique_id_callback_methods
         - *generate_unique_id_callback_methods_empty
         - *generate_unique_id_callback_methods_remove
@@ -6023,6 +6031,10 @@ reviewed_api_contract_overlay:
         classification keeps direct
         constructor stability uncertain because upstream documents the route
         customization hook as experimental.
+        Sync and async generator classification also covers one endpoint whose
+        callable instance is wrapped by functools.partial, comparing streamed
+        HTTP responses and the selected OpenAPI response. Other wrapper and
+        custom response-class combinations remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract

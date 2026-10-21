@@ -3664,6 +3664,51 @@
       ]
     },
     {
+      "id": "callable-endpoint-partial-generators",
+      "input_path": "tests/fixtures/inputs/parity/callable-endpoint-partial-generators.json",
+      "input_sha256": "343187520a9975695526843ec59e3a739b3fb8f8a43f3f9c69303873c8fc76f5",
+      "recipe_path": "tests/fixtures/input-recipes/parity/callable-endpoint-partial-generators.yaml",
+      "recipe_sha256": "6063299e6ee87f65bb366f3c50ab542a7734f687a3052a67f036addd2d8c5c6c",
+      "case_ids": [
+        "fastapi.routing.callable-generator.partial-sync-instance",
+        "fastapi.routing.callable-generator.partial-async-instance"
+      ],
+      "workload_path": "tests/fixtures/workloads/callable_endpoint_partial_generators.py",
+      "workload_sha256": "e456fc4ea8d1d783e484c1d1669c1daf02cb362220ab80b0b6ab112a892c9761",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.routing.callable-generator.partial-async-instance",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        },
+        {
+          "case_id": "fastapi.routing.callable-generator.partial-sync-instance",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.callable-generator.partial-sync-instance",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute",
+            "source:upstream-test:tests/test_callable_endpoint.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.callable-generator.partial-async-instance",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute",
+            "source:upstream-test:tests/test_callable_endpoint.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "callable-endpoint-partial-upstream",
       "input_path": "tests/fixtures/inputs/parity/callable-endpoint-partial-upstream.json",
       "input_sha256": "3d2ab10556673ab083d99ffbffff32e752117ab54a2b25d03fd52cbbe3761018",
@@ -14443,7 +14488,7 @@
         "fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection"
       ],
       "workload_path": "tests/fixtures/workloads/jsonable_encoder_atlas_wave.py",
-      "workload_sha256": "ab20d004a10285b2de322bbab981c99d15b7dbfcd5b75ce0d4e36dc658a4bcee",
+      "workload_sha256": "e935299195af3373d7307da1b2b723897d1be97f6668c5dcfa0355acddc30192",
       "api_probes": [
         {
           "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
@@ -17635,7 +17680,7 @@
         "fastapi.openapi-models.example.populated-extra-key"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_model_projection.py",
-      "workload_sha256": "9278d68a25e8c8b76d74c7c79d2371cbb0c19678ceb27933a441586a635cb491",
+      "workload_sha256": "8e39268608d73d0d4117a8bd57e84ed1b89e6c256e200e26f33fc13a2e0bc639",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.example.empty-construction",
@@ -19235,7 +19280,7 @@
         "fastapi.openapi-models.components.all-fields-result"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_model_projection.py",
-      "workload_sha256": "9278d68a25e8c8b76d74c7c79d2371cbb0c19678ceb27933a441586a635cb491",
+      "workload_sha256": "8e39268608d73d0d4117a8bd57e84ed1b89e6c256e200e26f33fc13a2e0bc639",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi-models.api-key.model-result",
@@ -34255,7 +34300,7 @@
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin"
       ],
       "workload_path": "tests/fixtures/workloads/router_composition_upstream.py",
-      "workload_sha256": "11cb87e93df2da16ee021362f5e17ad344fa4c778b32bb6c3cb49bdb9da89e88",
+      "workload_sha256": "512ed50cd1e7f872f3394dcc487dd8d3ece653eaa044020c081770ff8325e842",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-jessica",
@@ -46684,6 +46729,23 @@
         "docs.response.status",
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_callable_endpoint.py",
+      "fixture_id": "fastapi.test.test-callable-endpoint",
+      "workflow_id": "callable-endpoint-partial-generators",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.callable-generator.partial-async-instance",
+        "fastapi.routing.callable-generator.partial-sync-instance"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.paths"
       ]
     },
     {

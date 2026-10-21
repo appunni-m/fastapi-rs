@@ -162043,6 +162043,22 @@
       "independent_workflow_mappings": [
         {
           "case_ids": [
+            "fastapi.routing.callable-generator.partial-async-instance",
+            "fastapi.routing.callable-generator.partial-sync-instance"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/callable-endpoint-partial-generators.yaml",
+          "workflow_id": "callable-endpoint-partial-generators"
+        },
+        {
+          "case_ids": [
             "fastapi.test.test-callable-endpoint.test-partial"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -162060,9 +162076,24 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
-        "http.status"
+        "http.status",
+        "openapi.paths"
       ],
       "selector_evidence": [
+        {
+          "case_ids": [
+            "fastapi.routing.callable-generator.partial-async-instance",
+            "fastapi.routing.callable-generator.partial-sync-instance"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/callable-endpoint-partial-generators.yaml",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.paths"
+          ],
+          "workflow_id": "callable-endpoint-partial-generators"
+        },
         {
           "case_ids": [
             "fastapi.test.test-callable-endpoint.test-partial"

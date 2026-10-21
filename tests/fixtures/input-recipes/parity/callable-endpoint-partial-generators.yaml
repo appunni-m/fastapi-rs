@@ -1,0 +1,106 @@
+schema: fastapi-rs/python-asgi-workflow@16
+workload:
+  file: tests/fixtures/workloads/callable_endpoint_partial_generators.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.routing.callable-generator.partial-sync-instance
+    verification: parity
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: stream-partial-wrapped-sync-generator-instance
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /sync
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+      - action_id: observe-sync-generator-item-openapi-response
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: openapi
+            json_pointers: [/paths/~1sync/get/responses/200]
+            comparison: exact
+    source_evidence: &partial-generator-evidence
+      - path: tests/test_callable_endpoint.py
+        kind: upstream_test
+      - path: fastapi/routing.py
+        kind: upstream_api_definition
+        sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55
+        symbol_id: fastapi.routing.APIRoute
+  - case_id: fastapi.routing.callable-generator.partial-async-instance
+    verification: parity
+    factory_input: {}
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: stream-partial-wrapped-async-generator-instance
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /async
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+      - action_id: observe-async-generator-item-openapi-response
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events: [{type: http.request, body: '', more_body: false}]
+        observations:
+          - kind: openapi
+            json_pointers: [/paths/~1async/get/responses/200]
+            comparison: exact
+    source_evidence: *partial-generator-evidence

@@ -8420,11 +8420,13 @@ impl PyFastApi {
         let (stream_item_model_name, stream_item_schema) = if jsonl_stream || sse_stream {
             match route.stream_item_type.as_ref() {
                 Some(stream_item_type) => {
+                    let stream_item_title =
+                        title_case(&format!("StreamItem_{}", route.unique_id).replace('_', " "));
                     let schema = pydantic_response_schema(
                         py,
                         stream_item_type.bind(py),
                         separate_input_output_schemas,
-                        None,
+                        Some(&stream_item_title),
                     )?;
                     let model_name = match schema_definition_name(schema.bind(py))? {
                         Some(name) => Some(name),
@@ -10980,11 +10982,13 @@ fn register_multi_method_api_route(
 }
 
 fn inspect_generator_kind(
+    py: Python<'_>,
     inspect: &Bound<'_, PyAny>,
     callable: &Bound<'_, PyAny>,
 ) -> PyResult<FastApiGeneratorKind> {
-    let unwrapped = inspect.getattr("unwrap")?.call1((callable,))?;
-    for candidate in [callable, &unwrapped] {
+    let without_partials = dependency_callable_without_partials(py, callable)?;
+    let unwrapped = inspect.getattr("unwrap")?.call1((&without_partials,))?;
+    for candidate in [&without_partials, &unwrapped] {
         if inspect
             .getattr("isasyncgenfunction")?
             .call1((candidate,))?
@@ -11009,22 +11013,27 @@ fn inspect_generator_kind(
         return Ok(FastApiGeneratorKind::None);
     }
 
-    if let Ok(dunder_call) = callable.getattr("__call__") {
-        let unwrapped_dunder_call = inspect.getattr("unwrap")?.call1((&dunder_call,))?;
-        for candidate in [&dunder_call, &unwrapped_dunder_call] {
-            if inspect
-                .getattr("isasyncgenfunction")?
-                .call1((candidate,))?
-                .extract::<bool>()?
-            {
-                return Ok(FastApiGeneratorKind::Async);
-            }
-            if inspect
-                .getattr("isgeneratorfunction")?
-                .call1((candidate,))?
-                .extract::<bool>()?
-            {
-                return Ok(FastApiGeneratorKind::Sync);
+    for call_source in [&without_partials, &unwrapped] {
+        if let Ok(dunder_call) = call_source.getattr("__call__") {
+            let dunder_without_partials = dependency_callable_without_partials(py, &dunder_call)?;
+            let unwrapped_dunder_call = inspect
+                .getattr("unwrap")?
+                .call1((&dunder_without_partials,))?;
+            for candidate in [&dunder_without_partials, &unwrapped_dunder_call] {
+                if inspect
+                    .getattr("isasyncgenfunction")?
+                    .call1((candidate,))?
+                    .extract::<bool>()?
+                {
+                    return Ok(FastApiGeneratorKind::Async);
+                }
+                if inspect
+                    .getattr("isgeneratorfunction")?
+                    .call1((candidate,))?
+                    .extract::<bool>()?
+                {
+                    return Ok(FastApiGeneratorKind::Sync);
+                }
             }
         }
     }
@@ -11034,11 +11043,12 @@ fn inspect_generator_kind(
 
 fn generator_kind(py: Python<'_>, callable: &Bound<'_, PyAny>) -> PyResult<FastApiGeneratorKind> {
     let inspect = py.import("inspect")?;
-    let kind = inspect_generator_kind(&inspect, callable)?;
+    let kind = inspect_generator_kind(py, &inspect, callable)?;
     if kind.is_generator() {
         return Ok(kind);
     }
-    let unwrapped = inspect.getattr("unwrap")?.call1((callable,))?;
+    let without_partials = dependency_callable_without_partials(py, callable)?;
+    let unwrapped = inspect.getattr("unwrap")?.call1((&without_partials,))?;
     if inspect
         .getattr("isclass")?
         .call1((&unwrapped,))?
@@ -11046,8 +11056,8 @@ fn generator_kind(py: Python<'_>, callable: &Bound<'_, PyAny>) -> PyResult<FastA
     {
         return Ok(FastApiGeneratorKind::None);
     }
-    match callable.getattr("__call__") {
-        Ok(dunder_call) => inspect_generator_kind(&inspect, &dunder_call),
+    match without_partials.getattr("__call__") {
+        Ok(dunder_call) => inspect_generator_kind(py, &inspect, &dunder_call),
         Err(error) if error.is_instance_of::<PyAttributeError>(py) => {
             Ok(FastApiGeneratorKind::None)
         }
