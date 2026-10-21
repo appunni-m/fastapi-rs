@@ -53,22 +53,23 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The latest completed direct-ASGI suite is recorded in
-[the 2026-10-20 report](benchmarks/2026-10-20-153c76e.md). It completed all
+[the 2026-10-21 report](benchmarks/2026-10-21-94865f9.md). It completed all
 seven reviewed workloads and passed all 45 selected parity observations on
-FastAPI-RS `153c76e7f473183c93547442a4264906fdc890bb`, FastAPI 0.141.1 at
-`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
-`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
-`4139a72449bf5751e8902fb1c7175ee7f191d338`. The fixture manifest SHA-256 is
-`898aa7d00e392a2ae347ca64bba01cf2f2a5f9169c2253cc00eee75cf6b11077`. Suite
-receipt `benchmark-results/suite-20261020T061134Z-036c5b6e-81f7-4319-870c-648488f307a2.json`
+FastAPI-RS 94865f9948611f707bfe47262b14be46b2bfa07b, FastAPI 0.141.1 at
+95f8322ee1dcda7ceace7b1c4f6c9915b36d748f, Starlette 1.6.0 at
+4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and Starlette-RS
+4139a72449bf5751e8902fb1c7175ee7f191d338. The fixture manifest SHA-256 is
+8a5dc27eb5bbf2450bc14bd2eb7f8f9bc14b56003a1111b42ee5be8d51cdf9b9. Suite
+receipt benchmark-results/suite-20261021T000900Z-cd0b3bac-1a8f-45e1-b470-d05e1aecd78b.json
 has SHA-256
-`9492e5dfc8098009ee111c5fc1dad660ff0bce091a50a7a8cc5a09af665a122a`.
+f72f4ff26ff2f855dcc728be7fe7b7348cfccabccc896d263bf0cc1bdca75ca1.
 FastAPI-RS median and p95 latency were higher in all seven measured workloads.
-The report records the exact boundaries, environment, parity counts, timing
-settings, and per-workload result paths. This is a selected direct-ASGI
-workload set; it does not establish full FastAPI parity or a broader
-performance conclusion.
-
+The report records identities, the direct-ASGI boundary, timing policy,
+parity counts, and per-workload result paths. This selected workload set does
+not establish full FastAPI parity or a broader performance conclusion. The
+older 2026-10-20 report binds a previous target and manifest; its stale
+root-level suite receipt is preserved under
+benchmark-results/archive/stale-manifest-20261020/.
 The 2026-10-19 report remains historical because it binds an earlier target
 and fixture manifest. Its suite receipt is archived at
 `benchmark-results/archive/stale-manifest-20261019/suite-20261019T091804Z-650d1f09-bdaf-4cc3-b125-21c3ae0b7f33.json`.
