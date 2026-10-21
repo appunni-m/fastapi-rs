@@ -2681,6 +2681,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.apiroute.response-class.router-inherited-default
           workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &apiroute_response_class_mutated_handler
+          recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+          case_id: fastapi.routing.apiroute.response-class.mutated-handler-rebuild
+          workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message]
+        - &apiroute_response_class_mutated_old_app
+          recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+          case_id: fastapi.routing.apiroute.response-class.mutated-old-app
+          workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -16817,11 +16827,17 @@ reviewed_api_contract_overlay:
         - *apiroute_response_class_default
         - *apiroute_response_class_explicit
         - *apiroute_response_class_router_inherited
+        - *apiroute_response_class_mutated_handler
+        - *apiroute_response_class_mutated_old_app
       supported_slice: >-
         Expose default-placeholder, explicitly supplied plain-text, and router-inherited response
         class values through the route instance during dispatch; compare response status, ordered
-        headers, exact body bytes, and OpenAPI response media type. Handler mutation and other
-        response classes remain outside this slice.
+        headers, exact body bytes, and OpenAPI response media type. A separate case assigns a
+        plain-text class to a standalone APIRoute, rebuilds its public handler, and dispatches that
+        handler through FastAPI's ASGI app; another confirms the route's original app
+        retains its captured handler after the public field is mutated. Default-placeholder equality,
+        truthiness, repeated-omission identity, and response classes beyond the reviewed JSON/plain-text
+        cases remain unverified.
 
     fastapi.routing.APIRoute.tags:
       target_binding:

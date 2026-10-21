@@ -2477,7 +2477,7 @@ impl PyBoundApiRouteProxyMember {
                     object_setattr(py, instance, &name, &value)?;
                 } else {
                     let state = api_route_state(instance)?;
-                    if matches!(name.as_str(), "summary" | "methods") {
+                    if matches!(name.as_str(), "summary" | "methods" | "response_class") {
                         state.setattr(name.as_str(), &value)?;
                     } else {
                         object_setattr(py, instance, &name, &value)?;
@@ -2507,7 +2507,15 @@ impl PyBoundApiRouteProxyMember {
             ApiRouteProxyMember::GetRouteHandler => {
                 require_proxy_arguments(args, kwargs, 0, "APIRoute.get_route_handler")?;
                 let route = route_for_current_effective_context(py, self.instance.clone_ref(py))?;
-                Py::new(py, PyFastApiRouteHandler { route }).map(Py::into_any)
+                let response_class = route.bind(py).getattr("response_class")?.unbind();
+                Py::new(
+                    py,
+                    PyFastApiRouteHandler {
+                        route,
+                        response_class,
+                    },
+                )
+                .map(Py::into_any)
             }
             ApiRouteProxyMember::App => {
                 require_proxy_arguments(args, kwargs, 0, "APIRoute.app")?;
@@ -2560,7 +2568,15 @@ struct PyRouteContextIterator {
 impl PyApiRouteState {
     fn get_route_handler(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
         let route = route_for_current_effective_context(py, slf.into_any())?;
-        Py::new(py, PyFastApiRouteHandler { route }).map(|handler| handler.into_any())
+        let response_class = route.bind(py).getattr("response_class")?.unbind();
+        Py::new(
+            py,
+            PyFastApiRouteHandler {
+                route,
+                response_class,
+            },
+        )
+        .map(|handler| handler.into_any())
     }
 
     #[new]
@@ -2958,6 +2974,12 @@ impl PyApiRouteState {
             .as_ref()
             .map(|resolution| resolution.resolve(py).python_value(py))
             .unwrap_or_else(|| self.response_class.clone_ref(py))
+    }
+
+    #[setter]
+    fn set_response_class(&mut self, response_class: Py<PyAny>) {
+        self.response_class = response_class;
+        self.response_class_resolution = None;
     }
 
     #[getter]
@@ -4858,6 +4880,7 @@ struct PyApiRouteAsgiCore {
 #[pyclass(name = "_FastAPIRouteHandler", module = "fastapi_rs._core")]
 struct PyFastApiRouteHandler {
     route: Py<PyAny>,
+    response_class: Py<PyAny>,
 }
 
 #[pyclass(
@@ -5075,6 +5098,7 @@ impl PyFastApiRouteHandler {
                     route_dependency_overrides_provider: dependency_overrides_provider,
                     router_default: None,
                     provided_request: Some(request.clone().unbind()),
+                    response_class_override: Some(self.response_class.clone_ref(py)),
                 },
             ),
         )
@@ -17163,6 +17187,7 @@ struct FastApiCallOptions {
     route_dependency_overrides_provider: Option<Py<PyAny>>,
     router_default: Option<Py<PyAny>>,
     provided_request: Option<Py<PyAny>>,
+    response_class_override: Option<Py<PyAny>>,
 }
 
 struct FastApiCall {
@@ -17176,6 +17201,7 @@ struct FastApiCall {
     forced_route_index: Option<usize>,
     route_handler_response: bool,
     provided_request: Option<Py<PyAny>>,
+    response_class_override: Option<Py<PyAny>>,
     route_handler_cleanup: Option<Py<PyFastApiRequestCleanup>>,
     frontend_route_index: Option<usize>,
     frontend_path: Option<String>,
@@ -17214,6 +17240,7 @@ impl FastApiCall {
             route_dependency_overrides_provider,
             router_default,
             provided_request,
+            response_class_override,
         } = options;
         let route_handler_response = provided_request.is_some();
         Self {
@@ -17227,6 +17254,7 @@ impl FastApiCall {
             forced_route_index,
             route_handler_response,
             provided_request,
+            response_class_override,
             route_handler_cleanup: None,
             frontend_route_index: None,
             frontend_path: None,
@@ -19338,10 +19366,20 @@ impl FastApiCall {
                     method: request_method.clone(),
                     path: route.path.clone(),
                 });
+            let response_class = self
+                .response_class_override
+                .as_ref()
+                .map(|value| ResponseClassChoice::from_python(py, value.clone_ref(py)))
+                .unwrap_or_else(|| route.response_class.clone_ref(py));
+            let sse_stream = if self.response_class_override.is_some() {
+                included_route_sse_stream(py, route.generator_kind, &response_class)?
+            } else {
+                route.sse_stream
+            };
             (
                 route.generator_kind,
-                route.response_class.clone_ref(py),
-                route.sse_stream,
+                response_class,
+                sse_stream,
                 route.status_code,
                 config,
             )

@@ -829,16 +829,18 @@
     {
       "id": "apiroute-response-class-public-contract",
       "input_path": "tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json",
-      "input_sha256": "013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c",
+      "input_sha256": "fa7ee24011114c1b8eb3d80d545fcd3a34ff334028ee326bbd66136bb496a4e9",
       "recipe_path": "tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml",
-      "recipe_sha256": "938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9",
+      "recipe_sha256": "ec9c4033864f1a7fa93e874c4215c366cee9231449d2736c82786bf7f2ac0705",
       "case_ids": [
         "fastapi.routing.apiroute.response-class.default-placeholder",
         "fastapi.routing.apiroute.response-class.explicit-plain-text",
-        "fastapi.routing.apiroute.response-class.router-inherited-default"
+        "fastapi.routing.apiroute.response-class.router-inherited-default",
+        "fastapi.routing.apiroute.response-class.mutated-handler-rebuild",
+        "fastapi.routing.apiroute.response-class.mutated-old-app"
       ],
       "workload_path": "tests/fixtures/workloads/apiroute_response_class_public_contract.py",
-      "workload_sha256": "6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067",
+      "workload_sha256": "832e63956f2a94e77b95186c2166592820fa43f4b96d750af10271a1cb4ab614",
       "api_definitions": [
         {
           "case_id": "fastapi.routing.apiroute.response-class.default-placeholder",
@@ -848,6 +850,18 @@
         },
         {
           "case_id": "fastapi.routing.apiroute.response-class.explicit-plain-text",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.mutated-handler-rebuild",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.mutated-old-app",
           "symbol_id": "fastapi.routing.APIRoute",
           "path": "fastapi/routing.py",
           "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
@@ -882,6 +896,22 @@
           "requirement_refs": [
             "api:fastapi.routing.APIRoute",
             "source:upstream-test:tests/test_default_response_class_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.mutated-handler-rebuild",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute",
+            "source:upstream-test:tests/test_default_response_class.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.mutated-old-app",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute",
+            "source:upstream-test:tests/test_default_response_class.py"
           ]
         }
       ]
@@ -44356,10 +44386,12 @@
       "fixture_id": "fastapi.test.test-default-response-class",
       "workflow_id": "apiroute-response-class-public-contract",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.routing.apiroute.response-class.default-placeholder",
-        "fastapi.routing.apiroute.response-class.explicit-plain-text"
+        "fastapi.routing.apiroute.response-class.explicit-plain-text",
+        "fastapi.routing.apiroute.response-class.mutated-handler-rebuild",
+        "fastapi.routing.apiroute.response-class.mutated-old-app"
       ],
       "observation_selectors": [
         "http.body.bytes",
