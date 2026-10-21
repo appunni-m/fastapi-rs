@@ -2666,6 +2666,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.generate-unique-id-callback-construction-state
           workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
           observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &apiroute_response_class_default
+          recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+          case_id: fastapi.routing.apiroute.response-class.default-placeholder
+          workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &apiroute_response_class_explicit
+          recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+          case_id: fastapi.routing.apiroute.response-class.explicit-plain-text
+          workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &apiroute_response_class_router_inherited
+          recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+          case_id: fastapi.routing.apiroute.response-class.router-inherited-default
+          workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -16781,19 +16796,16 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRoute.response_class:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute::response_class
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
+            Writable-field mutation followed by rebuilding a route handler remains unverified.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Default-placeholder equality, truthiness, repeated-omission identity, and response
+            classes beyond the reviewed JSON and plain-text cases remain unverified.
       feature_ids: [app-routing]
-      observation_selectors: [python.attribute_value]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
       source_evidence:
         - path: fastapi/routing.py
           kind: source-definition
@@ -16802,10 +16814,14 @@ reviewed_api_contract_overlay:
           end_line: 1281
       fixture_refs:
         - *generate_unique_id_callback_state
+        - *apiroute_response_class_default
+        - *apiroute_response_class_explicit
+        - *apiroute_response_class_router_inherited
       supported_slice: >-
-        Read the configured response class or retained `DefaultPlaceholder` in the unique-ID
-        callback before handler construction; handler response selection resolves that stored
-        value separately.
+        Expose default-placeholder, explicitly supplied plain-text, and router-inherited response
+        class values through the route instance during dispatch; compare response status, ordered
+        headers, exact body bytes, and OpenAPI response media type. Handler mutation and other
+        response classes remain outside this slice.
 
     fastapi.routing.APIRoute.tags:
       target_binding:

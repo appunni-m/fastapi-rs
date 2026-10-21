@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: b8030a54295a021127524835f3bce1385116fbea3351b72388157cdf2fbe022c
+    sha256: 7c53823907e9992cc32278f89142cdb700186ae588a000c47cc37789366c9369
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: f9a821dc025159178ce2a6c3ce5654c51eb2ce9733572b4ccbd360c2c727ac14
+    sha256: 2c828d3a6244c4a95f5cdb9227407795489cd20cb7bfddc14e7296fea991a2de
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 93afcaeeed174c98543464ff185649c23e87b9c6c833a86aa81cc8e75c833278
+    sha256: 6e6e1b3b1f82f85ff1ac98c173eb7d9a66bd8dfe0e65d8887ef2ff8792129ee4
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 720
-      cases: 2982
-      partial_source_mappings: 1983
+      workflows: 721
+      cases: 2985
+      partial_source_mappings: 1985
 
 contract_metadata:
   aliases:
@@ -1437,7 +1437,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 461
-    operation_fixture_refs: 2807
+    operation_fixture_refs: 2813
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -12553,6 +12553,57 @@ api_surface_contract:
       - construction.outcome
       - docs.response.status
       - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: apiroute-response-class-public-contract
+      input_path: tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json
+      input_sha256: 013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+      recipe_sha256: 938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9
+      workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+      workload_sha256: 6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067
+      case_id: fastapi.routing.apiroute.response-class.default-placeholder
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: apiroute-response-class-public-contract
+      input_path: tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json
+      input_sha256: 013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+      recipe_sha256: 938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9
+      workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+      workload_sha256: 6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067
+      case_id: fastapi.routing.apiroute.response-class.explicit-plain-text
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: apiroute-response-class-public-contract
+      input_path: tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json
+      input_sha256: 013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+      recipe_sha256: 938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9
+      workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+      workload_sha256: 6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067
+      case_id: fastapi.routing.apiroute.response-class.router-inherited-default
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
       - http.status
       - openapi.document
       - openapi.paths
@@ -64832,11 +64883,68 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: apiroute-response-class-public-contract
+      input_path: tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json
+      input_sha256: 013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+      recipe_sha256: 938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9
+      workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+      workload_sha256: 6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067
+      case_id: fastapi.routing.apiroute.response-class.default-placeholder
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: apiroute-response-class-public-contract
+      input_path: tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json
+      input_sha256: 013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+      recipe_sha256: 938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9
+      workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+      workload_sha256: 6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067
+      case_id: fastapi.routing.apiroute.response-class.explicit-plain-text
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: apiroute-response-class-public-contract
+      input_path: tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json
+      input_sha256: 013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c
+      recipe_path: tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml
+      recipe_sha256: 938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9
+      workload_path: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+      workload_sha256: 6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067
+      case_id: fastapi.routing.apiroute.response-class.router-inherited-default
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
     feature_ids:
     - app-routing
     observation_selectors:
-    - python.attribute_value
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - openapi.document
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRoute.response_class/supported_slice
@@ -64849,16 +64957,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1071
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute::response_class
       known_gaps:
-      - Input/workflow references exist, but no exact implementation binding or current comparison result
-        establishes this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Writable-field mutation followed by rebuilding a route handler remains unverified.
+      - Default-placeholder equality, truthiness, repeated-omission identity, and response classes beyond
+        the reviewed JSON and plain-text cases remain unverified.
   - id: fastapi.routing.APIRoute.tags
     kind: field
     source_candidate_ref: /api_candidates/1088

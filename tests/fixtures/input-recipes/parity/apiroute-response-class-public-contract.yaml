@@ -1,0 +1,102 @@
+schema: fastapi-rs/python-asgi-workflow@17
+workload:
+  file: tests/fixtures/workloads/apiroute_response_class_public_contract.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.routing.apiroute.response-class.default-placeholder
+  verification: parity
+  factory_input: {mode: direct-default}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-and-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1/responses/200/content]
+      comparison: exact
+  source_evidence:
+  - {path: fastapi/routing.py, kind: upstream_api_definition, symbol_id: fastapi.routing.APIRoute, sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55}
+  - {path: tests/test_default_response_class.py, kind: upstream_test}
+- case_id: fastapi.routing.apiroute.response-class.explicit-plain-text
+  verification: parity
+  factory_input: {mode: direct-plain-text}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-and-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1/responses/200/content]
+      comparison: exact
+  source_evidence:
+  - {path: fastapi/routing.py, kind: upstream_api_definition, symbol_id: fastapi.routing.APIRoute, sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55}
+  - {path: tests/test_default_response_class.py, kind: upstream_test}
+- case_id: fastapi.routing.apiroute.response-class.router-inherited-default
+  verification: parity
+  factory_input: {mode: router-default}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-and-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1/responses/200/content]
+      comparison: exact
+  source_evidence:
+  - {path: fastapi/routing.py, kind: upstream_api_definition, symbol_id: fastapi.routing.APIRoute, sha256: 7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55}
+  - {path: tests/test_default_response_class_router.py, kind: upstream_test}

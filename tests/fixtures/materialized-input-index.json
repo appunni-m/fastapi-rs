@@ -827,6 +827,66 @@
       ]
     },
     {
+      "id": "apiroute-response-class-public-contract",
+      "input_path": "tests/fixtures/inputs/parity/apiroute-response-class-public-contract.json",
+      "input_sha256": "013f32da979da219268987c2cd2ac58dd81362e0a4c867164f1cadc1ac00228c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/apiroute-response-class-public-contract.yaml",
+      "recipe_sha256": "938b0f54f69dc37cafab4dbe26b77f598ac1e066efde078ac19a9d6c35849cf9",
+      "case_ids": [
+        "fastapi.routing.apiroute.response-class.default-placeholder",
+        "fastapi.routing.apiroute.response-class.explicit-plain-text",
+        "fastapi.routing.apiroute.response-class.router-inherited-default"
+      ],
+      "workload_path": "tests/fixtures/workloads/apiroute_response_class_public_contract.py",
+      "workload_sha256": "6bff4e1f97a856c19eefbadc14fa0b532ea0b7a56a096da0c96c2ed40138d067",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.default-placeholder",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.explicit-plain-text",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.router-inherited-default",
+          "symbol_id": "fastapi.routing.APIRoute",
+          "path": "fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.default-placeholder",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute",
+            "source:upstream-test:tests/test_default_response_class.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.explicit-plain-text",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute",
+            "source:upstream-test:tests/test_default_response_class.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.apiroute.response-class.router-inherited-default",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.routing.APIRoute",
+            "source:upstream-test:tests/test_default_response_class_router.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "apiroute-starlette-route-inheritance",
       "input_path": "tests/fixtures/inputs/parity/apiroute-starlette-route-inheritance.json",
       "input_sha256": "f90ea92e7f085357bcb6db369a44351337ca2b0d2133f4a210ba0ff51ab46842",
@@ -44289,6 +44349,37 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_default_response_class.py",
+      "fixture_id": "fastapi.test.test-default-response-class",
+      "workflow_id": "apiroute-response-class-public-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.response-class.default-placeholder",
+        "fastapi.routing.apiroute.response-class.explicit-plain-text"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_default_response_class_router.py",
+      "fixture_id": "fastapi.test.test-default-response-class-router",
+      "workflow_id": "apiroute-response-class-public-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.apiroute.response-class.router-inherited-default"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
