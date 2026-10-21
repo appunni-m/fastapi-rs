@@ -6700,6 +6700,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.response-model-schemas-shared
           workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml
+          case_id: fastapi.applications.routes.route-tree-openapi
+          workload_path: tests/fixtures/workloads/fastapi_routes_tree_openapi.py
+          observation_selectors: [http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
           case_id: fastapi.openapi.get-openapi.single-route
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
@@ -24631,14 +24635,18 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
           case_id: fastapi.docs.sub-applications.route-list-after-mount
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml
+          case_id: fastapi.applications.routes.route-tree-openapi
+          workload_path: tests/fixtures/workloads/fastapi_routes_tree_openapi.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       feature_ids: [openapi-docs]
-      observation_selectors: [http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::routes
         known_gaps:
-          - The projection includes generic route objects supplied directly to FastAPI, but does not establish route-tree or mount structure, generic routes added later or through included APIRouters, WebSocket dispatch parity, custom route classes, other route options or fields, or built-in and docs routes; passing the projection to get_openapi also remains unestablished.
+          - The focused route-tree input establishes one selected route collection and OpenAPI projection. Its oracle/target comparison shows matching OpenAPI paths, but the target creates a fresh list on each access, omits default docs and mounted route entries, and exposes a RouteContext for an included router where upstream exposes _IncludedRouter. Public collection mutation effects, WebSocket routes, custom route classes, and other route options or configurations remain unestablished.
           - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods, tags, and endpoint name for one GET route each; broader collection contents and configurations remain outside this partial contract.
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:

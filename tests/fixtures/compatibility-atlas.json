@@ -297374,6 +297374,20 @@
           },
           {
             "case_ids": [
+              "fastapi.applications.routes.route-tree-openapi"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml",
+            "workflow_id": "fastapi-routes-tree-openapi"
+          },
+          {
+            "case_ids": [
               "fastapi.docs.sub-applications.built-in-routes-root-path",
               "fastapi.docs.sub-applications.mount-and-own-openapi",
               "fastapi.docs.sub-applications.route-list-after-mount"
@@ -329761,6 +329775,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
             "workflow_id": "docs-openapi-interface"
+          },
+          {
+            "case_ids": [
+              "fastapi.applications.routes.route-tree-openapi"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml",
+            "workflow_id": "fastapi-routes-tree-openapi"
           },
           {
             "case_ids": [
@@ -611684,6 +611712,20 @@
           },
           {
             "case_ids": [
+              "fastapi.applications.routes.route-tree-openapi"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml",
+            "workflow_id": "fastapi-routes-tree-openapi"
+          },
+          {
+            "case_ids": [
               "fastapi.routing.generate-unique-id-callback-adds-route-method",
               "fastapi.routing.generate-unique-id-callback-clears-route-methods",
               "fastapi.routing.generate-unique-id-callback-removes-route-method",
@@ -749750,11 +749792,23 @@
         {
           "case_id": "fastapi.docs.sub-applications.route-list-after-mount",
           "recipe_path": "tests/fixtures/input-recipes/parity/sub_applications.yaml"
+        },
+        {
+          "case_id": "fastapi.applications.routes.route-tree-openapi",
+          "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml",
+          "workload_path": "tests/fixtures/workloads/fastapi_routes_tree_openapi.py"
         }
       ],
       "id": "fastapi.applications.FastAPI.routes",
       "kind": "inherited_property",
       "observation_selectors": [
+        "http.status",
+        "http.headers.ordered",
         "http.body.bytes"
       ],
       "reviewed_overlay_ref": "/reviewed_api_contract_overlay/inherited_operations/fastapi.applications.FastAPI.routes",
@@ -749787,7 +749841,7 @@
       "target_binding": {
         "implementation_owner": "fastapi-rs",
         "known_gaps": [
-          "The projection includes generic route objects supplied directly to FastAPI, but does not establish route-tree or mount structure, generic routes added later or through included APIRouters, WebSocket dispatch parity, custom route classes, other route options or fields, or built-in and docs routes; passing the projection to get_openapi also remains unestablished.",
+          "The focused route-tree input establishes one selected route collection and OpenAPI projection. Its oracle/target comparison shows matching OpenAPI paths, but the target creates a fresh list on each access, omits default docs and mounted route entries, and exposes a RouteContext for an included router where upstream exposes _IncludedRouter. Public collection mutation effects, WebSocket routes, custom route classes, and other route options or configurations remain unestablished.",
           "The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods, tags, and endpoint name for one GET route each; broader collection contents and configurations remain outside this partial contract."
         ],
         "rust_binding": "fastapi-rs/src/application_runtime.rs::PyFastApi::routes",

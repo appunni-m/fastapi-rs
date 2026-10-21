@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: eec7721dbd4ffebf01d9886edf395963917d33f020aedbb4738dd6565b6184ab
+    sha256: 68fd4de3a302f85dfaca87e8b67af41eb047bdb48814d75a5da4fbdc0427da6e
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: d692443169ecd929b1fbc16115860b296bfd9cee020fb5769be15914bf759440
+    sha256: 27a1b4f50ee5981b15066fe3d15227f8286ba4a1005e6fe73d77aeb2b994bce0
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: c2099e8f3fdb3d5afa14a96f7e4a7436ac7f9ba2fce954118f21f25e6597ee2f
+    sha256: 28b91a2dbee9ecd478b53b43a211c6db35c26d784b1cf64234749c976e29072d
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 717
-      cases: 2973
-      partial_source_mappings: 1978
+      workflows: 718
+      cases: 2974
+      partial_source_mappings: 1981
 
 contract_metadata:
   aliases:
@@ -1405,7 +1405,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 455
-    operation_fixture_refs: 2772
+    operation_fixture_refs: 2773
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -55889,6 +55889,18 @@ api_surface_contract:
       case_id: fastapi.openapi.get-openapi.response-model-schemas-shared
       observation_selectors:
       - python.attribute_value
+    - workflow_id: fastapi-routes-tree-openapi
+      input_path: tests/fixtures/inputs/parity/fastapi-routes-tree-openapi.json
+      input_sha256: e7e1d6d8e2f420aac4f850614825b945f3fac52f321fead017c6fa8768943ce2
+      recipe_path: tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml
+      recipe_sha256: 7e30ecc4ca66aec041130193896cf6cc8950a13622e2fbdb7adb48ba7fc263aa
+      workload_path: tests/fixtures/workloads/fastapi_routes_tree_openapi.py
+      workload_sha256: 00a6e34ed6f4972e6cdcbaade07e8bd6f9c8e7464242ea968b288f9e76eacd88
+      case_id: fastapi.applications.routes.route-tree-openapi
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
       input_sha256: 01d2e25abb60a45c5f7f750d904c7974ebf215702455b8d3a6bfabb3ecff16cb
@@ -83035,10 +83047,21 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/sub_applications.py
       observation_selectors:
       - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml
+      case_id: fastapi.applications.routes.route-tree-openapi
+      workload_path: tests/fixtures/workloads/fastapi_routes_tree_openapi.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     feature_ids:
     - openapi-docs
     observation_selectors:
     - http.body.bytes
+    - http.headers.ordered
+    - http.status
     input_workflow_refs: []
     canonical_operation_ref: &id055
       contract_id: starlette-1.6.0-full
@@ -83080,10 +83103,11 @@ api_surface_contract:
       status: partial-contract
       disposition: unresolved
       known_gaps:
-      - The projection includes generic route objects supplied directly to FastAPI, but does not establish
-        route-tree or mount structure, generic routes added later or through included APIRouters, WebSocket
-        dispatch parity, custom route classes, other route options or fields, or built-in and docs routes;
-        passing the projection to get_openapi also remains unestablished.
+      - The focused route-tree input establishes one selected route collection and OpenAPI projection.
+        Its oracle/target comparison shows matching OpenAPI paths, but the target creates a fresh list
+        on each access, omits default docs and mounted route entries, and exposes a RouteContext for an
+        included router where upstream exposes _IncludedRouter. Public collection mutation effects, WebSocket
+        routes, custom route classes, and other route options or configurations remain unestablished.
       - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods,
         tags, and endpoint name for one GET route each; broader collection contents and configurations
         remain outside this partial contract.
