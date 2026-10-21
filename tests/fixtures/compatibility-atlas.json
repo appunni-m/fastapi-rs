@@ -762995,7 +762995,7 @@
       ],
       "starlette_rs_subclass_contract_refs": {
         "resolution": "subclass-contract-operation-links",
-        "scope_note": "The target links inherited task-list attributes and the sibling's generic add_task lookup, sync/async dispatch, sequential execution, and sequence construction requirements without duplicating Starlette's API inventory. The FastAPI workload also verifies that a later task failure propagates after an earlier task completes and prevents the following task from starting. FastAPI's dependency aggregation and subclass registration API remain FastAPI-owned.",
+        "scope_note": "The target links inherited task-list attributes and the sibling's generic add_task lookup, sync/async dispatch, sequential execution, and sequence construction and live task-list mutation requirements without duplicating Starlette's API inventory. The FastAPI workload also verifies that a later task failure propagates after an earlier task completes and prevents the following task from starting, and that a task appended during execution runs in the same response. FastAPI's dependency aggregation and subclass registration API remain FastAPI-owned.",
         "starlette_symbol": "starlette.background.BackgroundTasks",
         "target_operation_refs": [
           {
@@ -763032,7 +763032,8 @@
               "starlette.responses.Response.asgi-call.background-sync-task",
               "starlette.responses.Response.asgi-call.background-task-order",
               "starlette.responses.Response.asgi-call.background-task-sequence-constructor",
-              "starlette.responses.Response.asgi-call.background-task-late-failure-stops"
+              "starlette.responses.Response.asgi-call.background-task-late-failure-stops",
+              "starlette.responses.Response.asgi-call.background-task-live-list-mutation"
             ],
             "source_path": "starlette.responses.Response.__call__",
             "surface_id": "starlette.responses.Response",
