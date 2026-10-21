@@ -1149,8 +1149,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "response-serialization",
         ],
         "observation_selectors": [
+            "asgi.cancellation.cancelled_caught",
             "asgi.application_error.exception",
             "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -1158,10 +1162,11 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "rationale": (
             "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks "
             "from dependencies. The linked independent cases observe response effects, "
-            "selected callback/keyword forms, a live list append, and one failure "
-            "short-circuit. They do not claim exhaustive callable, cancellation, or "
-            "injection coverage. FastAPI's BackgroundTasks subclass and injection are "
-            "FastAPI-owned; generic execution is Starlette-owned."
+            "selected callback/keyword forms, a live list append, one failure "
+            "short-circuit, and cancellation while an injected async task awaits. They "
+            "do not claim exhaustive callable, cancellation, or injection coverage. "
+            "FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; generic "
+            "execution and cancellation propagation are Starlette-owned."
         ),
         "workflow_cases": [
             {
@@ -1213,6 +1218,19 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                     "observe-shared-base-typed-dependency-effects",
                 ],
                 "observation_selectors": ["http.body.bytes", "http.status"],
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+                "case_id": "fastapi.background.task-execution.cancelled-during-background-await",
+                "action_ids": [
+                    "cancel-dispatch-while-background-task-awaits",
+                    "observe-background-task-cancellation",
+                ],
+                "observation_selectors": [
+                    "asgi.cancellation.cancelled_caught",
+                    "http.body.bytes",
+                    "http.status",
+                ],
             },
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",

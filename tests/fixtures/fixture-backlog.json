@@ -84826,6 +84826,9 @@
     },
     {
       "candidate_observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "dependency.call_order",
         "dependency.cleanup_order",
         "error.class",
@@ -84895,10 +84898,27 @@
             "response.background_effects",
             "validation.error_class"
           ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ]
         }
       ],
       "candidate_selector_scope": {
-        "unobserved_reviewed_selector_claims": [],
+        "unobserved_reviewed_selector_claims": [
+          "construction.exception_class",
+          "construction.exception_message",
+          "construction.outcome"
+        ],
         "workflow_scope_notes": []
       },
       "documented_sections": [
@@ -85742,15 +85762,17 @@
         {
           "case_ids": [
             "fastapi.background.task-execution.callable-shapes-and-kwargs",
+            "fastapi.background.task-execution.cancelled-during-background-await",
             "fastapi.background.task-execution.failure-short-circuits",
             "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
             "fastapi.background.task-list.live-append-during-execution",
             "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
           ],
-          "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, asgi.cancellation.cancelled_caught, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "asgi.application_error.exception",
+            "asgi.cancellation.cancelled_caught",
             "asgi.send.message_types",
             "http.body.bytes",
             "http.status"
@@ -85789,6 +85811,7 @@
       "input_only": true,
       "observation_selectors": [
         "asgi.application_error.exception",
+        "asgi.cancellation.cancelled_caught",
         "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
@@ -85796,7 +85819,7 @@
       ],
       "related_usage_sources": [],
       "reviewed_source_mapping": {
-        "rationale": "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks from dependencies. The linked independent cases observe response effects, selected callback/keyword forms, a live list append, and one failure short-circuit. They do not claim exhaustive callable, cancellation, or injection coverage. FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; generic execution is Starlette-owned.",
+        "rationale": "The tutorial covers FastAPI injection of BackgroundTasks and merging tasks from dependencies. The linked independent cases observe response effects, selected callback/keyword forms, a live list append, one failure short-circuit, and cancellation while an injected async task awaits. They do not claim exhaustive callable, cancellation, or injection coverage. FastAPI's BackgroundTasks subclass and injection are FastAPI-owned; generic execution and cancellation propagation are Starlette-owned.",
         "source_evidence": [
           {
             "end_line": 74,
@@ -85889,6 +85912,19 @@
           },
           {
             "action_ids": [
+              "cancel-dispatch-while-background-task-awaits",
+              "observe-background-task-cancellation"
+            ],
+            "case_id": "fastapi.background.task-execution.cancelled-during-background-await",
+            "observation_selectors": [
+              "asgi.cancellation.cancelled_caught",
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml"
+          },
+          {
+            "action_ids": [
               "append-task-while-running",
               "observe-live-list-mutation-effects"
             ],
@@ -85939,10 +85975,12 @@
           "feature_id": null,
           "schema_extension_required": [
             "asgi.application_error.exception",
+            "asgi.cancellation.cancelled_caught",
             "asgi.send.message_types"
           ],
           "selectors": [
             "asgi.application_error.exception",
+            "asgi.cancellation.cancelled_caught",
             "asgi.send.message_types"
           ]
         }

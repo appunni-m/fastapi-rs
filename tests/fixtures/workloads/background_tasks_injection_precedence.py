@@ -1,5 +1,6 @@
 """Independent workload for request-scoped BackgroundTasks injection."""
 
+import asyncio
 from functools import partial
 from typing import Annotated
 
@@ -109,6 +110,19 @@ def create_app(factory_input: dict[str, object], _workload_trace: list[str]) -> 
         background_tasks.add_task(fail_task, "failure-raised")
         background_tasks.add_task(record_task, "failure-skipped")
         return {"kind": "failure"}
+
+    @app.get("/cancel-background-task")
+    async def schedule_cancellable_task(background_tasks: BackgroundTasks) -> dict[str, str]:
+        async def wait_until_cancelled() -> None:
+            task_events.append("started")
+            try:
+                await asyncio.Event().wait()
+            except asyncio.CancelledError:
+                task_events.append("cancelled")
+                raise
+
+        background_tasks.add_task(wait_until_cancelled)
+        return {"kind": "cancellation"}
 
     @app.get("/callable-shapes")
     async def execute_callable_shapes(background_tasks: BackgroundTasks) -> dict[str, str]:

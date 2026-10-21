@@ -2460,9 +2460,9 @@
     {
       "id": "background-tasks-injection-precedence",
       "input_path": "tests/fixtures/inputs/parity/background-tasks-injection-precedence.json",
-      "input_sha256": "1310e1e685fec53495b1fd095e240cee3f2343f480b6b48a111ef7c8724a32d1",
+      "input_sha256": "c15c09dcbf5c10926d730e661647ef8ec29b7b9500303c382c686d4cd0f18499",
       "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
-      "recipe_sha256": "8e3fed5b21506fcdb974257e084b5fc8f2085ec2a83a754530d63622130be92c",
+      "recipe_sha256": "9d3ca42ac12036eccefd0b2249b20eac87a63c36913955af508cfc8721e886d3",
       "case_ids": [
         "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
         "fastapi.background.task-injection.mixed-sync-async-order",
@@ -2471,10 +2471,11 @@
         "fastapi.background.task-list.live-append-during-execution",
         "fastapi.background.task-execution.failure-short-circuits",
         "fastapi.background.task-execution.callable-shapes-and-kwargs",
-        "fastapi.background.task-injection.starlette-base-annotation-in-dependency"
+        "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
+        "fastapi.background.task-execution.cancelled-during-background-await"
       ],
       "workload_path": "tests/fixtures/workloads/background_tasks_injection_precedence.py",
-      "workload_sha256": "1d680479dbe300b0340737a5d352996ce4e66fada97dfa4aac366e901d54815f",
+      "workload_sha256": "77c933638fcf5b09d0d93e905a910fd42418c3af192d935ce2491a6141d4e0cc",
       "case_contracts": [
         {
           "case_id": "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
@@ -2537,6 +2538,13 @@
           "requirement_refs": [
             "source:documented-page:tutorial/background-tasks.md",
             "source:upstream-test:tests/test_response_dependency.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.background.task-execution.cancelled-during-background-await",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/background-tasks.md"
           ]
         }
       ]
@@ -45140,9 +45148,10 @@
       "fixture_id": "fastapi.docs.tutorial-background-tasks",
       "workflow_id": "background-tasks-injection-precedence",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, asgi.cancellation.cancelled_caught, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.background.task-execution.callable-shapes-and-kwargs",
+        "fastapi.background.task-execution.cancelled-during-background-await",
         "fastapi.background.task-execution.failure-short-circuits",
         "fastapi.background.task-injection.starlette-base-annotation-in-dependency",
         "fastapi.background.task-list.live-append-during-execution",
@@ -45150,6 +45159,7 @@
       ],
       "observation_selectors": [
         "asgi.application_error.exception",
+        "asgi.cancellation.cancelled_caught",
         "asgi.send.message_types",
         "http.body.bytes",
         "http.status"
