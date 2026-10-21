@@ -77,8 +77,10 @@ def _mapped(
     implementation_sources: tuple[dict[str, object], ...],
     *,
     extra_sources: tuple[dict[str, object], ...] = (),
+    workflow_case: dict[str, Any] | None = None,
+    stimulus_notes: str | None = None,
 ) -> dict[str, Any]:
-    return {
+    row = {
         "review_status": "reviewed_source_candidate",
         "mapping_status": "contract_gated_source_candidate",
         "feature_ids": list(feature_ids),
@@ -86,7 +88,8 @@ def _mapped(
         "rationale": rationale,
         "replace_features": True,
         "contract_gate": "Partial: " + contract_gate,
-        "stimulus_notes": (
+        "stimulus_notes": stimulus_notes
+        or (
             f"Use {RECIPE}::{case_id} actions {', '.join(action_ids)}. "
             f"The independent stimulus is implemented by {WORKLOAD}; it contains no expected output."
         ),
@@ -104,6 +107,9 @@ def _mapped(
             *implementation_sources,
         ],
     }
+    if workflow_case is not None:
+        row["workflow_case"] = workflow_case
+    return row
 
 
 def _excluded(
@@ -633,8 +639,8 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ["openapi"],
                 ["openapi.document"],
                 ["openapi-docs"],
-                "The OpenAPI response object records the route's bodyless success status and typed additional error model.",
-                "The source snapshots two full path operations; this independent app checks its own complete parsed document and does not copy the snapshot or claim identical operation IDs/paths.",
+                "The source snapshot confirms the /b operation's explicit 204 response and generated default 200 response; the direct input link compares only those two entries.",
+                "The /b response pointers are a partial projection. The source's /a custom response class, modeled 500 response, generated 204 entry, operation metadata, and component schemas remain unmapped.",
                 _OPENAPI_ROUTE,
                 extra_sources=(
                     _source(
@@ -643,6 +649,20 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         38,
                         "Source route response class, success status, and additional typed error model",
                     ),
+                ),
+                workflow_case={
+                    "workflow_id": "response-204-openapi",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-204-openapi.yaml",
+                    "case_id": "fastapi.response.openapi-explicit-204-keeps-default-200",
+                    "action_ids": ["inspect-explicit-204-and-default-200"],
+                    "observation_selectors": ["openapi.document", "openapi.paths"],
+                },
+                stimulus_notes=(
+                    "Use tests/fixtures/input-recipes/parity/response-204-openapi.yaml::"
+                    "fastapi.response.openapi-explicit-204-keeps-default-200 action "
+                    "inspect-explicit-204-and-default-200. It compares the /b 204 and default-200 "
+                    "response pointers only; the source's /a custom response and modeled 500 "
+                    "schema remain outside this partial function mapping."
                 ),
             ),
         },

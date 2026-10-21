@@ -199,6 +199,16 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ),
     ),
     (
+        "tests/test_response_code_no_body.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "response-204-openapi",
+        "tests/fixtures/input-recipes/parity/response-204-openapi.yaml",
+        "fastapi.response.openapi-explicit-204-keeps-default-200",
+        ("inspect-explicit-204-and-default-200",),
+        ("openapi.document", "openapi.paths"),
+    ),
+    (
         "tests/test_path.py",
         "test_path_param_le_ge_int_1",
     ): _reviewed_direct_link(
@@ -2723,6 +2733,7 @@ def validate_compatibility_artifacts(
                 )
             if source_row.get("source_path") in {
                 "tests/test_enforce_once_required_parameter.py",
+                "tests/test_response_code_no_body.py",
                 "tests/test_response_model_data_filter.py",
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial001.py",

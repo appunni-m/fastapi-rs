@@ -352008,6 +352008,12 @@
           "feature_ids": [
             "openapi-docs"
           ],
+          "function_source_ref": {
+            "end_line": 115,
+            "line": 48,
+            "path": "tests/test_response_code_no_body.py",
+            "sha256": "1e2e0005b5a42b1f298ad744bae1fcc792c8ad32aaed110cce5b014eb084a9bf"
+          },
           "id": "fastapi.test.test-response-code-no-body.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -352015,8 +352021,8 @@
             "openapi.document"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: The source snapshots two full path operations; this independent app checks its own complete parsed document and does not copy the snapshot or claim identical operation IDs/paths.",
-            "rationale": "The OpenAPI response object records the route's bodyless success status and typed additional error model.",
+            "contract_gate": "Partial: The /b response pointers are a partial projection. The source's /a custom response class, modeled 500 response, generated 204 entry, operation metadata, and component schemas remain unmapped.",
+            "rationale": "The source snapshot confirms the /b operation's explicit 204 response and generated default 200 response; the direct input link compares only those two entries.",
             "source_evidence": [
               {
                 "end_line": 115,
@@ -352096,7 +352102,19 @@
                 "start_line": 585
               }
             ],
-            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-bodyless.openapi actions openapi. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-204-openapi.yaml::fastapi.response.openapi-explicit-204-keeps-default-200 action inspect-explicit-204-and-default-200. It compares the /b 204 and default-200 response pointers only; the source's /a custom response and modeled 500 schema remain outside this partial function mapping.",
+            "workflow_case": {
+              "action_ids": [
+                "inspect-explicit-204-and-default-200"
+              ],
+              "case_id": "fastapi.response.openapi-explicit-204-keeps-default-200",
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-204-openapi.yaml",
+              "workflow_id": "response-204-openapi"
+            }
           },
           "selector_evidence": [
             {
@@ -352112,7 +352130,19 @@
           "stimulus_design": [
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-bodyless.openapi actions openapi. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-204-openapi.yaml::fastapi.response.openapi-explicit-204-keeps-default-200 action inspect-explicit-204-and-default-200. It compares the /b 204 and default-200 response pointers only; the source's /a custom response and modeled 500 schema remain outside this partial function mapping.",
+          "workflow_case": {
+            "action_ids": [
+              "inspect-explicit-204-and-default-200"
+            ],
+            "case_id": "fastapi.response.openapi-explicit-204-keeps-default-200",
+            "observation_selectors": [
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-204-openapi.yaml",
+            "workflow_id": "response-204-openapi"
+          }
         }
       ],
       "feature_ids": [
