@@ -8,6 +8,9 @@ from fastapi_rs._core import (
     RouteContext as RouteContext,
 )
 from fastapi_rs._core import (
+    _IncludedRouter as _IncludedRouter,
+)
+from fastapi_rs._core import (
     iter_route_contexts as iter_route_contexts,
 )
 

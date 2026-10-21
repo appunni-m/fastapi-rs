@@ -20,11 +20,13 @@ def create_app() -> FastAPI:
     def mounted_child() -> dict[str, str]:
         return {"source": "mounted"}
 
+    constructor_routes = [Route("/constructor", constructor_endpoint, name="constructor")]
     app = FastAPI(
         title="Route Tree Input",
         version="1.0.0",
-        routes=[Route("/constructor", constructor_endpoint, name="constructor")],
+        routes=constructor_routes,
     )
+    constructor_routes.clear()
 
     @app.get("/direct", name="direct")
     def direct_route() -> dict[str, str]:
@@ -60,6 +62,8 @@ def create_app() -> FastAPI:
         )
         return {
             "route_list_identity_stable": routes is app.routes,
+            "router_routes_identity_shared": routes is app.router.routes,
+            "constructor_routes_input_copied": routes[0].path == "/constructor",
             "routes": route_entries,
             "openapi_paths": sorted(schema["paths"]),
         }

@@ -2542,10 +2542,17 @@ struct PyRouteContext {
     effective_route: Py<PyAny>,
 }
 
+#[pyclass(name = "_IncludedRouter", module = "fastapi.routing")]
+struct PyFastApiIncludedRouter {
+    original_router: Py<PyAny>,
+    effective_route_contexts: Py<PyList>,
+}
+
 #[pyclass(module = "fastapi.routing")]
 struct PyRouteContextIterator {
     routes: Py<PyAny>,
     iterator: Option<Py<PyIterator>>,
+    included_iterator: Option<Py<PyIterator>>,
     finished: bool,
 }
 
@@ -3064,6 +3071,14 @@ impl PyRouteContext {
     }
 }
 
+#[pymethods]
+impl PyFastApiIncludedRouter {
+    #[getter]
+    fn original_router(&self, py: Python<'_>) -> Py<PyAny> {
+        self.original_router.clone_ref(py)
+    }
+}
+
 fn materialize_api_route_response_class(py: Python<'_>, route: &Py<PyAny>) -> PyResult<()> {
     if !is_fastapi_api_route(py, route.bind(py))? {
         return Ok(());
@@ -3104,49 +3119,71 @@ impl PyRouteContextIterator {
         if self.finished {
             return Ok(None);
         }
-        if self.iterator.is_none() {
-            self.iterator = match self.routes.bind(py).try_iter() {
-                Ok(iterator) => Some(iterator.unbind()),
-                Err(error) => {
+        loop {
+            let from_included = self.included_iterator.is_some();
+            let next = if let Some(iterator) = self.included_iterator.as_ref() {
+                iterator.clone_ref(py).into_bound(py).next()
+            } else {
+                if self.iterator.is_none() {
+                    self.iterator = match self.routes.bind(py).try_iter() {
+                        Ok(iterator) => Some(iterator.unbind()),
+                        Err(error) => {
+                            self.finished = true;
+                            return Err(error);
+                        }
+                    };
+                }
+                let Some(iterator) = self.iterator.as_ref() else {
+                    self.finished = true;
+                    return Ok(None);
+                };
+                iterator.clone_ref(py).into_bound(py).next()
+            };
+            let route = match next {
+                Some(Ok(route)) => route,
+                Some(Err(error)) => {
                     self.finished = true;
                     return Err(error);
                 }
+                None if from_included => {
+                    self.included_iterator = None;
+                    continue;
+                }
+                None => {
+                    self.finished = true;
+                    return Ok(None);
+                }
             };
-        }
-        let Some(iterator) = self.iterator.as_ref() else {
-            self.finished = true;
-            return Ok(None);
-        };
-        let mut iterator = iterator.clone_ref(py).into_bound(py);
-        let route = match iterator.next() {
-            Some(Ok(route)) => route,
-            Some(Err(error)) => {
-                self.finished = true;
-                return Err(error);
+            if route.is_instance_of::<PyFastApiIncludedRouter>() {
+                let included = route.extract::<PyRef<'_, PyFastApiIncludedRouter>>()?;
+                self.included_iterator = Some(
+                    included
+                        .effective_route_contexts
+                        .bind(py)
+                        .try_iter()?
+                        .unbind(),
+                );
+                continue;
             }
-            None => {
-                self.finished = true;
-                return Ok(None);
+            if route.is_instance_of::<PyRouteContext>() {
+                let context = route.unbind();
+                let effective_route = context
+                    .bind(py)
+                    .extract::<PyRef<'_, PyRouteContext>>()?
+                    .effective_route
+                    .clone_ref(py);
+                materialize_api_route_response_class(py, &effective_route)?;
+                return Ok(Some(context));
             }
-        };
-        if route.is_instance_of::<PyRouteContext>() {
-            let context = route.unbind();
-            let effective_route = context
-                .bind(py)
-                .extract::<PyRef<'_, PyRouteContext>>()?
-                .effective_route
-                .clone_ref(py);
-            materialize_api_route_response_class(py, &effective_route)?;
-            return Ok(Some(context));
-        }
-        let route = route.unbind();
-        materialize_api_route_response_class(py, &route)?;
-        match new_route_context(py, route.clone_ref(py), route) {
-            Ok(context) => Ok(Some(context)),
-            Err(error) => {
-                self.finished = true;
-                Err(error)
-            }
+            let route = route.unbind();
+            materialize_api_route_response_class(py, &route)?;
+            return match new_route_context(py, route.clone_ref(py), route) {
+                Ok(context) => Ok(Some(context)),
+                Err(error) => {
+                    self.finished = true;
+                    Err(error)
+                }
+            };
         }
     }
 }
@@ -3478,23 +3515,30 @@ fn new_route_context(
     .map(Py::into_any)
 }
 
-fn route_views(
+fn new_public_starlette_route(
     py: Python<'_>,
-    constructor_routes: &[Py<PyAny>],
-    routes: &[FastApiRoute],
-) -> PyResult<Py<PyList>> {
-    let views = PyList::empty(py);
-    for route in constructor_routes {
-        views.append(route.bind(py))?;
+    path: &str,
+    endpoint: &Bound<'_, PyAny>,
+    name: &str,
+    include_in_schema: bool,
+) -> PyResult<Py<PyAny>> {
+    let route_type = py.import("starlette.routing")?.getattr("Route")?;
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("methods", PyList::new(py, ["GET"])?)?;
+    kwargs.set_item("name", name)?;
+    kwargs.set_item("include_in_schema", include_in_schema)?;
+    route_type
+        .call((path, endpoint), Some(&kwargs))
+        .map(Bound::unbind)
+}
+
+fn replace_python_list(py: Python<'_>, target: &Py<PyList>, values: &[Py<PyAny>]) -> PyResult<()> {
+    let target = target.bind(py);
+    target.call_method0("clear")?;
+    for value in values {
+        target.append(value.bind(py))?;
     }
-    let mut seen_routes = HashSet::with_capacity(routes.len());
-    for route in routes {
-        let route_pointer = route.public_route.as_ptr() as usize;
-        if seen_routes.insert(route_pointer) {
-            views.append(route.public_route.bind(py))?;
-        }
-    }
-    Ok(views.unbind())
+    Ok(())
 }
 
 fn openapi_warning_identity(
@@ -3997,6 +4041,7 @@ fn py_iter_route_contexts(py: Python<'_>, routes: &Bound<'_, PyAny>) -> PyResult
         PyRouteContextIterator {
             routes: routes.clone().unbind(),
             iterator: None,
+            included_iterator: None,
             finished: false,
         },
     )
@@ -4019,6 +4064,7 @@ struct FastApiRouterInclude {
     deprecated: Option<bool>,
     include_in_schema: bool,
     strict_content_type: Option<bool>,
+    public_route: Py<PyAny>,
     source_route_cursor: usize,
     source_route_indexes: Vec<usize>,
     source_websocket_route_cursor: usize,
@@ -4559,6 +4605,7 @@ pub(crate) struct PyFastApi {
     docs_routes: Vec<FastApiDocsRoute>,
     named_routes: NamedRouteTable,
     constructor_routes: Vec<Py<PyAny>>,
+    route_surface: Py<PyList>,
     routes: Vec<FastApiRoute>,
     route_dispatch_order: Vec<RouteDispatchEntry>,
     router_includes: Vec<FastApiRouterInclude>,
@@ -5547,6 +5594,47 @@ impl PyFastApi {
                 docs_routes.push(FastApiDocsRoute::ReDoc);
             }
         }
+        let route_surface = PyList::empty(py);
+        for route in &constructor_routes {
+            route_surface.append(route.bind(py))?;
+        }
+        if let Some(path) = openapi_url.filter(|path| !path.is_empty()) {
+            let response_endpoint = py.import("starlette.responses")?.getattr("Response")?;
+            route_surface.append(
+                new_public_starlette_route(py, path, &response_endpoint, "openapi", false)?
+                    .bind(py),
+            )?;
+            if let Some(path) = docs_url.filter(|path| !path.is_empty()) {
+                route_surface.append(
+                    new_public_starlette_route(
+                        py,
+                        path,
+                        &response_endpoint,
+                        "swagger_ui_html",
+                        false,
+                    )?
+                    .bind(py),
+                )?;
+                if let Some(path) = swagger_ui_oauth2_redirect_url.filter(|path| !path.is_empty()) {
+                    route_surface.append(
+                        new_public_starlette_route(
+                            py,
+                            path,
+                            &response_endpoint,
+                            "swagger_ui_redirect",
+                            false,
+                        )?
+                        .bind(py),
+                    )?;
+                }
+            }
+            if let Some(path) = redoc_url.filter(|path| !path.is_empty()) {
+                route_surface.append(
+                    new_public_starlette_route(py, path, &response_endpoint, "redoc_html", false)?
+                        .bind(py),
+                )?;
+            }
+        }
         let lifespan = FastApiLifespan::new(py, on_startup, on_shutdown, lifespan)?;
         let webhooks = match webhooks {
             Some(webhooks) if webhooks.bind(py).is_none() => webhooks,
@@ -5627,6 +5715,7 @@ impl PyFastApi {
             docs_routes,
             named_routes: NamedRouteTable::new(),
             constructor_routes,
+            route_surface: route_surface.unbind(),
             routes: Vec::new(),
             route_dispatch_order: Vec::new(),
             router_includes: Vec::new(),
@@ -5893,8 +5982,9 @@ impl PyFastApi {
     }
 
     #[getter]
-    fn routes(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
-        route_views(py, &self.constructor_routes, &self.routes)
+    fn routes(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyList>> {
+        refresh_included_router_routes(py, &slf)?;
+        Ok(slf.bind(py).borrow().route_surface.clone_ref(py))
     }
 
     #[getter]
@@ -6745,6 +6835,7 @@ impl PyFastApi {
         }
         let mount = mount_type.call((path, app.bind(py)), Some(&kwargs))?;
         let route_index = self.mounted_routes.len();
+        self.route_surface.bind(py).append(&mount)?;
         self.mounted_routes.push(mount.unbind());
         self.route_dispatch_order
             .push(RouteDispatchEntry::MountedRoute(route_index));
@@ -6772,6 +6863,7 @@ impl PyFastApi {
         kwargs.set_item("include_in_schema", include_in_schema)?;
         let route_object = route_type.call((path, route.bind(py)), Some(&kwargs))?;
         let route_index = self.mounted_routes.len();
+        self.route_surface.bind(py).append(&route_object)?;
         self.mounted_routes.push(route_object.unbind());
         self.route_dispatch_order
             .push(RouteDispatchEntry::MountedRoute(route_index));
@@ -6793,6 +6885,7 @@ impl PyFastApi {
         }
         let route = host_type.call((host, app.bind(py)), Some(&kwargs))?;
         let route_index = self.mounted_routes.len();
+        self.route_surface.bind(py).append(&route)?;
         self.mounted_routes.push(route.unbind());
         self.route_dispatch_order
             .push(RouteDispatchEntry::MountedRoute(route_index));
@@ -6989,6 +7082,26 @@ impl PyFastApi {
                 strict_content_type,
             },
         )?;
+        let effective_route_contexts = PyList::empty(py);
+        for route_index in &source_route_indexes {
+            let route = destination
+                .routes
+                .get(*route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("included public route context was lost"))?;
+            effective_route_contexts.append(route.public_route.bind(py))?;
+        }
+        let public_route = Py::new(
+            py,
+            PyFastApiIncludedRouter {
+                original_router: router_object.clone_ref(py),
+                effective_route_contexts: effective_route_contexts.clone().unbind(),
+            },
+        )?
+        .into_any();
+        destination
+            .route_surface
+            .bind(py)
+            .append(public_route.bind(py))?;
         destination.router_includes.push(FastApiRouterInclude {
             route_position,
             websocket_route_position,
@@ -7011,6 +7124,7 @@ impl PyFastApi {
             deprecated,
             include_in_schema,
             strict_content_type,
+            public_route,
             source_route_cursor: source.routes.len(),
             source_route_indexes: source_route_indexes.clone(),
             source_websocket_route_cursor: source.websocket_routes.len(),
@@ -8645,6 +8759,11 @@ impl PyApiRouter {
         )?;
         {
             let mut inner = inner.bind(py).borrow_mut();
+            let route_surface = PyList::empty(py);
+            for route in &inner.constructor_routes {
+                route_surface.append(route.bind(py))?;
+            }
+            inner.route_surface = route_surface.unbind();
             inner.route_scope_prefix = prefix.to_owned();
             inner.is_router_inner = true;
             inner.router_tags = tag_values.clone_ref(py);
@@ -8788,8 +8907,9 @@ impl PyApiRouter {
     #[getter]
     fn routes(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
         let inner = self.inner_app(py)?;
+        refresh_included_router_routes(py, &inner)?;
         let inner = inner.bind(py).borrow();
-        route_views(py, &inner.constructor_routes, &inner.routes)
+        Ok(inner.route_surface.clone_ref(py))
     }
 
     #[getter]
@@ -9138,6 +9258,26 @@ impl PyApiRouter {
                 strict_content_type: inherited_strict_content_type,
             },
         )?;
+        let effective_route_contexts = PyList::empty(py);
+        for route_index in &source_route_indexes {
+            let route = destination
+                .routes
+                .get(*route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("included public route context was lost"))?;
+            effective_route_contexts.append(route.public_route.bind(py))?;
+        }
+        let public_route = Py::new(
+            py,
+            PyFastApiIncludedRouter {
+                original_router: router_object.clone_ref(py),
+                effective_route_contexts: effective_route_contexts.clone().unbind(),
+            },
+        )?
+        .into_any();
+        destination
+            .route_surface
+            .bind(py)
+            .append(public_route.bind(py))?;
         destination.router_includes.push(FastApiRouterInclude {
             route_position,
             websocket_route_position,
@@ -9160,6 +9300,7 @@ impl PyApiRouter {
             deprecated,
             include_in_schema,
             strict_content_type: inherited_strict_content_type,
+            public_route,
             source_route_cursor: source.routes.len(),
             source_route_indexes: source_route_indexes.clone(),
             source_websocket_route_cursor: source.websocket_routes.len(),
@@ -10586,6 +10727,7 @@ fn synchronize_included_route_orders(py: Python<'_>, app: &Py<PyFastApi>) -> PyR
 struct IncludedRouterRefresh {
     index: usize,
     router: Py<PyAny>,
+    public_route: Py<PyAny>,
     merge_prefix: String,
     frontend_merge_prefix: String,
     responses: Py<PyDict>,
@@ -10626,6 +10768,7 @@ fn refresh_included_router_routes_inner(
             .map(|(index, include)| IncludedRouterRefresh {
                 index,
                 router: include.router.clone_ref(py),
+                public_route: include.public_route.clone_ref(py),
                 merge_prefix: include.merge_prefix.clone(),
                 frontend_merge_prefix: include.frontend_merge_prefix.clone(),
                 responses: include.responses.clone_ref(py),
@@ -10722,6 +10865,18 @@ fn refresh_included_router_routes_inner(
         let mut source_frontend_route_indexes = include.source_frontend_route_indexes;
         source_frontend_route_indexes
             .extend(destination_frontend_route_start..destination.frontend_routes.len());
+        let effective_route_contexts = source_route_indexes
+            .iter()
+            .map(|route_index| {
+                destination
+                    .routes
+                    .get(*route_index)
+                    .map(|route| route.public_route.clone_ref(py))
+                    .ok_or_else(|| {
+                        PyRuntimeError::new_err("included public route context was lost")
+                    })
+            })
+            .collect::<PyResult<Vec<_>>>()?;
         let mut fields = IncludedFieldBranch::from_router_indexes(&source, &source_route_indexes);
         let router_include = destination
             .router_includes
@@ -10735,6 +10890,16 @@ fn refresh_included_router_routes_inner(
         router_include.source_frontend_route_cursor = source.frontend_routes.len();
         router_include.source_frontend_route_indexes = source_frontend_route_indexes;
         router_include.fields = fields;
+        drop(destination);
+        let included_route = include
+            .public_route
+            .bind(py)
+            .extract::<PyRef<'_, PyFastApiIncludedRouter>>()?;
+        replace_python_list(
+            py,
+            &included_route.effective_route_contexts,
+            &effective_route_contexts,
+        )?;
     }
     synchronize_included_route_orders(py, app)
 }
@@ -11411,6 +11576,9 @@ impl PyOperationDecorator {
             .map(|method| OpenApiRouteSnapshot::from_route(py, &route, method, false))
             .collect::<PyResult<Vec<_>>>()?;
         set_api_route_openapi_snapshots(py, &route.public_route, openapi_snapshots)?;
+        app.route_surface
+            .bind(py)
+            .append(route.public_route.bind(py))?;
         app.routes.push(route);
         let route_index = app.routes.len() - 1;
         app.route_dispatch_order
@@ -11449,6 +11617,7 @@ impl PyWebSocketDecorator {
             websocket_route_scope(py, &scope_path, endpoint.bind(py), self.name.as_deref())?;
         let name = route_scope.bind(py).getattr("name")?.extract::<String>()?;
         let mut app = self.app.bind(py).borrow_mut();
+        app.route_surface.bind(py).append(route_scope.bind(py))?;
         let index = app
             .websocket_router
             .add_operation(&self.path, "GET", Some(200))
@@ -14148,6 +14317,7 @@ fn add_raw_websocket_route(
     let scope_path = format!("{}{}", app.route_scope_prefix, path);
     let route_scope = websocket_route_scope(py, &scope_path, endpoint, name)?;
     let route_name = route_scope.bind(py).getattr("name")?.extract::<String>()?;
+    app.route_surface.bind(py).append(route_scope.bind(py))?;
     let param_convertors = route_param_convertors(py, path)?;
     let index = app
         .websocket_router
@@ -20085,6 +20255,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyBoundApiRouteProxyMember>()?;
     install_api_route_proxy(module.py(), module)?;
     module.add_class::<PyRouteContext>()?;
+    module.add_class::<PyFastApiIncludedRouter>()?;
     module.add_class::<PyRouteContextIterator>()?;
     module.add_class::<PyOperationDecorator>()?;
     module.add_class::<PyWebSocketDecorator>()?;

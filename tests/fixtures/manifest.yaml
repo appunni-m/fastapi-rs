@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 68fd4de3a302f85dfaca87e8b67af41eb047bdb48814d75a5da4fbdc0427da6e
+    sha256: d5dbe288991e7f9669d4f6d3f5c70b0d8ca549bf21e815e64f165a79b4bad770
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -602,7 +602,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 28b91a2dbee9ecd478b53b43a211c6db35c26d784b1cf64234749c976e29072d
+    sha256: 13a148a92c6409d13aa9b5ff6b66f09512a9d8bdd17d90800f5cb96d90b9c027
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -55895,7 +55895,7 @@ api_surface_contract:
       recipe_path: tests/fixtures/input-recipes/parity/fastapi-routes-tree-openapi.yaml
       recipe_sha256: 7e30ecc4ca66aec041130193896cf6cc8950a13622e2fbdb7adb48ba7fc263aa
       workload_path: tests/fixtures/workloads/fastapi_routes_tree_openapi.py
-      workload_sha256: 00a6e34ed6f4972e6cdcbaade07e8bd6f9c8e7464242ea968b288f9e76eacd88
+      workload_sha256: ba4589922de785b833a12b788571e5e9a1da1decb3a91d96f2a4d6c7da8d9785
       case_id: fastapi.applications.routes.route-tree-openapi
       observation_selectors:
       - http.body.bytes
@@ -83103,11 +83103,11 @@ api_surface_contract:
       status: partial-contract
       disposition: unresolved
       known_gaps:
-      - The focused route-tree input establishes one selected route collection and OpenAPI projection.
-        Its oracle/target comparison shows matching OpenAPI paths, but the target creates a fresh list
-        on each access, omits default docs and mounted route entries, and exposes a RouteContext for an
-        included router where upstream exposes _IncludedRouter. Public collection mutation effects, WebSocket
-        routes, custom route classes, and other route options or configurations remain unestablished.
+      - The focused route-tree input now covers stable `app.routes` identity, its shared identity with
+        `app.router.routes`, constructor-list copying, default docs routes, direct and mounted entries,
+        the `_IncludedRouter` marker, and OpenAPI path projection. Docs endpoint identity and invocation,
+        effects of mutating the returned list, WebSocket route-tree observations, custom route classes,
+        and other route options or configurations remain unestablished.
       - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods,
         tags, and endpoint name for one GET route each; broader collection contents and configurations
         remain outside this partial contract.

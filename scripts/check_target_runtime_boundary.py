@@ -353,17 +353,25 @@ def check_python_facade_pass_through() -> None:
                     f"{path.relative_to(PROJECT_ROOT)}:{all_assignments[0].lineno}: "
                     "__all__ contains duplicate names"
                 )
-            if imported_names != exported_names:
+            public_imported_names = [
+                name for name in imported_names if not name.startswith("_") or name.startswith("__")
+            ]
+            if public_imported_names != exported_names:
                 violations.append(
                     f"{path.relative_to(PROJECT_ROOT)}:{all_assignments[0].lineno}: "
-                    f"__all__ must exactly match native re-exports; imports={imported_names!r}, "
+                    f"__all__ must exactly match public native re-exports; "
+                    f"imports={imported_names!r}, "
                     f"__all__={exported_names!r}"
                 )
         elif imported_names:
-            violations.append(
-                f"{path.relative_to(PROJECT_ROOT)}: native imports must be listed in "
-                "literal __all__"
-            )
+            public_imported_names = [
+                name for name in imported_names if not name.startswith("_") or name.startswith("__")
+            ]
+            if public_imported_names:
+                violations.append(
+                    f"{path.relative_to(PROJECT_ROOT)}: public native imports must be listed in "
+                    "literal __all__"
+                )
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Import) and any(

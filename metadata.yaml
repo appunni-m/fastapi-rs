@@ -24646,7 +24646,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::routes
         known_gaps:
-          - The focused route-tree input establishes one selected route collection and OpenAPI projection. Its oracle/target comparison shows matching OpenAPI paths, but the target creates a fresh list on each access, omits default docs and mounted route entries, and exposes a RouteContext for an included router where upstream exposes _IncludedRouter. Public collection mutation effects, WebSocket routes, custom route classes, and other route options or configurations remain unestablished.
+          - The focused route-tree input now covers stable `app.routes` identity, its shared identity with `app.router.routes`, constructor-list copying, default docs routes, direct and mounted entries, the `_IncludedRouter` marker, and OpenAPI path projection. Docs endpoint identity and invocation, effects of mutating the returned list, WebSocket route-tree observations, custom route classes, and other route options or configurations remain unestablished.
           - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods, tags, and endpoint name for one GET route each; broader collection contents and configurations remain outside this partial contract.
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
