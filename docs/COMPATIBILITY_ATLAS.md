@@ -798,7 +798,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 
 | FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |
 |---:|---:|---:|---:|
-| 925 | 2529 | 372 | 26 |
+| 925 | 2528 | 372 | 26 |
 
 | FastAPI-Starlette source edges | Direct re-exports linked to complete surfaces | Direct re-export gaps/private classifications | Subclass edges with base operation links | Private-helper behavior links | Namespace catalog references | New Starlette inventory entries copied |
 |---:|---:|---:|---:|---:|---:|---:|

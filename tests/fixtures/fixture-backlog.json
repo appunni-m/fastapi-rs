@@ -152139,7 +152139,7 @@
             "openapi.document"
           ],
           "reviewed_mapping": {
-            "contract_gate": "The workflow compares selected OpenAPI pointers rather than the source's full document snapshot; it is a focused source candidate, not a full-snapshot parity claim. Generic TestClient behavior remains in the Starlette 1.6.0 contract.",
+            "contract_gate": "Unlinked source-backed gap: the current OpenAPI action covers a different path, path parameter, typed return, and additional-response declarations; it cannot stand in for the source's nested-router /items/ snapshot. The separate nested-router runtime action covers HTTP output only. Generic TestClient behavior remains in the Starlette 1.6.0 contract.",
             "rationale": "The source compares a complete OpenAPI snapshot for a nested router operation.",
             "source_evidence": [
               {
@@ -152164,7 +152164,7 @@
                 "start_line": 473
               }
             ],
-            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-response-extra.openapi-schema; it checks the route response pointer and success status."
+            "stimulus_notes": "The existing openapi-operations.yaml case fastapi.openapi.additional-response-extra.openapi-schema selects a different /items/{item_id} route with additional 404/409 responses. It does not project this source snapshot's nested /items/ operation, so this function remains unlinked."
           },
           "selector_evidence": [
             {
@@ -152189,7 +152189,7 @@
           "stimulus_design": [
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-response-extra.openapi-schema; it checks the route response pointer and success status."
+          "stimulus_design_notes": "The existing openapi-operations.yaml case fastapi.openapi.additional-response-extra.openapi-schema selects a different /items/{item_id} route with additional 404/409 responses. It does not project this source snapshot's nested /items/ operation, so this function remains unlinked."
         }
       ],
       "feature_ids": [
@@ -152311,46 +152311,26 @@
                   "term": "openapi"
                 }
               ]
-            },
-            {
-              "feature_id": "public-api-errors",
-              "signals": [
-                {
-                  "end_line": 40,
-                  "line": 38,
-                  "path": "tests/test_additional_responses_bad.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 40,
-                  "line": 38,
-                  "path": "tests/test_additional_responses_bad.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                },
-                {
-                  "end_line": 509,
-                  "line": 504,
-                  "path": "fastapi/openapi/utils.py",
-                  "source": "reviewed-source-span",
-                  "term": "curated source review"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "openapi-docs",
-            "public-api-errors"
+            "openapi-docs"
           ],
+          "function_source_ref": {
+            "end_line": 40,
+            "line": 38,
+            "path": "tests/test_additional_responses_bad.py",
+            "sha256": "b6a1303079524f200789ea3f8a19555ca100f8fdce2f80fa123f44a94512eac7"
+          },
           "id": "fastapi.test.test-additional-responses-bad.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
             "validation.error_class"
           ],
           "reviewed_mapping": {
-            "rationale": "The invalid additional-response status raises ValueError during OpenAPI generation; the workflow captures the fully qualified dispatch exception class.",
+            "contract_gate": "Partial: the case compares the exception class for an independently malformed status key. It does not compare the source's exact 'hello' key, exception message, or a valid OpenAPI snapshot; the selected public behavior is the ValueError outcome.",
+            "rationale": "An invalid additional-response status key makes OpenAPI generation raise ValueError.",
             "source_evidence": [
               {
                 "end_line": 40,
@@ -152372,8 +152352,34 @@
                 "role": "OpenAPI response-status key is converted to an integer",
                 "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
                 "start_line": 504
+              },
+              {
+                "end_line": 40,
+                "path": "tests/test_additional_responses_bad.py",
+                "role": "upstream test stimulus and asserted behavior",
+                "sha256": "b6a1303079524f200789ea3f8a19555ca100f8fdce2f80fa123f44a94512eac7",
+                "start_line": 38
+              },
+              {
+                "end_line": 505,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI converts additional response models into OpenAPI response schemas",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 473
               }
-            ]
+            ],
+            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-bad.openapi-schema, action openapi; the independent input also exercises an invalid response status and observes the raised error class.",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-bad.openapi-schema",
+              "observation_selectors": [
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           },
           "selector_evidence": [
             {
@@ -152390,15 +152396,24 @@
           "source_function": "test_openapi_schema",
           "source_line": 38,
           "stimulus_design": [
-            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
+            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-bad.openapi-schema, action openapi; the independent input also exercises an invalid response status and observes the raised error class.",
+          "workflow_case": {
+            "action_ids": [
+              "openapi"
+            ],
+            "case_id": "fastapi.openapi.additional-responses-bad.openapi-schema",
+            "observation_selectors": [
+              "validation.error_class"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+            "workflow_id": "openapi-operations"
+          }
         }
       ],
       "feature_ids": [
-        "openapi-docs",
-        "public-api-errors"
+        "openapi-docs"
       ],
       "id": "fastapi.test.test-additional-responses-bad",
       "independent_workflow_mappings": [
@@ -152420,17 +152435,10 @@
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
-        "error.class",
-        "error.public_attributes",
         "http.body.bytes",
         "openapi.document",
-        "python.attribute_value",
-        "python.import_path",
-        "python.object_identity",
         "python.pydantic_model_result",
-        "python.signature",
-        "validation.error_class",
-        "warnings.category_message"
+        "validation.error_class"
       ],
       "selector_evidence": [
         {
@@ -152442,18 +152450,6 @@
             "http.body.bytes",
             "openapi.document",
             "python.pydantic_model_result"
-          ]
-        },
-        {
-          "feature_id": "public-api-errors",
-          "selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
           ]
         },
         {
@@ -152474,12 +152470,10 @@
       "stage": "reviewed partial source-to-input mapping; remaining source behavior is not claimed",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
-        "middleware-authentication-endpoints-datastructures-status",
         "wsgi-static-files-templates-schemas-configuration-testclient"
       ],
       "stimulus_design": [
-        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
-        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
       ],
       "stimulus_design_notes": null
     },
@@ -152505,6 +152499,12 @@
           "feature_ids": [
             "openapi-docs"
           ],
+          "function_source_ref": {
+            "end_line": 147,
+            "line": 32,
+            "path": "tests/test_additional_responses_custom_model_in_callback.py",
+            "sha256": "c3b6282898a6eb6aba29150862f606eb33dcfd998f1608e9b9abbf813841ff84"
+          },
           "id": "fastapi.test.test-additional-responses-custom-model-in-callback.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -152513,7 +152513,7 @@
             "openapi.document"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Only the callback and component pointers are compared, not the full source snapshot or query parameter schema. FastAPI callback/OpenAPI behavior is gated by the completed public manifest; TestClient mechanics are Starlette-owned.",
+            "contract_gate": "Partial: the case uses an independently named callback path and CallbackFailure model; it observes the callback and component pointers, not the source's callback path expression, CustomModel fields/name, query parameter schema, or full snapshot. FastAPI callback/OpenAPI behavior is gated by the completed public manifest; TestClient mechanics are Starlette-owned.",
             "rationale": "The OpenAPI snapshot places a modeled callback response and its schema component under the callback operation.",
             "source_evidence": [
               {
@@ -152538,7 +152538,21 @@
                 "start_line": 473
               }
             ],
-            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema; the independent workflow observes the callback and named schema pointers."
+            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema; the independent workflow observes the callback and named schema pointers.",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           },
           "selector_evidence": [
             {
@@ -152563,7 +152577,21 @@
           "stimulus_design": [
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema; the independent workflow observes the callback and named schema pointers."
+          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema; the independent workflow observes the callback and named schema pointers.",
+          "workflow_case": {
+            "action_ids": [
+              "openapi"
+            ],
+            "case_id": "fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+            "workflow_id": "openapi-operations"
+          }
         }
       ],
       "feature_ids": [
@@ -152668,6 +152696,12 @@
             "openapi-docs",
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 100,
+            "line": 35,
+            "path": "tests/test_additional_responses_custom_validationerror.py",
+            "sha256": "d5601b54030f84381486f512b9ecfbe414434246bbbfd9bde875b58d03faa2f8"
+          },
           "id": "fastapi.test.test-additional-responses-custom-validationerror.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -152676,7 +152710,7 @@
             "openapi.document"
           ],
           "reviewed_mapping": {
-            "contract_gate": "The selected JSON pointer does not compare every field of the source OpenAPI snapshot. The additional-response schema is FastAPI behavior; ordinary TestClient behavior belongs to Starlette-RS.",
+            "contract_gate": "Partial: the selected 422 response pointer exercises an independently named model and application/json media type; it does not cover the source's JsonApiError component, application/vnd.api+json media type, success response, parameter schema, or full snapshot. The additional-response schema is FastAPI behavior; ordinary TestClient behavior belongs to Starlette-RS.",
             "rationale": "The snapshot documents an additional validation-error response using its declared custom media type and model schema.",
             "source_evidence": [
               {
@@ -152701,7 +152735,21 @@
                 "start_line": 473
               }
             ],
-            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-validationerror.openapi-schema; it inspects the status-specific content schema pointer."
+            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-validationerror.openapi-schema; it inspects the status-specific content schema pointer.",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-custom-validationerror.openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           },
           "selector_evidence": [
             {
@@ -152724,7 +152772,21 @@
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-validationerror.openapi-schema; it inspects the status-specific content schema pointer."
+          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-validationerror.openapi-schema; it inspects the status-specific content schema pointer.",
+          "workflow_case": {
+            "action_ids": [
+              "openapi"
+            ],
+            "case_id": "fastapi.openapi.additional-responses-custom-validationerror.openapi-schema",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+            "workflow_id": "openapi-operations"
+          }
         }
       ],
       "feature_ids": [
@@ -152844,6 +152906,12 @@
           "feature_ids": [
             "openapi-docs"
           ],
+          "function_source_ref": {
+            "end_line": 91,
+            "line": 16,
+            "path": "tests/test_additional_responses_default_validationerror.py",
+            "sha256": "9fa0626f84b71185883d5541cc8ae3e5debb5aa421a0a5baa2eed582f4a934da"
+          },
           "id": "fastapi.test.test-additional-responses-default-validationerror.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -152852,7 +152920,7 @@
             "openapi.document"
           ],
           "reviewed_mapping": {
-            "contract_gate": "The case checks a response-schema pointer rather than the complete OpenAPI document. The source also asserts TestClient status; generic client behavior is Starlette-owned.",
+            "contract_gate": "Partial: the selected response object checks default validation-error response generation for an independently named route and path field. It does not compare the source's full document, operation metadata, exact path parameter shape, or component schemas. The source's TestClient status assertion is represented by the selected action; generic client behavior is Starlette-owned.",
             "rationale": "The OpenAPI snapshot checks the default validation-error response schema for an ordinary route.",
             "source_evidence": [
               {
@@ -152877,7 +152945,21 @@
                 "start_line": 473
               }
             ],
-            "stimulus_notes": "Use additional-response-openapi-wave.yaml case fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema; its independent input compares the error response schema pointer."
+            "stimulus_notes": "Use additional-response-openapi-wave.yaml case fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema, action dispatch; its independent input compares the route response object.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+              "workflow_id": "additional-response-openapi-wave"
+            }
           },
           "selector_evidence": [
             {
@@ -152902,7 +152984,21 @@
           "stimulus_design": [
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Use additional-response-openapi-wave.yaml case fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema; its independent input compares the error response schema pointer."
+          "stimulus_design_notes": "Use additional-response-openapi-wave.yaml case fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema, action dispatch; its independent input compares the route response object.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+            "workflow_id": "additional-response-openapi-wave"
+          }
         }
       ],
       "feature_ids": [
@@ -153871,6 +153967,12 @@
           "feature_ids": [
             "openapi-docs"
           ],
+          "function_source_ref": {
+            "end_line": 182,
+            "line": 85,
+            "path": "tests/test_additional_responses_router.py",
+            "sha256": "9aadfe3ebf87732a0fa8f23bcdcc89a2b065c3c31f722619248575e9f4b9f1e2"
+          },
           "id": "fastapi.test.test-additional-responses-router.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -153881,7 +153983,7 @@
             "openapi.paths"
           ],
           "reviewed_mapping": {
-            "contract_gate": "The recipes compare selected response pointers rather than the full snapshot. Response-model schemas depend on the completed FastAPI manifest; TestClient behavior is Starlette-owned.",
+            "contract_gate": "Partial: openapi-operations selects the independently authored first and fourth router response objects only; it omits the source's /b 4XX declaration and /c string, lowercase 5xx, and default entries, and its modeled schemas/components use different input types and names. It does not compare the full snapshot. Response-model schemas depend on the completed FastAPI manifest; TestClient behavior is Starlette-owned.",
             "rationale": "The snapshot checks numeric, string, range, default, and modeled additional-response OpenAPI entries on four router operations. Its /c response declaration uses lowercase 5xx and asserts the normalized 5XX key.",
             "source_evidence": [
               {
@@ -153913,7 +154015,21 @@
                 "start_line": 31
               }
             ],
-            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-router.openapi-schema for selected response-object pointers, and additional-response-status-keys-review.yaml case fastapi.additional-responses.status-key-normalization.lowercase-range for /c-style lowercase range normalization."
+            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-router.openapi-schema for selected response-object pointers, and additional-response-status-keys-review.yaml case fastapi.additional-responses.status-key-normalization.lowercase-range for /c-style lowercase range normalization.",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-router.openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           },
           "selector_evidence": [
             {
@@ -153943,7 +154059,21 @@
           "stimulus_design": [
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-router.openapi-schema for selected response-object pointers, and additional-response-status-keys-review.yaml case fastapi.additional-responses.status-key-normalization.lowercase-range for /c-style lowercase range normalization."
+          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-router.openapi-schema for selected response-object pointers, and additional-response-status-keys-review.yaml case fastapi.additional-responses.status-key-normalization.lowercase-range for /c-style lowercase range normalization.",
+          "workflow_case": {
+            "action_ids": [
+              "openapi"
+            ],
+            "case_id": "fastapi.openapi.additional-responses-router.openapi-schema",
+            "observation_selectors": [
+              "docs.response.status",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+            "workflow_id": "openapi-operations"
+          }
         }
       ],
       "feature_ids": [
@@ -154168,7 +154298,7 @@
             "openapi.document"
           ],
           "reviewed_mapping": {
-            "contract_gate": "The pointer case is narrower than the full source snapshot and must preserve the duplicate-branch predicate. It remains gated on the full FastAPI response/OpenAPI manifest.",
+            "contract_gate": "Unlinked source-backed gap: the independent case declares a route-level response for one route; the source regression merges application-level responses across two routes to guard against accumulated duplicate anyOf references. The present case cannot exercise that merge path or claim the source's duplicate-branch regression. Its route-level union schema is related evidence only.",
             "rationale": "The OpenAPI regression snapshot checks a union additional-response schema where duplicate anyOf branches must not appear.",
             "source_evidence": [
               {
@@ -154193,7 +154323,7 @@
                 "start_line": 473
               }
             ],
-            "stimulus_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-union-duplicate-anyof.openapi-schema; its JSON pointer targets the status-specific schema."
+            "stimulus_notes": "The existing openapi-operations.yaml case fastapi.openapi.additional-responses-union-duplicate-anyof.openapi-schema samples a route-level union response on one route. It does not exercise this source regression's app-level responses merge across two routes, so this function remains unlinked."
           },
           "selector_evidence": [
             {
@@ -154218,7 +154348,7 @@
           "stimulus_design": [
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
-          "stimulus_design_notes": "Use openapi-operations.yaml case fastapi.openapi.additional-responses-union-duplicate-anyof.openapi-schema; its JSON pointer targets the status-specific schema."
+          "stimulus_design_notes": "The existing openapi-operations.yaml case fastapi.openapi.additional-responses-union-duplicate-anyof.openapi-schema samples a route-level union response on one route. It does not exercise this source regression's app-level responses merge across two routes, so this function remains unlinked."
         }
       ],
       "feature_ids": [
@@ -166997,16 +167127,20 @@
             "dependency-security",
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 43,
+            "line": 40,
+            "path": "tests/test_dependency_after_yield_raise.py",
+            "sha256": "42031e5ef8d70dde0489734e8c960a86b94bd299633a7b030d2ac82fba0fe3a1"
+          },
           "id": "fastapi.test.test-dependency-after-yield-raise.test-catching",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.status",
-            "http.body.bytes",
-            "http.body.json"
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: the workflow uses a new dependency and exception value. It samples caught-error propagation through yield cleanup; the source's exact 418 detail and TestClient behavior are not claimed.",
+            "contract_gate": "Partial: the direct function link selects only response status. The workflow also observes raw body bytes, which are not equated with the source's parsed JSON assertion. The independent dependency and exception values do not claim the source's exact 418 detail or TestClient behavior.",
             "rationale": "A yielded dependency catches an endpoint exception and raises FastAPI HTTPException during cleanup.",
             "source_evidence": [
               {
@@ -167038,15 +167172,25 @@
                 "start_line": 11
               }
             ],
-            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.yield-caught-error (http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+            "stimulus_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.yield-caught-error (http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+            "workflow_case": {
+              "action_ids": [
+                "mapped-handler-error"
+              ],
+              "case_id": "fastapi.dependencies.yield-caught-error",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+              "workflow_id": "dependency-wave-lifecycle"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
               "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.status"
               ]
             }
           ],
@@ -167057,7 +167201,19 @@
             "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.yield-caught-error (http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs."
+          "stimulus_design_notes": "Input-only workflow case link(s): tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml::fastapi.dependencies.yield-caught-error (http_response.status, http_response.body). Case IDs and observation selectors are references to the reviewed recipes; they contain no expected outputs.",
+          "workflow_case": {
+            "action_ids": [
+              "mapped-handler-error"
+            ],
+            "case_id": "fastapi.dependencies.yield-caught-error",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+            "workflow_id": "dependency-wave-lifecycle"
+          }
         },
         {
           "feature_evidence": [
@@ -188530,16 +188686,20 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 61,
+            "line": 58,
+            "path": "tests/test_exception_handlers.py",
+            "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+          },
           "id": "fastapi.test.test-exception-handlers.test-override-http-exception",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.status",
-            "http.body.bytes",
-            "http.body.json"
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: The independent workflow uses another route and HTTPException status; it exercises handler lookup and response status/body, while generic dispatch is Starlette-owned.",
+            "contract_gate": "Partial: The direct link claims only the status selector. The independent action uses a subclass exception and decorator registration, and selects raw body bytes rather than the source's parsed JSON assertion; generic exception dispatch remains Starlette-owned.",
             "rationale": "A FastAPI HTTPException handler replaces the default error representation with a status-200 JSON response.",
             "source_evidence": [
               {
@@ -188775,20 +188935,29 @@
                 "start_line": 41
               }
             ],
-            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-http-exception (action: dispatch; selectors: http.status, http.body.json). The recipe has no expected outputs or copied upstream test body."
+            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-http-exception (action: dispatch; selectors: http.body.bytes, http.headers.ordered, http.status). The recipe has no expected outputs or copied upstream test body.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-exception-handlers.test-override-http-exception",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+              "workflow_id": "middleware-exceptions-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": null,
               "schema_extension_required": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.status"
               ],
               "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.status"
               ]
             }
           ],
@@ -188798,7 +188967,20 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-http-exception (action: dispatch; selectors: http.status, http.body.json). The recipe has no expected outputs or copied upstream test body."
+          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-http-exception (action: dispatch; selectors: http.body.bytes, http.headers.ordered, http.status). The recipe has no expected outputs or copied upstream test body.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.test.test-exception-handlers.test-override-http-exception",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+            "workflow_id": "middleware-exceptions-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -189049,16 +189231,20 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 67,
+            "line": 64,
+            "path": "tests/test_exception_handlers.py",
+            "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+          },
           "id": "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.status",
-            "http.body.bytes",
-            "http.body.json"
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: The independent workflow uses a different slashless integer route and invalid value; it observes handler response status/body, not source validation-error details. The source request omits its route's terminal slash and relies on Starlette's default redirect-following behavior, which this ASGI input does not replay.",
+            "contract_gate": "Partial: The direct link claims only the status selector. The independent workflow uses a different slashless integer route and invalid value and selects raw body bytes rather than the source's parsed JSON assertion. The source request omits its route's terminal slash and relies on Starlette's default redirect-following behavior, which this ASGI input does not replay.",
             "rationale": "A FastAPI RequestValidationError handler replaces the default validation response after invalid path input.",
             "source_evidence": [
               {
@@ -189310,20 +189496,29 @@
                 "start_line": 385
               }
             ],
-            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-request-validation-exception (action: dispatch; selectors: http.status, http.body.json). The recipe has no expected outputs or copied upstream test body."
+            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-request-validation-exception (action: dispatch; selectors: http.body.bytes, http.headers.ordered, http.status). The recipe has no expected outputs or copied upstream test body.",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+              "workflow_id": "middleware-exceptions-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": null,
               "schema_extension_required": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.status"
               ],
               "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.status"
               ]
             }
           ],
@@ -189333,7 +189528,20 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-request-validation-exception (action: dispatch; selectors: http.status, http.body.json). The recipe has no expected outputs or copied upstream test body."
+          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml::fastapi.test.test-exception-handlers.test-override-request-validation-exception (action: dispatch; selectors: http.body.bytes, http.headers.ordered, http.status). The recipe has no expected outputs or copied upstream test body.",
+          "workflow_case": {
+            "action_ids": [
+              "dispatch"
+            ],
+            "case_id": "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+            "workflow_id": "middleware-exceptions-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -189570,6 +189778,12 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 72,
+            "line": 70,
+            "path": "tests/test_exception_handlers.py",
+            "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+          },
           "id": "fastapi.test.test-exception-handlers.test-override-server-error-exception-raises",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -189577,7 +189791,7 @@
             "validation.error_class"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: The independent ASGI case observes the exception class. TestClient's default re-raise option is Starlette-owned and is not a recipe input.",
+            "contract_gate": "Partial: The selected ASGI action observes the application error class, which supports the RuntimeError propagation assertion. TestClient's default re-raise option is Starlette-owned and is not a recipe input.",
             "rationale": "The source expects the application RuntimeError to escape through TestClient even though an Exception handler is installed.",
             "source_evidence": [
               {
@@ -189814,7 +190028,21 @@
                 "start_line": 348
               }
             ],
-            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: validation.error_class). The recipe has no expected outputs or copied upstream test body."
+            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: http.body.bytes, http.headers.ordered, http.status, validation.error_class). The recipe has no expected outputs or copied upstream test body.",
+            "workflow_case": {
+              "action_ids": [
+                "server-error"
+              ],
+              "case_id": "fastapi.test.exception-handlers.server-error-handler-response",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+              "workflow_id": "exception-handlers-test-review"
+            }
           },
           "selector_evidence": [
             {
@@ -189833,7 +190061,21 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: validation.error_class). The recipe has no expected outputs or copied upstream test body."
+          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: http.body.bytes, http.headers.ordered, http.status, validation.error_class). The recipe has no expected outputs or copied upstream test body.",
+          "workflow_case": {
+            "action_ids": [
+              "server-error"
+            ],
+            "case_id": "fastapi.test.exception-handlers.server-error-handler-response",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "validation.error_class"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+            "workflow_id": "exception-handlers-test-review"
+          }
         },
         {
           "feature_evidence": [
@@ -190070,13 +190312,17 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 79,
+            "line": 75,
+            "path": "tests/test_exception_handlers.py",
+            "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+          },
           "id": "fastapi.test.test-exception-handlers.test-override-server-error-exception-response",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.status",
-            "http.body.bytes",
-            "http.body.json"
+            "http.status"
           ],
           "reviewed_mapping": {
             "constraints": {
@@ -190084,7 +190330,7 @@
                 "raise_server_exceptions": false
               }
             },
-            "contract_gate": "Partial: The independent workload uses a different RuntimeError, handler body, and route. It checks response emission plus application failure; ServerErrorMiddleware and TestClient suppression are Starlette-owned.",
+            "contract_gate": "Partial: The direct link claims only the 500 status selector. The independent workload uses another RuntimeError, route, and handler body; its selected response observation is raw bytes rather than parsed JSON. ServerErrorMiddleware and TestClient suppression are Starlette-owned.",
             "rationale": "A FastAPI Exception handler is assigned to the server-error path and emits the tested 500 JSON response.",
             "source_evidence": [
               {
@@ -190321,20 +190567,30 @@
                 "start_line": 348
               }
             ],
-            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: http.status, http.body.json). The recipe has no expected outputs or copied upstream test body."
+            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: http.body.bytes, http.headers.ordered, http.status, validation.error_class). The recipe has no expected outputs or copied upstream test body.",
+            "workflow_case": {
+              "action_ids": [
+                "server-error"
+              ],
+              "case_id": "fastapi.test.exception-handlers.server-error-handler-response",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+              "workflow_id": "exception-handlers-test-review"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": null,
               "schema_extension_required": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.status"
               ],
               "selectors": [
-                "http.status",
-                "http.body.bytes",
-                "http.body.json"
+                "http.status"
               ]
             }
           ],
@@ -190344,7 +190600,21 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: http.status, http.body.json). The recipe has no expected outputs or copied upstream test body."
+          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.server-error-handler-response (action: server-error; selectors: http.body.bytes, http.headers.ordered, http.status, validation.error_class). The recipe has no expected outputs or copied upstream test body.",
+          "workflow_case": {
+            "action_ids": [
+              "server-error"
+            ],
+            "case_id": "fastapi.test.exception-handlers.server-error-handler-response",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "validation.error_class"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+            "workflow_id": "exception-handlers-test-review"
+          }
         },
         {
           "feature_evidence": [
@@ -190567,6 +190837,12 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 88,
+            "line": 82,
+            "path": "tests/test_exception_handlers.py",
+            "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+          },
           "id": "fastapi.test.test-exception-handlers.test-traceback-for-dependency-with-yield",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -190574,7 +190850,7 @@
             "validation.error_class"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Partial: The independent case observes the exception class/message and server-error response. The workflow schema has no traceback-frame path/line selector, so it does not assert the source's Python traceback location; TestClient propagation is Starlette-owned.",
+            "contract_gate": "Partial: The selected ASGI action observes the ValueError class raised while resolving a yield dependency. The source traceback-frame path and line have no workflow selector, and TestClient propagation is Starlette-owned.",
             "rationale": "A ValueError raised while resolving a yield dependency propagates out of the FastAPI request path.",
             "source_evidence": [
               {
@@ -190796,7 +191072,21 @@
                 "start_line": 348
               }
             ],
-            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.yield-dependency-error (action: dependency-error; selectors: validation.error_class). The recipe has no expected outputs or copied upstream test body."
+            "stimulus_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.yield-dependency-error (action: dependency-error; selectors: http.body.bytes, http.headers.ordered, http.status, validation.error_class). The recipe has no expected outputs or copied upstream test body.",
+            "workflow_case": {
+              "action_ids": [
+                "dependency-error"
+              ],
+              "case_id": "fastapi.test.exception-handlers.yield-dependency-error",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+              "workflow_id": "exception-handlers-test-review"
+            }
           },
           "selector_evidence": [
             {
@@ -190815,7 +191105,21 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.yield-dependency-error (action: dependency-error; selectors: validation.error_class). The recipe has no expected outputs or copied upstream test body."
+          "stimulus_design_notes": "Independent input-only workflow reference: tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml::fastapi.test.exception-handlers.yield-dependency-error (action: dependency-error; selectors: http.body.bytes, http.headers.ordered, http.status, validation.error_class). The recipe has no expected outputs or copied upstream test body.",
+          "workflow_case": {
+            "action_ids": [
+              "dependency-error"
+            ],
+            "case_id": "fastapi.test.exception-handlers.yield-dependency-error",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "validation.error_class"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+            "workflow_id": "exception-handlers-test-review"
+          }
         }
       ],
       "feature_ids": [
@@ -190827,10 +191131,9 @@
           "case_ids": [
             "fastapi.applications.exception-handler.after-stack-cache"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
-            "http.body.bytes",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml",
@@ -190841,10 +191144,9 @@
             "fastapi.test.exception-handlers.server-error-handler-response",
             "fastapi.test.exception-handlers.yield-dependency-error"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
-            "http.body.bytes",
             "http.status",
             "validation.error_class"
           ],
@@ -190857,10 +191159,9 @@
             "fastapi.docs.handling-errors.multiple-inheritance-lookup-first",
             "fastapi.docs.handling-errors.subclass-handler-precedence"
           ],
-          "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 3 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
-            "http.body.bytes",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
@@ -190872,10 +191173,9 @@
             "fastapi.applications.constructor.exception-handlers",
             "fastapi.applications.constructor.exception-handlers.status-code"
           ],
-          "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 3 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
-            "http.body.bytes",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml",
@@ -190886,10 +191186,9 @@
             "fastapi.test.test-exception-handlers.test-override-http-exception",
             "fastapi.test.test-exception-handlers.test-override-request-validation-exception"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
-            "http.body.bytes",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
@@ -190900,10 +191199,9 @@
             "fastapi.public-errors.http.constructor-contract",
             "fastapi.public-errors.http.starlette-subclass-default-handler"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
-            "http.body.bytes",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
@@ -190918,10 +191216,9 @@
             "fastapi.request-validation-handler.manual-structured-errors",
             "fastapi.request-validation-handler.path-error"
           ],
-          "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 6 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
-            "http.body.bytes",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml",
@@ -190931,11 +191228,10 @@
           "case_ids": [
             "fastapi.dependencies.function-request-cleanup-on-unhandled-error"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "asgi.send.message_types",
-            "http.body.bytes",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/route-invocation-function-scope-cleanup-fault-contract.yaml",
@@ -190946,8 +191242,6 @@
       "observation_selectors": [
         "error.class",
         "error.public_attributes",
-        "http.body.bytes",
-        "http.body.json",
         "http.status",
         "python.attribute_value",
         "python.import_path",
@@ -190972,14 +191266,10 @@
         {
           "feature_id": null,
           "schema_extension_required": [
-            "http.body.bytes",
-            "http.body.json",
             "http.status",
             "validation.error_class"
           ],
           "selectors": [
-            "http.body.bytes",
-            "http.body.json",
             "http.status",
             "validation.error_class"
           ]
@@ -351881,6 +352171,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 45,
+            "line": 41,
+            "path": "tests/test_response_code_no_body.py",
+            "sha256": "1e2e0005b5a42b1f298ad744bae1fcc792c8ad32aaed110cce5b014eb084a9bf"
+          },
           "id": "fastapi.test.test-response-code-no-body.test-get-response",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -351973,7 +352269,20 @@
                 "start_line": 163
               }
             ],
-            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-bodyless.wire actions read-empty. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-bodyless.wire actions read-empty. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output.",
+            "workflow_case": {
+              "action_ids": [
+                "empty-response"
+              ],
+              "case_id": "fastapi.response.bodyless-204",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+              "workflow_id": "response-policy-matrix"
+            }
           },
           "selector_evidence": [
             {
@@ -351991,7 +352300,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-bodyless.wire actions read-empty. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-bodyless.wire actions read-empty. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output.",
+          "workflow_case": {
+            "action_ids": [
+              "empty-response"
+            ],
+            "case_id": "fastapi.response.bodyless-204",
+            "observation_selectors": [
+              "http.status",
+              "http.headers.ordered",
+              "http.body.bytes"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+            "workflow_id": "response-policy-matrix"
+          }
         },
         {
           "feature_evidence": [
@@ -364680,6 +365002,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 29,
+            "line": 26,
+            "path": "tests/test_response_set_response_code_empty.py",
+            "sha256": "4532c702c58ef5b296438289df6c6313e7104a66db6610dcd9d8671986aebb20"
+          },
           "id": "fastapi.test.test-response-set-response-code-empty.test-dependency-set-status-code",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -364771,7 +365099,20 @@
                 "start_line": 163
               }
             ],
-            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-status.override actions archive-record. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-status.override actions archive-record. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output.",
+            "workflow_case": {
+              "action_ids": [
+                "delete-record"
+              ],
+              "case_id": "fastapi.response.status-overwrite",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+              "workflow_id": "response-policy-matrix"
+            }
           },
           "selector_evidence": [
             {
@@ -364788,7 +365129,20 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-status.override actions archive-record. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.response-status.override actions archive-record. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output.",
+          "workflow_case": {
+            "action_ids": [
+              "delete-record"
+            ],
+            "case_id": "fastapi.response.status-overwrite",
+            "observation_selectors": [
+              "http.status",
+              "http.headers.ordered",
+              "http.body.bytes"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+            "workflow_id": "response-policy-matrix"
+          }
         },
         {
           "feature_evidence": [
@@ -438251,6 +438605,12 @@
             "response-serialization",
             "status-codes"
           ],
+          "function_source_ref": {
+            "end_line": 154,
+            "line": 152,
+            "path": "tests/test_stream_status_code.py",
+            "sha256": "651e64ab219e9eb1154a6754ba768446bdf10208233c15220da539e95bb8266b"
+          },
           "id": "fastapi.test.test-stream-status-code.test-status-code",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -438347,7 +438707,26 @@
                 "start_line": 248
               }
             ],
-            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.stream-status.matrix actions stream-1, stream-2, stream-3, stream-4, stream-5, stream-6, stream-7, stream-8, stream-9. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.stream-status.matrix actions stream-1, stream-2, stream-3, stream-4, stream-5, stream-6, stream-7, stream-8, stream-9. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output.",
+            "workflow_case": {
+              "action_ids": [
+                "case-1",
+                "case-2",
+                "case-3",
+                "case-4",
+                "case-5",
+                "case-6",
+                "case-7",
+                "case-8",
+                "case-9"
+              ],
+              "case_id": "fastapi.test.test-stream-status-code.test-status-code",
+              "observation_selectors": [
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/stream-status-code-upstream.yaml",
+              "workflow_id": "stream-status-code-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -438370,7 +438749,26 @@
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
           ],
-          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.stream-status.matrix actions stream-1, stream-2, stream-3, stream-4, stream-5, stream-6, stream-7, stream-8, stream-9. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml::fastapi.source-wave-a.stream-status.matrix actions stream-1, stream-2, stream-3, stream-4, stream-5, stream-6, stream-7, stream-8, stream-9. The independent stimulus is implemented by tests/fixtures/workloads/pending_source_wave_a.py; it contains no expected output.",
+          "workflow_case": {
+            "action_ids": [
+              "case-1",
+              "case-2",
+              "case-3",
+              "case-4",
+              "case-5",
+              "case-6",
+              "case-7",
+              "case-8",
+              "case-9"
+            ],
+            "case_id": "fastapi.test.test-stream-status-code.test-status-code",
+            "observation_selectors": [
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/stream-status-code-upstream.yaml",
+            "workflow_id": "stream-status-code-upstream"
+          }
         },
         {
           "feature_evidence": [

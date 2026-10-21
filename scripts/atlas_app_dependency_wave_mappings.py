@@ -83,12 +83,13 @@ def _review(
     links: list[dict[str, object]],
     contract_gate: str,
     implementation_sources: tuple[dict[str, object], ...] = (),
+    workflow_case: dict[str, object] | None = None,
 ) -> dict[str, object]:
     link_text = "; ".join(
         f"{link['recipe_path']}::{link['case_id']} ({', '.join(link['workflow_selectors'])})"
         for link in links
     )
-    return {
+    row = {
         "feature_ids": list(feature_ids),
         "observation_selectors": list(observation_selectors),
         "rationale": rationale,
@@ -108,6 +109,9 @@ def _review(
             *implementation_sources,
         ],
     }
+    if workflow_case is not None:
+        row["workflow_case"] = workflow_case
+    return row
 
 
 def _module(
@@ -533,7 +537,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "tests/test_dependency_after_yield_raise.py",
                 "test_catching",
                 ["dependency-security", "public-api-errors"],
-                ["http.status", "http.body.json"],
+                ["http.status"],
                 "A yielded dependency catches an endpoint exception and raises FastAPI HTTPException during cleanup.",
                 [
                     _case_link(
@@ -542,8 +546,15 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         _HTTP_BODY_STATUS,
                     )
                 ],
-                "Partial: the workflow uses a new dependency and exception value. It samples caught-error propagation through yield cleanup; the source's exact 418 detail and TestClient behavior are not claimed.",
+                "Partial: the direct function link selects only response status. The workflow also observes raw body bytes, which are not equated with the source's parsed JSON assertion. The independent dependency and exception values do not claim the source's exact 418 detail or TestClient behavior.",
                 (_DEPENDENCY_SOLVER, _HTTP_EXCEPTION),
+                workflow_case={
+                    "workflow_id": "dependency-wave-lifecycle",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+                    "case_id": "fastapi.dependencies.yield-caught-error",
+                    "action_ids": ["mapped-handler-error"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
             ),
             "test_broken_raise": _review(
                 "tests/test_dependency_after_yield_raise.py",

@@ -209,6 +209,191 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ("openapi.document", "openapi.paths"),
     ),
     (
+        "tests/test_response_code_no_body.py",
+        "test_get_response",
+    ): _reviewed_direct_link(
+        "response-policy-matrix",
+        "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+        "fastapi.response.bodyless-204",
+        ("empty-response",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_response_set_response_code_empty.py",
+        "test_dependency_set_status_code",
+    ): _reviewed_direct_link(
+        "response-policy-matrix",
+        "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+        "fastapi.response.status-overwrite",
+        ("delete-record",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_stream_status_code.py",
+        "test_status_code",
+    ): _reviewed_direct_link(
+        "stream-status-code-upstream",
+        "tests/fixtures/input-recipes/parity/stream-status-code-upstream.yaml",
+        "fastapi.test.test-stream-status-code.test-status-code",
+        (
+            "case-1",
+            "case-2",
+            "case-3",
+            "case-4",
+            "case-5",
+            "case-6",
+            "case-7",
+            "case-8",
+            "case-9",
+        ),
+        ("http.status",),
+    ),
+    (
+        "tests/test_exception_handlers.py",
+        "test_override_http_exception",
+    ): _reviewed_direct_link(
+        "middleware-exceptions-upstream",
+        "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+        "fastapi.test.test-exception-handlers.test-override-http-exception",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_exception_handlers.py",
+        "test_override_request_validation_exception",
+    ): _reviewed_direct_link(
+        "middleware-exceptions-upstream",
+        "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+        "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_exception_handlers.py",
+        "test_override_server_error_exception_raises",
+    ): _reviewed_direct_link(
+        "exception-handlers-test-review",
+        "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+        "fastapi.test.exception-handlers.server-error-handler-response",
+        ("server-error",),
+        (
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "validation.error_class",
+        ),
+    ),
+    (
+        "tests/test_exception_handlers.py",
+        "test_override_server_error_exception_response",
+    ): _reviewed_direct_link(
+        "exception-handlers-test-review",
+        "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+        "fastapi.test.exception-handlers.server-error-handler-response",
+        ("server-error",),
+        (
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "validation.error_class",
+        ),
+    ),
+    (
+        "tests/test_exception_handlers.py",
+        "test_traceback_for_dependency_with_yield",
+    ): _reviewed_direct_link(
+        "exception-handlers-test-review",
+        "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+        "fastapi.test.exception-handlers.yield-dependency-error",
+        ("dependency-error",),
+        (
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "validation.error_class",
+        ),
+    ),
+    (
+        "tests/test_dependency_after_yield_raise.py",
+        "test_catching",
+    ): _reviewed_direct_link(
+        "dependency-wave-lifecycle",
+        "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+        "fastapi.dependencies.yield-caught-error",
+        ("mapped-handler-error",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_additional_responses_bad.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "openapi-operations",
+        "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+        "fastapi.openapi.additional-responses-bad.openapi-schema",
+        ("openapi",),
+        ("validation.error_class",),
+    ),
+    (
+        "tests/test_additional_responses_custom_model_in_callback.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "openapi-operations",
+        "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+        "fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema",
+        ("openapi",),
+        (
+            "docs.response.status",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ),
+    ),
+    (
+        "tests/test_additional_responses_custom_validationerror.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "openapi-operations",
+        "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+        "fastapi.openapi.additional-responses-custom-validationerror.openapi-schema",
+        ("openapi",),
+        (
+            "docs.response.status",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ),
+    ),
+    (
+        "tests/test_additional_responses_default_validationerror.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "additional-response-openapi-wave",
+        "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+        "fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema",
+        ("dispatch",),
+        (
+            "docs.response.status",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ),
+    ),
+    (
+        "tests/test_additional_responses_router.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "openapi-operations",
+        "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+        "fastapi.openapi.additional-responses-router.openapi-schema",
+        ("openapi",),
+        (
+            "docs.response.status",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ),
+    ),
+    (
         "tests/test_path.py",
         "test_path_param_le_ge_int_1",
     ): _reviewed_direct_link(
@@ -2734,6 +2919,15 @@ def validate_compatibility_artifacts(
             if source_row.get("source_path") in {
                 "tests/test_enforce_once_required_parameter.py",
                 "tests/test_response_code_no_body.py",
+                "tests/test_response_set_response_code_empty.py",
+                "tests/test_dependency_after_yield_raise.py",
+                "tests/test_stream_status_code.py",
+                "tests/test_exception_handlers.py",
+                "tests/test_additional_responses_bad.py",
+                "tests/test_additional_responses_custom_model_in_callback.py",
+                "tests/test_additional_responses_custom_validationerror.py",
+                "tests/test_additional_responses_default_validationerror.py",
+                "tests/test_additional_responses_router.py",
                 "tests/test_response_model_data_filter.py",
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial001.py",

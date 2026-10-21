@@ -41,6 +41,19 @@ def _link(
     }
 
 
+def _direct_link(
+    workflow_id: str,
+    recipe_path: str,
+    case_id: str,
+    action_id: str,
+    selectors: tuple[str, ...],
+) -> dict[str, Any]:
+    return {
+        "workflow_id": workflow_id,
+        **_link(recipe_path, case_id, action_id, selectors),
+    }
+
+
 def _function(
     name: str,
     start: int,
@@ -50,6 +63,7 @@ def _function(
     workflow: dict[str, Any],
     gate: str,
     sources: tuple[dict[str, Any], ...],
+    direct_workflow_case: dict[str, Any],
 ) -> dict[str, Any]:
     link_text = (
         f"{workflow['recipe_path']}::{workflow['case_id']} "
@@ -63,6 +77,7 @@ def _function(
         "rationale": rationale,
         "replace_features": True,
         "contract_gate": "Partial: " + gate,
+        "workflow_case": direct_workflow_case,
         "workflow_cases": [workflow],
         "stimulus_notes": (
             "Independent input-only workflow reference: "
@@ -110,8 +125,15 @@ def _module(functions: dict[str, dict[str, Any]]) -> dict[str, Any]:
 
 _EXISTING_RECIPE = "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml"
 _NEW_RECIPE = "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml"
-_HTTP_RESPONSE = ("http.status", "http.body.json")
+_HTTP_STATUS = ("http.status",)
 _ERROR_CLASS = ("validation.error_class",)
+_HTTP_ACTION_SELECTORS = ("http.body.bytes", "http.headers.ordered", "http.status")
+_ERROR_ACTION_SELECTORS = (
+    "http.body.bytes",
+    "http.headers.ordered",
+    "http.status",
+    "validation.error_class",
+)
 
 _TEST_HANDLER_SETUP = _source(
     "tests/test_exception_handlers.py",
@@ -243,31 +265,45 @@ EXCEPTION_HANDLERS_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "test_override_http_exception",
                 58,
                 61,
-                _HTTP_RESPONSE,
+                _HTTP_STATUS,
                 "A FastAPI HTTPException handler replaces the default error representation with a status-200 JSON response.",
                 _link(
                     _EXISTING_RECIPE,
                     "fastapi.test.test-exception-handlers.test-override-http-exception",
                     "dispatch",
-                    _HTTP_RESPONSE,
+                    _HTTP_ACTION_SELECTORS,
                 ),
-                "The independent workflow uses another route and HTTPException status; it exercises handler lookup and response status/body, while generic dispatch is Starlette-owned.",
+                "The direct link claims only the status selector. The independent action uses a subclass exception and decorator registration, and selects raw body bytes rather than the source's parsed JSON assertion; generic exception dispatch remains Starlette-owned.",
                 _HTTP_HANDLER_SOURCES,
+                _direct_link(
+                    "middleware-exceptions-upstream",
+                    _EXISTING_RECIPE,
+                    "fastapi.test.test-exception-handlers.test-override-http-exception",
+                    "dispatch",
+                    _HTTP_ACTION_SELECTORS,
+                ),
             ),
             "test_override_request_validation_exception": _function(
                 "test_override_request_validation_exception",
                 64,
                 67,
-                _HTTP_RESPONSE,
+                _HTTP_STATUS,
                 "A FastAPI RequestValidationError handler replaces the default validation response after invalid path input.",
                 _link(
                     _EXISTING_RECIPE,
                     "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
                     "dispatch",
-                    _HTTP_RESPONSE,
+                    _HTTP_ACTION_SELECTORS,
                 ),
-                "The independent workflow uses a different slashless integer route and invalid value; it observes handler response status/body, not source validation-error details. The source request omits its route's terminal slash and relies on Starlette's default redirect-following behavior, which this ASGI input does not replay.",
+                "The direct link claims only the status selector. The independent workflow uses a different slashless integer route and invalid value and selects raw body bytes rather than the source's parsed JSON assertion. The source request omits its route's terminal slash and relies on Starlette's default redirect-following behavior, which this ASGI input does not replay.",
                 _VALIDATION_HANDLER_SOURCES,
+                _direct_link(
+                    "middleware-exceptions-upstream",
+                    _EXISTING_RECIPE,
+                    "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
+                    "dispatch",
+                    _HTTP_ACTION_SELECTORS,
+                ),
             ),
             "test_override_server_error_exception_raises": _function(
                 "test_override_server_error_exception_raises",
@@ -279,25 +315,39 @@ EXCEPTION_HANDLERS_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     _NEW_RECIPE,
                     "fastapi.test.exception-handlers.server-error-handler-response",
                     "server-error",
-                    _ERROR_CLASS,
+                    _ERROR_ACTION_SELECTORS,
                 ),
-                "The independent ASGI case observes the exception class. TestClient's default re-raise option is Starlette-owned and is not a recipe input.",
+                "The selected ASGI action observes the application error class, which supports the RuntimeError propagation assertion. TestClient's default re-raise option is Starlette-owned and is not a recipe input.",
                 _SERVER_ERROR_SOURCES,
+                _direct_link(
+                    "exception-handlers-test-review",
+                    _NEW_RECIPE,
+                    "fastapi.test.exception-handlers.server-error-handler-response",
+                    "server-error",
+                    _ERROR_ACTION_SELECTORS,
+                ),
             ),
             "test_override_server_error_exception_response": _function(
                 "test_override_server_error_exception_response",
                 75,
                 79,
-                _HTTP_RESPONSE,
+                _HTTP_STATUS,
                 "A FastAPI Exception handler is assigned to the server-error path and emits the tested 500 JSON response.",
                 _link(
                     _NEW_RECIPE,
                     "fastapi.test.exception-handlers.server-error-handler-response",
                     "server-error",
-                    _HTTP_RESPONSE,
+                    _ERROR_ACTION_SELECTORS,
                 ),
-                "The independent workload uses a different RuntimeError, handler body, and route. It checks response emission plus application failure; ServerErrorMiddleware and TestClient suppression are Starlette-owned.",
+                "The direct link claims only the 500 status selector. The independent workload uses another RuntimeError, route, and handler body; its selected response observation is raw bytes rather than parsed JSON. ServerErrorMiddleware and TestClient suppression are Starlette-owned.",
                 _SERVER_ERROR_SOURCES,
+                _direct_link(
+                    "exception-handlers-test-review",
+                    _NEW_RECIPE,
+                    "fastapi.test.exception-handlers.server-error-handler-response",
+                    "server-error",
+                    _ERROR_ACTION_SELECTORS,
+                ),
             ),
             "test_traceback_for_dependency_with_yield": _function(
                 "test_traceback_for_dependency_with_yield",
@@ -309,10 +359,17 @@ EXCEPTION_HANDLERS_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     _NEW_RECIPE,
                     "fastapi.test.exception-handlers.yield-dependency-error",
                     "dependency-error",
-                    _ERROR_CLASS,
+                    _ERROR_ACTION_SELECTORS,
                 ),
-                "The independent case observes the exception class/message and server-error response. The workflow schema has no traceback-frame path/line selector, so it does not assert the source's Python traceback location; TestClient propagation is Starlette-owned.",
+                "The selected ASGI action observes the ValueError class raised while resolving a yield dependency. The source traceback-frame path and line have no workflow selector, and TestClient propagation is Starlette-owned.",
                 _DEPENDENCY_ERROR_SOURCES,
+                _direct_link(
+                    "exception-handlers-test-review",
+                    _NEW_RECIPE,
+                    "fastapi.test.exception-handlers.yield-dependency-error",
+                    "dependency-error",
+                    _ERROR_ACTION_SELECTORS,
+                ),
             ),
         }
     )

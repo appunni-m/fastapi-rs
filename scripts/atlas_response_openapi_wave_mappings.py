@@ -91,6 +91,24 @@ _OPENAPI_SUCCESS = _source(
     472,
     "FastAPI emits success-response schema content using the selected media type and response field",
 )
+_OPENAPI_WORKFLOW_SELECTORS = [
+    "docs.response.status",
+    "http.status",
+    "openapi.document",
+    "openapi.paths",
+]
+
+
+def _additional_response_openapi_workflow_case(workflow_id, recipe_path, case_id, action_id):
+    return {
+        "workflow_id": workflow_id,
+        "recipe_path": recipe_path,
+        "case_id": case_id,
+        "action_ids": [action_id],
+        "observation_selectors": list(_OPENAPI_WORKFLOW_SELECTORS),
+    }
+
+
 _RESPONSE_CLASS_SELECTION = (
     _source(
         "fastapi/applications.py",
@@ -274,9 +292,31 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 ["openapi-docs"],
                 ["http.status", "openapi.document"],
                 "The source compares a complete OpenAPI snapshot for a nested router operation.",
-                "Use openapi-operations.yaml case fastapi.openapi.additional-response-extra.openapi-schema; it checks the route response pointer and success status.",
+                "The existing openapi-operations.yaml case fastapi.openapi.additional-response-extra.openapi-schema selects a different /items/{item_id} route with additional 404/409 responses. It does not project this source snapshot's nested /items/ operation, so this function remains unlinked.",
                 implementation=_OPENAPI_RESPONSES,
-                contract_gate="The workflow compares selected OpenAPI pointers rather than the source's full document snapshot; it is a focused source candidate, not a full-snapshot parity claim. Generic TestClient behavior remains in the Starlette 1.6.0 contract.",
+                contract_gate="Unlinked source-backed gap: the current OpenAPI action covers a different path, path parameter, typed return, and additional-response declarations; it cannot stand in for the source's nested-router /items/ snapshot. The separate nested-router runtime action covers HTTP output only. Generic TestClient behavior remains in the Starlette 1.6.0 contract.",
+            ),
+        },
+    },
+    "tests/test_additional_responses_bad.py": {
+        "functions": {
+            "test_openapi_schema": _case(
+                "tests/test_additional_responses_bad.py",
+                38,
+                40,
+                ["openapi-docs"],
+                ["validation.error_class"],
+                "An invalid additional-response status key makes OpenAPI generation raise ValueError.",
+                "Use openapi-operations.yaml case fastapi.openapi.additional-responses-bad.openapi-schema, action openapi; the independent input also exercises an invalid response status and observes the raised error class.",
+                implementation=_OPENAPI_RESPONSES,
+                contract_gate="Partial: the case compares the exception class for an independently malformed status key. It does not compare the source's exact 'hello' key, exception message, or a valid OpenAPI snapshot; the selected public behavior is the ValueError outcome.",
+                workflow_case={
+                    "workflow_id": "openapi-operations",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+                    "case_id": "fastapi.openapi.additional-responses-bad.openapi-schema",
+                    "action_ids": ["openapi"],
+                    "observation_selectors": ["validation.error_class"],
+                },
             ),
         },
     },
@@ -291,7 +331,13 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "The OpenAPI snapshot places a modeled callback response and its schema component under the callback operation.",
                 "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema; the independent workflow observes the callback and named schema pointers.",
                 implementation=_OPENAPI_RESPONSES,
-                contract_gate="Only the callback and component pointers are compared, not the full source snapshot or query parameter schema. FastAPI callback/OpenAPI behavior is gated by the completed public manifest; TestClient mechanics are Starlette-owned.",
+                contract_gate="Partial: the case uses an independently named callback path and CallbackFailure model; it observes the callback and component pointers, not the source's callback path expression, CustomModel fields/name, query parameter schema, or full snapshot. FastAPI callback/OpenAPI behavior is gated by the completed public manifest; TestClient mechanics are Starlette-owned.",
+                workflow_case=_additional_response_openapi_workflow_case(
+                    "openapi-operations",
+                    "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+                    "fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema",
+                    "openapi",
+                ),
             ),
         },
     },
@@ -306,7 +352,13 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "The snapshot documents an additional validation-error response using its declared custom media type and model schema.",
                 "Use openapi-operations.yaml case fastapi.openapi.additional-responses-custom-validationerror.openapi-schema; it inspects the status-specific content schema pointer.",
                 implementation=_OPENAPI_RESPONSES,
-                contract_gate="The selected JSON pointer does not compare every field of the source OpenAPI snapshot. The additional-response schema is FastAPI behavior; ordinary TestClient behavior belongs to Starlette-RS.",
+                contract_gate="Partial: the selected 422 response pointer exercises an independently named model and application/json media type; it does not cover the source's JsonApiError component, application/vnd.api+json media type, success response, parameter schema, or full snapshot. The additional-response schema is FastAPI behavior; ordinary TestClient behavior belongs to Starlette-RS.",
+                workflow_case=_additional_response_openapi_workflow_case(
+                    "openapi-operations",
+                    "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+                    "fastapi.openapi.additional-responses-custom-validationerror.openapi-schema",
+                    "openapi",
+                ),
             ),
         },
     },
@@ -319,9 +371,15 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 ["openapi-docs"],
                 ["http.status", "openapi.document"],
                 "The OpenAPI snapshot checks the default validation-error response schema for an ordinary route.",
-                "Use additional-response-openapi-wave.yaml case fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema; its independent input compares the error response schema pointer.",
+                "Use additional-response-openapi-wave.yaml case fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema, action dispatch; its independent input compares the route response object.",
                 implementation=_OPENAPI_RESPONSES,
-                contract_gate="The case checks a response-schema pointer rather than the complete OpenAPI document. The source also asserts TestClient status; generic client behavior is Starlette-owned.",
+                contract_gate="Partial: the selected response object checks default validation-error response generation for an independently named route and path field. It does not compare the source's full document, operation metadata, exact path parameter shape, or component schemas. The source's TestClient status assertion is represented by the selected action; generic client behavior is Starlette-owned.",
+                workflow_case=_additional_response_openapi_workflow_case(
+                    "additional-response-openapi-wave",
+                    "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+                    "fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema",
+                    "dispatch",
+                ),
             ),
         },
     },
@@ -384,7 +442,13 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                         "upstream /c route declaration with lowercase 5xx additional response key",
                     ),
                 ),
-                contract_gate="The recipes compare selected response pointers rather than the full snapshot. Response-model schemas depend on the completed FastAPI manifest; TestClient behavior is Starlette-owned.",
+                contract_gate="Partial: openapi-operations selects the independently authored first and fourth router response objects only; it omits the source's /b 4XX declaration and /c string, lowercase 5xx, and default entries, and its modeled schemas/components use different input types and names. It does not compare the full snapshot. Response-model schemas depend on the completed FastAPI manifest; TestClient behavior is Starlette-owned.",
+                workflow_case=_additional_response_openapi_workflow_case(
+                    "openapi-operations",
+                    "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+                    "fastapi.openapi.additional-responses-router.openapi-schema",
+                    "openapi",
+                ),
             ),
         },
     },
@@ -397,9 +461,9 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 ["openapi-docs"],
                 ["http.status", "openapi.document"],
                 "The OpenAPI regression snapshot checks a union additional-response schema where duplicate anyOf branches must not appear.",
-                "Use openapi-operations.yaml case fastapi.openapi.additional-responses-union-duplicate-anyof.openapi-schema; its JSON pointer targets the status-specific schema.",
+                "The existing openapi-operations.yaml case fastapi.openapi.additional-responses-union-duplicate-anyof.openapi-schema samples a route-level union response on one route. It does not exercise this source regression's app-level responses merge across two routes, so this function remains unlinked.",
                 implementation=_OPENAPI_RESPONSES,
-                contract_gate="The pointer case is narrower than the full source snapshot and must preserve the duplicate-branch predicate. It remains gated on the full FastAPI response/OpenAPI manifest.",
+                contract_gate="Unlinked source-backed gap: the independent case declares a route-level response for one route; the source regression merges application-level responses across two routes to guard against accumulated duplicate anyOf references. The present case cannot exercise that merge path or claim the source's duplicate-branch regression. Its route-level union schema is related evidence only.",
             ),
         },
     },

@@ -23,8 +23,10 @@ def _case(
     implementation_sources,
     contract_sources=(),
     contract_gate,
+    workflow_case=None,
+    coverage_notes=(),
 ):
-    return {
+    row = {
         "feature_ids": list(feature_ids),
         "observation_selectors": list(observation_selectors),
         "rationale": rationale,
@@ -39,6 +41,11 @@ def _case(
         "stimulus_notes": workflow,
         "contract_gate": contract_gate,
     }
+    if workflow_case is not None:
+        row["workflow_case"] = workflow_case
+    if coverage_notes:
+        row["coverage_notes"] = list(coverage_notes)
+    return row
 
 
 _STATUS_SELECTION = _source(
@@ -120,6 +127,21 @@ RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
                 ],
                 contract_sources=[_STARLETTE_RESPONSE_HEADERS, _STARLETTE_RESPONSE_SEND],
                 contract_gate="FastAPI selects route status, validates/serializes the response, and clears bodies for disallowed statuses. The upstream assertion covers 204 only; independent 205/304 inputs extend the source-defined policy. Starlette 1.6.0 owns header construction: 205 retains the pre-clear serialized Content-Length, while 304 omits automatic Content-Length. The source uses a custom response-class media type, so the linked default-response inputs do not claim that custom media type or exact source-header parity.",
+                workflow_case={
+                    "workflow_id": "response-policy-matrix",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+                    "case_id": "fastapi.response.bodyless-204",
+                    "action_ids": ["empty-response"],
+                    "observation_selectors": [
+                        "http.status",
+                        "http.headers.ordered",
+                        "http.body.bytes",
+                    ],
+                },
+                coverage_notes=[
+                    "Partial runtime mapping: the existing 204 action observes status, headers, and the empty body asserted by test_get_response. Its independently authored default-response route does not establish the source route's JsonApiResponse media type or full header equality.",
+                    "The 205/304 cases extend the body-policy input matrix but are not assertions in test_get_response; the separate OpenAPI snapshot in test_openapi_schema remains outside this mapping.",
+                ],
             ),
         },
     },
@@ -130,7 +152,7 @@ RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
                 26,
                 29,
                 ["response-serialization"],
-                ["http.status", "http.body.json"],
+                ["http.status", "http.body.bytes"],
                 "A route declared as 204 injects a mutable Response, overrides it to 400, and returns a nonempty JSON object.",
                 "Reuse response-policy-matrix.yaml case fastapi.response.status-overwrite, action delete-record. It sends a direct ASGI DELETE and observes status, headers, and raw body bytes; the route and body values are independently authored.",
                 implementation_sources=[
@@ -146,6 +168,21 @@ RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
                 ],
                 contract_sources=[_STARLETTE_RESPONSE_HEADERS, _STARLETTE_RESPONSE_SEND],
                 contract_gate="FastAPI owns Response injection and the precedence of the dependency-mutated status over the decorator status. Starlette 1.6.0 owns JSONResponse byte rendering, header construction, and ASGI emission. The source asserts parsed JSON and nonempty content; the linked case compares raw bytes and headers on a different route/body, so the mapping is limited to status override plus a nonempty JSON response.",
+                workflow_case={
+                    "workflow_id": "response-policy-matrix",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+                    "case_id": "fastapi.response.status-overwrite",
+                    "action_ids": ["delete-record"],
+                    "observation_selectors": [
+                        "http.status",
+                        "http.headers.ordered",
+                        "http.body.bytes",
+                    ],
+                },
+                coverage_notes=[
+                    "Partial runtime mapping: the existing action observes the overridden status and raw body bytes, supporting the source's 400 status and nonempty response assertions.",
+                    "The action uses a different path, identifier, and JSON payload. It does not compare the source's parsed JSON object or cover test_openapi_schema's full OpenAPI snapshot.",
+                ],
             ),
         },
     },
@@ -206,6 +243,27 @@ RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
                 ],
                 contract_sources=[_STARLETTE_STREAM_SEND],
                 contract_gate="The upstream test asserts status only. FastAPI selects declared/dependency-mutated status for the three stream branches; Starlette 1.6.0 emits generic streaming status and chunks. The mapping makes no claim about stream body bytes, chunk boundaries, response headers, or TestClient transport behavior.",
+                workflow_case={
+                    "workflow_id": "stream-status-code-upstream",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/stream-status-code-upstream.yaml",
+                    "case_id": "fastapi.test.test-stream-status-code.test-status-code",
+                    "action_ids": [
+                        "case-1",
+                        "case-2",
+                        "case-3",
+                        "case-4",
+                        "case-5",
+                        "case-6",
+                        "case-7",
+                        "case-8",
+                        "case-9",
+                    ],
+                    "observation_selectors": ["http.status"],
+                },
+                coverage_notes=[
+                    "Partial runtime mapping: all nine existing actions exercise the declared, dependency-selected, and dependency-overridden statuses from the source parameter matrix, and compare status only.",
+                    "Stream payload bytes, chunk boundaries, headers, lifecycle/cancellation behavior, TestClient transport details, and the separate full OpenAPI snapshot in test_openapi remain outside this mapping.",
+                ],
             ),
         },
     },

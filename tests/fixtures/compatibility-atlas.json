@@ -537059,8 +537059,7 @@
       "benchmark_workload_id": null,
       "exclusion_reason": null,
       "feature_ids": [
-        "openapi-docs",
-        "public-api-errors"
+        "openapi-docs"
       ],
       "fixture_id": "fastapi.test.test-additional-responses-bad",
       "id": "upstream-test:tests/test_additional_responses_bad.py",
@@ -537086,10 +537085,27 @@
           {
             "case_id": "fastapi.test.test-additional-responses-bad.test-openapi-schema",
             "end_line": 40,
+            "function_source_ref": {
+              "end_line": 40,
+              "line": 38,
+              "path": "tests/test_additional_responses_bad.py",
+              "sha256": "b6a1303079524f200789ea3f8a19555ca100f8fdce2f80fa123f44a94512eac7"
+            },
             "line": 38,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
-            "name": "test_openapi_schema"
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-bad.openapi-schema",
+              "observation_selectors": [
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -537117,24 +537133,17 @@
         "test_function_count": 1,
         "unmatched_test_functions": []
       },
-      "mapping_status": "candidate",
+      "mapping_status": "partially_mapped",
       "observation_selectors": [
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
-        "error.class",
-        "error.public_attributes",
         "http.body.bytes",
         "openapi.document",
-        "python.attribute_value",
-        "python.import_path",
-        "python.object_identity",
         "python.pydantic_model_result",
-        "python.signature",
-        "validation.error_class",
-        "warnings.category_message"
+        "validation.error_class"
       ],
-      "review_reason": null,
+      "review_reason": "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow.",
       "review_status": "reviewed_partial",
       "selector_evidence": [
         {
@@ -537146,18 +537155,6 @@
             "http.body.bytes",
             "openapi.document",
             "python.pydantic_model_result"
-          ]
-        },
-        {
-          "feature_id": "public-api-errors",
-          "selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
           ]
         },
         {
@@ -537222,72 +537219,10 @@
           "ownership_boundary": "FastAPI-owned with a generic ASGI outer boundary",
           "scope_note": "OpenAPI generation, schema projection, and FastAPI docs endpoints are outside the current Starlette-RS slice; only the generic Starlette ASGI dispatch envelope is referenced.",
           "status": "linked-to-current-contract-slice"
-        },
-        {
-          "contract_id": "starlette-1.6.0-full",
-          "feature_id": "public-api-errors",
-          "manifest_path": "tests/fixtures/manifest.yaml",
-          "manifest_sha256": "86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029",
-          "operation_refs": [
-            {
-              "contract_id": "starlette-1.6.0-full",
-              "operation_id": "__call__",
-              "relationship": "composed error boundary",
-              "requirement_ids": [
-                "starlette.asgi.server-error.default-response",
-                "starlette.asgi.server-error.status-500-handler",
-                "starlette.asgi.server-error.exception-handler",
-                "starlette.asgi.exception-handler.status-code",
-                "starlette.asgi.exception-handler.exception-class",
-                "starlette.asgi.exception-handler.async-callback",
-                "starlette.asgi.exception-handler.headers-forwarding",
-                "starlette.asgi.exception-handler.router-miss-404",
-                "starlette.asgi.websocket-exception.default-handler",
-                "starlette.asgi.websocket-exception.http-denial-response",
-                "starlette.asgi.websocket-exception.custom-handler",
-                "starlette.asgi.websocket-exception.websocket-class-handler"
-              ],
-              "source_path": "starlette.applications.Starlette.__call__",
-              "surface_id": "starlette.applications.Starlette",
-              "target_support": {
-                "python-package": {
-                  "missing_requirements": [],
-                  "reason": null,
-                  "status": "supported"
-                },
-                "rust-native": {
-                  "missing_requirements": [
-                    "starlette.compatibility.full-public-surface",
-                    "starlette.asgi.scope-mutation",
-                    "starlette.asgi.streaming",
-                    "starlette.asgi.python-callables",
-                    "starlette.asgi.http-exception.default-406-detail",
-                    "starlette.asgi.http-exception.no-content-204",
-                    "starlette.asgi.http-exception.not-modified-304",
-                    "starlette.asgi.http-exception.headers-200",
-                    "starlette.asgi.server-error.default-response",
-                    "starlette.asgi.server-error.status-500-handler",
-                    "starlette.asgi.server-error.exception-handler",
-                    "starlette.asgi.server-error.special-key-order",
-                    "starlette.asgi.server-error.debug-traceback",
-                    "starlette.asgi.server-error.response-started",
-                    "starlette.asgi.server-error.background-task-failure",
-                    "starlette.asgi.server-error.handled-http-exception-500"
-                  ],
-                  "reason": "The Rust-native API renders explicit exception details but does not expose the Python HTTPException constructor and its standard-library status-phrase defaults.",
-                  "status": "partial"
-                }
-              }
-            }
-          ],
-          "ownership_boundary": "composed error boundary",
-          "scope_note": "Starlette-RS supplies generic HTTP/WebSocket exception selection and ASGI response behavior. FastAPI-owned validation error projection, dependency cleanup, and handler registration remain separate behavior; these are ownership links, not FastAPI-RS parity claims.",
-          "status": "linked-to-current-contract-slice"
         }
       ],
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
-        "middleware-authentication-endpoints-datastructures-status",
         "wsgi-static-files-templates-schemas-configuration-testclient"
       ]
     },
@@ -537323,10 +537258,30 @@
           {
             "case_id": "fastapi.test.test-additional-responses-custom-model-in-callback.test-openapi-schema",
             "end_line": 147,
+            "function_source_ref": {
+              "end_line": 147,
+              "line": 32,
+              "path": "tests/test_additional_responses_custom_model_in_callback.py",
+              "sha256": "c3b6282898a6eb6aba29150862f606eb33dcfd998f1608e9b9abbf813841ff84"
+            },
             "line": 32,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-custom-model-in-callback.openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -537488,10 +537443,30 @@
           {
             "case_id": "fastapi.test.test-additional-responses-custom-validationerror.test-openapi-schema",
             "end_line": 100,
+            "function_source_ref": {
+              "end_line": 100,
+              "line": 35,
+              "path": "tests/test_additional_responses_custom_validationerror.py",
+              "sha256": "d5601b54030f84381486f512b9ecfbe414434246bbbfd9bde875b58d03faa2f8"
+            },
             "line": 35,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-custom-validationerror.openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -537709,10 +537684,30 @@
           {
             "case_id": "fastapi.test.test-additional-responses-default-validationerror.test-openapi-schema",
             "end_line": 91,
+            "function_source_ref": {
+              "end_line": 91,
+              "line": 16,
+              "path": "tests/test_additional_responses_default_validationerror.py",
+              "sha256": "9fa0626f84b71185883d5541cc8ae3e5debb5aa421a0a5baa2eed582f4a934da"
+            },
             "line": 16,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+              "workflow_id": "additional-response-openapi-wave"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -538365,10 +538360,30 @@
           {
             "case_id": "fastapi.test.test-additional-responses-router.test-openapi-schema",
             "end_line": 182,
+            "function_source_ref": {
+              "end_line": 182,
+              "line": 85,
+              "path": "tests/test_additional_responses_router.py",
+              "sha256": "9aadfe3ebf87732a0fa8f23bcdcc89a2b065c3c31f722619248575e9f4b9f1e2"
+            },
             "line": 85,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "openapi"
+              ],
+              "case_id": "fastapi.openapi.additional-responses-router.openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+              "workflow_id": "openapi-operations"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -545323,10 +545338,28 @@
           {
             "case_id": "fastapi.test.test-dependency-after-yield-raise.test-catching",
             "end_line": 43,
+            "function_source_ref": {
+              "end_line": 43,
+              "line": 40,
+              "path": "tests/test_dependency_after_yield_raise.py",
+              "sha256": "42031e5ef8d70dde0489734e8c960a86b94bd299633a7b030d2ac82fba0fe3a1"
+            },
             "line": 40,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_catching"
+            "name": "test_catching",
+            "workflow_case": {
+              "action_ids": [
+                "mapped-handler-error"
+              ],
+              "case_id": "fastapi.dependencies.yield-caught-error",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+              "workflow_id": "dependency-wave-lifecycle"
+            }
           },
           {
             "case_id": "fastapi.test.test-dependency-after-yield-raise.test-broken-raise",
@@ -554817,10 +554850,9 @@
             "case_ids": [
               "fastapi.applications.exception-handler.after-stack-cache"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml",
@@ -554831,10 +554863,9 @@
               "fastapi.test.exception-handlers.server-error-handler-response",
               "fastapi.test.exception-handlers.yield-dependency-error"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status",
               "validation.error_class"
             ],
@@ -554847,10 +554878,9 @@
               "fastapi.docs.handling-errors.multiple-inheritance-lookup-first",
               "fastapi.docs.handling-errors.subclass-handler-precedence"
             ],
-            "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 3 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
@@ -554862,10 +554892,9 @@
               "fastapi.applications.constructor.exception-handlers",
               "fastapi.applications.constructor.exception-handlers.status-code"
             ],
-            "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 3 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml",
@@ -554876,10 +554905,9 @@
               "fastapi.test.test-exception-handlers.test-override-http-exception",
               "fastapi.test.test-exception-handlers.test-override-request-validation-exception"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
@@ -554890,10 +554918,9 @@
               "fastapi.public-errors.http.constructor-contract",
               "fastapi.public-errors.http.starlette-subclass-default-handler"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
@@ -554908,10 +554935,9 @@
               "fastapi.request-validation-handler.manual-structured-errors",
               "fastapi.request-validation-handler.path-error"
             ],
-            "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 6 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml",
@@ -554921,11 +554947,10 @@
             "case_ids": [
               "fastapi.dependencies.function-request-cleanup-on-unhandled-error"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "asgi.send.message_types",
-              "http.body.bytes",
               "http.status"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/route-invocation-function-scope-cleanup-fault-contract.yaml",
@@ -554937,42 +554962,140 @@
           {
             "case_id": "fastapi.test.test-exception-handlers.test-override-http-exception",
             "end_line": 61,
+            "function_source_ref": {
+              "end_line": 61,
+              "line": 58,
+              "path": "tests/test_exception_handlers.py",
+              "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+            },
             "line": 58,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_override_http_exception"
+            "name": "test_override_http_exception",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-exception-handlers.test-override-http-exception",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+              "workflow_id": "middleware-exceptions-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
             "end_line": 67,
+            "function_source_ref": {
+              "end_line": 67,
+              "line": 64,
+              "path": "tests/test_exception_handlers.py",
+              "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+            },
             "line": 64,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_override_request_validation_exception"
+            "name": "test_override_request_validation_exception",
+            "workflow_case": {
+              "action_ids": [
+                "dispatch"
+              ],
+              "case_id": "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml",
+              "workflow_id": "middleware-exceptions-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-exception-handlers.test-override-server-error-exception-raises",
             "end_line": 72,
+            "function_source_ref": {
+              "end_line": 72,
+              "line": 70,
+              "path": "tests/test_exception_handlers.py",
+              "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+            },
             "line": 70,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_override_server_error_exception_raises"
+            "name": "test_override_server_error_exception_raises",
+            "workflow_case": {
+              "action_ids": [
+                "server-error"
+              ],
+              "case_id": "fastapi.test.exception-handlers.server-error-handler-response",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+              "workflow_id": "exception-handlers-test-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-exception-handlers.test-override-server-error-exception-response",
             "end_line": 79,
+            "function_source_ref": {
+              "end_line": 79,
+              "line": 75,
+              "path": "tests/test_exception_handlers.py",
+              "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+            },
             "line": 75,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_override_server_error_exception_response"
+            "name": "test_override_server_error_exception_response",
+            "workflow_case": {
+              "action_ids": [
+                "server-error"
+              ],
+              "case_id": "fastapi.test.exception-handlers.server-error-handler-response",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+              "workflow_id": "exception-handlers-test-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-exception-handlers.test-traceback-for-dependency-with-yield",
             "end_line": 88,
+            "function_source_ref": {
+              "end_line": 88,
+              "line": 82,
+              "path": "tests/test_exception_handlers.py",
+              "sha256": "0e000189a2cf379db20a3545386c6364e12697ec33bfcc97bdbb4a800a13e571"
+            },
             "line": 82,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_traceback_for_dependency_with_yield"
+            "name": "test_traceback_for_dependency_with_yield",
+            "workflow_case": {
+              "action_ids": [
+                "dependency-error"
+              ],
+              "case_id": "fastapi.test.exception-handlers.yield-dependency-error",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml",
+              "workflow_id": "exception-handlers-test-review"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -555170,8 +555293,9 @@
               ],
               "case_id": "fastapi.test.test-exception-handlers.test-override-http-exception",
               "observation_selectors": [
-                "http.status",
-                "http.body.json"
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml"
             },
@@ -555181,8 +555305,9 @@
               ],
               "case_id": "fastapi.test.test-exception-handlers.test-override-request-validation-exception",
               "observation_selectors": [
-                "http.status",
-                "http.body.json"
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml"
             },
@@ -555192,6 +555317,9 @@
               ],
               "case_id": "fastapi.test.exception-handlers.server-error-handler-response",
               "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
                 "validation.error_class"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml"
@@ -555202,6 +555330,9 @@
               ],
               "case_id": "fastapi.test.exception-handlers.yield-dependency-error",
               "observation_selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
                 "validation.error_class"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/exception-handlers-test-review.yaml"
@@ -555216,8 +555347,6 @@
       "observation_selectors": [
         "error.class",
         "error.public_attributes",
-        "http.body.bytes",
-        "http.body.json",
         "http.status",
         "python.attribute_value",
         "python.import_path",
@@ -555244,14 +555373,10 @@
         {
           "feature_id": null,
           "schema_extension_required": [
-            "http.body.bytes",
-            "http.body.json",
             "http.status",
             "validation.error_class"
           ],
           "selectors": [
-            "http.body.bytes",
-            "http.body.json",
             "http.status",
             "validation.error_class"
           ]
@@ -605142,10 +605267,29 @@
           {
             "case_id": "fastapi.test.test-response-code-no-body.test-get-response",
             "end_line": 45,
+            "function_source_ref": {
+              "end_line": 45,
+              "line": 41,
+              "path": "tests/test_response_code_no_body.py",
+              "sha256": "1e2e0005b5a42b1f298ad744bae1fcc792c8ad32aaed110cce5b014eb084a9bf"
+            },
             "line": 41,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get_response"
+            "name": "test_get_response",
+            "workflow_case": {
+              "action_ids": [
+                "empty-response"
+              ],
+              "case_id": "fastapi.response.bodyless-204",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+              "workflow_id": "response-policy-matrix"
+            }
           },
           {
             "case_id": "fastapi.test.test-response-code-no-body.test-openapi-schema",
@@ -608923,10 +609067,29 @@
           {
             "case_id": "fastapi.test.test-response-set-response-code-empty.test-dependency-set-status-code",
             "end_line": 29,
+            "function_source_ref": {
+              "end_line": 29,
+              "line": 26,
+              "path": "tests/test_response_set_response_code_empty.py",
+              "sha256": "4532c702c58ef5b296438289df6c6313e7104a66db6610dcd9d8671986aebb20"
+            },
             "line": 26,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_dependency_set_status_code"
+            "name": "test_dependency_set_status_code",
+            "workflow_case": {
+              "action_ids": [
+                "delete-record"
+              ],
+              "case_id": "fastapi.response.status-overwrite",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-policy-matrix.yaml",
+              "workflow_id": "response-policy-matrix"
+            }
           },
           {
             "case_id": "fastapi.test.test-response-set-response-code-empty.test-openapi-schema",
@@ -634211,10 +634374,35 @@
           {
             "case_id": "fastapi.test.test-stream-status-code.test-status-code",
             "end_line": 154,
+            "function_source_ref": {
+              "end_line": 154,
+              "line": 152,
+              "path": "tests/test_stream_status_code.py",
+              "sha256": "651e64ab219e9eb1154a6754ba768446bdf10208233c15220da539e95bb8266b"
+            },
             "line": 152,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_status_code"
+            "name": "test_status_code",
+            "workflow_case": {
+              "action_ids": [
+                "case-1",
+                "case-2",
+                "case-3",
+                "case-4",
+                "case-5",
+                "case-6",
+                "case-7",
+                "case-8",
+                "case-9"
+              ],
+              "case_id": "fastapi.test.test-stream-status-code.test-status-code",
+              "observation_selectors": [
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/stream-status-code-upstream.yaml",
+              "workflow_id": "stream-status-code-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-stream-status-code.test-openapi",
