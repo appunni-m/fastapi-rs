@@ -202,6 +202,49 @@ cases:
   source_evidence:
   - path: tests/test_application.py
     kind: upstream_test
+- case_id: fastapi.first-slice.method-not-allowed
+  actions:
+  - action_id: get-post-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/41
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - 127.0.0.1
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_application.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/path-operation-configuration.md
+    kind: upstream_documentation
 - case_id: fastapi.first-slice.create-item-chunked-body
   actions:
   - action_id: post-item

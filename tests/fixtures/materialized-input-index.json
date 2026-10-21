@@ -12342,14 +12342,15 @@
     {
       "id": "first-asgi-request",
       "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
-      "input_sha256": "f937e7552eb473629234576db598707748fe0a6570e5b3982022af21d4d86fbe",
+      "input_sha256": "af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451",
       "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
-      "recipe_sha256": "68b7dc21604bacd48d7ea707853e941322f0be7c0d33bd13d4388df0efa5e345",
+      "recipe_sha256": "767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e",
       "case_ids": [
         "fastapi.first-slice.create-item-valid",
         "fastapi.first-slice.create-item-optional-query-default",
         "fastapi.first-slice.create-item-invalid-path-conversion",
         "fastapi.first-slice.path-not-found",
+        "fastapi.first-slice.method-not-allowed",
         "fastapi.first-slice.create-item-chunked-body",
         "fastapi.first-slice.create-item-missing-header",
         "fastapi.first-slice.create-item-invalid",
@@ -12396,6 +12397,14 @@
           "case_id": "fastapi.first-slice.path-not-found",
           "verification": "parity",
           "requirement_refs": [
+            "source:upstream-test:tests/test_application.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.first-slice.method-not-allowed",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/path-operation-configuration.md",
             "source:upstream-test:tests/test_application.py"
           ]
         },
@@ -54698,6 +54707,22 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/path-operation-configuration.md",
+      "fixture_id": "fastapi.docs.tutorial-path-operation-configuration",
+      "workflow_id": "first-asgi-request",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-slice.method-not-allowed"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/path-params.md",
       "fixture_id": "fastapi.docs.tutorial-path-params",
       "workflow_id": "first-asgi-request",
@@ -54757,10 +54782,11 @@
       "fixture_id": "fastapi.test.test-application",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.first-slice.create-item-chunked-body",
         "fastapi.first-slice.create-item-valid",
+        "fastapi.first-slice.method-not-allowed",
         "fastapi.first-slice.openapi",
         "fastapi.first-slice.path-not-found"
       ],

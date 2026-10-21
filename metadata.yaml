@@ -6988,6 +6988,10 @@ reviewed_api_contract_overlay:
           recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
           case_id: fastapi.first-slice.path-not-found
           workload_path: tests/fixtures/workloads/first_slice.py
+        - &first_asgi_method_not_allowed
+          recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.method-not-allowed
+          workload_path: tests/fixtures/workloads/first_slice.py
         - *first_asgi_chunked_body
         - *first_asgi_missing_header
         - *first_asgi_invalid
@@ -10430,6 +10434,7 @@ reviewed_api_contract_overlay:
         - *first_asgi_valid
         - *first_asgi_optional_query
         - *first_asgi_invalid_path
+        - *first_asgi_method_not_allowed
         - *first_asgi_chunked_body
         - *first_asgi_missing_header
         - *first_asgi_invalid
