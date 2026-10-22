@@ -20390,7 +20390,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         rust_binding: fastapi-rs/src/openapi_models.rs::GraphDefinition::Enum
         known_gaps:
-          - Direct module/object identity is mapped, but enum-member identity and standalone member values are not; consumer evidence is through Parameter.in_, and other consumers and validation/serialization remain unproven.
+          - Other consumers, Pydantic validation/serialization, and behavior outside the pinned Python runtime remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -20400,8 +20400,10 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Enum declaration and module binding only: the module identity workflow compares the
         fastapi.openapi.models.ParameterInType import path and object identity. Child rows declare cookie,
-        header, path, and query; those values are observed only through accepted/rejected Parameter.in_
-        consumer inputs. Direct member identity and standalone member values are not mapped.
+        header, path, and query. The direct enum workflow also compares ordered declared members and enum
+        iteration, each direct member, name/value lookup, string/repr, and same-process member identity
+        relations. Accepted/rejected Parameter.in_ consumer inputs remain separately mapped. Other
+        consumers and Pydantic validation/serialization are unproven.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
           case_id: fastapi.openapi-models.module-identity
@@ -20409,17 +20411,20 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi-models.parameter-in-type.accepted-values
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
           case_id: fastapi.openapi-models.parameter-in-type.invalid-value
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+          case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
       observation_selectors:
         - python.import_path
         - python.object_identity
         - python.pydantic_model_result
         - python.call_outcome
+        - python.enum_behavior
     fastapi.openapi.models.ParameterInType.cookie:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Evidence is through the linked consumer field, not a standalone alias/enum identity contract; other consumers and validation/serialization remain unproven.
+          - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -20427,20 +20432,23 @@ reviewed_api_contract_overlay:
           start_line: 221
           end_line: 225
       supported_slice: >-
-        Enum member only: fastapi.openapi.models.ParameterInType.cookie binds 'cookie'; no direct
-        member-value/identity case is indexed. The cookie value is sampled only through Parameter.in_;
-        member identity and standalone access are unobserved.
+        Direct member access, value, repr/string, and same-process identity relations for
+        fastapi.openapi.models.ParameterInType.cookie are compared alongside the class member/iteration
+        order and name/value lookup cases. The cookie value is also sampled through Parameter.in_.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
           case_id: fastapi.openapi-models.parameter-in-type.accepted-values
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+          case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
       observation_selectors:
         - python.pydantic_model_result
+        - python.enum_behavior
     fastapi.openapi.models.ParameterInType.header:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Evidence is through the linked consumer field, not a standalone alias/enum identity contract; other consumers and validation/serialization remain unproven.
+          - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -20448,20 +20456,23 @@ reviewed_api_contract_overlay:
           start_line: 221
           end_line: 225
       supported_slice: >-
-        Enum member only: fastapi.openapi.models.ParameterInType.header binds 'header'; no direct
-        member-value/identity case is indexed. The header value is sampled only through Parameter.in_;
-        member identity and standalone access are unobserved.
+        Direct member access, value, repr/string, and same-process identity relations for
+        fastapi.openapi.models.ParameterInType.header are compared alongside the class member/iteration
+        order and name/value lookup cases. The header value is also sampled through Parameter.in_.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
           case_id: fastapi.openapi-models.parameter-in-type.accepted-values
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+          case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
       observation_selectors:
         - python.pydantic_model_result
+        - python.enum_behavior
     fastapi.openapi.models.ParameterInType.path:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Evidence is through the linked consumer field, not a standalone alias/enum identity contract; other consumers and validation/serialization remain unproven.
+          - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -20469,20 +20480,23 @@ reviewed_api_contract_overlay:
           start_line: 221
           end_line: 225
       supported_slice: >-
-        Enum member only: fastapi.openapi.models.ParameterInType.path binds 'path'; no direct
-        member-value/identity case is indexed. The path value is sampled only through Parameter.in_;
-        member identity and standalone access are unobserved.
+        Direct member access, value, repr/string, and same-process identity relations for
+        fastapi.openapi.models.ParameterInType.path are compared alongside the class member/iteration
+        order and name/value lookup cases. The path value is also sampled through Parameter.in_.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
           case_id: fastapi.openapi-models.parameter-in-type.accepted-values
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+          case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
       observation_selectors:
         - python.pydantic_model_result
+        - python.enum_behavior
     fastapi.openapi.models.ParameterInType.query:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Evidence is through the linked consumer field, not a standalone alias/enum identity contract; other consumers and validation/serialization remain unproven.
+          - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -20490,14 +20504,17 @@ reviewed_api_contract_overlay:
           start_line: 221
           end_line: 225
       supported_slice: >-
-        Enum member only: fastapi.openapi.models.ParameterInType.query binds 'query'; no direct
-        member-value/identity case is indexed. The query value is sampled only through Parameter.in_;
-        member identity and standalone access are unobserved.
+        Direct member access, value, repr/string, and same-process identity relations for
+        fastapi.openapi.models.ParameterInType.query are compared alongside the class member/iteration
+        order and name/value lookup cases. The query value is also sampled through Parameter.in_.
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
           case_id: fastapi.openapi-models.parameter-in-type.accepted-values
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+          case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
       observation_selectors:
         - python.pydantic_model_result
+        - python.enum_behavior
     fastapi.openapi.models.PathItem:
       rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       target_binding:

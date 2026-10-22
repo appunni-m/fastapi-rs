@@ -19,12 +19,6 @@
       "workflow_support": "supported"
     },
     {
-      "id": "asgi.send.message_types",
-      "projection": "Ordered ASGI send message type names emitted during one HTTP action.",
-      "comparison": "ordered-exact",
-      "workflow_support": "supported"
-    },
-    {
       "id": "asgi.lifespan.application_errors",
       "projection": "Ordered lifespan application exceptions by stage, fully qualified class, and exact exception message.",
       "comparison": "ordered-exact",
@@ -37,14 +31,14 @@
       "workflow_support": "supported"
     },
     {
-      "id": "asgi.lifespan.shutdown",
-      "projection": "Exact shutdown outcome, response type, and message, including whether shutdown was sent.",
+      "id": "asgi.lifespan.scope_state",
+      "projection": "Exact final JSON state mapping on the ASGI lifespan scope, including values seeded before startup.",
       "comparison": "exact",
       "workflow_support": "supported"
     },
     {
-      "id": "asgi.lifespan.scope_state",
-      "projection": "Exact final JSON state mapping on the ASGI lifespan scope, including values seeded before startup.",
+      "id": "asgi.lifespan.shutdown",
+      "projection": "Exact shutdown outcome, response type, and message, including whether shutdown was sent.",
       "comparison": "exact",
       "workflow_support": "supported"
     },
@@ -63,6 +57,12 @@
     {
       "id": "asgi.lifespan.workload_trace",
       "projection": "Ordered callback-side effects explicitly recorded by the independent workload and observed after cleanup.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "asgi.send.message_types",
+      "projection": "Ordered ASGI send message type names emitted during one HTTP action.",
       "comparison": "ordered-exact",
       "workflow_support": "supported"
     },
@@ -242,14 +242,20 @@
       "workflow_support": "supported"
     },
     {
+      "id": "python.binding_identity",
+      "projection": "Boolean whether a selected public FastAPI binding is the exact Python object exported by its reviewed canonical Starlette module and attribute in the same identity-checked process.",
+      "comparison": "exact-identity-relation",
+      "workflow_support": "supported"
+    },
+    {
       "id": "python.call_outcome",
       "projection": "Whether a direct public callable returned or raised; a raised outcome includes the fully qualified exception class and exact message.",
       "comparison": "exact",
       "workflow_support": "supported"
     },
     {
-      "id": "python.import_path",
-      "projection": "Stable module import metadata: module name, package, import-spec name and parent, and package status; source and target file paths are intentionally excluded.",
+      "id": "python.enum_behavior",
+      "projection": "Direct public Enum operations preserving __members__ binding order and aliases, list(Enum) iteration order, canonical and selected binding names, exact repr and str, strictly typed primitive values, within-process class and lookup identity relations, and exact lookup error class, args, and message.",
       "comparison": "exact",
       "workflow_support": "supported"
     },
@@ -260,14 +266,14 @@
       "workflow_support": "supported"
     },
     {
-      "id": "python.object_identity",
-      "projection": "Same-process identity relations for a selected module against sys.modules, its parent binding, repeated import, and each reviewed binding after repeated import.",
-      "comparison": "exact-identity-relation",
+      "id": "python.import_path",
+      "projection": "Stable module import metadata: module name, package, import-spec name and parent, and package status; source and target file paths are intentionally excluded.",
+      "comparison": "exact",
       "workflow_support": "supported"
     },
     {
-      "id": "python.binding_identity",
-      "projection": "Boolean whether a selected public FastAPI binding is the exact Python object exported by its reviewed canonical Starlette module and attribute in the same identity-checked process.",
+      "id": "python.object_identity",
+      "projection": "Same-process identity relations for a selected module against sys.modules, its parent binding, repeated import, and each reviewed binding after repeated import.",
       "comparison": "exact-identity-relation",
       "workflow_support": "supported"
     },
@@ -338,12 +344,6 @@
       "workflow_support": "supported"
     },
     {
-      "id": "websocket.workload_trace",
-      "projection": "Ordered independent-workload side-effect labels recorded during WebSocket application dispatch.",
-      "comparison": "ordered-exact",
-      "workflow_support": "supported"
-    },
-    {
       "id": "websocket.event_order",
       "projection": "Ordered ASGI WebSocket receive and send message types.",
       "comparison": "ordered-exact",
@@ -352,6 +352,12 @@
     {
       "id": "websocket.messages",
       "projection": "Ordered WebSocket text or binary payloads with their message types.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "websocket.workload_trace",
+      "projection": "Ordered independent-workload side-effect labels recorded during WebSocket application dispatch.",
       "comparison": "ordered-exact",
       "workflow_support": "supported"
     }

@@ -574,10 +574,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 0f864d7217ff44f5f7252badb39029b469978ac383ba33e5bdddf91b2a0f97d7
+    sha256: e7807eef49bb84724740a653bef447d4f9ba6e632b0807ba1f83548ef58e2d91
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 57
+      selectors: 58
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -602,13 +602,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 76f4cc9d75fe0939d0f201efd26953f38f78841ed317d2ec2c86371fedb7b9a4
+    sha256: 8d15b08c62d9e27cf99d26dc066b5bc49d0a4478b68c6d9b17ac70803ee9d9ad
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 724
-      cases: 2990
+      workflows: 725
+      cases: 2991
       partial_source_mappings: 1988
 
 contract_metadata:
@@ -1156,6 +1156,23 @@ unresolved:
       of a returned public exception's class, arguments, string, representation,
       and explicitly selected public attributes. Inputs contain constructor
       arguments and attribute selectors only; they contain no expected values.
+  python_api_workflow_v14:
+    state: public-enum-behavior-observation; v1-v14-remain-supported
+    schema_id: fastapi-rs/python-api-workflow@14
+    schema_path: tests/fixtures/schemas/python-api-workflow-v14.schema.json
+    schema_sha256: 4b9a41571887a550dcc45163e7ecbee030d5b7521bcc2e53c725e6454fdd932b
+    result_schema_id: fastapi-rs/python-api-workflow-result@16
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v16.schema.json
+    result_schema_sha256: 5cbf3cfcbc420dd110d7e61190ab9291fd50fa7d234d5b62fcd60c9676cffee2
+    comparison_schema_id: fastapi-rs/python-api-comparison@14
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v14.schema.json
+    comparison_schema_sha256: 1426f72b9aee269657d1515b30eac779aff8e48a1a98d906334da014dd61a1c7
+    coverage: >-
+      Preserves direct API observations through v13 and adds strict Enum member
+      declaration and iteration order, aliases, direct members, name/value
+      lookup, exact string/repr, in-process identity relations, and invalid
+      lookup errors. Lookup operands are input bundles; recipes contain no
+      expected values.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -1435,9 +1452,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 14
-    symbols_with_direct_api_input_workflow_refs: 191
+    symbols_with_direct_api_input_workflow_refs: 195
     symbols_with_operation_fixture_refs: 461
-    operation_fixture_refs: 2825
+    operation_fixture_refs: 2830
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -44477,6 +44494,138 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-cookie-name-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-cookie-value-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-enum-class-members
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-header-name-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-header-value-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-invalid-name-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-invalid-value-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-path-name-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-path-value-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-query-name-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-query-value-lookup
+      probe_kind: callable
+      observation_selectors:
+      - python.enum_behavior
     operation_fixture_refs:
     - workflow_id: openapi-model-module-identity
       input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
@@ -44509,6 +44658,16 @@ api_surface_contract:
       case_id: fastapi.openapi-models.parameter-in-type.invalid-value
       observation_selectors:
       - python.call_outcome
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      observation_selectors:
+      - python.enum_behavior
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -44520,6 +44679,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - python.enum_behavior
     - python.import_path
     - python.object_identity
     - python.pydantic_model_result
@@ -44540,8 +44700,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/openapi_models.rs::GraphDefinition::Enum
       known_gaps:
-      - Direct module/object identity is mapped, but enum-member identity and standalone member values
-        are not; consumer evidence is through Parameter.in_, and other consumers and validation/serialization
+      - Other consumers, Pydantic validation/serialization, and behavior outside the pinned Python runtime
         remain unproven.
   - id: fastapi.openapi.models.ParameterInType.cookie
     kind: field
@@ -44573,7 +44732,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-cookie-member
+      probe_kind: attribute
+      observation_selectors:
+      - python.enum_behavior
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
@@ -44585,6 +44756,16 @@ api_surface_contract:
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
       observation_selectors:
       - python.pydantic_model_result
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      observation_selectors:
+      - python.enum_behavior
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -44596,6 +44777,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - python.enum_behavior
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -44614,8 +44796,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Evidence is through the linked consumer field, not a standalone alias/enum identity contract;
-        other consumers and validation/serialization remain unproven.
+      - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
   - id: fastapi.openapi.models.ParameterInType.header
     kind: field
     source_candidate_ref: /api_candidates/765
@@ -44646,7 +44827,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-header-member
+      probe_kind: attribute
+      observation_selectors:
+      - python.enum_behavior
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
@@ -44658,6 +44851,16 @@ api_surface_contract:
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
       observation_selectors:
       - python.pydantic_model_result
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      observation_selectors:
+      - python.enum_behavior
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -44669,6 +44872,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - python.enum_behavior
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -44687,8 +44891,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Evidence is through the linked consumer field, not a standalone alias/enum identity contract;
-        other consumers and validation/serialization remain unproven.
+      - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
   - id: fastapi.openapi.models.ParameterInType.path
     kind: field
     source_candidate_ref: /api_candidates/766
@@ -44719,7 +44922,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-path-member
+      probe_kind: attribute
+      observation_selectors:
+      - python.enum_behavior
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
@@ -44731,6 +44946,16 @@ api_surface_contract:
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
       observation_selectors:
       - python.pydantic_model_result
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      observation_selectors:
+      - python.enum_behavior
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -44742,6 +44967,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - python.enum_behavior
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -44760,8 +44986,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Evidence is through the linked consumer field, not a standalone alias/enum identity contract;
-        other consumers and validation/serialization remain unproven.
+      - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
   - id: fastapi.openapi.models.ParameterInType.query
     kind: field
     source_candidate_ref: /api_candidates/767
@@ -44792,7 +45017,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id016
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      probe_id: parameter-in-type-query-member
+      probe_kind: attribute
+      observation_selectors:
+      - python.enum_behavior
     operation_fixture_refs:
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
@@ -44804,6 +45041,16 @@ api_surface_contract:
       case_id: fastapi.openapi-models.parameter-in-type.accepted-values
       observation_selectors:
       - python.pydantic_model_result
+    - workflow_id: parameter-in-type-enum-direct
+      input_path: tests/fixtures/inputs/parity/parameter-in-type-enum-direct.json
+      input_sha256: a8814077268eca9dc336d536fac12e5857c988d82b85198689d520330f846278
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-in-type-enum-direct.yaml
+      recipe_sha256: 82d293b08eaa1c7f2fc2675b6e93dc9a06fcae472036cb4f6fe67ee6c661c527
+      workload_path: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+      workload_sha256: 7051255ede95984ff789a684c5d25d5b869a1f2234d2e8a7558e4dc9a86ccdc4
+      case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+      observation_selectors:
+      - python.enum_behavior
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -44815,6 +45062,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - python.enum_behavior
     - python.pydantic_model_result
     - python.signature
     operation_scope:
@@ -44833,8 +45081,7 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - Evidence is through the linked consumer field, not a standalone alias/enum identity contract;
-        other consumers and validation/serialization remain unproven.
+      - Other consumers and enum behavior outside the direct member and lookup cases remain unproven.
   - id: fastapi.openapi.models.PathItem
     kind: class
     source_candidate_ref: /api_candidates/768

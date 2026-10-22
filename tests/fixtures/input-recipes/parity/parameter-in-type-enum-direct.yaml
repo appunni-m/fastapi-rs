@@ -1,0 +1,175 @@
+schema: fastapi-rs/python-api-workflow@14
+workload:
+  file: tests/fixtures/workloads/parameter_in_type_enum_direct.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-models.parameter-in-type.direct-enum-contract
+  probes:
+  - probe_id: parameter-in-type-enum-class-members
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: enum-empty
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: class_members
+      comparison: exact
+  - probe_id: parameter-in-type-cookie-member
+    public_attribute:
+      module: fastapi.openapi.models
+      attribute: ParameterInType.cookie
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: member
+      comparison: exact
+  - probe_id: parameter-in-type-header-member
+    public_attribute:
+      module: fastapi.openapi.models
+      attribute: ParameterInType.header
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: member
+      comparison: exact
+  - probe_id: parameter-in-type-path-member
+    public_attribute:
+      module: fastapi.openapi.models
+      attribute: ParameterInType.path
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: member
+      comparison: exact
+  - probe_id: parameter-in-type-query-member
+    public_attribute:
+      module: fastapi.openapi.models
+      attribute: ParameterInType.query
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: member
+      comparison: exact
+  - probe_id: parameter-in-type-cookie-name-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: name-cookie
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_name
+      comparison: exact
+  - probe_id: parameter-in-type-header-name-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: name-header
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_name
+      comparison: exact
+  - probe_id: parameter-in-type-path-name-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: name-path
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_name
+      comparison: exact
+  - probe_id: parameter-in-type-query-name-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: name-query
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_name
+      comparison: exact
+  - probe_id: parameter-in-type-invalid-name-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: name-invalid
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_name
+      comparison: exact
+  - probe_id: parameter-in-type-cookie-value-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: value-cookie
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_value
+      comparison: exact
+  - probe_id: parameter-in-type-header-value-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: value-header
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_value
+      comparison: exact
+  - probe_id: parameter-in-type-path-value-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: value-path
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_value
+      comparison: exact
+  - probe_id: parameter-in-type-query-value-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: value-query
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_value
+      comparison: exact
+  - probe_id: parameter-in-type-invalid-value-lookup
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: ParameterInType
+    argument_bundle: value-invalid
+    observations:
+    - kind: python_enum_behavior
+      selector: enum_behavior
+      operation: lookup_by_value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.ParameterInType
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.ParameterInType.cookie
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.ParameterInType.header
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.ParameterInType.path
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.ParameterInType.query
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d

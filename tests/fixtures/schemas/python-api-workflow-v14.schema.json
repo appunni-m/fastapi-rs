@@ -1,0 +1,1309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/python-api-workflow/14",
+  "title": "FastAPI-RS direct Python API workflow v14",
+  "description": "Input-only direct API probes, including exact public Enum member and lookup projections.",
+  "type": "object",
+  "required": [
+    "schema",
+    "workload",
+    "cases"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fastapi-rs/python-api-workflow@14"
+    },
+    "workload": {
+      "$ref": "#/$defs/workload"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "relativePythonFile": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+\\.py$"
+    },
+    "workload": {
+      "type": "object",
+      "required": [
+        "file",
+        "factory",
+        "instantiate_per_case"
+      ],
+      "properties": {
+        "file": {
+          "$ref": "#/$defs/relativePythonFile"
+        },
+        "factory": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "instantiate_per_case": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceEvidence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "path",
+            "kind",
+            "sha256"
+          ],
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+            },
+            "kind": {
+              "enum": [
+                "upstream_test",
+                "upstream_documentation"
+              ]
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "path",
+            "kind",
+            "sha256",
+            "symbol_id"
+          ],
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+            },
+            "kind": {
+              "const": "upstream_api_definition"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "symbol_id": {
+              "type": "string",
+              "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "publicCallable": {
+      "type": "object",
+      "required": [
+        "module",
+        "attribute"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+        },
+        "attribute": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "publicAttribute": {
+      "type": "object",
+      "required": [
+        "module",
+        "attribute"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+        },
+        "attribute": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "bindingIdentity": {
+      "type": "object",
+      "required": [
+        "module",
+        "attribute"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^starlette(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+        },
+        "attribute": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "argumentBundle": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "returnValueObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_return_value"
+        },
+        "selector": {
+          "const": "value"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "attributeValueObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_attribute_value"
+        },
+        "selector": {
+          "const": "value"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "signatureObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_signature"
+        },
+        "selector": {
+          "const": "signature"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "callOutcomeObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_call_outcome"
+        },
+        "selector": {
+          "const": "outcome"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pydanticModelResultObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_pydantic_model_result"
+        },
+        "selector": {
+          "const": "model_dump"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "observation": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/returnValueObservation"
+        },
+        {
+          "$ref": "#/$defs/attributeValueObservation"
+        },
+        {
+          "$ref": "#/$defs/signatureObservation"
+        },
+        {
+          "$ref": "#/$defs/callOutcomeObservation"
+        },
+        {
+          "$ref": "#/$defs/pydanticModelResultObservation"
+        },
+        {
+          "$ref": "#/$defs/parameterMetadataObservation"
+        },
+        {
+          "$ref": "#/$defs/moduleImportPathObservation"
+        },
+        {
+          "$ref": "#/$defs/moduleObjectIdentityObservation"
+        },
+        {
+          "$ref": "#/$defs/bindingIdentityObservation"
+        },
+        {
+          "$ref": "#/$defs/bindingDistinctObservation"
+        },
+        {
+          "$ref": "#/$defs/backgroundTaskQueueObservation"
+        },
+        {
+          "$ref": "#/$defs/classDocstringObservation"
+        },
+        {
+          "$ref": "#/$defs/literalTypeAliasObservation"
+        },
+        {
+          "$ref": "#/$defs/exceptionInstanceObservation"
+        },
+        {
+          "$ref": "#/$defs/enumBehaviorObservation"
+        }
+      ]
+    },
+    "probe": {
+      "type": "object",
+      "required": [
+        "probe_id",
+        "observations"
+      ],
+      "properties": {
+        "probe_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "public_callable": {
+          "$ref": "#/$defs/publicCallable"
+        },
+        "public_attribute": {
+          "$ref": "#/$defs/publicAttribute"
+        },
+        "binding_identity": {
+          "$ref": "#/$defs/bindingIdentity"
+        },
+        "argument_bundle": {
+          "$ref": "#/$defs/argumentBundle"
+        },
+        "capture_warnings": {
+          "const": true,
+          "description": "Capture ordered Python warnings emitted while invoking and awaiting a public callable, or, for a v11 public_module probe, only during the first public-module import."
+        },
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/observation"
+          }
+        },
+        "public_module": {
+          "$ref": "#/$defs/publicModule"
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "required": [
+                "public_callable",
+                "argument_bundle"
+              ],
+              "not": {
+                "required": [
+                  "public_attribute"
+                ]
+              }
+            },
+            {
+              "required": [
+                "public_attribute"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "public_callable"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "argument_bundle"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "required": [
+                "public_module"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "public_callable"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "public_attribute"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "argument_bundle"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "if": {
+            "required": [
+              "public_module"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observations": {
+                "minItems": 2,
+                "maxItems": 2,
+                "allOf": [
+                  {
+                    "contains": {
+                      "properties": {
+                        "kind": {
+                          "const": "python_import_path"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "kind": {
+                          "const": "python_object_identity"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "capture_warnings"
+            ]
+          },
+          "then": {
+            "oneOf": [
+              {
+                "required": [
+                  "public_callable"
+                ]
+              },
+              {
+                "required": [
+                  "public_module"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "public_attribute"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observations": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/attributeValueObservation"
+                    },
+                    {
+                      "$ref": "#/$defs/literalTypeAliasObservation"
+                    },
+                    {
+                      "$ref": "#/$defs/enumBehaviorObservation"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "binding_identity"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_callable",
+              "argument_bundle"
+            ],
+            "not": {
+              "required": [
+                "public_attribute"
+              ]
+            },
+            "properties": {
+              "observations": {
+                "minItems": 1,
+                "maxItems": 1,
+                "contains": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/bindingIdentityObservation"
+                    },
+                    {
+                      "$ref": "#/$defs/bindingDistinctObservation"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/bindingIdentityObservation"
+                    },
+                    {
+                      "$ref": "#/$defs/bindingDistinctObservation"
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_callable",
+              "argument_bundle",
+              "binding_identity"
+            ],
+            "not": {
+              "required": [
+                "public_attribute"
+              ]
+            },
+            "properties": {
+              "observations": {
+                "minItems": 1,
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "public_callable"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observations": {
+                "items": {
+                  "not": {
+                    "properties": {
+                      "kind": {
+                        "const": "python_attribute_value"
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "properties": {
+                    "kind": {
+                      "const": "python_call_outcome"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observations": {
+                "oneOf": [
+                  {
+                    "maxItems": 1
+                  },
+                  {
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "contains": {
+                      "$ref": "#/$defs/backgroundTaskQueueObservation"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "properties": {
+                    "kind": {
+                      "const": "python_pydantic_model_result"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_callable",
+              "argument_bundle"
+            ],
+            "properties": {
+              "observations": {
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "properties": {
+                    "kind": {
+                      "const": "python_parameter_metadata"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_callable",
+              "argument_bundle"
+            ],
+            "properties": {
+              "observations": {
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "public_module"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observations": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/$defs/moduleImportPathObservation"
+                    },
+                    {
+                      "$ref": "#/$defs/moduleObjectIdentityObservation"
+                    }
+                  ]
+                },
+                "allOf": [
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/moduleImportPathObservation"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/moduleObjectIdentityObservation"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "public_callable"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observations": {
+                "items": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/moduleImportPathObservation"
+                      },
+                      {
+                        "$ref": "#/$defs/moduleObjectIdentityObservation"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "$ref": "#/$defs/backgroundTaskQueueObservation"
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_callable",
+              "argument_bundle"
+            ],
+            "properties": {
+              "public_callable": {
+                "required": [
+                  "module",
+                  "attribute"
+                ],
+                "properties": {
+                  "module": {
+                    "const": "fastapi.background"
+                  },
+                  "attribute": {
+                    "const": "BackgroundTasks.add_task"
+                  }
+                }
+              },
+              "observations": {
+                "minItems": 2,
+                "maxItems": 2,
+                "allOf": [
+                  {
+                    "contains": {
+                      "$ref": "#/$defs/backgroundTaskQueueObservation"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/$defs/returnValueObservation"
+                        },
+                        {
+                          "$ref": "#/$defs/callOutcomeObservation"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "$ref": "#/$defs/classDocstringObservation"
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_callable",
+              "argument_bundle"
+            ],
+            "not": {
+              "required": [
+                "public_attribute"
+              ]
+            },
+            "properties": {
+              "observations": {
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "$ref": "#/$defs/literalTypeAliasObservation"
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_attribute"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "public_callable"
+                  ]
+                },
+                {
+                  "required": [
+                    "public_module"
+                  ]
+                },
+                {
+                  "required": [
+                    "argument_bundle"
+                  ]
+                }
+              ]
+            },
+            "properties": {
+              "observations": {
+                "minItems": 1,
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "$ref": "#/$defs/enumBehaviorObservation"
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observations": {
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "$ref": "#/$defs/enumBehaviorObservation"
+                }
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "public_callable",
+                  "argument_bundle"
+                ],
+                "not": {
+                  "required": [
+                    "public_attribute"
+                  ]
+                }
+              },
+              {
+                "required": [
+                  "public_attribute"
+                ],
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "public_callable"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "argument_bundle"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "public_module"
+                  ]
+                },
+                {
+                  "required": [
+                    "capture_warnings"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "properties": {
+                    "operation": {
+                      "const": "member"
+                    }
+                  },
+                  "required": [
+                    "operation"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_attribute"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "properties": {
+                    "operation": {
+                      "enum": [
+                        "class_members",
+                        "lookup_by_name",
+                        "lookup_by_value"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "operation"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "observations"
+            ]
+          },
+          "then": {
+            "required": [
+              "public_callable",
+              "argument_bundle"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "probes",
+        "source_evidence"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+        },
+        "probes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/probe"
+          }
+        },
+        "source_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceEvidence"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "parameterMetadataObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_parameter_metadata"
+        },
+        "selector": {
+          "const": "parameter_metadata"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "publicModule": {
+      "type": "object",
+      "required": [
+        "module",
+        "bindings"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+        },
+        "bindings": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "moduleImportPathObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_import_path"
+        },
+        "selector": {
+          "const": "import_path"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "moduleObjectIdentityObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_object_identity"
+        },
+        "selector": {
+          "const": "object_identity"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "bindingIdentityObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_binding_identity"
+        },
+        "selector": {
+          "const": "binding_identity"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "bindingDistinctObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_binding_distinct"
+        },
+        "selector": {
+          "const": "binding_identity"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "backgroundTaskQueueObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_background_task_queue"
+        },
+        "selector": {
+          "const": "tasks"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "classDocstringObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_class_docstring"
+        },
+        "selector": {
+          "const": "value"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "literalTypeAliasObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_literal_type_alias"
+        },
+        "selector": {
+          "const": "type_alias"
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "exceptionInstanceObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "attributes",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_exception_instance"
+        },
+        "selector": {
+          "const": "exception_instance"
+        },
+        "attributes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "code",
+              "reason"
+            ]
+          }
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "enumBehaviorObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "operation",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "python_enum_behavior"
+        },
+        "selector": {
+          "const": "enum_behavior"
+        },
+        "operation": {
+          "enum": [
+            "class_members",
+            "member",
+            "lookup_by_name",
+            "lookup_by_value"
+          ]
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

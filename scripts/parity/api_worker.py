@@ -52,6 +52,7 @@ WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow@10"
 WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow@11"
 WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow@12"
 WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow@13"
+WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow@14"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -67,6 +68,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V11_ID,
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
+        WORKFLOW_SCHEMA_V14_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -83,6 +85,7 @@ RESULT_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow-result@12"
 RESULT_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow-result@13"
 RESULT_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow-result@14"
 RESULT_SCHEMA_V15_ID = "fastapi-rs/python-api-workflow-result@15"
+RESULT_SCHEMA_V16_ID = "fastapi-rs/python-api-workflow-result@16"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -97,6 +100,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V11_ID: RESULT_SCHEMA_V13_ID,
     WORKFLOW_SCHEMA_V12_ID: RESULT_SCHEMA_V14_ID,
     WORKFLOW_SCHEMA_V13_ID: RESULT_SCHEMA_V15_ID,
+    WORKFLOW_SCHEMA_V14_ID: RESULT_SCHEMA_V16_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
@@ -766,6 +770,164 @@ def _binding_identity_values(
     }
 
 
+def _enum_primitive_value(value: Any) -> dict[str, Any]:
+    """Preserve only exact built-in primitive enum values without coercion."""
+    if value is None:
+        return {"type": "null", "value": None}
+    if type(value) is bool:
+        return {"type": "bool", "value": value}
+    if type(value) is int:
+        return {"type": "int", "value": value}
+    if type(value) is float and math.isfinite(value):
+        return {"type": "float", "value": value}
+    if type(value) is str:
+        return {"type": "str", "value": value}
+    raise WorkerError(
+        "enum values must use a supported strict primitive type "
+        "(null, bool, int, finite float, or str); "
+        f"got {type(value).__module__}.{type(value).__qualname__}"
+    )
+
+
+def _enum_class_name(enum_class: type[Enum]) -> str:
+    module = enum_class.__module__
+    qualname = enum_class.__qualname__
+    if type(module) is not str or type(qualname) is not str:
+        raise WorkerError("Enum class has malformed module or qualified name")
+    return f"{module}.{qualname}"
+
+
+def _enum_member_projection(
+    enum_class: type[Enum], binding_name: str, member: Enum
+) -> dict[str, Any]:
+    """Project one selected Enum binding, including same-process identity relations."""
+    member_bindings = enum_class.__members__
+    if binding_name not in member_bindings or member_bindings[binding_name] is not member:
+        raise WorkerError(f"selected Enum binding is not a class member: {binding_name}")
+    canonical_name = member.name
+    if type(canonical_name) is not str or not canonical_name:
+        raise WorkerError("Enum member has a malformed canonical name")
+    binding_names = [
+        name for name, bound_member in member_bindings.items() if bound_member is member
+    ]
+    if not binding_names:
+        raise WorkerError(f"Enum member has no class binding: {canonical_name}")
+    value = member.value
+    canonical_attribute = getattr(enum_class, canonical_name)
+    name_lookup = enum_class[canonical_name]
+    value_lookup = enum_class(value)
+    return {
+        "binding_name": binding_name,
+        "binding_names": binding_names,
+        "canonical_name": canonical_name,
+        "is_alias": binding_name != canonical_name,
+        "value": _enum_primitive_value(value),
+        "repr": repr(member),
+        "str": str(member),
+        "identity": {
+            "same_as_binding_attribute": getattr(enum_class, binding_name) is member,
+            "same_as_binding_entry": member_bindings[binding_name] is member,
+            "same_as_canonical_attribute": canonical_attribute is member,
+            "same_as_name_lookup": name_lookup is member,
+            "same_as_value_lookup": value_lookup is member,
+        },
+    }
+
+
+def _enum_lookup_error(error: Exception) -> dict[str, Any]:
+    error_type = type(error)
+    return {
+        "class": f"{error_type.__module__}.{error_type.__qualname__}",
+        "args": _json_safe(list(error.args)),
+        "message": str(error),
+    }
+
+
+def _enum_behavior_projection(
+    probe: dict[str, Any],
+    observation: dict[str, Any],
+    bundles: Mapping[str, Any],
+    public_value: Any,
+) -> dict[str, Any]:
+    """Observe an input-selected Enum operation without invoking unrelated call paths."""
+    operation = observation["operation"]
+    if "public_callable" in probe:
+        enum_class = public_value
+        if not inspect.isclass(enum_class) or not issubclass(enum_class, Enum):
+            raise WorkerError("Enum class operation requires a public Enum class")
+        if operation == "class_members":
+            args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
+            if args or kwargs:
+                raise WorkerError("Enum class_members operation requires an empty argument bundle")
+            return {
+                "operation": operation,
+                "enum_class": _enum_class_name(enum_class),
+                "members": [
+                    _enum_member_projection(enum_class, name, member)
+                    for name, member in enum_class.__members__.items()
+                ],
+                "iteration_order": [member.name for member in enum_class],
+            }
+
+        args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
+        if kwargs or len(args) != 1:
+            raise WorkerError(
+                f"Enum {operation} operation requires exactly one positional argument"
+            )
+        if operation == "lookup_by_name":
+            name = args[0]
+            if type(name) is not str:
+                raise WorkerError("Enum lookup_by_name argument must be a string")
+            try:
+                member = enum_class[name]
+            except Exception as exc:
+                return {
+                    "operation": operation,
+                    "enum_class": _enum_class_name(enum_class),
+                    "outcome": "error",
+                    "error": _enum_lookup_error(exc),
+                }
+            binding_name = name
+        elif operation == "lookup_by_value":
+            value = args[0]
+            _enum_primitive_value(value)
+            try:
+                member = enum_class(value)
+            except Exception as exc:
+                return {
+                    "operation": operation,
+                    "enum_class": _enum_class_name(enum_class),
+                    "outcome": "error",
+                    "error": _enum_lookup_error(exc),
+                }
+            binding_name = member.name if isinstance(member, Enum) else ""
+        else:
+            raise WorkerError(f"unsupported Enum class operation: {operation}")
+
+        if not isinstance(member, enum_class):
+            raise WorkerError("Enum lookup did not return a member of the selected class")
+        return {
+            "operation": operation,
+            "enum_class": _enum_class_name(enum_class),
+            "outcome": "member",
+            "member": _enum_member_projection(enum_class, binding_name, member),
+        }
+
+    if operation != "member" or "public_attribute" not in probe:
+        raise WorkerError("Enum member operation requires a public Enum member attribute")
+    member = public_value
+    if not isinstance(member, Enum):
+        raise WorkerError("Enum member operation requires a public Enum member")
+    enum_class = type(member)
+    binding_name = probe["public_attribute"]["attribute"].rsplit(".", 1)[-1]
+    return {
+        "operation": operation,
+        "enum_class": _enum_class_name(enum_class),
+        "outcome": "member",
+        "member": _enum_member_projection(enum_class, binding_name, member),
+    }
+
+
 def _require_supported_callable(spec: dict[str, str], supported_symbols: frozenset[str]) -> str:
     return _require_supported_symbol(spec, supported_symbols, label="callable")
 
@@ -837,8 +999,50 @@ def _validate_workflow_callables(
                 and observation.get("kind") == "python_exception_instance"
                 for observation in observations
             )
+            enum_behavior_observations = [
+                observation
+                for observation in observations
+                if isinstance(observation, dict)
+                and observation.get("kind") == "python_enum_behavior"
+            ]
+            if enum_behavior_observations:
+                enum_operation = enum_behavior_observations[0].get("operation")
+                if (
+                    workflow.get("schema") != WORKFLOW_SCHEMA_V14_ID
+                    or len(observations) != 1
+                    or len(enum_behavior_observations) != 1
+                    or "public_module" in probe
+                    or "capture_warnings" in probe
+                    or enum_operation
+                    not in {"class_members", "member", "lookup_by_name", "lookup_by_value"}
+                ):
+                    raise WorkerError(
+                        "Enum behavior requires one supported v14 public Enum operation"
+                    )
+                if enum_operation == "member":
+                    if (
+                        "public_attribute" not in probe
+                        or "public_callable" in probe
+                        or "argument_bundle" in probe
+                    ):
+                        raise WorkerError(
+                            "Enum member observation requires one public Enum member attribute"
+                        )
+                elif (
+                    "public_callable" not in probe
+                    or "argument_bundle" not in probe
+                    or "public_attribute" in probe
+                ):
+                    raise WorkerError(
+                        "Enum class operation requires a public Enum class and argument bundle"
+                    )
             if literal_type_alias_selected and (
-                workflow.get("schema") not in {WORKFLOW_SCHEMA_V12_ID, WORKFLOW_SCHEMA_V13_ID}
+                workflow.get("schema")
+                not in {
+                    WORKFLOW_SCHEMA_V12_ID,
+                    WORKFLOW_SCHEMA_V13_ID,
+                    WORKFLOW_SCHEMA_V14_ID,
+                }
                 or len(observations) != 1
                 or "public_attribute" not in probe
                 or "public_callable" in probe
@@ -846,10 +1050,11 @@ def _validate_workflow_callables(
                 or "argument_bundle" in probe
             ):
                 raise WorkerError(
-                    "Literal type alias observation requires one v12 or v13 public-attribute probe"
+                    "Literal type alias observation requires one v12 through v14 public-attribute probe"
                 )
             if exception_instance_selected and (
-                workflow.get("schema") != WORKFLOW_SCHEMA_V13_ID
+                workflow.get("schema")
+                not in {WORKFLOW_SCHEMA_V13_ID, WORKFLOW_SCHEMA_V14_ID}
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
@@ -857,7 +1062,7 @@ def _validate_workflow_callables(
                 or "public_module" in probe
             ):
                 raise WorkerError(
-                    "exception instance observation requires one v13 public-callable probe"
+                    "exception instance observation requires one v13 or v14 public-callable probe"
                 )
             if class_docstring_selected and (
                 workflow.get("schema")
@@ -866,6 +1071,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V11_ID,
                     WORKFLOW_SCHEMA_V12_ID,
                     WORKFLOW_SCHEMA_V13_ID,
+                    WORKFLOW_SCHEMA_V14_ID,
                 }
                 or len(observations) != 1
                 or "public_callable" not in probe
@@ -873,7 +1079,7 @@ def _validate_workflow_callables(
                 or "public_attribute" in probe
             ):
                 raise WorkerError(
-                    "class docstring observation requires one v10 through v13 public-callable probe"
+                    "class docstring observation requires one v10 through v14 public-callable probe"
                 )
             if "binding_identity" in probe or binding_identity_selected:
                 binding_identity = probe.get("binding_identity")
@@ -886,6 +1092,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V11_ID,
                         WORKFLOW_SCHEMA_V12_ID,
                         WORKFLOW_SCHEMA_V13_ID,
+                        WORKFLOW_SCHEMA_V14_ID,
                     }
                     or not binding_identity_selected
                     or len(observations) != 1
@@ -900,7 +1107,7 @@ def _validate_workflow_callables(
                     or _ATTRIBUTE_PATH.fullmatch(binding_identity["attribute"]) is None
                 ):
                     raise WorkerError(
-                        "cross-module binding identity requires one v8 through v13 callable probe"
+                        "cross-module binding identity requires one v8 through v14 callable probe"
                     )
             background_task_queue_selected = any(
                 isinstance(observation, dict)
@@ -922,6 +1129,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V11_ID,
                         WORKFLOW_SCHEMA_V12_ID,
                         WORKFLOW_SCHEMA_V13_ID,
+                        WORKFLOW_SCHEMA_V14_ID,
                     }
                     or not isinstance(public_callable, dict)
                     or public_callable.get("module") != "fastapi.background"
@@ -931,7 +1139,7 @@ def _validate_workflow_callables(
                     or not invocation_selected
                 ):
                     raise WorkerError(
-                        "BackgroundTasks queue observation requires v9 through v13, "
+                        "BackgroundTasks queue observation requires v9 through v14, "
                         "one add_task call "
                         "and a return or call-outcome observation"
                     )
@@ -946,6 +1154,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V11_ID,
                         WORKFLOW_SCHEMA_V12_ID,
                         WORKFLOW_SCHEMA_V13_ID,
+                        WORKFLOW_SCHEMA_V14_ID,
                     }
                     or any(
                         key in probe
@@ -962,6 +1171,7 @@ def _validate_workflow_callables(
                             WORKFLOW_SCHEMA_V11_ID,
                             WORKFLOW_SCHEMA_V12_ID,
                             WORKFLOW_SCHEMA_V13_ID,
+                            WORKFLOW_SCHEMA_V14_ID,
                         }
                     )
                     or len(observations) != 2
@@ -969,7 +1179,7 @@ def _validate_workflow_callables(
                     != {"python_import_path", "python_object_identity"}
                 ):
                     raise WorkerError(
-                        "module identity requires one v7 through v13 module probe with both "
+                        "module identity requires one v7 through v14 module probe with both "
                         "identity "
                         "observations"
                     )
@@ -1016,6 +1226,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V7_ID,
                     WORKFLOW_SCHEMA_V12_ID,
                     WORKFLOW_SCHEMA_V13_ID,
+                    WORKFLOW_SCHEMA_V14_ID,
                 }
                 or len(observations) != 1
                 or "public_callable" not in probe
@@ -1036,6 +1247,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V7_ID,
                     WORKFLOW_SCHEMA_V12_ID,
                     WORKFLOW_SCHEMA_V13_ID,
+                    WORKFLOW_SCHEMA_V14_ID,
                 }
                 or len(observations) != 1
                 or "public_callable" not in probe
@@ -1359,6 +1571,9 @@ async def _run_probe(
                     "representation": repr(result),
                     "attributes": public_attributes,
                 }
+            elif observation["kind"] == "python_enum_behavior":
+                public_value = function if "public_callable" in probe else attribute_value
+                values = _enum_behavior_projection(probe, observation, bundles, public_value)
             elif observation["kind"] == "python_parameter_metadata":
                 values = {"parameter_metadata": _parameter_metadata_projection(result)}
             elif observation["kind"] == "python_call_outcome":
@@ -1803,6 +2018,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V11_ID,
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
+                WORKFLOW_SCHEMA_V14_ID,
             },
         )
     )
