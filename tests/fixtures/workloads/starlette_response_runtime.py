@@ -54,13 +54,13 @@ def create_app() -> FastAPI:
     _write_file_response_input(file_response_class_input, _FILE_RESPONSE_CLASS_BYTES)
     app.state.file_response_directory = file_response_directory
 
-    @app.get("/plain", response_class=PlainTextResponse)
-    async def plain_text():
+    @app.get("/", response_class=PlainTextResponse)
+    async def main():
         return "Hello World"
 
-    @app.get("/redirect", response_class=JSONResponse)
-    async def redirect():
-        return RedirectResponse("https://example.test/destination")
+    @app.get("/typer", response_class=JSONResponse)
+    async def redirect_typer():
+        return RedirectResponse("https://typer.tiangolo.com")
 
     @app.get("/stream")
     async def stream_chunks():
@@ -127,8 +127,8 @@ def create_app() -> FastAPI:
         return response
 
     @app.get("/items/", response_class=HTMLResponse)
-    async def html_items():
-        return "<h1>Items</h1><p>Response class selection.</p>"
+    async def read_items():
+        return "<h1>Items</h1><p>This is a list of items.</p>"
 
     @app.put("/items/{item_id}")
     def update_item(item_id: str, item: Item):

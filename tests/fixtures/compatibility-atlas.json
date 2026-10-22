@@ -650021,9 +650021,10 @@
               "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
               "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
+              "docs.response.status",
               "http.body.bytes",
               "http.headers.ordered",
               "http.status",
@@ -650038,18 +650039,57 @@
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
             "end_line": 12,
+            "function_source_ref": {
+              "end_line": 12,
+              "line": 9,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+              "sha256": "6cbb2443badbb9f8db42935eb85d7cc15db5f4bb6b672364d51c4600a1fc9192"
+            },
             "line": 9,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get"
+            "name": "test_get",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema",
             "end_line": 39,
+            "function_source_ref": {
+              "end_line": 39,
+              "line": 15,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+              "sha256": "6cbb2443badbb9f8db42935eb85d7cc15db5f4bb6b672364d51c4600a1fc9192"
+            },
             "line": 15,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -650078,6 +650118,99 @@
               "role": "FastAPI OpenAPI document generation",
               "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
               "start_line": 585
+            },
+            {
+              "end_line": 12,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+              "role": "pinned FastAPI 0.141.1 test function and asserted observations",
+              "sha256": "6cbb2443badbb9f8db42935eb85d7cc15db5f4bb6b672364d51c4600a1fc9192",
+              "start_line": 9
+            },
+            {
+              "end_line": 9,
+              "path": "docs_src/custom_response/tutorial005_py310.py",
+              "role": "Root route, explicit PlainTextResponse class, and exact response text",
+              "sha256": "69ad204fa756166e8e2a105d752fadf6f86cbdaf5331e904e6ce9c305672dfb9",
+              "start_line": 4
+            },
+            {
+              "end_line": 372,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI applies route and injected Response status values when constructing responses",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 357
+            },
+            {
+              "end_line": 400,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI selects the route's actual response class",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 750,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI preserves returned Response instances and constructs the configured response class for other values",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 711
+            },
+            {
+              "end_line": 1009,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI stores response_class on the route",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 961
+            },
+            {
+              "end_line": 1033,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI normalizes and stores the declared route status code",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 1029
+            },
+            {
+              "end_line": 1,
+              "path": "fastapi/testclient.py",
+              "role": "FastAPI re-exports Starlette TestClient",
+              "sha256": "9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4",
+              "start_line": 1
+            },
+            {
+              "end_line": 374,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient captures the ASGI response status, headers, and body",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 327
+            },
+            {
+              "end_line": 420,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient wraps the app in its ASGI HTTP transport",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 377
+            },
+            {
+              "end_line": 39,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+              "role": "pinned FastAPI 0.141.1 test function and asserted observations",
+              "sha256": "6cbb2443badbb9f8db42935eb85d7cc15db5f4bb6b672364d51c4600a1fc9192",
+              "start_line": 15
+            },
+            {
+              "end_line": 9,
+              "path": "docs_src/custom_response/tutorial005_py310.py",
+              "role": "Root route and explicit PlainTextResponse response-class declaration",
+              "sha256": "69ad204fa756166e8e2a105d752fadf6f86cbdaf5331e904e6ce9c305672dfb9",
+              "start_line": 4
+            },
+            {
+              "end_line": 418,
+              "path": "fastapi/openapi/utils.py",
+              "role": "FastAPI documents the route's explicit status code or derives it from the response class",
+              "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+              "start_line": 403
             },
             {
               "end_line": 12,
@@ -650190,6 +650323,7 @@
       },
       "mapping_status": "partially_mapped",
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
@@ -650205,6 +650339,7 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
           "selectors": [
+            "docs.response.status",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -650343,22 +650478,22 @@
         {
           "feature_id": "openapi-docs",
           "selectors": [
-            "openapi.document",
-            "python.pydantic_model_result",
-            "docs.response.status",
-            "docs.response.headers",
             "docs.response.body.bytes",
-            "http.body.bytes"
+            "docs.response.headers",
+            "docs.response.status",
+            "http.body.bytes",
+            "openapi.document",
+            "python.pydantic_model_result"
           ]
         },
         {
           "feature_id": "response-serialization",
           "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.cookies",
             "http.body.bytes",
             "http.body.json",
+            "http.cookies",
+            "http.headers.ordered",
+            "http.status",
             "response.background_effects",
             "validation.error_class"
           ]
@@ -650380,9 +650515,10 @@
               "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get",
               "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
+              "docs.response.status",
               "http.body.bytes",
               "http.headers.ordered",
               "http.status",
@@ -650397,24 +650533,64 @@
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get",
             "end_line": 12,
+            "function_source_ref": {
+              "end_line": 12,
+              "line": 9,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+              "sha256": "15ddc6babae6c8593230918b1858162be2c1f1b38478fc8513945ea6d41583b4"
+            },
             "line": 9,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get"
+            "name": "test_get",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema",
             "end_line": 37,
+            "function_source_ref": {
+              "end_line": 37,
+              "line": 15,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+              "sha256": "15ddc6babae6c8593230918b1858162be2c1f1b38478fc8513945ea6d41583b4"
+            },
             "line": 15,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
-            "name": "test_openapi_schema"
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": null,
+          "rationale": "The independent redirect inputs reproduce the tutorial's /typer route and destination and select its corresponding OpenAPI operation.",
+          "stimulus_notes": "Source-reviewed partial mapping to independent cases: tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml::fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get (actions: request; selectors: http.status, http.headers.ordered, http.body.bytes); tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml::fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema (actions: request; selectors: docs.response.status, http.status, openapi.document, openapi.paths). FastAPI owns response-class selection and direct-response dispatch. Response encoding, file metadata/transfer, streaming, redirects, and TestClient transport belong to the pinned Starlette contract.",
           "supporting_sources": [
             {
               "end_line": 9,
@@ -650436,6 +650612,134 @@
               "role": "FastAPI OpenAPI document generation",
               "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
               "start_line": 585
+            },
+            {
+              "end_line": 12,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+              "role": "pinned FastAPI 0.141.1 test function and asserted observations",
+              "sha256": "15ddc6babae6c8593230918b1858162be2c1f1b38478fc8513945ea6d41583b4",
+              "start_line": 9
+            },
+            {
+              "end_line": 9,
+              "path": "docs_src/custom_response/tutorial006_py310.py",
+              "role": "GET /typer route and exact RedirectResponse destination",
+              "sha256": "3f1bbd64331088196e1c8ca160527d3df03497ec10514f828432b14f48b1d094",
+              "start_line": 4
+            },
+            {
+              "end_line": 372,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI applies route and injected Response status values when constructing responses",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 357
+            },
+            {
+              "end_line": 400,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI selects the route's actual response class",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 750,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI preserves returned Response instances and constructs the configured response class for other values",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 711
+            },
+            {
+              "end_line": 1009,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI stores response_class on the route",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 961
+            },
+            {
+              "end_line": 1033,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI normalizes and stores the declared route status code",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 1029
+            },
+            {
+              "end_line": 213,
+              "path": "starlette/responses.py",
+              "role": "Starlette RedirectResponse encodes Location and applies its status code",
+              "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 204
+            },
+            {
+              "end_line": 1,
+              "path": "fastapi/testclient.py",
+              "role": "FastAPI re-exports Starlette TestClient",
+              "sha256": "9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4",
+              "start_line": 1
+            },
+            {
+              "end_line": 374,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient captures the ASGI response status, headers, and body",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 327
+            },
+            {
+              "end_line": 420,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient wraps the app in its ASGI HTTP transport",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 377
+            },
+            {
+              "end_line": 37,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+              "role": "pinned FastAPI 0.141.1 test function and asserted observations",
+              "sha256": "15ddc6babae6c8593230918b1858162be2c1f1b38478fc8513945ea6d41583b4",
+              "start_line": 15
+            },
+            {
+              "end_line": 9,
+              "path": "docs_src/custom_response/tutorial006_py310.py",
+              "role": "GET /typer route and RedirectResponse endpoint name",
+              "sha256": "3f1bbd64331088196e1c8ca160527d3df03497ec10514f828432b14f48b1d094",
+              "start_line": 4
+            },
+            {
+              "end_line": 418,
+              "path": "fastapi/openapi/utils.py",
+              "role": "FastAPI documents the route's explicit status code or derives it from the response class",
+              "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+              "start_line": 403
+            }
+          ],
+          "workflow_cases": [
+            {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml"
+            },
+            {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml"
             }
           ]
         },
@@ -650445,6 +650749,7 @@
       },
       "mapping_status": "partially_mapped",
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
@@ -650460,6 +650765,7 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
           "selectors": [
+            "docs.response.status",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -652510,9 +652816,10 @@
               "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-get-custom-response",
               "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-openapi-schema"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
+              "docs.response.status",
               "http.body.bytes",
               "http.headers.ordered",
               "http.status",
@@ -652527,18 +652834,57 @@
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-get-custom-response",
             "end_line": 23,
+            "function_source_ref": {
+              "end_line": 23,
+              "line": 20,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+              "sha256": "86036e68d694db19deb6b2b04485242630c45bf0a77f9e3a52caa798ef312871"
+            },
             "line": 20,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get_custom_response"
+            "name": "test_get_custom_response",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-get-custom-response",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-openapi-schema",
             "end_line": 50,
+            "function_source_ref": {
+              "end_line": 50,
+              "line": 26,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+              "sha256": "86036e68d694db19deb6b2b04485242630c45bf0a77f9e3a52caa798ef312871"
+            },
             "line": 26,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-openapi-schema",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -652574,6 +652920,99 @@
               "role": "FastAPI OpenAPI document generation",
               "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
               "start_line": 585
+            },
+            {
+              "end_line": 23,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+              "role": "pinned FastAPI 0.141.1 test function and asserted observations",
+              "sha256": "86036e68d694db19deb6b2b04485242630c45bf0a77f9e3a52caa798ef312871",
+              "start_line": 20
+            },
+            {
+              "end_line": 9,
+              "path": "docs_src/custom_response/tutorial010_py310.py",
+              "role": "App-level HTMLResponse default and exact /items/ response body",
+              "sha256": "3d9166f63d0970ba4c0d2c6c52cbb1a6b2be4602c0ce6878430511405eea204e",
+              "start_line": 4
+            },
+            {
+              "end_line": 372,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI applies route and injected Response status values when constructing responses",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 357
+            },
+            {
+              "end_line": 400,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI selects the route's actual response class",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 750,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI preserves returned Response instances and constructs the configured response class for other values",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 711
+            },
+            {
+              "end_line": 1009,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI stores response_class on the route",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 961
+            },
+            {
+              "end_line": 1033,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI normalizes and stores the declared route status code",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 1029
+            },
+            {
+              "end_line": 1,
+              "path": "fastapi/testclient.py",
+              "role": "FastAPI re-exports Starlette TestClient",
+              "sha256": "9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4",
+              "start_line": 1
+            },
+            {
+              "end_line": 374,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient captures the ASGI response status, headers, and body",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 327
+            },
+            {
+              "end_line": 420,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient wraps the app in its ASGI HTTP transport",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 377
+            },
+            {
+              "end_line": 50,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+              "role": "pinned FastAPI 0.141.1 test function and asserted observations",
+              "sha256": "86036e68d694db19deb6b2b04485242630c45bf0a77f9e3a52caa798ef312871",
+              "start_line": 26
+            },
+            {
+              "end_line": 9,
+              "path": "docs_src/custom_response/tutorial010_py310.py",
+              "role": "App-level HTMLResponse default and /items/ route",
+              "sha256": "3d9166f63d0970ba4c0d2c6c52cbb1a6b2be4602c0ce6878430511405eea204e",
+              "start_line": 4
+            },
+            {
+              "end_line": 418,
+              "path": "fastapi/openapi/utils.py",
+              "role": "FastAPI documents the route's explicit status code or derives it from the response class",
+              "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+              "start_line": 403
             },
             {
               "end_line": 23,
@@ -652693,6 +653132,7 @@
       },
       "mapping_status": "partially_mapped",
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
@@ -652708,6 +653148,7 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
           "selectors": [
+            "docs.response.status",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",

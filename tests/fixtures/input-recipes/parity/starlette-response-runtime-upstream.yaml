@@ -21,7 +21,7 @@ cases:
       http_version: '1.1'
       method: GET
       scheme: http
-      path: /plain
+      path: /
       query_string: ''
       root_path: ''
       headers:
@@ -78,9 +78,13 @@ cases:
       body: ''
       more_body: false
     observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
     - kind: openapi
       json_pointers:
-      - /paths/~1plain/get
+      - /paths/~1/get
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_custom_response/test_tutorial005.py
@@ -97,7 +101,7 @@ cases:
       http_version: '1.1'
       method: GET
       scheme: http
-      path: /redirect
+      path: /typer
       query_string: ''
       root_path: ''
       headers:
@@ -154,9 +158,13 @@ cases:
       body: ''
       more_body: false
     observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
     - kind: openapi
       json_pointers:
-      - /paths/~1redirect/get
+      - /paths/~1typer/get
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_custom_response/test_tutorial006.py
@@ -495,6 +503,10 @@ cases:
       body: ''
       more_body: false
     observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
     - kind: openapi
       json_pointers:
       - /paths/~1items~1/get

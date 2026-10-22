@@ -182,6 +182,46 @@ def _wave_h_bigger_applications_direct(case_slug, action_id):
 
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
+        "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+        "test_get",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
+        ("request",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema",
+        ("request",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+        "test_get",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get",
+        ("request",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema",
+        ("request",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
         "tests/test_datetime_custom_encoder.py",
         "test_pydanticv2",
     ): _reviewed_direct_link(
@@ -230,6 +270,26 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         "fastapi.test.test-tutorial-test-custom-response-test-tutorial009b.test-get",
         ("request",),
         ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+        "test_get_custom_response",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-get-custom-response",
+        ("request",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-openapi-schema",
+        ("request",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
     ),
     (
         "tests/test_dependency_after_yield_websockets.py",
@@ -3275,6 +3335,9 @@ def validate_compatibility_artifacts(
                 "tests/test_additional_responses_default_validationerror.py",
                 "tests/test_additional_responses_router.py",
                 "tests/test_response_model_data_filter.py",
+                "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+                "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+                "tests/test_tutorial/test_custom_response/test_tutorial010.py",
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial002.py",

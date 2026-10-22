@@ -21,7 +21,7 @@ SOURCE_IDENTITIES = {
     },
     "pydantic": {
         "version": "2.13.4",
-        "role": "pinned dependency; no Pydantic response-model behavior is exercised by these four modules",
+        "role": "pinned dependency; no Pydantic response-model behavior is exercised by these custom-response mappings",
     },
 }
 
@@ -132,7 +132,25 @@ _OPENAPI_REVIEW_RECIPE = (
 )
 _STATUS_HEADERS = ("http.status", "http.headers.ordered")
 _BODY_BYTES = ("http.body.bytes",)
+_HTTP_RESPONSE = ("http.status", "http.headers.ordered", "http.body.bytes")
 _OPENAPI = ("http.status", "openapi.document")
+_OPENAPI_ACTION = (
+    "docs.response.status",
+    "http.status",
+    "openapi.document",
+    "openapi.paths",
+)
+
+
+def _runtime_direct_case(case_id: str, selectors: tuple[str, ...]) -> dict[str, Any]:
+    return {
+        "workflow_id": "starlette-response-runtime-upstream",
+        "recipe_path": _RUNTIME_RECIPE,
+        "case_id": case_id,
+        "action_ids": ["request"],
+        "observation_selectors": list(selectors),
+    }
+
 
 _TESTCLIENT = (
     _source("fastapi/testclient.py", 1, 1, "FastAPI re-exports Starlette TestClient"),
@@ -230,6 +248,145 @@ _FILE_RESPONSE = (
 
 
 CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
+    "tests/test_tutorial/test_custom_response/test_tutorial005.py": _module(
+        "The independent PlainTextResponse inputs reproduce the tutorial's root route, body, response class, and selected OpenAPI operation.",
+        {
+            "test_get": _function(
+                "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+                9,
+                12,
+                ("response-serialization",),
+                ("http.status", "http.body.bytes"),
+                "The input reproduces the root GET route and exact Hello World body with the tutorial's explicit PlainTextResponse class.",
+                (
+                    _link(
+                        _RUNTIME_RECIPE,
+                        "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
+                        ("request",),
+                        _HTTP_RESPONSE,
+                    ),
+                ),
+                "The source asserts status and decoded text; the input uses the same path, route name, response class, and body, and additionally compares ordered headers and raw bytes. Generic PlainTextResponse encoding belongs to Starlette 1.6.0.",
+                (
+                    _source(
+                        "docs_src/custom_response/tutorial005_py310.py",
+                        4,
+                        9,
+                        "Root route, explicit PlainTextResponse class, and exact response text",
+                    ),
+                    *_FASTAPI_RESPONSE_DISPATCH,
+                    *_ROUTE_RESPONSE_CLASS,
+                    *_TESTCLIENT,
+                ),
+                direct_workflow_case=_runtime_direct_case(
+                    "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
+                    _HTTP_RESPONSE,
+                ),
+            ),
+            "test_openapi_schema": _function(
+                "tests/test_tutorial/test_custom_response/test_tutorial005.py",
+                15,
+                39,
+                ("openapi-docs", "response-serialization"),
+                _OPENAPI,
+                "The independent OpenAPI input selects the same root GET operation, including its PlainTextResponse-derived text/plain schema.",
+                (
+                    _link(
+                        _RUNTIME_RECIPE,
+                        "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema",
+                        ("request",),
+                        _OPENAPI_ACTION,
+                    ),
+                ),
+                "The source compares a complete OpenAPI snapshot. The input selects only the matching root GET operation and HTTP status; top-level document fields and unrelated paths are not claimed.",
+                (
+                    _source(
+                        "docs_src/custom_response/tutorial005_py310.py",
+                        4,
+                        9,
+                        "Root route and explicit PlainTextResponse response-class declaration",
+                    ),
+                    *_ROUTE_RESPONSE_CLASS,
+                    *_OPENAPI_STATUS,
+                    *_TESTCLIENT,
+                ),
+                direct_workflow_case=_runtime_direct_case(
+                    "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema",
+                    _OPENAPI_ACTION,
+                ),
+            ),
+        },
+    ),
+    "tests/test_tutorial/test_custom_response/test_tutorial006.py": _module(
+        "The independent redirect inputs reproduce the tutorial's /typer route and destination and select its corresponding OpenAPI operation.",
+        {
+            "test_get": _function(
+                "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+                9,
+                12,
+                ("response-serialization",),
+                _STATUS_HEADERS,
+                "The input sends GET /typer and returns the tutorial's exact 307 Location target.",
+                (
+                    _link(
+                        _RUNTIME_RECIPE,
+                        "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get",
+                        ("request",),
+                        _HTTP_RESPONSE,
+                    ),
+                ),
+                "The source disables TestClient redirect following and asserts status plus Location. The direct ASGI input compares the matching response and does not exercise a redirect-following client policy; the shared workload sets JSONResponse explicitly because tutorial010 requires an app-wide HTMLResponse default, so default-class inheritance is not claimed. Generic RedirectResponse encoding belongs to Starlette 1.6.0.",
+                (
+                    _source(
+                        "docs_src/custom_response/tutorial006_py310.py",
+                        4,
+                        9,
+                        "GET /typer route and exact RedirectResponse destination",
+                    ),
+                    *_FASTAPI_RESPONSE_DISPATCH,
+                    *_ROUTE_RESPONSE_CLASS,
+                    *_REDIRECT_RESPONSE,
+                    *_TESTCLIENT,
+                ),
+                direct_workflow_case=_runtime_direct_case(
+                    "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-get",
+                    _HTTP_RESPONSE,
+                ),
+            ),
+            "test_openapi_schema": _function(
+                "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+                15,
+                37,
+                ("openapi-docs", "response-serialization"),
+                _OPENAPI,
+                "The independent OpenAPI input selects the same /typer GET operation and generated operation identifier.",
+                (
+                    _link(
+                        _RUNTIME_RECIPE,
+                        "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema",
+                        ("request",),
+                        _OPENAPI_ACTION,
+                    ),
+                ),
+                "The source compares a complete OpenAPI snapshot. The input selects only the matching /typer GET operation and HTTP status; top-level document fields and unrelated paths are not claimed. The shared workload selects JSONResponse on this route to reproduce the source operation while retaining tutorial010's app-wide HTMLResponse default.",
+                (
+                    _source(
+                        "docs_src/custom_response/tutorial006_py310.py",
+                        4,
+                        9,
+                        "GET /typer route and RedirectResponse endpoint name",
+                    ),
+                    *_ROUTE_RESPONSE_CLASS,
+                    *_OPENAPI_STATUS,
+                    *_TESTCLIENT,
+                ),
+                direct_workflow_case=_runtime_direct_case(
+                    "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema",
+                    _OPENAPI_ACTION,
+                ),
+            ),
+        },
+    ),
     "tests/test_tutorial/test_custom_response/test_tutorial006c.py": _module(
         "The module checks an explicit 302 RedirectResponse-class route and snapshots OpenAPI's documented response status.",
         {
@@ -457,6 +614,75 @@ CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
                         "http.body.bytes",
                     ],
                 },
+            ),
+        },
+    ),
+    "tests/test_tutorial/test_custom_response/test_tutorial010.py": _module(
+        "The independent HTMLResponse inputs reproduce the tutorial's /items/ route, exact HTML body, default response class, and selected OpenAPI operation.",
+        {
+            "test_get_custom_response": _function(
+                "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+                20,
+                23,
+                ("response-serialization",),
+                ("http.status", "http.body.bytes"),
+                "The input reproduces the exact /items/ body and the app-level HTMLResponse default documented by the tutorial.",
+                (
+                    _link(
+                        _RUNTIME_RECIPE,
+                        "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-get-custom-response",
+                        ("request",),
+                        _HTTP_RESPONSE,
+                    ),
+                ),
+                "The source asserts status and decoded text; the input uses the exact path and body, and additionally compares ordered headers and raw bytes. Generic HTMLResponse encoding belongs to Starlette 1.6.0.",
+                (
+                    _source(
+                        "docs_src/custom_response/tutorial010_py310.py",
+                        4,
+                        9,
+                        "App-level HTMLResponse default and exact /items/ response body",
+                    ),
+                    *_FASTAPI_RESPONSE_DISPATCH,
+                    *_ROUTE_RESPONSE_CLASS,
+                    *_TESTCLIENT,
+                ),
+                direct_workflow_case=_runtime_direct_case(
+                    "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-get-custom-response",
+                    _HTTP_RESPONSE,
+                ),
+            ),
+            "test_openapi_schema": _function(
+                "tests/test_tutorial/test_custom_response/test_tutorial010.py",
+                26,
+                50,
+                ("openapi-docs", "response-serialization"),
+                _OPENAPI,
+                "The independent OpenAPI input selects the same /items/ GET operation, HTML response schema, and operation identifier.",
+                (
+                    _link(
+                        _RUNTIME_RECIPE,
+                        "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-openapi-schema",
+                        ("request",),
+                        _OPENAPI_ACTION,
+                    ),
+                ),
+                "The source compares a complete OpenAPI snapshot. The input selects only the matching /items/ GET operation and HTTP status; top-level document fields and unrelated paths are not claimed.",
+                (
+                    _source(
+                        "docs_src/custom_response/tutorial010_py310.py",
+                        4,
+                        9,
+                        "App-level HTMLResponse default and /items/ route",
+                    ),
+                    *_ROUTE_RESPONSE_CLASS,
+                    *_OPENAPI_STATUS,
+                    *_TESTCLIENT,
+                ),
+                direct_workflow_case=_runtime_direct_case(
+                    "fastapi.test.test-tutorial-test-custom-response-test-tutorial010.test-openapi-schema",
+                    _OPENAPI_ACTION,
+                ),
             ),
         },
     ),
