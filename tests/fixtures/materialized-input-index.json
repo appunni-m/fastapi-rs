@@ -38532,6 +38532,27 @@
       ]
     },
     {
+      "id": "security-oauth2-password-bearer-auto-error-zero",
+      "input_path": "tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero.json",
+      "input_sha256": "4f7f9da63d07729127ee0c8113b8b47fc5f8f71543e8ebcac2703129fb6ebbf8",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml",
+      "recipe_sha256": "5898d064e96eed07376dd19b8bdc93b9d9b751dbd23438895bdc347fc7df8abb",
+      "case_ids": [
+        "fastapi.security.oauth2-password-bearer.auto-error-int-zero"
+      ],
+      "workload_path": "tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero.py",
+      "workload_sha256": "f3b5a501fcc1fe12c35076db1c7dfb86ae52def60d00bd3693d9ca5b93969e34",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.oauth2-password-bearer.auto-error-int-zero",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_password_bearer_optional.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "security-oauth2-strict-optional-gap-wave",
       "input_path": "tests/fixtures/inputs/parity/security-oauth2-strict-optional-gap-wave.json",
       "input_sha256": "51505965d442d12c561d53661a8bb79cf951c5da732791f0db10a15a6d970ca0",
@@ -72994,6 +73015,21 @@
         "fastapi.security-gap.oauth2-optional-description.test-strict-login-incorrect-grant-type-passwordblah",
         "fastapi.security-gap.oauth2-optional-description.test-strict-login-no-grant-type",
         "fastapi.security-gap.oauth2-optional-description.test-strict-login-none"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_oauth2_password_bearer_optional.py",
+      "fixture_id": "fastapi.test.test-security-oauth2-password-bearer-optional",
+      "workflow_id": "security-oauth2-password-bearer-auto-error-zero",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.oauth2-password-bearer.auto-error-int-zero"
       ],
       "observation_selectors": [
         "http.body.bytes",

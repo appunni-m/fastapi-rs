@@ -13096,11 +13096,11 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Direct alias-object identity and request token extraction through this import path remain
-            unverified here.
+            Nonzero values, custom truthy objects, subclass behavior, and other OAuth2 flows remain
+            unverified for this imported class.
           - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current identity-checked receipt covers only the linked selected cases, not the
+            complete class contract.
         rust_binding: "fastapi-rs/src/security.rs::PyOAuth2PasswordBearer"
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
       source_evidence:
@@ -13110,13 +13110,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+          case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
       feature_ids: [dependency-security]
-      observation_selectors: [openapi.document, openapi.paths, openapi.security, python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security, python.signature]
       supported_slice: >-
         The root-package export participates in an identity-checked scoped
         dependency OpenAPI case, which observes its named scheme and merged
-        operation scope requirements. Direct alias-object identity and request
-        token extraction through this import path remain unverified here.
+        operation scope requirements. The selected auto_error case also observes
+        root/module alias identity, preserves integer zero through construction
+        and assignment, and checks missing, non-Bearer, and Bearer requests.
     fastapi.security.oauth2.OAuth2:
       target_binding:
         implementation_owner: fastapi-rs
@@ -13249,11 +13252,11 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Other flow variants, inheritance, request token extraction, and optional-auth handling are
-            not covered by this OpenAPI fixture.
+            Other flow variants, subclass behavior, nonzero values, and custom truthy objects remain
+            unverified outside this selected auto_error case.
           - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current identity-checked receipt covers only the linked selected cases, not the
+            complete class contract.
         rust_binding: "fastapi-rs/src/security.rs::PyOAuth2PasswordBearer"
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
       source_evidence:
@@ -13267,25 +13270,29 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+          case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
       feature_ids: [dependency-security]
-      observation_selectors: [openapi.document, openapi.paths, openapi.security, python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security, python.signature]
       supported_slice: >-
         Partial native implementation is covered for construction of a named
         password-flow scheme and merging scopes through repeated nested
-        Security dependencies into OpenAPI. Other flow variants, inheritance,
-        request token extraction, and optional-auth handling are not covered
-        by this OpenAPI fixture.
+        Security dependencies into OpenAPI. The selected auto_error case also
+        preserves integer zero as its public value and type through the property
+        setter, applies its falsey behavior to missing and non-Bearer headers,
+        and extracts a Bearer token. Other flows and subclass behavior remain
+        unverified.
     fastapi.security.oauth2.OAuth2PasswordBearer.__init__:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            Other constructor options, its reflected signature, and validation outcomes remain
-            unverified.
+            Other constructor options and validation outcomes remain unverified; the focused case
+            does not establish general non-bool value compatibility.
           - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current identity-checked receipt covers only the linked selected cases, not the
+            complete constructor contract.
         rust_binding: "fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::new"
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::new
       source_evidence:
@@ -13299,24 +13306,27 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-password-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+          case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
       feature_ids: [dependency-security]
-      observation_selectors: [openapi.document, openapi.security, python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         The fixture constructs the default password-flow scheme with a
         configured name and scope descriptions, then observes merged required
-        scopes in OpenAPI. Other constructor options, its reflected signature,
-        and validation outcomes remain unverified.
+        scopes in OpenAPI. The selected auto_error case preserves constructor
+        integer zero as an integer through direct attribute observation. Other
+        constructor options and validation outcomes remain unverified.
     fastapi.security.oauth2.OAuth2PasswordBearer.__call__:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
-            Token whitespace/case variants, empty parameters, and optional authentication remain
-            unverified.
+            Token whitespace/case variants, empty parameters, nonzero values, and custom truthy
+            objects remain unverified.
           - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            The current identity-checked receipt covers only the linked selected cases, not the
+            complete call contract.
         rust_binding: "fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::__call__"
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::__call__
       source_evidence:
@@ -13330,13 +13340,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-tutorial-002.test-token
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.oauth2-protected-user.test-no-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+          case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
       feature_ids: [dependency-security, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         Selected requests observe a valid Bearer token returned to the endpoint
-        and a missing required credential producing the 401 challenge. Token
-        whitespace/case variants, empty parameters, and optional authentication
-        remain unverified.
+        and a missing required credential producing the 401 challenge. The
+        focused auto_error case observes falsey integer semantics for missing
+        and non-Bearer headers. Token whitespace/case variants, empty parameters,
+        nonzero values, and custom truthy objects remain unverified.
     fastapi.security.HTTPAuthorizationCredentials:
       target_binding:
         implementation_owner: fastapi-rs

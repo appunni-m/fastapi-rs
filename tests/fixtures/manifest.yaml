@@ -525,7 +525,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 39a4a2b2dabfa566ea87801940495155c8cdc844f3a911f28a2e9fa3a8643613
+    sha256: 2d79e70d419b0857fee5ba1d6776b96c71e11f43bda3fc2fbf5979b3d70031a5
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1643
@@ -565,7 +565,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 8260aa5563f2c6db114f3fbdb6839b4c310703866b7c7636d74c1801d8e9f2e0
+    sha256: c821408af50f0f76329d681af26bcb8132f4a844fa67144dadd2d88f5ce80eea
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 891
@@ -602,14 +602,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 198d160a93e1cbbf680b15b89ee2547ffa6b9d0bd244804cf156fdefb24cdd22
+    sha256: b1434ddf944c256f8b2cd79cd5d52bba2a5ddb8a09000fdb3c433f4f7caa09e3
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 721
-      cases: 2987
-      partial_source_mappings: 1985
+      workflows: 722
+      cases: 2988
+      partial_source_mappings: 1986
 
 contract_metadata:
   aliases:
@@ -1437,7 +1437,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 190
     symbols_with_operation_fixture_refs: 461
-    operation_fixture_refs: 2817
+    operation_fixture_refs: 2821
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -71406,6 +71406,21 @@ api_surface_contract:
       case_id: fastapi.security.public-api.oauth2-password-bearer
       observation_selectors:
       - python.signature
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero.json
+      input_sha256: 4f7f9da63d07729127ee0c8113b8b47fc5f8f71543e8ebcac2703129fb6ebbf8
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+      recipe_sha256: 5898d064e96eed07376dd19b8bdc93b9d9b751dbd23438895bdc347fc7df8abb
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero.py
+      workload_sha256: f3b5a501fcc1fe12c35076db1c7dfb86ae52def60d00bd3693d9ca5b93969e34
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -71440,10 +71455,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
       known_gaps:
-      - Direct alias-object identity and request token extraction through this import path remain unverified
-        here.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Nonzero values, custom truthy objects, subclass behavior, and other OAuth2 flows remain unverified
+        for this imported class.
+      - The current identity-checked receipt covers only the linked selected cases, not the complete class
+        contract.
   - id: fastapi.security.OAuth2PasswordRequestForm
     kind: import_binding
     source_candidate_ref: /api_candidates/1470
@@ -77749,6 +77764,21 @@ api_surface_contract:
       case_id: fastapi.security.public-api.oauth2-password-bearer
       observation_selectors:
       - python.signature
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero.json
+      input_sha256: 4f7f9da63d07729127ee0c8113b8b47fc5f8f71543e8ebcac2703129fb6ebbf8
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+      recipe_sha256: 5898d064e96eed07376dd19b8bdc93b9d9b751dbd23438895bdc347fc7df8abb
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero.py
+      workload_sha256: f3b5a501fcc1fe12c35076db1c7dfb86ae52def60d00bd3693d9ca5b93969e34
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -77780,10 +77810,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
       known_gaps:
-      - Other flow variants, inheritance, request token extraction, and optional-auth handling are not
-        covered by this OpenAPI fixture.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Other flow variants, subclass behavior, nonzero values, and custom truthy objects remain unverified
+        outside this selected auto_error case.
+      - The current identity-checked receipt covers only the linked selected cases, not the complete class
+        contract.
   - id: fastapi.security.oauth2.OAuth2PasswordBearer.__call__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1549
@@ -77841,6 +77871,21 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero.json
+      input_sha256: 4f7f9da63d07729127ee0c8113b8b47fc5f8f71543e8ebcac2703129fb6ebbf8
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+      recipe_sha256: 5898d064e96eed07376dd19b8bdc93b9d9b751dbd23438895bdc347fc7df8abb
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero.py
+      workload_sha256: f3b5a501fcc1fe12c35076db1c7dfb86ae52def60d00bd3693d9ca5b93969e34
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -77873,9 +77918,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::__call__
       known_gaps:
-      - Token whitespace/case variants, empty parameters, and optional authentication remain unverified.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Token whitespace/case variants, empty parameters, nonzero values, and custom truthy objects remain
+        unverified.
+      - The current identity-checked receipt covers only the linked selected cases, not the complete call
+        contract.
   - id: fastapi.security.oauth2.OAuth2PasswordBearer.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1550
@@ -77945,6 +77991,21 @@ api_surface_contract:
       case_id: fastapi.security.public-api.oauth2-password-bearer
       observation_selectors:
       - python.signature
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero.json
+      input_sha256: 4f7f9da63d07729127ee0c8113b8b47fc5f8f71543e8ebcac2703129fb6ebbf8
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
+      recipe_sha256: 5898d064e96eed07376dd19b8bdc93b9d9b751dbd23438895bdc347fc7df8abb
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero.py
+      workload_sha256: f3b5a501fcc1fe12c35076db1c7dfb86ae52def60d00bd3693d9ca5b93969e34
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -77976,9 +78037,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::new
       known_gaps:
-      - Other constructor options, its reflected signature, and validation outcomes remain unverified.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Other constructor options and validation outcomes remain unverified; the focused case does not
+        establish general non-bool value compatibility.
+      - The current identity-checked receipt covers only the linked selected cases, not the complete constructor
+        contract.
   - id: fastapi.security.oauth2.OAuth2PasswordRequestForm
     kind: class
     source_candidate_ref: /api_candidates/1551

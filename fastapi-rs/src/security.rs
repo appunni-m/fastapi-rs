@@ -963,7 +963,7 @@ impl PyOAuth2 {
 struct PyOAuth2PasswordBearer {
     model: Py<PyAny>,
     scheme_name: Py<PyAny>,
-    auto_error: bool,
+    auto_error: Py<PyAny>,
 }
 
 #[pyclass(
@@ -1390,14 +1390,14 @@ impl PyOAuth2PasswordBearer {
         reason = "preserve the public camelCase tokenUrl and refreshUrl keywords"
     )]
     #[new]
-    #[pyo3(signature = (tokenUrl, scheme_name=None, scopes=None, description=None, auto_error=true, refreshUrl=None))]
+    #[pyo3(signature = (tokenUrl, scheme_name=None, scopes=None, description=None, auto_error=constructor_auto_error_default(), refreshUrl=None))]
     fn new(
         py: Python<'_>,
         tokenUrl: Py<PyAny>,
         scheme_name: Option<Py<PyAny>>,
         scopes: Option<Py<PyAny>>,
         description: Option<Py<PyAny>>,
-        auto_error: bool,
+        auto_error: Py<PyAny>,
         refreshUrl: Option<Py<PyAny>>,
     ) -> PyResult<Self> {
         let module = py.import("fastapi_rs._core")?;
@@ -1457,12 +1457,12 @@ impl PyOAuth2PasswordBearer {
     }
 
     #[getter]
-    fn auto_error(&self) -> bool {
-        self.auto_error
+    fn auto_error(&self, py: Python<'_>) -> Py<PyAny> {
+        self.auto_error.clone_ref(py)
     }
 
     #[setter]
-    fn set_auto_error(&mut self, auto_error: bool) {
+    fn set_auto_error(&mut self, auto_error: Py<PyAny>) {
         self.auto_error = auto_error;
     }
 
