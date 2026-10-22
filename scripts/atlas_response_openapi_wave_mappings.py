@@ -1316,7 +1316,7 @@ RESPONSE_OPENAPI_REVIEW_GAPS = {
     },
     "tests/test_stream_status_code.py": {
         "test_openapi": {
-            "reason": "The source compares the complete OpenAPI snapshot for SSE, JSONL, and raw streams with declared and dependency-overridden status codes. Current streaming cases cover selected runtime status and JSONL item-schema behavior, not this complete document.",
+            "reason": "The independent full-document input now covers the nine-route SSE/JSONL/raw stream status matrix with independently named routes. It maps stream schema and status behavior without claiming the source path, operation IDs, or literal OpenAPI snapshot.",
             "supporting_sources": [
                 _source(
                     "tests/test_stream_status_code.py",

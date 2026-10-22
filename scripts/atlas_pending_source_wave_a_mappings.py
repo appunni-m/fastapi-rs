@@ -827,6 +827,13 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         "Source declares route generator annotations, response classes, statuses, and additional stream responses",
                     ),
                 ),
+                workflow_case={
+                    "workflow_id": "pending-source-wave-a",
+                    "recipe_path": RECIPE,
+                    "case_id": "fastapi.source-wave-a.stream-status.openapi",
+                    "action_ids": ["openapi"],
+                    "observation_selectors": ["openapi.document"],
+                },
             ),
         },
         R,

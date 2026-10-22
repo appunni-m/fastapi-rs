@@ -397,6 +397,26 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     ),
     (
         "tests/test_enforce_once_required_parameter.py",
+        "test_get_invalid",
+    ): _reviewed_direct_link(
+        "dependency-required-parameter-once-upstream",
+        "tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml",
+        "fastapi.dependencies.required-parameter-once.missing",
+        ("missing-shared-required-query",),
+        ("http.status",),
+    ),
+    (
+        "tests/test_enforce_once_required_parameter.py",
+        "test_get_valid",
+    ): _reviewed_direct_link(
+        "dependency-required-parameter-once-upstream",
+        "tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml",
+        "fastapi.dependencies.required-parameter-once.valid",
+        ("one-value-feeds-required-and-optional-dependencies",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_enforce_once_required_parameter.py",
         "test_openapi_schema",
     ): _reviewed_direct_link(
         "dependency-required-parameter-once-upstream",
@@ -469,6 +489,16 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
             "case-9",
         ),
         ("http.status",),
+    ),
+    (
+        "tests/test_stream_status_code.py",
+        "test_openapi",
+    ): _reviewed_direct_link(
+        "pending-source-wave-a",
+        "tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml",
+        "fastapi.source-wave-a.stream-status.openapi",
+        ("openapi",),
+        ("openapi.document",),
     ),
     (
         "tests/test_exception_handlers.py",

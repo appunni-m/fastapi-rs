@@ -1146,6 +1146,56 @@ def _required_parameter_once_openapi_function_mapping() -> dict[str, Any]:
     }
 
 
+def _required_parameter_once_http_function_mapping(
+    function_name: str,
+    case_id: str,
+    action_id: str,
+    observation_selectors: list[str],
+    rationale: str,
+    contract_gate: str,
+) -> dict[str, Any]:
+    """Link required-dependency HTTP tests to their existing input cases."""
+    test_path = "tests/test_enforce_once_required_parameter.py"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    case_row = _RECIPE_CASE_INDEX.get(case_id)
+    recipe_path = (
+        "tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml"
+    )
+    if case_row is None or case_row["recipe_path"] != recipe_path:
+        raise ValueError(f"unknown required-parameter HTTP case: {case_id}")
+    actions = case_row["case"].get("actions", [])
+    if len(actions) != 1 or actions[0].get("action_id") != action_id:
+        raise ValueError(f"expected one {action_id} action in {case_id}")
+    selectors = _workflow_selectors({"actions": actions})
+    if selectors != observation_selectors:
+        raise ValueError(f"required-parameter HTTP selectors changed for {case_id}: {selectors}")
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": recipe_path,
+            "case_id": case_id,
+            "action_ids": [action_id],
+            "observation_selectors": selectors,
+        },
+        "feature_ids": ["request-validation", "dependency-security"],
+        "rationale": rationale,
+        "contract_gate": contract_gate,
+    }
+
+
 def _path_test_function_mapping(function_name: str, case_id: str, behavior: str) -> dict[str, Any]:
     """Link one exact Path test assertion to its independent ASGI input case."""
     test_path = "tests/test_path.py"
@@ -1692,6 +1742,22 @@ def _parameter_repr_function_mappings() -> dict[str, dict[str, Any]]:
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
     _PARAMETER_REPR_TEST_PATH: _parameter_repr_function_mappings(),
     "tests/test_enforce_once_required_parameter.py": {
+        "test_get_invalid": _required_parameter_once_http_function_mapping(
+            "test_get_invalid",
+            "fastapi.dependencies.required-parameter-once.missing",
+            "missing-shared-required-query",
+            ["http.status"],
+            "Omitting client_id leaves the shared required dependency parameter missing and returns the independently observed 422 status.",
+            "Partial input mapping: this case observes the validation status only. It does not compare the source error document or assert exact TestClient URL encoding; generic ASGI behavior remains in the pinned Starlette 1.6.0 contract.",
+        ),
+        "test_get_valid": _required_parameter_once_http_function_mapping(
+            "test_get_valid",
+            "fastapi.dependencies.required-parameter-once.valid",
+            "one-value-feeds-required-and-optional-dependencies",
+            ["http.body.bytes", "http.status"],
+            "One query value satisfies the required and optional dependency parameters, and the independent endpoint returns its derived values.",
+            "Partial input mapping: the case observes status and raw response bytes for independent route and value literals. It maps the valid shared-dependency path without claiming the source body literals or TestClient encoding.",
+        ),
         "test_openapi_schema": _required_parameter_once_openapi_function_mapping(),
     },
     "tests/test_path.py": {
